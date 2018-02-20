@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
 
 /**
@@ -13,7 +16,21 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
  * <p>
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public enum DeltaKey {
-  USAGE, CARDINALITY_MIN, CARDINALITY_MAX, NAME, LENGTH_MIN, LENGTH_MAX, CONF_LENGTH, DATATYPE, VALUESET, SINGLECODE, CONSTANT_VALUE, PREDICATE, CONFORMANCE_STATEMENT, DYNAMIC_MAPPING, CO_CONSTRAINTS, DEFINITION_TEXT, COMMENT
+public class DeltaDefinitionText extends DeltaObject {
+
+  private String definitionText;
+
+  public DeltaDefinitionText(String definitionText) {
+    super(DeltaKey.DEFINITION_TEXT);
+    this.definitionText = definitionText;
+  }
+
+  public String getDefinitionText() {
+    return definitionText;
+  }
+
+  public void setDefinitionText(String definitionText) {
+    this.definitionText = definitionText;
+  }
 
 }
