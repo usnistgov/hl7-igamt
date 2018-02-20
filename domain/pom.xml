@@ -8,7 +8,6 @@
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>gov.nist.healthcare.tools.hl7.v2</groupId>
 	<artifactId>domain</artifactId>
 	<version>${parent.version}</version>
 	<name>domain</name>
