@@ -10,10 +10,17 @@
 	</parent>
 	<groupId>gov.nist.healthcare.tools.hl7.v2</groupId>
 	<artifactId>profile-component</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>${parent.version}</version>
 	<name>profile-component</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
+	<dependencies>
+		<dependency>
+			<groupId>gov.nist.healthcare.tools.hl7.v2</groupId>
+			<artifactId>domain</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+	</dependencies>
 </project>
