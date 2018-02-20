@@ -1,4 +1,4 @@
-package gov.nist.healthcare.tools.hl7.v2.igamt.domain;
+package gov.nist.hit.hl7.igamt.domain;
 
 public class Resource {
 

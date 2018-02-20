@@ -1,3 +1,6 @@
+/**
+ * 
+ */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
 
 /**
@@ -13,7 +16,22 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
  * <p>
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public enum DeltaKey {
-  USAGE, CARDINALITY_MIN, CARDINALITY_MAX, NAME, LENGTH_MIN, LENGTH_MAX, CONF_LENGTH, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, CONFORMANCE_STATEMENT, DYNAMIC_MAPPING, CO_CONSTRAINTS, DEFINITION_TEXT, COMMENT
+public class DeltaLengthMin extends DeltaObject {
 
+  private int min;
+
+  public DeltaLengthMin(int min) {
+    super(DeltaKey.LENGTH_MIN);
+    this.min = min;
+  }
+
+  public int getMin() {
+    return min;
+  }
+
+  public void setMin(int min) {
+    this.min = min;
+  }
+  
+  
 }
