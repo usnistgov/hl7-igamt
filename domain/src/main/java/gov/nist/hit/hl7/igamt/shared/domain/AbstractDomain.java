@@ -15,6 +15,18 @@ public abstract class AbstractDomain {
       // TODO Auto-generated constructor stub
     }
  
+    public AbstractDomain(String id, String version, PublicationInfo publicationInfo,
+        DomainInfo domainInfo, String username, String comment, String description) {
+      super();
+      this.id = id;
+      this.version = version;
+      this.publicationInfo = publicationInfo;
+      this.domainInfo = domainInfo;
+      this.username = username;
+      this.comment = comment;
+      this.description = description;
+    }
+
     public String getVersion() {
       return version;
     }

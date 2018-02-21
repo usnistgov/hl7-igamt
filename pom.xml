@@ -15,5 +15,6 @@
 		<module>profile-component</module>
 		<module>composite-profile</module>
 		<module>ig</module>
+		<module>datatype</module>
 	</modules>
 </project>
