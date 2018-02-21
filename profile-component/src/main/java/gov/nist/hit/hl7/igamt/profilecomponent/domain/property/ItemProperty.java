@@ -8,43 +8,20 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+*/
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
- * 
+ *
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
+public abstract class ItemProperty {
 
-  private String path;
-  private Set<ItemProperty> itemProperties;
+  protected PropertyKey propertyKey;
 
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
-  }
-
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
+  public ItemProperty(PropertyKey propertyKey) {
+    this.propertyKey = propertyKey;
   }
 
 }
-

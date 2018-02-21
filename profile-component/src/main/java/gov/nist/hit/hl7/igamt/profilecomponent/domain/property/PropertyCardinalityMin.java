@@ -9,42 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
-
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
+public class PropertyCardinalityMin extends ItemProperty {
 
-  private String path;
-  private Set<ItemProperty> itemProperties;
+  private int min;
 
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
+  public PropertyCardinalityMin(int min) {
+    super(PropertyKey.CARDINALITY_MIN);
+    this.min = min;
   }
 
-  public String getPath() {
-    return path;
+  public int getMin() {
+    return min;
   }
 
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
-  }
-
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
+  public void setMin(int min) {
+    this.min = min;
   }
 
 }
-

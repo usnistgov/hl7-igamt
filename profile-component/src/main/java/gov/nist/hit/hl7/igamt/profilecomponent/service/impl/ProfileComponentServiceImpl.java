@@ -9,42 +9,14 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
-
-  private String path;
-  private Set<ItemProperty> itemProperties;
-
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
-  }
-
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
-  }
+public class ProfileComponentServiceImpl implements ProfileComponentService {
 
 }
-

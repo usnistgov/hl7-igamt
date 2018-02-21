@@ -11,40 +11,35 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
-
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
+public class OrderedProfileComponent {
 
-  private String path;
-  private Set<ItemProperty> itemProperties;
+  private int position;
+  private ProfileComponent profileComponent;
 
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
+  public OrderedProfileComponent(int position, ProfileComponent profileComponent) {
     super();
-    this.path = path;
-    this.itemProperties = itemProperties;
+    this.position = position;
+    this.profileComponent = profileComponent;
   }
 
-  public String getPath() {
-    return path;
+  public int getPosition() {
+    return position;
   }
 
-  public void setPath(String path) {
-    this.path = path;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
+  public ProfileComponent getProfileComponent() {
+    return profileComponent;
   }
 
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
+  public void setProfileComponent(ProfileComponent profileComponent) {
+    this.profileComponent = profileComponent;
   }
 
 }
-

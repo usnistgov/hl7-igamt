@@ -9,42 +9,13 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
-
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
-
-  private String path;
-  private Set<ItemProperty> itemProperties;
-
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
-  }
-
-  public String getPath() {
-    return path;
-  }
-
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
-  }
-
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
-  }
+public enum PropertyKey {
+  USAGE, CARDINALITY_MIN, CARDINALITY_MAX, NAME, LENGTH_MIN, LENGTH_MAX, CONF_LENGTH, DATATYPE, VALUESET, SINGLECODE, CONSTANT_VALUE, PREDICATE, CONFORMANCE_STATEMENT, DYNAMIC_MAPPING, CO_CONSTRAINTS, DEFINITION_TEXT, COMMENT
 
 }
-

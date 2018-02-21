@@ -9,42 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
-
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponentItem {
+public class PropertyConstantValue extends ItemProperty {
 
-  private String path;
-  private Set<ItemProperty> itemProperties;
+  private String constantValue;
 
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
+  public PropertyConstantValue(String constantValue) {
+    super(PropertyKey.CONSTANT_VALUE);
+    this.constantValue = constantValue;
   }
 
-  public String getPath() {
-    return path;
+  public String getConstantValue() {
+    return constantValue;
   }
 
-  public void setPath(String path) {
-    this.path = path;
-  }
-
-  public Set<ItemProperty> getDeltaObjects() {
-    return itemProperties;
-  }
-
-  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
-    this.itemProperties = itemProperties;
-  }
+  public void setConstantValue(String constantValue) {
+    this.constantValue = constantValue;
+  };
 
 }
-
