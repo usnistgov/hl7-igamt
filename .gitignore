@@ -2,3 +2,9 @@ profile-component/target
 domain/target
 profile-component/.settings
 domain/.settings
+*.classpath
+*.settings*
+*target*
+*.project*
+*.classpath*
+.metadata

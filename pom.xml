@@ -13,5 +13,6 @@
 	<modules>
 		<module>domain</module>
 		<module>profile-component</module>
+		<module>igdocument</module>
 	</modules>
 </project>
