@@ -5,7 +5,7 @@ public abstract class AbstractDomain {
     private String version;
     private PublicationInfo publicationInfo;
     private DomainInfo domainInfo;
-    private String userName;
+    private String username;
     private  String comment;
     private String description;
     
@@ -16,13 +16,13 @@ public abstract class AbstractDomain {
     }
  
     public AbstractDomain(String id, String version, PublicationInfo publicationInfo,
-        DomainInfo domainInfo, String userName, String comment, String description) {
+        DomainInfo domainInfo, String username, String comment, String description) {
       super();
       this.id = id;
       this.version = version;
       this.publicationInfo = publicationInfo;
       this.domainInfo = domainInfo;
-      this.userName = userName;
+      this.username = username;
       this.comment = comment;
       this.description = description;
     }
@@ -46,10 +46,10 @@ public abstract class AbstractDomain {
       this.domainInfo = domainInfo;
     }
     public String getUserName() {
-      return userName;
+      return username;
     }
     public void setUserName(String userName) {
-      this.userName = userName;
+      this.username = userName;
     }
     public String getComment() {
       return comment;

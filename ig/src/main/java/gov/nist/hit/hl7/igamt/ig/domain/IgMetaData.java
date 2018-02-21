@@ -8,15 +8,14 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
-package gov.nist.hit.hl7.igamt.compositeprofile.model;
-
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+package gov.nist.hit.hl7.igamt.ig.domain;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author ena3
+ *
  */
-public class CompositeProfile extends Resource {
+public class IgMetaData {
 
 }

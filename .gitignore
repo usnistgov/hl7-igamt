@@ -7,5 +7,5 @@ domain/.settings
 *target*
 *.project*
 *.classpath*
-.metadata
-*.setting*
+*.metadata
+*.class
