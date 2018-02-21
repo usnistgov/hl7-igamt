@@ -7,9 +7,9 @@
     <artifactId>igamt</artifactId>
     <version>0.0.1-SNAPSHOT</version>
   </parent>
-  <artifactId>shared-domain</artifactId>
+  <artifactId>domain</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>shared-domain</name>
+  <name>domain</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
