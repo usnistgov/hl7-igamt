@@ -22,6 +22,12 @@ public class DomainInfo {
     super();
     // TODO Auto-generated constructor stub
   }
+  public Scope getScope() {
+    return scope;
+  }
+  public void setScope(Scope scope) {
+    this.scope = scope;
+  }
   
   
   

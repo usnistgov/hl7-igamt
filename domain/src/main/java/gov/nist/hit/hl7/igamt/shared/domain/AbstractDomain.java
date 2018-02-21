@@ -8,6 +8,7 @@ public abstract class AbstractDomain {
     private String userName;
     private  String comment;
     private String description;
+    
    
     public AbstractDomain() {
       super();
