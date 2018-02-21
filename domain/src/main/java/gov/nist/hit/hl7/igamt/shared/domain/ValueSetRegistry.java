@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 
 import java.util.HashMap;
 
-public class ValueSetRegistry extends Resgistry<Link> {
+public class ValueSetRegistry extends Registry<Link> {
   private ValueSetConfigForExport exportConfig;
   private HashMap<String, Boolean> codesPresence;
   

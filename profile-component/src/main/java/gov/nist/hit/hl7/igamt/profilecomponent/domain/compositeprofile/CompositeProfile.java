@@ -5,7 +5,6 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.compositeprofile;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.domain.Resource;
 
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
@@ -20,7 +19,7 @@ import gov.nist.hit.hl7.igamt.domain.Resource;
  * <p>
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class CompositeProfile extends Resource {
+public class CompositeProfile extends gov.nist.hit.hl7.igamt.shared.domain.Resource {
 
   private String conformanceProfileId;
   private Set<OrderedProfileComponentsGroup> orderedProfileComponentsGroups;

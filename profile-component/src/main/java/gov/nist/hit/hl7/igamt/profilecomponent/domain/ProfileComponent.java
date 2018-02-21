@@ -5,7 +5,6 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.domain.Resource;
 
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
@@ -20,7 +19,7 @@ import gov.nist.hit.hl7.igamt.domain.Resource;
  * <p>
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class ProfileComponent extends Resource {
+public class ProfileComponent extends gov.nist.hit.hl7.igamt.shared.domain.Resource {
 
   public enum Level {
     MESSAGE, SEGMENT

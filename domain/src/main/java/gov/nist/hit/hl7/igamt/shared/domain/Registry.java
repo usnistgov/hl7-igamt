@@ -4,12 +4,12 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "registry")
-public class Resgistry<T extends Link> extends Section {
+public class Registry<T extends Link> extends Section {
   
   private String description;
   private Set<T> children;
   private Type type;
-  public Resgistry() {
+  public Registry() {
     super();
     // TODO Auto-generated constructor stub
   }

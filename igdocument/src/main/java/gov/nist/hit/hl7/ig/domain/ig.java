@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igdocument.domain;
+package gov.nist.hit.hl7.ig.domain;
 
 import java.util.Set;
 
@@ -8,16 +8,16 @@ import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 
 @Document(collection = "igdocument")
-public class igdocument extends AbstractDomain {
+public class ig extends AbstractDomain {
 
-  private IgDocumentMetaData metaData;
+  private IgMetaData metaData;
   private Set<Section> content;
 
-  public IgDocumentMetaData getMetaData() {
+  public IgMetaData getMetaData() {
     return metaData;
   }
 
-  public void setMetaData(IgDocumentMetaData metaData) {
+  public void setMetaData(IgMetaData metaData) {
     this.metaData = metaData;
   }
   public Set<Section> getContent() {
