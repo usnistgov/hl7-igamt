@@ -13,7 +13,6 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.domain.Resource;
 
 /**
  * 

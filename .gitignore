@@ -8,3 +8,4 @@ domain/.settings
 *.project*
 *.classpath*
 *.metadata
+*.class

@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.ig.domain;
+package gov.nist.hit.hl7.igamt.ig.domain;
 
 import java.util.Set;
 
