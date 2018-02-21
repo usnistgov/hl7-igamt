@@ -21,5 +21,10 @@
 			<artifactId>domain</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>datatype</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
 	</dependencies>
 </project>
