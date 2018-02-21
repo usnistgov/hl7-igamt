@@ -1,9 +1,4 @@
 /**
- * 
- */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
-
-/**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -13,24 +8,15 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * <p>
+ */
+package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
+
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileService;
+
+/**
+ * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class DeltaConstantValue extends DeltaObject {
-
-  private String constantValue;
-
-  public DeltaConstantValue(String constantValue) {
-    super(DeltaKey.CONSTANT_VALUE);
-    this.constantValue = constantValue;
-  }
-
-  public String getConstantValue() {
-    return constantValue;
-  }
-
-  public void setConstantValue(String constantValue) {
-    this.constantValue = constantValue;
-  };
+public class CompositeProfileServiceImpl implements CompositeProfileService {
 
 }

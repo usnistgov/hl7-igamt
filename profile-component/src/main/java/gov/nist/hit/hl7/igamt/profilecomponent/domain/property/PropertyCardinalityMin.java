@@ -1,9 +1,4 @@
 /**
- * 
- */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
-
-/**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -13,15 +8,19 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * <p>
+ */
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+
+/**
+ * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class DeltaCardinalityMin extends DeltaObject {
+public class PropertyCardinalityMin extends ItemProperty {
 
   private int min;
 
-  public DeltaCardinalityMin(int min) {
-    super(DeltaKey.CARDINALITY_MIN);
+  public PropertyCardinalityMin(int min) {
+    super(PropertyKey.CARDINALITY_MIN);
     this.min = min;
   }
 

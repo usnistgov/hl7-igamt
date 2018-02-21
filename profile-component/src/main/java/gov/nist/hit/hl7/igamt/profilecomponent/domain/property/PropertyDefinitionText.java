@@ -1,9 +1,4 @@
 /**
- * 
- */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
-
-/**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -13,25 +8,28 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.delta;
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * <p>
+ */
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+
+/**
+ * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class DeltaLengthMin extends DeltaObject {
+public class PropertyDefinitionText extends ItemProperty {
 
-  private int min;
+  private String definitionText;
 
-  public DeltaLengthMin(int min) {
-    super(DeltaKey.LENGTH_MIN);
-    this.min = min;
+  public PropertyDefinitionText(String definitionText) {
+    super(PropertyKey.DEFINITION_TEXT);
+    this.definitionText = definitionText;
   }
 
-  public int getMin() {
-    return min;
+  public String getDefinitionText() {
+    return definitionText;
   }
 
-  public void setMin(int min) {
-    this.min = min;
+  public void setDefinitionText(String definitionText) {
+    this.definitionText = definitionText;
   }
-  
-  
+
 }

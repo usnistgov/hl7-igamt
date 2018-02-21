@@ -1,11 +1,4 @@
 /**
- * 
- */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.compositeprofile;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
-
-/**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -15,34 +8,28 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * <p>
+ */
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+
+/**
+ * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
-public class OrderedProfileComponent {
+public class PropertyLengthMax extends ItemProperty {
 
-  private int position;
-  private ProfileComponent profileComponent;
+  private int max;
 
-  public OrderedProfileComponent(int position, ProfileComponent profileComponent) {
-    super();
-    this.position = position;
-    this.profileComponent = profileComponent;
+  public PropertyLengthMax(int max) {
+    super(PropertyKey.LENGTH_MAX);
+    this.max = max;
   }
 
-  public int getPosition() {
-    return position;
+  public int getMax() {
+    return max;
   }
 
-  public void setPosition(int position) {
-    this.position = position;
+  public void setMax(int max) {
+    this.max = max;
   }
-
-  public ProfileComponent getProfileComponent() {
-    return profileComponent;
-  }
-
-  public void setProfileComponent(ProfileComponent profileComponent) {
-    this.profileComponent = profileComponent;
-  }
-
+  
 }
