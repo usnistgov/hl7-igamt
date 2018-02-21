@@ -1,9 +1,3 @@
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
-
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.delta.DeltaObject;
-
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
@@ -14,18 +8,26 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.delta.DeltaObject;
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * <p>
+ */
+package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
+
+/**
+ * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
 public class ProfileComponentItem {
 
   private String path;
-  private Set<DeltaObject> deltaObjects;
+  private Set<ItemProperty> itemProperties;
 
-  public ProfileComponentItem(String path, Set<DeltaObject> deltaObjects) {
+  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
     super();
     this.path = path;
-    this.deltaObjects = deltaObjects;
+    this.itemProperties = itemProperties;
   }
 
   public String getPath() {
@@ -36,12 +38,12 @@ public class ProfileComponentItem {
     this.path = path;
   }
 
-  public Set<DeltaObject> getDeltaObjects() {
-    return deltaObjects;
+  public Set<ItemProperty> getDeltaObjects() {
+    return itemProperties;
   }
 
-  public void setDeltaObjects(Set<DeltaObject> deltaObjects) {
-    this.deltaObjects = deltaObjects;
+  public void setDeltaObjects(Set<ItemProperty> itemProperties) {
+    this.itemProperties = itemProperties;
   }
 
 }

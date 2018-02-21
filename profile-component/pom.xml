@@ -4,7 +4,7 @@
 	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>gov.nist.healthcare.tools.hl7.v2</groupId>
+		<groupId>gov.nist.hit.hl7</groupId>
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
@@ -17,7 +17,7 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>gov.nist.healthcare.tools.hl7.v2</groupId>
+			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>domain</artifactId>
 			<version>${parent.version}</version>
 		</dependency>

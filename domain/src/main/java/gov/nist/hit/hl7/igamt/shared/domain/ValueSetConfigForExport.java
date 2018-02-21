@@ -5,8 +5,12 @@ import java.util.Set;
 
 public class ValueSetConfigForExport {
 
+  public ValueSetConfigForExport() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
   private Set<String> include;
-  HashMap<String, Boolean> codesPresence;
+
   public Set<String> getInclude() {
     return include;
   }
