@@ -27,10 +27,10 @@ public abstract class Datatype extends Resource {
   private String ext;
   private String purposeAndUse;
 
-  public Datatype(String id, String version, PublicationInfo publicationInfo, DomainInfo domainInfo,
-      String userName, String comment, String description, String preDef, String postDef,
-      String ext, String purposeAndUse) {
-    super(id, version, publicationInfo, domainInfo, userName, comment, description, preDef,
+  public Datatype(String id, String version, String name, PublicationInfo publicationInfo,
+      DomainInfo domainInfo, String username, String comment, String description, String preDef,
+      String postDef, String ext, String purposeAndUse) {
+    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
         postDef);
     this.ext = ext;
     this.purposeAndUse = purposeAndUse;

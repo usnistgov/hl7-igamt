@@ -8,9 +8,9 @@
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>datatype</artifactId>
+	<artifactId>valueset</artifactId>
 	<version>${parent.version}</version>
-	<name>datatype</name>
+	<name>valueset</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
