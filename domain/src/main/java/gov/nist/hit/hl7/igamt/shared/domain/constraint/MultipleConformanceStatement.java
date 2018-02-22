@@ -9,35 +9,32 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint;
+
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.MultipleAssertion;
 
 /**
  * @author jungyubw
  *
  */
-public class ConditionalAssertion extends ComplexAssertion {
-  private Assertion ifAssertion;
-  private Assertion thenAssertion;
+public class MultipleConformanceStatement extends ConformanceStatement {
 
-  public ConditionalAssertion(Assertion ifAssertion, Assertion thenAssertion) {
-    super();
-    this.ifAssertion = ifAssertion;
-    this.thenAssertion = thenAssertion;
+  private MultipleAssertion complexAssertion;
+
+  public MultipleConformanceStatement(String id, String identifier,
+      MultipleAssertion complexAssertion) {
+    super(id, identifier);
+    this.complexAssertion = complexAssertion;
   }
 
-  public Assertion getIfAssertion() {
-    return ifAssertion;
+  public MultipleAssertion getComplexAssertion() {
+    return complexAssertion;
   }
 
-  public void setIfAssertion(Assertion ifAssertion) {
-    this.ifAssertion = ifAssertion;
+  public void setComplexAssertion(MultipleAssertion complexAssertion) {
+    this.complexAssertion = complexAssertion;
   }
 
-  public Assertion getThenAssertion() {
-    return thenAssertion;
-  }
 
-  public void setThenAssertion(Assertion thenAssertion) {
-    this.thenAssertion = thenAssertion;
-  }
+
 }

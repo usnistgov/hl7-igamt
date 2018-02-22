@@ -12,28 +12,27 @@
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Usage;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.ComplexAssertion;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
 
 /**
  * @author jungyubw
  *
  */
-public class ComplexPredicate extends Predicate {
+public class SinglePredicate extends Predicate {
+  private SingleAssertion simpleAssertion;
 
-  private ComplexAssertion complexAssertion;
-
-  public ComplexPredicate(String id, Usage trueUsage, Usage falseUsage,
-      ComplexAssertion complexAssertion) {
+  public SinglePredicate(String id, Usage trueUsage, Usage falseUsage,
+      SingleAssertion simpleAssertion) {
     super(id, trueUsage, falseUsage);
-    this.complexAssertion = complexAssertion;
+    this.simpleAssertion = simpleAssertion;
   }
 
-  public ComplexAssertion getComplexAssertion() {
-    return complexAssertion;
+  public SingleAssertion getSimpleAssertion() {
+    return simpleAssertion;
   }
 
-  public void setComplexAssertion(ComplexAssertion complexAssertion) {
-    this.complexAssertion = complexAssertion;
+  public void setSimpleAssertion(SingleAssertion simpleAssertion) {
+    this.simpleAssertion = simpleAssertion;
   }
 
 }

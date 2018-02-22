@@ -9,26 +9,44 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
+
+import java.util.Set;
 
 /**
  * @author jungyubw
  *
  */
-public class FreetextConformanceStatement extends ConformanceStatement {
+public class OperatorAssertion extends MultipleAssertion {
 
-  private String freetext;
-
-  public FreetextConformanceStatement(String id, String identifier, String freetext) {
-    super(id, identifier);
-    this.freetext = freetext;
+  public enum Operator {
+    AND, OR
   }
 
-  public String getFreetext() {
-    return freetext;
+  private Operator operator;
+  private Set<Assertion> assertions;
+
+  public OperatorAssertion(Operator operator, Set<Assertion> assertions) {
+    super();
+    this.operator = operator;
+    this.assertions = assertions;
   }
 
-  public void setFreetext(String freetext) {
-    this.freetext = freetext;
+  public Set<Assertion> getAssertions() {
+    return assertions;
   }
+
+  public void setAssertions(Set<Assertion> assertions) {
+    this.assertions = assertions;
+  }
+
+  public Operator getOperator() {
+    return operator;
+  }
+
+  public void setOperator(Operator operator) {
+    this.operator = operator;
+  }
+
+
 }

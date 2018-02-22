@@ -11,48 +11,41 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Complement;
-
 /**
  * @author jungyubw
  *
+ *
  */
-public class SimpleAssertion extends Assertion {
+public class IfThenAssertion extends MultipleAssertion {
+  /*
+   * This is if_assertion statement.
+   */
+  private Assertion ifAssertion;
+  
+  /*
+   * This is then_assertion statement.
+   */
+  private Assertion thenAssertion;
 
-  private Subject subject;
-  private String verbKey;
-  private Complement complement;
-
-  public SimpleAssertion(Subject subject, String verbKey, Complement complement) {
+  public IfThenAssertion(Assertion ifAssertion, Assertion thenAssertion) {
     super();
-    this.subject = subject;
-    this.verbKey = verbKey;
-    this.complement = complement;
+    this.ifAssertion = ifAssertion;
+    this.thenAssertion = thenAssertion;
   }
 
-  public Subject getSubject() {
-    return subject;
+  public Assertion getIfAssertion() {
+    return ifAssertion;
   }
 
-  public void setSubject(Subject subject) {
-    this.subject = subject;
+  public void setIfAssertion(Assertion ifAssertion) {
+    this.ifAssertion = ifAssertion;
   }
 
-  public String getVerbKey() {
-    return verbKey;
+  public Assertion getThenAssertion() {
+    return thenAssertion;
   }
 
-  public void setVerbKey(String verbKey) {
-    this.verbKey = verbKey;
+  public void setThenAssertion(Assertion thenAssertion) {
+    this.thenAssertion = thenAssertion;
   }
-
-  public Complement getComplement() {
-    return complement;
-  }
-
-  public void setComplement(Complement complement) {
-    this.complement = complement;
-  }
-
-
 }

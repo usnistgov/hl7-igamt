@@ -11,25 +11,26 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SimpleAssertion;
+import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 
 /**
  * @author jungyubw
  *
  */
-public class SimpleConformanceStatement extends ConformanceStatement {
-  private SimpleAssertion simpleAssertion;
+public class FreeTextPredicate extends Predicate {
 
-  public SimpleConformanceStatement(String id, String identifier, SimpleAssertion simpleAssertion) {
-    super(id, identifier);
-    this.simpleAssertion = simpleAssertion;
+  private String freeText;
+
+  public FreeTextPredicate(String id, Usage trueUsage, Usage falseUsage, String freeText) {
+    super(id, trueUsage, falseUsage);
+    this.freeText = freeText;
   }
 
-  public SimpleAssertion getSimpleAssertion() {
-    return simpleAssertion;
+  public String getFreeText() {
+    return freeText;
   }
 
-  public void setSimpleAssertion(SimpleAssertion simpleAssertion) {
-    this.simpleAssertion = simpleAssertion;
+  public void setFreeText(String freeText) {
+    this.freeText = freeText;
   }
 }

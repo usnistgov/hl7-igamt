@@ -9,32 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
-
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.ComplexAssertion;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class ComplexConformanceStatement extends ConformanceStatement {
-
-  private ComplexAssertion complexAssertion;
-
-  public ComplexConformanceStatement(String id, String identifier,
-      ComplexAssertion complexAssertion) {
-    super(id, identifier);
-    this.complexAssertion = complexAssertion;
-  }
-
-  public ComplexAssertion getComplexAssertion() {
-    return complexAssertion;
-  }
-
-  public void setComplexAssertion(ComplexAssertion complexAssertion) {
-    this.complexAssertion = complexAssertion;
-  }
-
-
+public class MultipleAssertion {
 
 }

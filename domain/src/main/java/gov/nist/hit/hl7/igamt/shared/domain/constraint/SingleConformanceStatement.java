@@ -9,44 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import java.util.Set;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
 
 /**
  * @author jungyubw
  *
  */
-public class NonConditionalAssertion extends ComplexAssertion {
+public class SingleConformanceStatement extends ConformanceStatement {
+  private SingleAssertion simpleAssertion;
 
-  public enum Operator {
-    AND, OR
+  public SingleConformanceStatement(String id, String identifier, SingleAssertion simpleAssertion) {
+    super(id, identifier);
+    this.simpleAssertion = simpleAssertion;
   }
 
-  private Operator operator;
-  private Set<Assertion> assertions;
-
-  public NonConditionalAssertion(Operator operator, Set<Assertion> assertions) {
-    super();
-    this.operator = operator;
-    this.assertions = assertions;
+  public SingleAssertion getSimpleAssertion() {
+    return simpleAssertion;
   }
 
-  public Set<Assertion> getAssertions() {
-    return assertions;
+  public void setSimpleAssertion(SingleAssertion simpleAssertion) {
+    this.simpleAssertion = simpleAssertion;
   }
-
-  public void setAssertions(Set<Assertion> assertions) {
-    this.assertions = assertions;
-  }
-
-  public Operator getOperator() {
-    return operator;
-  }
-
-  public void setOperator(Operator operator) {
-    this.operator = operator;
-  }
-
-
 }

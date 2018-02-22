@@ -9,28 +9,41 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
+import java.util.Set;
 
 /**
  * @author jungyubw
  *
  */
-public class FreetextPredicate extends Predicate {
+public class DatatypeComplementRule {
 
-  private String freetext;
+  private String datatypeBaseName;
+  private Set<ComplementKey> possibleComplements;
 
-  public FreetextPredicate(String id, Usage trueUsage, Usage falseUsage, String freetext) {
-    super(id, trueUsage, falseUsage);
-    this.freetext = freetext;
+
+  public DatatypeComplementRule(String datatypeBaseName, Set<ComplementKey> possibleComplements) {
+    super();
+    this.datatypeBaseName = datatypeBaseName;
+    this.possibleComplements = possibleComplements;
   }
 
-  public String getFreetext() {
-    return freetext;
+  public String getDatatypeBaseName() {
+    return datatypeBaseName;
   }
 
-  public void setFreetext(String freetext) {
-    this.freetext = freetext;
+  public void setDatatypeBaseName(String datatypeBaseName) {
+    this.datatypeBaseName = datatypeBaseName;
   }
+
+  public Set<ComplementKey> getPossibleComplements() {
+    return possibleComplements;
+  }
+
+  public void setPossibleComplements(Set<ComplementKey> possibleComplements) {
+    this.possibleComplements = possibleComplements;
+  }
+
+
 }

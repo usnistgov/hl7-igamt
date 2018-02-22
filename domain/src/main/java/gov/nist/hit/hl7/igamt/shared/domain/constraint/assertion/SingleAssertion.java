@@ -9,40 +9,49 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
-import java.util.Set;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Complement;
 
 /**
  * @author jungyubw
  *
  */
-public class ComplementRule {
+public class SingleAssertion extends Assertion {
 
-  private String datatypeBaseName;
-  private Set<ComplementKey> possibleComplements;
+  private Subject subject;
+  private String verbKey;
+  private Complement complement;
 
-
-  public ComplementRule(String datatypeBaseName, Set<ComplementKey> possibleComplements) {
+  public SingleAssertion(Subject subject, String verbKey, Complement complement) {
     super();
-    this.datatypeBaseName = datatypeBaseName;
-    this.possibleComplements = possibleComplements;
+    this.subject = subject;
+    this.verbKey = verbKey;
+    this.complement = complement;
   }
 
-  public String getDatatypeBaseName() {
-    return datatypeBaseName;
+  public Subject getSubject() {
+    return subject;
   }
 
-  public void setDatatypeBaseName(String datatypeBaseName) {
-    this.datatypeBaseName = datatypeBaseName;
+  public void setSubject(Subject subject) {
+    this.subject = subject;
   }
 
-  public Set<ComplementKey> getPossibleComplements() {
-    return possibleComplements;
+  public String getVerbKey() {
+    return verbKey;
   }
 
-  public void setPossibleComplements(Set<ComplementKey> possibleComplements) {
-    this.possibleComplements = possibleComplements;
+  public void setVerbKey(String verbKey) {
+    this.verbKey = verbKey;
+  }
+
+  public Complement getComplement() {
+    return complement;
+  }
+
+  public void setComplement(Complement complement) {
+    this.complement = complement;
   }
 
 
