@@ -18,6 +18,17 @@ import java.util.Set;
  *
  */
 public class InstancePath extends Path{
+  
+  /*
+   * instanceParameter is instance number
+   * ex) ORDER[2]-OBSERVATION[1]-OBX[*]-3[1].1[1] 
+   * elementId  : ORDER groupd id
+   * instanceParameter : 2
+   * elementId of child : OBSERVATION group id
+   * instanceParameter of child : 1
+   * ...
+   */
+  
   private String instanceParameter;
 
   public InstancePath(String elementId, Set<InstancePath> children, String instanceParameter) {

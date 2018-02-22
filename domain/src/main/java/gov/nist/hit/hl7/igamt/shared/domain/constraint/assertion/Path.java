@@ -18,6 +18,14 @@ import java.util.Set;
  *
  */
 public class Path {
+  
+  /*
+   * elementId contains element mongo id for ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId
+   * ex) MSH-3.1 
+   * elementId of this  : MSH id
+   * elementId of child : 3rd field Id
+   * elementId of child of child : 1st component id of 3rd field Datatype
+   */
   private String elementId;
   private Set<InstancePath> children;
 
