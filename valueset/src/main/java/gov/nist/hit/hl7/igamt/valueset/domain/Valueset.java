@@ -11,10 +11,12 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+
 /**
  * @author jungyubw
  *
  */
-public class Valueset {
+public class Valueset extends Resource{
 
 }

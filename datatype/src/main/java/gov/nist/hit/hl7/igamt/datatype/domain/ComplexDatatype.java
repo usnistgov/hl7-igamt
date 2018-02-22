@@ -30,12 +30,12 @@ public class ComplexDatatype extends Datatype {
   public ComplexDatatype() {
     super();
   }
-
-  public ComplexDatatype(String id, String version, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String userName, String comment, String description, String preDef,
+  
+  public ComplexDatatype(String id, String version, String name, PublicationInfo publicationInfo,
+      DomainInfo domainInfo, String username, String comment, String description, String preDef,
       String postDef, String ext, String purposeAndUse, Set<Component> components) {
-    super(id, version, publicationInfo, domainInfo, userName, comment, description, preDef, postDef,
-        ext, purposeAndUse);
+    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
+        postDef, ext, purposeAndUse);
     this.components = components;
   }
 

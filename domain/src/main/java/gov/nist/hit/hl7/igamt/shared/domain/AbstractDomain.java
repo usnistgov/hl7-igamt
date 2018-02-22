@@ -3,10 +3,11 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 public abstract class AbstractDomain {
     private String id;
     private String version;
+    private String name;
     private PublicationInfo publicationInfo;
     private DomainInfo domainInfo;
     private String username;
-    private  String comment;
+    private String comment;
     private String description;
     
    
@@ -14,12 +15,13 @@ public abstract class AbstractDomain {
       super();
       // TODO Auto-generated constructor stub
     }
- 
-    public AbstractDomain(String id, String version, PublicationInfo publicationInfo,
+
+    public AbstractDomain(String id, String version, String name, PublicationInfo publicationInfo,
         DomainInfo domainInfo, String username, String comment, String description) {
       super();
       this.id = id;
       this.version = version;
+      this.name = name;
       this.publicationInfo = publicationInfo;
       this.domainInfo = domainInfo;
       this.username = username;
@@ -68,6 +70,14 @@ public abstract class AbstractDomain {
     }
     public void setId(String id) {
       this.id = id;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
     }
 
 }
