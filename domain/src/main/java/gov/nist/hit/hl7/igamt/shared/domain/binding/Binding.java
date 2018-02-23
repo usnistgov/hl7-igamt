@@ -17,7 +17,7 @@ import java.util.Set;
  * @author jungyubw
  *
  */
-public class Binding {
+public abstract class Binding {
 
   /*
    * elementId contains element mongo id for ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId
