@@ -41,5 +41,6 @@
 		<module>composite-profile</module>
 		<module>ig</module>
 		<module>datatype</module>
+		<module>valueset</module>
 	</modules>
 </project>

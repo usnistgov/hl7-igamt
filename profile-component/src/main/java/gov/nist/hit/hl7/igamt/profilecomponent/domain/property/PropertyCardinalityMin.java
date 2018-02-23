@@ -24,6 +24,10 @@ public class PropertyCardinalityMin extends ItemProperty {
     this.min = min;
   }
 
+  public PropertyCardinalityMin() {
+    super(PropertyKey.CARDINALITY_MIN);
+  }
+
   public int getMin() {
     return min;
   }

@@ -23,6 +23,10 @@ public class PropertyCardinalityMax extends ItemProperty {
     super(PropertyKey.CARDINALITY_MAX);
     this.max = max;
   }
+  
+  public PropertyCardinalityMax() {
+    super(PropertyKey.CARDINALITY_MAX);
+  }
 
   public String getMax() {
     return max;

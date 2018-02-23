@@ -23,6 +23,10 @@ public class PropertyName extends ItemProperty {
     super(PropertyKey.NAME);
     this.name = name;
   }
+  
+  public PropertyName() {
+    super(PropertyKey.NAME);
+  }
 
   public String getName() {
     return name;

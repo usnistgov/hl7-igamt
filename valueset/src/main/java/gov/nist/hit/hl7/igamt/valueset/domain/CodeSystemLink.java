@@ -9,31 +9,38 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
+package gov.nist.hit.hl7.igamt.valueset.domain;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author jungyubw
+ *
  */
-public class PropertyLengthMax extends ItemProperty {
+public class CodeSystemLink {
 
-  private int max;
+  private String id;
+  private int position;
 
-  public PropertyLengthMax(int max) {
-    super(PropertyKey.LENGTH_MAX);
-    this.max = max;
-  }
-  
-  public PropertyLengthMax() {
-    super(PropertyKey.LENGTH_MAX);
+  public CodeSystemLink(String id, int position) {
+    super();
+    this.id = id;
+    this.position = position;
   }
 
-  public int getMax() {
-    return max;
+  public String getId() {
+    return id;
   }
 
-  public void setMax(int max) {
-    this.max = max;
+  public void setId(String id) {
+    this.id = id;
   }
-  
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
+  }
+
+
 }
