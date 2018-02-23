@@ -1,7 +1,6 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
 public abstract class AbstractDomain {
-    private String id;
     private String version;
     private PublicationInfo publicationInfo;
     private DomainInfo domainInfo;
@@ -18,7 +17,6 @@ public abstract class AbstractDomain {
     public AbstractDomain(String id, String version, PublicationInfo publicationInfo,
         DomainInfo domainInfo, String username, String comment, String description) {
       super();
-      this.id = id;
       this.version = version;
       this.publicationInfo = publicationInfo;
       this.domainInfo = domainInfo;
@@ -63,11 +61,6 @@ public abstract class AbstractDomain {
     public void setDescription(String description) {
       this.description = description;
     }
-    public String getId() {
-      return id;
-    }
-    public void setId(String id) {
-      this.id = id;
-    }
+
 
 }
