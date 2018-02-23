@@ -14,6 +14,8 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
@@ -23,24 +25,29 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
-public abstract class Datatype extends Resource {
+@Document(collection = "document")
+public class Datatype extends Resource {
+	
 
   private String ext;
   private String purposeAndUse;
-  private ResourceBinding resourceBinding;
+  private ResourceBinding binding;
 
-  public Datatype(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef);
-    this.ext = ext;
-    this.purposeAndUse = purposeAndUse;
-    this.resourceBinding = resourceBinding;
+
+  public ResourceBinding getBinding() {
+	return binding;
+}
+
+public void setBinding(ResourceBinding binding) {
+	this.binding = binding;
+}
+
+public Datatype(String preDef, String postDef) {
+	super(preDef, postDef);
+	// TODO Auto-generated constructor stub
   }
 
   public Datatype() {
-    super();
   }
 
   public String getExt() {
@@ -59,12 +66,5 @@ public abstract class Datatype extends Resource {
     this.purposeAndUse = purposeAndUse;
   }
 
-  public ResourceBinding getResourceBinding() {
-    return resourceBinding;
-  }
-
-  public void setResourceBinding(ResourceBinding resourceBinding) {
-    this.resourceBinding = resourceBinding;
-  }
 
 }

@@ -22,6 +22,9 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  * @author Maxence Lefort on Feb 21, 2018.
  */
 public class PrimitiveDatatype extends Datatype {
+	
+	
+	
 
   public PrimitiveDatatype() {
     super();

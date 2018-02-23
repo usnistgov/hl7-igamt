@@ -1,5 +1,4 @@
 /**
- * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -11,34 +10,41 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.domain;
+package gov.nist.hit.hl7.igamt.shared.domain;
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import java.io.Serializable;
 
 /**
+ * @author ena3
  *
- * @author Maxence Lefort on Feb 21, 2018.
  */
-public class ComplexDatatype extends Datatype {
+public class CompositeKey implements Serializable {
 
-  private Set<Component> components;
-
-  public ComplexDatatype() {
-    super();
-  }
+ /**
+   * 
+   */
+  private static final long serialVersionUID = -5077046386179385282L;
+  private String id; 
+  private String version;
+ 
+ 
+public String getId() {
+  return id;
+}
+public CompositeKey(String id, String version) {
+  super();
+  this.id = id;
+  this.version = version;
+}
+public void setId(String id) {
+  this.id = id;
+}
+public String getVersion() {
+  return version;
+}
+public void setVersion(String version) {
+  this.version = version;
+}
   
-
-
-  public Set<Component> getComponents() {
-    return components;
-  }
-
-  public void setComponents(Set<Component> components) {
-    this.components = components;
-  }
 
 }

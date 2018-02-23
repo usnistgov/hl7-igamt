@@ -10,15 +10,16 @@ public class Resource extends AbstractDomain {
     // TODO Auto-generated constructor stub
   }
     
-  public Resource(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description);
-    this.preDef = preDef;
-    this.postDef = postDef;
-  }
 
-  public String getPreDef() {
+  public Resource(String preDef, String postDef) {
+	super();
+	this.preDef = preDef;
+	this.postDef = postDef;
+}
+
+
+
+public String getPreDef() {
     return preDef;
   }
   public void setPreDef(String preDef) {

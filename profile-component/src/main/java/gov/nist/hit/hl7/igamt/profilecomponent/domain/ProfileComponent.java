@@ -13,6 +13,11 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.Set;
 
+import org.springframework.data.annotation.Id;
+
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+
+
 
 /**
  * A profile component is an objects that contains all the changes between the source (a message or
@@ -22,15 +27,24 @@ import java.util.Set;
  */
 public class ProfileComponent extends Resource {
 
-  public enum Level {
-    MESSAGE, SEGMENT
-  }
-
+  @Id
+  private CompositeKey id;
   private Level level;
   private String sourceId;
   private String structure;
   private Set<ProfileComponentItem> profileComponentItems;
   private Set<String> compositeProfileIds;
+  
+
+  public ProfileComponent() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
+  public enum Level {
+    MESSAGE, SEGMENT
+  }
+
 
   public ProfileComponent(Level level, String sourceId, String structure,
       Set<ProfileComponentItem> profileComponentItems, Set<String> compositeProfileIds) {
