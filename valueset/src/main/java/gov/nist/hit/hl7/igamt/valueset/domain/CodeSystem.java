@@ -12,33 +12,53 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.net.URL;
-import java.util.Set;
 
-import org.bson.types.Code;
-
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
  * @author jungyubw
  *
  */
-public class Valueset extends Resource {
-  private String bindingIdentifier;
+public class CodeSystem extends Resource {
+  private String identifier;
   private String oid;
-  private String intensionalComment;
   private URL url;
 
-  private ManagedBy managedBy = ManagedBy.Internal;
-  private Stability stability = Stability.Undefined;
-  private Extensibility extensibility = Extensibility.Undefined;
-  private ContentDefinition contentDefinition = ContentDefinition.Undefined;
-  
-  protected int numberOfCodes;
-  private Set<String> codeSystemIds;
-  private Set<CodeRef> codeRefs;
-  private Set<Code> codes;
+  public CodeSystem(String id, String version, String name, PublicationInfo publicationInfo,
+      DomainInfo domainInfo, String username, String comment, String description, String preDef,
+      String postDef, String identifier, String oid, URL url) {
+    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
+        postDef);
+    this.identifier = identifier;
+    this.oid = oid;
+    this.url = url;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  public String getOid() {
+    return oid;
+  }
+
+  public void setOid(String oid) {
+    this.oid = oid;
+  }
+
+  public URL getUrl() {
+    return url;
+  }
+
+  public void setUrl(URL url) {
+    this.url = url;
+  }
+
+
 }
