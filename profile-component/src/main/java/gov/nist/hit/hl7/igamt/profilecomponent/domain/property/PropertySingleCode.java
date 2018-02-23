@@ -1,4 +1,5 @@
 /**
+ * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -8,32 +9,33 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ *
+ * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyLengthMax extends ItemProperty {
+public class PropertySingleCode extends ItemProperty {
 
-  private int max;
+  private String singleCodeId;
 
-  public PropertyLengthMax(int max) {
-    super(PropertyKey.LENGTH_MAX);
-    this.max = max;
+  public PropertySingleCode(String singleCodeId) {
+    super(PropertyKey.SINGLECODE);
+    this.singleCodeId = singleCodeId;
   }
   
-  public PropertyLengthMax() {
-    super(PropertyKey.LENGTH_MAX);
+  public PropertySingleCode() {
+    super(PropertyKey.SINGLECODE);
   }
 
-  public int getMax() {
-    return max;
+  public String getSingleCodeId() {
+    return singleCodeId;
   }
 
-  public void setMax(int max) {
-    this.max = max;
+  public void setSingleCodeId(String singleCodeId) {
+    this.singleCodeId = singleCodeId;
   }
-  
+
 }

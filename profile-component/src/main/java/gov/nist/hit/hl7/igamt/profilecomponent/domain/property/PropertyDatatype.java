@@ -27,6 +27,10 @@ public class PropertyDatatype extends ItemProperty {
     super(PropertyKey.DATATYPE);
     this.datatype = datatype;
   }
+  
+  public PropertyDatatype() {
+    super(PropertyKey.DATATYPE);
+  }
 
   public Datatype getDatatype() {
     return datatype;

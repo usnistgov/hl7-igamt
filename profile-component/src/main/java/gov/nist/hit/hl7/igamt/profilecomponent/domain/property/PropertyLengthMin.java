@@ -22,6 +22,10 @@ public class PropertyLengthMin extends ItemProperty {
     super(PropertyKey.LENGTH_MIN);
     this.min = min;
   }
+  
+  public PropertyLengthMin() {
+    super(PropertyKey.LENGTH_MIN);
+  }
 
   public int getMin() {
     return min;
