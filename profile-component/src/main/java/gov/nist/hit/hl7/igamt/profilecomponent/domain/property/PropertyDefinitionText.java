@@ -23,6 +23,10 @@ public class PropertyDefinitionText extends ItemProperty {
     super(PropertyKey.DEFINITION_TEXT);
     this.definitionText = definitionText;
   }
+  
+  public PropertyDefinitionText() {
+    super(PropertyKey.DEFINITION_TEXT);
+  }
 
   public String getDefinitionText() {
     return definitionText;

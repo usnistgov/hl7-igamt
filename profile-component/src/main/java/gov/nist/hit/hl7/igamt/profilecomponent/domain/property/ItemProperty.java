@@ -13,6 +13,9 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
+ * This is an abstract class to define all property objects of a profile component item.
+ * Each ItemProperty object is going to be used to define a specific delta between the 
+ * source and the targeted composite profile.
  *
  * Created by Maxence Lefort on Feb 20, 2018.
  */

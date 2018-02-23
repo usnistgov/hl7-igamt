@@ -18,6 +18,7 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 /**
  *
@@ -33,9 +34,9 @@ public class ComplexDatatype extends Datatype {
   
   public ComplexDatatype(String id, String version, String name, PublicationInfo publicationInfo,
       DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, String ext, String purposeAndUse, Set<Component> components) {
+      String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding, Set<Component> components) {
     super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef, ext, purposeAndUse);
+        postDef, ext, purposeAndUse, resourceBinding);
     this.components = components;
   }
 

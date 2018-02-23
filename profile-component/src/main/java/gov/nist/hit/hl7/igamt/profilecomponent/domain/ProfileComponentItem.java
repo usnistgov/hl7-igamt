@@ -16,6 +16,8 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
 
 /**
+ * A profile component item is a set of changes for a specific item (a datatype, a component, a
+ * message...).
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
