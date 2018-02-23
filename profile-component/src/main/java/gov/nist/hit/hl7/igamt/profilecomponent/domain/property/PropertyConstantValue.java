@@ -24,6 +24,10 @@ public class PropertyConstantValue extends ItemProperty {
     this.constantValue = constantValue;
   }
 
+  public PropertyConstantValue() {
+    super(PropertyKey.CONSTANT_VALUE);
+  }
+  
   public String getConstantValue() {
     return constantValue;
   }

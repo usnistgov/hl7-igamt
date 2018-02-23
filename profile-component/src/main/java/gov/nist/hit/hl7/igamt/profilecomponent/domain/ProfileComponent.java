@@ -8,13 +8,15 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
-*/
+ */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
 import java.util.Set;
 
 
 /**
+ * A profile component is an objects that contains all the changes between the source (a message or
+ * a segment) and the targeted composite profile.
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */

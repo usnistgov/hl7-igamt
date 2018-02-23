@@ -27,6 +27,10 @@ public class PropertyUsage extends ItemProperty {
     super(PropertyKey.USAGE);
     this.usage = usage;
   }
+  
+  public PropertyUsage() {
+    super(PropertyKey.USAGE);
+  }
 
   public Usage getUsage() {
     return usage;

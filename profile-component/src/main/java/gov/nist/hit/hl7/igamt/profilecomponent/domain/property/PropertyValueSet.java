@@ -1,4 +1,5 @@
 /**
+ * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -8,32 +9,38 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
+
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ *
+ * @author Maxence Lefort on Feb 23, 2018.
  */
-public class PropertyLengthMax extends ItemProperty {
+public class PropertyValueSet extends ItemProperty {
 
-  private int max;
+  private Set<ValuesetBinding> valuesetBindings;
 
-  public PropertyLengthMax(int max) {
-    super(PropertyKey.LENGTH_MAX);
-    this.max = max;
-  }
-  
-  public PropertyLengthMax() {
-    super(PropertyKey.LENGTH_MAX);
+  public PropertyValueSet(Set<ValuesetBinding> valuesetBindings) {
+    super(PropertyKey.VALUESET);
+    this.valuesetBindings = valuesetBindings;
   }
 
-  public int getMax() {
-    return max;
+  public PropertyValueSet() {
+    super(PropertyKey.VALUESET);
   }
 
-  public void setMax(int max) {
-    this.max = max;
+  public Set<ValuesetBinding> getValuesetBindings() {
+    return valuesetBindings;
   }
-  
+
+  public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
+    this.valuesetBindings = valuesetBindings;
+  }
+
+
 }
