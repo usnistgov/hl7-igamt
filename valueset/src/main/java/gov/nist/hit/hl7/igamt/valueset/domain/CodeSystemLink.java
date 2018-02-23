@@ -15,35 +15,23 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
  * @author jungyubw
  *
  */
-public class CodeRef {
+public class CodeSystemLink {
 
-  private String codeId;
-  private String codeSystemId;
+  private String id;
   private int position;
-  private CodeUsage usage;
 
-  public CodeRef(String codeId, String codeSystemId, int position, CodeUsage usage) {
+  public CodeSystemLink(String id, int position) {
     super();
-    this.codeId = codeId;
-    this.codeSystemId = codeSystemId;
+    this.id = id;
     this.position = position;
-    this.usage = usage;
   }
 
-  public String getCodeId() {
-    return codeId;
+  public String getId() {
+    return id;
   }
 
-  public void setCodeId(String codeId) {
-    this.codeId = codeId;
-  }
-
-  public String getCodeSystemId() {
-    return codeSystemId;
-  }
-
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
+  public void setId(String id) {
+    this.id = id;
   }
 
   public int getPosition() {
@@ -52,14 +40,6 @@ public class CodeRef {
 
   public void setPosition(int position) {
     this.position = position;
-  }
-
-  public CodeUsage getUsage() {
-    return usage;
-  }
-
-  public void setUsage(CodeUsage usage) {
-    this.usage = usage;
   }
 
 

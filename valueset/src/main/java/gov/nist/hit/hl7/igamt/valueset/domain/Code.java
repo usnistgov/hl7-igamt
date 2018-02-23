@@ -15,52 +15,44 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
  * @author jungyubw
  *
  */
-public class CodeRef {
-
-  private String codeId;
+public class Code {
+  private String id;
+  private String value;
+  private String description;
   private String codeSystemId;
-  private int position;
-  private CodeUsage usage;
-
-  public CodeRef(String codeId, String codeSystemId, int position, CodeUsage usage) {
+  
+  public Code(String id, String value, String description, String codeSystemId) {
     super();
-    this.codeId = codeId;
+    this.id = id;
+    this.value = value;
+    this.description = description;
     this.codeSystemId = codeSystemId;
-    this.position = position;
-    this.usage = usage;
   }
-
-  public String getCodeId() {
-    return codeId;
+  
+  public String getId() {
+    return id;
   }
-
-  public void setCodeId(String codeId) {
-    this.codeId = codeId;
+  public void setId(String id) {
+    this.id = id;
   }
-
+  public String getValue() {
+    return value;
+  }
+  public void setValue(String value) {
+    this.value = value;
+  }
+  public String getDescription() {
+    return description;
+  }
+  public void setDescription(String description) {
+    this.description = description;
+  }
   public String getCodeSystemId() {
     return codeSystemId;
   }
-
   public void setCodeSystemId(String codeSystemId) {
     this.codeSystemId = codeSystemId;
   }
-
-  public int getPosition() {
-    return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-  public CodeUsage getUsage() {
-    return usage;
-  }
-
-  public void setUsage(CodeUsage usage) {
-    this.usage = usage;
-  }
-
-
+  
+  
 }

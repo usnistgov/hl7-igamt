@@ -15,52 +15,7 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
  * @author jungyubw
  *
  */
-public class CodeRef {
+public enum CodeUsage {
 
-  private String codeId;
-  private String codeSystemId;
-  private int position;
-  private CodeUsage usage;
-
-  public CodeRef(String codeId, String codeSystemId, int position, CodeUsage usage) {
-    super();
-    this.codeId = codeId;
-    this.codeSystemId = codeSystemId;
-    this.position = position;
-    this.usage = usage;
-  }
-
-  public String getCodeId() {
-    return codeId;
-  }
-
-  public void setCodeId(String codeId) {
-    this.codeId = codeId;
-  }
-
-  public String getCodeSystemId() {
-    return codeSystemId;
-  }
-
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
-  }
-
-  public int getPosition() {
-    return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-  public CodeUsage getUsage() {
-    return usage;
-  }
-
-  public void setUsage(CodeUsage usage) {
-    this.usage = usage;
-  }
-
-
+  R,P,E;
 }
