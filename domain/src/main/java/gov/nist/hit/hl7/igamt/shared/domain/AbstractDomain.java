@@ -1,11 +1,16 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
+import org.springframework.data.annotation.Id;
+
 public abstract class AbstractDomain {
+	@Id
+	private CompositeKey id;
     private String version;
+    private String name;
     private PublicationInfo publicationInfo;
     private DomainInfo domainInfo;
     private String username;
-    private  String comment;
+    private String comment;
     private String description;
     
    
@@ -13,11 +18,12 @@ public abstract class AbstractDomain {
       super();
       // TODO Auto-generated constructor stub
     }
- 
-    public AbstractDomain(String id, String version, PublicationInfo publicationInfo,
+
+    public AbstractDomain(CompositeKey id, String version, String name, PublicationInfo publicationInfo,
         DomainInfo domainInfo, String username, String comment, String description) {
       super();
       this.version = version;
+      this.name = name;
       this.publicationInfo = publicationInfo;
       this.domainInfo = domainInfo;
       this.username = username;
@@ -62,5 +68,29 @@ public abstract class AbstractDomain {
       this.description = description;
     }
 
+
+    public CompositeKey getId() {
+		return id;
+	}
+
+	public void setId(CompositeKey id) {
+		this.id = id;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
 
 }

@@ -13,8 +13,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Section;
 @Document(collection = "igdocument")
 public class Ig extends AbstractDomain {
 
-  @Id
-  private CompositeKey id;
+  
   
 
   private IgMetaData metaData;
@@ -35,13 +34,7 @@ public class Ig extends AbstractDomain {
   public void setContent(Set<Section> content) {
     this.content = content;
   }
-  public CompositeKey getId() {
-    return id;
-  }
 
-  public void setId(CompositeKey id) {
-    this.id = id;
-  }
   @Override
   public boolean equals(Object o) {
 
@@ -52,10 +45,10 @@ public class Ig extends AbstractDomain {
 
       Ig ig = (Ig) o;
 
-      return ig.getId().equals(id);
+      return ig.getId().equals(this.getId());
   }
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(this.getId());
   }
 }

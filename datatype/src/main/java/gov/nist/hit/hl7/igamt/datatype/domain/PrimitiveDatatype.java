@@ -18,5 +18,8 @@ package gov.nist.hit.hl7.igamt.datatype.domain;
  * @author Maxence Lefort on Feb 21, 2018.
  */
 public class PrimitiveDatatype extends Datatype {
+	
+	
+	
 
 }
