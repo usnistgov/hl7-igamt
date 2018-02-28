@@ -4,15 +4,12 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 public class SaveVersionInfo {
 
-	private String id;
+	private String id; 
 	private String version;
 	private Type type;
-	
-	
-	
+
 	public SaveVersionInfo() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 	public String getId() {
 		return id;

@@ -2,7 +2,7 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.format.annotation.DateTimeFormat;
-
+import java.util.Date;
 public abstract class AbstractDomain {
 	@Id
 	private CompositeKey id;

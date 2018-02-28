@@ -34,8 +34,8 @@ public class PrimitiveDatatype extends Datatype {
   public PrimitiveDatatype(String id, String version, String name, PublicationInfo publicationInfo,
       DomainInfo domainInfo, String username, String comment, String description, String preDef,
       String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef, ext, purposeAndUse, resourceBinding);
+//    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
+//        postDef, ext, purposeAndUse, resourceBinding);
     // TODO Auto-generated constructor stub
   }
 
