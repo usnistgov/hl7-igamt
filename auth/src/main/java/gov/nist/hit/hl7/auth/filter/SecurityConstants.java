@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.auth.config;
+package gov.nist.hit.hl7.auth.filter;
 
 public class SecurityConstants {
 	public static final String SECRET = "@Bscde6ip23097524293293"; //temporary 

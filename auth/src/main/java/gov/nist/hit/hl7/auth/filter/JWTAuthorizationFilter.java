@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.auth.config;
+package gov.nist.hit.hl7.auth.filter;
 
 import java.io.IOException;
 import java.util.ArrayList;
