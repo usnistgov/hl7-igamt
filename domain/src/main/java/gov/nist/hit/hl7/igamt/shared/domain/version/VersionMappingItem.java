@@ -2,13 +2,13 @@ package gov.nist.hit.hl7.igamt.shared.domain.version;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
-public class SaveVersionInfo {
+public class VersionMappingItem {
 
 	private String id; 
 	private String version;
 	private Type type;
 
-	public SaveVersionInfo() {
+	public VersionMappingItem() {
 		super();
 	}
 	public String getId() {
