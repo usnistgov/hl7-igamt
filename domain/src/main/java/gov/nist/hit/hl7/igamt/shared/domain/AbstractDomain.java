@@ -1,17 +1,20 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
 import org.springframework.data.annotation.Id;
-
+import org.springframework.format.annotation.DateTimeFormat;
+import java.util.Date;
+import java.util.HashMap;
 public abstract class AbstractDomain {
 	@Id
 	private CompositeKey id;
-    private String version;
     private String name;
     private PublicationInfo publicationInfo;
     private DomainInfo domainInfo;
     private String username;
     private String comment;
     private String description;
+    private CompositeKey createdFrom;
+    
     
    
     public AbstractDomain() {
@@ -22,7 +25,6 @@ public abstract class AbstractDomain {
     public AbstractDomain(CompositeKey id, String version, String name, PublicationInfo publicationInfo,
         DomainInfo domainInfo, String username, String comment, String description) {
       super();
-      this.version = version;
       this.name = name;
       this.publicationInfo = publicationInfo;
       this.domainInfo = domainInfo;
@@ -31,12 +33,6 @@ public abstract class AbstractDomain {
       this.description = description;
     }
 
-    public String getVersion() {
-      return version;
-    }
-    public void setVersion(String version) {
-      this.version = version;
-    }
     public PublicationInfo getPublicationInfo() {
       return publicationInfo;
     }
@@ -92,5 +88,13 @@ public abstract class AbstractDomain {
     public void setName(String name) {
       this.name = name;
     }
+
+	public CompositeKey getCreatedFrom() {
+		return createdFrom;
+	}
+
+	public void setCreatedFrom(CompositeKey createdFrom) {
+		this.createdFrom = createdFrom;
+	}
 
 }

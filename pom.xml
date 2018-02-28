@@ -42,5 +42,6 @@
 		<module>ig</module>
 		<module>datatype</module>
 		<module>valueset</module>
+		<module>bootstrap</module>
 	</modules>
 </project>
