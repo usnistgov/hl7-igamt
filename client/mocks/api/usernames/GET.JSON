@@ -1,0 +1,22 @@
+[
+  {
+    "fullname":"full name 1",
+    "username":"username 1",
+    "email":"1@email.com"
+  },
+  {
+    "fullname":"full name 2",
+    "username":"username 2",
+    "email":"1@email.com"
+  },
+  {
+    "fullname":"full name 3",
+    "username":"username 3",
+    "email":"1@email.com"
+  },
+  {
+    "fullname":"full name 4",
+    "username":"username 4",
+    "email":"1@email.com"
+  }
+]

@@ -1,0 +1,30 @@
+<div class="layout-wrapper" [ngClass]="{'layout-compact':layoutCompact}" (click)="onLayoutClick()">
+
+  <div #layoutContainer class="layout-container"
+       [ngClass]="{'menu-layout-static': !isOverlay(),
+            'menu-layout-overlay': isOverlay(),
+            'layout-menu-overlay-active': overlayMenuActive,
+            'menu-layout-horizontal': isHorizontal(),
+            'menu-layout-slim': isSlim(),
+            'layout-menu-static-inactive': staticMenuDesktopInactive,
+            'layout-menu-static-active': staticMenuMobileActive}">
+
+    <app-topbar></app-topbar>
+
+    <div class="layout-menu" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)">
+      <div #layoutMenuScroller class="nano">
+        <div class="nano-content menu-scroll-content">
+          <inline-profile *ngIf="profileMode=='inline'&&!isHorizontal()"></inline-profile>
+          <app-menu [reset]="resetMenu"></app-menu>
+        </div>
+      </div>
+    </div>
+
+    <div class="layout-main" style="padding-left: 0; padding-right: 0; padding-top : 111px;">
+      <router-outlet></router-outlet>
+    </div>
+    <!--<app-footer></app-footer>-->
+    <div class="layout-mask"></div>
+  </div>
+
+</div>

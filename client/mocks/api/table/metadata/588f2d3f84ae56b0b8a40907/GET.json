@@ -1,0 +1,8 @@
+{
+    "id": "588f2d3f84ae56b0b8a40907",
+    "bindingIdentifier": "0130",
+    "name": "Visit User Code",
+    "scope" : "HL7STANDARD",
+    "hl7Version" : "2.6",
+    "numOfCodes" : 5
+}

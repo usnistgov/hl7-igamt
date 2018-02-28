@@ -1,0 +1,65 @@
+<div class="topbar clearfix">
+  <div class="topbar-left" style="width: 800px !important;">
+    <div class="brand" id="appheader">
+      <span style="display: inline-block; text-shadow:none" href="#">
+        <div style="    margin-bottom: 5px;
+    margin-left: 10px;
+    font-size: 32px;
+    color: #F3C60D;">NIST IGAMT <span style="color:white; font-size:medium" msg="" key="app.subtitle" class="ng-binding">Implementation Guide Authoring and Management Tool</span><span class="badge ng-binding" style="background-color: rgb(152, 45, 18);color:white; font-size:12px"> 2.0.0-beta13</span></div>
+        <!-- ngIf: appInfo.domain != '' && appInfo.domain  != null -->
+      </span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <a id="menu-button" href="#" (click)="app.onMenuButtonClick($event)">
+      <i></i>
+    </a>
+
+    <a id="rightpanel-menu-button" href="#" (click)="app.onRightPanelButtonClick($event)">
+      <i class="material-icons">more_vert</i>
+    </a>
+
+    <a id="topbar-menu-button" href="#" (click)="app.onTopbarMenuButtonClick($event)">
+      <i class="material-icons">menu</i>
+    </a>
+
+    <ul class="topbar-items animated fadeInDown" [ngClass]="{'topbar-items-visible': app.topbarMenuActive}">
+      <li #profile class="profile-item" *ngIf="app.profileMode==='top'||app.isHorizontal()"
+          [ngClass]="{'active-top-menu':app.activeTopbarItem === profile}">
+
+        <a href="#" (click)="app.onTopbarItemClick($event,profile)">
+          <img class="profile-image" src="assets/layout/images/avatar.png" />
+          <span class="topbar-item-name">Jane Williams</span>
+        </a>
+
+        <ul class="ultima-menu animated fadeInDown">
+          <li role="menuitem">
+            <a href="#">
+              <i class="material-icons">person</i>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li role="menuitem">
+            <a href="#">
+              <i class="material-icons">security</i>
+              <span>Privacy</span>
+            </a>
+          </li>
+          <li role="menuitem">
+            <a href="#">
+              <i class="material-icons">settings_applications</i>
+              <span>Settings</span>
+            </a>
+          </li>
+          <li role="menuitem">
+            <a href="#">
+              <i class="material-icons">power_settings_new</i>
+              <span>Logout</span>
+            </a>
+          </li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+{
+    "id": "588f2d3e84ae56b0b8a3f540",
+    "name": "ID",
+    "label": "ID",
+    "scope" : "HL7STANDARD",
+    "hl7Version" : "2.6",
+    "numOfChildren" : 0
+}

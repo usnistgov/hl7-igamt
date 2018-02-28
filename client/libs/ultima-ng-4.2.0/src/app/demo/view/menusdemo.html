@@ -1,0 +1,70 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12">
+        <div class="card card-w-title">
+            <h1>Breadcrumb</h1>
+            <p-breadcrumb [model]="breadcrumbItems"></p-breadcrumb>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Steps</h1>
+            <p-steps [model]="stepsItems"></p-steps>
+        </div>
+                
+        <div class="card card-w-title">
+            <h1>MenuBar</h1>
+            <p-menubar [model]="tieredItems"></p-menubar>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-lg-6">
+        <!-- Left Colum -->
+        <div class="card card-w-title">
+            <h1>Plain Menu</h1>
+            <p-menu #menu [model]="items"></p-menu>
+            
+            <p-menu #menu popup="popup" [model]="items" [style]="{'width':'250px'}"></p-menu>
+            <button type="button" pButton icon="ui-icon-open-in-new" label="Show" (click)="menu.toggle($event)" style="margin-top:20px;width:auto"></button>
+        </div>
+                
+        <div class="card card-w-title">
+            <h1>TieredMenu</h1>
+            <p-tieredMenu [model]="tieredItems" [style]="{'width':'250px','margin-bottom':'20px'}"></p-tieredMenu>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-lg-6">
+        <!-- Right Colum -->
+        <div class="card card-w-title">
+            <h1 style="margin-top:40px">ContextMenu</h1>
+            Right click!
+            
+            <p-contextMenu [global]="true" [model]="tieredItems" [style]="{'width':'12.5em'}"></p-contextMenu>
+        </div>
+        
+        <div class="card">
+            <h1>SlideMenu</h1>
+            <p-slideMenu [model]="items" [style]="{'width':'260px'}" [menuWidth]="260"></p-slideMenu>
+        </div>
+        
+        <div class="card">
+            <h1>PanelMenu</h1>
+            <p-panelMenu [model]="panelMenuItems"></p-panelMenu>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-g-6">
+        <div class="card">
+            <h1>TabMenu</h1>
+            <p-tabMenu [model]="tabMenuItems"></p-tabMenu>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-g-6">
+        <div class="card">
+            <h1>MegaMenu - Horizontal</h1>
+            <p-megaMenu [model]="megaMenuItems"></p-megaMenu>
+            
+            <h1>MegaMenu - Vertical</h1>
+            <p-megaMenu [model]="megaMenuItems" orientation="vertical" [style]="{'width':'200px'}"></p-megaMenu>
+        </div>
+    </div>
+</div>

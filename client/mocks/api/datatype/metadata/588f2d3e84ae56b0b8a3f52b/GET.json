@@ -1,0 +1,9 @@
+{
+    "id": "588f2d3e84ae56b0b8a3f52b",
+    "name": "CWE",
+    "ext": "02",
+    "label": "CWE_02",
+    "scope" : "USER",
+    "hl7Version" : "2.6",
+    "numOfChildren" : 9
+}

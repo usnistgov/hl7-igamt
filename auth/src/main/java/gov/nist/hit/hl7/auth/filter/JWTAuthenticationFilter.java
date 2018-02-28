@@ -23,7 +23,6 @@ import gov.nist.hit.hl7.auth.domain.Account;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
-@Component
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter  {
 	private AuthenticationManager authenticationManager;
 	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {

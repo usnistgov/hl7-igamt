@@ -1,0 +1,520 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="card docs"> 
+            
+            <h1>Getting Started</h1>
+            <p>Ultima is a true native application template for Angular and is distributed as a CLI project. If you don't have CLI installed already run the following commands to set it up. In case
+            you have an application that do not use CLI, skip the <a href="#noncli">Integration with an Existing Non CLI Application</a> part.</p>
+<pre>
+npm install -g @angular/cli
+</pre>
+
+            <p>Once CLI is ready in your system, extract the contents of the ultima zip file distribution, cd to the directory, 
+            install the libraries from npm and then execute "ng serve" to run the application in your local environment at http://localhost:4200/.</p>
+<pre>
+cd ultima
+npm install
+ng serve
+</pre>
+
+            <p>That's it, you may now start with the development of your application.</p>
+
+            <h1>Important CLI Commands</h1>
+            <p>Following commands are derived from CLI.</p>
+<pre>
+Run 'ng serve' for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+Run 'ng generate component component-name' to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+
+Run 'ng build' to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+
+Run 'ng test' to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+Run 'ng e2e' to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+Run 'ng help' for more options.
+</pre>            
+                                    
+            <h1>Structure</h1>
+            <p>Ultima consists of 3 main parts; the application layout, layout resources and theme resources for PrimeNG components. <i>app.component.html</i> inside app folder is the html template for the base layout, 
+                required resources for the layout are placed inside the <i>src/assets/layout</i> folder and similarly theme resources are inside <i>src/assets/theme</i> folder. 
+            </p>
+
+            <h1>Template</h1>
+            <p>Main layout is the html view of the app.component.ts, it is divided into a couple of sections such as topbar, profile, menu and footer. Here is the code for
+                the main template. The component class app.component.ts implements the logic such as opening menus, layout modes and so on.
+            </p>
+<pre>
+&lt;div class="layout-wrapper" [ngClass]="&#123;'layout-compact':layoutCompact&#125;" (click)="onLayoutClick()"&gt;
+
+    &lt;div #layoutContainer class="layout-container" 
+            [ngClass]="&#123;'menu-layout-static': !isOverlay(),
+            'menu-layout-overlay': isOverlay(),
+            'layout-menu-overlay-active': overlayMenuActive,
+            'menu-layout-horizontal': isHorizontal(),
+            'menu-layout-slim': isSlim(),
+            'layout-menu-static-inactive': staticMenuDesktopInactive,
+            'layout-menu-static-active': staticMenuMobileActive&#125;"&gt;
+
+        &lt;app-topbar&gt;&lt;/app-topbar&gt;
+
+        &lt;div class="layout-menu" [ngClass]="&#123;'layout-menu-dark':darkMenu&#125;" (click)="onMenuClick($event)"&gt;
+            &lt;div #layoutMenuScroller class="nano"&gt;
+                &lt;div class="nano-content menu-scroll-content"&gt;
+                    &lt;inline-profile *ngIf="profileMode=='inline'&&!isHorizontal()"&gt;&lt;/inline-profile&gt;
+                    &lt;app-menu [reset]="resetMenu"&gt;&lt;/app-menu&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="layout-main"&gt;
+            &lt;router-outlet&gt;&lt;/router-outlet&gt;
+            
+            &lt;app-footer&gt;&lt;/app-footer&gt;
+        &lt;/div&gt;
+        
+        &lt;app-rightpanel&gt;&lt;/app-rightpanel&gt;
+        
+        &lt;div class="layout-mask"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+</pre>
+
+            <h1>Menu</h1>
+            <p>Menu is a separate component defined in app.menu.component.ts file based on PrimeNG MenuModel API. In order to define the menuitems, 
+            navigate to this file and define your own model as a nested structure. Here is the menu component from the sample application. The helper
+            app-submenu component is also available in the same file.</p>
+<pre>
+import &#123;Component,Input,OnInit,EventEmitter,ViewChild,trigger,state,transition,style,animate&#125; from '@angular/core';
+import &#123;Location&#125; from '@angular/common';
+import &#123;Router&#125; from '@angular/router';
+import &#123;MenuItem&#125; from 'primeng/primeng';
+import &#123;AppComponent&#125; from './app.component';
+
+@Component(&#123;
+    selector: 'app-menu',
+    template: `
+        &lt;ul app-submenu [item]="model" root="true" class="ultima-menu ultima-main-menu  clearfix" [reset]="reset"&gt;&lt;/ul&gt;
+    `
+&#125;)
+export class AppMenuComponent implements OnInit &#123;
+
+    @Input() reset: boolean;
+
+    model: MenuItem[];
+
+    constructor(public app:AppComponent) &#123;&#125;
+    
+    ngOnInit() &#123;
+        this.model = [
+            &#123;label: 'Dashboard', icon: 'dashboard', routerLink: ['/']&#125;,
+            &#123;
+                label: 'Components', icon: 'list',
+                items: [
+                    &#123;label: 'Sample Page', icon: 'desktop_mac', routerLink: ['/sample']&#125;,
+                    &#123;label: 'Forms', icon: 'input', routerLink: ['/forms']&#125;,
+                    &#123;label: 'Data', icon: 'grid_on', routerLink: ['/data']&#125;,
+                    &#123;label: 'Panels', icon: 'content_paste', routerLink: ['/panels']&#125;,
+                    &#123;label: 'Overlays', icon: 'content_copy', routerLink: ['/overlays']&#125;,
+                    &#123;label: 'Menus', icon: 'menu', routerLink: ['/menus']&#125;,
+                    &#123;label: 'Messages', icon: 'message', routerLink: ['/messages']&#125;,
+                    &#123;label: 'Charts', icon: 'insert_chart', routerLink: ['/charts']&#125;,
+                    &#123;label: 'File', icon: 'attach_file', routerLink: ['/file']&#125;,
+                    &#123;label: 'Misc', icon: 'toys', routerLink: ['/misc']&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Template Pages', icon: 'get_app',
+                items: [
+                    &#123;label: 'Empty Page', icon: 'hourglass_empty', routerLink: ['/empty']&#125;,
+                    &#123;label: 'Landing Page', icon: 'flight_land', url: 'landing.html'&#125;,
+                    &#123;label: 'Login Page', icon: 'verified_user', url: 'login.html'&#125;,
+                    &#123;label: 'Error Page', icon: 'error', url: 'error.html'&#125;,
+                    &#123;label: '404 Page', icon: 'error_outline', url: '404.html'&#125;,
+                    &#123;label: 'Access Denied Page', icon: 'security', url: 'access.html'&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Menu Hierarchy', icon: 'menu',
+                items: [
+                    &#123;
+                        label: 'Submenu 1', icon: 'subject',
+                        items: [
+                            &#123;
+                                label: 'Submenu 1.1', icon: 'subject',
+                                items: [
+                                    &#123;label: 'Submenu 1.1.1', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 1.1.2', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 1.1.3', icon: 'subject'&#125;,
+                                ]
+                            &#125;,
+                            &#123;
+                                label: 'Submenu 1.2', icon: 'subject',
+                                items: [
+                                    &#123;label: 'Submenu 1.2.1', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 1.2.2', icon: 'subject'&#125;
+                                ]
+                            &#125;,
+                        ]
+                    &#125;,
+                    &#123;
+                        label: 'Submenu 2', icon: 'subject',
+                        items: [
+                            &#123;
+                                label: 'Submenu 2.1', icon: 'subject',
+                                items: [
+                                    &#123;label: 'Submenu 2.1.1', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 2.1.2', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 2.1.3', icon: 'subject'&#125;,
+                                ]
+                            &#125;,
+                            &#123;
+                                label: 'Submenu 2.2', icon: 'subject',
+                                items: [
+                                    &#123;label: 'Submenu 2.2.1', icon: 'subject'&#125;,
+                                    &#123;label: 'Submenu 2.2.2', icon: 'subject'&#125;
+                                ]
+                            &#125;,
+                        ]
+                    &#125;
+                ]
+            &#125;,
+            &#123;label: 'Utils', icon: 'build', routerLink: ['/utils']&#125;,
+            &#123;label: 'Documentation', icon: 'find_in_page', routerLink: ['/documentation']&#125;
+        ];
+    &#125;
+&#125;
+</pre>
+
+            
+            <h1>Integration with an Existing CLI Project</h1>
+            <p>To setup Ultima in an existing project, copy the <i>src/assets</i> folder to your projects folder with the same name 
+                and replace the contents of app.component.ts, app.component.html with their counterparts in Ultima under <i>src/app</i> folder.</p>
+            
+            <p>Dependencies of Ultima are listed below and needs to be added to package.json</p>
+<pre>
+"primeng": "^4.1.0",             //required: PrimeNG components
+"jquery": "^3.1.1",              //optional: schedule and nanoscroller
+"chart.js": "^2.4.0",            //optional: chart 
+"fullcalendar": "^3.1.0",        //optional: schedule
+"moment": "^2.17.1",             //optional: chart and schedule
+"quill": "^1.1.8",               //optional: editor
+</pre>
+                        
+            <p>Add PrimeNG CSS at styles section in angular-cli.json</p>
+
+<pre>
+"styles": [
+    "../node_modules/primeng/resources/primeng.min.css",        //required: PrimeNG components
+    "../node_modules/fullcalendar/dist/fullcalendar.min.css",   //optional: schedule
+    "../node_modules/quill/dist/quill.snow.css",                //optional: editor
+    "../node_modules/nanoscroller/bin/css/nanoscroller.css",    //optional: nanoscroller
+    "styles.scss"                                               //your styles and overrides
+],
+</pre>
+
+            <p>Add the following scripts to your angular-cli.json</p>
+<pre>
+"scripts": [
+    "../node_modules/jquery/dist/jquery.js",                                //optional: schedule and nanoscroller
+    "../node_modules/nanoscroller/bin/javascripts/jquery.nanoscroller.js",  //optional: nanoscroller
+    "assets/layout/js/ripple.js",                                           //optional: ripple effect
+    "../node_modules/moment/moment.js",                                     //optional: schedule and charts
+    "../node_modules/chart.js/dist/Chart.js",                               //optional: charts
+    "../node_modules/fullcalendar/dist/fullcalendar.js",                    //optional: schedule
+    "../node_modules/quill/dist/quill.js"                                   //optional: editor
+],
+</pre>
+
+            <p>Last part is adding theme and layout css files, in the CLI app they are defined using link tags in index.html so the demo can switch them on
+            the fly by changing the path however if this is not a requirement, you may also add them to the styles configuration so they go inside the bundle.</p>
+
+            <h1 id="noncli">Integration with an Existing Non-CLI Project</h1>
+            <p>For an existing project that do not use CLI, setup steps are more or less similar. Start with installing the dependencies listed above in package.json</p>
+            <p>Copy the <i>src/assets</i> folder to your application and include the resources listed above with a module bundler like webpack or using link-script tags.</p>
+            <p>Finally copy the contents of app.component.html to your application's main component template such as <i>app/application.html</i> along
+            with the sub components which are app.menu.component.ts, app.profile.components.ts, app.topbar.component.ts and app.footer.component.ts.</p>
+                        
+            <h1>Size</h1>
+            <p>Ultima uses EM units for scalability and comes in two built-in sizes, default is closer to the material design specification with bigger fonts and paddings whereas the alternative compact size
+            shrinks the dimensions of the UI elements. To activate the compact mode add "layout-compact" style class to the .layout-wrapper element in application.html
+            which is the enclosing div of whole content.</p>
+            
+            <h1>Theme</h1>    
+            <p>Ultima provides 12 PrimeNG themes out of the box, setup of a theme simple including the css of theme to your page that are located inside resources/theme folder.</p>
+            
+            <ul>
+                <li>theme-blue</li>
+                <li>theme-blue-grey</li>
+                <li>theme-brown</li>
+                <li>theme-cyan</li>
+                <li>theme-dark-blue</li>
+                <li>theme-dark-green</li>
+                <li>theme-green</li>
+                <li>theme-grey</li>
+                <li>theme-indigo</li>
+                <li>theme-purple-amber</li>
+                <li>theme-purple-cyan</li>
+                <li>theme-teal</li>
+            </ul>
+            
+            <p>A custom theme can be developed by the following steps.</p>
+            <ul>
+                <li>Choose a custom theme name such as theme-myown.</li>
+                <li>Create a file named theme-myown.scss under <i>assets/theme folder</i>.</li>
+                <li>Define the variables listed below and import the <i>/sass/theme/_theme.scss</i> file.</li>
+                <li>Build the scss to generate css</li>
+                <li>Include the generated theme.css to your page.</li>
+            </ul>
+            
+            <p>Here are the variables required to create a theme, you may need to change the last line according to the 
+                relative path of the sass folder in your application.</p>
+                
+<pre>
+$primaryColor: #009688;
+$primaryDarkColor: #00695C;
+$primaryLightColor: #80CBC4;
+$accentColor: #CDDC39;
+$accentDarkColor: #9E9D24;
+$accentLightColor: #E6EE9C;
+$accentTextColor: #212121;
+
+@import '../sass/theme/_theme';
+</pre> 
+                
+            <p> An example sass command to compile the css would be;</p>
+                
+<pre>
+sass src/assets/theme-myown/theme.scss src/assets/theme-myown/theme.css
+</pre> 
+
+            <p>Watch mode is handy to avoid compiling everytime when a change is made, instead use the following command
+            so that sass generates the file whenever you make a customization. This builds all css files whenever a change is made to any scss file.</p>
+<pre>
+sass -w resources/ --sourcemap=none
+</pre>
+
+            <p>Same can also be applied to layout itself;</p>
+            <ul>
+                <li>Choose a layout name such as layout-myown.</li>
+                <li>Create an empty file named layout-myown.scss inside <i>assets/layout/css</i> folder.</li>
+                <li>Define the variables listed below and import the <i>/sass/layout/_layout.scss</i> file.</li>
+                <li>Build the scss to generate css</li>
+                <li>Serve the css by importing it using a link tag or a bundler.</li>
+            </ul>
+            
+            <p>Here are the variables required to create a layout, you may need to change the last line according to the 
+                relative path of the sass folder in your application.</p>
+            
+<pre>
+$primaryColor: #3F51B5;
+$primaryDarkColor: #283593;
+$primaryLightColor: #9fa8da;
+$accentColor: #E91E63;
+$accentDarkColor: #ad1457;
+$accentLightColor: #f48fb1;
+$accentTextColor: #ffffff;
+$darkMenuBgColor: #424242;
+$darkMenuHoverColor: #676767;
+$darkMenuRouterLinkActiveColor: #9fa8da;
+$lightMenuRouterLinkActiveColor: #3F51B5;
+$horizontalLightMenuRouterLinkActiveColor: #9fa8da;
+
+@import '../../sass/layout/_layout';
+</pre> 
+
+            <p>Check out the video tutorial that follows the steps above to create the dark-blue theme and layout. It is based on PrimeFaces version but generation part
+                applies to PrimeNG as well.</p>
+            
+            <div class="video-container">
+                <iframe src="https://www.youtube.com/embed/XmU7QYFYuPk" frameborder="0"></iframe>
+            </div>
+            
+            <p>For both cases, several .scss files such as _layout.scss, _theme.scss or _variables.scss has to be present relative to your scss files, these are available inside the resources/sass folder in the distribution.</p>
+            <p>In case you'd like to customize the structure not just the colors, the _variables.scss is where the structural variables (e.g. font size, paddings) for the layout are defined.</p>
+<pre>
+$textColor: #212121;
+$textSecondaryColor: #757575;
+$fontSize: 16px;
+$lineHeight: 1.5em;
+$borderRadius: 3px;
+$headerFontSize: 1em;
+$headerPadding: .625em 1em;
+$contentFontSize: 1em;
+$contentPadding: .625em 1em;
+$inputHeaderFontSize: 1em;
+$inputHeaderPadding: .625em 1em;
+$inputFontSize: 1em;
+$buttonFontSize: 1em;
+$inputOptionFontSize: 1em;
+$inputOptionPadding: .625em .875em;
+$hoverBgColor: #e8e8e8;
+$hoverTextColor: #000000;
+$dividerColor: #bdbdbd;
+$dividerLightColor: #cacaca;
+$grayBgColor: #757575;
+$iconFontSize: 1.5em;
+$invalidInputLabelColor: #e62a10;
+$invalidInputBorderColor: #e62a10;
+
+/* Compact */
+$c-fontSize: 14px;
+$c-lineHeight: 18px;
+</pre>        
+
+            <h1>Menu Item Badges</h1>
+            <p>Badges are numerical indicators associated with a link.
+               The badge property is the value of the badge and badgeStyleClass is style class of the badge.</p>
+<pre>
+label: 'Components', icon: 'list', badge: '2', badgeStyleClass: 'red-badge'
+</pre>  
+            <p>Default badge uses the accent color of ultima layout and there are three more alternative colors.</p>
+            <ul>
+                <li>red-badge</li>
+                <li>purple-badge</li>
+                <li>teal-badge</li>
+            </ul>
+                                    
+            <h1>Menu Modes</h1>
+            <p>Menu has 4 modes, static, overlay, slim and horizontal. Layout container element in application.html is used to define which mode to use by adding specific classes. List
+            below indicates the style classes for each mode. In addition menu</p>
+            <ul>
+                <li>Static: "layout-wrapper menu-layout-static"</li>
+                <li>Overlay: "layout-wrapper menu-layout-overlay"</li>
+                <li>Slim: "layout-wrapper menu-layout-static menu-layout-slim"</li>
+                <li>Horizontal: "layout-wrapper menu-layout-static menu-layout-horizontal"</li>
+            </ul>
+            
+            <p>For example to create a horizontal menu, the div element should be in following form;</p>
+<pre>
+&lt;div class="layout-wrapper layout-compact"&gt;
+    &lt;div class="layout-container menu-layout-static menu-layout-horizonal"&gt;
+</pre>            
+
+            <p>It is also possible to leave the choice to the user by keeping the preference at a component and using an expression to bind it so that user can switch between modes. Sample
+            application has an example implementation of such use case. Refer to app.component.ts for an example.</p>          
+
+            <h1>Dark Menu</h1>
+            <p>Default color scheme of menu is light and alternative dark mode can be activated by adding layout-menu-dark style class to the menu container that 
+                is an element having .layout-menu as its class.</p>
+<pre>
+&lt;div class="layout-menu layout-menu-dark"&gt;
+</pre>
+            
+            <h1>Profile Modes</h1>
+            <p>There are two possible locations for the user profile menu, first version is inline located inside the main menu and second option is the topbar menu. For inline mode,
+            profile content should be placed above the menu and for inline mode content goes in topbar-items list. The sample demo application provides examples for
+            both cases.</p>
+            
+            <h1>Utilities</h1>
+            <p>Ultima provides various helper features such as material iconset compatible with PrimeNG components and helper classes. Visit <a [routerLink]="['/utils']">utils</a> page for details.</p>
+                    
+            <h1>Grid CSS</h1>
+            <p>Ultima uses PrimeNG Grid CSS (ui-g-*) throughout the samples, we strongly suggest using Grid CSS as your layout framework as it is well tested and supported by PrimeNG. Grid CSS is
+            available inside primeng.css.</p> 
+            
+            <h1>Customizing Styles</h1>
+            <p>It is suggested to write your customizations in styles.scss file or another file instead of adding them to the
+                scss files under sass folders to avoid maintenance issues after an update.</p>
+            
+            <h1>Migration Guide</h1>
+            <p>For seamless updates and easier maintenance, we suggest keeping your CSS customizations in a separate sass file so that your changes
+            are not overriden with an update.</p>
+
+            <p>4.1.1 to 4.2</p>
+            <ul>
+                <li>Update app.*.ts and app.*.html files under app folder.</li>
+                <li>Update theme css and layout css files.</li>
+            </ul>
+
+            <p>4.0.1 to 4.1.0</p>
+            <ul>
+                <li>Update layout css files.</li>
+                <li>Update theme css files.</li>
+                <li>Update AppSubmenu component in app.menu.component.ts.</li>
+            </ul>
+            
+            <p>4.0 to 4.0.1</p>
+            <ul>
+                <li>Update layout css files.</li>
+            </ul>
+            
+            <p>2.1 to 4.0</p>
+            <ul>
+                <li>Includes version updates to PrimeNG 4 and Angular 4.</li>
+                <li>Update theme css files.</li>
+            </ul>
+            
+            <p>2.0.5 to 2.1</p>
+            <ul>
+                <li>Project is updated to CLI RC2, Angular 4-RC3 and PrimeNG 4-RC1.</li>
+                <li>Add <i class="inline-code">import &#123;trigger,state,style,transition,animate&#125; from '@angular/animations';</i> to app.menu.components.ts and remove these imports from 'angular/core'.</li>
+                <li>Add <i class="inline-code">import &#123;BrowserAnimationsModule&#125; from '@angular/platform-browser/animations';</i> to app.module.ts and import the module to your application.</li>
+                <li>Update theme css files, there are no changes to the layout.</li>
+            </ul>
+            
+            <p>2.0.4 to 2.0.5</p>
+            <ul>
+                <li>No change required, missing .angular-cli.json file in 2.0.4 is added.</li>
+            </ul>
+            
+            <p>2.0.3 to 2.0.4</p>
+            <ul>
+                <li>No change required, only CLI version is updated to RC</li>
+            </ul>
+            
+            <p>2.0.2 to 2.0.3</p>
+            <ul>
+                <li>Update AppSubmenu component in app.menu.component.ts by replacing the itemClick method implementation.</li>
+                <li>Update layout css files, there are no changes on themes.</li>
+                <li>Update app.component.ts by changing onTopbarMenuButtonClick method implementation to add <i>event.preventDefault()</i> at the end.</li>
+                <li>Remove [ngClass]="&#123;'menu-button-rotate': app.rotateMenuButton&#125;" from menu-button in app.topbar.component.ts.</li>
+            </ul> 
+                       
+            <p>2.0.1 to 2.0.2</p>
+            <ul>
+                <li>Update AppSubmenu component in app.menu.component.ts</li>
+                <li>Update layout css files, there are no changes on themes.</li>
+                <li>Update app.component.ts.</li>
+                <li>Add pInputText to search input at app.topbar.component.ts</li>
+            </ul> 
+            
+            <p>2.0 to 2.0.11</p>
+            <ul>
+                <li>Update AppSubmenu component in app.menu.component.ts</li>
+                <li>Update layout css and theme css files.</li>
+                <li>Update app.component.ts.</li>
+            </ul> 
+            
+            <p>1.1 to 2.0</p>
+            <ul>
+                <li>Update PrimeNG to at least 2.0.</li>
+                <li>Replace app.component.ts and app.component.html</li>
+                <li>Remove layout.js</li>
+                <li>Update the scripts and styles section at angular-cli.json</li>
+                <li>Define menu using PrimeNG MenuModel</li>
+            </ul> 
+
+            <p>1.0.3 to 1.1</p>
+            <ul>
+                <li>Update css files of layout and theme.</li>
+            </ul> 
+            
+            <p>1.0.2 to 1.0.3</p>
+            <ul>
+                <li>Update css files of layout and theme.</li>
+            </ul> 
+            
+            <p>1.0.1 to 1.0.2</p>
+            <ul>
+                <li>Update layout.js</li>
+            </ul> 
+            
+            <p>1.0.0 to 1.0.1</p>
+            <ul>
+                <li>Update layout.js</li>
+            </ul>                 
+        </div>
+    </div>
+</div>

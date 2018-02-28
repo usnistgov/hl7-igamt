@@ -1,0 +1,15 @@
+<div class="h-bar">
+  <display-badge [type]="_elm.type"></display-badge> {{header()}}
+  <span class="text-small label label-green">
+    <i class="fa fa-calendar" aria-hidden="true"></i>
+    {{_elm.dateUpdated | date : 'short'}}
+  </span>
+  <span *ngIf="_elm.type != 'document'" class="text-small label label-blue">
+    <i class="fa fa-code-fork" aria-hidden="true"></i>
+    HL7 v{{_elm.hl7Version }}
+  </span>
+  <span *ngIf="_elm.type == 'document'" class="text-small label label-user">
+    <i class="fa fa-user" aria-hidden="true"></i>
+    <!--{{_elm.owner.username }}-->
+  </span>
+</div>

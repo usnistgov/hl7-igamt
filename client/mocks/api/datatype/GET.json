@@ -1,0 +1,62 @@
+[
+    {
+        "id": "565f3ab5d4c6e52cfd43b962",
+        "name": "ST",
+        "label": "ST",
+        "scope" : "HL7STANDARD",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 0
+    },
+    {
+        "id": "588f2d3e84ae56b0b8a3f52a",
+        "name": "CWE",
+        "ext": "01",
+        "label": "CWE_01",
+        "scope" : "USER",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 9
+    },
+    {
+        "id": "588f2d3e84ae56b0b8a3f52b",
+        "name": "CWE",
+        "ext": "02",
+        "label": "CWE_02",
+        "scope" : "USER",
+        "hl7Version" : "2.7",
+        "numOfChildren" : 9
+    },
+    {
+        "id": "588f2d3e84ae56b0b8a3f540",
+        "name": "ID",
+        "label": "ID",
+        "scope" : "HL7STANDARD",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 0
+    },
+    {
+        "id": "588f2d3e84ae56b0b8a3f542",
+        "name": "SI",
+        "label": "SI",
+        "scope" : "HL7STANDARD",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 0
+    },
+    {
+        "id": "588f2d3e84ae56b0b8a3f541",
+        "name": "SI",
+        "ext": "01",
+        "label": "SI_01",
+        "scope" : "USER",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 0
+    },
+    {
+        "id": "579655655455fa35176cd5e4",
+        "name": "XXX",
+        "ext": "01",
+        "label": "XXX_01",
+        "scope" : "USER",
+        "hl7Version" : "2.6",
+        "numOfChildren" : 2
+    }
+]

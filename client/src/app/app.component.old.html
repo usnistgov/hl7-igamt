@@ -1,0 +1,39 @@
+<div class="layout-wrapper">
+  <div id="layout-topbar">
+    <a href="#" class="menu-button" (click)="onMenuButtonClick($event)">
+      <i class="fa fa-bars"></i>
+    </a>
+
+    <a href="#" class="logo" [routerLink]="['/']">
+      <img alt="logo" src="assets/images/NISTLogo.png" />
+    </a>
+
+    <ul class="topbar-menu">
+      <li>
+        <a href="#" [routerLink]="['/igDocuments']">IG Documents</a>
+      </li>
+      <li>
+        <a href="#" [routerLink]="['/datatypeLibraries']">Data Type Libraries</a>
+      </li>
+      <li>
+        <a [routerLink]="['/sharedElements']">Shared Elements</a>
+      </li>
+      <li>
+        <a [routerLink]="['/delta']">Delta</a>
+      </li>
+      <li>
+        <a [routerLink]="['/documentation']">Documentation</a>
+      </li>
+      <li>
+        <a [routerLink]="['/configuration']">Configuration</a>
+      </li>
+      <li>
+        <a [routerLink]="['/search']">Search</a>
+      </li>
+      <li>
+        <a [routerLink]="['/about']">About</a>
+      </li>
+    </ul>
+  </div>
+      <router-outlet></router-outlet>
+</div>

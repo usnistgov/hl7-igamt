@@ -1,0 +1,32 @@
+.label-USE {
+  background-color: green;
+  font-weight: 400;
+}
+
+.label-HL7 {
+  background-color: #f4867e;
+  font-weight: 400;
+}
+.label-PRL {
+  background: cornflowerblue;
+  font-weight: 400;
+}
+
+.label-PVS {
+  background: #ed0bea;
+  font-weight: 400;
+}
+
+.label-MASTER {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#ff7400+0,ff7400+100;Orange+Flat */
+  background: #ff7400; /* Old browsers */
+  background: -moz-linear-gradient(top, #ff7400 0%, #ff7400 100%);
+  /* FF3.6-15 */
+  background: -webkit-linear-gradient(top, #ff7400 0%, #ff7400 100%);
+  /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(to bottom, #ff7400 0%, #ff7400 100%);
+  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff7400',
+  endColorstr='#ff7400', GradientType=0); /* IE6-9 */
+  font-weight: 400;
+}

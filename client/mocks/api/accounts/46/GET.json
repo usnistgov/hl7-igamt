@@ -1,0 +1,15 @@
+{
+  "id": 46,
+  "entityDisabled": false,
+  "pending": false,
+  "accountType": "admin",
+  "username": "haffo",
+  "email": "haffo@nist.gov",
+  "fullName": "Harold Affo",
+  "phone": "2408988391",
+  "employer": "NIST",
+  "title": "Software Engineer",
+  "juridiction": null,
+  "signedConfidentialityAgreement": true,
+  "password": null
+}
