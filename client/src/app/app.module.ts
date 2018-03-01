@@ -32,6 +32,9 @@ import {LoginComponent} from "./login/login.component"
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
 import {HttpClientModule} from "@angular/common/http";
+import {HTTP_INTERCEPTORS} from "@angular/common/http";
+import {TokenInterceptor} from "./requestInterceptor";
+import { RegisterComponent } from './register/register.component';
 
 
 @NgModule({
@@ -46,7 +49,8 @@ import {HttpClientModule} from "@angular/common/http";
     AppTopBarComponent,
     AppFooterComponent,
     NotFoundComponent,
-    LoginComponent
+    LoginComponent,
+    RegisterComponent
 
   ],
   exports : [ ],
@@ -65,6 +69,11 @@ import {HttpClientModule} from "@angular/common/http";
   ],
   providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TokenInterceptor,
+      multi: true
+    },
      AppInfoService,
     WorkspaceService,
     GeneralConfigurationService,

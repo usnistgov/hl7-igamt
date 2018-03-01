@@ -26,19 +26,16 @@ export class AuthService {
 
   login(username,password): BehaviorSubject<boolean> {
 
-    var auth="Basic "+ btoa(username + ":" + password);
-    let headers = new HttpHeaders(
-      {
-        'Authorization':auth,
-        'Content-Type': 'application/json'
-      }
-    );
-    this.http.get('api/accounts/login',{headers: headers}).subscribe(data => {
-      return this.http.get('api/accounts/cuser').subscribe(user=>{
-        this.isLoggedIn.next(true);
+    this.http.post('api/login',{username:username,password:password},{ observe: 'response' }).subscribe(data => {
+      console.log(data);
+      let token = data.headers.get('Authorization');
+      console.log(token);
+
+      localStorage.setItem('currentUser', token );
+
+      this.isLoggedIn.next(true);
 
         console.log(this.redirectUrl);
-      });
     });
     return this.isLoggedIn;
 
@@ -46,6 +43,8 @@ export class AuthService {
 
 
   logout(): void {
+    localStorage.removeItem('currentUser');
+
     this.isLoggedIn.next(false);
   }
 }

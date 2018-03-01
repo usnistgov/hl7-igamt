@@ -8,12 +8,16 @@ import {Router} from "@angular/router";
 
 export class MyIgsComponent implements OnInit {
 
-  igs :any[];
+  igs :any
 
   constructor(private listService :IgListService, public router: Router ) {
 
-    listService.getListByType("USER").then( res =>
-      this.igs= res);
+    listService.getListByType("USER").subscribe( res =>{
+       this.igs=res;
+
+
+      }
+    );
 
   }
 

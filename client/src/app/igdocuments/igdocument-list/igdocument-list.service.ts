@@ -4,17 +4,19 @@
 
 import {Injectable}  from "@angular/core";
 import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable()
 export  class IgListService {
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
   }
 
   getListByType(type){
 
-   return  this.http.get('api/igdocuments/list/'+type)
-      .toPromise()
-      .then(res => <any[]> res.json());
+   return  this.http.get('api/igdocuments/list/'+type);
+
+
+
 
 
 

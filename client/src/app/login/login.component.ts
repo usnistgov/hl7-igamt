@@ -23,7 +23,6 @@ export class LoginComponent {
     this.message = 'Trying to log in ...';
 
     this.authService.login(this.username,this.password).subscribe(x => {
-      console.log(x);
       if (x==true) {
         console.log("test");
         console.log(this.authService.redirectUrl);
@@ -38,7 +37,11 @@ export class LoginComponent {
   }
 
   logout() {
-    this.authService.logout();
+    this.authService.logout();  //?
     this.setMessage();
   }
+  register(){
+    this.router.navigate(["/register"]);
+  }
+
 }

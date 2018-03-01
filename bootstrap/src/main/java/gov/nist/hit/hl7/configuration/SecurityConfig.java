@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,12 +18,18 @@ import gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter{
 
-
+	@Autowired
+	private AuthenticationManager authManager;
 	@Override
 	protected void configure (AuthenticationManagerBuilder auth) throws Exception{
 	
 	
 	}
+	
+    @Bean
+    protected JWTAuthenticationFilter loginFilter() throws Exception{
+    	return new JWTAuthenticationFilter("/api/login",authManager );
+    }
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
@@ -29,13 +37,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		http.csrf().disable();
 		http.formLogin().disable();
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		http.authorizeRequests().antMatchers("**/login/**", "**/register/**").permitAll();
+		http.authorizeRequests().antMatchers("api/login/", "api/register/").permitAll();
 		http.authorizeRequests().antMatchers("api/accounts/login/**", "**/register/**").permitAll();
 
 		
 		http.authorizeRequests().antMatchers("/api/**").fullyAuthenticated();
 		
-		http.addFilter(new JWTAuthenticationFilter(authenticationManager()));
+		http.addFilterBefore(loginFilter(), UsernamePasswordAuthenticationFilter.class);
 		http.addFilterBefore(new JWTAuthorizationFilter() , UsernamePasswordAuthenticationFilter.class);  
 		
 		

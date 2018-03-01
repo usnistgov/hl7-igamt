@@ -5,6 +5,7 @@ import {AboutComponent} from './about/about.component';
 import {DocumentationComponent} from './documentation/documentation.component';
 import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component"
+import {RegisterComponent} from "./register/register.component";
 
 
 export const routes: Routes = [
@@ -19,7 +20,8 @@ export const routes: Routes = [
   {path: 'documentation', component: DocumentationComponent},
   {path: '', component: DocumentationComponent},
   {path: 'login', component: LoginComponent},
-{path : '**', component: NotFoundComponent}
+  {path: 'register', component: RegisterComponent},
+  {path : '**', component: NotFoundComponent}
 
 ];
 export const AppRoutes: ModuleWithProviders = RouterModule.forRoot(routes);

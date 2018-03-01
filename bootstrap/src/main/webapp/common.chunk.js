@@ -26551,7 +26551,7 @@ var MatIconRegistry = (function () {
     ];
     /** @nocollapse */
     MatIconRegistry.ctorParameters = function () { return [
-        { type: __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */], decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["Optional"] },] },
+        { type: __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["b" /* HttpClient */], decorators: [{ type: __WEBPACK_IMPORTED_MODULE_0__angular_core__["Optional"] },] },
         { type: __WEBPACK_IMPORTED_MODULE_10__angular_platform_browser__["DomSanitizer"], },
     ]; };
     return MatIconRegistry;
@@ -26574,7 +26574,7 @@ var ICON_REGISTRY_PROVIDER = {
     provide: MatIconRegistry,
     deps: [
         [new __WEBPACK_IMPORTED_MODULE_0__angular_core__["Optional"](), new __WEBPACK_IMPORTED_MODULE_0__angular_core__["SkipSelf"](), MatIconRegistry],
-        [new __WEBPACK_IMPORTED_MODULE_0__angular_core__["Optional"](), __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["a" /* HttpClient */]],
+        [new __WEBPACK_IMPORTED_MODULE_0__angular_core__["Optional"](), __WEBPACK_IMPORTED_MODULE_9__angular_common_http__["b" /* HttpClient */]],
         __WEBPACK_IMPORTED_MODULE_10__angular_platform_browser__["DomSanitizer"]
     ],
     useFactory: ICON_REGISTRY_PROVIDER_FACTORY

@@ -7,11 +7,11 @@ import {IgListService} from "../igdocument-list.service";
 
 export class PreloadedIgsComponent implements OnInit {
 
-  igs :any[];
+  igs;
 
   constructor(private listService :IgListService ) {
 
-    listService.getListByType("PRELOADED").then( res =>
+    listService.getListByType("PRELOADED").subscribe( res =>
       this.igs= res);
   }
 

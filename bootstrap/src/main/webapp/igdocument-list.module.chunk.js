@@ -218,7 +218,7 @@ var IgDocumentListModule = (function () {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IgListService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_http__ = __webpack_require__("../../../http/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
 /**
  * Created by ena3 on 12/6/17.
  */
@@ -238,13 +238,11 @@ var IgListService = (function () {
         this.http = http;
     }
     IgListService.prototype.getListByType = function (type) {
-        return this.http.get('api/igdocuments/list/' + type)
-            .toPromise()
-            .then(function (res) { return res.json(); });
+        return this.http.get('api/igdocuments/list/' + type);
     };
     IgListService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Http */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
     ], IgListService);
     return IgListService;
 }());
@@ -285,8 +283,8 @@ var MyIgsComponent = (function () {
         var _this = this;
         this.listService = listService;
         this.router = router;
-        listService.getListByType("USER").then(function (res) {
-            return _this.igs = res;
+        listService.getListByType("USER").subscribe(function (res) {
+            _this.igs = res;
         });
     }
     MyIgsComponent.prototype.ngOnInit = function () {
@@ -336,7 +334,7 @@ var PreloadedIgsComponent = (function () {
     function PreloadedIgsComponent(listService) {
         var _this = this;
         this.listService = listService;
-        listService.getListByType("PRELOADED").then(function (res) {
+        listService.getListByType("PRELOADED").subscribe(function (res) {
             return _this.igs = res;
         });
     }
