@@ -11,10 +11,28 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
+
+import java.util.List;
+
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
 public interface ProfileComponentService {
+
+  ProfileComponent findByCompositeKey(CompositeKey compositeKey);
+
+  ProfileComponent create(ProfileComponent profileComponent);
+
+  List<ProfileComponent> findAll();
+
+  ProfileComponent save(ProfileComponent profileComponent);
+
+  List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents);
+
+  void delete(CompositeKey compositeKey);
 
 }

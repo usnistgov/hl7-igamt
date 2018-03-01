@@ -11,32 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.domain;
+package gov.nist.hit.hl7.igamt.shared.util;
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
- * @author Maxence Lefort on Feb 21, 2018.
+ * @author Maxence Lefort on Mar 1, 2018.
  */
-public class ComplexDatatype extends Datatype {
+public class CompositeKeyUtil {
 
-  private Set<Component> components;
-
-  public ComplexDatatype() {
-    super();
+  public static final CompositeKey updateVersion(CompositeKey compositeKey) {
+     compositeKey.setVersion(compositeKey.getVersion()+1);
+     return compositeKey;
   }
-  
-
-
-  public Set<Component> getComponents() {
-    return components;
-  }
-
-  public void setComponents(Set<Component> components) {
-    this.components = components;
-  }
-
 }

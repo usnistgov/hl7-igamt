@@ -11,32 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.domain;
+package gov.nist.hit.hl7.igamt.profilecomponent.repository;
 
-import java.util.Set;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
- * @author Maxence Lefort on Feb 21, 2018.
+ * @author Maxence Lefort on Feb 27, 2018.
  */
-public class ComplexDatatype extends Datatype {
+public interface ProfileComponentRepository extends MongoRepository<ProfileComponent, CompositeKey> {
 
-  private Set<Component> components;
-
-  public ComplexDatatype() {
-    super();
-  }
   
-
-
-  public Set<Component> getComponents() {
-    return components;
-  }
-
-  public void setComponents(Set<Component> components) {
-    this.components = components;
-  }
-
 }
