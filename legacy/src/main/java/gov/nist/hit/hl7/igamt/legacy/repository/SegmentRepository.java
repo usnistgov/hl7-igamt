@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 
-@Repository("tableRepository")
+@Repository("segmentRepository")
 public interface SegmentRepository extends MongoRepository<Segment, String> {
 }

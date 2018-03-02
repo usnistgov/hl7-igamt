@@ -5,6 +5,6 @@ import org.springframework.stereotype.Repository;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.IGDocument;
 
-@Repository("tableRepository")
+@Repository("igDocumentRepository")
 public interface IGDocumentRepository extends MongoRepository<IGDocument, String> {
 }
