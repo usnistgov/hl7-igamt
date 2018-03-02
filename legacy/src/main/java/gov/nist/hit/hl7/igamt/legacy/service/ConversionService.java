@@ -2,15 +2,15 @@ package gov.nist.hit.hl7.igamt.legacy.service;
 
 public interface ConversionService {
 
-  public void conversionTables();
+  public void convertTables();
   
-  public void conversionIgDocuments();
+  public void convertIgDocuments();
   
-  public void conversionDatatypes();
+  public void convertDatatypes();
   
-  public void conversionSegments();
+  public void convertSegments();
   
-  public void conversionMessages();
+  public void convertMessages();
   
   
 }

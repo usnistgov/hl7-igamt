@@ -43,7 +43,7 @@ public class ConversionServiceImpl implements ConversionService {
   private static CodeService codeService = (CodeService) context.getBean("codeService");
 
   @Override
-  public void conversionTables() {
+  public void convertTables() {
     List<Table> allTables = legacyTableRepository.findAll();
 
     for (Table table : allTables) {
@@ -186,25 +186,25 @@ public class ConversionServiceImpl implements ConversionService {
   }
 
   @Override
-  public void conversionIgDocuments() {
+  public void convertIgDocuments() {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void conversionDatatypes() {
+  public void convertDatatypes() {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void conversionSegments() {
+  public void convertSegments() {
     // TODO Auto-generated method stub
 
   }
 
   @Override
-  public void conversionMessages() {
+  public void convertMessages() {
     // TODO Auto-generated method stub
 
   }
