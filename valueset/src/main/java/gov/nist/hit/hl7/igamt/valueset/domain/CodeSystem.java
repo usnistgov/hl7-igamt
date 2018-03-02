@@ -13,27 +13,23 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.net.URL;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 
 /**
  * @author jungyubw
  *
  */
+@Document(collection = "codesystem")
 public class CodeSystem extends Resource {
+
   private String identifier;
   private String oid;
   private URL url;
 
-  public CodeSystem(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, String identifier, String oid, URL url) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef);
-    this.identifier = identifier;
-    this.oid = oid;
-    this.url = url;
+  public CodeSystem() {
+    super();
   }
 
   public String getIdentifier() {

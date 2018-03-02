@@ -43,5 +43,6 @@
 		<module>datatype</module>
 		<module>valueset</module>
 		<module>bootstrap</module>
+		<module>legacy</module>
 	</modules>
 </project>

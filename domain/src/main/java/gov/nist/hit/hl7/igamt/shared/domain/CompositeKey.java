@@ -16,6 +16,8 @@ import java.io.Serializable;
 
 import javax.persistence.GeneratedValue;
 
+import org.bson.types.ObjectId;
+
 /**
  * @author ena3
  *
@@ -37,6 +39,7 @@ public String getId() {
 }
 public CompositeKey() {
   super();
+  this.id = new ObjectId().toString();
   this.version = firstVersion;
 }
 public CompositeKey(String id) {

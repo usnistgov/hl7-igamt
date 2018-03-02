@@ -13,23 +13,20 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 
 /**
  * @author jungyubw
  *
  */
+@Document(collection = "codesystem-library")
 public class CodeSystemLibrary extends Resource {
   private Set<CodeSystemLink> refs;
-  
-  public CodeSystemLibrary(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, Set<CodeSystemLink> refs) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef);
-    this.refs = refs;
+
+  public CodeSystemLibrary() {
+    super();
   }
 
   public Set<CodeSystemLink> getRefs() {
@@ -39,5 +36,5 @@ public class CodeSystemLibrary extends Resource {
   public void setRefs(Set<CodeSystemLink> refs) {
     this.refs = refs;
   }
-  
+
 }
