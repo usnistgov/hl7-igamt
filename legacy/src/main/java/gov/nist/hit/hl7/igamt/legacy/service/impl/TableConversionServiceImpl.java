@@ -4,15 +4,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
-
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
-import gov.nist.hit.hl7.igamt.legacy.config.ApplicationConfig;
-import gov.nist.hit.hl7.igamt.legacy.config.LegacyApplicationConfig;
 import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
@@ -20,12 +16,12 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
-import gov.nist.hit.hl7.igamt.valueset.service.CodeService;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -36,10 +32,11 @@ public class TableConversionServiceImpl implements ConversionService {
       (ValuesetService) context.getBean("valuesetService");
   private static CodeSystemService codeSystemService =
       (CodeSystemService) context.getBean("codeSystemService");
-  private static CodeService codeService = (CodeService) context.getBean("codeService");
 
   @Override
   public void convert() {
+    init();
+    
     List<Table> allTables = legacyTableRepository.findAll();
 
     for (Table table : allTables) {
@@ -108,11 +105,9 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setDomainInfo(domainInfo);
 
         CodeSystem codeSystem = new CodeSystem();
+        codeSystem.setId(new CompositeKey());
         codeSystem.setIdentifier("HL7" + table.getBindingIdentifier());
         codeSystem.setDomainInfo(domainInfo);
-        codeSystem = codeSystemService.create(codeSystem);
-        // TODO ??? need key?
-        v.addCodeSystemId(codeSystem.getId().getId());
 
         if (table.getCodes() != null) {
           for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
@@ -120,7 +115,7 @@ public class TableConversionServiceImpl implements ConversionService {
             code.setCodeSystemId(codeSystem.getId().getId());
             code.setDescription(c.getLabel());
             code.setValue(c.getValue());
-            codeService.create(code);
+            codeSystem.addCode(code);
 
             CodeRef codeRef = new CodeRef();
             codeRef.setCodeId(code.getId());
@@ -136,7 +131,9 @@ public class TableConversionServiceImpl implements ConversionService {
           }
           v.setNumberOfCodes(table.getCodes().size());
         }
-      }else if (table.getScope().equals(SCOPE.PHINVADS)) {
+        codeSystem = codeSystemService.save(codeSystem);
+        v.addCodeSystemId(codeSystem.getId().getId());
+      } else if (table.getScope().equals(SCOPE.PHINVADS)) {
         DomainInfo domainInfo = new DomainInfo();
         domainInfo.setVersion(table.getVersion());
         // TODO need check
@@ -145,19 +142,17 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setDomainInfo(domainInfo);
 
         CodeSystem codeSystem = new CodeSystem();
+        codeSystem.setId(new CompositeKey());
         codeSystem.setIdentifier(table.getBindingIdentifier());
         codeSystem.setDomainInfo(domainInfo);
-        codeSystem = codeSystemService.create(codeSystem);
-        // TODO ??? need key?
-        v.addCodeSystemId(codeSystem.getId().getId());
-
+  
         if (table.getCodes() != null) {
           for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
             Code code = new Code();
             code.setCodeSystemId(codeSystem.getId().getId());
             code.setDescription(c.getLabel());
             code.setValue(c.getValue());
-            codeService.create(code);
+            codeSystem.addCode(code);
 
             CodeRef codeRef = new CodeRef();
             codeRef.setCodeId(code.getId());
@@ -173,11 +168,42 @@ public class TableConversionServiceImpl implements ConversionService {
           }
           v.setNumberOfCodes(table.getCodes().size());
         }
-      }else if (table.getScope().equals(SCOPE.USER)) {
-        //TODO
+        codeSystem = codeSystemService.save(codeSystem);
+        v.addCodeSystemId(codeSystem.getId().getId());
+        
+      } else if (table.getScope().equals(SCOPE.USER)) {
+        DomainInfo domainInfo = new DomainInfo();
+        domainInfo.setVersion(table.getVersion());
+        // TODO need check
+        domainInfo.setCompatibilityVersion(new HashSet<String>());
+        domainInfo.setScope(Scope.USER);
+        v.setDomainInfo(domainInfo);
+
+        if (table.getCodes() != null) {
+          for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
+            InternalCode code = new InternalCode();
+            code.setCodeSystemId(c.getCodeSystem());
+            code.setDescription(c.getLabel());
+            code.setValue(c.getValue());
+            if (c.getCodeUsage().equals("R")) {
+              code.setUsage(CodeUsage.R);
+            } else if (c.getCodeUsage().equals("E")) {
+              code.setUsage(CodeUsage.E);
+            } else {
+              code.setUsage(CodeUsage.P);
+            }
+            v.addCode(code);
+          }
+          v.setNumberOfCodes(table.getCodes().size());
+        }
       }
       valuesetService.createFromLegacy(v, table.getId());
     }
 
+  }
+
+  private void init() {
+    valuesetService.removeCollection();
+    codeSystemService.removeCollection();
   }
 }

@@ -75,5 +75,11 @@ public class ValuesetServiceImpl implements ValuesetService {
   public void delete(CompositeKey id) {
     valuesetRepository.delete(id);
   }
+
+  @Override
+  public void removeCollection() {
+    // TODO Auto-generated method stub
+    
+  }
   
 }
