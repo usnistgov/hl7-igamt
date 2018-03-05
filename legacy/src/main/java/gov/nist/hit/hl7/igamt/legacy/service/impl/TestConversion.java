@@ -1,8 +1,8 @@
 package gov.nist.hit.hl7.igamt.legacy.service.impl;
 
-public class Conversion {
+public class TestConversion {
   public static void main(String[] args) {
-    new ConversionServiceImpl().convertTables();
+    new TableConversionServiceImpl().convert();
   }
 
 }

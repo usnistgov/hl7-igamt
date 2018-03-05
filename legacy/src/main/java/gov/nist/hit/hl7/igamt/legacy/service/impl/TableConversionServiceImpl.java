@@ -29,7 +29,7 @@ import gov.nist.hit.hl7.igamt.valueset.service.CodeService;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
-public class ConversionServiceImpl implements ConversionService {
+public class TableConversionServiceImpl implements ConversionService {
   private static AbstractApplicationContext context =
       new AnnotationConfigApplicationContext(ApplicationConfig.class);
   private static AbstractApplicationContext legacyContext =
@@ -43,7 +43,7 @@ public class ConversionServiceImpl implements ConversionService {
   private static CodeService codeService = (CodeService) context.getBean("codeService");
 
   @Override
-  public void convertTables() {
+  public void convert() {
     List<Table> allTables = legacyTableRepository.findAll();
 
     for (Table table : allTables) {
@@ -184,29 +184,4 @@ public class ConversionServiceImpl implements ConversionService {
     }
 
   }
-
-  @Override
-  public void convertIgDocuments() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void convertDatatypes() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void convertSegments() {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public void convertMessages() {
-    // TODO Auto-generated method stub
-
-  }
-
 }

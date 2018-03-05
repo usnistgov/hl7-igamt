@@ -8,7 +8,7 @@
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>valueset</artifactId>
+	<artifactId>legacy</artifactId>
 	<version>${parent.version}</version>
 	<name>legacy</name>
 	<url>http://maven.apache.org</url>
