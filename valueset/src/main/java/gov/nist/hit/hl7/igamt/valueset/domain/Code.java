@@ -11,16 +11,23 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import org.springframework.data.mongodb.core.mapping.Document;
+
 /**
  * @author jungyubw
  *
  */
+@Document(collection = "code")
 public class Code {
   private String id;
   private String value;
   private String description;
   private String codeSystemId;
   
+  public Code() {
+    super();
+  }
+
   public Code(String id, String value, String description, String codeSystemId) {
     super();
     this.id = id;

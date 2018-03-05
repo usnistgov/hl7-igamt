@@ -14,6 +14,10 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 
 import java.io.Serializable;
 
+import javax.persistence.GeneratedValue;
+
+import org.bson.types.ObjectId;
+
 /**
  * @author ena3
  *
@@ -24,14 +28,24 @@ public class CompositeKey implements Serializable {
    * 
    */
   private static final long serialVersionUID = -5077046386179385282L;
+  @GeneratedValue
   private String id; 
-  private String version;
+  private int version;
+  private static final int firstVersion = 1;
  
  
 public String getId() {
   return id;
 }
-public CompositeKey(String id, String version) {
+public CompositeKey() {
+  super();
+  this.id = new ObjectId().toString();
+  this.version = firstVersion;
+}
+public CompositeKey(String id) {
+  this(id,firstVersion);
+}
+public CompositeKey(String id, int version) {
   super();
   this.id = id;
   this.version = version;
@@ -39,10 +53,10 @@ public CompositeKey(String id, String version) {
 public void setId(String id) {
   this.id = id;
 }
-public String getVersion() {
+public int getVersion() {
   return version;
 }
-public void setVersion(String version) {
+public void setVersion(int version) {
   this.version = version;
 }
   

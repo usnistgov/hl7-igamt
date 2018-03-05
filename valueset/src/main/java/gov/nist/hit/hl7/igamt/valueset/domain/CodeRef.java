@@ -30,6 +30,10 @@ public class CodeRef {
     this.usage = usage;
   }
 
+  public CodeRef() {
+    // TODO Auto-generated constructor stub
+  }
+
   public String getCodeId() {
     return codeId;
   }

@@ -16,8 +16,6 @@ package gov.nist.hit.hl7.igamt.datatype.domain;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 
 /**
  *

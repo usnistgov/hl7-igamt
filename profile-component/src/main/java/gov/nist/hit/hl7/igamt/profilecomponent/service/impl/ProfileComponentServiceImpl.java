@@ -11,12 +11,62 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 /**
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
 public class ProfileComponentServiceImpl implements ProfileComponentService {
+
+  @Autowired
+  private ProfileComponentRepository profileComponentRepository;
+  
+  @Override
+  public ProfileComponent findByCompositeKey(CompositeKey compositeKey) {
+    return profileComponentRepository.findOne(compositeKey);
+  }
+
+  @Override
+  public ProfileComponent create(ProfileComponent profileComponent) {
+    profileComponent.setId(new CompositeKey());
+    profileComponent = profileComponentRepository.save(profileComponent);
+    return profileComponent;
+  }
+
+  @Override
+  public List<ProfileComponent> findAll() {
+    return profileComponentRepository.findAll();
+  }
+
+  @Override
+  public ProfileComponent save(ProfileComponent profileComponent) {
+    profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
+    profileComponent = profileComponentRepository.save(profileComponent);
+    return profileComponent;
+  }
+
+  @Override
+  public List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents) {
+    ArrayList<ProfileComponent> savedProfileComponents = new ArrayList<>();
+    for(ProfileComponent profileComponent : profileComponents) {
+      savedProfileComponents.add(this.save(profileComponent));
+    }
+    return savedProfileComponents;
+  }
+
+  @Override
+  public void delete(CompositeKey id) {
+    profileComponentRepository.delete(id);
+  }
 
 }
