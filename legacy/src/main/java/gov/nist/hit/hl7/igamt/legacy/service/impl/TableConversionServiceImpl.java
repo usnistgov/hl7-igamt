@@ -30,10 +30,6 @@ import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 public class TableConversionServiceImpl implements ConversionService {
-  private static AbstractApplicationContext context =
-      new AnnotationConfigApplicationContext(ApplicationConfig.class);
-  private static AbstractApplicationContext legacyContext =
-      new AnnotationConfigApplicationContext(LegacyApplicationConfig.class);
   private static TableRepository legacyTableRepository =
       (TableRepository) legacyContext.getBean("tableRepository");
   private static ValuesetService valuesetService =
