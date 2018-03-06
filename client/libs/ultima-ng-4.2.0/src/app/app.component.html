@@ -1,15 +1,5 @@
-<div class="layout-wrapper" [ngClass]="{'layout-compact':layoutCompact}" (click)="onLayoutClick()">
 
-    <div #layoutContainer class="layout-container" 
-            [ngClass]="{'menu-layout-static': !isOverlay(),
-            'menu-layout-overlay': isOverlay(),
-            'layout-menu-overlay-active': overlayMenuActive,
-            'menu-layout-horizontal': isHorizontal(),
-            'menu-layout-slim': isSlim(),
-            'layout-menu-static-inactive': staticMenuDesktopInactive,
-            'layout-menu-static-active': staticMenuMobileActive}">
-
-        <app-topbar></app-topbar>
+   <app-topbar></app-topbar>
 
         <div class="layout-menu" [ngClass]="{'layout-menu-dark':darkMenu}" (click)="onMenuClick($event)">
             <div #layoutMenuScroller class="nano">
@@ -19,16 +9,19 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="layout-main">
+
             <router-outlet></router-outlet>
-            
+
+          <nav class="navbar fixed-bottom navbar-expand navbar-light bg-light">
+            <div class="navbar-text m-auto">
+
             <app-footer></app-footer>
+            </div>
+          </nav>
         </div>
-        
-        <app-rightpanel></app-rightpanel>
-        
-        <div class="layout-mask"></div>
+
     </div>
 
 </div>

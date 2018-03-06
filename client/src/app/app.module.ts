@@ -20,11 +20,9 @@ import {DatatypesService} from './service/datatypes/datatypes.service';
 import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {MenubarModule,PanelModule} from 'primeng/primeng';
 import {AppRoutes} from './app.routes';
-import {AppMenuComponent, AppSubMenuComponent} from './app.menu.component';
+import {AppMenuComponent} from './app.menu.component';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
-
-import {InlineProfileComponent} from './app.profile.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
 import {SegmentsService} from "./service/segments/segments.service";
 import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
@@ -35,6 +33,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
 import {TokenInterceptor} from "./requestInterceptor";
 import { RegisterComponent } from './register/register.component';
+import {UserService} from "./service/userService/user.service";
 
 
 @NgModule({
@@ -43,9 +42,7 @@ import { RegisterComponent } from './register/register.component';
     HomeComponent,
     AboutComponent,
     DocumentationComponent,
-    InlineProfileComponent,
     AppMenuComponent,
-    AppSubMenuComponent,
     AppTopBarComponent,
     AppFooterComponent,
     NotFoundComponent,
@@ -83,7 +80,8 @@ import { RegisterComponent } from './register/register.component';
     SegmentsService,
     ProfileComponentsService,
     AuthService,
-    AuthGuard
+    AuthGuard,
+    UserService
   ],
   bootstrap: [AppComponent]
 })

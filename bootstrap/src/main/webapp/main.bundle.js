@@ -606,12 +606,14 @@ var AppSubMenuComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__requestInterceptor__ = __webpack_require__("../../../../../src/app/requestInterceptor.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__service_userService_user_service__ = __webpack_require__("../../../../../src/app/service/userService/user.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -694,7 +696,8 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_24__service_segments_segments_service__["a" /* SegmentsService */],
                 __WEBPACK_IMPORTED_MODULE_25__service_profilecomponents_profilecomponents_service__["a" /* ProfileComponentsService */],
                 __WEBPACK_IMPORTED_MODULE_27__login_auth_service__["a" /* AuthService */],
-                __WEBPACK_IMPORTED_MODULE_28__login_auth_guard_service__["a" /* AuthGuard */]
+                __WEBPACK_IMPORTED_MODULE_28__login_auth_guard_service__["a" /* AuthGuard */],
+                __WEBPACK_IMPORTED_MODULE_32__service_userService_user_service__["a" /* UserService */]
             ],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]]
         })
@@ -1099,6 +1102,8 @@ var AuthService = (function () {
             localStorage.setItem('currentUser', token);
             _this.isLoggedIn.next(true);
             console.log(_this.redirectUrl);
+        }, function (error) {
+            _this.isLoggedIn.next(false);
         });
         return this.isLoggedIn;
     };
@@ -1148,11 +1153,7 @@ var LoginComponent = (function () {
     function LoginComponent(authService, router) {
         this.authService = authService;
         this.router = router;
-        this.setMessage();
     }
-    LoginComponent.prototype.setMessage = function () {
-        this.message = 'Logged ' + (this.authService.isLoggedIn ? 'in' : 'out');
-    };
     LoginComponent.prototype.login = function () {
         var _this = this;
         this.message = 'Trying to log in ...';
@@ -1171,7 +1172,6 @@ var LoginComponent = (function () {
     };
     LoginComponent.prototype.logout = function () {
         this.authService.logout(); //?
-        this.setMessage();
     };
     LoginComponent.prototype.register = function () {
         this.router.navigate(["/register"]);
@@ -1211,7 +1211,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p>\n  register works!\n</p>\n<p>\n  register works!\n</p>\n<p>\n  register works!\n</p>\n"
+module.exports = "<div class=\"col-md-6 col-md-offset-3\">\n  <h2>Register</h2>\n  <form name=\"form\" (ngSubmit)=\"f.form.valid && register()\" #f=\"ngForm\" novalidate>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">\n      <label>Full Name</label>\n      <input type=\"text\" class=\"form-control\" name=\"fullname\" [(ngModel)]=\"model.fullname\" #fullname=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !fullname.valid\" class=\"help-block\">First Name is required</div>\n    </div>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">\n      <label>Username</label>\n      <input type=\"text\" class=\"form-control\" name=\"username\" [(ngModel)]=\"model.username\" #username=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !username.valid\" class=\"help-block\">User Name is required</div>\n    </div>\n\n    <div class=\"form-group\">\n      <label >Email</label>\n      <input type=\"text\"  class=\"form-control\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" required/>\n      <div *ngIf=\"f.submitted && !email.valid\" class=\"help-block\">Email is required</div>\n\n    </div>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !password.valid }\">\n      <label>Password</label>\n      <input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !password.valid\" class=\"help-block\">Password is required</div>\n    </div>\n\n\n    <div class=\"form-group\">\n      <label >Organization</label>\n      <input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"model.organization\" #password=\"ngModel\"/>\n    </div>\n\n\n\n\n    <div class=\"form-group\">\n      <button [disabled]=\"loading\" class=\"btn btn-primary\" (click)=\"register()\">Register</button>\n      <a [routerLink]=\"['/login']\" class=\"btn btn-link\">Cancel</a>\n    </div>\n  </form>\n</div>\n"
 
 /***/ }),
 
@@ -1221,6 +1221,8 @@ module.exports = "<p>\n  register works!\n</p>\n<p>\n  register works!\n</p>\n<p
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return RegisterComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_userService_user_service__ = __webpack_require__("../../../../../src/app/service/userService/user.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1231,10 +1233,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 
+
+
 var RegisterComponent = (function () {
-    function RegisterComponent() {
+    function RegisterComponent(router, userService) {
+        this.router = router;
+        this.userService = userService;
+        this.model = {};
+        this.loading = false;
     }
-    RegisterComponent.prototype.ngOnInit = function () {
+    RegisterComponent.prototype.register = function () {
+        var _this = this;
+        this.loading = true;
+        this.userService.create(this.model)
+            .subscribe(function (data) {
+            console.log("success");
+            _this.router.navigate(['/login']);
+        }, function (error) {
+            console.log("error");
+            _this.loading = false;
+        });
     };
     RegisterComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -1242,7 +1260,8 @@ var RegisterComponent = (function () {
             template: __webpack_require__("../../../../../src/app/register/register.component.html"),
             styles: [__webpack_require__("../../../../../src/app/register/register.component.css")]
         }),
-        __metadata("design:paramtypes", [])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"],
+            __WEBPACK_IMPORTED_MODULE_2__service_userService_user_service__["a" /* UserService */]])
     ], RegisterComponent);
     return RegisterComponent;
 }());
@@ -2021,6 +2040,57 @@ var SegmentsService = (function () {
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_http__["a" /* Http */]])
     ], SegmentsService);
     return SegmentsService;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/service/userService/user.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return UserService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+/**
+ * Created by ena3 on 3/5/18.
+ */
+
+
+var UserService = (function () {
+    function UserService(http) {
+        this.http = http;
+    }
+    UserService.prototype.getAll = function () {
+        return this.http.get('/api/users');
+    };
+    UserService.prototype.getById = function (id) {
+        return this.http.get('/api/users/' + id);
+    };
+    UserService.prototype.create = function (user) {
+        return this.http.post('/register', user, { observe: 'response' });
+    };
+    UserService.prototype.update = function (user) {
+        return this.http.put('/api/users/' + user.id, user);
+    };
+    UserService.prototype.delete = function (id) {
+        return this.http.delete('/api/users/' + id);
+    };
+    UserService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
+    ], UserService);
+    return UserService;
 }());
 
 

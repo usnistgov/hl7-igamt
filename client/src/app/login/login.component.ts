@@ -12,11 +12,6 @@ export class LoginComponent {
   password: string;
 
   constructor(public authService: AuthService, public router: Router) {
-    this.setMessage();
-  }
-
-  setMessage() {
-    this.message = 'Logged ' + (this.authService.isLoggedIn ? 'in' : 'out');
   }
 
   login() {
@@ -38,7 +33,6 @@ export class LoginComponent {
 
   logout() {
     this.authService.logout();  //?
-    this.setMessage();
   }
   register(){
     this.router.navigate(["/register"]);

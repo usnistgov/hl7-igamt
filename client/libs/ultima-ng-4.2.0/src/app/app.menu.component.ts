@@ -7,9 +7,7 @@ import {AppComponent} from './app.component';
 
 @Component({
     selector: 'app-menu',
-    template: `
-        <ul app-submenu [item]="model" root="true" class="ultima-menu ultima-main-menu clearfix" [reset]="reset" visible="true"></ul>
-    `
+    templateUrl: 'navbar.html'
 })
 export class AppMenuComponent implements OnInit {
 
@@ -18,7 +16,7 @@ export class AppMenuComponent implements OnInit {
     model: any[];
 
     constructor(public app: AppComponent) {}
-    
+
     ngOnInit() {
         this.model = [
             {label: 'Dashboard', icon: 'dashboard', routerLink: ['/']},
@@ -133,7 +131,7 @@ export class AppMenuComponent implements OnInit {
     changeTheme(theme) {
         let themeLink: HTMLLinkElement = <HTMLLinkElement> document.getElementById('theme-css');
         let layoutLink: HTMLLinkElement = <HTMLLinkElement> document.getElementById('layout-css');
-        
+
         themeLink.href = 'assets/theme/theme-' + theme +'.css';
         layoutLink.href = 'assets/layout/css/layout-' + theme +'.css';
     }
@@ -190,31 +188,31 @@ export class AppMenuComponent implements OnInit {
 export class AppSubMenu {
 
     @Input() item: MenuItem;
-    
+
     @Input() root: boolean;
-    
+
     @Input() visible: boolean;
 
     _reset: boolean;
-        
+
     activeIndex: number;
 
     constructor(public app: AppComponent) {}
-        
-    itemClick(event: Event, item: MenuItem, index: number) {        
+
+    itemClick(event: Event, item: MenuItem, index: number) {
         if(this.root) {
             this.app.menuHoverActive = !this.app.menuHoverActive;
         }
-        
+
         //avoid processing disabled items
         if(item.disabled) {
             event.preventDefault();
             return true;
         }
-        
+
         //activate current item and deactivate active sibling if any
         this.activeIndex = (this.activeIndex === index) ? null : index;
-                
+
         //execute command
         if(item.command) {
             item.command({originalEvent: event, item: item});
@@ -224,26 +222,26 @@ export class AppSubMenu {
         if(item.items || (!item.url && !item.routerLink)) {
             event.preventDefault();
         }
-        
+
         //hide menu
         if(!item.items) {
             if(this.app.isHorizontal() || this.app.isSlim())
                 this.app.resetMenu = true;
             else
                 this.app.resetMenu = false;
-                
+
             this.app.overlayMenuActive = false;
             this.app.staticMenuMobileActive = false;
             this.app.menuHoverActive = !this.app.menuHoverActive;
         }
     }
-    
+
     onMouseEnter(index: number) {
         if(this.root && this.app.menuHoverActive && (this.app.isHorizontal() || this.app.isSlim())) {
             this.activeIndex = index;
         }
     }
-    
+
     isActive(index: number): boolean {
         return this.activeIndex === index;
     }

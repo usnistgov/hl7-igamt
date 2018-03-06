@@ -34,10 +34,17 @@ export class AuthService {
       localStorage.setItem('currentUser', token );
 
       this.isLoggedIn.next(true);
+      console.log(this.redirectUrl);
+    }, error =>{
 
-        console.log(this.redirectUrl);
-    });
-    return this.isLoggedIn;
+      this.isLoggedIn.next(false);
+
+      }
+    );
+    return  this.isLoggedIn;
+
+
+
 
   }
 

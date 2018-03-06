@@ -1,37 +1,23 @@
 package gov.nist.hit.hl7.auth.domain;
 
-import java.util.Set;
-
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-@Document
-public class Account {
 
-	@Id
-	private String id;
+public class RegistrationRequest {
 	private String username;
 	private String password;
 	private String email;
-	private boolean pending = false;
-	private String fullName;
+
+	private String fullname;
 	private String organization;
 	private Boolean signedConfidentialityAgreement = false;
-	@DBRef
-	private Set<Privilege> privileges;
 	
-	public String getId() {
-		return id;
+	public RegistrationRequest() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-	public void setId(String id) {
-		this.id = id;
-	}
+	
 	public String getUsername() {
 		return username;
 	}
@@ -50,17 +36,11 @@ public class Account {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public boolean isPending() {
-		return pending;
-	}
-	public void setPending(boolean pending) {
-		this.pending = pending;
-	}
 	public String getFullName() {
-		return fullName;
+		return fullname;
 	}
 	public void setFullName(String fullName) {
-		this.fullName = fullName;
+		this.fullname = fullName;
 	}
 	public String getOrganization() {
 		return organization;
@@ -74,16 +54,7 @@ public class Account {
 	public void setSignedConfidentialityAgreement(Boolean signedConfidentialityAgreement) {
 		this.signedConfidentialityAgreement = signedConfidentialityAgreement;
 	}
-	public Set<Privilege> getPrivileges() {
-		return privileges;
-	}
-	public void setPrivileges(Set<Privilege> privileges) {
-		this.privileges = privileges;
-	}
 	
-	@Transient
-	public UserDetails userDetails(){
-		return new User(getUsername(), getPassword(), !isPending(), true, true, true, privileges);
-	}
+	
 	
 }
