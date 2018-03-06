@@ -78,8 +78,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public void removeCollection() {
-    // TODO Auto-generated method stub
-    
+    valuesetRepository.deleteAll();
   }
   
 }
