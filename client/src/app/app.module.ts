@@ -47,7 +47,7 @@ import {UserService} from "./service/userService/user.service";
     AppFooterComponent,
     NotFoundComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
 
   ],
   exports : [ ],
@@ -58,7 +58,7 @@ import {UserService} from "./service/userService/user.service";
     PanelModule,
     FormsModule,
     ReactiveFormsModule,
-  AppRoutes,
+    AppRoutes,
     HttpModule,
     HttpClientModule,
     BrowserAnimationsModule,
