@@ -11,10 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
-
 /**
  * @author jungyubw
  *
@@ -22,14 +18,9 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 public class DateTimeDatatype extends PrimitiveDatatype{
 
   private DateTimeConstraints dateTimeConstraints;
-  
-  public DateTimeDatatype(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding,
-      DateTimeConstraints dateTimeConstraints) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef, ext, purposeAndUse, resourceBinding);
-    this.dateTimeConstraints = dateTimeConstraints;
+
+  public DateTimeDatatype() {
+    super();
   }
 
   public DateTimeConstraints getDateTimeConstraints() {

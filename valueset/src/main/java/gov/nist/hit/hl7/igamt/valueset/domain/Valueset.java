@@ -12,10 +12,11 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.net.URL;
+import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
@@ -26,6 +27,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
  * @author jungyubw
  *
  */
+@Document(collection = "valueset")
 public class Valueset extends Resource {
   private String bindingIdentifier;
   private String oid;
@@ -38,30 +40,14 @@ public class Valueset extends Resource {
   private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 
   protected int numberOfCodes;
-  private Set<String> codeSystemIds;
-  private Set<CodeRef> codeRefs;
-  private Set<Code> codes;
+  private Set<String> codeSystemIds = new HashSet<String>();
+  private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
+  
+  private Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
+  private Set<InternalCode> codes = new HashSet<InternalCode>();
 
-  public Valueset(String id, String version, String name, PublicationInfo publicationInfo,
-      DomainInfo domainInfo, String username, String comment, String description, String preDef,
-      String postDef, String bindingIdentifier, String oid, String intensionalComment, URL url,
-      ManagedBy managedBy, Stability stability, Extensibility extensibility,
-      ContentDefinition contentDefinition, int numberOfCodes, Set<String> codeSystemIds,
-      Set<CodeRef> codeRefs, Set<Code> codes) {
-    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-        postDef);
-    this.bindingIdentifier = bindingIdentifier;
-    this.oid = oid;
-    this.intensionalComment = intensionalComment;
-    this.url = url;
-    this.managedBy = managedBy;
-    this.stability = stability;
-    this.extensibility = extensibility;
-    this.contentDefinition = contentDefinition;
-    this.numberOfCodes = numberOfCodes;
-    this.codeSystemIds = codeSystemIds;
-    this.codeRefs = codeRefs;
-    this.codes = codes;
+  public Valueset() {
+    super();
   }
 
   public String getBindingIdentifier() {
@@ -157,14 +143,55 @@ public class Valueset extends Resource {
     this.updateNumberOfCodes();
   }
 
-  public Set<Code> getCodes() {
+  public Set<InternalCode> getCodes() {
     return codes;
   }
 
-  public void setCodes(Set<Code> codes) {
+  public void setCodes(Set<InternalCode> codes) {
     this.codes = codes;
     this.updateNumberOfCodes();
   }
+  
+  public void addCode(InternalCode code) {
+    if(code.getCodeSystemId() != null) {
+      InternalCodeSystem found = findInternalCodeSystem(code.getCodeSystemId());
+      if(found == null) {
+        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
+        internalCodeSystem.setIdentifier(code.getCodeSystemId());
+        this.internalCodeSystems.add(internalCodeSystem);
+      }      
+    }else {
+      InternalCodeSystem found = findInternalCodeSystem("NULL");
+      if(found == null) {
+        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
+        internalCodeSystem.setIdentifier("NULL");
+        this.internalCodeSystems.add(internalCodeSystem);        
+      }
+      code.setCodeSystemId("NULL");
+    }
+    this.codes.add(code);
+  }
+  
+  private InternalCodeSystem findInternalCodeSystem(String codeSystemId) {
+    for(InternalCodeSystem cs: this.internalCodeSystems) {
+      if(cs.getIdentifier().equals(codeSystemId)) return cs;
+    }
+    return null;
+  }
 
+  public void addCodeRef(CodeRef codeRef) {
+    this.codeRefs.add(codeRef);
+  }
+  
+  public void addCodeSystemId(String codeSystemId) {
+    this.codeSystemIds.add(codeSystemId);
+  }
 
+  public Set<InternalCodeSystem> getInternalCodeSystems() {
+    return internalCodeSystems;
+  }
+
+  public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
+    this.internalCodeSystems = internalCodeSystems;
+  }
 }

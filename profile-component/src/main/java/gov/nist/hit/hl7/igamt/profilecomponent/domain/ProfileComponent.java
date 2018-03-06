@@ -96,6 +96,12 @@ public class ProfileComponent extends Resource {
     this.compositeProfileIds = compositeProfileIds;
   }
 
+  public CompositeKey getId() {
+    return id;
+  }
 
-
+  public void setId(CompositeKey id) {
+    this.id = id;
+  }
+  
 }

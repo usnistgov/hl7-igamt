@@ -11,16 +11,24 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import org.bson.types.ObjectId;
+
 /**
  * @author jungyubw
  *
  */
+
 public class Code {
   private String id;
   private String value;
   private String description;
   private String codeSystemId;
-  
+
+  public Code() {
+    super();
+    this.id = new ObjectId().toString();
+  }
+
   public Code(String id, String value, String description, String codeSystemId) {
     super();
     this.id = id;
@@ -28,31 +36,38 @@ public class Code {
     this.description = description;
     this.codeSystemId = codeSystemId;
   }
-  
+
   public String getId() {
     return id;
   }
+
   public void setId(String id) {
     this.id = id;
   }
+
   public String getValue() {
     return value;
   }
+
   public void setValue(String value) {
     this.value = value;
   }
+
   public String getDescription() {
     return description;
   }
+
   public void setDescription(String description) {
     this.description = description;
   }
+
   public String getCodeSystemId() {
     return codeSystemId;
   }
+
   public void setCodeSystemId(String codeSystemId) {
     this.codeSystemId = codeSystemId;
   }
-  
-  
+
+
 }
