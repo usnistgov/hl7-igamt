@@ -12,6 +12,8 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -27,6 +29,7 @@ public class CodeSystem extends Resource {
   private String identifier;
   private String oid;
   private URL url;
+  private Set<Code> codes = new HashSet<Code>();
 
   public CodeSystem() {
     super();
@@ -54,6 +57,18 @@ public class CodeSystem extends Resource {
 
   public void setUrl(URL url) {
     this.url = url;
+  }
+
+  public Set<Code> getCodes() {
+    return codes;
+  }
+
+  public void setCodes(Set<Code> codes) {
+    this.codes = codes;
+  }
+  
+  public void addCode(Code code) {
+    this.codes.add(code);
   }
 
 

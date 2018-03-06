@@ -68,4 +68,9 @@ public class CodeSystemServiceImpl implements CodeSystemService {
     codeSystemRepository.delete(id);
   }
 
+  @Override
+  public void removeCollection() {
+    codeSystemRepository.deleteAll();
+  }
+
 }

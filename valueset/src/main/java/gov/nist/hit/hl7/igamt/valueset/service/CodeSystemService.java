@@ -35,5 +35,7 @@ public interface CodeSystemService {
   public void delete(CodeSystem codeSystem);
 
   public void delete(CompositeKey id);
+  
+  public void removeCollection();
 
 }

@@ -37,5 +37,7 @@ public interface ValuesetService {
   public void delete(Valueset valueset);
 
   public void delete(CompositeKey id);
+  
+  public void removeCollection();
 
 }

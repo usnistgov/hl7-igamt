@@ -42,7 +42,9 @@ public class Valueset extends Resource {
   protected int numberOfCodes;
   private Set<String> codeSystemIds = new HashSet<String>();
   private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
-  private Set<Code> codes = new HashSet<Code>();
+  
+  private Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
+  private Set<InternalCode> codes = new HashSet<InternalCode>();
 
   public Valueset() {
     super();
@@ -141,19 +143,42 @@ public class Valueset extends Resource {
     this.updateNumberOfCodes();
   }
 
-  public Set<Code> getCodes() {
+  public Set<InternalCode> getCodes() {
     return codes;
   }
 
-  public void setCodes(Set<Code> codes) {
+  public void setCodes(Set<InternalCode> codes) {
     this.codes = codes;
     this.updateNumberOfCodes();
   }
   
-  public void addCode(Code code) {
+  public void addCode(InternalCode code) {
+    if(code.getCodeSystemId() != null) {
+      InternalCodeSystem found = findInternalCodeSystem(code.getCodeSystemId());
+      if(found == null) {
+        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
+        internalCodeSystem.setIdentifier(code.getCodeSystemId());
+        this.internalCodeSystems.add(internalCodeSystem);
+      }      
+    }else {
+      InternalCodeSystem found = findInternalCodeSystem("NULL");
+      if(found == null) {
+        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
+        internalCodeSystem.setIdentifier("NULL");
+        this.internalCodeSystems.add(internalCodeSystem);        
+      }
+      code.setCodeSystemId("NULL");
+    }
     this.codes.add(code);
   }
   
+  private InternalCodeSystem findInternalCodeSystem(String codeSystemId) {
+    for(InternalCodeSystem cs: this.internalCodeSystems) {
+      if(cs.getIdentifier().equals(codeSystemId)) return cs;
+    }
+    return null;
+  }
+
   public void addCodeRef(CodeRef codeRef) {
     this.codeRefs.add(codeRef);
   }
@@ -162,5 +187,11 @@ public class Valueset extends Resource {
     this.codeSystemIds.add(codeSystemId);
   }
 
+  public Set<InternalCodeSystem> getInternalCodeSystems() {
+    return internalCodeSystems;
+  }
 
+  public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
+    this.internalCodeSystems = internalCodeSystems;
+  }
 }

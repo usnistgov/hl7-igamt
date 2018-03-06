@@ -75,5 +75,10 @@ public class ValuesetServiceImpl implements ValuesetService {
   public void delete(CompositeKey id) {
     valuesetRepository.delete(id);
   }
+
+  @Override
+  public void removeCollection() {
+    valuesetRepository.deleteAll();
+  }
   
 }
