@@ -1,39 +1,8 @@
-<script src="jquery.js"></script>
-  <script type="text/javascript">
-    $(function() {
-      $('#menu-button').on('click', function(e) {
-        var menu = $('#menu');
-        if(menu.hasClass('lmenu-active')) {
-          menu.addClass('fadeOutUp');
 
-          setTimeout(function() {
-            menu.removeClass('fadeOutUp fadeInDown lmenu-active');
-          },500);
-        }
-        else {
-          menu.addClass('lmenu-active fadeInDown');
-        }
-        e.preventDefault();
-      });
-    });
-  </script>
-<div class="landing-body">
-<div class="landing-wrapper">
-  <div id="header">
-    <div class="header-top clearfix">
-    </div>
-
-    <div class="header-content clearfix">
       <h1> Welcome to the Implementation Guide Authoring and
         Management Tool (IGAMT)</h1>
-      <a routerLink="login" class="ui-button secondary">
-        <span class="ui-button-text">Login </span>
-      </a>
-    </div>
-  </div>
 
-  <div class="ui-g">
-      <div class="ui-g-4">
+      <div class="ui-g-12">
         <div class="card">
           <h3>
             Note to Testers
@@ -44,8 +13,8 @@
             IGAMT is a work-in-progress and is in a constant state of change. Many core features exist and IGAMT has been used to create complete Implementation Guides in pilot projects. However, be aware that new features may not be completely functionality and some existing features will change. Also, we are currently working on integration with the NIST validation tool. If you have issues, please contact us or join the IGAMT Google Group to post questions.
           </p>
         </div>
-       </div>
-      <div class="ui-g-4">
+      </div>
+      <div class="ui-g-6">
         <div class="card">
           <h3>
             Have a Question?
@@ -54,7 +23,8 @@
                                                             ng-href="https://groups.google.com/forum/#!forum/nist-igamt"
                                                             target="_blank">NIST-IGAMT</a>
             has been established for discussion/questions about the tool. No
-            membership is required. A Google account is required for posting.</p>
+            membership is required. A Google account is required for posting.
+          </p>
           <ul>
             <li>Site: <a class="point" target="_blank"
                          ng-href="https://groups.google.com/forum/#!forum/nist-igamt">https://groups.google.com/forum/#!forum/nist-igamt</a>
@@ -63,7 +33,7 @@
           </ul>
         </div>
       </div>
-      <div class="ui-g-4">
+      <div class="ui-g-6">
         <div class="card">
           <h3>
             Supported Browsers
@@ -76,9 +46,6 @@
           </ul>
         </div>
       </div>
-    </div>
 
-  </div>
 
-</div>
 

@@ -48,3 +48,33 @@ ul .ui-tree-container {
   border-radius: 0;
   color: #212121;
 }
+
+
+.nav-back {
+  background-color: #031a4c;
+  -webkit-box-shadow: 0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow:    0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  box-shadow:         0px 5px 5px 0px rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid black;
+}
+
+.nav-link:hover {
+  color: #F3C60D !important;
+}
+
+.nav-link {
+  color: #ececec !important;
+}
+.outlet{
+
+  margin-top: 50px;
+}
+
+.ng-valid[required], .ng-valid.required  {
+  border-left: 5px solid #42A948; /* green */
+}
+
+.ng-invalid:not(form)  {
+  border-left: 5px solid #a94442; /* red */
+}
+
