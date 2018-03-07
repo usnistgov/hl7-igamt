@@ -1,0 +1,50 @@
+.tt-table td {
+  height: 10px;
+  padding-top : 0 !important;
+  padding-bottom : 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  border-left: 1px solid #dddddd !important;
+}
+
+.tt-cell {
+  padding: 10px;
+}
+
+
+.toc.ui-tree.ui-widget.ui-widget-content.ui-corner-all.ui-tree-selectable{
+  border: none !important;
+
+}
+
+ul .ui-tree-container {
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+  padding: .25em;
+  white-space: nowrap;
+  width: inherit;
+  overflow: scroll;
+}
+
+.list-ig .ui-orderlist-controls {
+  height: 12.5em;
+  padding: 0 .25em;
+  vertical-align: middle;
+  display: none !important;
+}
+
+.list-ig{
+
+}
+
+
+.ui-orderlist .ui-orderlist-list li.ui-orderlist-item {
+  font-size: 2em !important;
+  padding: 0.625em 0.875em;
+  margin: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  color: #212121;
+}

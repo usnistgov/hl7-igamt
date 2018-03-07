@@ -1,0 +1,338 @@
+<div class="ui-g dashboard">
+    <div class="ui-g-12 ui-md-4">
+        <div class="card overview">
+            <div class="overview-content clearfix">
+                <span class="overview-title">Sales</span>
+                <span class="overview-badge">+%90</span>
+                <span class="overview-detail">$22,650 / week</span>
+            </div>
+            <div class="overview-footer">
+                <img src="assets/layout/images/dashboard/sales.svg" style="width: 100%" />
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-4">
+        <div class="card overview">
+            <div class="overview-content clearfix">
+                <span class="overview-title">Views</span>
+                <span class="overview-badge">+%60</span>
+                <span class="overview-detail">6,520 / day</span>
+            </div>
+            <div class="overview-footer">
+                <img src="assets/layout/images/dashboard/views.svg" style="width: 100%" />
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-4">
+        <div class="card overview">
+            <div class="overview-content clearfix">
+                <span class="overview-title">Users</span>
+                <span class="overview-badge">+%45</span>
+                <span class="overview-detail">5,200 / day</span>
+            </div>
+            <div class="overview-footer">
+                <img src="assets/layout/images/dashboard/progress.svg" style="width: 100%" />
+            </div>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-md-6 ui-lg-3">
+        <div class="ui-g card colorbox colorbox-1">
+            <div class="ui-g-4">
+                <i class="material-icons">check_circle</i>
+            </div>
+            <div class="ui-g-8">
+                <span class="colorbox-name">Tasks</span>
+                <span class="colorbox-count">50</span>
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-3">
+        <div class="ui-g card colorbox colorbox-2">
+            <div class="ui-g-4">
+                <i class="material-icons">shopping_card</i>
+            </div>
+            <div class="ui-g-8">
+                <span class="colorbox-name">Purchases</span>
+                <span class="colorbox-count">1200</span>
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-3">
+        <div class="ui-g card colorbox colorbox-3">
+            <div class="ui-g-4">
+                <i class="material-icons">report</i>
+            </div>
+            <div class="ui-g-8">
+                <span class="colorbox-name">Issues</span>
+                <span class="colorbox-count">22</span>
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-3">
+        <div class="ui-g card colorbox colorbox-4">
+            <div class="ui-g-4">
+                <i class="material-icons">email</i>
+            </div>
+            <div class="ui-g-8">
+                <span class="colorbox-name">Messages</span>
+                <span class="colorbox-count">10</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-md-6 ui-lg-4 task-list">
+        <p-panel header="Tasks">
+            <ul>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Sales Reports</span>
+                    <i class="material-icons">&#xE8C9;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Pay Invoices</span>
+                    <i class="material-icons">&#xE8A1;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Dinner with Tony</span>
+                    <i class="material-icons">&#xE561;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Client Meeting</span>
+                    <i class="material-icons">&#xE7FB;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">New Theme</span>
+                    <i class="material-icons">&#xE3AE;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Flight Ticket</span>
+                    <i class="material-icons">&#xE01B;</i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Generate Charts</span>
+                    <i class="material-icons">&#xE6C4;</i>
+                </li>
+            </ul>
+        </p-panel>
+    </div>
+    <div class="ui-g-12 ui-md-6 ui-lg-4 ui-fluid contact-form">
+        <p-panel header="Contact Us">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <p-dropdown [options]="cities" [autoWidth]="false" [(ngModel)]="selectedCity"></p-dropdown>
+                </div>
+                <div class="ui-g-12">
+                    <span class="md-inputfield">
+                        <input id="name" type="text" pInputText />
+                        <label for="name">Name</label>
+                    </span>
+                </div>
+                <div class="ui-g-12">
+                    <span class="md-inputfield">
+                        <input id="age" type="text" pInputText />
+                        <label for="age">Age</label>
+                    </span>
+                </div>
+                <div class="ui-g-12">
+                    <span class="md-inputfield">
+                        <input id="message" type="text" pInputText />
+                        <label for="message">Message</label>
+                    </span>
+                </div>
+            </div>
+            <button type="button" label="Send" icon="ui-icon-send" pButton></button>
+        </p-panel>
+    </div>
+    <div class="ui-g-12 ui-lg-4 contacts">
+        <p-panel header="Contacts">
+            <ul>
+                <li>
+                    <a href="#">
+                        <img src="assets/layout/images/avatar1.png" width="45">
+                        <span class="name">Joshua Williams</span>
+                        <span class="email">joshua@pf-ultima.com</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="assets/layout/images/avatar2.png" width="45">
+                        <span class="name">Emily Clark</span>
+                        <span class="email">emily@pf-ultima.com</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="assets/layout/images/avatar3.png" width="45">
+                        <span class="name">Susan Johnson</span>
+                        <span class="email">susan@pf-ultima.com</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <img src="assets/layout/images/avatar4.png" width="45">
+                        <span class="name">Kelly Stark</span>
+                        <span class="email">kelly@pf-ultima.com</span>
+                    </a>
+                </li>
+            </ul>
+        </p-panel>
+    </div>
+    
+    <div class="ui-g-12 ui-md-4">
+        <div class="card timeline ui-fluid">
+            <div class="ui-g">
+                <div class="ui-g-3">
+                    <span class="event-time">just now</span>
+                    <i class="material-icons" style="color:#009688">&#xE1BC;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#009688">Katherine May</span>
+                    <span class="event-text">Lorem ipsun dolor amet</span>
+                    <div class="event-content">
+                        <img src="assets/layout/images/dashboard/md.png">
+                    </div>
+                </div>
+                
+                <div class="ui-g-3">
+                    <span class="event-time">12h ago</span>
+                    <i class="material-icons" style="color:#E91E63">&#xE885;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#E91E63">Brandon Santos</span>
+                    <span class="event-text">Ab nobis, magnam sunt eum. Laudantium, repudiandae, similique!.</span>
+                </div>
+                
+                <div class="ui-g-3">
+                    <span class="event-time">15h ago</span>
+                    <i class="material-icons" style="color:#9c27b0">&#xE0C9;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#9c27b0">Stephan Ward</span>
+                    <span class="event-text">Omnis veniam quibusdam ratione est repellat qui nam quisquam ab mollitia dolores ullam voluptates, similique, dignissimos.</span>
+                </div>
+                
+                <div class="ui-g-3">
+                    <span class="event-time">2d ago</span>
+                    <i class="material-icons" style="color:#ff9800">&#xE0C8;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#ff9800">Jason Smith</span>
+                    <span class="event-text">Laudantium, repudiandae, similique!</span>
+                    <div class="event-content">
+                        <img src="assets/layout/images/dashboard/map.png">
+                    </div>
+                </div>
+                
+                <div class="ui-g-3">
+                    <span class="event-time">1w ago</span>
+                    <i class="material-icons" style="color:#607d8b">&#xE91B;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner">Kevin Cox</span>
+                    <span class="event-text">Quibusdam ratione est repellat qui nam quisquam veniam quibusdam ratione.</span>
+                </div>
+                
+                <div class="ui-g-3">
+                    <span class="event-time">2w ago</span>
+                    <i class="material-icons" style="color:#FFC107">&#xE23A;</i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#FFC107">Walter White</span>
+                    <span class="event-text">I am the one who knocks!</span>
+                </div>
+                
+                <div class="ui-g-12">
+                    <button type="button" label="Refresh" icon="ui-icon-refresh" pButton></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-md-8">
+        <div class="card">
+            <p-dataTable [value]="cars" [style]="{'margin-bottom':'20px'}">
+                <p-header>Recent Sales</p-header>
+                <p-column field="vin" header="Vin"></p-column>
+                <p-column field="year" header="Year"></p-column>
+                <p-column field="brand" header="Brand"></p-column>
+                <p-column field="color" header="Color"></p-column>
+            </p-dataTable>
+            
+            <p-panel header="Sales Graph">
+                <p-chart type="line" [data]="chartData" responsive="true"></p-chart>
+            </p-panel>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-md-8">
+        <p-panel header="Calendar" [style]="{'height':'100%'}">
+            <p-schedule [events]="events" defaultDate="2016-01-12"></p-schedule>
+        </p-panel>
+    </div>
+    <div class="ui-g-12 ui-md-4">
+        <p-panel header="Activity" [style]="{'height':'100%'}">
+            <div class="activity-header">
+                <div class="ui-g">
+                    <div class="ui-g-6">
+                        <span style="font-weight:bold">Last Activity</span>
+                        <p>Updated 1 minute ago</p>
+                    </div>
+                    <div class="ui-g-6" style="text-align:right">
+                        <button type="button" label="Update" icon="ui-icon-update" pButton></button>
+                    </div>
+                </div>
+            </div>
+            <ul class="activity-list">
+                <li>
+                    <div class="count">$900</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Income</div>
+                        <div class="ui-g-6">95%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="count" style="background-color:#ffc107">$250</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Tax</div>
+                        <div class="ui-g-6">24%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="count" style="background-color:#673AB7">$125</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Invoices</div>
+                        <div class="ui-g-6">55%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="count" style="background-color:#00bcd4">$250</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Expenses</div>
+                        <div class="ui-g-6">15%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="count" style="background-color:#607D8B">$350</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Bonus</div>
+                        <div class="ui-g-6">5%</div>
+                    </div>
+                </li>
+                <li>
+                    <div class="count" style="background-color:#FF5722">$500</div>
+                    <div class="ui-g">
+                        <div class="ui-g-6">Revenue</div>
+                        <div class="ui-g-6">25%</div>
+                    </div>
+                </li>
+            </ul>
+        </p-panel>
+    </div>
+</div>

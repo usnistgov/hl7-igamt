@@ -12,51 +12,43 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.stereotype.Component;
+import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.domain.LoginRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import java.util.Collections;
+public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
+	public JWTAuthenticationFilter(String url , AuthenticationManager authenticationManager) {
+		super(new AntPathRequestMatcher(url));
+		setAuthenticationManager(authenticationManager);
 
-@Component
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter  {
-	private AuthenticationManager authenticationManager;
-	public JWTAuthenticationFilter(AuthenticationManager authenticationManager) {
-		super();
-		this.authenticationManager = authenticationManager;
 		// TODO Auto-generated constructor stub
 	}
 	
 
 	@Override
 	public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-			throws AuthenticationException {
+			throws AuthenticationException, JsonParseException, JsonMappingException, IOException {
 		
-		Account a = null;
+		 ObjectMapper mapper = 
+								new ObjectMapper()
+	        .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		LoginRequest creds = new LoginRequest();
 		
-		try {
-			 a= new ObjectMapper().readValue(request.getInputStream(), Account.class);
-			
-		} catch (JsonParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		// TODO Auto-generated method stub
-		return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(a.getUsername(), a.getPassword()));
+		creds=  mapper.readValue(request.getInputStream(), LoginRequest.class);
+		System.out.println(creds);
+		System.out.println(creds.getPassword());
+		System.out.println(creds.getUsername());
+
+
+		return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),creds.getPassword(), Collections.emptyList()));
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,  HttpServletResponse response,
 			 FilterChain chain,	Authentication authResult) throws IOException, ServletException {
@@ -67,6 +59,6 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 				signWith(SignatureAlgorithm.HS256, SecurityConstants.SECRET).claim("roles", springUser.getAuthorities()).compact();
 		
 		response.addHeader(SecurityConstants.HEADER_STRING,jwt);
-		super.successfulAuthentication(request, response, authResult);
+//		super.successfulAuthentication(request, response, authResult);
 	}
 }

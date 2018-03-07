@@ -1,0 +1,335 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-lg-6">
+        <!-- Left Side -->
+        <div class="card card-w-title">
+            <h1>InputText</h1>
+            <div class="ui-g form-group">
+                <div class="ui-g-12 ui-md-4">
+                    <span class="md-inputfield">
+                        <input type="text" pInputText>
+                        <label>Name</label>
+                    </span>
+                </div>
+                <div class="ui-g-12 ui-md-4">
+                    <span class="md-inputfield">
+                        <input type="text" pInputText>
+                        <label>Email</label>
+                    </span>
+                </div>
+                <div class="ui-g-12 ui-md-4">
+                    <span class="md-inputfield">
+                        <input type="text" pInputText>
+                        <label>Phone</label>
+                    </span>
+                </div>
+                <div class="ui-g-12 ui-md-4">
+                    <input type="text" pInputText placeholder="Disabled" disabled="disabled">
+                </div>
+                <div class="ui-g-12 ui-md-4">
+                    <span class="md-inputfield">
+                        <input type="text" pInputText class="ng-dirty ng-invalid" placeholder="Invalid">
+                        <div class="ui-message ui-messages-error ui-corner-all">
+                            This field is required
+                        </div>
+                    </span>
+                </div>
+                <div class="ui-g-12 ui-md-4">
+                    <input type="text" pInputText>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>TextArea</h1>
+            <textarea [rows]="3" [cols]="30" pInputTextarea placeholder="Your Message" autoResize="autoResize"></textarea>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>AutoComplete</h1>            
+            <div class="ui-g form-group">
+                <div class="ui-g-12">
+                    <label for="acSimple">Simple</label>
+                </div>
+                <div class="ui-g-12" style="margin-bottom:10px">
+                    <p-autoComplete id="acSimple" [(ngModel)]="country" [suggestions]="filteredCountries" (completeMethod)="filterCountry($event)" field="name" [size]="30"
+                        placeholder="Countries" [minLength]="1"></p-autoComplete>
+                </div>
+                
+                <div class="ui-g-12">
+                    <label for="acAdvanced">Advanced</label>
+                </div>
+                <div class="ui-g-12">
+                    <p-autoComplete id="acAdvanced" [(ngModel)]="selectedBrands" [suggestions]="filteredBrands" (completeMethod)="filterBrands($event)" [size]="30"
+                        [minLength]="1" placeholder="Hint: type 'v' or 'f'" [dropdown]="true" (onDropdownClick)="handleACDropdownClick()" multiple="true">
+                        <ng-template let-brand pTemplate="item">
+                            <div class="ui-helper-clearfix">
+                                <img src="assets/demo/images/car/{{brand}}.gif" style="width:32px;display:inline-block;margin:5px 0 2px 5px"/>
+                                <div style="font-size:18px;float:right;margin:10px 10px 0 0">{{brand}}</div>
+                            </div>
+                        </ng-template>
+                    </p-autoComplete>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>MultiSelect</h1>
+            <p-multiSelect [options]="carOptions" [(ngModel)]="selectedMultiSelectCars"></p-multiSelect>
+        </div>
+
+        <div class="card card-w-title">
+            <h1>Calendar</h1>
+            <p-calendar [inline]="true"></p-calendar> 
+            
+            <div class="ui-g form-group-m" style="margin-top:20px">
+                <div class="ui-g-12">
+                    <p-calendar id="popup" placeholder="Popup"></p-calendar>
+                </div>
+                <div class="ui-g-12">
+                    <p-calendar id="datetime" dateFormat="mm/dd/yy" showTime="true" placeholder="DateTime"></p-calendar>
+                </div>
+                <div class="ui-g-12">
+                    <p-calendar id="time" showTime="true" [timeOnly]="true" placeholder="Time"></p-calendar>
+                </div>
+                <div class="ui-g-12">
+                    <p-calendar id="showIcon" [showIcon]="true" placeholder="Button"></p-calendar>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Chips</h1>
+            <p-chips></p-chips>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-lg-6">
+        <!-- Right Side -->
+        <div class="card card-w-title">
+            <h1>Checkboxes</h1>
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-4"><p-checkbox name="cg" value="Ultima" label="Ultima" [(ngModel)]="checkboxValues"></p-checkbox></div>
+                <div class="ui-g-12 ui-md-4"><p-checkbox name="cg" value="Icarus" label="Icarus" [(ngModel)]="checkboxValues"></p-checkbox></div>
+                <div class="ui-g-12 ui-md-4"><p-checkbox name="cg" value="Omega" label="Omega" [(ngModel)]="checkboxValues"></p-checkbox></div>
+            </div>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>RadioButtons</h1>
+            <div class="ui-g">
+                <div class="ui-g-12 ui-md-4"><p-radioButton name="rg" value="Ultima" label="Ultima" [(ngModel)]="radioValue"></p-radioButton></div>
+                <div class="ui-g-12 ui-md-4"><p-radioButton name="rg" value="Icarus" label="Icarus" [(ngModel)]="radioValue"></p-radioButton></div>
+                <div class="ui-g-12 ui-md-4"><p-radioButton name="rg" value="Omega" label="Omega" [(ngModel)]="radioValue"></p-radioButton></div>
+            </div>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>InputSwitch</h1>
+            <p-inputSwitch [(ngModel)]="switchChecked"></p-inputSwitch>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Dropdown</h1>
+            <p-dropdown [options]="cities" [(ngModel)]="selectedCity1" [autoWidth]="false"></p-dropdown>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Password</h1>
+            <input pPassword type="password"/>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Spinner</h1>
+            <p-spinner></p-spinner>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Slider</h1>
+            <p-slider [(ngModel)]="rangeValues" [range]="true"></p-slider>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Listbox</h1>
+            <p-listbox [options]="citiesListbox" [(ngModel)]="selectedCity2" filter="true"></p-listbox>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>Rating</h1>
+            <p-rating [(ngModel)]="ratingValue"></p-rating>
+        </div>
+        
+        <div class="card card-w-title">
+            <h1>ColorPicker</h1>
+            <p-colorPicker [(ngModel)]="color" inline="true"></p-colorPicker>
+        </div>
+    </div>
+    
+    <div class="ui-g-12">
+        <div class="card card-w-title">
+            <h1>Input Groups</h1>
+            
+            <div class="ui-g form-group">
+                <div class="ui-g-12 ui-md-6">
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="material-icons">account_circle</i></span>
+                        <span class="md-inputfield">
+                            <input type="text" pInputText> 
+                            <label>Username</label>        
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="ui-g-12 ui-md-6">
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><i class="material-icons">credit_card</i></span>  
+                        <span class="ui-inputgroup-addon"><i class="material-icons">card_travel</i></span>   
+                        <span class="md-inputfield">
+                            <input type="text" pInputText> 
+                            <label>Price</label>        
+                        </span>
+                        <span class="ui-inputgroup-addon">$</span>  
+                        <span class="ui-inputgroup-addon">.00</span>      
+                    </div>
+                </div>
+                            
+                <div class="ui-g-12 ui-md-6">
+                    <div class="ui-inputgroup">
+                        <span class="md-inputfield">
+                            <input type="text" pInputText> 
+                            <label>Keyword</label>        
+                        </span>
+                        <button pButton type="button" icon="ui-icon-search"></button>      
+                    </div>
+                </div>
+                
+                <div class="ui-g-12 ui-md-6">
+                    <div class="ui-inputgroup">
+                        <span class="ui-inputgroup-addon"><p-checkbox></p-checkbox></span>
+                        <span class="md-inputfield">
+                            <input type="text" pInputText> 
+                            <label>Confirm</label>        
+                        </span>         
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+            
+    <div class="ui-g-12">
+        <div class="card card-w-title">
+            <h1>Editor</h1>
+            <p-editor [style]="{'height':'320px'}"></p-editor>
+        </div>
+    </div>
+    
+    <div class="ui-g-12 ui-g-nopad">
+        <div class="ui-g-12 ui-lg-6" style="padding-top:0">
+            <div class="card card-w-title">
+                <h1>Buttons</h1>
+                
+                <div class="ui-g">
+                    <div class="ui-g-12">ToggleButton</div>
+                    <div class="ui-g-12">
+                        <p-toggleButton [(ngModel)]="toggleButtonChecked"></p-toggleButton>
+                    </div>
+                    
+                    <div class="ui-g-12">SelectButton</div>
+                    <div class="ui-g-12">
+                        <p-selectButton [options]="types" [(ngModel)]="selectedType"></p-selectButton>
+                    </div>
+                    
+                    <div class="ui-g-12">Button</div>
+                    <div class="ui-g-12">
+                        <button type="button" label="Bookmark" pButton></button>
+                    </div>
+                    
+                    <div class="ui-g-12">Left Icon</div>
+                    <div class="ui-g-12">
+                        <button type="button" label="Clear" pButton icon="ui-icon-clear"></button>
+                    </div>
+                    
+                    <div class="ui-g-12">Right Icon</div>
+                    <div class="ui-g-12">
+                        <button type="button" label="Clear" pButton icon="ui-icon-clear" iconPos="right"></button>
+                    </div>
+                    
+                    <div class="ui-g-12">Icon Only</div>
+                    <div class="ui-g-12">
+                        <button type="button" icon="ui-icon-add" pButton></button>
+                    </div>
+                    
+                    <div class="ui-g-12">Link</div>
+                    <div class="ui-g-12"><a href="http://www.primefaces.org" target="_blank">Homepage</a></div>
+                    
+                    <div class="ui-g-12">SplitButton</div>
+                    <div class="ui-g-12">
+                        <p-splitButton label="Save" icon="ui-icon-save" [model]="splitButtonItems"></p-splitButton>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-g-12 ui-lg-6" style="padding-top:0">
+            <div class="card card-w-title">
+                <h1>Colored Buttons</h1>
+                <p>Raised and Flat buttons with various color alternatives.</p>
+                <div class="ui-g">
+                    <div class="ui-g-12 ui-md-6" style="text-align:center">
+                        <button pButton type="button" label="Primary Button" style="margin-bottom:10px"></button>
+                                                
+                        <button pButton type="button" label="Inline Button" style="margin-bottom:10px;width:auto"></button>
+                        
+                        <button pButton type="button" label="Blue-Grey Button" style="margin-bottom:10px" class="blue-grey-btn"></button>
+                        
+                        <button pButton type="button" label="Cyan Button" style="margin-bottom:10px" class="cyan-btn"></button>
+                        
+                        <button pButton type="button" label="Amber Button" style="margin-bottom:10px" class="amber-btn"></button>
+                        
+                        <button pButton type="button" label="Teal Button" style="margin-bottom:10px" class="teal-btn"></button>
+                        
+                        <button pButton type="button" label="Red Button" style="margin-bottom:10px" class="red-btn"></button>
+                        
+                        <button pButton type="button" label="Orange Button" style="margin-bottom:10px" class="orange-btn"></button>
+                        
+                        <button pButton type="button" label="Green Button" style="margin-bottom:10px" class="green-btn"></button>
+                        
+                        <button pButton type="button" label="Deep-Orange Button" style="margin-bottom:10px" class="deep-orange-btn"></button>
+                        
+                        <button pButton type="button" label="Purple Button" style="margin-bottom:10px" class="purple-btn"></button>
+                        
+                        <button pButton type="button" label="Indigo Button" style="margin-bottom:10px" class="indigo-btn"></button>
+                        
+                        <button pButton type="button" label="Pink Button" style="margin-bottom:10px" class="pink-btn"></button>
+                    </div>
+                    
+                    <div class="ui-g-12 ui-md-6" style="text-align:center">                                
+                        <button pButton type="button" label="Primary Button" style="margin-bottom:10px" styleClass="flat"></button>
+                        
+                        <button pButton type="button" label="Inline Button" style="margin-bottom:10px;width:auto" styleClass="flat"></button>
+                        
+                        <button pButton type="button" label="Blue-Grey Button" style="margin-bottom:10px" class="blue-grey-btn flat"></button>
+                        
+                        <button pButton type="button" label="Cyan Button" style="margin-bottom:10px" class="cyan-btn flat"></button>
+                        
+                        <button pButton type="button" label="Amber Button" style="margin-bottom:10px" class="amber-btn flat"></button>
+                        
+                        <button pButton type="button" label="Teal Button" style="margin-bottom:10px" class="teal-btn flat"></button>
+                        
+                        <button pButton type="button" label="Red Button" style="margin-bottom:10px" class="red-btn flat"></button>
+                        
+                        <button pButton type="button" label="Orange Button" style="margin-bottom:10px" class="orange-btn flat"></button>
+                        
+                        <button pButton type="button" label="Green Button" style="margin-bottom:10px" class="green-btn flat"></button>
+                        
+                        <button pButton type="button" label="Deep-Orange Button" style="margin-bottom:10px" class="deep-orange-btn flat"></button>
+                        
+                        <button pButton type="button" label="Purple Button" style="margin-bottom:10px" class="purple-btn flat"></button>
+                        
+                        <button pButton type="button" label="Indigo Button" style="margin-bottom:10px" class="indigo-btn flat"></button>
+                        
+                        <button pButton type="button" label="Pink Button" style="margin-bottom:10px" class="pink-btn flat"></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

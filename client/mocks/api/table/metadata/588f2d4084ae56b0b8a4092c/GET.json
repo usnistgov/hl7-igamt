@@ -1,0 +1,8 @@
+{
+    "id": "588f2d4084ae56b0b8a4092c",
+    "bindingIdentifier": "0222",
+    "name": "ANY CODES",
+    "scope" : "HL7STANDARD",
+    "hl7Version" : "2.6",
+    "numOfCodes" : 10
+}

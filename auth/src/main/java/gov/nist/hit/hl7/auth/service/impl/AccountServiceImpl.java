@@ -39,6 +39,7 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public Account createAdmin(Account account) {
+		
 		if (!account.getUsername().isEmpty() && !account.getPassword().isEmpty()) {
 			account.setPassword(encoder.encode(account.getPassword()));
 			Set<Privilege> roles = new HashSet<Privilege>(privilegeRepository.findAll());
@@ -50,13 +51,13 @@ public class AccountServiceImpl implements AccountService {
 	}
 
 	@Override
-	public Account createTester(Account account) {
+	public Account createNoramlUser(Account account) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		if (!account.getUsername().isEmpty()
 				&& !account.getPassword().isEmpty()) {
 			account.setPassword(encoder.encode(account.getPassword()));
 			Set<Privilege> roles = new HashSet<Privilege>();
-			roles.add(privilegeRepository.findByRole("TESTER"));
+			roles.add(privilegeRepository.findByRole("USER"));
 			account.setPrivileges(roles);
 			accountRepository.save(account);
 			return account;
@@ -85,7 +86,7 @@ public class AccountServiceImpl implements AccountService {
 			this.createAdmin(account);
 		}
 		else {
-			this.createTester(account);
+			this.createNoramlUser(account);
 		}
 		return null;
 	}
@@ -120,6 +121,27 @@ public class AccountServiceImpl implements AccountService {
 	public List<Account> findAll() {
 		return accountRepository.findAll();
 		// TODO Auto-generated method stub
+	}
+
+
+	@Override
+	public boolean emailExist(String email) {
+
+	       Account user = accountRepository.findByEmail(email);
+	        if (user != null) {
+	            return true;
+	        }
+	        return false;
+	}
+
+	@Override
+	public boolean userNameExist(String username) {
+		// TODO Auto-generated method stub
+	       Account user = accountRepository.findByUsername(username);
+	        if (user != null) {
+	            return true;
+	        }
+	        return false;
 	}
 
 }

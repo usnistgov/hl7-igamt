@@ -1,0 +1,84 @@
+<script src="jquery.js"></script>
+  <script type="text/javascript">
+    $(function() {
+      $('#menu-button').on('click', function(e) {
+        var menu = $('#menu');
+        if(menu.hasClass('lmenu-active')) {
+          menu.addClass('fadeOutUp');
+
+          setTimeout(function() {
+            menu.removeClass('fadeOutUp fadeInDown lmenu-active');
+          },500);
+        }
+        else {
+          menu.addClass('lmenu-active fadeInDown');
+        }
+        e.preventDefault();
+      });
+    });
+  </script>
+<div class="landing-body">
+<div class="landing-wrapper">
+  <div id="header">
+    <div class="header-top clearfix">
+    </div>
+
+    <div class="header-content clearfix">
+      <h1> Welcome to the Implementation Guide Authoring and
+        Management Tool (IGAMT)</h1>
+      <a routerLink="login" class="ui-button secondary">
+        <span class="ui-button-text">Login </span>
+      </a>
+    </div>
+  </div>
+
+  <div class="ui-g">
+      <div class="ui-g-4">
+        <div class="card">
+          <h3>
+            Note to Testers
+          </h3>
+          <p style="text-align:justify">IGAMT is a tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles. The tool provides capabilities to create both narrative text (akin to a word processing program) and messaging requirements in a structured environment. IGAMT contains a model of all the message events for every version of the HL7 v2 standard. Users begin by selecting the version of the HL7 v2 standard and the message events they want to include and refine (constrain) in their implementation guide.
+          </p>
+          <p style="color:red; font-weight: bold;text-align:justify">
+            IGAMT is a work-in-progress and is in a constant state of change. Many core features exist and IGAMT has been used to create complete Implementation Guides in pilot projects. However, be aware that new features may not be completely functionality and some existing features will change. Also, we are currently working on integration with the NIST validation tool. If you have issues, please contact us or join the IGAMT Google Group to post questions.
+          </p>
+        </div>
+       </div>
+      <div class="ui-g-4">
+        <div class="card">
+          <h3>
+            Have a Question?
+          </h3>
+          <p style="text-align: justify;">A Google Group <a class="point"
+                                                            ng-href="https://groups.google.com/forum/#!forum/nist-igamt"
+                                                            target="_blank">NIST-IGAMT</a>
+            has been established for discussion/questions about the tool. No
+            membership is required. A Google account is required for posting.</p>
+          <ul>
+            <li>Site: <a class="point" target="_blank"
+                         ng-href="https://groups.google.com/forum/#!forum/nist-igamt">https://groups.google.com/forum/#!forum/nist-igamt</a>
+            </li>
+            <li>Email: nist-igamt@googlegroups.com</li>
+          </ul>
+        </div>
+      </div>
+      <div class="ui-g-4">
+        <div class="card">
+          <h3>
+            Supported Browsers
+          </h3>
+          <p style="text-align: justify">The following browsers are currently supported:</p>
+          <ul>
+            <li>Chrome <span style="color:red">(Recommended)</span></li>
+            <li>Firefox <span style="color:red"></span></li>
+            <li>Safari</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+

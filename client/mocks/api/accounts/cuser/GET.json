@@ -1,0 +1,18 @@
+{
+  "username": "haffo",
+  "accountId": 46,
+  "authorities": [
+    {
+      "authority": "admin"
+    },
+    {
+      "authority": "author"
+    },
+    {
+      "authority": "user"
+    }
+  ],
+  "fullName": "Harold Affo",
+  "pending": false,
+  "authenticated": true
+}

@@ -1,0 +1,31 @@
+.label-sub-component {
+  background-color: rgba(0, 0, 0, 0.91);
+}
+
+.label-datatype {
+  background-color: rgba(30, 24, 242, 0.91);
+}
+
+.label-segment {
+  background-color: #0f44f2;
+}
+
+.label-field {
+  background-color: #f24a08;
+}
+
+.label-component {
+  background-color: #f2c60d;
+}
+
+.label-dynamicCase {
+  background-color: #ff43d8;
+}
+
+.label-gray {
+  background-color: gray;
+}
+
+.label-ig {
+  background-color: purple;
+}

@@ -1,0 +1,25 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>Messages and Growl</h1>
+            <p-messages [value]="msgs"></p-messages>
+            <p-growl [value]="msgs" sticky="sticky"></p-growl>
+            
+            <button type="button" pButton (click)="showInfo()" label="Info" style="width:100px"></button>
+            <button type="button" pButton (click)="showSuccess()" label="Success" style="width:100px" class="green-btn"></button>
+            <button type="button" pButton (click)="showWarn()" label="Warn" class="deep-orange-button" style="width:100px" class="amber-btn"></button>
+            <button type="button" pButton (click)="showError()" label="Error" class="red-button" style="width:100px" class="red-btn"></button>
+            <button type="button" pButton (click)="showMultiple()" label="Multiple" class="indigo-button" style="width:100px" class="purple-btn"></button>
+        </div>
+        
+        <div class="card">
+            <h1>Invalid Field</h1>
+            <span class="md-inputfield">
+                <input type="text" pInputText class="ng-dirty ng-invalid" placeholder="Invalid">
+                <div class="ui-message ui-messages-error ui-corner-all">
+                    This field is required
+                </div>
+            </span>
+        </div>
+    </div>
+</div>

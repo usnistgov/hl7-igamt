@@ -1,0 +1,1586 @@
+{
+  "dateUpdated": 1499876540902,
+  "publicationDate": null,
+  "publicationVersion": 0,
+  "createdFrom": "58544b7c84ae7df1679607d9",
+  "hl7Section": null,
+  "type": "segment",
+  "hl7Version": "2.8.2",
+  "accountId": 44,
+  "scope": "USER",
+  "parentVersion": null,
+  "date": "2016/10/30 15:21:53",
+  "version": null,
+  "status": "UNPUBLISHED",
+  "participants": [],
+  "libIds": [
+    "588f2d3e84ae56b0b8a3f34f"
+  ],
+  "predicates": [
+    {
+      "id": "57acdd985d0b2dd60cffce63",
+      "constraintId": "CP_17[1]_-17",
+      "constraintTarget": "17[1]",
+      "constraintClassification": null,
+      "reference": null,
+      "description": "If the value of OBX-3.1(Identifier) is '64994-7'.",
+      "assertion": "<Condition><PlainText Path=\"3[1].1[1]\" Text=\"64994-7\" IgnoreCase=\"false\"/></Condition>",
+      "trueUsage": "RE",
+      "falseUsage": "O",
+      "context": null
+    },
+    {
+      "id": "585940d1ee6fc445dec3e664",
+      "constraintId": "CP_6[1]_-1",
+      "constraintTarget": "6[1]",
+      "constraintClassification": null,
+      "reference": null,
+      "description": "If the value of OBX-2(Value Type) is 'NM'.",
+      "assertion": "<Condition><PlainText Path=\"2[1]\" Text=\"NM\" IgnoreCase=\"false\"/></Condition>",
+      "trueUsage": "R",
+      "falseUsage": "O",
+      "context": null
+    }
+  ],
+  "conformanceStatements": [
+    {
+      "id": "57adce865d0b2d89570cbac2",
+      "constraintId": "IZ-20",
+      "constraintTarget": "1[1]",
+      "constraintClassification": null,
+      "reference": null,
+      "description": "The value of OBX-1(Set ID - OBX) SHALL be valued sequentially starting with the value '1'.",
+      "assertion": "<Assertion><SetID Path=\"1[1]\"/></Assertion>"
+    },
+    {
+      "id": "57adcec85d0b2d89570cbac3",
+      "constraintId": "IZ-22",
+      "constraintTarget": "11[1]",
+      "constraintClassification": null,
+      "reference": null,
+      "description": "The value of OBX-11(Observation Result Status) SHALL be 'F'.",
+      "assertion": "<Assertion><PlainText Path=\"11[1]\" Text=\"F\" IgnoreCase=\"false\"/></Assertion>"
+    },
+    {
+      "id": "57fd21a3ee6fc497d1159466",
+      "constraintId": "IZ-150",
+      "constraintTarget": "4[1]",
+      "constraintClassification": null,
+      "reference": null,
+      "description": "The value of OBX-4.1 (Observation SubID) SHALL be a positive integer.",
+      "assertion": null
+    }
+  ],
+  "id": "588f2d3f84ae56b0b8a3fbd8",
+  "label": "OBX_IZ_01",
+  "ext": "IZ_01",
+  "fields": [
+    {
+      "dateUpdated": 1480615819255,
+      "publicationDate": null,
+      "publicationVersion": 0,
+      "createdFrom": null,
+      "hl7Section": null,
+      "type": "field",
+      "name": "Set ID - OBX",
+      "usage": "R",
+      "minLength": "1",
+      "maxLength": "4",
+      "confLength": "NA",
+      "tables": [],
+      "datatype": {
+        "id": "588f2d3e84ae56b0b8a3f542",
+        "name": "SI",
+        "ext": "01",
+        "label": "SI_01",
+        "numOfChildren" : 0
+      },
+      "position": 1,
+      "comment": "",
+      "text": "<p>This field contains the sequence number. The first instance may be set to 1 and each subsequent instance may be the next number in sequence. Numbering might not be restarted within a message. That is, if a message had 3 order groups and each had 3 OBX, the last OBX in the message would have value of 9 for this field. Alternatively, the Set ID is also allowed to restart within a message, between order groups. That is, if a message had 3 order groups and each had 3 OBX segments, all three order groups would contain OBX segments with Set IDs of 1, 2 and 3. Either approach, restarting or not restarting per order group, is allowed.</p>",
+      "hide": false,
+      "id": "57acd4715d0b2dd60cffcde6",
+      "itemNo": "00569",
+      "min": 1,
+      "max": "1",
+      "added": null
+    },
+    {
+      "dateUpdated": 1480615819255,
+      "publicationDate": null,
+      "publicationVersion": 0,
+      "createdFrom": null,
+      "hl7Section": null,
+      "type": "field",
+      "name": "Value Type",
+      "usage": "R",
+      "minLength": "2",
+      "maxLength": "3",
+      "confLength": "NA",
+      "tables": [
+        {
+          "id": "588f2d3f84ae56b0b8a40907",
+          "bindingIdentifier": "0125_01",
+          "bindingStrength": null,
+          "bindingLocation": null
+        }
+      ],
+      "datatype": {
+        "id": "588f2d3e84ae56b0b8a3f540",
+        "name": "ID",
+        "ext": "01",
+        "label": "ID_01",
+        "numOfChildren" : 0
+      },
+      "position": 2,
+      "comment": "",
+      "text": "<p>This field contains the format of the observation value in OBX-5.&nbsp;</p>",
+      "hide": false,
+      "id": "57acd4715d0b2dd60cffcde7",
+      "itemNo": "00570",
+      "min": 1,
+      "max": "1",
+      "added": null
+    },
+    {
+      "dateUpdated": 1480615819255,
+      "publicationDate": null,
+      "publicationVersion": 0,
+      "createdFrom": null,
+      "hl7Section": null,
+      "type": "field",
+      "name": "Observation Identifier",
+      "usage": "R",
+      "minLength": "0",
+      "maxLength": "0",
+      "confLength": "NA",
+      "tables": [
+        {
+          "id": "588f2d4084ae56b0b8a4092c",
+          "bindingIdentifier": "NIP003_01",
+          "bindingStrength": null,
+          "bindingLocation": null
+        }
+      ],
+      "datatype": {
+        "id": "588f2d3e84ae56b0b8a3f52a",
+        "name": "CWE",
+        "ext": "01",
+        "label": "CWE_01",
+        "numOfChildren" : 9
+      },
+      "position": 3,
+      "comment": "This indicates what this observation refers to. It poses the question that is answered by OBX-5.",
+      "text": "<p>This field contains a unique identifier for the observation.&nbsp;</p><p>This may be thought of as a question that the observation in OBX-5 answers. In the example above, the question is &quot;what funding program was this person eligible for when this vaccine was administered&quot;. The answer in OBX-5 could be &quot;VFC eligible - MEDICAID&quot;.</p><p>&nbsp;LOINC shall be the standard coding system for this field if an appropriate LOINC code exists. If a local coding system is in use, a local code should also be sent to help with identification of coding issues. When no valid LOINC exists the local code may be the only code sent. When populating this field with values, this guide does not give preference to the triplet in which the standard (LOINC) code should appear.</p><p><br></p>",
+      "hide": false,
+      "id": "57acd4715d0b2dd60cffcde8",
+      "itemNo": "00571",
+      "min": 1,
+      "max": "1",
+      "added": null
+    },
+    {
+      "dateUpdated": 1480615819255,
+      "publicationDate": null,
+      "publicationVersion": 0,
+      "createdFrom": null,
+      "hl7Section": null,
+      "type": "field",
+      "name": "Observation Sub-ID",
+      "usage": "R",
+      "minLength": "0",
+      "maxLength": "0",
+      "confLength": "20",
+      "tables": [],
+      "datatype": {
+        "id": "565f3ab5d4c6e52cfd43b962",
+        "name": "OG",
+        "ext": "01",
+        "label": "OG_01"
+      },
+      "position": 4,
+      "comment": "",
+      "text": "<p>This field is used to group related observations by setting the value to the same number. For example, recording VIS fully-encoded text string and VIS presentation date for a combination vaccination requires multiple OBX segment groups. One OBX would indicate the document type and version using the fully-encoded text string. It would have an associated OBX indicating the VIS presentation date. These would have the same OBX-4 value to allow them to be linked. The second set of related OBX segments for the next vaccine component would have another OBX-4 value common to each of them.</p><p>The observation Sub-ID must be unique for each related set of observations under a given vaccine order group. Sub-IDs may be re-used between order groups in the message.</p>",
+      "hide": false,
+      "id": "57acd4715d0b2dd60cffcde9",
+      "itemNo": "00572",
+      "min": 1,
+      "max": "1",
+      "added": null
+    },
+    {
+      "dateUpdated": 1480615819255,
+      "publicationDate": null,
+      "publicationVersion": 0,
+      "createdFrom": null,
+      "hl7Section": null,
+      "type": "field",
+      "name": "Observation Value",
+      "usage": "R",
+      "minLength": "0",
+      "maxLength": "0",
+      "confLength": "NA",
+      "tables": [],
+      "datatype": {
+        "id": "579655655455fa35176cd5e4",
+        "name": "VARIES",
+        "ext": "",
+        "label": "VARIES_"
+      },
+      "position": 5,
+      "comment": "This is the observation value and answers the question posed by OBX-3.",
+      "text": "<p>This field contains the value of the observation being reported. OBX-2 (Value Type) defines the data type for this field. &nbsp;OBX -3 (Observation Identifier) defines the concept being reported in this field.</p>",
+      "hide": false,
+      "id": "57acd4715d0b2dd60cffcdea",
+      "itemNo": "00573",
+      "min": 1,
+      "max": "1",
+      "added": null
+    }
+  ],
+  "dynamicMapping": {
+    "id": "579655655455fa35176ce225",
+    "mappings": []
+  },
+  "dynamicMappingDefinition": {
+    "mappingStructure": {
+      "hl7Version": "2.8.2",
+      "segmentName": "OBX",
+      "targetLocation": "5",
+      "referenceLocation": "2",
+      "secondRefereceLocation": null
+    },
+    "dynamicMappingItems": []
+  },
+  "coConstraintsTable": {
+    "ifColumnDefinition": {
+      "id": "5900cbaee4b08f8c340fe6f8",
+      "path": "3",
+      "constraintPath": "3[1]",
+      "type": "field",
+      "constraintType": "value",
+      "name": "CWE",
+      "usage": "R",
+      "dtId": "579a388984aeb9b94367dec9",
+      "primitive": false,
+      "dMReference": false
+    },
+    "thenColumnDefinitionList": [
+      {
+        "id": "5900cbaee4b08f8c340fe6f9",
+        "path": "2",
+        "constraintPath": "2[1]",
+        "type": "field",
+        "constraintType": "dmr",
+        "name": "ID",
+        "usage": "R",
+        "dtId": "579655655455fa35176cd5dc",
+        "primitive": true,
+        "dMReference": true
+      },
+      {
+        "id": "5900cbaee4b08f8c340fe6fa",
+        "path": "5",
+        "constraintPath": "5[1]",
+        "type": "field",
+        "constraintType": "valueset",
+        "name": "VARIES",
+        "usage": "R",
+        "dtId": "579655655455fa35176cd5e4",
+        "primitive": true,
+        "dMReference": false
+      },
+      {
+        "id": "5900cbaee4b08f8c340fe84e",
+        "path": "17",
+        "constraintPath": "17[1]",
+        "type": "field",
+        "constraintType": "valueset",
+        "name": "CWE",
+        "usage": "C",
+        "dtId": "579655655455fa35176cd603",
+        "primitive": false,
+        "dMReference": false
+      }
+    ],
+    "userColumnDefinitionList": [
+      {
+        "id": "Description",
+        "title": "Description"
+      },
+      {
+        "id": "Comments",
+        "title": "Comments"
+      }
+    ],
+    "rowSize": 18,
+    "ifColumnData": [
+      {
+        "valueData": {
+          "value": "64994-7",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "30963-3",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "29769-7",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "69764-9",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "59784-9",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "75505-8",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "31044-1",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "59785-6",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "30945-0",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "30946-8",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "30944-3",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "30956-7",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "48767-8",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "TBD1",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "TBD2",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "TBD3",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "TBD4",
+          "bindingLocation": null
+        }
+      },
+      {
+        "valueData": {
+          "value": "TBD5",
+          "bindingLocation": null
+        }
+      }
+    ],
+    "thenMapData": {
+      "5900cbaee4b08f8c340fe6fa": [
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df1679607fe",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df16796080a",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df167960828",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df167960810",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df167960811",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df16796080c",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df16796080d",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df16796080b",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df167960816",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "588b9ec684aed450d8631e4a",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        }
+      ],
+      "5900cbaee4b08f8c340fe6f9": [
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "TX",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "CWE",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": "DT",
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        }
+      ],
+      "5900cbaee4b08f8c340fe84e": [
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [
+            {
+              "tableId": "58544b7d84ae7df167960812",
+              "bindingStrength": "R",
+              "bindingLocation": null
+            }
+          ],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        },
+        {
+          "valueData": {
+            "value": null,
+            "bindingLocation": null
+          },
+          "valueSets": [],
+          "datatypeId": null
+        }
+      ]
+    },
+    "userMapData": {
+      "Description": [
+        {
+          "text": "Vaccine funding program eligibility category"
+        },
+        {
+          "text": "Vaccine funding source"
+        },
+        {
+          "text": "Date vaccine information statement presented"
+        },
+        {
+          "text": "Document type"
+        },
+        {
+          "text": "Disease with presumed immunity"
+        },
+        {
+          "text": "Disease with serological evidence of immunity"
+        },
+        {
+          "text": "Immunization reaction"
+        },
+        {
+          "text": "Indication for immunization"
+        },
+        {
+          "text": "Vaccination contraindication/precaution"
+        },
+        {
+          "text": "Date.vaccination contraindication/precaution effective"
+        },
+        {
+          "text": "Date of vaccination temporary contraindication/precaution expiration"
+        },
+        {
+          "text": "Type [Identifier] Vaccine"
+        },
+        {
+          "text": "Annotation comment"
+        },
+        {
+          "text": "Date of vaccination indication effective"
+        },
+        {
+          "text": "Date of vaccination temporary indication expiration"
+        },
+        {
+          "text": "General patient observation"
+        },
+        {
+          "text": "Date of general patient observation effective"
+        },
+        {
+          "text": "Date of temporary general patient observation expiration"
+        }
+      ],
+      "Comments": [
+        {
+          "text": "This value represents the funding program that should pay for a given immunization. It is determined based on characteristics of the patient and the type of vaccine administered. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents the funding source (public or private) of the vaccine administered. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents the date the document was presented to the patient/responsible person.  \nOBX-5 Format:  DT_01"
+        },
+        {
+          "text": "This value represents the vaccine type that the VIS provides information about. \nOBX-5 Format:  CWE_01"
+        },
+        {
+          "text": "This value represents a disease where a clinician has determined that the patient has a history of the disease. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents a disease serological evidence indicates immunity. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents a reaction a patient experienced after an immunization. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents a factor which can drive the need for a specific immunization or a change in the normal schedule for immunization. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents a physical condition, current medication or other factor that indicates that a person should not receive an immunization. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents the effective date of the contraindication.  \nOBX-5 Format: DT_01"
+        },
+        {
+          "text": "This value represents the expiration date of the contraindication.  \nOBX-5 Format: DT_01"
+        },
+        {
+          "text": "This value represents the vaccine administered. \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents a comment regarding the vaccination. \nOBX-5 Format: TX_01"
+        },
+        {
+          "text": "This value represents the effective date of the indication.  \nOBX-5 Format: DT_01"
+        },
+        {
+          "text": "This value represents the expiration date of the indication.  \nOBX-5 Format: DT_01"
+        },
+        {
+          "text": "This value represents a fact known about the patient.  \nOBX-5 Format: CWE_01"
+        },
+        {
+          "text": "This value represents the effective date of the patient observation.  \nOBX-5 Format: DT_01"
+        },
+        {
+          "text": "This value represents the expiration date of the patient observation.  \nOBX-5 Format: DT_01"
+        }
+      ]
+    }
+  },
+  "valueSetBindings": [
+    {
+      "type": "valueset",
+      "id": null,
+      "location": "2",
+      "tableId": "588f2d3f84ae56b0b8a40907",
+      "usage": "R",
+      "bindingLocation": null,
+      "bindingStrength": "R"
+    },
+    {
+      "type": "valueset",
+      "id": null,
+      "location": "3",
+      "tableId": "588f2d4084ae56b0b8a4092c",
+      "usage": "R",
+      "bindingLocation": null,
+      "bindingStrength": "R"
+    },
+    {
+      "type": "valueset",
+      "id": null,
+      "location": "3.3",
+      "tableId": "588f2d4084ae56b0b8a4092c",
+      "usage": "R",
+      "bindingLocation": null,
+      "bindingStrength": "R"
+    }
+  ],
+  "singleElementValues": [],
+  "comments": [
+    {
+      "location": "3",
+      "description": "This indicates what this observation refers to. It poses the question that is answered by OBX-5.",
+      "authorId": null,
+      "lastUpdatedDate": 1493708440559
+    },
+    {
+      "location": "5",
+      "description": "This is the observation value and answers the question posed by OBX-3.",
+      "authorId": null,
+      "lastUpdatedDate": 1493708440559
+    },
+    {
+      "location": "17",
+      "description": "64994 “-7” is a LOINC meaning “funding program eligibility”. This field is used to distinguish between eligibility that is captured at the visit level versus at the immunization event level.",
+      "authorId": null,
+      "lastUpdatedDate": 1493708440559
+    }
+  ],
+  "name": "OBX",
+  "description": "Observation/Result",
+  "comment": "",
+  "text1": "<p>The observation result segment has many uses. It carries observations about the object of its parent segment. In this document it is associated with the RXA segment. The basic format is a question (OBX-3) and an answer (OBX-5).</p><p>The Co-Constraints table at the end of this section specifies how to populate an OBX segment based on the observation being messaged. To use the table, find the row containing the LOINC code being messaged in OBX-3. Then use the remaining columns to determine how to populate the remainder of the segment.The data type for OBX-2 is indicated along with valid value sets for various fields (when appropriate for the date type), including OBX-5. When populating the segment, the value in OBX-2 must correspond to a value found in HL7 table 0125 but the format of the data in OBX-5 should correspond to a data type flavor described in this document and identified in the &quot;Comments&quot; column. For example, when sending a coded observation value, OBX-2 should be the value &quot;CWE&quot; but OBX-5 should be formatted according to the requirements of the CWE_01 data type flavor.</p>",
+  "text2": "",
+  "coConstraints": {
+    "columnList": [
+      {
+        "field": {
+          "dateUpdated": 1480615819256,
+          "publicationDate": null,
+          "publicationVersion": 0,
+          "createdFrom": null,
+          "hl7Section": null,
+          "type": "field",
+          "name": "Observation Identifier",
+          "usage": "R",
+          "minLength": "0",
+          "maxLength": "0",
+          "confLength": "NA",
+          "tables": [
+            {
+              "id": "579655655455fa35176ccb4e",
+              "bindingIdentifier": "no table for CE",
+              "bindingStrength": null,
+              "bindingLocation": null
+            }
+          ],
+          "datatype": {
+            "id": "579a388984aeb9b94367dec9",
+            "name": "CWE",
+            "ext": "01",
+            "label": "CWE_01"
+          },
+          "position": 3,
+          "comment": "This indicates what this observation refers to. It poses the question that is answered by OBX-5.",
+          "text": "<p>This field contains a unique identifier for the observation.&nbsp;</p><p>This may be thought of as a question that the observation in OBX-5 answers. In the example above, the question is &quot;what funding program was this person eligible for when this vaccine was administered&quot;. The answer in OBX-5 could be &quot;VFC eligible - MEDICAID&quot;.</p><p>&nbsp;LOINC shall be the standard coding system for this field if an appropriate LOINC code exists. If a local coding system is in use, a local code should also be sent to help with identification of coding issues. When no valid LOINC exists the local code may be the only code sent.&nbsp;</p><p><br></p>",
+          "hide": false,
+          "id": "57acd4715d0b2dd60cffcde8",
+          "itemNo": "00571",
+          "min": 1,
+          "max": "1",
+          "added": null
+        },
+        "constraintType": "v",
+        "columnPosition": 0
+      },
+      {
+        "field": {
+          "dateUpdated": 1480615819256,
+          "publicationDate": null,
+          "publicationVersion": 0,
+          "createdFrom": null,
+          "hl7Section": null,
+          "type": "field",
+          "name": "Value Type",
+          "usage": "R",
+          "minLength": "2",
+          "maxLength": "3",
+          "confLength": "NA",
+          "tables": [
+            {
+              "id": "579655655455fa35176cbedf",
+              "bindingIdentifier": "Value Type",
+              "bindingStrength": null,
+              "bindingLocation": null
+            }
+          ],
+          "datatype": {
+            "id": "579655655455fa35176cd5dc",
+            "name": "ID",
+            "ext": null,
+            "label": "ID"
+          },
+          "position": 2,
+          "comment": "",
+          "text": "<p>This field contains the format of the observation value in OBX-5.&nbsp;</p>",
+          "hide": false,
+          "id": "57acd4715d0b2dd60cffcde7",
+          "itemNo": "00570",
+          "min": 1,
+          "max": "1",
+          "added": null
+        },
+        "constraintType": "v",
+        "columnPosition": 1
+      },
+      {
+        "field": {
+          "dateUpdated": 1480615819256,
+          "publicationDate": null,
+          "publicationVersion": 0,
+          "createdFrom": null,
+          "hl7Section": null,
+          "type": "field",
+          "name": "Observation Value",
+          "usage": "R",
+          "minLength": "0",
+          "maxLength": "0",
+          "confLength": "NA",
+          "tables": [],
+          "datatype": {
+            "id": "579655655455fa35176cd5e4",
+            "name": "VARIES",
+            "ext": null,
+            "label": "VARIES"
+          },
+          "position": 5,
+          "comment": "This is the observation value and answers the question posed by OBX-3.",
+          "text": "<p>This field contains the value observed by the observation producer. OBX-2-value type contains the data type for this field according to which observation value is formatted.</p><p>This field contains the value of OBX-3-observation identifier of the same segment. Depending upon the observation, the data type may be a number (e.g., dose number), a coded answer (e.g., a vaccine), or a date/time (the date/time that the VIS was given to the client/parent). An observation value is always represented as the data type specified in OBX-2-value type of the same segment. Whether numeric or short text, the answer shall be recorded in ASCII text.</p>",
+          "hide": false,
+          "id": "57acd4715d0b2dd60cffcdea",
+          "itemNo": "00573",
+          "min": 1,
+          "max": "1",
+          "added": null
+        },
+        "constraintType": "vs",
+        "columnPosition": 2
+      },
+      {
+        "field": {
+          "dateUpdated": 1480615819256,
+          "publicationDate": null,
+          "publicationVersion": 0,
+          "createdFrom": null,
+          "hl7Section": null,
+          "type": "field",
+          "name": "Observation Method",
+          "usage": "C",
+          "minLength": "0",
+          "maxLength": "0",
+          "confLength": "NA",
+          "tables": [
+            {
+              "id": "579655655455fa35176ccb4e",
+              "bindingIdentifier": "no table for CE",
+              "bindingStrength": null,
+              "bindingLocation": null
+            }
+          ],
+          "datatype": {
+            "id": "579655655455fa35176cd603",
+            "name": "CWE",
+            "ext": null,
+            "label": "CWE"
+          },
+          "position": 17,
+          "comment": "64994 “-7” is a LOINC meaning “funding program eligibility”. This field is used to distinguish between eligibility that is captured at the visit level versus at the immunization event level.",
+          "text": "<p>This optional field can be used to transmit the method or procedure by which an observation was obtained when the sending system wishes to distinguish among one measurement obtained by different methods and the distinction is not implicit in the test ID.&nbsp;</p><p>In this Guide, it shall be used to differentiate the way that VFC Eligibility Status was collected. The two choices are:</p><ul><li>Recorded in the sending system at the visit level</li><li>Recorded in the sending system at the immunization level</li></ul>",
+          "hide": false,
+          "id": "57acd4715d0b2dd60cffcdf6",
+          "itemNo": "00936",
+          "min": 0,
+          "max": "1",
+          "added": null
+        },
+        "constraintType": "vs",
+        "columnPosition": 3
+      }
+    ],
+    "constraints": [
+      {
+        "description": "Vaccine funding program eligibility category",
+        "comments": "This value represents the funding program that should pay for a given immunization. It is determined based on characteristics of the patient and the type of vaccine administered. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "64994-7"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df1679607fe"
+          },
+          {
+            "value": "58544b7d84ae7df167960812"
+          }
+        ]
+      },
+      {
+        "description": "Vaccine funding source",
+        "comments": "This value represents the funding source (public or private) of the vaccine administered. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "30963-3"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df16796080a"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date vaccine information statement presented",
+        "comments": "This value represents the date the document was presented to the patient/responsible person.  \nOBX-5 Format:  DT_01",
+        "values": [
+          {
+            "value": "29769-7"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Document type",
+        "comments": "This value represents the vaccine type that the VIS provides information about. \nOBX-5 Format:  CWE_01",
+        "values": [
+          {
+            "value": "69764-9"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df167960828"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Disease with presumed immunity",
+        "comments": "This value represents a disease where a clinician has determined that the patient has a history of the disease. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "59784-9"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df167960810"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Disease with serological evidence of immunity",
+        "comments": "This value represents a disease serological evidence indicates immunity. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "75505-8"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df167960811"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Immunization reaction",
+        "comments": "This value represents a reaction a patient experienced after an immunization. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "31044-1"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df16796080c"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Indication for immunization",
+        "comments": "This value represents a factor which can drive the need for a specific immunization or a change in the normal schedule for immunization. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "59785-6"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df16796080d"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Vaccination contraindication/precaution",
+        "comments": "This value represents a physical condition, current medication or other factor that indicates that a person should not receive an immunization. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "30945-0"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df16796080b"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date.vaccination contraindication/precaution effective",
+        "comments": "This value represents the effective date of the contraindication.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "30946-8"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date of vaccination temporary contraindication/precaution expiration",
+        "comments": "This value represents the expiration date of the contraindication.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "30944-3"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Type [Identifier] Vaccine",
+        "comments": "This value represents the vaccine administered. \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "30956-7"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "58544b7d84ae7df167960816"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Annotation comment",
+        "comments": "This value represents a comment regarding the vaccination. \nOBX-5 Format: TX_01",
+        "values": [
+          {
+            "value": "48767-8"
+          },
+          {
+            "value": "TX"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date of vaccination indication effective",
+        "comments": "This value represents the effective date of the indication.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "TBD1"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date of vaccination temporary indication expiration",
+        "comments": "This value represents the expiration date of the indication.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "TBD2"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "General patient observation",
+        "comments": "This value represents a fact known about the patient.  \nOBX-5 Format: CWE_01",
+        "values": [
+          {
+            "value": "TBD3"
+          },
+          {
+            "value": "CWE"
+          },
+          {
+            "value": "588b9ec684aed450d8631e4a"
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date of general patient observation effective",
+        "comments": "This value represents the effective date of the patient observation.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "TBD4"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      },
+      {
+        "description": "Date of temporary general patient observation expiration",
+        "comments": "This value represents the expiration date of the patient observation.  \nOBX-5 Format: DT_01",
+        "values": [
+          {
+            "value": "TBD5"
+          },
+          {
+            "value": "DT"
+          },
+          {
+            "value": ""
+          },
+          {
+            "value": ""
+          }
+        ]
+      }
+    ]
+  }
+}

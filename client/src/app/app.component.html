@@ -1,0 +1,17 @@
+
+
+
+    <app-topbar></app-topbar>
+
+    <div class="layout-menu" [ngClass]="{'layout-menu-dark':darkMenu}">
+      <div>
+          <app-menu></app-menu>
+      </div>
+    </div>
+
+    <div class="layout-main" style="padding-left: 0; padding-right: 0; padding-top : 111px;">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+    <div class="layout-mask"></div>
+

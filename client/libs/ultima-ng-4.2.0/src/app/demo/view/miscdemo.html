@@ -1,0 +1,18 @@
+<div class="ui-g">
+    <div class="ui-g-12 ui-lg-6">
+        <div class="card">
+            <h1>ProgressBar</h1>
+            <p-progressBar [value]="value"></p-progressBar>
+        </div>
+        <div class="card">
+            <h1>Terminal</h1>
+            <p-terminal (handler)="onCommand($event)" [response]="response" welcomeMessage="Welcome to Ultima" prompt="primeng $"></p-terminal>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-lg-6">
+        <div class="card">
+            <h1>Galleria</h1>
+            <p-galleria [images]="images" panelWidth="500" panelHeight="313"></p-galleria>
+        </div>
+    </div>
+</div>

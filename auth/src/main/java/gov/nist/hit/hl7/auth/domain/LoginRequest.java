@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.auth.domain;
 
 public class LoginRequest {
+	public LoginRequest() {
+	}
 	private String username;
 	private String password;
 	
