@@ -15,11 +15,8 @@ package gov.nist.hit.hl7.legacy.datatype;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -27,6 +24,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
+import gov.nist.hit.hl7.igamt.legacy.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
@@ -35,7 +33,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-public class DatatypeConversionService extends ConversionService{
+public class DatatypeConversionServiceImpl implements ConversionService{
 
   @Autowired
   DatatypeRepository oldDatatypeRepository;
@@ -61,7 +59,7 @@ public class DatatypeConversionService extends ConversionService{
     convertedDatatype.setDescription(oldDatatype.getDescription());
     DomainInfo domainInfo = new DomainInfo();
     domainInfo.setCompatibilityVersion(new HashSet<String>(oldDatatype.getHl7versions()));
-    domainInfo.setScope(this.convertScope(oldDatatype.getScope()));
+    domainInfo.setScope(ConversionUtil.convertScope(oldDatatype.getScope()));
     domainInfo.setVersion(oldDatatype.getVersion());
     convertedDatatype.setDomainInfo(domainInfo);
     convertedDatatype.setExt(oldDatatype.getExt());

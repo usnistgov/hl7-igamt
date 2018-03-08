@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-public class DatatypeConversionServiceTest {
+public class DatatypeConversionServiceImplTest {
 
   @Test
   public void testConvert() {
