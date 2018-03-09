@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.util;
+package gov.nist.hit.hl7.igamt.legacy.service.impl.util;
 
 import java.io.StringReader;
 import java.util.ArrayList;

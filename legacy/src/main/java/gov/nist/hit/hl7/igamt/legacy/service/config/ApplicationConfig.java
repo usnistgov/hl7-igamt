@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.config;
+package gov.nist.hit.hl7.igamt.legacy.service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;

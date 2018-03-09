@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.legacy.datatype;
+package gov.nist.hit.hl7.igamt.legacy.service.impl.datatype;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -35,7 +35,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate.PredicateType;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
-import gov.nist.hit.hl7.igamt.legacy.util.ConversionUtil;
+import gov.nist.hit.hl7.igamt.legacy.service.impl.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
