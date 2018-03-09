@@ -29,6 +29,10 @@ public abstract class Binding {
   protected String elementId;
   protected Set<StructureElementBinding> children;
 
+  public Binding() {
+    super();
+  }
+  
   public Binding(String elementId, Set<StructureElementBinding> children) {
     super();
     this.elementId = elementId;
@@ -50,6 +54,10 @@ public abstract class Binding {
 
   public void setChildren(Set<StructureElementBinding> children) {
     this.children = children;
+  }
+  
+  public void addChild(StructureElementBinding childStructureElementBinding) {
+    this.children.add(childStructureElementBinding); 
   }
 
 }

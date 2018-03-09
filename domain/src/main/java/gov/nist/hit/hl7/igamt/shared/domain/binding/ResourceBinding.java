@@ -23,6 +23,10 @@ public class ResourceBinding extends Binding {
   private Set<ConformanceStatement> conformanceStatements;
   private Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs;
   
+  public ResourceBinding() {
+    super();
+  }
+  
   public ResourceBinding(String elementId, Set<StructureElementBinding> children,
       Set<ConformanceStatement> conformanceStatements,
       Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
@@ -46,6 +50,4 @@ public class ResourceBinding extends Binding {
   public void setConformanceStatementCrossRefs(Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
     this.conformanceStatementCrossRefs = conformanceStatementCrossRefs;
   }
-
-
 }
