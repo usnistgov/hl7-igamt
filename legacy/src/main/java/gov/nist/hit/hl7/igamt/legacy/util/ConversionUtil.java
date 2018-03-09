@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.legacy.util;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 
 /**
  *
@@ -37,6 +38,27 @@ public class ConversionUtil {
       return Scope.PRELOADED;
     } else if (scope.equals(SCOPE.USER)) {
       return Scope.USER;
+    }
+    return null;
+  }
+  
+  public static Usage convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage usage) {
+    if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.R)) {
+      return Usage.R;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.RE)) {
+      return Usage.RE;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.C)) {
+      return Usage.C;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.O)) {
+      return Usage.O;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.X)) {
+      return Usage.X;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.B)) {
+      return Usage.B;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.W)) {
+      return Usage.W;
+    } else if(usage.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.CE)) {
+      return Usage.CE;
     }
     return null;
   }

@@ -22,6 +22,10 @@ public class DateTimeConstraints {
   private List<DateTimeComponentDefinition> dateTimeComponentDefinitions =
       new ArrayList<DateTimeComponentDefinition>();
   
+  public DateTimeConstraints() {
+    super();
+  }
+
   public DateTimeConstraints(List<DateTimeComponentDefinition> dateTimeComponentDefinitions) {
     super();
     this.dateTimeComponentDefinitions = dateTimeComponentDefinitions;

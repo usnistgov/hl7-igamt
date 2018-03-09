@@ -20,6 +20,7 @@ import org.junit.Test;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.legacy.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 
 /**
  *
@@ -36,6 +37,18 @@ public class ConversionUtilTest {
     assertEquals(Scope.PHINVADS, ConversionUtil.convertScope(SCOPE.PHINVADS));
     assertEquals(Scope.PRELOADED, ConversionUtil.convertScope(SCOPE.PRELOADED));
     assertEquals(Scope.USER, ConversionUtil.convertScope(SCOPE.USER));
+  }
+  
+  @Test
+  public void testConvertUsage() {
+    assertEquals(Usage.B,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.B));
+    assertEquals(Usage.C,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.C));
+    assertEquals(Usage.CE,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.CE));
+    assertEquals(Usage.O,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.O));
+    assertEquals(Usage.R,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.R));
+    assertEquals(Usage.RE,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.RE));
+    assertEquals(Usage.W,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.W));
+    assertEquals(Usage.X,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.X));
   }
   
 }

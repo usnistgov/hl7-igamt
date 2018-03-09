@@ -14,6 +14,9 @@
 package gov.nist.hit.hl7.legacy.datatype;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -25,11 +28,14 @@ import static org.junit.Assert.*;
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
+@ActiveProfiles({ "test", "unit" })
+@RunWith(SpringJUnit4ClassRunner.class)
 public class DatatypeConversionServiceImplTest {
 
   @Test
   public void testConvert() {
     Datatype oldDatatype = new Datatype();
+    
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype newDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
     
   }
