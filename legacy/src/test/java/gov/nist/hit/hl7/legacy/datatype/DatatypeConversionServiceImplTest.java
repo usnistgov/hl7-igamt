@@ -1,4 +1,5 @@
 /**
+ * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -8,36 +9,34 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
-package gov.nist.hit.hl7.igamt.datatype.domain;
+package gov.nist.hit.hl7.legacy.datatype;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
+
+import static org.junit.Assert.*;
 
 /**
- * @author jungyubw
  *
+ * @author Maxence Lefort on Mar 5, 2018.
  */
-public class DateTimeConstraints {
-  private List<DateTimeComponentDefinition> dateTimeComponentDefinitions =
-      new ArrayList<DateTimeComponentDefinition>();
-  
-  public DateTimeConstraints() {
-    super();
-  }
+@ActiveProfiles({ "test", "unit" })
+@RunWith(SpringJUnit4ClassRunner.class)
+public class DatatypeConversionServiceImplTest {
 
-  public DateTimeConstraints(List<DateTimeComponentDefinition> dateTimeComponentDefinitions) {
-    super();
-    this.dateTimeComponentDefinitions = dateTimeComponentDefinitions;
+  @Test
+  public void testConvert() {
+    Datatype oldDatatype = new Datatype();
+    
+    gov.nist.hit.hl7.igamt.datatype.domain.Datatype newDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
+    
   }
-
-  public List<DateTimeComponentDefinition> getDateTimeComponentDefinitions() {
-    return dateTimeComponentDefinitions;
-  }
-
-  public void setDateTimeComponentDefinitions(List<DateTimeComponentDefinition> dateTimeComponentDefinitions) {
-    this.dateTimeComponentDefinitions = dateTimeComponentDefinitions;
-  }
-  
-  
 }

@@ -36,13 +36,8 @@ public class Datatype extends Resource {
 	return binding;
 }
 
-public void setBinding(ResourceBinding binding) {
-	this.binding = binding;
-}
-
-public Datatype(String preDef, String postDef) {
-	super(preDef, postDef);
-	// TODO Auto-generated constructor stub
+  public void setBinding(ResourceBinding binding) {
+  	this.binding = binding;
   }
 
   public Datatype() {

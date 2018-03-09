@@ -11,5 +11,8 @@ public interface ConversionService {
       new AnnotationConfigApplicationContext(ApplicationConfig.class);
   static AbstractApplicationContext legacyContext =
       new AnnotationConfigApplicationContext(LegacyApplicationConfig.class);
-  public void convert();
+  public abstract void convert();
+  
+  
+  
 }
