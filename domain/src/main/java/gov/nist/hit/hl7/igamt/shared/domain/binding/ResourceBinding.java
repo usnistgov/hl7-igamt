@@ -50,4 +50,9 @@ public class ResourceBinding extends Binding {
   public void setConformanceStatementCrossRefs(Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
     this.conformanceStatementCrossRefs = conformanceStatementCrossRefs;
   }
+
+  public void addConformanceStatement(ConformanceStatement conformanceStatement) {
+    this.conformanceStatements.add(conformanceStatement);
+    
+  }
 }

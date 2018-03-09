@@ -21,10 +21,9 @@ public class MultipleConformanceStatement extends ConformanceStatement {
 
   private MultipleAssertion complexAssertion;
 
-  public MultipleConformanceStatement(String id, String identifier,
-      MultipleAssertion complexAssertion) {
-    super(id, identifier);
-    this.complexAssertion = complexAssertion;
+
+  public MultipleConformanceStatement() {
+    super();
   }
 
   public MultipleAssertion getComplexAssertion() {
