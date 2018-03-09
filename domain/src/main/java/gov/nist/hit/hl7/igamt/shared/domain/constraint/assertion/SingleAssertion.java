@@ -23,11 +23,8 @@ public class SingleAssertion extends Assertion {
   private String verbKey;
   private Complement complement;
 
-  public SingleAssertion(Subject subject, String verbKey, Complement complement) {
+  public SingleAssertion() {
     super();
-    this.subject = subject;
-    this.verbKey = verbKey;
-    this.complement = complement;
   }
 
   public Subject getSubject() {

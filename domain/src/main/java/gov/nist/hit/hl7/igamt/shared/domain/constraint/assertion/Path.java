@@ -29,11 +29,6 @@ public class Path {
   private String elementId;
   private Set<InstancePath> children;
 
-  public Path(String elementId, Set<InstancePath> children) {
-    super();
-    this.elementId = elementId;
-    this.children = children;
-  }
 
   public String getElementId() {
     return elementId;
