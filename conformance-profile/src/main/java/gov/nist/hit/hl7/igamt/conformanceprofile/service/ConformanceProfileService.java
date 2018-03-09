@@ -11,29 +11,28 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.service;
+package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
- * @author Maxence Lefort on Mar 1, 2018.
+ * @author Maxence Lefort on Mar 9, 2018.
  */
-public interface DatatypeService {
+public interface ConformanceProfileService {
 
-  public Datatype findByKey(CompositeKey key);
+  public ConformanceProfile findByKey(CompositeKey key);
+  
+  public ConformanceProfile create(ConformanceProfile conformanceProfile);
 
-  public Datatype create(Datatype datatype);
+  public ConformanceProfile save(ConformanceProfile conformanceProfile);
 
-  public Datatype save(Datatype datatype);
+  public List<ConformanceProfile> findAll();
 
-  public List<Datatype> findAll();
-
-  public void delete(Datatype datatype);
+  public void delete(ConformanceProfile conformanceProfile);
 
   public void delete(CompositeKey key);
-  
 }
