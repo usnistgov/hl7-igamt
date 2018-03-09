@@ -1,10 +1,16 @@
 package gov.nist.hit.hl7.igamt.legacy.util;
 
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Comment;
@@ -53,7 +59,10 @@ public class BindingHandler {
         newConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
         if (oldConformanceStatement.getAssertion() != null
             && !oldConformanceStatement.getAssertion().equals("")) {
-          // TODO
+          Document assertionDoc =
+              this.convertStringToDocument(oldConformanceStatement.getAssertion());
+
+
         } else {
           gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
               (gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement) newConformanceStatement;
@@ -281,5 +290,18 @@ public class BindingHandler {
 
   public void setDatatypeRepository(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
+  }
+
+  private static Document convertStringToDocument(String xmlStr) {
+    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    DocumentBuilder builder;
+    try {
+      builder = factory.newDocumentBuilder();
+      Document doc = builder.parse(new InputSource(new StringReader(xmlStr)));
+      return doc;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 }
