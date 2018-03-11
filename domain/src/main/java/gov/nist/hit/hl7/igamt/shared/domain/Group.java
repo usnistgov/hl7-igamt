@@ -6,15 +6,13 @@ public class Group extends MsgStructElement {
 
   private String name;
   private  Set< MsgStructElement> children;
-  
-  
-  
-  
+    
   public Group() {
     
     super();
     this.setType(Type.GROUP);
   }
+  
   public Set< MsgStructElement> getChildren() {
     return children;
   }

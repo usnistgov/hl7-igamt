@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 
 public abstract class AbstractDomain {
@@ -9,9 +11,15 @@ public abstract class AbstractDomain {
   private PublicationInfo publicationInfo;
   private DomainInfo domainInfo;
   private String username;
+  private Long accountID; // to faciltate conversion 
+
   private String comment;
   private String description;
   private String createdFrom;
+  
+  private Date creationDate;
+  private Date updateDate;
+  
 
 
 
@@ -97,5 +105,29 @@ public abstract class AbstractDomain {
   public void setUsername(String username) {
     this.username = username;
   }
+
+public Long getAccountID() {
+	return accountID;
+}
+
+public void setAccountID(Long accountID) {
+	this.accountID = accountID;
+}
+
+public Date getCreationDate() {
+	return creationDate;
+}
+
+public void setCreationDate(Date creationDate) {
+	this.creationDate = creationDate;
+}
+
+public Date getUpdateDate() {
+	return updateDate;
+}
+
+public void setUpdateDate(Date updateDate) {
+	this.updateDate = updateDate;
+}
 
 }

@@ -26,6 +26,11 @@
 			<artifactId>datatype</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
+				<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>ig</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>gov.nist.healthcare.tools.hl7.v2.igamt.lite</groupId>
 			<artifactId>igamt-lite-domain</artifactId>
