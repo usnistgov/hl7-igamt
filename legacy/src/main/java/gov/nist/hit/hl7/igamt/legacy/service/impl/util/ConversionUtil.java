@@ -27,7 +27,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Usage;
  */
 public class ConversionUtil {
   
-  private static final String DATE_FORMAT = "yyyy/MMM/dd HH:mm:ss";
+  private static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
 
   public static Scope convertScope(SCOPE scope) {
     if(scope.equals(SCOPE.HL7STANDARD)) {
