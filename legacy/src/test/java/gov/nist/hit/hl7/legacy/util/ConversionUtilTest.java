@@ -65,6 +65,9 @@ public class ConversionUtilTest {
     assertEquals(cal.get(Calendar.HOUR_OF_DAY),10);
     assertEquals(cal.get(Calendar.MINUTE),57);
     assertEquals(cal.get(Calendar.SECOND),47);
+    assertNull(ConversionUtil.convertPublicationDate(null));
+    assertNull(ConversionUtil.convertPublicationDate(""));
+    assertNull(ConversionUtil.convertPublicationDate("        "));
   }
   
 }
