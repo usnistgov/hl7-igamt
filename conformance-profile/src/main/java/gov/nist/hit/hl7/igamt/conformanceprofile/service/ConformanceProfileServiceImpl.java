@@ -11,59 +11,56 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.service.impl;
+package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
-import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 /**
  *
- * @author Maxence Lefort on Mar 1, 2018.
+ * @author Maxence Lefort on Mar 9, 2018.
  */
-public class DatatypeServiceImpl implements DatatypeService {
+public class ConformanceProfileServiceImpl implements ConformanceProfileService{
 
   @Autowired
-  private DatatypeRepository datatypeRepository;
-  
+  ConformanceProfileRepository conformanceProfileRepository;
+
   @Override
-  public Datatype findByKey(CompositeKey key) {
-    return datatypeRepository.findOne(key);
-  }
-  
-  @Override
-  public Datatype create(Datatype datatype) {
-    datatype.setId(new CompositeKey());
-    datatype = datatypeRepository.save(datatype);
-    return datatype;
+  public ConformanceProfile findByKey(CompositeKey key) {
+    return conformanceProfileRepository.findOne(key);
   }
 
   @Override
-  public Datatype save(Datatype datatype) {
-    datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
-    datatype = datatypeRepository.save(datatype);
-    return datatype;
+  public ConformanceProfile create(ConformanceProfile conformanceProfile) {
+    conformanceProfile.setId(new CompositeKey());
+    return conformanceProfileRepository.save(conformanceProfile);
   }
 
   @Override
-  public List<Datatype> findAll() {
-    return datatypeRepository.findAll();
+  public ConformanceProfile save(ConformanceProfile conformanceProfile) {
+    conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+    return conformanceProfileRepository.save(conformanceProfile);
   }
 
   @Override
-  public void delete(Datatype datatype) {
-    datatypeRepository.delete(datatype);
+  public List<ConformanceProfile> findAll() {
+    return conformanceProfileRepository.findAll();
+  }
+
+  @Override
+  public void delete(ConformanceProfile conformanceProfile) {
+    conformanceProfileRepository.delete(conformanceProfile);
   }
 
   @Override
   public void delete(CompositeKey key) {
-    datatypeRepository.delete(key);
+    conformanceProfileRepository.delete(key);
   }
   
 }
