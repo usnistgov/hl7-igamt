@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.binding;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
@@ -21,22 +22,16 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
  */
 public class StructureElementBinding extends Binding {
 
-  private Set<Comment> comments;
-  private Set<ValuesetBinding> valuesetBindings;
+  private Set<Comment> comments = new HashSet<Comment>();
+  private Set<ValuesetBinding> valuesetBindings = new HashSet<ValuesetBinding>();
   private String singleCodeId;
+  private ExternalSingleCode externalSingleCode;
+  private String constantValue;
   private Predicate predicate;
-  private Set<PredicateCrossRef> predicateCrossRefs;
+  private Set<PredicateCrossRef> predicateCrossRefs = new HashSet<PredicateCrossRef>();
 
-
-  public StructureElementBinding(String elementId, Set<StructureElementBinding> children,
-      Set<Comment> comments, Set<ValuesetBinding> valuesetBindings, String singleCodeId,
-      Predicate predicate, Set<PredicateCrossRef> predicateCrossRefs) {
-    super(elementId, children);
-    this.comments = comments;
-    this.valuesetBindings = valuesetBindings;
-    this.singleCodeId = singleCodeId;
-    this.predicate = predicate;
-    this.predicateCrossRefs = predicateCrossRefs;
+  public StructureElementBinding() {
+    super();
   }
 
   public Set<Comment> getComments() {
@@ -79,5 +74,27 @@ public class StructureElementBinding extends Binding {
     this.predicateCrossRefs = predicateCrossRefs;
   }
 
+  public void addComment(Comment newComment) {
+    this.comments.add(newComment);
+  }
 
+  public String getConstantValue() {
+    return constantValue;
+  }
+
+  public void setConstantValue(String constantValue) {
+    this.constantValue = constantValue;
+  }
+
+  public void addValuesetBinding(ValuesetBinding newValuesetBinding) {
+    this.valuesetBindings.add(newValuesetBinding);
+  }
+
+  public ExternalSingleCode getExternalSingleCode() {
+    return externalSingleCode;
+  }
+
+  public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
+    this.externalSingleCode = externalSingleCode;
+  }
 }

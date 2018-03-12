@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.MultipleAssertion;
 
 /**
@@ -22,10 +21,8 @@ public class MultiplePredicate extends Predicate {
 
   private MultipleAssertion complexAssertion;
 
-  public MultiplePredicate(String id, Usage trueUsage, Usage falseUsage,
-      MultipleAssertion complexAssertion) {
-    super(id, trueUsage, falseUsage);
-    this.complexAssertion = complexAssertion;
+  public MultiplePredicate() {
+    super();
   }
 
   public MultipleAssertion getComplexAssertion() {

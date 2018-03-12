@@ -22,10 +22,8 @@ public class Predicate extends Constraint {
   protected Usage trueUsage;
   protected Usage falseUsage;
   
-  public Predicate(String id, Usage trueUsage, Usage falseUsage) {
-    super(id);
-    this.trueUsage = trueUsage;
-    this.falseUsage = falseUsage;
+  public Predicate() {
+    super();
   }
 
   public Usage getTrueUsage() {

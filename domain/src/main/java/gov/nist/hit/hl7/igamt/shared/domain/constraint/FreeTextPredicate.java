@@ -11,8 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
-
 /**
  * @author jungyubw
  *
@@ -21,9 +19,8 @@ public class FreeTextPredicate extends Predicate {
 
   private String freeText;
 
-  public FreeTextPredicate(String id, Usage trueUsage, Usage falseUsage, String freeText) {
-    super(id, trueUsage, falseUsage);
-    this.freeText = freeText;
+  public FreeTextPredicate() {
+    super();
   }
 
   public String getFreeText() {

@@ -20,9 +20,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion
 public class SingleConformanceStatement extends ConformanceStatement {
   private SingleAssertion simpleAssertion;
 
-  public SingleConformanceStatement(String id, String identifier, SingleAssertion simpleAssertion) {
-    super(id, identifier);
-    this.simpleAssertion = simpleAssertion;
+  public SingleConformanceStatement() {
+    super();
   }
 
   public SingleAssertion getSimpleAssertion() {
