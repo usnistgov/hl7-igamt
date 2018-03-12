@@ -13,6 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.util;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.Usage;
@@ -22,6 +26,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.Usage;
  * @author Maxence Lefort on Mar 8, 2018.
  */
 public class ConversionUtil {
+  
+  private static final String DATE_FORMAT = "yyyy/MMM/dd HH:mm:ss";
 
   public static Scope convertScope(SCOPE scope) {
     if(scope.equals(SCOPE.HL7STANDARD)) {
@@ -61,5 +67,17 @@ public class ConversionUtil {
       return Usage.CE;
     }
     return null;
+  }
+  
+  public static Date convertPublicationDate(String date) {
+    if(date == null || date.trim().isEmpty()) {
+      return null;
+    }
+    try {
+      return new SimpleDateFormat(DATE_FORMAT).parse(date);
+    } catch (ParseException e) {
+      e.printStackTrace();
+    }
+    return new Date();
   }
 }

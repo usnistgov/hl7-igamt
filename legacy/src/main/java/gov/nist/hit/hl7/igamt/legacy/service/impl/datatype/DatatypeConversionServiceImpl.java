@@ -13,8 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.datatype;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -106,13 +104,7 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     convertedDatatype.setPostDef(oldDatatype.getDefPostText());
     convertedDatatype.setPreDef(oldDatatype.getDefPreText());
     PublicationInfo publicationInfo = new PublicationInfo();
-    try {
-      publicationInfo.setPublicationDate(oldDatatype.getPublicationDate() != null ? new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss").parse(oldDatatype.getPublicationDate()) : null);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    } finally {
-      publicationInfo.setPublicationDate(null);
-    }
+    publicationInfo.setPublicationDate(ConversionUtil.convertPublicationDate(oldDatatype.getPublicationDate()));
     publicationInfo.setPublicationVersion(oldDatatype.getVersion());
     convertedDatatype.setPublicationInfo(publicationInfo);
     convertedDatatype.setPurposeAndUse(oldDatatype.getPurposeAndUse());
