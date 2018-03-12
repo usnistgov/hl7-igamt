@@ -64,7 +64,6 @@ public class ConstraintHandler {
     }
     dt.setComponents(components);
 
-
     test.constructAssertionObjForDatatype(simplePresenceAssertion, dt);
     test.constructAssertionObjForDatatype(simplePlainTextAssertion, dt);
     test.constructAssertionObjForDatatype(complexAssertion, dt);
@@ -140,6 +139,13 @@ public class ConstraintHandler {
     Subject subject = new Subject();
     Path pathObj = new Path();
     pathObj.setElementId(dt.getId());
+    
+    if(dt.getComponents() != null && dt.getComponents().size() > 0){
+      for(Component c:dt.getComponents()){
+        
+      }
+    }
+    
     subject.setPath(pathObj);
     return subject;
   }
