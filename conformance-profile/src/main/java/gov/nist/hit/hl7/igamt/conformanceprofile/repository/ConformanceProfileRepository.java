@@ -11,29 +11,17 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.service;
+package gov.nist.hit.hl7.igamt.conformanceprofile.repository;
 
-import java.util.List;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
- * @author Maxence Lefort on Mar 1, 2018.
+ * @author Maxence Lefort on Mar 9, 2018.
  */
-public interface DatatypeService {
+public interface ConformanceProfileRepository extends MongoRepository<ConformanceProfile, CompositeKey>{
 
-  public Datatype findByKey(CompositeKey key);
-
-  public Datatype create(Datatype datatype);
-
-  public Datatype save(Datatype datatype);
-
-  public List<Datatype> findAll();
-
-  public void delete(Datatype datatype);
-
-  public void delete(CompositeKey key);
-  
 }

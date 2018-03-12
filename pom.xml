@@ -40,5 +40,6 @@
 		<module>valueset</module>
 		<module>legacy</module>
 		<module>bootstrap</module>
+		<module>conformance-profile</module>
 	</modules>
 </project>
