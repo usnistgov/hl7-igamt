@@ -72,7 +72,7 @@ public class ConstraintHandler {
    * rootName is "Condition" for Predicate
    */
   public Assertion constructAssertionObjForDatatype(String assertionStr, String desc, Datatype dt, String rootName) {
-    if(!assertionStr.startsWith(rootName)){
+    if(!assertionStr.startsWith("<" + rootName + ">")){
       assertionStr = "<" + rootName + ">" + assertionStr + "</" + rootName + ">";
     }
     Document doc = this.convertStringToDocument(assertionStr);
