@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.repository;
+package gov.nist.hit.hl7.legacy.igamt.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

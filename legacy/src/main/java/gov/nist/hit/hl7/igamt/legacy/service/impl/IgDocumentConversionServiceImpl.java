@@ -25,7 +25,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLink;
 
 import gov.nist.hit.hl7.igamt.ig.domain.*;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.legacy.repository.IGDocumentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
@@ -34,7 +33,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetConfigForExport;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.legacy.igamt.repository.IGDocumentRepository;
 
 
 
@@ -45,7 +44,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	
 	  private static IGDocumentRepository legacyRepository =
   		      (IGDocumentRepository) legacyContext.getBean("igDocumentRepository");
-	  
 	  
 	  private static IgService igService=
 		      (IgService) context.getBean("igService");
@@ -314,7 +312,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 			newSection.setChildren(children);
 			
 		}
-
 		return newSection;
 		// TODO Auto-generated method stub
 		

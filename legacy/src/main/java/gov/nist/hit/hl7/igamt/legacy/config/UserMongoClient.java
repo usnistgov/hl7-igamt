@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.legacy.config;
 
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -10,15 +11,19 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import com.mongodb.MongoClient;
 
+public class UserMongoClient {
+
 @Configuration
-@EnableMongoRepositories("gov.nist.hit.hl7.igamt")
+@EnableMongoRepositories("gov.nist.hit.hl7.auth.repository")
+@ComponentScan("gov.nist.hit.hl7.auth")
+
 public class ApplicationConfig {
 
   @Bean
   public MongoDbFactory mongoDbFactory() throws Exception {
 
     MongoClient mongoClient = new MongoClient("localhost", 27017);
-    return new SimpleMongoDbFactory(mongoClient, "igamt-hl7");
+    return new SimpleMongoDbFactory(mongoClient, "igamt-user");
 
   }
 
@@ -29,5 +34,5 @@ public class ApplicationConfig {
     return mongoTemplate;
 
   }
-
+}
 }

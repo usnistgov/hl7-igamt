@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.domain.Privilege;
-
 @Service
 public interface AccountService extends UserDetailsService {
 

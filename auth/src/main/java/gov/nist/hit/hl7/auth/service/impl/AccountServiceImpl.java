@@ -5,13 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.auth.domain.Account;
@@ -20,7 +19,7 @@ import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.auth.repository.PrivilegeRepository;
 import gov.nist.hit.hl7.auth.service.AccountService;
 
-@Service
+@Service("accountServiceMongo")
 public class AccountServiceImpl implements AccountService {
 
 	@Autowired
@@ -29,8 +28,9 @@ public class AccountServiceImpl implements AccountService {
 	@Autowired
 	private PrivilegeRepository privilegeRepository;
 	
+
 	@Autowired
-	private PasswordEncoder encoder;
+	private ShaPasswordEncoder encoder;
 
 	@Override
 	public Account getAccountByUsername(String username) {
@@ -41,7 +41,7 @@ public class AccountServiceImpl implements AccountService {
 	public Account createAdmin(Account account) {
 		
 		if (!account.getUsername().isEmpty() && !account.getPassword().isEmpty()) {
-			account.setPassword(encoder.encode(account.getPassword()));
+			account.setPassword(encoder.encodePassword(account.getPassword(),account.getUsername()));
 			Set<Privilege> roles = new HashSet<Privilege>(privilegeRepository.findAll());
 			account.setPrivileges(roles);
 			accountRepository.save(account);

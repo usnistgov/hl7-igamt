@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.auth.config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
@@ -11,7 +12,8 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
 @Configuration
-@EnableMongoRepositories(basePackages={"gov.nist.hit.hl7.auth"})
+@EnableMongoRepositories(basePackages={"gov.nist.hit.hl7.auth.repository"})
+
 public class MongoConfig extends AbstractMongoConfiguration {
 //	@Autowired
 //	private Environment env;
