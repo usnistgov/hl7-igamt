@@ -20,8 +20,14 @@ public class PresenceComplement extends Complement{
   /**
    * @param complementKey
    */
-  public PresenceComplement(ComplementKey complementKey) {
-    super(complementKey);
-    // TODO Auto-generated constructor stub
+  public PresenceComplement() {
+    this.complementKey = ComplementKey.PRESENCE;
   }
+
+  @Override
+  public String toString() {
+    return "PresenceComplement [complementKey=" + complementKey + "]";
+  }
+  
+  
 }

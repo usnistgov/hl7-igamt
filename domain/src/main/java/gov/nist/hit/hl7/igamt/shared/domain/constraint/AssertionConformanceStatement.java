@@ -11,26 +11,26 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.MultipleAssertion;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class MultiplePredicate extends Predicate {
+public class AssertionConformanceStatement extends ConformanceStatement {
+  private Assertion assertion;
 
-  private MultipleAssertion complexAssertion;
-
-  public MultiplePredicate() {
+  public AssertionConformanceStatement() {
     super();
   }
 
-  public MultipleAssertion getComplexAssertion() {
-    return complexAssertion;
+  public Assertion getAssertion() {
+    return assertion;
   }
 
-  public void setComplexAssertion(MultipleAssertion complexAssertion) {
-    this.complexAssertion = complexAssertion;
+  public void setAssertion(Assertion assertion) {
+    this.assertion = assertion;
   }
 
+  
 }

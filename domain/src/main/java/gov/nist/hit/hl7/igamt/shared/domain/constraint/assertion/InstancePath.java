@@ -33,5 +33,10 @@ public class InstancePath extends Path {
     this.instanceParameter = instanceParameter;
   }
 
+  @Override
+  public String toString() {
+    return "InstancePath [instanceParameter=" + instanceParameter + ", toString()="
+        + super.toString() + "]";
+  }
 
 }

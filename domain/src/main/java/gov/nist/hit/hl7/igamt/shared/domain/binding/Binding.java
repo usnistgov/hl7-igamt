@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.binding;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -27,7 +28,7 @@ public abstract class Binding {
    * elementId of child of child : 1st component id of 3rd field Datatype
    */
   protected String elementId;
-  protected Set<StructureElementBinding> children;
+  protected Set<StructureElementBinding> children = new HashSet<StructureElementBinding>();
 
   public Binding() {
     super();

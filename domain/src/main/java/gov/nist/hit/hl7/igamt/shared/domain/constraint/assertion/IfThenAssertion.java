@@ -21,17 +21,11 @@ public class IfThenAssertion extends MultipleAssertion {
    * This is if_assertion statement.
    */
   private Assertion ifAssertion;
-  
+
   /*
    * This is then_assertion statement.
    */
   private Assertion thenAssertion;
-
-  public IfThenAssertion(Assertion ifAssertion, Assertion thenAssertion) {
-    super();
-    this.ifAssertion = ifAssertion;
-    this.thenAssertion = thenAssertion;
-  }
 
   public Assertion getIfAssertion() {
     return ifAssertion;
@@ -48,4 +42,11 @@ public class IfThenAssertion extends MultipleAssertion {
   public void setThenAssertion(Assertion thenAssertion) {
     this.thenAssertion = thenAssertion;
   }
+
+  @Override
+  public String toString() {
+    return "IfThenAssertion [ifAssertion=" + ifAssertion + ", thenAssertion=" + thenAssertion + "]";
+  }
+
+
 }

@@ -18,11 +18,6 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
 public abstract class Complement {
   protected ComplementKey complementKey;
 
-  public Complement(ComplementKey complementKey) {
-    super();
-    this.complementKey = complementKey;
-  }
-
   public ComplementKey getComplementKey() {
     return complementKey;
   }

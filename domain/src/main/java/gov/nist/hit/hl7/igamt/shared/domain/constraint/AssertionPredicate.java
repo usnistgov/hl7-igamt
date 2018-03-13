@@ -11,24 +11,25 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class SingleConformanceStatement extends ConformanceStatement {
-  private SingleAssertion simpleAssertion;
+public class AssertionPredicate extends Predicate {
+  private Assertion assertion;
 
-  public SingleConformanceStatement() {
+  public AssertionPredicate() {
     super();
   }
 
-  public SingleAssertion getSimpleAssertion() {
-    return simpleAssertion;
+  public Assertion getAssertion() {
+    return assertion;
   }
 
-  public void setSimpleAssertion(SingleAssertion simpleAssertion) {
-    this.simpleAssertion = simpleAssertion;
+  public void setAssertion(Assertion assertion) {
+    this.assertion = assertion;
   }
+
 }

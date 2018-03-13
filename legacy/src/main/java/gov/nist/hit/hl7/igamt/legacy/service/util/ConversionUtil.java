@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.legacy.service.impl.util;
+package gov.nist.hit.hl7.igamt.legacy.service.util;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;

@@ -53,8 +53,12 @@ public class ValuesetBinding {
 
   public void addValuesetLocation(String location) {
     this.valuesetLocations.add(location);
-    
+
   }
 
-
+  @Override
+  public String toString() {
+    return "ValuesetBinding [valuesetId=" + valuesetId + ", strength=" + strength
+        + ", valuesetLocations=" + valuesetLocations + "]";
+  }
 }

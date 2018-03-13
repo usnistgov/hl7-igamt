@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
-import gov.nist.hit.hl7.igamt.legacy.service.impl.util.ConversionUtil;
+import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 

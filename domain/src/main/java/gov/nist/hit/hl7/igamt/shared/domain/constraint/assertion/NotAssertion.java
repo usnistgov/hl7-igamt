@@ -9,31 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
-
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.MultipleAssertion;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class MultipleConformanceStatement extends ConformanceStatement {
+public class NotAssertion extends MultipleAssertion {
+  private Assertion child;
 
-  private MultipleAssertion complexAssertion;
-
-
-  public MultipleConformanceStatement() {
-    super();
+  public Assertion getChild() {
+    return child;
   }
 
-  public MultipleAssertion getComplexAssertion() {
-    return complexAssertion;
+  public void setChild(Assertion child) {
+    this.child = child;
   }
 
-  public void setComplexAssertion(MultipleAssertion complexAssertion) {
-    this.complexAssertion = complexAssertion;
+  @Override
+  public String toString() {
+    return "NotAssertion [child=" + child + "]";
   }
-
 
 
 }

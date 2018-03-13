@@ -1,16 +1,10 @@
-package gov.nist.hit.hl7.igamt.legacy.service.impl.util;
+package gov.nist.hit.hl7.igamt.legacy.service.util;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Comment;
@@ -54,19 +48,21 @@ public class BindingHandler {
        */
       List<ConformanceStatement> oldConformanceStatements = oldDatatype.getConformanceStatements();
       for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
-        gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement newConformanceStatement =
-            new gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement();
-        newConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
         if (oldConformanceStatement.getAssertion() != null
             && !oldConformanceStatement.getAssertion().equals("")) {
-          Document assertionDoc =
-              this.convertStringToDocument(oldConformanceStatement.getAssertion());
+          ConstraintHandler cHandler = new ConstraintHandler(datatypeRepository);
 
-
+          gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement newAssertionConformanceStatement =
+              new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement();
+          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
+          newAssertionConformanceStatement.setAssertion(cHandler.constructAssertionObjForDatatype(
+              oldConformanceStatement.getAssertion(),oldConformanceStatement.getDescription(), oldDatatype, "Assertion"));
+          rb.addConformanceStatement(newAssertionConformanceStatement);
         } else {
           gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
-              (gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement) newConformanceStatement;
+              new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement();
           newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
+          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
           rb.addConformanceStatement(newFreeConformanceStatement);
         }
       }
@@ -82,8 +78,6 @@ public class BindingHandler {
 
     StructureElementBinding seb = new StructureElementBinding();
     seb.setElementId(c.getId());
-    Datatype childDatatype = datatypeRepository.findOne(c.getDatatype().getId());
-
 
     /*
      * Convert Comments
@@ -121,37 +115,45 @@ public class BindingHandler {
         newValuesetBinding
             .setStrength(this.mapValueSetStrength(oldValueSetBinding.getBindingStrength()));
         newValuesetBinding.setValuesetId(oldValueSetBinding.getTableId());
-        if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0
-            && this.isValueSetComplexDatatype(childDatatype)) {
-          if (oldValueSetBinding.getBindingLocation() == null) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("1")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("2")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 2).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("3")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 3).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("4")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("1 or 4")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
-          } else if (oldValueSetBinding.getBindingLocation().equals("1 or 4 or 10")) {
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
-            newValuesetBinding.addValuesetLocation(
-                this.findComponentByPosition(childDatatype.getComponents(), 10).getId());
+        
+        if(c.getDatatype() != null && c.getDatatype().getId() != null){
+          Datatype childDatatype = datatypeRepository.findOne(c.getDatatype().getId());
+          
+          if(childDatatype != null){
+            if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0
+                && this.isValueSetComplexDatatype(childDatatype)) {
+              if (oldValueSetBinding.getBindingLocation() == null) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("1")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("2")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 2).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("3")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 3).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("4")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("1 or 4")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
+              } else if (oldValueSetBinding.getBindingLocation().equals("1 or 4 or 10")) {
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 1).getId());
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 4).getId());
+                newValuesetBinding.addValuesetLocation(
+                    this.findComponentByPosition(childDatatype.getComponents(), 10).getId());
+              }
+            }
           }
         }
+        
         seb.addValuesetBinding(newValuesetBinding);
       } else if (oldValueSetOrSingleCodeBinding instanceof SingleCodeBinding) {
         SingleCodeBinding oldSingleCodeBinding = (SingleCodeBinding) oldValueSetOrSingleCodeBinding;
@@ -164,19 +166,25 @@ public class BindingHandler {
     }
 
     /*
-     * Convert ConformanceStatement
+     * Convert Predicate
      */
     Predicate oldPredicate = this.findPredicate(oldDatatype, path);
     if (oldPredicate != null) {
-      gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate newPredicate =
-          new gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate();
-      newPredicate.setFalseUsage(this.convertUsage(oldPredicate.getFalseUsage()));
-      newPredicate.setTrueUsage(this.convertUsage(oldPredicate.getTrueUsage()));
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
-        // TODO
+        ConstraintHandler cHandler = new ConstraintHandler(datatypeRepository);
+
+        gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionPredicate newAssertionPredicate =
+            new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionPredicate();
+        newAssertionPredicate.setFalseUsage(this.convertUsage(oldPredicate.getFalseUsage()));
+        newAssertionPredicate.setTrueUsage(this.convertUsage(oldPredicate.getTrueUsage()));
+        newAssertionPredicate.setAssertion(cHandler.constructAssertionObjForDatatype(
+            oldPredicate.getAssertion(), oldPredicate.getDescription() ,oldDatatype, "Condition"));
+        seb.setPredicate(newAssertionPredicate);
       } else {
         gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextPredicate newFreeTextPredicate =
-            (gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextPredicate) newPredicate;
+            new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextPredicate();
+        newFreeTextPredicate.setFalseUsage(this.convertUsage(oldPredicate.getFalseUsage()));
+        newFreeTextPredicate.setTrueUsage(this.convertUsage(oldPredicate.getTrueUsage()));
         newFreeTextPredicate.setFreeText(oldPredicate.getDescription());
         seb.setPredicate(newFreeTextPredicate);
       }
@@ -185,11 +193,16 @@ public class BindingHandler {
     /*
      * Child
      */
-    if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
-      for (Component childC : childDatatype.getComponents()) {
-        String childPath = path + "." + childC.getPosition();
+    if(c.getDatatype() != null && c.getDatatype().getId() != null){
+      Datatype childDatatype = datatypeRepository.findOne(c.getDatatype().getId());
+      if(childDatatype != null){
+        if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
+          for (Component childC : childDatatype.getComponents()) {
+            String childPath = path + "." + childC.getPosition();
 
-        seb.addChild(constructResourceBindingForComponent(oldDatatype, childPath, childC));
+            seb.addChild(constructResourceBindingForComponent(oldDatatype, childPath, childC));
+          }
+        }        
       }
     }
 
@@ -290,18 +303,5 @@ public class BindingHandler {
 
   public void setDatatypeRepository(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
-  }
-
-  private static Document convertStringToDocument(String xmlStr) {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder builder;
-    try {
-      builder = factory.newDocumentBuilder();
-      Document doc = builder.parse(new InputSource(new StringReader(xmlStr)));
-      return doc;
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 }
