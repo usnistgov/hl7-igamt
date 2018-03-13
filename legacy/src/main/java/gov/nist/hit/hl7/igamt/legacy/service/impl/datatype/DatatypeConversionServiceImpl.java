@@ -47,10 +47,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 public class DatatypeConversionServiceImpl implements ConversionService{
 
   @Autowired
-  DatatypeRepository oldDatatypeRepository;
+  DatatypeRepository oldDatatypeRepository = (DatatypeRepository) legacyContext.getBean("datatypeRepository");
   
   @Autowired
-  DatatypeService convertedDatatypeService;
+  DatatypeService convertedDatatypeService = (DatatypeService) context.getBean("datatypeService");
   
   @Override
   public void convert() {

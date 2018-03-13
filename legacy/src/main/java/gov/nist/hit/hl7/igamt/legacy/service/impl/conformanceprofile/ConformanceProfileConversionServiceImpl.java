@@ -45,10 +45,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
 public class ConformanceProfileConversionServiceImpl implements ConversionService {
 
   @Autowired
-  private ConformanceProfileRepository conformanceProfileRepository;
+  private ConformanceProfileRepository conformanceProfileRepository = (ConformanceProfileRepository) context.getBean("conformanceProfileRepository");
   
   @Autowired
-  private MessageRepository messageRepository;
+  private MessageRepository messageRepository = (MessageRepository) legacyContext.getBean("messageRepository");
   
   @Override
   public void convert() {
