@@ -11,6 +11,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 @Document(collection = "segment")
 
 public class Segment extends Resource {
+  private String ext;
   private ResourceBinding binding;
 
   private Set<Field> children;
@@ -33,6 +34,14 @@ public class Segment extends Resource {
 
   public void setChildren(Set<Field> children) {
     this.children = children;
+  }
+
+  public String getExt() {
+    return ext;
+  }
+
+  public void setExt(String ext) {
+    this.ext = ext;
   }
 
 

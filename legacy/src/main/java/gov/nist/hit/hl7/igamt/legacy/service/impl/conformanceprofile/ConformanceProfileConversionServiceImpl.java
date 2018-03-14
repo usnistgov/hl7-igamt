@@ -55,16 +55,20 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 public class ConformanceProfileConversionServiceImpl implements ConversionService{
 
   @Autowired
-  private MessageRepository oldMessageRepository = (MessageRepository) legacyContext.getBean("messageRepository");
-  
+  private MessageRepository oldMessageRepository =
+      (MessageRepository) legacyContext.getBean("messageRepository");
+
   @Autowired
-  private SegmentRepository oldSegmentRepository = (SegmentRepository) legacyContext.getBean("segmentRepository");
-  
+  private SegmentRepository oldSegmentRepository =
+      (SegmentRepository) legacyContext.getBean("segmentRepository");
+
   @Autowired
-  private DatatypeRepository oldDatatypeRepository = (DatatypeRepository) legacyContext.getBean("datatypeRepository");
-  
+  private DatatypeRepository oldDatatypeRepository =
+      (DatatypeRepository) legacyContext.getBean("datatypeRepository");
+
   @Autowired
-  private ConformanceProfileService convertedConformanceProfileService = (ConformanceProfileService) context.getBean("conformanceProfileService");
+  private ConformanceProfileService convertedConformanceProfileService =
+      (ConformanceProfileService) context.getBean("conformanceProfileService");
   
   @Override
   public void convert() {
