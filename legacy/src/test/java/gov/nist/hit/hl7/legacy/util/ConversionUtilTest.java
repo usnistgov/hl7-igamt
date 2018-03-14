@@ -15,6 +15,9 @@ package gov.nist.hit.hl7.legacy.util;
 
 import static org.junit.Assert.*;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import org.junit.Test;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
@@ -49,6 +52,22 @@ public class ConversionUtilTest {
     assertEquals(Usage.RE,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.RE));
     assertEquals(Usage.W,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.W));
     assertEquals(Usage.X,ConversionUtil.convertUsage(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Usage.X));
+  }
+  
+  @Test
+  public void testConvertPublicationDate() {
+    Date convertedDate = ConversionUtil.convertPublicationDate("2017/01/18 10:57:47");
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(convertedDate);
+    assertEquals(cal.get(Calendar.DAY_OF_MONTH),18);
+    assertEquals(cal.get(Calendar.MONTH),0);
+    assertEquals(cal.get(Calendar.YEAR),2017);
+    assertEquals(cal.get(Calendar.HOUR_OF_DAY),10);
+    assertEquals(cal.get(Calendar.MINUTE),57);
+    assertEquals(cal.get(Calendar.SECOND),47);
+    assertNull(ConversionUtil.convertPublicationDate(null));
+    assertNull(ConversionUtil.convertPublicationDate(""));
+    assertNull(ConversionUtil.convertPublicationDate("        "));
   }
   
 }
