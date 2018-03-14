@@ -30,7 +30,14 @@ import org.xml.sax.InputSource;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Component;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Group;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Message;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
+import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Assertion;
@@ -49,6 +56,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Form
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.FormattedComplement.FormatType;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.GenericComplement;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.ListValuesComplement;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Parameter;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.PresenceComplement;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.SameValueComplement;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.ValuesetComplement;
@@ -58,101 +66,133 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Valu
  *
  */
 public class ConstraintHandler {
-  
+
   @Autowired
   private DatatypeRepository datatypeRepository;
 
-  
+  @Autowired
+  private SegmentRepository segmentRepository;
+
   public ConstraintHandler(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
   }
-  
-  /*
-   * rootName is "Assertion" for ConformanceStatement
-   * rootName is "Condition" for Predicate
+
+  public ConstraintHandler(SegmentRepository segmentRepository,
+      DatatypeRepository datatypeRepository) {
+    this.segmentRepository = segmentRepository;
+    this.datatypeRepository = datatypeRepository;
+  }
+
+  /**
+   * @param assertion
+   * @param description
+   * @param oldMessage
+   * @param string
+   * @return
    */
-  public Assertion constructAssertionObjForDatatype(String assertionStr, String desc, Datatype dt, String rootName) {
-    if(!assertionStr.startsWith("<" + rootName + ">")){
+  public Assertion constructAssertionObj(String assertionStr, String description, Object o,
+      String rootName) {
+    if (!assertionStr.startsWith("<" + rootName + ">")) {
       assertionStr = "<" + rootName + ">" + assertionStr + "</" + rootName + ">";
     }
     Document doc = this.convertStringToDocument(assertionStr);
     Node assertionNode = doc.getElementsByTagName(rootName).item(0);
-    Assertion result = constructAssertionObj(this.findFirstChild(assertionNode), dt);
-    result.setDescription(desc);
+    Assertion result = constructAssertionObj(this.findFirstChild(assertionNode), o);
+    result.setDescription(description);
     return result;
   }
-  
+
   /**
    * @param assertionNode
    * @param dt
-   * @return 
+   * @return
    */
-  private Assertion constructAssertionObj(Node assertionNode, Datatype dt) {
+  private Assertion constructAssertionObj(Node assertionNode, Object obj) {
     if (this.isCompositeOrNotConstraint(assertionNode)) {
       if (assertionNode != null) {
         if (assertionNode.getNodeName().equals("NOT")) {
           NotAssertion notAssertion = new NotAssertion();
-          notAssertion.setChild(this.constructAssertionObj(this.findFirstChild(assertionNode), dt));
+          notAssertion
+              .setChild(this.constructAssertionObj(this.findFirstChild(assertionNode), obj));
           return notAssertion;
-        }else if (assertionNode.getNodeName().equals("AND") || assertionNode.getNodeName().equals("OR")) {
+        } else if (assertionNode.getNodeName().equals("AND")
+            || assertionNode.getNodeName().equals("OR")) {
           OperatorAssertion operatorAssertion = new OperatorAssertion();
           operatorAssertion.setOperator(Operator.valueOf(assertionNode.getNodeName()));
-          operatorAssertion.addAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 1), dt));
-          operatorAssertion.addAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 2), dt));
+          operatorAssertion
+              .addAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 1), obj));
+          operatorAssertion
+              .addAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 2), obj));
           return operatorAssertion;
-        }else if (assertionNode.getNodeName().equals("IMPLY")) {
+        } else if (assertionNode.getNodeName().equals("IMPLY")) {
           System.out.println("IF");
           IfThenAssertion ifThenAssertion = new IfThenAssertion();
-          ifThenAssertion.setIfAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 1), dt));
-          ifThenAssertion.setThenAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 2), dt));
+          ifThenAssertion.setIfAssertion(
+              this.constructAssertionObj(this.findChildByNum(assertionNode, 1), obj));
+          ifThenAssertion.setThenAssertion(
+              this.constructAssertionObj(this.findChildByNum(assertionNode, 2), obj));
           return ifThenAssertion;
-        }else if (assertionNode.getNodeName().equals("FORALL")) {
+        } else if (assertionNode.getNodeName().equals("FORALL")) {
           OperatorAssertion operatorAssertion = new OperatorAssertion();
           operatorAssertion.setOperator(Operator.AND);
           List<Node> childNodes = this.findAllChild(assertionNode);
-          for(Node child:childNodes){
-            operatorAssertion.addAssertion(this.constructAssertionObj(child, dt));
+          for (Node child : childNodes) {
+            operatorAssertion.addAssertion(this.constructAssertionObj(child, obj));
           }
           return operatorAssertion;
-        }else if (assertionNode.getNodeName().equals("EXIST")) {
+        } else if (assertionNode.getNodeName().equals("EXIST")) {
           OperatorAssertion operatorAssertion = new OperatorAssertion();
           operatorAssertion.setOperator(Operator.OR);
           List<Node> childNodes = this.findAllChild(assertionNode);
-          for(Node child:childNodes){
-            operatorAssertion.addAssertion(this.constructAssertionObj(child, dt));
+          for (Node child : childNodes) {
+            operatorAssertion.addAssertion(this.constructAssertionObj(child, obj));
           }
           return operatorAssertion;
         }
       }
     } else {
-      SingleAssertion singleAssertion = this.constructSingleAssertionObjForDatatype(dt, assertionNode);
+      SingleAssertion singleAssertion = this.constructSingleAssertionObj(obj, assertionNode);
       return singleAssertion;
     }
 
     return null;
-    
+
   }
 
-  private SingleAssertion constructSingleAssertionObjForDatatype(Datatype dt, Node childNode){
+  /**
+   * @param m
+   * @param assertionNode
+   * @return
+   */
+  private SingleAssertion constructSingleAssertionObj(Object obj, Node childNode) {
     SingleAssertion singleAssertion = new SingleAssertion();
-    
+
     if (childNode != null) {
       if (childNode.getNodeName().equals("Presence")) {
-        this.constructSimplePresenceAssertion(singleAssertion, childNode, dt);
+        this.constructSimplePresenceAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("PlainText")) {
-        this.constructSimplePlainTextAssertion(singleAssertion, childNode, dt);
+        this.constructSimplePlainTextAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("StringList")) {
-        this.constructSimpleStringListAssertion(singleAssertion, childNode, dt);
+        this.constructSimpleStringListAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("ValueSet")) {
-        this.constructSimpleValueSetAssertion(singleAssertion, childNode, dt);
+        this.constructSimpleValueSetAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("Format")) {
-        this.constructSimpleFormatAssertion(singleAssertion, childNode, dt);
+        this.constructSimpleFormatAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("PathValue")) {
-        this.constructSimplePathValueAssertion(singleAssertion, childNode, dt);
+        this.constructSimplePathValueAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("SimpleValue")) {
-        this.constructSimpleSimpleValueAssertion(singleAssertion, childNode, dt);
+        this.constructSimpleSimpleValueAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("SetID")) {
-        this.constructSimpleSetIDAssertion(singleAssertion, childNode, dt);
+        this.constructSimpleSetIDAssertion(singleAssertion, childNode, obj);
+      } else if (childNode.getNodeName().equals("IZSetID")) {
+        this.constructSimpleIZSetIDAssertion(singleAssertion, childNode, obj);
+      } else{
+        try {
+          throw new Exception();
+        } catch (Exception e) {
+          System.out.println("Not Found");
+          e.printStackTrace();
+        } 
       }
     }
     return singleAssertion;
@@ -162,215 +202,226 @@ public class ConstraintHandler {
    * @param singleAssertion
    * @param presenceNode
    */
-  private void constructSimplePresenceAssertion(SingleAssertion singleAssertion, Node presenceNode, Datatype dt) {
-    String path = ((Element)presenceNode).getAttribute("Path");
-    
+  private void constructSimplePresenceAssertion(SingleAssertion singleAssertion, Node presenceNode,
+      Object obj) {
+    String path = ((Element) presenceNode).getAttribute("Path");
+
     PresenceComplement presenceComplement = new PresenceComplement();
-    
+
     singleAssertion.setComplement(presenceComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   /**
    * @param singleAssertion
    * @param plainTextNode
    */
-  private void constructSimplePlainTextAssertion(SingleAssertion singleAssertion, Node plainTextNode, Datatype dt) {
-    String path = ((Element)plainTextNode).getAttribute("Path");
-    boolean casesensitive = Boolean.parseBoolean(((Element)plainTextNode).getAttribute("IgnoreCase"));
-    String value = ((Element)plainTextNode).getAttribute("Text");
-    
+  private void constructSimplePlainTextAssertion(SingleAssertion singleAssertion,
+      Node plainTextNode, Object obj) {
+    String path = ((Element) plainTextNode).getAttribute("Path");
+    boolean casesensitive =
+        Boolean.parseBoolean(((Element) plainTextNode).getAttribute("IgnoreCase"));
+    String value = ((Element) plainTextNode).getAttribute("Text");
+
     SameValueComplement sameValueComplement = new SameValueComplement();
     sameValueComplement.setCasesensitive(casesensitive);
     sameValueComplement.setValue(value);
-    
+
     singleAssertion.setComplement(sameValueComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   /**
    * @param singleAssertion
    * @param stringListNode
    */
-  private void constructSimpleStringListAssertion(SingleAssertion singleAssertion, Node stringListNode, Datatype dt) {
-    String path = ((Element)stringListNode).getAttribute("Path");
-    String csvValue = ((Element)stringListNode).getAttribute("CSV");
+  private void constructSimpleStringListAssertion(SingleAssertion singleAssertion,
+      Node stringListNode, Object obj) {
+    String path = ((Element) stringListNode).getAttribute("Path");
+    String csvValue = ((Element) stringListNode).getAttribute("CSV");
 
     ListValuesComplement listValuesComplement = new ListValuesComplement();
     listValuesComplement.setValues(new HashSet<String>(Arrays.asList(csvValue.split(","))));
-    
+
     singleAssertion.setComplement(listValuesComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   /**
    * @param singleAssertion
    * @param childNode
    */
-  private void constructSimpleValueSetAssertion(SingleAssertion singleAssertion, Node valueSetNode, Datatype dt) {
-    String path = ((Element)valueSetNode).getAttribute("Path");
-    String valueSetID = ((Element)valueSetNode).getAttribute("ValueSetID");
-    String strengthStr = ((Element)valueSetNode).getAttribute("BindingStrength");
-    String bindingLocationStr = ((Element)valueSetNode).getAttribute("BindingLocation");
-    
+  private void constructSimpleValueSetAssertion(SingleAssertion singleAssertion, Node valueSetNode,
+      Object obj) {
+    String path = ((Element) valueSetNode).getAttribute("Path");
+    String valueSetID = ((Element) valueSetNode).getAttribute("ValueSetID");
+    String strengthStr = ((Element) valueSetNode).getAttribute("BindingStrength");
+    String bindingLocationStr = ((Element) valueSetNode).getAttribute("BindingLocation");
+
     ValuesetComplement valuesetComplement = new ValuesetComplement();
     ValuesetBinding binding = new ValuesetBinding();
     binding.setStrength(ValuesetStrength.fromValue(strengthStr));
     binding.setValuesetId(valueSetID);
-    binding.setValuesetLocations(this.constructBindingLocations(bindingLocationStr, dt));
-    
+    binding.setValuesetLocations(this.constructBindingLocations(bindingLocationStr));
+
     valuesetComplement.setBinding(binding);
 
     singleAssertion.setComplement(valuesetComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   /**
    * @param singleAssertion
    * @param childNode
    */
-  private void constructSimpleFormatAssertion(SingleAssertion singleAssertion, Node formatNode, Datatype dt) {
-    String path = ((Element)formatNode).getAttribute("Path");
-    String regex = ((Element)formatNode).getAttribute("Regex");
-    
+  private void constructSimpleFormatAssertion(SingleAssertion singleAssertion, Node formatNode,
+      Object obj) {
+    String path = ((Element) formatNode).getAttribute("Path");
+    String regex = ((Element) formatNode).getAttribute("Regex");
+
     FormattedComplement formattedComplement = new FormattedComplement();
     formattedComplement.setRegexPattern(regex);
     formattedComplement.setType(FormatType.regrex);
-    
+
     singleAssertion.setComplement(formattedComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   /**
    * @param singleAssertion
    * @param childNode
    */
-  private void constructSimplePathValueAssertion(SingleAssertion singleAssertion, Node pathValueNode, Datatype dt) {
-    String path1 = ((Element)pathValueNode).getAttribute("Path1");
-    String path2 = ((Element)pathValueNode).getAttribute("Path2");
-    String operatorStr = ((Element)pathValueNode).getAttribute("Operator");
-    
+  private void constructSimplePathValueAssertion(SingleAssertion singleAssertion,
+      Node pathValueNode, Object obj) {
+    String path1 = ((Element) pathValueNode).getAttribute("Path1");
+    String path2 = ((Element) pathValueNode).getAttribute("Path2");
+    String operatorStr = ((Element) pathValueNode).getAttribute("Operator");
+
     CompareNodeComplement compareNodeComplement = new CompareNodeComplement();
-    compareNodeComplement.setComparatorPath(this.constructSubject(path2, dt).getPath());
-    
-    if(operatorStr.equals("EQ")){
+    compareNodeComplement.setComparatorPath(this.constructSubject(path2, obj).getPath());
+
+    if (operatorStr.equals("EQ")) {
       compareNodeComplement.setOperator(CompareOperator.equal);
-    }else if(operatorStr.equals("NE")){
+    } else if (operatorStr.equals("NE")) {
       compareNodeComplement.setOperator(CompareOperator.notequal);
-    }else if(operatorStr.equals("GT")){
+    } else if (operatorStr.equals("GT")) {
       compareNodeComplement.setOperator(CompareOperator.greater);
-    }else if(operatorStr.equals("GE")){
+    } else if (operatorStr.equals("GE")) {
       compareNodeComplement.setOperator(CompareOperator.equalorgreater);
-    }else if(operatorStr.equals("LT")){
+    } else if (operatorStr.equals("LT")) {
       compareNodeComplement.setOperator(CompareOperator.less);
-    }else if(operatorStr.equals("LE")){
+    } else if (operatorStr.equals("LE")) {
       compareNodeComplement.setOperator(CompareOperator.equalorless);
     }
-    
-    singleAssertion.setComplement(compareNodeComplement);
-    singleAssertion.setSubject(this.constructSubject(path1, dt));
-    singleAssertion.setVerbKey("SHALL");  
 
-  }
-  
-  /**
-   * @param singleAssertion
-   * @param childNode
-   */
-  private void constructSimpleSimpleValueAssertion(SingleAssertion singleAssertion, Node simpleValueNode, Datatype dt) {
-    String path = ((Element)simpleValueNode).getAttribute("Path");
-    String operatorStr = ((Element)simpleValueNode).getAttribute("Operator");
-    String value = ((Element)simpleValueNode).getAttribute("Value");
-    
-    CompareValueComplement compareValueComplement = new CompareValueComplement();
-    compareValueComplement.setValue(value);
-    
-    if(operatorStr.equals("EQ")){
-      compareValueComplement.setOperator(CompareOperator.equal);
-    }else if(operatorStr.equals("NE")){
-      compareValueComplement.setOperator(CompareOperator.notequal);
-    }else if(operatorStr.equals("GT")){
-      compareValueComplement.setOperator(CompareOperator.greater);
-    }else if(operatorStr.equals("GE")){
-      compareValueComplement.setOperator(CompareOperator.equalorgreater);
-    }else if(operatorStr.equals("LT")){
-      compareValueComplement.setOperator(CompareOperator.less);
-    }else if(operatorStr.equals("LE")){
-      compareValueComplement.setOperator(CompareOperator.equalorless);
-    }
-    
-    singleAssertion.setComplement(compareValueComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setComplement(compareNodeComplement);
+    singleAssertion.setSubject(this.constructSubject(path1, obj));
     singleAssertion.setVerbKey("SHALL");
 
   }
-  
+
   /**
    * @param singleAssertion
    * @param childNode
    */
-  private void constructSimpleSetIDAssertion(SingleAssertion singleAssertion, Node setIdNode, Datatype dt) {
-    String path = ((Element)setIdNode).getAttribute("Path");
-    
+  private void constructSimpleSimpleValueAssertion(SingleAssertion singleAssertion,
+      Node simpleValueNode, Object obj) {
+    String path = ((Element) simpleValueNode).getAttribute("Path");
+    String operatorStr = ((Element) simpleValueNode).getAttribute("Operator");
+    String value = ((Element) simpleValueNode).getAttribute("Value");
+
+    CompareValueComplement compareValueComplement = new CompareValueComplement();
+    compareValueComplement.setValue(value);
+
+    if (operatorStr.equals("EQ")) {
+      compareValueComplement.setOperator(CompareOperator.equal);
+    } else if (operatorStr.equals("NE")) {
+      compareValueComplement.setOperator(CompareOperator.notequal);
+    } else if (operatorStr.equals("GT")) {
+      compareValueComplement.setOperator(CompareOperator.greater);
+    } else if (operatorStr.equals("GE")) {
+      compareValueComplement.setOperator(CompareOperator.equalorgreater);
+    } else if (operatorStr.equals("LT")) {
+      compareValueComplement.setOperator(CompareOperator.less);
+    } else if (operatorStr.equals("LE")) {
+      compareValueComplement.setOperator(CompareOperator.equalorless);
+    }
+
+    singleAssertion.setComplement(compareValueComplement);
+    singleAssertion.setSubject(this.constructSubject(path, obj));
+    singleAssertion.setVerbKey("SHALL");
+
+  }
+
+  /**
+   * @param singleAssertion
+   * @param childNode
+   */
+  private void constructSimpleSetIDAssertion(SingleAssertion singleAssertion, Node setIdNode,
+      Object obj) {
+    String path = ((Element) setIdNode).getAttribute("Path");
+
     GenericComplement genericComplement = new GenericComplement();
     genericComplement.setDescription("Simple SetID");
     genericComplement.setName("Simple SetID");
-    
+
     singleAssertion.setComplement(genericComplement);
-    singleAssertion.setSubject(this.constructSubject(path, dt));
+    singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
+  
+  private void constructSimpleIZSetIDAssertion(SingleAssertion singleAssertion, Node setIdNode,
+      Object obj) {
+    String path1 = ((Element) setIdNode).getAttribute("Element");
+    String path2 = ((Element) setIdNode).getAttribute("Parent");
+
+    GenericComplement genericComplement = new GenericComplement();
+    genericComplement.setDescription("IZSetID");
+    genericComplement.setName("IZSetID");
+    Set<Parameter> parms = new HashSet<Parameter>();
+    parms.add(new Parameter("Element", this.constructSubject(path1, obj)));
+    parms.add(new Parameter("Parent", this.constructSubject(path2, obj)));
+    genericComplement.setParms(parms);
+
+    singleAssertion.setComplement(genericComplement);
+    singleAssertion.setSubject(this.constructSubject(path1, obj));
+    singleAssertion.setVerbKey("SHALL");
+  }
+  
 
   /**
    * @param bindingLocationStr
    * @param dt
    * @return
    */
-  private Set<String> constructBindingLocations(String bindingLocationStr, Datatype dt) {
-    if(dt.getComponents() != null && dt.getComponents().size() > 0){
-      Set<String> results = new HashSet<String>();
-      
-      if (bindingLocationStr == null) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 1).getId());
-      } else if (bindingLocationStr.equals("1")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 1).getId());
-      } else if (bindingLocationStr.equals("2")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 2).getId());
-      } else if (bindingLocationStr.equals("3")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 3).getId());
-      } else if (bindingLocationStr.equals("4")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 4).getId());
-      } else if (bindingLocationStr.equals("1 or 4")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 1).getId());
-        results.add(this.findComponentByPosition(dt.getComponents(), 4).getId());
-      } else if (bindingLocationStr.equals("1 or 4 or 10")) {
-        results.add(this.findComponentByPosition(dt.getComponents(), 1).getId());
-        results.add(this.findComponentByPosition(dt.getComponents(), 4).getId());
-        results.add(this.findComponentByPosition(dt.getComponents(), 10).getId());
-      }     
-      
-      return results;
-    }else{
-      return null;
-    }
-  }
+  private Set<Integer> constructBindingLocations(String bindingLocationStr) {
+    Set<Integer> results = new HashSet<Integer>();
 
-  /**
-   * @param components
-   * @param i
-   * @return
-   */
-  private Component findComponentByPosition(List<Component> components, int i) {
-    for (Component c : components) {
-      if (c.getPosition() == i)
-        return c;
+    if (bindingLocationStr == null) {
+      results.add(1);
+    } else if (bindingLocationStr.equals("1")) {
+      results.add(1);
+    } else if (bindingLocationStr.equals("2")) {
+      results.add(2);
+    } else if (bindingLocationStr.equals("3")) {
+      results.add(3);
+    } else if (bindingLocationStr.equals("4")) {
+      results.add(4);
+    } else if (bindingLocationStr.equals("1 or 4")) {
+      results.add(1);
+      results.add(4);
+    } else if (bindingLocationStr.equals("1 or 4 or 10")) {
+      results.add(1);
+      results.add(4);
+      results.add(10);
     }
-    return null;
+
+    return results;
   }
 
   /**
@@ -378,17 +429,43 @@ public class ConstraintHandler {
    * @param dt
    * @return
    */
-  private Subject constructSubject(String path, Datatype dt) {
-    if(path != null){
-      Subject subject = new Subject();
-      Path pathObj = new Path();
-      pathObj.setElementId(dt.getId());
-
-      constructChildPath(pathObj, path, dt);
-      
-      subject.setPath(pathObj);
-      return subject;
+  private Subject constructSubject(String path, Object o) {
+    Subject subject = new Subject();
+    Path pathObj = new Path();
+    if (o instanceof Datatype) {
+      Datatype dt = (Datatype) o;
+      if (path != null) {
+        pathObj.setElementId(dt.getId());
+        constructChildPath(pathObj, path, dt);
+        subject.setPath(pathObj);
+        return subject;
+      }
+    } else if (o instanceof Segment) {
+      Segment s = (Segment) o;
+      if (path != null) {
+        pathObj.setElementId(s.getId());
+        constructChildPath(pathObj, path, s);
+        subject.setPath(pathObj);
+        return subject;
+      }
+    } else if (o instanceof Group) {
+      Group g = (Group) o;
+      if (path != null) {
+        pathObj.setElementId(g.getId());
+        constructChildPath(pathObj, path, g);
+        subject.setPath(pathObj);
+        return subject;
+      }
+    } else if (o instanceof Message) {
+      Message m = (Message) o;
+      if (path != null) {
+        pathObj.setElementId(m.getId());
+        constructChildPath(pathObj, path, m);
+        subject.setPath(pathObj);
+        return subject;
+      }
     }
+
     return null;
   }
 
@@ -397,34 +474,126 @@ public class ConstraintHandler {
    * @param path
    * @param dt
    */
-  private void constructChildPath(Path pathObj, String path, Datatype dt) {
+  private void constructChildPath(Path pathObj, String path, Object o) {
     String[] splits = path.split("\\.");
     String firstPath = splits[0];
-    
+
     String position = firstPath.substring(0, firstPath.indexOf("["));
     String instanceNum = firstPath.substring(firstPath.indexOf("[") + 1, firstPath.indexOf("]"));
-    
-    if(dt.getComponents() != null && dt.getComponents().size() > 0){
-      for(Component c:dt.getComponents()){
-        if(position.equals("" + c.getPosition())){
-          InstancePath iPathObj = new InstancePath();
-          iPathObj.setElementId(c.getId());
-          iPathObj.setInstanceParameter(instanceNum);
-          pathObj.setChild(iPathObj);
 
-          if(splits.length > 1){
-            Datatype childDt = datatypeRepository.findOne(c.getDatatype().getId());
-            List<String> list = new LinkedList<String>(Arrays.asList(splits));
-            list.remove(0);
-            if(childDt != null && childDt.getComponents() != null && childDt.getComponents().size() > 0){
-              constructChildPath(iPathObj, String.join(".", list), childDt);
-            }            
+    if (o instanceof Datatype) {
+      Datatype dt = (Datatype) o;
+      if (dt.getComponents() != null && dt.getComponents().size() > 0) {
+        for (Component c : dt.getComponents()) {
+          if (position.equals("" + c.getPosition())) {
+            InstancePath iPathObj = new InstancePath();
+            iPathObj.setElementId(c.getId());
+            iPathObj.setInstanceParameter(instanceNum);
+            pathObj.setChild(iPathObj);
+
+            if (splits.length > 1) {
+              Datatype childDt = datatypeRepository.findOne(c.getDatatype().getId());
+              List<String> list = new LinkedList<String>(Arrays.asList(splits));
+              list.remove(0);
+              if (childDt != null && childDt.getComponents() != null
+                  && childDt.getComponents().size() > 0) {
+                constructChildPath(iPathObj, String.join(".", list), childDt);
+              }
+            }
+          }
+        }
+      }
+    } else if (o instanceof Segment) {
+      Segment s = (Segment) o;
+      if (s.getFields() != null && s.getFields().size() > 0) {
+        for (Field f : s.getFields()) {
+          if (position.equals("" + f.getPosition())) {
+            InstancePath iPathObj = new InstancePath();
+            iPathObj.setElementId(f.getId());
+            iPathObj.setInstanceParameter(instanceNum);
+            pathObj.setChild(iPathObj);
+
+            if (splits.length > 1) {
+              Datatype childDt = datatypeRepository.findOne(f.getDatatype().getId());
+              List<String> list = new LinkedList<String>(Arrays.asList(splits));
+              list.remove(0);
+              if (childDt != null && childDt.getComponents() != null
+                  && childDt.getComponents().size() > 0) {
+                constructChildPath(iPathObj, String.join(".", list), childDt);
+              }
+            }
+          }
+        }
+      }
+    } else if (o instanceof Group) {
+      Group g = (Group) o;
+      if (g.getChildren() != null && g.getChildren().size() > 0) {
+        for (SegmentRefOrGroup srog : g.getChildren()) {
+          if (position.equals("" + srog.getPosition())) {
+            InstancePath iPathObj = new InstancePath();
+            iPathObj.setElementId(srog.getId());
+            iPathObj.setInstanceParameter(instanceNum);
+            pathObj.setChild(iPathObj);
+
+            if (splits.length > 1) {
+              if (srog instanceof SegmentRef) {
+                SegmentRef sr = (SegmentRef) srog;
+                Segment childSeg = segmentRepository.findOne(sr.getRef().getId());
+                List<String> list = new LinkedList<String>(Arrays.asList(splits));
+                list.remove(0);
+                if (childSeg != null && childSeg.getFields() != null
+                    && childSeg.getFields().size() > 0) {
+                  constructChildPath(iPathObj, String.join(".", list), childSeg);
+                }
+              } else if (srog instanceof Group) {
+                Group childGroup = (Group) srog;
+                List<String> list = new LinkedList<String>(Arrays.asList(splits));
+                list.remove(0);
+                if (childGroup != null && childGroup.getChildren() != null
+                    && childGroup.getChildren().size() > 0) {
+                  constructChildPath(iPathObj, String.join(".", list), childGroup);
+                }
+              }
+            }
+          }
+        }
+      }
+    } else if (o instanceof Message) {
+      Message m = (Message) o;
+      if (m.getChildren() != null && m.getChildren().size() > 0) {
+        for (SegmentRefOrGroup srog : m.getChildren()) {
+          if (position.equals("" + srog.getPosition())) {
+            InstancePath iPathObj = new InstancePath();
+            iPathObj.setElementId(srog.getId());
+            iPathObj.setInstanceParameter(instanceNum);
+            pathObj.setChild(iPathObj);
+
+            if (splits.length > 1) {
+              if (srog instanceof SegmentRef) {
+                SegmentRef sr = (SegmentRef) srog;
+                Segment childSeg = segmentRepository.findOne(sr.getRef().getId());
+                List<String> list = new LinkedList<String>(Arrays.asList(splits));
+                list.remove(0);
+                if (childSeg != null && childSeg.getFields() != null
+                    && childSeg.getFields().size() > 0) {
+                  constructChildPath(iPathObj, String.join(".", list), childSeg);
+                }
+              } else if (srog instanceof Group) {
+                Group childGroup = (Group) srog;
+                List<String> list = new LinkedList<String>(Arrays.asList(splits));
+                list.remove(0);
+                if (childGroup != null && childGroup.getChildren() != null
+                    && childGroup.getChildren().size() > 0) {
+                  constructChildPath(iPathObj, String.join(".", list), childGroup);
+                }
+              }
+            }
           }
         }
       }
     }
   }
-  
+
   /**
    * @param assertionNode
    * @return
@@ -437,45 +606,45 @@ public class ConstraintHandler {
     }
     return null;
   }
-  
+
   private Node findChildByNum(Node assertionNode, int num) {
     int count = 1;
     for (int i = 0; i < assertionNode.getChildNodes().getLength(); i++) {
       if (assertionNode.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
-        if(count == num){
+        if (count == num) {
           return assertionNode.getChildNodes().item(i);
-        }else {
+        } else {
           count = count + 1;
         }
       }
     }
     return null;
   }
-  
+
   /**
    * @param assertionNode
    * @return
    */
   private List<Node> findAllChild(Node assertionNode) {
     List<Node> results = new ArrayList<Node>();
-    
+
     for (int i = 0; i < assertionNode.getChildNodes().getLength(); i++) {
       if (assertionNode.getChildNodes().item(i).getNodeType() == Node.ELEMENT_NODE) {
         results.add(assertionNode.getChildNodes().item(i));
       }
     }
-    
+
     return results;
   }
-  
+
   /**
    * @param assertionNode
    * @return
    */
   private boolean isCompositeOrNotConstraint(Node assertionNode) {
     if (Arrays.asList(new String[] {"AND", "OR", "XOR", "IMPLY", "FORALL", "EXIST", "NOT"})
-          .contains(assertionNode.getNodeName()))
-        return true;
+        .contains(assertionNode.getNodeName()))
+      return true;
     return false;
   }
 

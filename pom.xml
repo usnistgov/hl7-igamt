@@ -46,5 +46,6 @@
 		<module>legacy</module>
 		<module>bootstrap</module>
 		<module>conformance-profile</module>
+		<module>segment</module>
 	</modules>
 </project>

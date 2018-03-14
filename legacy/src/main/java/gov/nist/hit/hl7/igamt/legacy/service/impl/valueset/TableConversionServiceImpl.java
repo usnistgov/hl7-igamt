@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.service.impl.vlaueset;
+package gov.nist.hit.hl7.igamt.legacy.service.impl.valueset;
 
 import java.util.Date;
 import java.util.HashSet;

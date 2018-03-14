@@ -24,21 +24,24 @@ import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 public class ConversionUtil {
 
   public static Scope convertScope(SCOPE scope) {
-    if(scope.equals(SCOPE.HL7STANDARD)) {
-      return Scope.HL7STANDARD;
-    } else if (scope.equals(SCOPE.ARCHIVED)) {
-      return Scope.ARCHIVED;
-    } else if (scope.equals(SCOPE.INTERMASTER)) {
-      return Scope.INTERMASTER;
-    } else if (scope.equals(SCOPE.MASTER)) {
-      return Scope.MASTER;
-    } else if (scope.equals(SCOPE.PHINVADS)) {
-      return Scope.PHINVADS;
-    } else if (scope.equals(SCOPE.PRELOADED)) {
-      return Scope.PRELOADED;
-    } else if (scope.equals(SCOPE.USER)) {
-      return Scope.USER;
+    if(scope != null){
+      if(scope.equals(SCOPE.HL7STANDARD)) {
+        return Scope.HL7STANDARD;
+      } else if (scope.equals(SCOPE.ARCHIVED)) {
+        return Scope.ARCHIVED;
+      } else if (scope.equals(SCOPE.INTERMASTER)) {
+        return Scope.INTERMASTER;
+      } else if (scope.equals(SCOPE.MASTER)) {
+        return Scope.MASTER;
+      } else if (scope.equals(SCOPE.PHINVADS)) {
+        return Scope.PHINVADS;
+      } else if (scope.equals(SCOPE.PRELOADED)) {
+        return Scope.PRELOADED;
+      } else if (scope.equals(SCOPE.USER)) {
+        return Scope.USER;
+      }      
     }
+
     return null;
   }
   

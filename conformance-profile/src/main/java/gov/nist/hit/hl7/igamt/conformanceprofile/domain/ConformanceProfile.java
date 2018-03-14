@@ -13,12 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.Constraint;
+import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 /**
  *
@@ -26,17 +26,9 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.Constraint;
  */
 public class ConformanceProfile extends Resource {
 
-  private Set<MsgStructElement> children;
-  private StructureElementBinding binding;
-  private Set<Constraint> constraints;
-
-  public ConformanceProfile(Set<MsgStructElement> children, StructureElementBinding binding,
-      Set<Constraint> constraints) {
-    super();
-    this.children = children;
-    this.binding = binding;
-    this.constraints = constraints;
-  }
+  private String identifier;
+  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+  private ResourceBinding binding;
 
   public ConformanceProfile() {
     super();
@@ -50,20 +42,24 @@ public class ConformanceProfile extends Resource {
     this.children = children;
   }
 
-  public StructureElementBinding getBinding() {
+  public ResourceBinding getBinding() {
     return binding;
   }
 
-  public void setBinding(StructureElementBinding binding) {
+  public void setBinding(ResourceBinding binding) {
     this.binding = binding;
   }
 
-  public Set<Constraint> getConstraints() {
-    return constraints;
+  public String getIdentifier() {
+    return identifier;
   }
 
-  public void setConstraints(Set<Constraint> constraints) {
-    this.constraints = constraints;
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  public void addChild(MsgStructElement mse) {
+    this.children.add(mse);
   }
 
 }

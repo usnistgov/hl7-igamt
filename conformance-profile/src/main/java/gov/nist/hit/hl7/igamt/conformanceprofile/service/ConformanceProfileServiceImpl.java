@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
@@ -26,6 +27,7 @@ import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
  *
  * @author Maxence Lefort on Mar 9, 2018.
  */
+@Service("conformanceProfileService")
 public class ConformanceProfileServiceImpl implements ConformanceProfileService{
 
   @Autowired
@@ -61,6 +63,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService{
   @Override
   public void delete(CompositeKey key) {
     conformanceProfileRepository.delete(key);
+  }
+
+  @Override
+  public void removeCollection() {
+    conformanceProfileRepository.deleteAll();
+    
   }
   
 }

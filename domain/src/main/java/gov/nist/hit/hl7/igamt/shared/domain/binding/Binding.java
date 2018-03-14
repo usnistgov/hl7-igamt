@@ -28,7 +28,7 @@ public abstract class Binding {
    * elementId of child of child : 1st component id of 3rd field Datatype
    */
   protected String elementId;
-  protected Set<StructureElementBinding> children = new HashSet<StructureElementBinding>();
+  protected Set<StructureElementBinding> children;
 
   public Binding() {
     super();
@@ -58,6 +58,9 @@ public abstract class Binding {
   }
   
   public void addChild(StructureElementBinding childStructureElementBinding) {
+    if(children == null){
+      this.children = new HashSet<StructureElementBinding>();
+    }
     this.children.add(childStructureElementBinding); 
   }
 
