@@ -58,7 +58,7 @@ public abstract class Binding {
   }
   
   public void addChild(StructureElementBinding childStructureElementBinding) {
-    if(children == null){
+    if(this.children == null){
       this.children = new HashSet<StructureElementBinding>();
     }
     this.children.add(childStructureElementBinding); 

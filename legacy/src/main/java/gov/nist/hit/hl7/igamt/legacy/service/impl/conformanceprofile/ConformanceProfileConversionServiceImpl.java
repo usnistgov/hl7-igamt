@@ -151,6 +151,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       }
     }
     
+    newGroup.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertBindingForGroup(g));
+    
     children.add(newGroup);
     
   }

@@ -72,11 +72,7 @@ public class ConstraintHandler {
 
   @Autowired
   private SegmentRepository segmentRepository;
-
-  public ConstraintHandler(DatatypeRepository datatypeRepository) {
-    this.datatypeRepository = datatypeRepository;
-  }
-
+  
   public ConstraintHandler(SegmentRepository segmentRepository,
       DatatypeRepository datatypeRepository) {
     this.segmentRepository = segmentRepository;
@@ -95,6 +91,7 @@ public class ConstraintHandler {
     if (!assertionStr.startsWith("<" + rootName + ">")) {
       assertionStr = "<" + rootName + ">" + assertionStr + "</" + rootName + ">";
     }
+    System.out.println(assertionStr);
     Document doc = this.convertStringToDocument(assertionStr);
     Node assertionNode = doc.getElementsByTagName(rootName).item(0);
     Assertion result = constructAssertionObj(this.findFirstChild(assertionNode), o);
@@ -125,7 +122,6 @@ public class ConstraintHandler {
               .addAssertion(this.constructAssertionObj(this.findChildByNum(assertionNode, 2), obj));
           return operatorAssertion;
         } else if (assertionNode.getNodeName().equals("IMPLY")) {
-          System.out.println("IF");
           IfThenAssertion ifThenAssertion = new IfThenAssertion();
           ifThenAssertion.setIfAssertion(
               this.constructAssertionObj(this.findChildByNum(assertionNode, 1), obj));
@@ -166,7 +162,7 @@ public class ConstraintHandler {
    */
   private SingleAssertion constructSingleAssertionObj(Object obj, Node childNode) {
     SingleAssertion singleAssertion = new SingleAssertion();
-
+//<Plugin QualifiedClassName=\"gov.nist.healthcare.hl7.v2.iz.plugins.IZ24Constraint\"/>
     if (childNode != null) {
       if (childNode.getNodeName().equals("Presence")) {
         this.constructSimplePresenceAssertion(singleAssertion, childNode, obj);
@@ -186,11 +182,13 @@ public class ConstraintHandler {
         this.constructSimpleSetIDAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("IZSetID")) {
         this.constructSimpleIZSetIDAssertion(singleAssertion, childNode, obj);
-      } else{
+      } else if (childNode.getNodeName().equals("Plugin")) {
+        this.constructSimplePluginAssertion(singleAssertion, childNode, obj);
+      }else{
         try {
           throw new Exception();
         } catch (Exception e) {
-          System.out.println("Not Found");
+          System.out.println("Not Found for " + childNode.getNodeName());
           e.printStackTrace();
         } 
       }
@@ -393,6 +391,22 @@ public class ConstraintHandler {
     singleAssertion.setVerbKey("SHALL");
   }
   
+  private void constructSimplePluginAssertion(SingleAssertion singleAssertion, Node childNode,
+      Object obj) {
+    String qualifiedClassName = ((Element) childNode).getAttribute("QualifiedClassName");
+
+    GenericComplement genericComplement = new GenericComplement();
+    genericComplement.setDescription("Plugin");
+    genericComplement.setName("Plugin");
+    Set<Parameter> parms = new HashSet<Parameter>();
+    parms.add(new Parameter("QualifiedClassName", qualifiedClassName));
+    genericComplement.setParms(parms);
+
+    singleAssertion.setComplement(genericComplement);
+    singleAssertion.setVerbKey("SHALL");
+    
+  }
+  
 
   /**
    * @param bindingLocationStr
@@ -477,7 +491,6 @@ public class ConstraintHandler {
   private void constructChildPath(Path pathObj, String path, Object o) {
     String[] splits = path.split("\\.");
     String firstPath = splits[0];
-
     String position = firstPath.substring(0, firstPath.indexOf("["));
     String instanceNum = firstPath.substring(firstPath.indexOf("[") + 1, firstPath.indexOf("]"));
 
