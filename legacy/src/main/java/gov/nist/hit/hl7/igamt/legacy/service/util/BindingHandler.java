@@ -136,6 +136,47 @@ public class BindingHandler {
     }
     return null;
   }
+  
+  
+  public ResourceBinding convertBindingForSegment(Segment oldSegment) {
+    if (oldSegment.getFields() != null && oldSegment.getFields().size() > 0) {
+      ResourceBinding rb = new ResourceBinding();
+      rb.setElementId(oldSegment.getId());
+
+      for (Field f : oldSegment.getFields()) {
+        String path = "" + f.getPosition();
+        rb.addChild(constructStructureElementBinding(oldSegment, path, f));
+      }
+
+      /*
+       * Convert ConformanceStatement
+       */
+      List<ConformanceStatement> oldConformanceStatements = oldSegment.getConformanceStatements();
+      for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
+        if (oldConformanceStatement.getAssertion() != null
+            && !oldConformanceStatement.getAssertion().equals("")) {
+          ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
+
+          gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement newAssertionConformanceStatement =
+              new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement();
+          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
+          newAssertionConformanceStatement
+              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
+                  oldConformanceStatement.getDescription(), oldSegment, "Assertion"));
+          rb.addConformanceStatement(newAssertionConformanceStatement);
+        } else {
+          gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
+              new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement();
+          newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
+          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
+          rb.addConformanceStatement(newFreeConformanceStatement);
+        }
+      }
+
+      return rb;
+    }
+    return null;
+  }
 
   public ResourceBinding convertBindingForDatatype(Datatype oldDatatype) {
     if (oldDatatype.getComponents() != null && oldDatatype.getComponents().size() > 0) {

@@ -12,7 +12,7 @@ import com.mongodb.MongoClient;
 
 @Configuration
 @ComponentScan({"gov.nist.hit.hl7.igamt"})
-@EnableMongoRepositories({"gov.nist.hit.hl7.igamt"})
+@EnableMongoRepositories({"gov.nist.hit.hl7.igamt.segment", "gov.nist.hit.hl7.igamt.datatype", "gov.nist.hit.hl7.igamt.valueset", "gov.nist.hit.hl7.igamt.conformanceprofile"})
 public class ApplicationConfig {
 
   @Bean
