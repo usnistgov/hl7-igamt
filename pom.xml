@@ -52,5 +52,6 @@
 		<module>bootstrap</module>
 		<module>conformance-profile</module>
 		<module>export</module>
+		<module>serialization</module>
 	</modules>
 </project>
