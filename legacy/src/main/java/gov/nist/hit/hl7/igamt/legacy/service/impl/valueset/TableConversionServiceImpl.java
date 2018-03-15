@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -204,5 +205,11 @@ public class TableConversionServiceImpl implements ConversionService {
   private void init() {
     valuesetService.removeCollection();
     codeSystemService.removeCollection();
+  }
+
+  @Override
+  public Datatype convert(String id) {
+    // TODO Auto-generated method stub
+    return null;
   }
 }

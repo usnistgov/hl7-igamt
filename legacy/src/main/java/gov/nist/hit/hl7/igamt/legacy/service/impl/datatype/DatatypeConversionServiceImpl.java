@@ -67,6 +67,16 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     System.out.println(datatypes.size() + " have be coverted!");
   }
   
+  @Override
+  public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
+    Datatype oldDatatype = oldDatatypeRepository.findOne(id);
+    return this.convertDatatype(oldDatatype);
+  }
+  
+  public Datatype findOldDatatype(String id) {
+    return oldDatatypeRepository.findOne(id);
+  }
+  
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype){
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
     if(oldDatatype.getName().equals("DTM")) {

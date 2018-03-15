@@ -22,6 +22,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMComponentDefinition
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMConstraints;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMPredicate;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
@@ -125,6 +126,12 @@ public class SegmentConversionServiceImpl implements ConversionService{
   
   private void init() {
     convertedSegmentService.removeCollection();
+  }
+
+  @Override
+  public Datatype convert(String id) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }

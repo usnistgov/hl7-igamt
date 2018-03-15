@@ -31,6 +31,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
@@ -221,6 +222,12 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
   
   private void init() {
     convertedConformanceProfileService.removeCollection();
+  }
+
+  @Override
+  public Datatype convert(String id) {
+    // TODO Auto-generated method stub
+    return null;
   }
 
 }
