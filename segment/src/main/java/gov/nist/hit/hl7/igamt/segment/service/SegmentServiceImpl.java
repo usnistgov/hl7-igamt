@@ -59,8 +59,8 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public void delete(Segment datatype) {
-    segmentRepository.delete(datatype);
+  public void delete(Segment segment) {
+    segmentRepository.delete(segment);
   }
 
   @Override

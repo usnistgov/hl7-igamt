@@ -41,15 +41,16 @@ import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
  * @author Jungyub Woo on Mar 15, 2018.
  */
 public class SegmentConversionServiceImpl implements ConversionService{
-
+  @Autowired
+  private SegmentService convertedSegmentService = (SegmentService) context.getBean("segmentService");
+  
   @Autowired
   private SegmentRepository oldSegmentRepository = (SegmentRepository) legacyContext.getBean("segmentRepository");
   
   @Autowired
   private DatatypeRepository oldDatatypeRepository = (DatatypeRepository) legacyContext.getBean("datatypeRepository");
   
-  @Autowired
-  private SegmentService convertedSegmentService = (SegmentService) context.getBean("segmentService");
+
 
   
   @Override
