@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.service;
+package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.util.List;
 
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 

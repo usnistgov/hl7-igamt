@@ -45,52 +45,56 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-public class DatatypeConversionServiceImpl implements ConversionService{
+public class DatatypeConversionServiceImpl implements ConversionService {
 
   @Autowired
-  private DatatypeRepository oldDatatypeRepository = (DatatypeRepository) legacyContext.getBean("datatypeRepository");
-  
-  @Autowired
-  private DatatypeService convertedDatatypeService = (DatatypeService) context.getBean("datatypeService");
+  private DatatypeRepository oldDatatypeRepository =
+      (DatatypeRepository) legacyContext.getBean("datatypeRepository");
 
-  
+  @Autowired
+  private DatatypeService convertedDatatypeService =
+      (DatatypeService) context.getBean("datatypeService");
+
+
   @Override
   public void convert() {
     init();
     List<Datatype> oldDatatypes = oldDatatypeRepository.findAll();
-    for(Datatype oldDatatype : oldDatatypes) {
-      gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype = this.convertDatatype(oldDatatype);
+    for (Datatype oldDatatype : oldDatatypes) {
+      gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype =
+          this.convertDatatype(oldDatatype);
       convertedDatatypeService.save(convertedDatatype);
     }
-    List<gov.nist.hit.hl7.igamt.datatype.domain.Datatype> datatypes = convertedDatatypeService.findAll();
+    List<gov.nist.hit.hl7.igamt.datatype.domain.Datatype> datatypes =
+        convertedDatatypeService.findAll();
     System.out.println(oldDatatypes.size() + " will be coverted!");
     System.out.println(datatypes.size() + " have be coverted!");
   }
-  
-  @Override
+
   public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
     Datatype oldDatatype = oldDatatypeRepository.findOne(id);
     return this.convertDatatype(oldDatatype);
   }
-  
+
   public Datatype findOldDatatype(String id) {
     return oldDatatypeRepository.findOne(id);
   }
-  
-  private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype){
+
+  private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
-    if(oldDatatype.getName().equals("DTM")) {
+    if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();
       DTMConstraints dtmConstraints = oldDatatype.getDtmConstraints();
-      if(dtmConstraints != null) {
+      if (dtmConstraints != null) {
         DateTimeConstraints dateTimeConstraints = this.convertDateTimeConstraints(dtmConstraints);
-        ((DateTimeDatatype)convertedDatatype).setDateTimeConstraints(dateTimeConstraints);
+        ((DateTimeDatatype) convertedDatatype).setDateTimeConstraints(dateTimeConstraints);
       }
-    } else if(oldDatatype.getComponents().size()>0) {
+    } else if (oldDatatype.getComponents().size() > 0) {
       convertedDatatype = new ComplexDatatype();
       HashSet<gov.nist.hit.hl7.igamt.shared.domain.Component> convertedComponents = new HashSet<>();
-      for(Component component : oldDatatype.getComponents()) {
-        gov.nist.hit.hl7.igamt.shared.domain.Component convertedComponent = new gov.nist.hit.hl7.igamt.shared.domain.Component();
+      for (Component component : oldDatatype.getComponents()) {
+        gov.nist.hit.hl7.igamt.shared.domain.Component convertedComponent =
+            new gov.nist.hit.hl7.igamt.shared.domain.Component();
         convertedComponent.setId(component.getId());
         convertedComponent.setConfLength(component.getConfLength());
         convertedComponent.setCustom(false);
@@ -103,7 +107,7 @@ public class DatatypeConversionServiceImpl implements ConversionService{
         convertedComponent.setUsage(ConversionUtil.convertUsage(component.getUsage()));
         convertedComponents.add(convertedComponent);
       }
-      ((ComplexDatatype)convertedDatatype).setComponents(convertedComponents);
+      ((ComplexDatatype) convertedDatatype).setComponents(convertedComponents);
     } else {
       convertedDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
     }
@@ -120,26 +124,29 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     convertedDatatype.setPostDef(oldDatatype.getDefPostText());
     convertedDatatype.setPreDef(oldDatatype.getDefPreText());
     PublicationInfo publicationInfo = new PublicationInfo();
-    publicationInfo.setPublicationDate(ConversionUtil.convertPublicationDate(oldDatatype.getPublicationDate()));
+    publicationInfo.setPublicationDate(
+        ConversionUtil.convertPublicationDate(oldDatatype.getPublicationDate()));
     publicationInfo.setPublicationVersion(oldDatatype.getVersion());
     convertedDatatype.setPublicationInfo(publicationInfo);
     convertedDatatype.setPurposeAndUse(oldDatatype.getPurposeAndUse());
     convertedDatatype.setComment(oldDatatype.getComment());
-    //TODO replace binding and set username
-    
-    convertedDatatype.setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
+    // TODO replace binding and set username
+
+    convertedDatatype
+        .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
     convertedDatatype.setUsername("");
     return convertedDatatype;
   }
-  
+
   protected DateTimeConstraints convertDateTimeConstraints(DTMConstraints dtmConstraints) {
-    if(dtmConstraints != null) {
+    if (dtmConstraints != null) {
       DateTimeConstraints dateTimeConstraints = new DateTimeConstraints();
-      List<DateTimeComponentDefinition> dateTimeComponentDefinitions =
-          new ArrayList<>();
-      for(DTMComponentDefinition dtmComponentDefinition : dtmConstraints.getDtmComponentDefinitions()) {
-        DateTimeComponentDefinition dateTimeComponentDefinition = this.convertDateTimeComponentDefinition(dtmComponentDefinition);
-        if(dateTimeComponentDefinition != null) {
+      List<DateTimeComponentDefinition> dateTimeComponentDefinitions = new ArrayList<>();
+      for (DTMComponentDefinition dtmComponentDefinition : dtmConstraints
+          .getDtmComponentDefinitions()) {
+        DateTimeComponentDefinition dateTimeComponentDefinition =
+            this.convertDateTimeComponentDefinition(dtmComponentDefinition);
+        if (dateTimeComponentDefinition != null) {
           dateTimeComponentDefinitions.add(dateTimeComponentDefinition);
         }
       }
@@ -148,21 +155,29 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     }
     return null;
   }
-  
-  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(DTMComponentDefinition dtmComponentDefinition) {
+
+  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(
+      DTMComponentDefinition dtmComponentDefinition) {
     DTMPredicate dtmPredicate = dtmComponentDefinition.getDtmPredicate();
-    DateTimeComponentDefinition dateTimeComponentDefinition = new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(), dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(), ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()), convertDateTimePredicate(dtmPredicate));
+    DateTimeComponentDefinition dateTimeComponentDefinition =
+        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
+            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
+            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
+            convertDateTimePredicate(dtmPredicate));
     return dateTimeComponentDefinition;
   }
-  
+
   protected DateTimePredicate convertDateTimePredicate(DTMPredicate dtmPredicate) {
-    if(dtmPredicate != null){
-      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()), ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()), convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE, dtmPredicate.getValue());
-      
+    if (dtmPredicate != null) {
+      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()),
+          ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()),
+          convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE,
+          dtmPredicate.getValue());
+
     }
     return null;
   }
-  
+
   private void init() {
     convertedDatatypeService.removeCollection();
   }

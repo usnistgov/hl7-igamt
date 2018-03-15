@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
@@ -26,6 +27,7 @@ import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
  * 
  * Created by Maxence Lefort on Feb 20, 2018.
  */
+@Service("profileComponentService")
 public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
@@ -67,6 +69,11 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   @Override
   public void delete(CompositeKey id) {
     profileComponentRepository.delete(id);
+  }
+
+  @Override
+  public void removeCollection() {
+    profileComponentRepository.deleteAll();
   }
 
 }

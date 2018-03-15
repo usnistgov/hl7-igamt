@@ -31,7 +31,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
@@ -53,7 +52,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
  *
  * @author Jungyub Woo on Mar 15, 2018.
  */
-public class ConformanceProfileConversionServiceImpl implements ConversionService{
+public class ConformanceProfileConversionServiceImpl implements ConversionService {
 
   @Autowired
   private MessageRepository oldMessageRepository =
@@ -70,12 +69,12 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
   @Autowired
   private ConformanceProfileService convertedConformanceProfileService =
       (ConformanceProfileService) context.getBean("conformanceProfileService");
-  
+
   @Override
   public void convert() {
     init();
     List<Message> oldMessages = oldMessageRepository.findAll();
-    for(Message oldMessage : oldMessages) {
+    for (Message oldMessage : oldMessages) {
       ConformanceProfile convertedConformanceProfile = this.convertConformanceProfile(oldMessage);
       convertedConformanceProfileService.save(convertedConformanceProfile);
     }
@@ -83,15 +82,15 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     System.out.println(oldMessages.size() + " will be coverted!");
     System.out.println(conformanceProfiles.size() + " have be coverted!");
   }
-  
-  private ConformanceProfile convertConformanceProfile(Message oldMessage){
+
+  private ConformanceProfile convertConformanceProfile(Message oldMessage) {
     ConformanceProfile convertedConformanceProfile = new ConformanceProfile();
-    
-    for(SegmentRefOrGroup seog:oldMessage.getChildren()){
-      if(seog instanceof SegmentRef){
-        constructSegmentRef(convertedConformanceProfile.getChildren(), (SegmentRef)seog);
-      }else if(seog instanceof Group){
-        constructSegmentGroup(convertedConformanceProfile.getChildren(), (Group)seog);
+
+    for (SegmentRefOrGroup seog : oldMessage.getChildren()) {
+      if (seog instanceof SegmentRef) {
+        constructSegmentRef(convertedConformanceProfile.getChildren(), (SegmentRef) seog);
+      } else if (seog instanceof Group) {
+        constructSegmentGroup(convertedConformanceProfile.getChildren(), (Group) seog);
       }
     }
 
@@ -100,8 +99,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     convertedConformanceProfile.setName(oldMessage.getName());
     convertedConformanceProfile.setDescription(oldMessage.getDescription());
     DomainInfo domainInfo = new DomainInfo();
-    //TODO need compatibilityVersion for message?
-//    domainInfo.setCompatibilityVersion(new HashSet<String>(oldMessage.getHl7Version()));
+    // TODO need compatibilityVersion for message?
+    // domainInfo.setCompatibilityVersion(new HashSet<String>(oldMessage.getHl7Version()));
     domainInfo.setScope(ConversionUtil.convertScope(oldMessage.getScope()));
     domainInfo.setVersion(oldMessage.getHl7Version());
     convertedConformanceProfile.setDomainInfo(domainInfo);
@@ -110,32 +109,37 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     convertedConformanceProfile.setPreDef(oldMessage.getDefPreText());
     PublicationInfo publicationInfo = new PublicationInfo();
     try {
-      publicationInfo.setPublicationDate(oldMessage.getPublicationDate() != null ? new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss").parse(oldMessage.getPublicationDate()) : null);
+      publicationInfo.setPublicationDate(oldMessage.getPublicationDate() != null
+          ? new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss").parse(oldMessage.getPublicationDate())
+          : null);
     } catch (ParseException e) {
       e.printStackTrace();
     } finally {
       publicationInfo.setPublicationDate(null);
     }
-    //TODO why is it int?
+    // TODO why is it int?
     publicationInfo.setPublicationVersion(oldMessage.getPublicationVersion() + "");
     convertedConformanceProfile.setPublicationInfo(publicationInfo);
     convertedConformanceProfile.setComment(oldMessage.getComment());
-    //TODO replace binding and set username
-    convertedConformanceProfile.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(oldMessage));
+    // TODO replace binding and set username
+    convertedConformanceProfile
+        .setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
+            .convertResourceBinding(oldMessage));
     convertedConformanceProfile.setUsername("");
     return convertedConformanceProfile;
   }
-  
+
   /**
    * @param children
    * @param seog
    */
   private void constructSegmentGroup(Set<MsgStructElement> children, Group g) {
-    gov.nist.hit.hl7.igamt.shared.domain.Group newGroup = new gov.nist.hit.hl7.igamt.shared.domain.Group();
-    
-    if(g.getAdded().equals(Constant.YES)){
+    gov.nist.hit.hl7.igamt.shared.domain.Group newGroup =
+        new gov.nist.hit.hl7.igamt.shared.domain.Group();
+
+    if (g.getAdded().equals(Constant.YES)) {
       newGroup.setCustom(true);
-    }else{
+    } else {
       newGroup.setCustom(false);
     }
     newGroup.setId(g.getId());
@@ -143,23 +147,24 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     newGroup.setMin(g.getMin());
     newGroup.setName(g.getName());
     newGroup.setPosition(g.getPosition());
-  //Text???
+    // Text???
     newGroup.setText(g.getAuthorNotes());
     newGroup.setType(Type.GROUP);
     newGroup.setUsage(ConversionUtil.convertUsage(g.getUsage()));
-    
-    for(SegmentRefOrGroup seog:g.getChildren()){
-      if(seog instanceof SegmentRef){
-        constructSegmentRef(newGroup.getChildren(), (SegmentRef)seog);
-      }else if(seog instanceof Group){
-        constructSegmentGroup(newGroup.getChildren(), (Group)seog);
+
+    for (SegmentRefOrGroup seog : g.getChildren()) {
+      if (seog instanceof SegmentRef) {
+        constructSegmentRef(newGroup.getChildren(), (SegmentRef) seog);
+      } else if (seog instanceof Group) {
+        constructSegmentGroup(newGroup.getChildren(), (Group) seog);
       }
     }
-    
-    newGroup.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(g));
-    
+
+    newGroup.setBinding(
+        new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(g));
+
     children.add(newGroup);
-    
+
   }
 
   /**
@@ -167,11 +172,12 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
    * @param seog
    */
   private void constructSegmentRef(Set<MsgStructElement> children, SegmentRef sr) {
-    gov.nist.hit.hl7.igamt.shared.domain.SegmentRef newSegmentRef = new gov.nist.hit.hl7.igamt.shared.domain.SegmentRef();
-    
-    if(sr.getAdded().equals(Constant.YES)){
+    gov.nist.hit.hl7.igamt.shared.domain.SegmentRef newSegmentRef =
+        new gov.nist.hit.hl7.igamt.shared.domain.SegmentRef();
+
+    if (sr.getAdded().equals(Constant.YES)) {
       newSegmentRef.setCustom(true);
-    }else{
+    } else {
       newSegmentRef.setCustom(false);
     }
     newSegmentRef.setId(sr.getId());
@@ -181,22 +187,23 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     Ref ref = new Ref();
     ref.setId(sr.getRef().getId());
     newSegmentRef.setRef(ref);
-    //Text???
+    // Text???
     newSegmentRef.setText(sr.getAuthorNotes());
     newSegmentRef.setType(Type.SEGMENTREF);
     newSegmentRef.setUsage(ConversionUtil.convertUsage(sr.getUsage()));
-    
+
     children.add(newSegmentRef);
   }
 
   protected DateTimeConstraints convertDateTimeConstraints(DTMConstraints dtmConstraints) {
-    if(dtmConstraints != null) {
+    if (dtmConstraints != null) {
       DateTimeConstraints dateTimeConstraints = new DateTimeConstraints();
-      List<DateTimeComponentDefinition> dateTimeComponentDefinitions =
-          new ArrayList<>();
-      for(DTMComponentDefinition dtmComponentDefinition : dtmConstraints.getDtmComponentDefinitions()) {
-        DateTimeComponentDefinition dateTimeComponentDefinition = this.convertDateTimeComponentDefinition(dtmComponentDefinition);
-        if(dateTimeComponentDefinition != null) {
+      List<DateTimeComponentDefinition> dateTimeComponentDefinitions = new ArrayList<>();
+      for (DTMComponentDefinition dtmComponentDefinition : dtmConstraints
+          .getDtmComponentDefinitions()) {
+        DateTimeComponentDefinition dateTimeComponentDefinition =
+            this.convertDateTimeComponentDefinition(dtmComponentDefinition);
+        if (dateTimeComponentDefinition != null) {
           dateTimeComponentDefinitions.add(dateTimeComponentDefinition);
         }
       }
@@ -205,29 +212,31 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     }
     return null;
   }
-  
-  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(DTMComponentDefinition dtmComponentDefinition) {
+
+  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(
+      DTMComponentDefinition dtmComponentDefinition) {
     DTMPredicate dtmPredicate = dtmComponentDefinition.getDtmPredicate();
-    DateTimeComponentDefinition dateTimeComponentDefinition = new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(), dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(), ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()), convertDateTimePredicate(dtmPredicate));
+    DateTimeComponentDefinition dateTimeComponentDefinition =
+        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
+            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
+            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
+            convertDateTimePredicate(dtmPredicate));
     return dateTimeComponentDefinition;
   }
-  
+
   protected DateTimePredicate convertDateTimePredicate(DTMPredicate dtmPredicate) {
-    if(dtmPredicate != null){
-      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()), ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()), convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE, dtmPredicate.getValue());
-      
+    if (dtmPredicate != null) {
+      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()),
+          ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()),
+          convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE,
+          dtmPredicate.getValue());
+
     }
     return null;
   }
-  
+
   private void init() {
     convertedConformanceProfileService.removeCollection();
-  }
-
-  @Override
-  public Datatype convert(String id) {
-    // TODO Auto-generated method stub
-    return null;
   }
 
 }

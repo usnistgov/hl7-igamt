@@ -9,21 +9,19 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 
 /**
  * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * Created by Jungyub Woo on Mar 15, 2018.
  */
-public class OrderedProfileComponent {
+public class OrderedProfileComponentLink {
 
   private int position;
-  private ProfileComponent profileComponent;
+  private String profileComponentId;
 
-  public OrderedProfileComponent(int position, ProfileComponent profileComponent) {
+  public OrderedProfileComponentLink() {
     super();
-    this.position = position;
-    this.profileComponent = profileComponent;
   }
 
   public int getPosition() {
@@ -34,12 +32,11 @@ public class OrderedProfileComponent {
     this.position = position;
   }
 
-  public ProfileComponent getProfileComponent() {
-    return profileComponent;
+  public String getProfileComponentId() {
+    return profileComponentId;
   }
 
-  public void setProfileComponent(ProfileComponent profileComponent) {
-    this.profileComponent = profileComponent;
+  public void setProfileComponentId(String profileComponentId) {
+    this.profileComponentId = profileComponentId;
   }
-
 }

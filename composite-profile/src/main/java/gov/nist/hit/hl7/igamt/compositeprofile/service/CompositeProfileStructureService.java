@@ -9,14 +9,29 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
+package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
-import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileService;
+import java.util.List;
+
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * Created by Jungyub Woo on Feb 20, 2018.
  */
-public class CompositeProfileServiceImpl implements CompositeProfileService {
+public interface CompositeProfileStructureService {
+  public CompositeProfileStructure findByKey(CompositeKey key);
+  
+  public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
+  public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure);
+
+  public List<CompositeProfileStructure> findAll();
+
+  public void delete(CompositeProfileStructure compositeProfileStructure);
+
+  public void delete(CompositeKey key);
+  
+  public void removeCollection();
 }

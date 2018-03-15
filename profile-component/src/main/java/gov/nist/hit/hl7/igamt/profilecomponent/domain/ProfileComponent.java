@@ -11,11 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.data.annotation.Id;
-
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 
 
 
@@ -27,14 +26,11 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public class ProfileComponent extends Resource {
 
-  @Id
-  private CompositeKey id;
   private Level level;
   private String sourceId;
   private String structure;
   private Set<ProfileComponentItem> profileComponentItems;
-  private Set<String> compositeProfileIds;
-  
+
 
   public ProfileComponent() {
     super();
@@ -43,17 +39,6 @@ public class ProfileComponent extends Resource {
 
   public enum Level {
     MESSAGE, SEGMENT
-  }
-
-
-  public ProfileComponent(Level level, String sourceId, String structure,
-      Set<ProfileComponentItem> profileComponentItems, Set<String> compositeProfileIds) {
-    super();
-    this.level = level;
-    this.sourceId = sourceId;
-    this.structure = structure;
-    this.profileComponentItems = profileComponentItems;
-    this.compositeProfileIds = compositeProfileIds;
   }
 
   public Level getLevel() {
@@ -88,20 +73,9 @@ public class ProfileComponent extends Resource {
     this.profileComponentItems = profileComponentItems;
   }
 
-  public Set<String> getCompositeProfileIds() {
-    return compositeProfileIds;
+  public void addProfileComponentItem(ProfileComponentItem item) {
+    if (this.profileComponentItems == null)
+      this.profileComponentItems = new HashSet<ProfileComponentItem>();
+    this.profileComponentItems.add(item);
   }
-
-  public void setCompositeProfileIds(Set<String> compositeProfileIds) {
-    this.compositeProfileIds = compositeProfileIds;
-  }
-
-  public CompositeKey getId() {
-    return id;
-  }
-
-  public void setId(CompositeKey id) {
-    this.id = id;
-  }
-  
 }

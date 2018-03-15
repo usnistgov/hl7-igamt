@@ -34,5 +34,7 @@ public interface ProfileComponentService {
   List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents);
 
   void delete(CompositeKey compositeKey);
+  
+  public void removeCollection();
 
 }

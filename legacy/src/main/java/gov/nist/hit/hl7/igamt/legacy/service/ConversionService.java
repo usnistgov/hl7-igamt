@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.legacy.service;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.legacy.service.config.ApplicationConfig;
 import gov.nist.hit.hl7.igamt.legacy.service.config.LegacyApplicationConfig;
 
@@ -12,7 +11,7 @@ public interface ConversionService {
       new AnnotationConfigApplicationContext(ApplicationConfig.class);
   static AbstractApplicationContext legacyContext =
       new AnnotationConfigApplicationContext(LegacyApplicationConfig.class);
+
   public abstract void convert();
-  public abstract Datatype convert(String id);
-  
+
 }

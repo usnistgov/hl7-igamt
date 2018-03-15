@@ -6,7 +6,6 @@ import java.util.List;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -27,17 +26,20 @@ import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 public class TableConversionServiceImpl implements ConversionService {
-  
-  private static TableRepository legacyTableRepository = (TableRepository) legacyContext.getBean("tableRepository");
-  private static ValuesetService valuesetService = (ValuesetService) context.getBean("valuesetService");
-  private static CodeSystemService codeSystemService = (CodeSystemService) context.getBean("codeSystemService");
+
+  private static TableRepository legacyTableRepository =
+      (TableRepository) legacyContext.getBean("tableRepository");
+  private static ValuesetService valuesetService =
+      (ValuesetService) context.getBean("valuesetService");
+  private static CodeSystemService codeSystemService =
+      (CodeSystemService) context.getBean("codeSystemService");
 
   @Override
   public void convert() {
     init();
     List<Table> allTables = legacyTableRepository.findAll();
     for (Table t : allTables) {
-      this.convertTable(t);      
+      this.convertTable(t);
     }
   }
 
@@ -55,11 +57,11 @@ public class TableConversionServiceImpl implements ConversionService {
     v.setUsername(null);
     v.setIntensionalComment(table.getIntensionalComment());
 
-    if (table.getContentDefinition().equals(
-        gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
+    if (table.getContentDefinition()
+        .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
       v.setContentDefinition(ContentDefinition.Extensional);
-    } else if (table.getContentDefinition().equals(
-        gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Intensional)) {
+    } else if (table.getContentDefinition()
+        .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Intensional)) {
       v.setContentDefinition(ContentDefinition.Intensional);
     } else {
       v.setContentDefinition(ContentDefinition.Undefined);
@@ -172,7 +174,7 @@ public class TableConversionServiceImpl implements ConversionService {
       }
       codeSystem = codeSystemService.save(codeSystem);
       v.addCodeSystemId(codeSystem.getId().getId());
-      
+
     } else if (table.getScope().equals(SCOPE.USER)) {
       DomainInfo domainInfo = new DomainInfo();
       domainInfo.setVersion(table.getVersion());
@@ -201,15 +203,10 @@ public class TableConversionServiceImpl implements ConversionService {
     }
     valuesetService.createFromLegacy(v, table.getId());
   }
-  
+
   private void init() {
     valuesetService.removeCollection();
     codeSystemService.removeCollection();
   }
 
-  @Override
-  public Datatype convert(String id) {
-    // TODO Auto-generated method stub
-    return null;
-  }
 }
