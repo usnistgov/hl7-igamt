@@ -4,12 +4,11 @@ import java.util.Set;
 
 
 
-public class TextSection<T> extends Section {
+public class TextSection<T extends Section> extends Section {
   
   private String parentId;
   private Set<T> children;
-  
-  
+
   
   public TextSection() {
     super();

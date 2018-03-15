@@ -36,7 +36,6 @@ import { RegisterComponent } from './register/register.component';
 import {UserService} from "./service/userService/user.service";
 
 import { FlexLayoutModule } from "@angular/flex-layout";
-import {EqualValidator} from "./formValidators/equal-validator.directive";
 
 @NgModule({
   declarations: [
@@ -49,9 +48,7 @@ import {EqualValidator} from "./formValidators/equal-validator.directive";
     AppFooterComponent,
     NotFoundComponent,
     LoginComponent,
-    RegisterComponent,
-    EqualValidator
-
+    RegisterComponent
   ],
   exports : [ ],
   imports: [

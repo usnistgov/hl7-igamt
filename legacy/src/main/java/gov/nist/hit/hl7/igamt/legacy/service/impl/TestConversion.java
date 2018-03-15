@@ -10,9 +10,7 @@ public class TestConversion {
   public static void main(String[] args) {
 	   AbstractApplicationContext context =
 		      new AnnotationConfigApplicationContext(ApplicationConfig.class);
-	   AccountConversionServiceImpl accountService= context.getBean( AccountConversionServiceImpl.class);
-	   accountService.convert();
-	//new IgDocumentConversionServiceImpl().convert();
+	new IgDocumentConversionServiceImpl().convert();
     //new TableConversionServiceImpl().convert();
 	
 

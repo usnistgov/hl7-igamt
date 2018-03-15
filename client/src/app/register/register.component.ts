@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from "@angular/router";
 import {UserService} from "../service/userService/user.service";
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import {EqualValidator, equalValidator} from "../formValidators/equal-validator.directive";
+import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl} from '@angular/forms';
+import { equalValidator} from "../formValidators/equal-validator.directive";
 
 
 @Component({
@@ -27,8 +27,7 @@ export class RegisterComponent{
       'password':new FormControl(this.model.password, [Validators.required,  Validators.minLength(8)]),
       'confirmPasswordForm':new FormControl(
         this.confirmPassword,
-        [Validators.required,  Validators.minLength(8),
-          equalValidator(this.model.password)] )
+        [this.passwordValidator(this.model.password)] )
     });
 
 
@@ -81,4 +80,15 @@ export class RegisterComponent{
             this.loading = false;
         });
   }
+
+  passwordValidator(obj: string): ValidatorFn {
+    return (control: AbstractControl): {[key: string]: any} => {
+      return this.confirmPassword !== this.model.password ? {'NotMAtch': {value: control.value}} : null;
+    };
+
+}
+
+
+
+
 }

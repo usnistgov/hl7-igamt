@@ -12,6 +12,7 @@ import com.mongodb.MongoClient;
 
 @Configuration
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
+@ComponentScan("gov.nist.hit.hl7")
 public class ApplicationConfig {
 
   @Bean

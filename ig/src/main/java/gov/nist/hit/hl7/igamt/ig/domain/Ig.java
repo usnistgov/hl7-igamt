@@ -10,15 +10,13 @@ import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 
 @Document
-public class Ig<TextSection> extends AbstractDomain {
-
-  
-  
+public class Ig<T extends Section> extends AbstractDomain {
 
   private IgMetaData metaData;
-  private Set<TextSection> content= new HashSet<TextSection>() ;
+  private Set<T> content= new HashSet<T>() ;
   
 
 
@@ -29,10 +27,10 @@ public class Ig<TextSection> extends AbstractDomain {
   public void setMetaData(IgMetaData metaData) {
     this.metaData = metaData;
   }
-  public Set<TextSection> getContent() {
+  public Set<T> getContent() {
     return content;
   }
-  public void setContent(Set<TextSection> content) {
+  public void setContent(Set<T> content) {
     this.content = content;
   }
 
@@ -44,7 +42,7 @@ public class Ig<TextSection> extends AbstractDomain {
           return false;
       }
 
-      Ig<TextSection> ig = (Ig<TextSection>) o;
+      Ig<T> ig = (Ig<T>) o;
 
       return ig.getId().equals(this.getId());
   }

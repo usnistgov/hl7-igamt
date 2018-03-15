@@ -6,6 +6,7 @@ import java.util.List;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
+import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
@@ -23,7 +24,6 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import gov.nist.hit.hl7.legacy.igamt.repository.TableRepository;
 
 public class TableConversionServiceImpl implements ConversionService {
   private static TableRepository legacyTableRepository =

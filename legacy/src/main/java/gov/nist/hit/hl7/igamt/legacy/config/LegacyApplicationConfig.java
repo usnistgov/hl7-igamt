@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import com.mongodb.MongoClient;
 
 @Configuration
+
 @EnableMongoRepositories("gov.nist.hit.hl7.legacy.igamt.repository")
 
 public class LegacyApplicationConfig {

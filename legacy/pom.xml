@@ -46,15 +46,15 @@
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		
-		 <dependency>
+<!-- 		 <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
     </dependency>
-    <!-- Hibernate 5.2.9 Final -->
+    Hibernate 5.2.9 Final
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-core</artifactId>
-    </dependency>
+    </dependency> -->
     
 	<dependency>
 			<groupId>gov.nist.healthcare.tools.hl7.v2.igamt.lite</groupId>

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfileStructure;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfiles;
@@ -25,6 +24,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLink;
 
 import gov.nist.hit.hl7.igamt.ig.domain.*;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.legacy.repository.IGDocumentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
@@ -33,7 +33,6 @@ import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetConfigForExport;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
-import gov.nist.hit.hl7.legacy.igamt.repository.IGDocumentRepository;
 
 
 
@@ -50,7 +49,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 
 	public IgDocumentConversionServiceImpl() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
 
 
@@ -95,8 +93,8 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		
 		if(ig.getChildSections() !=null && !ig.getChildSections().isEmpty())
 		addNaratives(newIg, ig.getChildSections());
-		
 		addProfile(newIg, ig.getProfile());
+		
 		
 		
 		igService.save(newIg);
