@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.segment.service.impl;
+package gov.nist.hit.hl7.igamt.segment.service;
 
 import java.util.List;
 
@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
