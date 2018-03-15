@@ -87,7 +87,7 @@ public class SegmentConversionServiceImpl implements ConversionService{
     convertedSegment.setComment(oldSegment.getComment());
     //TODO replace binding and set username
     
-    convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertBindingForSegment(oldSegment));
+    convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(oldSegment));
     convertedSegment.setUsername("");
     return convertedSegment;
   }

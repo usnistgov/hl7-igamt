@@ -51,147 +51,58 @@ public class BindingHandler {
     this.datatypeRepository = datatypeRepository;
   }
 
-  public ResourceBinding convertBindingForMessage(Message oldMessage) {
-    if (oldMessage.getChildren() != null && oldMessage.getChildren().size() > 0) {
-      ResourceBinding rb = new ResourceBinding();
+  public ResourceBinding convertResourceBinding(Object oldObject) {
+    ResourceBinding rb = new ResourceBinding();
+    List<ConformanceStatement> oldConformanceStatements = null;
+    
+    if(oldObject instanceof Message) {
+      Message oldMessage = (Message)oldObject;
       rb.setElementId(oldMessage.getId());
-
       for (SegmentRefOrGroup srog : oldMessage.getChildren()) {
         String path = "" + srog.getPosition();
-
-        if (isNeedToDive(path, oldMessage)) {
-          rb.addChild(constructStructureElementBinding(oldMessage, path, srog));
+        if (isNeedToDive(path, oldObject)) {
+          rb.addChild(constructStructureElementBinding(oldObject, path, srog));
         }
       }
-
-      /*
-       * Convert ConformanceStatement
-       */
-      List<ConformanceStatement> oldConformanceStatements = oldMessage.getConformanceStatements();
-      for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
-        if (oldConformanceStatement.getAssertion() != null
-            && !oldConformanceStatement.getAssertion().equals("")) {
-          ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
-
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement newAssertionConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement();
-          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          newAssertionConformanceStatement
-              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-                  oldConformanceStatement.getDescription(), oldMessage, "Assertion"));
-          rb.addConformanceStatement(newAssertionConformanceStatement);
-        } else {
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement();
-          newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
-          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          rb.addConformanceStatement(newFreeConformanceStatement);
-        }
-      }
-
-      if(rb.getChildren() != null || rb.getConformanceStatements() != null) return rb;
-    }
-    return null;
-  }
-  
-  public ResourceBinding convertBindingForGroup(Group g) {
-    if (g.getChildren() != null && g.getChildren().size() > 0) {
-      ResourceBinding rb = new ResourceBinding();
-      rb.setElementId(g.getId());
-
-      for (SegmentRefOrGroup srog : g.getChildren()) {
+      oldConformanceStatements = oldMessage.getConformanceStatements();
+    }else if(oldObject instanceof Group) {
+      Group oldGroup = (Group)oldObject;
+      rb.setElementId(oldGroup.getId());
+      for (SegmentRefOrGroup srog : oldGroup.getChildren()) {
         String path = "" + srog.getPosition();
-
-        if (isNeedToDive(path, g)) {
-          rb.addChild(constructStructureElementBinding(g, path, srog));
+        if (isNeedToDive(path, oldObject)) {
+          rb.addChild(constructStructureElementBinding(oldObject, path, srog));
         }
       }
-
-      /*
-       * Convert ConformanceStatement
-       */
-      List<ConformanceStatement> oldConformanceStatements = g.getConformanceStatements();
-      for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
-        if (oldConformanceStatement.getAssertion() != null
-            && !oldConformanceStatement.getAssertion().equals("")) {
-          ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
-
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement newAssertionConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement();
-          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          newAssertionConformanceStatement
-              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-                  oldConformanceStatement.getDescription(), g, "Assertion"));
-          rb.addConformanceStatement(newAssertionConformanceStatement);
-        } else {
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement();
-          newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
-          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          rb.addConformanceStatement(newFreeConformanceStatement);
-        }
-      }
-
-      if(rb.getChildren() != null || rb.getConformanceStatements() != null) return rb;
-    }
-    return null;
-  }
-  
-  
-  public ResourceBinding convertBindingForSegment(Segment oldSegment) {
-    if (oldSegment.getFields() != null && oldSegment.getFields().size() > 0) {
-      ResourceBinding rb = new ResourceBinding();
+      oldConformanceStatements = oldGroup.getConformanceStatements();
+    }else if(oldObject instanceof Segment) {
+      Segment oldSegment = (Segment)oldObject;
       rb.setElementId(oldSegment.getId());
-
+      
       for (Field f : oldSegment.getFields()) {
         String path = "" + f.getPosition();
-        rb.addChild(constructStructureElementBinding(oldSegment, path, f));
-      }
-
-      /*
-       * Convert ConformanceStatement
-       */
-      List<ConformanceStatement> oldConformanceStatements = oldSegment.getConformanceStatements();
-      for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
-        if (oldConformanceStatement.getAssertion() != null
-            && !oldConformanceStatement.getAssertion().equals("")) {
-          ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
-
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement newAssertionConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.AssertionConformanceStatement();
-          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          newAssertionConformanceStatement
-              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-                  oldConformanceStatement.getDescription(), oldSegment, "Assertion"));
-          rb.addConformanceStatement(newAssertionConformanceStatement);
-        } else {
-          gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
-              new gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement();
-          newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
-          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          rb.addConformanceStatement(newFreeConformanceStatement);
+        if (isNeedToDive(path, oldObject)) {
+          rb.addChild(constructStructureElementBinding(oldSegment, path, f));          
         }
       }
-
-      return rb;
-    }
-    return null;
-  }
-
-  public ResourceBinding convertBindingForDatatype(Datatype oldDatatype) {
-    if (oldDatatype.getComponents() != null && oldDatatype.getComponents().size() > 0) {
-      ResourceBinding rb = new ResourceBinding();
+      oldConformanceStatements = oldSegment.getConformanceStatements();
+    }else if(oldObject instanceof Datatype) {
+      Datatype oldDatatype = (Datatype)oldObject;
       rb.setElementId(oldDatatype.getId());
-
+      
       for (Component c : oldDatatype.getComponents()) {
         String path = "" + c.getPosition();
-        rb.addChild(constructStructureElementBinding(oldDatatype, path, c));
+        if (isNeedToDive(path, oldObject)) {
+          rb.addChild(constructStructureElementBinding(oldDatatype, path, c));          
+        }
       }
-
-      /*
-       * Convert ConformanceStatement
-       */
-      List<ConformanceStatement> oldConformanceStatements = oldDatatype.getConformanceStatements();
+      oldConformanceStatements = oldDatatype.getConformanceStatements();
+    }
+    
+    /*
+     * Convert ConformanceStatement
+     */
+    if(oldConformanceStatements != null) {
       for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
         if (oldConformanceStatement.getAssertion() != null
             && !oldConformanceStatement.getAssertion().equals("")) {
@@ -202,7 +113,7 @@ public class BindingHandler {
           newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
           newAssertionConformanceStatement
               .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-                  oldConformanceStatement.getDescription(), oldDatatype, "Assertion"));
+                  oldConformanceStatement.getDescription(), oldObject, "Assertion"));
           rb.addConformanceStatement(newAssertionConformanceStatement);
         } else {
           gov.nist.hit.hl7.igamt.shared.domain.constraint.FreeTextConformanceStatement newFreeConformanceStatement =
@@ -211,13 +122,14 @@ public class BindingHandler {
           newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
           rb.addConformanceStatement(newFreeConformanceStatement);
         }
-      }
-
-      return rb;
+      }  
     }
+    
+    if(rb.getChildren() != null || rb.getConformanceStatements() != null) return rb;
+   
     return null;
   }
-
+  
   private StructureElementBinding constructStructureElementBinding(Object refObj, String path,
       Object target) {
     StructureElementBinding seb = new StructureElementBinding();

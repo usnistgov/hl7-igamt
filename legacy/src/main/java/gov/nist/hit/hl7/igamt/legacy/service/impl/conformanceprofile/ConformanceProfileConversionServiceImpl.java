@@ -120,7 +120,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     convertedConformanceProfile.setPublicationInfo(publicationInfo);
     convertedConformanceProfile.setComment(oldMessage.getComment());
     //TODO replace binding and set username
-    convertedConformanceProfile.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertBindingForMessage(oldMessage));
+    convertedConformanceProfile.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(oldMessage));
     convertedConformanceProfile.setUsername("");
     return convertedConformanceProfile;
   }
@@ -155,7 +155,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       }
     }
     
-    newGroup.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertBindingForGroup(g));
+    newGroup.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(g));
     
     children.add(newGroup);
     

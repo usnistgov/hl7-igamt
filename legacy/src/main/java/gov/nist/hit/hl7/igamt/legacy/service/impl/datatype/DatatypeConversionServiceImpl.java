@@ -117,7 +117,7 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     convertedDatatype.setComment(oldDatatype.getComment());
     //TODO replace binding and set username
     
-    convertedDatatype.setBinding(new BindingHandler(oldDatatypeRepository).convertBindingForDatatype(oldDatatype));
+    convertedDatatype.setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
     convertedDatatype.setUsername("");
     return convertedDatatype;
   }
