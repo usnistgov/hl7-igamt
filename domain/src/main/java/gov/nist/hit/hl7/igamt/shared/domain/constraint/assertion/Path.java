@@ -29,13 +29,19 @@ public class Path {
   private String elementId;
   private Set<InstancePath> children;
 
-  public Path(String elementId, Set<InstancePath> children) {
-    super();
-    this.elementId = elementId;
-    this.children = children;
-  }
 
-  public String getElementId() {
+  public Path() {
+	super();
+	// TODO Auto-generated constructor stub
+}
+
+public Path(String elementId2, Set<InstancePath> children2) {
+	  this.elementId=elementId2;
+	  this.children=children2;
+	// TODO Auto-generated constructor stub
+}
+
+public String getElementId() {
     return elementId;
   }
 

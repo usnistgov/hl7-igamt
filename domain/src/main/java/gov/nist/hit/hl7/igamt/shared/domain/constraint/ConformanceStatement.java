@@ -18,9 +18,8 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 public class ConformanceStatement extends Constraint {
   protected String identifier;
 
-  public ConformanceStatement(String id, String identifier) {
-    super(id);
-    this.identifier = identifier;
+  public ConformanceStatement() {
+    super();
   }
 
   public String getIdentifier() {

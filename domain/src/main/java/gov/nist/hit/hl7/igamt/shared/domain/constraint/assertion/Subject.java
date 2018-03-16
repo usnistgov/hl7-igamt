@@ -17,18 +17,17 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
  */
 public class Subject {
 
-  private InstancePath path;
+  private Path path;
 
-  public Subject(InstancePath path) {
+  public Subject() {
     super();
-    this.path = path;
   }
 
-  public InstancePath getPath() {
+  public Path getPath() {
     return path;
   }
 
-  public void setPath(InstancePath path) {
+  public void setPath(Path path) {
     this.path = path;
   }
 

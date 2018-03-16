@@ -1,11 +1,9 @@
-package gov.nist.hit.hl7.igamt.legacy.service.impl;
+package gov.nist.hit.hl7.igamt.legacy.service.impl.igdocument;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfileStructure;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfiles;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DatatypeLibrary;
@@ -37,22 +35,16 @@ import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
 
 
 public class IgDocumentConversionServiceImpl implements ConversionService{
-	
-	
 
-	
-	  private static IGDocumentRepository legacyRepository =
-  		      (IGDocumentRepository) legacyContext.getBean("igDocumentRepository");
 	  
 	  private static IgService igService=
 		      (IgService) context.getBean("igService");
+	  private static IGDocumentRepository legacyRepository =
+  		      (IGDocumentRepository) legacyContext.getBean(IGDocumentRepository.class);
 
 	public IgDocumentConversionServiceImpl() {
 		super();
 	}
-
-
-
 
 	@Override
 	public void convert() {
@@ -66,9 +58,8 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	}
 
 
-
-
 	private void convert(IGDocument ig) {
+		
 		Ig newIg= new Ig();
 //		Metadata
 		CompositeKey key = new CompositeKey(ig.getId());
@@ -94,16 +85,14 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		if(ig.getChildSections() !=null && !ig.getChildSections().isEmpty())
 		addNaratives(newIg, ig.getChildSections());
 		addProfile(newIg, ig.getProfile());
-		
-		
-		
+			
 		igService.save(newIg);
-		
 	}
 
 
 
 
+	@SuppressWarnings("unchecked")
 	private void addProfile(Ig newIg, Profile profile) {
 		
 		TextSection<Registry> infra= new TextSection<Registry>();
@@ -125,7 +114,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		compositeProfiles.setPosition(3);
 		Registry segments= createSegment(profile.getSegmentLibrary());
 		segments.setPosition(4);
-		Registry datatypes= createDatatype(profile.getDatatypeLibrary());
+		Registry datatypes= createDatatypes(profile.getDatatypeLibrary());
 		datatypes.setPosition(5);
 		ValueSetRegistry valueSets= createValueSets(profile.getTableLibrary());	
 		valueSets.setPosition(6);
@@ -142,7 +131,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		infra.setPosition(newIg.getContent().size());
 		newIg.getContent().add(infra);
 		igService.save(newIg);
-		
 		
 	}
 	
@@ -219,7 +207,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		return ret;
 	}
 
-	private Registry createDatatype(DatatypeLibrary datatypeLibrary) {
+	private Registry createDatatypes(DatatypeLibrary datatypeLibrary) {
 		
 		Registry ret = new Registry();
 		ret.setType(Type.DATATYPEREGISTRY);
@@ -277,20 +265,9 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		for(Section s : childSections) {
 			children.add(createTextSectionFromSection( s,newIg.getId().getId()));
 			}
-		
 		newIg.setContent(children);
-		
-		
+
 	}
-
-
-
-
-
-
-
-
-
 	private TextSection createTextSectionFromSection(Section s, String parentId) {
 		TextSection<TextSection> newSection = new  TextSection<TextSection> ();
 		newSection.setLabel(s.getSectionTitle());
@@ -311,7 +288,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 			
 		}
 		return newSection;
-		// TODO Auto-generated method stub
 		
 	}
 	

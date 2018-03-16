@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
 
 /**
@@ -21,10 +20,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion
 public class SinglePredicate extends Predicate {
   private SingleAssertion simpleAssertion;
 
-  public SinglePredicate(String id, Usage trueUsage, Usage falseUsage,
-      SingleAssertion simpleAssertion) {
-    super(id, trueUsage, falseUsage);
-    this.simpleAssertion = simpleAssertion;
+  public SinglePredicate() {
+    super();
   }
 
   public SingleAssertion getSimpleAssertion() {

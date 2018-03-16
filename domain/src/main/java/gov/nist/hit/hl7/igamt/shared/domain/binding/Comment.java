@@ -29,6 +29,10 @@ public class Comment {
     this.dateupdated = dateupdated;
   }
 
+  public Comment() {
+    super();
+  }
+
   public String getDescription() {
     return description;
   }

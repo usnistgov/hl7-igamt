@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.config;
+package gov.nist.hit.hl7.igamt.legacy.service.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -12,7 +12,6 @@ import com.mongodb.MongoClient;
 
 @Configuration
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan("gov.nist.hit.hl7")
 public class ApplicationConfig {
 
   @Bean

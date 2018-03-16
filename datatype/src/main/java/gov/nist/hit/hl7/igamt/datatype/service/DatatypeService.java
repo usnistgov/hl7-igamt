@@ -24,7 +24,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public interface DatatypeService {
 
-  public Datatype findById(CompositeKey id);
+  public Datatype findByKey(CompositeKey key);
 
   public Datatype create(Datatype datatype);
 
@@ -34,6 +34,6 @@ public interface DatatypeService {
 
   public void delete(Datatype datatype);
 
-  public void delete(CompositeKey id);
+  public void delete(CompositeKey key);
   
 }

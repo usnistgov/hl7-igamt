@@ -33,8 +33,8 @@ public class DatatypeServiceImpl implements DatatypeService {
   private DatatypeRepository datatypeRepository;
   
   @Override
-  public Datatype findById(CompositeKey id) {
-    return datatypeRepository.findOne(id);
+  public Datatype findByKey(CompositeKey key) {
+    return datatypeRepository.findOne(key);
   }
   
   @Override
@@ -62,8 +62,8 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public void delete(CompositeKey id) {
-    datatypeRepository.delete(id);
+  public void delete(CompositeKey key) {
+    datatypeRepository.delete(key);
   }
   
 }

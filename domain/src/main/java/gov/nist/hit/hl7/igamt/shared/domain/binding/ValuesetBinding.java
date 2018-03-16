@@ -11,9 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.binding;
 
+import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
 
 /**
  * @author jungyubw
@@ -22,13 +21,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
 public class ValuesetBinding {
   private String valuesetId;
   private ValuesetStrength strength;
-  private Set<Path> locations;
-  
-  public ValuesetBinding(String valuesetId, ValuesetStrength strength, Set<Path> locations) {
+  private Set<String> valuesetLocations = new HashSet<String>();
+
+  public ValuesetBinding() {
     super();
-    this.valuesetId = valuesetId;
-    this.strength = strength;
-    this.locations = locations;
   }
 
   public String getValuesetId() {
@@ -47,13 +43,18 @@ public class ValuesetBinding {
     this.strength = strength;
   }
 
-  public Set<Path> getLocations() {
-    return locations;
+  public Set<String> getValuesetLocations() {
+    return valuesetLocations;
   }
 
-  public void setLocationIds(Set<Path> locations) {
-    this.locations = locations;
+  public void setValuesetLocations(Set<String> valuesetLocations) {
+    this.valuesetLocations = valuesetLocations;
   }
-  
-  
+
+  public void addValuesetLocation(String location) {
+    this.valuesetLocations.add(location);
+    
+  }
+
+
 }

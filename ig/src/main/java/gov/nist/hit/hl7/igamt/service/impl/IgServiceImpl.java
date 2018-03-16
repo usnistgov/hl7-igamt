@@ -23,7 +23,7 @@ public class IgServiceImpl implements IgService{
 	}
 
 	@Override
-	public List<Ig> findAll() {
+	public List findAll() {
 		// TODO Auto-generated method stub
 		return igRepository.findAll();
 	}

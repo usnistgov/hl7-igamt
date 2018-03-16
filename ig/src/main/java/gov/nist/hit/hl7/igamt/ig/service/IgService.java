@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
-@Service
+@Service("igService")
 public interface IgService {
 	
 	

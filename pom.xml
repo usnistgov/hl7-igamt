@@ -29,6 +29,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+		   	<artifactId>spring-boot-starter-test</artifactId>
+		   	<scope>test</scope>
+		</dependency>
 	</dependencies>
 	<modules>
 		<module>domain</module>
@@ -40,5 +45,6 @@
 		<module>valueset</module>
 		<module>legacy</module>
 		<module>bootstrap</module>
+		<module>conformance-profile</module>
 	</modules>
 </project>

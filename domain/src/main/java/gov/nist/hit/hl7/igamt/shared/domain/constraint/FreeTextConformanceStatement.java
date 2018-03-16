@@ -19,9 +19,8 @@ public class FreeTextConformanceStatement extends ConformanceStatement {
 
   private String freeText;
 
-  public FreeTextConformanceStatement(String id, String identifier, String freeText) {
-    super(id, identifier);
-    this.freeText = freeText;
+  public FreeTextConformanceStatement() {
+    super();
   }
 
   public String getFreeText() {

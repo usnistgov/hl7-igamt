@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-@Repository
-public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
+@Repository("igRepository")
+public interface IgRepository extends MongoRepository<Ig<?>, CompositeKey> {
 
 }
