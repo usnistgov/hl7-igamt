@@ -42,7 +42,8 @@ public class Ig<T extends Section> extends AbstractDomain {
           return false;
       }
 
-      Ig<T> ig = (Ig<T>) o;
+      @SuppressWarnings("unchecked")
+	Ig<T> ig = (Ig<T>) o;
 
       return ig.getId().equals(this.getId());
   }

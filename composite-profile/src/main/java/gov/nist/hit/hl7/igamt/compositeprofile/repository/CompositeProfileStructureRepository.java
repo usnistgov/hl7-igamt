@@ -1,4 +1,5 @@
 /**
+ * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -8,30 +9,19 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+package gov.nist.hit.hl7.igamt.compositeprofile.repository;
 
-import java.util.Set;
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ *
+ * @author Jungyub Woo on Mar 9, 2018.
  */
-public class ProfileComponentsGroup {
-
-  private Set<OrderedProfileComponent> orderedProfileComponents;
-
-  public ProfileComponentsGroup(Set<OrderedProfileComponent> orderedProfileComponents) {
-    super();
-    this.orderedProfileComponents = orderedProfileComponents;
-  }
-
-  public Set<OrderedProfileComponent> getOrderedProfileComponents() {
-    return orderedProfileComponents;
-  }
-
-  public void setOrderedProfileComponents(Set<OrderedProfileComponent> orderedProfileComponents) {
-    this.orderedProfileComponents = orderedProfileComponents;
-  }
+public interface CompositeProfileStructureRepository extends MongoRepository<CompositeProfileStructure, CompositeKey>{
 
 }

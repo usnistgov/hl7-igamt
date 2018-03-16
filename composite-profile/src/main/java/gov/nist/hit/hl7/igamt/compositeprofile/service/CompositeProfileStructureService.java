@@ -11,10 +11,27 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
+import java.util.List;
+
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+
 /**
  * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * Created by Jungyub Woo on Feb 20, 2018.
  */
-public interface CompositeProfileService {
+public interface CompositeProfileStructureService {
+  public CompositeProfileStructure findByKey(CompositeKey key);
+  
+  public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
+  public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure);
+
+  public List<CompositeProfileStructure> findAll();
+
+  public void delete(CompositeProfileStructure compositeProfileStructure);
+
+  public void delete(CompositeKey key);
+  
+  public void removeCollection();
 }

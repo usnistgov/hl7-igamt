@@ -9,37 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.profilecomponent.domain;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author jungyubw
+ *
  */
-public class OrderedProfileComponent {
+public class NotAssertion extends MultipleAssertion {
+  private Assertion child;
 
-  private int position;
-  private ProfileComponent profileComponent;
-
-  public OrderedProfileComponent(int position, ProfileComponent profileComponent) {
-    super();
-    this.position = position;
-    this.profileComponent = profileComponent;
+  public Assertion getChild() {
+    return child;
   }
 
-  public int getPosition() {
-    return position;
+  public void setChild(Assertion child) {
+    this.child = child;
   }
 
-  public void setPosition(int position) {
-    this.position = position;
+  @Override
+  public String toString() {
+    return "NotAssertion [child=" + child + "]";
   }
 
-  public ProfileComponent getProfileComponent() {
-    return profileComponent;
-  }
-
-  public void setProfileComponent(ProfileComponent profileComponent) {
-    this.profileComponent = profileComponent;
-  }
 
 }

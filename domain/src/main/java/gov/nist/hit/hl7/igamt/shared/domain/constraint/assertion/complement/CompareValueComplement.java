@@ -20,11 +20,8 @@ public class CompareValueComplement extends Complement {
 
   private String value;
 
-  public CompareValueComplement(ComplementKey complementKey, CompareOperator operator,
-      String value) {
-    super(complementKey);
-    this.operator = operator;
-    this.value = value;
+  public CompareValueComplement() {
+    this.complementKey = ComplementKey.COMPAREVALUE;
   }
 
   public CompareOperator getOperator() {
@@ -43,5 +40,9 @@ public class CompareValueComplement extends Complement {
     this.value = value;
   }
 
-
+  @Override
+  public String toString() {
+    return "CompareValueComplement [operator=" + operator + ", value=" + value + ", complementKey="
+        + complementKey + "]";
+  }
 }

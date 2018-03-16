@@ -1,4 +1,5 @@
 /**
+ * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -8,28 +9,33 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
+package gov.nist.hit.hl7.igamt.segment.service;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
+import java.util.List;
+
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
- * @author jungyubw
  *
+ * @author Jungyub Woo on Mar 15, 2018.
  */
-public class SinglePredicate extends Predicate {
-  private SingleAssertion simpleAssertion;
+public interface SegmentService {
 
-  public SinglePredicate() {
-    super();
-  }
+  public Segment findByKey(CompositeKey key);
 
-  public SingleAssertion getSimpleAssertion() {
-    return simpleAssertion;
-  }
+  public Segment create(Segment segment);
 
-  public void setSimpleAssertion(SingleAssertion simpleAssertion) {
-    this.simpleAssertion = simpleAssertion;
-  }
+  public Segment save(Segment segment);
 
+  public List<Segment> findAll();
+
+  public void delete(Segment segment);
+
+  public void delete(CompositeKey key);
+  
+  public void removeCollection();
+  
 }

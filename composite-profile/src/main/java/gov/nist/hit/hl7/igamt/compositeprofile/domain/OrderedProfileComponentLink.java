@@ -9,28 +9,34 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
-
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.MultipleAssertion;
+package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 
 /**
- * @author jungyubw
- *
+ * 
+ * Created by Jungyub Woo on Mar 15, 2018.
  */
-public class MultiplePredicate extends Predicate {
+public class OrderedProfileComponentLink {
 
-  private MultipleAssertion complexAssertion;
+  private int position;
+  private String profileComponentId;
 
-  public MultiplePredicate() {
+  public OrderedProfileComponentLink() {
     super();
   }
 
-  public MultipleAssertion getComplexAssertion() {
-    return complexAssertion;
+  public int getPosition() {
+    return position;
   }
 
-  public void setComplexAssertion(MultipleAssertion complexAssertion) {
-    this.complexAssertion = complexAssertion;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
+  public String getProfileComponentId() {
+    return profileComponentId;
+  }
+
+  public void setProfileComponentId(String profileComponentId) {
+    this.profileComponentId = profileComponentId;
+  }
 }

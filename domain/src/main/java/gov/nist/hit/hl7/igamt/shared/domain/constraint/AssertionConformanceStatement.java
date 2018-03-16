@@ -9,14 +9,28 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
-import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileService;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Assertion;
 
 /**
- * 
- * Created by Maxence Lefort on Feb 20, 2018.
+ * @author jungyubw
+ *
  */
-public class CompositeProfileServiceImpl implements CompositeProfileService {
+public class AssertionConformanceStatement extends ConformanceStatement {
+  private Assertion assertion;
 
+  public AssertionConformanceStatement() {
+    super();
+  }
+
+  public Assertion getAssertion() {
+    return assertion;
+  }
+
+  public void setAssertion(Assertion assertion) {
+    this.assertion = assertion;
+  }
+
+  
 }

@@ -13,8 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.datatype;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,6 +24,8 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMComponentDefinition
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMConstraints;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMPredicate;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
@@ -35,7 +35,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate.PredicateType;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
-import gov.nist.hit.hl7.igamt.legacy.service.impl.util.ConversionUtil;
+import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
+import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
@@ -46,50 +47,76 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-public class DatatypeConversionServiceImpl implements ConversionService{
+public class DatatypeConversionServiceImpl implements ConversionService {
 
   @Autowired
-  DatatypeRepository oldDatatypeRepository;
-  
+  private DatatypeRepository oldDatatypeRepository =
+      (DatatypeRepository) legacyContext.getBean("datatypeRepository");
+
   @Autowired
-  DatatypeService convertedDatatypeService;
+  private DatatypeService convertedDatatypeService =
+      (DatatypeService) context.getBean("datatypeService");
   
+  private  AccountRepository accountRepository =
+	      (AccountRepository) userContext.getBean(AccountRepository.class);
+  
+  
+  
+
   @Override
   public void convert() {
+    init();
     List<Datatype> oldDatatypes = oldDatatypeRepository.findAll();
-    for(Datatype oldDatatype : oldDatatypes) {
-      gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype = this.convertDatatype(oldDatatype);
-      convertedDatatypeService.create(convertedDatatype);
+    for (Datatype oldDatatype : oldDatatypes) {
+      gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype =
+          this.convertDatatype(oldDatatype);
+      convertedDatatypeService.save(convertedDatatype);
     }
-    
+    List<gov.nist.hit.hl7.igamt.datatype.domain.Datatype> datatypes =
+        convertedDatatypeService.findAll();
+    System.out.println(oldDatatypes.size() + " will be coverted!");
+    System.out.println(datatypes.size() + " have be coverted!");
   }
-  
-  private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype){
+
+  public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
+    Datatype oldDatatype = oldDatatypeRepository.findOne(id);
+    return this.convertDatatype(oldDatatype);
+  }
+
+  public Datatype findOldDatatype(String id) {
+    return oldDatatypeRepository.findOne(id);
+  }
+
+  private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
+	  
+	  
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
-    if(oldDatatype.getName().equals("DTM")) {
+    if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();
       DTMConstraints dtmConstraints = oldDatatype.getDtmConstraints();
-      if(dtmConstraints != null) {
+      if (dtmConstraints != null) {
         DateTimeConstraints dateTimeConstraints = this.convertDateTimeConstraints(dtmConstraints);
-        ((DateTimeDatatype)convertedDatatype).setDateTimeConstraints(dateTimeConstraints);
+        ((DateTimeDatatype) convertedDatatype).setDateTimeConstraints(dateTimeConstraints);
       }
-    } else if(oldDatatype.getComponents().size()>0) {
+    } else if (oldDatatype.getComponents().size() > 0) {
       convertedDatatype = new ComplexDatatype();
       HashSet<gov.nist.hit.hl7.igamt.shared.domain.Component> convertedComponents = new HashSet<>();
-      for(Component component : oldDatatype.getComponents()) {
-        gov.nist.hit.hl7.igamt.shared.domain.Component convertedComponent = new gov.nist.hit.hl7.igamt.shared.domain.Component();
+      for (Component component : oldDatatype.getComponents()) {
+        gov.nist.hit.hl7.igamt.shared.domain.Component convertedComponent =
+            new gov.nist.hit.hl7.igamt.shared.domain.Component();
+        convertedComponent.setId(component.getId());
         convertedComponent.setConfLength(component.getConfLength());
         convertedComponent.setCustom(false);
         convertedComponent.setMaxLength(component.getMaxLength());
         convertedComponent.setMinLength(component.getMinLength());
         convertedComponent.setPosition(component.getPosition());
-        convertedComponent.setRef(new Ref(oldDatatype.getId()));
+        convertedComponent.setRef(new Ref(component.getDatatype().getId()));
         convertedComponent.setText(component.getText());
         convertedComponent.setType(Type.COMPONENT);
         convertedComponent.setUsage(ConversionUtil.convertUsage(component.getUsage()));
         convertedComponents.add(convertedComponent);
       }
-      ((ComplexDatatype)convertedDatatype).setComponents(convertedComponents);
+      ((ComplexDatatype) convertedDatatype).setComponents(convertedComponents);
     } else {
       convertedDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
     }
@@ -106,31 +133,40 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     convertedDatatype.setPostDef(oldDatatype.getDefPostText());
     convertedDatatype.setPreDef(oldDatatype.getDefPreText());
     PublicationInfo publicationInfo = new PublicationInfo();
-    try {
-      publicationInfo.setPublicationDate(oldDatatype.getPublicationDate() != null ? new SimpleDateFormat("yyyy/MMM/dd HH:mm:ss").parse(oldDatatype.getPublicationDate()) : null);
-    } catch (ParseException e) {
-      e.printStackTrace();
-    } finally {
-      publicationInfo.setPublicationDate(null);
-    }
+    publicationInfo.setPublicationDate(
+        ConversionUtil.convertPublicationDate(oldDatatype.getPublicationDate()));
     publicationInfo.setPublicationVersion(oldDatatype.getVersion());
     convertedDatatype.setPublicationInfo(publicationInfo);
     convertedDatatype.setPurposeAndUse(oldDatatype.getPurposeAndUse());
     convertedDatatype.setComment(oldDatatype.getComment());
-    //TODO replace binding and set username
-    convertedDatatype.setBinding(null);
+    
+	if(oldDatatype.getAccountId() !=null) {
+		Account acc = accountRepository.findByAccountId(oldDatatype.getAccountId());
+		if(acc.getAccountId() !=null) {
+				if (acc.getUsername() !=null) {
+					
+				    convertedDatatype.setUsername(acc.getUsername());
+				}
+		}
+		
+}
+    // TODO replace binding and set username
+
+    convertedDatatype
+        .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
     convertedDatatype.setUsername("");
     return convertedDatatype;
   }
-  
+
   protected DateTimeConstraints convertDateTimeConstraints(DTMConstraints dtmConstraints) {
-    if(dtmConstraints != null) {
+    if (dtmConstraints != null) {
       DateTimeConstraints dateTimeConstraints = new DateTimeConstraints();
-      List<DateTimeComponentDefinition> dateTimeComponentDefinitions =
-          new ArrayList<>();
-      for(DTMComponentDefinition dtmComponentDefinition : dtmConstraints.getDtmComponentDefinitions()) {
-        DateTimeComponentDefinition dateTimeComponentDefinition = this.convertDateTimeComponentDefinition(dtmComponentDefinition);
-        if(dateTimeComponentDefinition != null) {
+      List<DateTimeComponentDefinition> dateTimeComponentDefinitions = new ArrayList<>();
+      for (DTMComponentDefinition dtmComponentDefinition : dtmConstraints
+          .getDtmComponentDefinitions()) {
+        DateTimeComponentDefinition dateTimeComponentDefinition =
+            this.convertDateTimeComponentDefinition(dtmComponentDefinition);
+        if (dateTimeComponentDefinition != null) {
           dateTimeComponentDefinitions.add(dateTimeComponentDefinition);
         }
       }
@@ -139,16 +175,31 @@ public class DatatypeConversionServiceImpl implements ConversionService{
     }
     return null;
   }
-  
-  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(DTMComponentDefinition dtmComponentDefinition) {
+
+  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(
+      DTMComponentDefinition dtmComponentDefinition) {
     DTMPredicate dtmPredicate = dtmComponentDefinition.getDtmPredicate();
-    DateTimeComponentDefinition dateTimeComponentDefinition = new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(), dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(), ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()), convertDateTimePredicate(dtmPredicate));
+    DateTimeComponentDefinition dateTimeComponentDefinition =
+        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
+            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
+            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
+            convertDateTimePredicate(dtmPredicate));
     return dateTimeComponentDefinition;
   }
-  
+
   protected DateTimePredicate convertDateTimePredicate(DTMPredicate dtmPredicate) {
-    //TODO change predicatetype
-    return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()), ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()), convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE, dtmPredicate.getValue());
+    if (dtmPredicate != null) {
+      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()),
+          ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()),
+          convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE,
+          dtmPredicate.getValue());
+
+    }
+    return null;
+  }
+
+  private void init() {
+    convertedDatatypeService.removeCollection();
   }
 
 }

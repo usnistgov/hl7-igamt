@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -24,13 +25,7 @@ public class OperatorAssertion extends MultipleAssertion {
   }
 
   private Operator operator;
-  private Set<Assertion> assertions;
-
-  public OperatorAssertion(Operator operator, Set<Assertion> assertions) {
-    super();
-    this.operator = operator;
-    this.assertions = assertions;
-  }
+  private Set<Assertion> assertions = new HashSet<Assertion>();
 
   public Set<Assertion> getAssertions() {
     return assertions;
@@ -46,6 +41,15 @@ public class OperatorAssertion extends MultipleAssertion {
 
   public void setOperator(Operator operator) {
     this.operator = operator;
+  }
+  
+  public void addAssertion(Assertion assertion){
+    this.assertions.add(assertion);
+  }
+
+  @Override
+  public String toString() {
+    return "OperatorAssertion [operator=" + operator + ", assertions=" + assertions + "]";
   }
 
 

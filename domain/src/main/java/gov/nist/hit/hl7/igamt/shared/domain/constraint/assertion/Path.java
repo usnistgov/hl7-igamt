@@ -11,33 +11,24 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
-import java.util.Set;
-
 /**
  * @author jungyubw
  *
  */
 public class Path {
-  
+
   /*
-   * elementId contains element mongo id for ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId
-   * ex) MSH-3.1 
-   * elementId of this  : MSH id
-   * elementId of child : 3rd field Id
-   * elementId of child of child : 1st component id of 3rd field Datatype
+   * elementId contains element mongo id for
+   * ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId ex) MSH-3.1 elementId of this :
+   * MSH id elementId of child : 3rd field Id elementId of child of child : 1st component id of 3rd
+   * field Datatype
    */
   private String elementId;
-  private Set<InstancePath> children;
+  private InstancePath child;
 
 
   public Path() {
 	super();
-	// TODO Auto-generated constructor stub
-}
-
-public Path(String elementId2, Set<InstancePath> children2) {
-	  this.elementId=elementId2;
-	  this.children=children2;
 	// TODO Auto-generated constructor stub
 }
 
@@ -49,13 +40,19 @@ public String getElementId() {
     this.elementId = elementId;
   }
 
-  public Set<InstancePath> getChildren() {
-    return children;
+  public InstancePath getChild() {
+    return child;
   }
 
-  public void setChildren(Set<InstancePath> children) {
-    this.children = children;
+  public void setChild(InstancePath child) {
+    this.child = child;
   }
 
+  @Override
+  public String toString() {
+    return "Path [elementId=" + elementId + ", child=" + child + "]";
+  }
+
+  
 
 }

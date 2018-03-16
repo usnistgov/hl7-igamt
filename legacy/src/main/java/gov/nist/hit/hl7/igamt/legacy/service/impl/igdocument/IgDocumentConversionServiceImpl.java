@@ -19,7 +19,8 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentLibrary;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentLink;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLibrary;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLink;
-
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.ig.domain.*;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.legacy.repository.IGDocumentRepository;
@@ -39,8 +40,13 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	  
 	  private static IgService igService=
 		      (IgService) context.getBean("igService");
+	  
+	 
 	  private static IGDocumentRepository legacyRepository =
-  		      (IGDocumentRepository) legacyContext.getBean(IGDocumentRepository.class);
+  		      (IGDocumentRepository) legacyContext.getBean("igDocumentRepository");
+	  
+	   AccountRepository accountRepository =
+		      userContext.getBean(AccountRepository.class);
 
 	public IgDocumentConversionServiceImpl() {
 		super();
@@ -51,8 +57,8 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		// TODO Auto-generated method stub
 		List<IGDocument> igs =  legacyRepository.findAll();
 		for(IGDocument ig: igs) {
-			
-			convert(ig);
+			System.out.println(accountRepository.findAll().get(0).getEmail());
+			//convert(ig);
 		}
 		
 	}
@@ -60,11 +66,22 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 
 	private void convert(IGDocument ig) {
 		
+		
+	
 		Ig newIg= new Ig();
 //		Metadata
 		CompositeKey key = new CompositeKey(ig.getId());
-		newIg.setId(key);
-		newIg.setAccountID(ig.getAccountId());
+		newIg.setId(key);	
+		if(ig.getAccountId() !=null) {
+				Account acc = accountRepository.findByAccountId(ig.getAccountId());
+				if(acc.getAccountId() !=null) {
+						if (acc.getUsername() !=null) {
+							
+							newIg.setUsername(acc.getUsername());
+						}
+				}
+				
+		}
 		IgMetaData newMetaData= new IgMetaData();
 		newMetaData.setIdentifier(ig.getMetaData().getIdentifier());
 		newMetaData.setCoverPicture(ig.getMetaData().getCoverPicture());
@@ -80,6 +97,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newIg.setDomainInfo(null);
 		newIg.setName(ig.getMetaData().getTitle());
 		newIg.setUpdateDate(ig.getDateUpdated());
+		newIg.setCreationDate(ig.getDateUpdated());
 		newIg.setComment(ig.getAuthorNotes());
 		
 		if(ig.getChildSections() !=null && !ig.getChildSections().isEmpty())
@@ -88,9 +106,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 			
 		igService.save(newIg);
 	}
-
-
-
 
 	@SuppressWarnings("unchecked")
 	private void addProfile(Ig newIg, Profile profile) {
@@ -278,7 +293,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newSection.setParentId(parentId);
 		newSection.setId(s.getId());
 		if(s.getChildSections() !=null && !s.getChildSections().isEmpty()) {
-			Set<TextSection> children = new HashSet<TextSection>();
+			Set<TextSection> children = new HashSet<>();
 			for(Section child : s.getChildSections()) {
 				
 				children.add(createTextSectionFromSection( child, s.getId())) ;

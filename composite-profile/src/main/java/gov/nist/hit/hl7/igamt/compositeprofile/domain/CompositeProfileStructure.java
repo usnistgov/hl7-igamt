@@ -11,9 +11,9 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.profilecomponent.domain.OrderedProfileComponentsGroup;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 
 
@@ -25,13 +25,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 public class CompositeProfileStructure extends Resource {
 
   private String conformanceProfileId;
-  private Set<OrderedProfileComponentsGroup> orderedProfileComponentsGroups;
+  private Set<OrderedProfileComponentLink> orderedProfileComponents;
 
-  public CompositeProfileStructure(String conformanceProfileId,
-      Set<OrderedProfileComponentsGroup> orderedProfileComponentsGroups) {
+  public CompositeProfileStructure() {
     super();
-    this.conformanceProfileId = conformanceProfileId;
-    this.orderedProfileComponentsGroups = orderedProfileComponentsGroups;
   }
 
   public String getConformanceProfileId() {
@@ -42,13 +39,17 @@ public class CompositeProfileStructure extends Resource {
     this.conformanceProfileId = conformanceProfileId;
   }
 
-  public Set<OrderedProfileComponentsGroup> getOrderedProfileComponentsGroups() {
-    return orderedProfileComponentsGroups;
+  public Set<OrderedProfileComponentLink> getOrderedProfileComponents() {
+    return orderedProfileComponents;
   }
 
-  public void setOrderedProfileComponentsGroups(
-      Set<OrderedProfileComponentsGroup> orderedProfileComponentsGroups) {
-    this.orderedProfileComponentsGroups = orderedProfileComponentsGroups;
+  public void setOrderedProfileComponents(Set<OrderedProfileComponentLink> orderedProfileComponents) {
+    this.orderedProfileComponents = orderedProfileComponents;
+  }
+  
+  public void addOrderedProfileComponents(OrderedProfileComponentLink o){
+    if(this.orderedProfileComponents == null) this.orderedProfileComponents = new HashSet<OrderedProfileComponentLink>();
+    this.orderedProfileComponents.add(o);
   }
 
 }

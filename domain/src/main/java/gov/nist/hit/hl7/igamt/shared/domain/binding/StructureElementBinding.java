@@ -22,13 +22,13 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
  */
 public class StructureElementBinding extends Binding {
 
-  private Set<Comment> comments = new HashSet<Comment>();
-  private Set<ValuesetBinding> valuesetBindings = new HashSet<ValuesetBinding>();
+  private Set<Comment> comments;
+  private Set<ValuesetBinding> valuesetBindings;
   private String singleCodeId;
   private ExternalSingleCode externalSingleCode;
   private String constantValue;
   private Predicate predicate;
-  private Set<PredicateCrossRef> predicateCrossRefs = new HashSet<PredicateCrossRef>();
+  private Set<PredicateCrossRef> predicateCrossRefs;
 
   public StructureElementBinding() {
     super();
@@ -75,6 +75,7 @@ public class StructureElementBinding extends Binding {
   }
 
   public void addComment(Comment newComment) {
+    if(this.comments == null) this.comments = new HashSet<Comment>();
     this.comments.add(newComment);
   }
 
@@ -87,6 +88,7 @@ public class StructureElementBinding extends Binding {
   }
 
   public void addValuesetBinding(ValuesetBinding newValuesetBinding) {
+    if(this.valuesetBindings == null) this.valuesetBindings = new HashSet<ValuesetBinding>();
     this.valuesetBindings.add(newValuesetBinding);
   }
 

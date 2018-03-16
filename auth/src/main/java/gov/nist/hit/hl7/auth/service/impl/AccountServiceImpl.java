@@ -28,7 +28,7 @@ import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.auth.repository.PrivilegeRepository;
 import gov.nist.hit.hl7.auth.service.AccountService;
 
-@Service()
+@Service("accountService")
 public class AccountServiceImpl implements AccountService {
 
 	@Autowired

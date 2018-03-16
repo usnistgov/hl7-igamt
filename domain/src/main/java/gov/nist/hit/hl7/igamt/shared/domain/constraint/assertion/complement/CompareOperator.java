@@ -16,5 +16,5 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
  *
  */
 public enum CompareOperator {
-  greater, less, equal, equalorgreater, equalorless
+  greater, less, equalorgreater, equalorless, notequal, equal
 }

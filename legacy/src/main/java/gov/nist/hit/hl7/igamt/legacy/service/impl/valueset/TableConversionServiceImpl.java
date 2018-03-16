@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.legacy.service.impl.vlaueset;
+package gov.nist.hit.hl7.igamt.legacy.service.impl.valueset;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -6,6 +6,8 @@ import java.util.List;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -26,17 +28,23 @@ import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 public class TableConversionServiceImpl implements ConversionService {
+
+  private static TableRepository legacyTableRepository =
+      (TableRepository) legacyContext.getBean("tableRepository");
+  private static ValuesetService valuesetService =
+      (ValuesetService) context.getBean("valuesetService");
+  private static CodeSystemService codeSystemService =
+      (CodeSystemService) context.getBean("codeSystemService");
   
-  private static TableRepository legacyTableRepository = (TableRepository) legacyContext.getBean("tableRepository");
-  private static ValuesetService valuesetService = (ValuesetService) context.getBean("valuesetService");
-  private static CodeSystemService codeSystemService = (CodeSystemService) context.getBean("codeSystemService");
+  private  AccountRepository accountRepository =
+	      (AccountRepository) userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
     init();
     List<Table> allTables = legacyTableRepository.findAll();
     for (Table t : allTables) {
-      this.convertTable(t);      
+      this.convertTable(t);
     }
   }
 
@@ -54,11 +62,11 @@ public class TableConversionServiceImpl implements ConversionService {
     v.setUsername(null);
     v.setIntensionalComment(table.getIntensionalComment());
 
-    if (table.getContentDefinition().equals(
-        gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
+    if (table.getContentDefinition()
+        .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
       v.setContentDefinition(ContentDefinition.Extensional);
-    } else if (table.getContentDefinition().equals(
-        gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Intensional)) {
+    } else if (table.getContentDefinition()
+        .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Intensional)) {
       v.setContentDefinition(ContentDefinition.Intensional);
     } else {
       v.setContentDefinition(ContentDefinition.Undefined);
@@ -171,10 +179,21 @@ public class TableConversionServiceImpl implements ConversionService {
       }
       codeSystem = codeSystemService.save(codeSystem);
       v.addCodeSystemId(codeSystem.getId().getId());
-      
+
     } else if (table.getScope().equals(SCOPE.USER)) {
       DomainInfo domainInfo = new DomainInfo();
       domainInfo.setVersion(table.getVersion());
+      
+		if(table.getAccountId() !=null) {
+			Account acc = accountRepository.findByAccountId(table.getAccountId());
+			if(acc.getAccountId() !=null) {
+					if (acc.getUsername() !=null) {
+						
+						v.setUsername(acc.getUsername());
+					}
+			}
+			
+	}
       // TODO need check
       domainInfo.setCompatibilityVersion(new HashSet<String>());
       domainInfo.setScope(Scope.USER);
@@ -182,6 +201,7 @@ public class TableConversionServiceImpl implements ConversionService {
 
       if (table.getCodes() != null) {
         for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
+        		
           InternalCode code = new InternalCode();
           code.setCodeSystemId(c.getCodeSystem());
           code.setDescription(c.getLabel());
@@ -193,16 +213,18 @@ public class TableConversionServiceImpl implements ConversionService {
           } else {
             code.setUsage(CodeUsage.P);
           }
-          v.addCode(code);
+
+          
         }
         v.setNumberOfCodes(table.getCodes().size());
       }
     }
     valuesetService.createFromLegacy(v, table.getId());
   }
-  
+
   private void init() {
     valuesetService.removeCollection();
     codeSystemService.removeCollection();
   }
+
 }

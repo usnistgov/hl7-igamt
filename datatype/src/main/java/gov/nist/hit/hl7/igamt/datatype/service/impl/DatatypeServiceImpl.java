@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.datatype.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
@@ -27,6 +28,8 @@ import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
  *
  * @author Maxence Lefort on Mar 1, 2018.
  */
+
+@Service("datatypeService")
 public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
@@ -64,6 +67,11 @@ public class DatatypeServiceImpl implements DatatypeService {
   @Override
   public void delete(CompositeKey key) {
     datatypeRepository.delete(key);
+  }
+
+  @Override
+  public void removeCollection() {
+    datatypeRepository.deleteAll();
   }
   
 }

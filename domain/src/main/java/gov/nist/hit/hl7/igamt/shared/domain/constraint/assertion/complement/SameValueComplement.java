@@ -21,10 +21,8 @@ public class SameValueComplement extends Complement {
   private boolean casesensitive;
 
 
-  public SameValueComplement(ComplementKey complementKey, String value, boolean casesensitive) {
-    super(complementKey);
-    this.value = value;
-    this.casesensitive = casesensitive;
+  public SameValueComplement() {
+    this.complementKey = ComplementKey.SAMEVALUE;
   }
 
   public String getValue() {
@@ -41,6 +39,12 @@ public class SameValueComplement extends Complement {
 
   public void setCasesensitive(boolean casesensitive) {
     this.casesensitive = casesensitive;
+  }
+
+  @Override
+  public String toString() {
+    return "SameValueComplement [value=" + value + ", casesensitive=" + casesensitive
+        + ", complementKey=" + complementKey + "]";
   }
 
 
