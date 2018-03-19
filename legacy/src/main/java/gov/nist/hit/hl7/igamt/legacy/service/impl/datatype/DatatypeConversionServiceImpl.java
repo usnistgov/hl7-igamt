@@ -24,6 +24,8 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMComponentDefinition
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMConstraints;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMPredicate;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
@@ -54,7 +56,12 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   @Autowired
   private DatatypeService convertedDatatypeService =
       (DatatypeService) context.getBean("datatypeService");
-
+  
+  private  AccountRepository accountRepository =
+	      (AccountRepository) userContext.getBean(AccountRepository.class);
+  
+  
+  
 
   @Override
   public void convert() {
@@ -81,6 +88,8 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   }
 
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
+	  
+	  
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
     if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();
@@ -130,6 +139,17 @@ public class DatatypeConversionServiceImpl implements ConversionService {
     convertedDatatype.setPublicationInfo(publicationInfo);
     convertedDatatype.setPurposeAndUse(oldDatatype.getPurposeAndUse());
     convertedDatatype.setComment(oldDatatype.getComment());
+    
+	if(oldDatatype.getAccountId() !=null) {
+		Account acc = accountRepository.findByAccountId(oldDatatype.getAccountId());
+		if(acc.getAccountId() !=null) {
+				if (acc.getUsername() !=null) {
+					
+				    convertedDatatype.setUsername(acc.getUsername());
+				}
+		}
+		
+}
     // TODO replace binding and set username
 
     convertedDatatype

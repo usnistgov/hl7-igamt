@@ -17,8 +17,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+//import org.springframework.test.context.ActiveProfiles;
+//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -28,8 +28,8 @@ import gov.nist.hit.hl7.igamt.legacy.service.impl.datatype.DatatypeConversionSer
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-@ActiveProfiles({ "test", "unit" })
-@RunWith(SpringJUnit4ClassRunner.class)
+//@ActiveProfiles({ "test", "unit" })
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class DatatypeConversionServiceImplTest {
 
   @Test

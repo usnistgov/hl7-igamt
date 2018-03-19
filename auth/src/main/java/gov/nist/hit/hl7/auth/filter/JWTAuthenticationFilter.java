@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.auth.filter;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.servlet.FilterChain;
@@ -7,8 +8,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
@@ -22,8 +25,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.auth.domain.LoginRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import java.util.Collections;
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
+	
+
+	@Autowired
+	private ShaPasswordEncoder encoder;
+	
 	public JWTAuthenticationFilter(String url , AuthenticationManager authenticationManager) {
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authenticationManager);
@@ -45,9 +52,14 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		System.out.println(creds);
 		System.out.println(creds.getPassword());
 		System.out.println(creds.getUsername());
+		
+		creds.setPassword(encoder.encodePassword(creds.getPassword(),creds.getUsername()));
+		
+		System.out.println(creds.getPassword());
 
-
-		return getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),creds.getPassword(), Collections.emptyList()));
+		Authentication ret = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),creds.getPassword(),Collections.emptyList()));
+		System.out.println(ret);
+		return ret;
 	}
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,  HttpServletResponse response,

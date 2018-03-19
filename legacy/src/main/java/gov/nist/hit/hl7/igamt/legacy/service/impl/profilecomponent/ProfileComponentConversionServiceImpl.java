@@ -18,6 +18,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ProfileComponent;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
@@ -39,6 +41,10 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
   @Autowired
   private ProfileComponentService convertedProfileComponentService =
       (ProfileComponentService) context.getBean("profileComponentService");
+  
+  @Autowired
+  private  AccountRepository accountRepository =
+	      (AccountRepository) userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
@@ -74,7 +80,6 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
     DomainInfo domainInfo = new DomainInfo();
     domainInfo.setScope(ConversionUtil.convertScope(oldProfileComponent.getScope()));
     PublicationInfo publicationInfo = new PublicationInfo();
-
     convertedProfileComponent.setId(new CompositeKey(oldProfileComponent.getId()));
     convertedProfileComponent.setComment(oldProfileComponent.getComment());
     convertedProfileComponent.setCreatedFrom(null);

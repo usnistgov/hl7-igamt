@@ -27,7 +27,12 @@ public class Path {
   private InstancePath child;
 
 
-  public String getElementId() {
+  public Path() {
+	super();
+	// TODO Auto-generated constructor stub
+}
+
+public String getElementId() {
     return elementId;
   }
 

@@ -87,7 +87,6 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
     DomainInfo domainInfo = new DomainInfo();
     domainInfo.setScope(ConversionUtil.convertScope(oldCompositeProfileStructure.getScope()));
     PublicationInfo publicationInfo = new PublicationInfo();
-
     convertedCompositeProfileStructure.setComment(oldCompositeProfileStructure.getComment());
     convertedCompositeProfileStructure
         .setConformanceProfileId(oldCompositeProfileStructure.getCoreProfileId());
