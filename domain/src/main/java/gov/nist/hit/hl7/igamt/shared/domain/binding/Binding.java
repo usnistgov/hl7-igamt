@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.binding;
 
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -57,6 +58,9 @@ public abstract class Binding {
   }
   
   public void addChild(StructureElementBinding childStructureElementBinding) {
+    if(this.children == null){
+      this.children = new HashSet<StructureElementBinding>();
+    }
     this.children.add(childStructureElementBinding); 
   }
 

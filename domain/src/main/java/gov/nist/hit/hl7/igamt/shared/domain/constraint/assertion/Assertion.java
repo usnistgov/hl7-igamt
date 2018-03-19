@@ -17,8 +17,17 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
  */
 public class Assertion {
 
+  private String description;
 
   public Assertion() {
     super();
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 }

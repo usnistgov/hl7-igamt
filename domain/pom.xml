@@ -9,7 +9,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>shared-domain</artifactId>
-	<version>${parent.version}</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>shared-domain</name>
 	<url>http://maven.apache.org</url>
 	<properties>

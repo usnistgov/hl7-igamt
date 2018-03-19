@@ -31,5 +31,12 @@ public class Subject {
     this.path = path;
   }
 
+  @Override
+  public String toString() {
+    return "Subject [path=" + path + "]";
+  }
+  
+  
+
 
 }

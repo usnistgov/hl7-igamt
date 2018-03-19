@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.binding;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement;
@@ -48,10 +49,16 @@ public class ResourceBinding extends Binding {
   }
 
   public void setConformanceStatementCrossRefs(Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
+    if(conformanceStatementCrossRefs == null) {
+      this.conformanceStatementCrossRefs = new HashSet<ConformanceStatementCrossRef>();
+    }
     this.conformanceStatementCrossRefs = conformanceStatementCrossRefs;
   }
 
   public void addConformanceStatement(ConformanceStatement conformanceStatement) {
+    if(conformanceStatements == null) {
+      this.conformanceStatements = new HashSet<ConformanceStatement>();
+    }
     this.conformanceStatements.add(conformanceStatement);
     
   }

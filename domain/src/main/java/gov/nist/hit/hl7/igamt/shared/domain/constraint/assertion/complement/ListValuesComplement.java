@@ -21,9 +21,8 @@ public class ListValuesComplement extends Complement {
 
   private Set<String> values;
 
-  public ListValuesComplement(ComplementKey complementKey, Set<String> values) {
-    super(complementKey);
-    this.values = values;
+  public ListValuesComplement() {
+    this.complementKey = ComplementKey.LISTVALUE;
   }
 
   public Set<String> getValues() {
@@ -33,6 +32,12 @@ public class ListValuesComplement extends Complement {
   public void setValues(Set<String> values) {
     this.values = values;
   }
+
+  @Override
+  public String toString() {
+    return "ListValuesComplement [values=" + values + ", complementKey=" + complementKey + "]";
+  }
+
 
 
 }

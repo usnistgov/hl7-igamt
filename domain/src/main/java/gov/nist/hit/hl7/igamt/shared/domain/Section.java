@@ -6,6 +6,7 @@ public class Section {
   private String description;
   private Type type;
   private int position;
+  private String label;
   
   public String getId() {
     return id;
@@ -31,6 +32,12 @@ public class Section {
   public void setPosition(int position) {
     this.position = position;
   }
+public String getLabel() {
+	return label;
+}
+public void setLabel(String label) {
+	this.label = label;
+}
 
 
 }

@@ -21,7 +21,7 @@ import java.util.Set;
 public class ValuesetBinding {
   private String valuesetId;
   private ValuesetStrength strength;
-  private Set<String> valuesetLocations = new HashSet<String>();
+  private Set<Integer> valuesetLocations = new HashSet<Integer>();
 
   public ValuesetBinding() {
     super();
@@ -43,18 +43,22 @@ public class ValuesetBinding {
     this.strength = strength;
   }
 
-  public Set<String> getValuesetLocations() {
+  public Set<Integer> getValuesetLocations() {
     return valuesetLocations;
   }
 
-  public void setValuesetLocations(Set<String> valuesetLocations) {
+  public void setValuesetLocations(Set<Integer> valuesetLocations) {
     this.valuesetLocations = valuesetLocations;
   }
 
-  public void addValuesetLocation(String location) {
+  public void addValuesetLocation(Integer location) {
     this.valuesetLocations.add(location);
-    
+
   }
 
-
+  @Override
+  public String toString() {
+    return "ValuesetBinding [valuesetId=" + valuesetId + ", strength=" + strength
+        + ", valuesetLocations=" + valuesetLocations + "]";
+  }
 }

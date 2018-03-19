@@ -24,10 +24,8 @@ public class FormattedComplement extends Complement {
   private FormatType type;
   private String regexPattern;
 
-  public FormattedComplement(ComplementKey complementKey, FormatType type, String regexPattern) {
-    super(complementKey);
-    this.type = type;
-    this.regexPattern = regexPattern;
+  public FormattedComplement() {
+    this.complementKey = ComplementKey.FORMATTED;
   }
 
   public FormatType getType() {

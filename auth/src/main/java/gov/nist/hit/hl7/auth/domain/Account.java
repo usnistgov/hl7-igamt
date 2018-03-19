@@ -2,9 +2,7 @@ package gov.nist.hit.hl7.auth.domain;
 
 import java.util.Set;
 
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.DBRef;
@@ -16,22 +14,18 @@ public class Account {
 
 	@Id
 	private String id;
+	private Long accountId; // only for legacy 
 	private String username;
 	private String password;
 	private String email;
-	private boolean pending = false;
+	private boolean pending=true;
 	private String fullName;
 	private String organization;
 	private Boolean signedConfidentialityAgreement = false;
 	@DBRef
 	private Set<Privilege> privileges;
 	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -84,6 +78,18 @@ public class Account {
 	@Transient
 	public UserDetails userDetails(){
 		return new User(getUsername(), getPassword(), !isPending(), true, true, true, privileges);
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public Long getAccountId() {
+		return accountId;
+	}
+	public void setAccountId(Long accountId) {
+		this.accountId = accountId;
 	}
 	
 }

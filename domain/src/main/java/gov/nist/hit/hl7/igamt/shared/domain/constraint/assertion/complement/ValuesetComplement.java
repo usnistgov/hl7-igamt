@@ -21,9 +21,8 @@ public class ValuesetComplement extends Complement {
 
   private ValuesetBinding binding;
 
-  public ValuesetComplement(ComplementKey complementKey, ValuesetBinding binding) {
-    super(complementKey);
-    this.binding = binding;
+  public ValuesetComplement() {
+    this.complementKey = ComplementKey.VALUESET;
   }
 
   public ValuesetBinding getBinding() {
@@ -33,4 +32,10 @@ public class ValuesetComplement extends Complement {
   public void setBinding(ValuesetBinding binding) {
     this.binding = binding;
   }
+
+  @Override
+  public String toString() {
+    return "ValuesetComplement [binding=" + binding + ", complementKey=" + complementKey + "]";
+  }
+
 }

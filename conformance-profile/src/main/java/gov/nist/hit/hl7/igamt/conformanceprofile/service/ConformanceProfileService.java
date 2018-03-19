@@ -35,4 +35,6 @@ public interface ConformanceProfileService {
   public void delete(ConformanceProfile conformanceProfile);
 
   public void delete(CompositeKey key);
+  
+  public void removeCollection();
 }

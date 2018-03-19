@@ -35,6 +35,7 @@ import {TokenInterceptor} from "./requestInterceptor";
 import { RegisterComponent } from './register/register.component';
 import {UserService} from "./service/userService/user.service";
 
+import { FlexLayoutModule } from "@angular/flex-layout";
 
 @NgModule({
   declarations: [
@@ -47,14 +48,14 @@ import {UserService} from "./service/userService/user.service";
     AppFooterComponent,
     NotFoundComponent,
     LoginComponent,
-    RegisterComponent,
-
+    RegisterComponent
   ],
   exports : [ ],
   imports: [
     CommonModule,
     AlertModule.forRoot(),
     BrowserModule,
+    FlexLayoutModule,
     PanelModule,
     FormsModule,
     ReactiveFormsModule,

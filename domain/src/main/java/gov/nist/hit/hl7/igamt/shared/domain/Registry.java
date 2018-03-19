@@ -1,34 +1,22 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-@Document(collection = "registry")
-public class Registry<T extends Link> extends Section {
+public class Registry extends Section {
   
-  private String description;
-  private Set<T> children;
-  private Type type;
+  private Set<Link> children = new HashSet<Link>();
   public Registry() {
     super();
     // TODO Auto-generated constructor stub
   }
-  public String getDescription() {
-    return description;
-  }
-  public void setDescription(String description) {
-    this.description = description;
-  }
-  public Set<T> getChildren() {
+  public Set<Link> getChildren() {
     return children;
   }
-  public void setChildren(Set<T> children) {
+  public void setChildren(Set<Link> children) {
     this.children = children;
   }
-  public Type getType() {
-    return type;
-  }
-  public void setType(Type type) {
-    this.type = type;
-  }
+
+
 }

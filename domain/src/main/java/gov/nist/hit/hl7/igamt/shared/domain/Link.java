@@ -1,19 +1,18 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
 public class Link {
-  private String id;
+  private CompositeKey id;
   private int position;
   
- public Link(String id, int position) {
+ public Link(CompositeKey id, int position) {
     super();
     this.id = id;
     this.position = position;
   }
-
- public String getId() {
+ public CompositeKey getId() {
   return id;
 }
- public void setId(String id) {
+ public void setId(CompositeKey id) {
   this.id = id;
 }
  public int getPosition() {

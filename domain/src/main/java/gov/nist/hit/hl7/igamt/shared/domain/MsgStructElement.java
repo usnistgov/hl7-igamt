@@ -4,7 +4,7 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 public class MsgStructElement extends StructureElement {
 
   private int min;
-  private int max;
+  private String max;
   public MsgStructElement() {
     
   }
@@ -14,10 +14,10 @@ public class MsgStructElement extends StructureElement {
   public void setMin(int min) {
     this.min = min;
   }
-  public int getMax() {
+  public String getMax() {
     return max;
   }
-  public void setMax(int max) {
+  public void setMax(String max) {
     this.max = max;
   }
   

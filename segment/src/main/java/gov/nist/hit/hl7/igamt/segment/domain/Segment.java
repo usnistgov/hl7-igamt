@@ -11,38 +11,38 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 @Document(collection = "segment")
 
 public class Segment extends Resource {
-	String ext;
-	
-	private ResourceBinding binding;
-	
-	private Set<Field> children;
-	
-	public Segment() {
-		super();
-	}
-	public String getExt() {
-		return ext;
-	}
+  private String ext;
+  private ResourceBinding binding;
 
-	public void setExt(String ext) {
-		this.ext = ext;
-	}
+  private Set<Field> children;
 
-	public ResourceBinding getBinding() {
-		return binding;
-	}
+  public Segment() {
+    super();
+  }
 
-	public void setBinding(ResourceBinding binding) {
-		this.binding = binding;
-	}
+  public ResourceBinding getBinding() {
+    return binding;
+  }
 
-	public Set<Field> getChildren() {
-		return children;
-	}
+  public void setBinding(ResourceBinding binding) {
+    this.binding = binding;
+  }
 
-	public void setChildren(Set<Field> children) {
-		this.children = children;
-	}
-	
+  public Set<Field> getChildren() {
+    return children;
+  }
+
+  public void setChildren(Set<Field> children) {
+    this.children = children;
+  }
+
+  public String getExt() {
+    return ext;
+  }
+
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
+
 
 }

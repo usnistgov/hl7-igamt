@@ -13,30 +13,35 @@
  */
 package gov.nist.hit.hl7.legacy.datatype;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+//import org.springframework.test.context.ActiveProfiles;
+//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
-
-import static org.junit.Assert.*;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.legacy.service.impl.datatype.DatatypeConversionServiceImpl;
 
 /**
  *
  * @author Maxence Lefort on Mar 5, 2018.
  */
-@ActiveProfiles({ "test", "unit" })
-@RunWith(SpringJUnit4ClassRunner.class)
+//@ActiveProfiles({ "test", "unit" })
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class DatatypeConversionServiceImplTest {
 
   @Test
   public void testConvert() {
-    Datatype oldDatatype = new Datatype();
+    String testId = "57450d0fd4c6f57e694edfa8";
     
-    gov.nist.hit.hl7.igamt.datatype.domain.Datatype newDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
+    Datatype oldDatatype = new DatatypeConversionServiceImpl().findOldDatatype(testId);
+    gov.nist.hit.hl7.igamt.datatype.domain.Datatype newDatatype = new DatatypeConversionServiceImpl().convert(testId);
+    assertEquals("ID should be same!", oldDatatype.getId(), newDatatype.getId().getId());
     
+    if(newDatatype instanceof ComplexDatatype) {
+      assertEquals("Number of Components mismached.", oldDatatype.getComponents().size(), ((ComplexDatatype)newDatatype).getComponents().size());
+    }
   }
 }
