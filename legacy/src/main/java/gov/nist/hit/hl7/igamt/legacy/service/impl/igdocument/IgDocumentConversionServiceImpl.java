@@ -58,7 +58,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		List<IGDocument> igs =  legacyRepository.findAll();
 		for(IGDocument ig: igs) {
 			System.out.println(accountRepository.findAll().get(0).getEmail());
-			//convert(ig);
+			convert(ig);
 		}
 		
 	}
@@ -74,7 +74,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newIg.setId(key);	
 		if(ig.getAccountId() !=null) {
 				Account acc = accountRepository.findByAccountId(ig.getAccountId());
-				if(acc.getAccountId() !=null) {
+				if(acc != null && acc.getAccountId() !=null) {
 						if (acc.getUsername() !=null) {
 							
 							newIg.setUsername(acc.getUsername());

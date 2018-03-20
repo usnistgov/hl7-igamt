@@ -29,6 +29,8 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Group;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Message;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
@@ -69,6 +71,9 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
   @Autowired
   private ConformanceProfileService convertedConformanceProfileService =
       (ConformanceProfileService) context.getBean("conformanceProfileService");
+  
+  private AccountRepository accountRepository =
+      userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
@@ -125,7 +130,14 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     convertedConformanceProfile
         .setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
             .convertResourceBinding(oldMessage));
-    convertedConformanceProfile.setUsername("");
+    if (oldMessage.getAccountId() != null) {
+      Account acc = accountRepository.findByAccountId(oldMessage.getAccountId());
+      if (acc.getAccountId() != null) {
+        if (acc.getUsername() != null) {
+          convertedConformanceProfile.setUsername(acc.getUsername());
+        }
+      }
+    }
     return convertedConformanceProfile;
   }
 

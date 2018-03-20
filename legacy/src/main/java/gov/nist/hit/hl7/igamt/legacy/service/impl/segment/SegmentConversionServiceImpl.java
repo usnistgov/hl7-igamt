@@ -13,19 +13,13 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.segment;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMComponentDefinition;
-import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMConstraints;
-import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMPredicate;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
-import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
-import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
-import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
-import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate.PredicateType;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
@@ -34,6 +28,8 @@ import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 
 /**
@@ -53,7 +49,8 @@ public class SegmentConversionServiceImpl implements ConversionService {
   private DatatypeRepository oldDatatypeRepository =
       (DatatypeRepository) legacyContext.getBean("datatypeRepository");
 
-
+  private AccountRepository accountRepository =
+      (AccountRepository) userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
@@ -91,53 +88,37 @@ public class SegmentConversionServiceImpl implements ConversionService {
     publicationInfo.setPublicationVersion(oldSegment.getVersion());
     convertedSegment.setPublicationInfo(publicationInfo);
     convertedSegment.setComment(oldSegment.getComment());
-    // TODO replace binding and set username
+    
+    if(oldSegment.getName().equals("OBX") && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems() != null && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems().size() > 0){
+      DynamicMappingInfo dynamicMappingInfo = new DynamicMappingInfo();
+      dynamicMappingInfo.setReferencePath("2");
+      dynamicMappingInfo.setVariesDatatypePath("5");
+      
+      for(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DynamicMappingItem oldDMItem : oldSegment.getDynamicMappingDefinition().getDynamicMappingItems()){
+        DynamicMappingItem item = new DynamicMappingItem();
+        item.setDatatypeId(oldDMItem.getDatatypeId());
+        item.setValue(oldDMItem.getFirstReferenceValue());
+        dynamicMappingInfo.addItem(item);
+      }
+      convertedSegment.setDynamicMappingInfo(dynamicMappingInfo);
+      
+    }
 
+    if (oldSegment.getAccountId() != null) {
+      Account acc = accountRepository.findByAccountId(oldSegment.getAccountId());
+      if (acc.getAccountId() != null) {
+        if (acc.getUsername() != null) {
+          convertedSegment.setUsername(acc.getUsername());
+        }
+      }
+    }
+    
+    
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
         .convertResourceBinding(oldSegment));
-    convertedSegment.setUsername("");
     return convertedSegment;
   }
 
-  protected DateTimeConstraints convertDateTimeConstraints(DTMConstraints dtmConstraints) {
-    if (dtmConstraints != null) {
-      DateTimeConstraints dateTimeConstraints = new DateTimeConstraints();
-      List<DateTimeComponentDefinition> dateTimeComponentDefinitions = new ArrayList<>();
-      for (DTMComponentDefinition dtmComponentDefinition : dtmConstraints
-          .getDtmComponentDefinitions()) {
-        DateTimeComponentDefinition dateTimeComponentDefinition =
-            this.convertDateTimeComponentDefinition(dtmComponentDefinition);
-        if (dateTimeComponentDefinition != null) {
-          dateTimeComponentDefinitions.add(dateTimeComponentDefinition);
-        }
-      }
-      dateTimeConstraints.setDateTimeComponentDefinitions(dateTimeComponentDefinitions);
-      return dateTimeConstraints;
-    }
-    return null;
-  }
-
-  protected DateTimeComponentDefinition convertDateTimeComponentDefinition(
-      DTMComponentDefinition dtmComponentDefinition) {
-    DTMPredicate dtmPredicate = dtmComponentDefinition.getDtmPredicate();
-    DateTimeComponentDefinition dateTimeComponentDefinition =
-        new DateTimeComponentDefinition(dtmComponentDefinition.getPosition().intValue(),
-            dtmComponentDefinition.getName(), dtmComponentDefinition.getDescription(),
-            ConversionUtil.convertUsage(dtmComponentDefinition.getUsage()),
-            convertDateTimePredicate(dtmPredicate));
-    return dateTimeComponentDefinition;
-  }
-
-  protected DateTimePredicate convertDateTimePredicate(DTMPredicate dtmPredicate) {
-    if (dtmPredicate != null) {
-      return new DateTimePredicate(ConversionUtil.convertUsage(dtmPredicate.getTrueUsage()),
-          ConversionUtil.convertUsage(dtmPredicate.getFalseUsage()),
-          convertDateTimeComponentDefinition(dtmPredicate.getTarget()), PredicateType.PRESENCE,
-          dtmPredicate.getValue());
-
-    }
-    return null;
-  }
 
   private void init() {
     convertedSegmentService.removeCollection();

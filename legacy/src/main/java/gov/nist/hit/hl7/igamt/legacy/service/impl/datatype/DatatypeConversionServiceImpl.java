@@ -56,12 +56,11 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   @Autowired
   private DatatypeService convertedDatatypeService =
       (DatatypeService) context.getBean("datatypeService");
-  
-  private  AccountRepository accountRepository =
-	      (AccountRepository) userContext.getBean(AccountRepository.class);
-  
-  
-  
+
+  private AccountRepository accountRepository =
+      (AccountRepository) userContext.getBean(AccountRepository.class);
+
+
 
   @Override
   public void convert() {
@@ -88,8 +87,8 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   }
 
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
-	  
-	  
+
+
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
     if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();
@@ -139,18 +138,15 @@ public class DatatypeConversionServiceImpl implements ConversionService {
     convertedDatatype.setPublicationInfo(publicationInfo);
     convertedDatatype.setPurposeAndUse(oldDatatype.getPurposeAndUse());
     convertedDatatype.setComment(oldDatatype.getComment());
-    
-	if(oldDatatype.getAccountId() !=null) {
-		Account acc = accountRepository.findByAccountId(oldDatatype.getAccountId());
-		if(acc.getAccountId() !=null) {
-				if (acc.getUsername() !=null) {
-					
-				    convertedDatatype.setUsername(acc.getUsername());
-				}
-		}
-		
-}
-    // TODO replace binding and set username
+
+    if (oldDatatype.getAccountId() != null) {
+      Account acc = accountRepository.findByAccountId(oldDatatype.getAccountId());
+      if (acc != null && acc.getAccountId() != null) {
+        if (acc.getUsername() != null) {
+          convertedDatatype.setUsername(acc.getUsername());
+        }
+      }
+    }
 
     convertedDatatype
         .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
