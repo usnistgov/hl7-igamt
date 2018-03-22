@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
-public class Registry extends Section {
+public class Registry extends TextSectionOrRegistry{
   
   private Set<Link> children = new HashSet<Link>();
   public Registry() {

@@ -56,9 +56,10 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	public void convert() {
 		// TODO Auto-generated method stub
 		List<IGDocument> igs =  legacyRepository.findAll();
+		System.out.println(accountRepository.findAll().get(0).getEmail());
+
 		for(IGDocument ig: igs) {
-			System.out.println(accountRepository.findAll().get(0).getEmail());
-			//convert(ig);
+			convert(ig);
 		}
 		
 	}
@@ -74,7 +75,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newIg.setId(key);	
 		if(ig.getAccountId() !=null) {
 				Account acc = accountRepository.findByAccountId(ig.getAccountId());
-				if(acc.getAccountId() !=null) {
+				if(acc!=null) {
 						if (acc.getUsername() !=null) {
 							
 							newIg.setUsername(acc.getUsername());
@@ -110,7 +111,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	@SuppressWarnings("unchecked")
 	private void addProfile(Ig newIg, Profile profile) {
 		
-		TextSection<Registry> infra= new TextSection<Registry>();
+		TextSection infra= new TextSection();
 		
 		infra.setParentId(newIg.getId().getId());
 		
@@ -133,7 +134,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		datatypes.setPosition(5);
 		ValueSetRegistry valueSets= createValueSets(profile.getTableLibrary());	
 		valueSets.setPosition(6);
-		Set<Registry> children =new HashSet<Registry>();
+		Set<gov.nist.hit.hl7.igamt.shared.domain.Section> children =new HashSet<gov.nist.hit.hl7.igamt.shared.domain.Section>();
 		
 		children.add(profileComponent);
 		children.add( conformanceProfile);
@@ -284,16 +285,16 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 
 	}
 	private TextSection createTextSectionFromSection(Section s, String parentId) {
-		TextSection<TextSection> newSection = new  TextSection<TextSection> ();
+		TextSection newSection = new  TextSection();
 		newSection.setLabel(s.getSectionTitle());
 		newSection.setDescription(s.getSectionDescription());
 		newSection.setType(Type.TEXT);
-		newSection.setDescription(s.getSectionDescription());
+		newSection.setDescription(s.getSectionContents());
 		newSection.setPosition(s.getSectionPosition());
 		newSection.setParentId(parentId);
 		newSection.setId(s.getId());
 		if(s.getChildSections() !=null && !s.getChildSections().isEmpty()) {
-			Set<TextSection> children = new HashSet<>();
+			Set<gov.nist.hit.hl7.igamt.shared.domain.Section> children = new HashSet<gov.nist.hit.hl7.igamt.shared.domain.Section>();
 			for(Section child : s.getChildSections()) {
 				
 				children.add(createTextSectionFromSection( child, s.getId())) ;
