@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Element;
 
 /**
@@ -61,7 +62,7 @@ public class SerializableSection extends SerializableElement{
     this.description = description;
   }
 
-  public Element serialize() {
+  public Element serialize() throws SerializationException {
     Element sectionElement = super.getElement("Section");
     sectionElement.appendChild(description);
     for(SerializableElement child : children) {

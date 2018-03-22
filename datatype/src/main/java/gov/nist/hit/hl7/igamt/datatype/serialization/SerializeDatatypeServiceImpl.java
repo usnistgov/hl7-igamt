@@ -18,7 +18,7 @@ import java.util.Map;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.serialization.domain.ResourceSerializationService;
+import gov.nist.hit.hl7.igamt.serialization.service.ResourceSerializationService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**

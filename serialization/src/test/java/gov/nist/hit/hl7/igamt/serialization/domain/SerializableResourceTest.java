@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.healthcare.tools.hl7.v2.igamt.domain.serialization;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -21,13 +21,14 @@ import java.util.Set;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.serialization.SerializableResource;
 import nu.xom.Element;
 
 /**
@@ -87,7 +88,7 @@ public class SerializableResourceTest {
   }
   
   @Test
-  public void testSerialize() {
+  public void testSerialize() throws SerializationException {
     SerializableResource serializableResource = getSerializableResourceTest();
     Element testElement = serializableResource.serialize();
     assertEquals(COMMENT_TEST, testElement.getAttribute("comment").getValue());

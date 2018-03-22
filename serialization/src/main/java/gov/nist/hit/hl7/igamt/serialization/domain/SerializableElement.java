@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -24,7 +25,7 @@ public abstract class SerializableElement {
 
   protected String id, position, title;
 
-  public abstract Element serialize();
+  public abstract Element serialize() throws SerializationException;
   
   public SerializableElement(String id, String position, String title) {
     super();

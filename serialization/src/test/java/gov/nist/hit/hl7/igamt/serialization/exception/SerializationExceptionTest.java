@@ -11,13 +11,11 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization;
-
-import java.util.Date;
+package gov.nist.hit.hl7.igamt.serialization.exception;
 
 import org.junit.Test;
 
-import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 import static org.junit.Assert.*;
 
@@ -25,14 +23,19 @@ import static org.junit.Assert.*;
  *
  * @author Maxence Lefort on Mar 22, 2018.
  */
-public class DateSerializationUtilTest {
+public class SerializationExceptionTest {
 
-  private final long DATE_IN_MILLIS = 1521731130187L;
-  private final String FORMATED_DATE = "03/22/2018";
+  private final String TEST_EXCEPTION_MESSAGE = "test_exception_message";
+  private final Exception TEST_EXCEPTION = new NullPointerException(TEST_EXCEPTION_MESSAGE);
+  private final Type TEST_TYPE = Type.COMPONENT;
+  private final String TEST_LOCATION = "test_location";
+  private final String TEST_MESSAGE = "test_message";
+
   
   @Test
-  public void testSerializeDate() {
-    Date date = new Date(DATE_IN_MILLIS);
-    assertEquals(FORMATED_DATE, DateSerializationUtil.serializeDate(date));
+  public void testPrintError() {
+    SerializationException serializationException = new SerializationException(TEST_EXCEPTION,TEST_TYPE,TEST_LOCATION,TEST_MESSAGE);
+    String testError = serializationException.printError();
+    assertEquals(TEST_TYPE+"["+TEST_LOCATION+"] => "+TEST_EXCEPTION.getClass()+" -> "+TEST_EXCEPTION_MESSAGE, testError);
   }
 }

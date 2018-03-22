@@ -11,9 +11,8 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.serialization;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
@@ -75,7 +74,6 @@ public abstract class SerializableResource extends SerializableElement {
         publicationDate = DateSerializationUtil
             .serializeDate(this.resource.getPublicationInfo().getPublicationDate());
       }
-
       element.addAttribute(new Attribute("publicationDate", publicationDate));
       element.addAttribute(new Attribute("username", this.resource.getUsername() != null ? this.resource.getUsername() : ""));
     }

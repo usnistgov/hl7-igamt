@@ -19,9 +19,12 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
+import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.Ref;
-import gov.nist.hit.hl7.igamt.shared.domain.serialization.SerializableResource;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -47,35 +50,46 @@ public class SerializableDatatype extends SerializableResource{
   }
 
   @Override
-  public Element serialize() {
-    Element datatypeElement = super.getElement("Datatype");
-    Datatype datatype = (Datatype) this.resource;
-    datatypeElement.addAttribute(new Attribute("ext",datatype.getExt()));
-    datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse()));
-    datatypeElement.appendChild(super.serializeResourceBinding(datatype.getBinding()));
-    if(datatype instanceof ComplexDatatype) {
-      datatypeElement = serializeComplexDatatype(datatypeElement);
-    } else if (datatype instanceof DateTimeDatatype) {
-      datatypeElement = serializeDateTimeDatatype(datatypeElement);
+  public Element serialize() throws ResourceSerializationException {
+    try {
+      Element datatypeElement = super.getElement("Datatype");
+      Datatype datatype = (Datatype) this.resource;
+      datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
+      datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
+      Element bindingElement = super.serializeResourceBinding(datatype.getBinding());
+      if(bindingElement != null) {
+        datatypeElement.appendChild(bindingElement);
+      }
+      if(datatype instanceof ComplexDatatype) {
+        datatypeElement = serializeComplexDatatype(datatypeElement);
+      } else if (datatype instanceof DateTimeDatatype) {
+        datatypeElement = serializeDateTimeDatatype(datatypeElement);
+      }
+      return datatypeElement;
+    } catch (Exception exception) {
+      throw new ResourceSerializationException(exception, Type.DATATYPE, this.resource);
     }
-    return datatypeElement;
   }
 
-  private Element serializeComplexDatatype(Element datatypeElement) {
+  private Element serializeComplexDatatype(Element datatypeElement) throws SubStructElementSerializationException {
     ComplexDatatype complexDatatype = (ComplexDatatype) super.getResource();
     for(Component component : complexDatatype.getComponents()) {
-      Element componentElement = new Element("Component");
-      componentElement.addAttribute(new Attribute("confLength",component.getConfLength()));
-      componentElement.addAttribute(new Attribute("id",component.getId()));
-      componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength()));
-      componentElement.addAttribute(new Attribute("minLength",component.getMinLength()));
-      componentElement.addAttribute(new Attribute("text",component.getText()));
-      componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
-      if(component.getRef() != null && refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())){
-        componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+      try {
+        Element componentElement = new Element("Component");
+        componentElement.addAttribute(new Attribute("confLength",component.getConfLength()));
+        componentElement.addAttribute(new Attribute("id",component.getId()));
+        componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength()));
+        componentElement.addAttribute(new Attribute("minLength",component.getMinLength()));
+        componentElement.addAttribute(new Attribute("text",component.getText()));
+        componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
+        if(component.getRef() != null && refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())){
+          componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+        }
+        componentElement.addAttribute(new Attribute("usage",component.getUsage().toString()));
+        datatypeElement.appendChild(componentElement);
+      } catch (Exception exception) {
+        throw new SubStructElementSerializationException(exception, component);
       }
-      componentElement.addAttribute(new Attribute("usage",component.getUsage().toString()));
-      datatypeElement.appendChild(componentElement);
     }
     return datatypeElement;
   }

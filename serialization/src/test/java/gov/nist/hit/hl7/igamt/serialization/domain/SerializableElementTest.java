@@ -11,12 +11,13 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
 
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Element;
 
 /**
@@ -42,7 +43,7 @@ public class SerializableElementTest {
   }
 
   @Test
-  public void testSerialize() {
+  public void testSerialize() throws SerializationException {
     Element testElement = getTestElement().serialize();
     assertEquals(3,testElement.getAttributeCount());
     assertEquals(ID_TEST, testElement.getAttribute("id").getValue());
