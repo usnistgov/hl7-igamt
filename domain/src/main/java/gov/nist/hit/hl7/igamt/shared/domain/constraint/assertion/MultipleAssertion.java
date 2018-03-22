@@ -15,6 +15,6 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
  * @author jungyubw
  *
  */
-public class MultipleAssertion {
+public class MultipleAssertion extends Assertion{
 
 }

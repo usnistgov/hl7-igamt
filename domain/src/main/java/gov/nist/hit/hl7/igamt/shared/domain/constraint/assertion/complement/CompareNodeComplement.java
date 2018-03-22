@@ -11,7 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.InstancePath;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
 
 /**
  * @author jungyubw
@@ -19,13 +19,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.InstancePath;
  */
 public class CompareNodeComplement extends Complement {
   private CompareOperator operator;
-  private InstancePath comparatorPath;
+  private Path comparatorPath;
 
-  public CompareNodeComplement(ComplementKey complementKey, CompareOperator operator,
-      InstancePath comparatorPath) {
-    super(complementKey);
-    this.operator = operator;
-    this.comparatorPath = comparatorPath;
+  public CompareNodeComplement() {
+    this.complementKey = ComplementKey.COMPARENODE;
   }
 
   public CompareOperator getOperator() {
@@ -36,13 +33,17 @@ public class CompareNodeComplement extends Complement {
     this.operator = operator;
   }
 
-  public InstancePath getComparatorPath() {
+  public Path getComparatorPath() {
     return comparatorPath;
   }
 
-  public void setComparatorPath(InstancePath comparatorPath) {
+  public void setComparatorPath(Path comparatorPath) {
     this.comparatorPath = comparatorPath;
   }
 
-
+  @Override
+  public String toString() {
+    return "CompareNodeComplement [operator=" + operator + ", comparatorPath=" + comparatorPath
+        + ", complementKey=" + complementKey + "]";
+  }
 }

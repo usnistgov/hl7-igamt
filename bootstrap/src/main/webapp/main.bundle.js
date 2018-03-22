@@ -118,7 +118,7 @@ var AboutComponent = (function () {
 /***/ "../../../../../src/app/app-topbar.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"topbar clearfix\">\n  <div class=\"topbar-left\" style=\"width: 800px !important;\">\n    <div class=\"brand\" id=\"appheader\">\n      <span style=\"display: inline-block; text-shadow:none\" href=\"#\">\n        <div style=\"    margin-bottom: 5px;\n    margin-left: 10px;\n    font-size: 32px;\n    color: #F3C60D;\">NIST IGAMT <span style=\"color:white; font-size:medium\" msg=\"\" key=\"app.subtitle\" class=\"ng-binding\">Implementation Guide Authoring and Management Tool</span><span class=\"badge ng-binding\" style=\"background-color: rgb(152, 45, 18);color:white; font-size:12px\"> 2.0.0-beta13</span></div>\n        <!-- ngIf: appInfo.domain != '' && appInfo.domain  != null -->\n      </span>\n    </div>\n  </div>\n\n  <div class=\"topbar-right\">\n    <a id=\"menu-button\" href=\"#\" (click)=\"app.onMenuButtonClick($event)\">\n      <i></i>\n    </a>\n\n    <a id=\"rightpanel-menu-button\" href=\"#\" (click)=\"app.onRightPanelButtonClick($event)\">\n      <i class=\"material-icons\">more_vert</i>\n    </a>\n\n    <a id=\"topbar-menu-button\" href=\"#\" (click)=\"app.onTopbarMenuButtonClick($event)\">\n      <i class=\"material-icons\">menu</i>\n    </a>\n\n    <ul class=\"topbar-items animated fadeInDown\" [ngClass]=\"{'topbar-items-visible': app.topbarMenuActive}\">\n      <li #profile class=\"profile-item\" *ngIf=\"app.profileMode==='top'||app.isHorizontal()\"\n          [ngClass]=\"{'active-top-menu':app.activeTopbarItem === profile}\">\n\n        <a href=\"#\" (click)=\"app.onTopbarItemClick($event,profile)\">\n          <img class=\"profile-image\" src=\"assets/layout/images/avatar.png\" />\n          <span class=\"topbar-item-name\">Jane Williams</span>\n        </a>\n\n        <ul class=\"ultima-menu animated fadeInDown\">\n          <li role=\"menuitem\">\n            <a href=\"#\">\n              <i class=\"material-icons\">person</i>\n              <span>Profile</span>\n            </a>\n          </li>\n          <li role=\"menuitem\">\n            <a href=\"#\">\n              <i class=\"material-icons\">security</i>\n              <span>Privacy</span>\n            </a>\n          </li>\n          <li role=\"menuitem\">\n            <a href=\"#\">\n              <i class=\"material-icons\">settings_applications</i>\n              <span>Settings</span>\n            </a>\n          </li>\n          <li role=\"menuitem\">\n            <a href=\"#\">\n              <i class=\"material-icons\">power_settings_new</i>\n              <span>Logout</span>\n            </a>\n          </li>\n        </ul>\n      </li>\n    </ul>\n  </div>\n</div>\n"
+module.exports = "<div style=\"background-color:  black\">\n\n      <span>\n        <div style=\"\n    margin-left: 10px;\n    font-size: 32px;\n    color: #F3C60D !important;\">\n\n          NIST IGAMT\n\n          <span style=\"color:white; font-size:medium\" class=\"ng-binding\">Implementation Guide Authoring and Management Tool</span><span class=\"badge ng-binding\" style=\"background-color: rgb(152, 45, 18);color:white; font-size:12px\"> 2.0.0-beta13</span>\n        </div>\n      </span>\n</div>\n"
 
 /***/ }),
 
@@ -143,7 +143,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"layout-wrapper\" [ngClass]=\"{'layout-compact':layoutCompact}\" (click)=\"onLayoutClick()\">\n\n  <div #layoutContainer class=\"layout-container\"\n       [ngClass]=\"{'menu-layout-static': !isOverlay(),\n            'menu-layout-overlay': isOverlay(),\n            'layout-menu-overlay-active': overlayMenuActive,\n            'menu-layout-horizontal': isHorizontal(),\n            'menu-layout-slim': isSlim(),\n            'layout-menu-static-inactive': staticMenuDesktopInactive,\n            'layout-menu-static-active': staticMenuMobileActive}\">\n\n    <app-topbar></app-topbar>\n\n    <div class=\"layout-menu\" [ngClass]=\"{'layout-menu-dark':darkMenu}\" (click)=\"onMenuClick($event)\">\n      <div #layoutMenuScroller class=\"nano\">\n        <div class=\"nano-content menu-scroll-content\">\n          <inline-profile *ngIf=\"profileMode=='inline'&&!isHorizontal()\"></inline-profile>\n          <app-menu [reset]=\"resetMenu\"></app-menu>\n        </div>\n      </div>\n    </div>\n\n    <div class=\"layout-main\" style=\"padding-left: 0; padding-right: 0; padding-top : 111px;\">\n      <router-outlet></router-outlet>\n    </div>\n    <!--<app-footer></app-footer>-->\n    <div class=\"layout-mask\"></div>\n  </div>\n\n</div>\n"
+module.exports = "\n\n\n    <app-topbar></app-topbar>\n\n    <div>\n          <app-menu></app-menu>\n\n    </div>\n\n      <div class=\"container-fluid outlet\">\n      <router-outlet></router-outlet>\n      </div>\n    <!--<app-footer></app-footer>-->\n\n"
 
 /***/ }),
 
@@ -184,138 +184,11 @@ var AppComponent = (function () {
         this.workSpace = workSpace;
         this.http = http;
         this.appInfo = appInfo;
-        this.layoutCompact = true;
-        this.layoutMode = MenuOrientation.HORIZONTAL;
-        this.darkMenu = false;
-        this.profileMode = 'inline';
         this.appInfo.getInfo().then(function (info) {
             console.log(info);
             _this.workSpace.setAppInfo(info);
         });
     }
-    AppComponent.prototype.ngAfterViewInit = function () {
-        var _this = this;
-        this.layoutContainer = this.layourContainerViewChild.nativeElement;
-        this.layoutMenuScroller = this.layoutMenuScrollerViewChild.nativeElement;
-        setTimeout(function () {
-            jQuery(_this.layoutMenuScroller).nanoScroller({ flash: true });
-        }, 10);
-    };
-    AppComponent.prototype.onLayoutClick = function () {
-        if (!this.topbarItemClick) {
-            this.activeTopbarItem = null;
-            this.topbarMenuActive = false;
-        }
-        if (!this.menuClick) {
-            if (this.isHorizontal() || this.isSlim()) {
-                this.resetMenu = true;
-            }
-            if (this.overlayMenuActive || this.staticMenuMobileActive) {
-                this.hideOverlayMenu();
-            }
-            this.menuHoverActive = false;
-        }
-        if (!this.rightPanelClick) {
-            this.rightPanelActive = false;
-        }
-        this.topbarItemClick = false;
-        this.menuClick = false;
-        this.rightPanelClick = false;
-    };
-    AppComponent.prototype.onMenuButtonClick = function (event) {
-        this.menuClick = true;
-        this.rotateMenuButton = !this.rotateMenuButton;
-        this.topbarMenuActive = false;
-        if (this.layoutMode === MenuOrientation.OVERLAY) {
-            this.overlayMenuActive = !this.overlayMenuActive;
-        }
-        else {
-            if (this.isDesktop())
-                this.staticMenuDesktopInactive = !this.staticMenuDesktopInactive;
-            else
-                this.staticMenuMobileActive = !this.staticMenuMobileActive;
-        }
-        event.preventDefault();
-    };
-    AppComponent.prototype.onMenuClick = function ($event) {
-        var _this = this;
-        this.menuClick = true;
-        this.resetMenu = false;
-        if (!this.isHorizontal()) {
-            setTimeout(function () {
-                jQuery(_this.layoutMenuScroller).nanoScroller();
-            }, 500);
-        }
-    };
-    AppComponent.prototype.onTopbarMenuButtonClick = function (event) {
-        this.topbarItemClick = true;
-        this.topbarMenuActive = !this.topbarMenuActive;
-        this.hideOverlayMenu();
-        event.preventDefault();
-    };
-    AppComponent.prototype.onTopbarItemClick = function (event, item) {
-        this.topbarItemClick = true;
-        if (this.activeTopbarItem === item)
-            this.activeTopbarItem = null;
-        else
-            this.activeTopbarItem = item;
-        event.preventDefault();
-    };
-    AppComponent.prototype.onRightPanelButtonClick = function (event) {
-        this.rightPanelClick = true;
-        this.rightPanelActive = !this.rightPanelActive;
-        event.preventDefault();
-    };
-    AppComponent.prototype.onRightPanelClick = function () {
-        this.rightPanelClick = true;
-    };
-    AppComponent.prototype.hideOverlayMenu = function () {
-        this.rotateMenuButton = false;
-        this.overlayMenuActive = false;
-        this.staticMenuMobileActive = false;
-    };
-    AppComponent.prototype.isTablet = function () {
-        var width = window.innerWidth;
-        return width <= 1024 && width > 640;
-    };
-    AppComponent.prototype.isDesktop = function () {
-        return window.innerWidth > 1024;
-    };
-    AppComponent.prototype.isMobile = function () {
-        return window.innerWidth <= 640;
-    };
-    AppComponent.prototype.isOverlay = function () {
-        return this.layoutMode === MenuOrientation.OVERLAY;
-    };
-    AppComponent.prototype.isHorizontal = function () {
-        return this.layoutMode === MenuOrientation.HORIZONTAL;
-    };
-    AppComponent.prototype.isSlim = function () {
-        return this.layoutMode === MenuOrientation.SLIM;
-    };
-    AppComponent.prototype.changeToStaticMenu = function () {
-        this.layoutMode = MenuOrientation.STATIC;
-    };
-    AppComponent.prototype.changeToOverlayMenu = function () {
-        this.layoutMode = MenuOrientation.OVERLAY;
-    };
-    AppComponent.prototype.changeToHorizontalMenu = function () {
-        this.layoutMode = MenuOrientation.HORIZONTAL;
-    };
-    AppComponent.prototype.changeToSlimMenu = function () {
-        this.layoutMode = MenuOrientation.SLIM;
-    };
-    AppComponent.prototype.ngOnDestroy = function () {
-        jQuery(this.layoutMenuScroller).nanoScroller({ flash: true });
-    };
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('layoutContainer'),
-        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["ElementRef"])
-    ], AppComponent.prototype, "layourContainerViewChild", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('layoutMenuScroller'),
-        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_0__angular_core__["ElementRef"])
-    ], AppComponent.prototype, "layoutMenuScrollerViewChild", void 0);
     AppComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'app-root',
@@ -384,10 +257,8 @@ var AppFooterComponent = (function () {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return AppMenuComponent; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return AppSubMenuComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_animations__ = __webpack_require__("../../../animations/esm5/animations.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_component__ = __webpack_require__("../../../../../src/app/app.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__app_component__ = __webpack_require__("../../../../../src/app/app.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -399,56 +270,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-
 var AppMenuComponent = (function () {
     function AppMenuComponent(app) {
         this.app = app;
     }
     AppMenuComponent.prototype.ngOnInit = function () {
-        var _this = this;
-        this.model = [
-            { label: 'Home', icon: 'dashboard', routerLink: ['/'] },
-            {
-                label: 'IG Documents', icon: 'palette', badge: '6',
-                items: [
-                    {
-                        label: 'Create New Document', icon: 'plus', routerLink: ['/ig-documents/create'], command: function (event) {
-                            _this.createNewIgDocument();
-                        }
-                    },
-                    {
-                        label: 'My Documents', icon: 'brush', routerLink: ['/ig-documents/my-igs'], command: function (event) {
-                            _this.loadScopeIgDocuments('USER');
-                        }
-                    },
-                    {
-                        label: 'Shared With Me', icon: 'brush', routerLink: ['/ig-documents/shared-igs'], command: function (event) {
-                            _this.loadScopeIgDocuments('SHARED');
-                        }
-                    },
-                    {
-                        label: 'Pre-loaded Documents', icon: 'brush', routerLink: ['/ig-documents/preloaded-igs'], command: function (event) {
-                            _this.loadScopeIgDocuments('PRELOADED');
-                        }
-                    },
-                    {
-                        label: 'All IG Documents', icon: 'brush', routerLink: ['/ig-documents/all'], command: function (event) {
-                            _this.loadScopeIgDocuments('ALL');
-                        }
-                    }
-                ]
-            },
-            { label: 'Data type Libraries', icon: 'list', routerLink: ['/datatype-libraries'] },
-            { label: 'Comparator', icon: 'dashboard', routerLink: ['/comparator'] },
-            { label: 'Documentation', icon: 'dashboard', routerLink: ['/documentation'] },
-            { label: 'Configuration', icon: 'dashboard', routerLink: ['/configuration'] },
-            { label: 'Search', icon: 'search', routerLink: ['/search'] },
-            { label: 'About', icon: 'info', routerLink: ['/about'] }
-        ];
-    };
-    AppMenuComponent.prototype.loadScopeIgDocuments = function (scope) {
-    };
-    AppMenuComponent.prototype.createNewIgDocument = function () {
     };
     __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
@@ -457,114 +283,21 @@ var AppMenuComponent = (function () {
     AppMenuComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             selector: 'app-menu',
-            template: "\n    <ul app-submenu [item]=\"model\" root=\"true\" class=\"ultima-menu ultima-main-menu clearfix\" [reset]=\"reset\"\n        visible=\"true\"></ul>\n  "
+            template: __webpack_require__("../../../../../src/app/app.menu.html")
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__app_component__["a" /* AppComponent */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__app_component__["a" /* AppComponent */]])
     ], AppMenuComponent);
     return AppMenuComponent;
 }());
 
-var AppSubMenuComponent = (function () {
-    function AppSubMenuComponent(app) {
-        this.app = app;
-    }
-    AppSubMenuComponent.prototype.itemClick = function (event, item, index) {
-        if (this.root) {
-            this.app.menuHoverActive = !this.app.menuHoverActive;
-        }
-        // avoid processing disabled items
-        if (item.disabled) {
-            event.preventDefault();
-            return true;
-        }
-        // activate current item and deactivate active sibling if any
-        this.activeIndex = (this.activeIndex === index) ? null : index;
-        // execute command
-        if (item.command) {
-            item.command({ originalEvent: event, item: item });
-        }
-        // prevent hash change
-        if (item.items || (!item.url && !item.routerLink)) {
-            event.preventDefault();
-        }
-        // hide menu
-        if (!item.items) {
-            if (this.app.isHorizontal() || this.app.isSlim())
-                this.app.resetMenu = true;
-            else
-                this.app.resetMenu = false;
-            this.app.overlayMenuActive = false;
-            this.app.staticMenuMobileActive = false;
-            this.app.menuHoverActive = !this.app.menuHoverActive;
-        }
-    };
-    AppSubMenuComponent.prototype.onMouseEnter = function (index) {
-        if (this.root && this.app.menuHoverActive && (this.app.isHorizontal() || this.app.isSlim())) {
-            this.activeIndex = index;
-        }
-    };
-    AppSubMenuComponent.prototype.isActive = function (index) {
-        return this.activeIndex === index;
-    };
-    Object.defineProperty(AppSubMenuComponent.prototype, "reset", {
-        get: function () {
-            return this._reset;
-        },
-        set: function (val) {
-            this._reset = val;
-            if (this._reset && (this.app.isHorizontal() || this.app.isSlim())) {
-                this.activeIndex = null;
-            }
-        },
-        enumerable: true,
-        configurable: true
-    });
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
-        __metadata("design:type", Object)
-    ], AppSubMenuComponent.prototype, "item", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
-        __metadata("design:type", Boolean)
-    ], AppSubMenuComponent.prototype, "root", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
-        __metadata("design:type", Boolean)
-    ], AppSubMenuComponent.prototype, "visible", void 0);
-    __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Input"])(),
-        __metadata("design:type", Boolean),
-        __metadata("design:paramtypes", [Boolean])
-    ], AppSubMenuComponent.prototype, "reset", null);
-    AppSubMenuComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-            selector: '[app-submenu]',
-            template: "\n    <ng-template ngFor let-child let-i=\"index\" [ngForOf]=\"(root ? item : item.items)\">\n      <li [ngClass]=\"{'active-menuitem': isActive(i)}\" [class]=\"child.badgeStyleClass\"\n          *ngIf=\"child.visible === false ? false : true\">\n        <a [href]=\"child.url||'#'\" (click)=\"itemClick($event,child,i)\" (mouseenter)=\"onMouseEnter(i)\" class=\"ripplelink\"\n           *ngIf=\"!child.routerLink\"\n           [attr.tabindex]=\"!visible ? '-1' : null\" [attr.target]=\"child.target\">\n          <i class=\"material-icons\">{{child.icon}}</i>\n          <span>{{child.label}}</span>\n          <span class=\"menuitem-badge\" *ngIf=\"child.badge\">{{child.badge}}</span>\n          <i class=\"material-icons submenu-icon\" *ngIf=\"child.items\">keyboard_arrow_down</i>\n        </a>\n\n        <a (click)=\"itemClick($event,child,i)\" (mouseenter)=\"onMouseEnter(i)\" class=\"ripplelink\"\n           *ngIf=\"child.routerLink\"\n           [routerLink]=\"child.routerLink\" routerLinkActive=\"active-menuitem-routerlink\"\n           [routerLinkActiveOptions]=\"{exact: true}\" [attr.tabindex]=\"!visible ? '-1' : null\"\n           [attr.target]=\"child.target\">\n          <i class=\"material-icons\">{{child.icon}}</i>\n          <span>{{child.label}}</span>\n          <span class=\"menuitem-badge\" *ngIf=\"child.badge\">{{child.badge}}</span>\n          <i class=\"material-icons submenu-icon\" *ngIf=\"child.items\">keyboard_arrow_down</i>\n        </a>\n        <div class=\"layout-menu-tooltip\">\n          <div class=\"layout-menu-tooltip-arrow\"></div>\n          <div class=\"layout-menu-tooltip-text\">{{child.label}}</div>\n        </div>\n        <ul app-submenu [item]=\"child\" *ngIf=\"child.items\" [visible]=\"isActive(i)\" [reset]=\"reset\"\n            [@children]=\"(app.isSlim()||app.isHorizontal())&&root ? isActive(i) ? 'visible' : 'hidden' : isActive(i) ? 'visibleAnimated' : 'hiddenAnimated'\"></ul>\n      </li>\n    </ng-template>\n  ",
-            animations: [
-                Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["trigger"])('children', [
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["state"])('hiddenAnimated', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["style"])({
-                        height: '0px'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["state"])('visibleAnimated', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["style"])({
-                        height: '*'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["state"])('visible', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["style"])({
-                        height: '*'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["state"])('hidden', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["style"])({
-                        height: '0px'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["transition"])('visibleAnimated => hiddenAnimated', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["animate"])('400ms cubic-bezier(0.86, 0, 0.07, 1)')),
-                    Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["transition"])('hiddenAnimated => visibleAnimated', Object(__WEBPACK_IMPORTED_MODULE_1__angular_animations__["animate"])('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
-                ])
-            ]
-        }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_2__app_component__["a" /* AppComponent */]])
-    ], AppSubMenuComponent);
-    return AppSubMenuComponent;
-}());
 
 
+/***/ }),
+
+/***/ "../../../../../src/app/app.menu.html":
+/***/ (function(module, exports) {
+
+module.exports = "<nav class=\"navbar navbar-expand nav-back\">\n  <div class=\"collapse navbar-collapse\">\n    <ul class=\"navbar-nav mr-auto\">\n      <li class=\"nav-item \">\n        <a class=\"nav-link\">\n         Home\n        </a>\n\n      </li>\n      <li class=\"nav-item dropdown\">\n        <a class=\"nav-link dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n         IG Documents\n        </a>\n        <div class=\"dropdown-menu\">\n          <a class=\"dropdown-item\">Create new Document</a>\n          <a class=\"dropdown-item\">My Documents</a>\n          <a class=\"dropdown-item\">Pre-loaded Documents</a>\n          <a class=\"dropdown-item\">Shared with Me</a>\n          <a class=\"dropdown-item\">All Documents</a>\n        </div>\n      </li>\n      <li class=\"nav-item dropdown\">\n        <a class=\"nav-link dropdown-toggle\" data-toggle=\"dropdown\" aria-haspopup=\"true\" aria-expanded=\"false\">\n          Data Type Libraries\n        </a>\n        <div class=\"dropdown-menu\">\n          <a class=\"dropdown-item\">Create new User Library</a>\n          <a class=\"dropdown-item\">Data Types Evolution Matrix</a>\n\n          <a class=\"dropdown-item\">My Libraries</a>\n          <a class=\"dropdown-item\">Master Libraries</a>\n          <a class=\"dropdown-item\">Shared with Me</a>\n        </div>\n      </li>\n      <li class=\"nav-item \">\n        <a class=\"nav-link\">\n          Comparator\n        </a>\n\n      </li>\n      <li class=\"nav-item \">\n        <a class=\"nav-link\">\n          Documentation\n        </a>\n\n      </li>\n      <li class=\"nav-item \">\n        <a class=\"nav-link\">\n          Search\n        </a>\n\n      </li>\n      <li class=\"nav-item \">\n        <a class=\"nav-link\">\n         About\n        </a>\n\n      </li>\n    </ul>\n\n\n    <ul class=\"nav navbar-nav navbar-right\">\n        <li routerLink=\"register\"><a class=\"nav-link\"><span class=\"glyphicon glyphicon-user\"></span> <i class=\"fa fa-user\"></i>\n          Sign Up</a></li>\n        <li routerLink=\"login\"><a class=\"nav-link\"><i class=\"fa fa-sign-in\"></i>Login</a></li>\n      </ul>\n\n  </div>\n</nav>\n\n\n\n\n"
 
 /***/ }),
 
@@ -596,17 +329,17 @@ var AppSubMenuComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_19__app_menu_component__ = __webpack_require__("../../../../../src/app/app.menu.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__app_topbar_component__ = __webpack_require__("../../../../../src/app/app.topbar.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__app_footer_component__ = __webpack_require__("../../../../../src/app/app.footer.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__app_profile_component__ = __webpack_require__("../../../../../src/app/app.profile.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__service_general_configuration_general_configuration_service__ = __webpack_require__("../../../../../src/app/service/general-configuration/general-configuration.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__service_segments_segments_service__ = __webpack_require__("../../../../../src/app/service/segments/segments.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__service_profilecomponents_profilecomponents_service__ = __webpack_require__("../../../../../src/app/service/profilecomponents/profilecomponents.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__login_login_component__ = __webpack_require__("../../../../../src/app/login/login.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__login_auth_service__ = __webpack_require__("../../../../../src/app/login/auth.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__login_auth_guard_service__ = __webpack_require__("../../../../../src/app/login/auth-guard.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__requestInterceptor__ = __webpack_require__("../../../../../src/app/requestInterceptor.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__service_userService_user_service__ = __webpack_require__("../../../../../src/app/service/userService/user.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__service_general_configuration_general_configuration_service__ = __webpack_require__("../../../../../src/app/service/general-configuration/general-configuration.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__service_segments_segments_service__ = __webpack_require__("../../../../../src/app/service/segments/segments.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__service_profilecomponents_profilecomponents_service__ = __webpack_require__("../../../../../src/app/service/profilecomponents/profilecomponents.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_25__login_login_component__ = __webpack_require__("../../../../../src/app/login/login.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_26__login_auth_service__ = __webpack_require__("../../../../../src/app/login/auth.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_27__login_auth_guard_service__ = __webpack_require__("../../../../../src/app/login/auth-guard.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_28__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_29__requestInterceptor__ = __webpack_require__("../../../../../src/app/requestInterceptor.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_30__register_register_component__ = __webpack_require__("../../../../../src/app/register/register.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_31__service_userService_user_service__ = __webpack_require__("../../../../../src/app/service/userService/user.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_32__angular_flex_layout__ = __webpack_require__("../../../flex-layout/esm5/flex-layout.es5.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -657,97 +390,51 @@ var AppModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_7__home_home_component__["a" /* HomeComponent */],
                 __WEBPACK_IMPORTED_MODULE_8__about_about_component__["a" /* AboutComponent */],
                 __WEBPACK_IMPORTED_MODULE_9__documentation_documentation_component__["a" /* DocumentationComponent */],
-                __WEBPACK_IMPORTED_MODULE_22__app_profile_component__["a" /* InlineProfileComponent */],
                 __WEBPACK_IMPORTED_MODULE_19__app_menu_component__["a" /* AppMenuComponent */],
-                __WEBPACK_IMPORTED_MODULE_19__app_menu_component__["b" /* AppSubMenuComponent */],
                 __WEBPACK_IMPORTED_MODULE_20__app_topbar_component__["a" /* AppTopBarComponent */],
                 __WEBPACK_IMPORTED_MODULE_21__app_footer_component__["a" /* AppFooterComponent */],
                 __WEBPACK_IMPORTED_MODULE_12__common_404_404_component__["a" /* NotFoundComponent */],
-                __WEBPACK_IMPORTED_MODULE_26__login_login_component__["a" /* LoginComponent */],
-                __WEBPACK_IMPORTED_MODULE_31__register_register_component__["a" /* RegisterComponent */]
+                __WEBPACK_IMPORTED_MODULE_25__login_login_component__["a" /* LoginComponent */],
+                __WEBPACK_IMPORTED_MODULE_30__register_register_component__["a" /* RegisterComponent */]
             ],
             exports: [],
             imports: [
                 __WEBPACK_IMPORTED_MODULE_5__angular_common__["CommonModule"],
                 __WEBPACK_IMPORTED_MODULE_11_ngx_bootstrap__["a" /* AlertModule */].forRoot(),
                 __WEBPACK_IMPORTED_MODULE_0__angular_platform_browser__["BrowserModule"],
+                __WEBPACK_IMPORTED_MODULE_32__angular_flex_layout__["a" /* FlexLayoutModule */],
                 __WEBPACK_IMPORTED_MODULE_17_primeng_primeng__["PanelModule"],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["FormsModule"],
                 __WEBPACK_IMPORTED_MODULE_2__angular_forms__["ReactiveFormsModule"],
                 __WEBPACK_IMPORTED_MODULE_18__app_routes__["a" /* AppRoutes */],
                 __WEBPACK_IMPORTED_MODULE_3__angular_http__["b" /* HttpModule */],
-                __WEBPACK_IMPORTED_MODULE_29__angular_common_http__["c" /* HttpClientModule */],
+                __WEBPACK_IMPORTED_MODULE_28__angular_common_http__["c" /* HttpClientModule */],
                 __WEBPACK_IMPORTED_MODULE_4__angular_platform_browser_animations__["a" /* BrowserAnimationsModule */],
                 __WEBPACK_IMPORTED_MODULE_17_primeng_primeng__["MenubarModule"]
             ],
             providers: [
                 { provide: __WEBPACK_IMPORTED_MODULE_5__angular_common__["LocationStrategy"], useClass: __WEBPACK_IMPORTED_MODULE_5__angular_common__["HashLocationStrategy"] },
                 {
-                    provide: __WEBPACK_IMPORTED_MODULE_29__angular_common_http__["a" /* HTTP_INTERCEPTORS */],
-                    useClass: __WEBPACK_IMPORTED_MODULE_30__requestInterceptor__["a" /* TokenInterceptor */],
+                    provide: __WEBPACK_IMPORTED_MODULE_28__angular_common_http__["a" /* HTTP_INTERCEPTORS */],
+                    useClass: __WEBPACK_IMPORTED_MODULE_29__requestInterceptor__["a" /* TokenInterceptor */],
                     multi: true
                 },
                 __WEBPACK_IMPORTED_MODULE_13__appinfo_service__["a" /* AppInfoService */],
                 __WEBPACK_IMPORTED_MODULE_10__service_workspace_workspace_service__["b" /* WorkspaceService */],
-                __WEBPACK_IMPORTED_MODULE_23__service_general_configuration_general_configuration_service__["a" /* GeneralConfigurationService */],
+                __WEBPACK_IMPORTED_MODULE_22__service_general_configuration_general_configuration_service__["a" /* GeneralConfigurationService */],
                 __WEBPACK_IMPORTED_MODULE_14__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */],
                 __WEBPACK_IMPORTED_MODULE_15__service_datatypes_datatypes_service__["a" /* DatatypesService */],
                 __WEBPACK_IMPORTED_MODULE_16__service_valueSets_valueSets_service__["a" /* ValueSetsService */],
-                __WEBPACK_IMPORTED_MODULE_24__service_segments_segments_service__["a" /* SegmentsService */],
-                __WEBPACK_IMPORTED_MODULE_25__service_profilecomponents_profilecomponents_service__["a" /* ProfileComponentsService */],
-                __WEBPACK_IMPORTED_MODULE_27__login_auth_service__["a" /* AuthService */],
-                __WEBPACK_IMPORTED_MODULE_28__login_auth_guard_service__["a" /* AuthGuard */],
-                __WEBPACK_IMPORTED_MODULE_32__service_userService_user_service__["a" /* UserService */]
+                __WEBPACK_IMPORTED_MODULE_23__service_segments_segments_service__["a" /* SegmentsService */],
+                __WEBPACK_IMPORTED_MODULE_24__service_profilecomponents_profilecomponents_service__["a" /* ProfileComponentsService */],
+                __WEBPACK_IMPORTED_MODULE_26__login_auth_service__["a" /* AuthService */],
+                __WEBPACK_IMPORTED_MODULE_27__login_auth_guard_service__["a" /* AuthGuard */],
+                __WEBPACK_IMPORTED_MODULE_31__service_userService_user_service__["a" /* UserService */]
             ],
             bootstrap: [__WEBPACK_IMPORTED_MODULE_6__app_component__["a" /* AppComponent */]]
         })
     ], AppModule);
     return AppModule;
-}());
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/app/app.profile.component.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return InlineProfileComponent; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-
-var InlineProfileComponent = (function () {
-    function InlineProfileComponent() {
-    }
-    InlineProfileComponent.prototype.onClick = function (event) {
-        this.active = !this.active;
-        event.preventDefault();
-    };
-    InlineProfileComponent = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
-            selector: 'inline-profile',
-            template: "\n        <div class=\"profile\" [ngClass]=\"{'profile-expanded':active}\">\n            <a href=\"#\" (click)=\"onClick($event)\">\n                <img class=\"profile-image\" src=\"assets/layout/images/avatar.png\" />\n                <span class=\"profile-name\">Jane Williams</span>\n                <i class=\"material-icons\">keyboard_arrow_down</i>\n            </a>\n        </div>\n\n        <ul class=\"ultima-menu profile-menu\" [@menu]=\"active ? 'visible' : 'hidden'\">\n            <li role=\"menuitem\">\n                <a href=\"#\" class=\"ripplelink\" [attr.tabindex]=\"!active ? '-1' : null\">\n                    <i class=\"material-icons\">person</i>\n                    <span>Profile</span>\n                </a>\n            </li>\n            <li role=\"menuitem\">\n                <a href=\"#\" class=\"ripplelink\" [attr.tabindex]=\"!active ? '-1' : null\">\n                    <i class=\"material-icons\">security</i>\n                    <span>Privacy</span>\n                </a>\n            </li>\n            <li role=\"menuitem\">\n                <a href=\"#\" class=\"ripplelink\" [attr.tabindex]=\"!active ? '-1' : null\">\n                    <i class=\"material-icons\">settings_application</i>\n                    <span>Settings</span>\n                </a>\n            </li>\n            <li role=\"menuitem\">\n                <a href=\"#\" class=\"ripplelink\" [attr.tabindex]=\"!active ? '-1' : null\">\n                    <i class=\"material-icons\">power_settings_new</i>\n                    <span>Logout</span>\n                </a>\n            </li>\n        </ul>\n    ",
-            animations: [
-                Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["trigger"])('menu', [
-                    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["state"])('hidden', Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["style"])({
-                        height: '0px'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["state"])('visible', Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["style"])({
-                        height: '*'
-                    })),
-                    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["transition"])('visible => hidden', Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["animate"])('400ms cubic-bezier(0.86, 0, 0.07, 1)')),
-                    Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["transition"])('hidden => visible', Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["animate"])('400ms cubic-bezier(0.86, 0, 0.07, 1)'))
-                ])
-            ]
-        })
-    ], InlineProfileComponent);
-    return InlineProfileComponent;
 }());
 
 
@@ -970,7 +657,7 @@ var DocumentationComponent = (function () {
 /***/ "../../../../../src/app/home/home.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<script src=\"jquery.js\"></script>\n  <script type=\"text/javascript\">\n    $(function() {\n      $('#menu-button').on('click', function(e) {\n        var menu = $('#menu');\n        if(menu.hasClass('lmenu-active')) {\n          menu.addClass('fadeOutUp');\n\n          setTimeout(function() {\n            menu.removeClass('fadeOutUp fadeInDown lmenu-active');\n          },500);\n        }\n        else {\n          menu.addClass('lmenu-active fadeInDown');\n        }\n        e.preventDefault();\n      });\n    });\n  </script>\n<div class=\"landing-body\">\n<div class=\"landing-wrapper\">\n  <div id=\"header\">\n    <div class=\"header-top clearfix\">\n    </div>\n\n    <div class=\"header-content clearfix\">\n      <h1> Welcome to the Implementation Guide Authoring and\n        Management Tool (IGAMT)</h1>\n      <a routerLink=\"login\" class=\"ui-button secondary\">\n        <span class=\"ui-button-text\">Login </span>\n      </a>\n    </div>\n  </div>\n\n  <div class=\"ui-g\">\n      <div class=\"ui-g-4\">\n        <div class=\"card\">\n          <h3>\n            Note to Testers\n          </h3>\n          <p style=\"text-align:justify\">IGAMT is a tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles. The tool provides capabilities to create both narrative text (akin to a word processing program) and messaging requirements in a structured environment. IGAMT contains a model of all the message events for every version of the HL7 v2 standard. Users begin by selecting the version of the HL7 v2 standard and the message events they want to include and refine (constrain) in their implementation guide.\n          </p>\n          <p style=\"color:red; font-weight: bold;text-align:justify\">\n            IGAMT is a work-in-progress and is in a constant state of change. Many core features exist and IGAMT has been used to create complete Implementation Guides in pilot projects. However, be aware that new features may not be completely functionality and some existing features will change. Also, we are currently working on integration with the NIST validation tool. If you have issues, please contact us or join the IGAMT Google Group to post questions.\n          </p>\n        </div>\n       </div>\n      <div class=\"ui-g-4\">\n        <div class=\"card\">\n          <h3>\n            Have a Question?\n          </h3>\n          <p style=\"text-align: justify;\">A Google Group <a class=\"point\"\n                                                            ng-href=\"https://groups.google.com/forum/#!forum/nist-igamt\"\n                                                            target=\"_blank\">NIST-IGAMT</a>\n            has been established for discussion/questions about the tool. No\n            membership is required. A Google account is required for posting.</p>\n          <ul>\n            <li>Site: <a class=\"point\" target=\"_blank\"\n                         ng-href=\"https://groups.google.com/forum/#!forum/nist-igamt\">https://groups.google.com/forum/#!forum/nist-igamt</a>\n            </li>\n            <li>Email: nist-igamt@googlegroups.com</li>\n          </ul>\n        </div>\n      </div>\n      <div class=\"ui-g-4\">\n        <div class=\"card\">\n          <h3>\n            Supported Browsers\n          </h3>\n          <p style=\"text-align: justify\">The following browsers are currently supported:</p>\n          <ul>\n            <li>Chrome <span style=\"color:red\">(Recommended)</span></li>\n            <li>Firefox <span style=\"color:red\"></span></li>\n            <li>Safari</li>\n          </ul>\n        </div>\n      </div>\n    </div>\n\n  </div>\n\n</div>\n\n"
+module.exports = "\n      <h1> Welcome to the Implementation Guide Authoring and\n        Management Tool (IGAMT)</h1>\n\n      <div class=\"ui-g-12\">\n        <div class=\"card\">\n          <h3>\n            Note to Testers\n          </h3>\n          <p style=\"text-align:justify\">IGAMT is a tool used to create HL7 v2.x implementation guides that contain one or more conformance profiles. The tool provides capabilities to create both narrative text (akin to a word processing program) and messaging requirements in a structured environment. IGAMT contains a model of all the message events for every version of the HL7 v2 standard. Users begin by selecting the version of the HL7 v2 standard and the message events they want to include and refine (constrain) in their implementation guide.\n          </p>\n          <p style=\"color:red; font-weight: bold;text-align:justify\">\n            IGAMT is a work-in-progress and is in a constant state of change. Many core features exist and IGAMT has been used to create complete Implementation Guides in pilot projects. However, be aware that new features may not be completely functionality and some existing features will change. Also, we are currently working on integration with the NIST validation tool. If you have issues, please contact us or join the IGAMT Google Group to post questions.\n          </p>\n        </div>\n      </div>\n      <div class=\"ui-g-6\">\n        <div class=\"card\">\n          <h3>\n            Have a Question?\n          </h3>\n          <p style=\"text-align: justify;\">A Google Group <a class=\"point\"\n                                                            ng-href=\"https://groups.google.com/forum/#!forum/nist-igamt\"\n                                                            target=\"_blank\">NIST-IGAMT</a>\n            has been established for discussion/questions about the tool. No\n            membership is required. A Google account is required for posting.\n          </p>\n          <ul>\n            <li>Site: <a class=\"point\" target=\"_blank\"\n                         ng-href=\"https://groups.google.com/forum/#!forum/nist-igamt\">https://groups.google.com/forum/#!forum/nist-igamt</a>\n            </li>\n            <li>Email: nist-igamt@googlegroups.com</li>\n          </ul>\n        </div>\n      </div>\n      <div class=\"ui-g-6\">\n        <div class=\"card\">\n          <h3>\n            Supported Browsers\n          </h3>\n          <p style=\"text-align: justify\">The following browsers are currently supported:</p>\n          <ul>\n            <li>Chrome <span style=\"color:red\">(Recommended)</span></li>\n            <li>Firefox <span style=\"color:red\"></span></li>\n            <li>Safari</li>\n          </ul>\n        </div>\n      </div>\n\n\n\n"
 
 /***/ }),
 
@@ -1125,7 +812,7 @@ var AuthService = (function () {
 /***/ "../../../../../src/app/login/login.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "\n    <script type=\"text/javascript\">\n        $(function() {\n            $('input').on('blur', function(e) {\n                var el = $(this);\n                if(el.val() != '')\n                    el.addClass('ui-state-filled');\n                else\n                    el.removeClass('ui-state-filled');\n            });\n        });\n    </script>\n\n  <!-- 3. Display the application -->\n  <div class=\"login-body\">\n      <div class=\"card login-panel ui-fluid\">\n          <div class=\"ui-g\">\n              <div class=\"ui-g-12\">\n                    <span class=\"md-inputfield\">\n                        <input type=\"text\" autocomplete=\"off\" class=\"ui-inputtext ui-corner-all ui-state-default ui-widget\" [(ngModel)]=\"username\">\n                        <label>Username</label>\n                    </span>\n              </div>\n              <div class=\"ui-g-12\">\n                  <span class=\"md-inputfield\">\n                      <input type=\"password\" autocomplete=\"off\" class=\"ui-inputtext ui-corner-all ui-state-default ui-widget\" [(ngModel)]=\"password\">\n                      <label>Password</label>\n                  </span>\n              </div>\n              <div class=\"ui-g-12\">\n                  <button type=\"button\" class=\"ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left\" (click)=\"login()\">\n                      <span class=\"ui-button-icon-left ui-c fa fa-fw\"></span>\n                    <i class=\"ui-button-icon-left fa fa-user\" aria-hidden=\"true\"></i>\n\n                    <span class=\"ui-button-text ui-c\">Sign In</span>\n                  </button>\n                  <button type=\"button\" class=\"secondary ui-button ui-widget ui-state-default ui-corner-all ui-button-text-icon-left\">\n                      <span class=\"ui-button-icon-left ui-c fa fa-fw ui-icon-help\"></span>\n                      <span class=\"ui-button-text ui-c\"  (click)=\"register()\">New User</span>\n                  </button>\n              </div>\n          </div>\n\n      </div>\n  </div>\n    <!--<div class=\"col-md-6 col-md-offset-3\">-->\n      <!--<h2>Login</h2>-->\n      <!--<form name=\"form\" (ngSubmit)=\"f.form.valid && login()\" #f=\"ngForm\" novalidate>-->\n        <!--<div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">-->\n          <!--<label >Username</label>-->\n          <!--<input type=\"text\" class=\"form-control\" name=\"username\" [(ngModel)]=\"model.username\" #username=\"ngModel\" required />-->\n          <!--<div *ngIf=\"f.submitted && !username.valid\" class=\"help-block\">Username is required</div>-->\n        <!--</div>-->\n        <!--<div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !password.valid }\">-->\n          <!--<label >Password</label>-->\n          <!--<input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\" required />-->\n          <!--<div *ngIf=\"f.submitted && !password.valid\" class=\"help-block\">Password is required</div>-->\n        <!--</div>-->\n        <!--<div class=\"form-group\">-->\n          <!--<button [disabled]=\"loading\" class=\"btn btn-primary\">Login</button>-->\n          <!--<img *ngIf=\"loading\" src=\"data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==\" />-->\n          <!--<a [routerLink]=\"['/register']\" class=\"btn btn-link\">Register</a>-->\n        <!--</div>-->\n      <!--</form>-->\n    <!--</div>-->\n"
+module.exports = "<div fxLayout=\"row\"  fxLayoutAlign=\"center\">\n\n<div fxFlex=\"50\" class=\"card container-fluid\" >\n  <h4 class=\"card-title\"> Sign in </h4>\n      <form name=\"form\" #f=\"ngForm\" novalidate>\n        <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">\n          <input type=\"text\" class=\"form-control\" name=\"username\" [(ngModel)]=\"username\" required placeholder=\"username\" />\n          <div *ngIf=\"f.submitted && !username.valid\" class=\"help-block\">Username is required</div>\n        </div>\n        <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !password.valid }\">\n          <input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"password\" required placeholder=\"password\" />\n          <div *ngIf=\"f.submitted && !password.valid\" class=\"help-block\">Password is required</div>\n        </div>\n        <div class=\"form-group\">\n          <button [disabled]=\"loading\" class=\"btn btn-primary\" (click)=\"login()\">Login</button>\n          <a [routerLink]=\"['/register']\" class=\"btn btn-link\">Register</a>\n        </div>\n      </form>\n</div>\n</div>\n"
 
 /***/ }),
 
@@ -1211,7 +898,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/register/register.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"col-md-6 col-md-offset-3\">\n  <h2>Register</h2>\n  <form name=\"form\" (ngSubmit)=\"f.form.valid && register()\" #f=\"ngForm\" novalidate>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">\n      <label>Full Name</label>\n      <input type=\"text\" class=\"form-control\" name=\"fullname\" [(ngModel)]=\"model.fullname\" #fullname=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !fullname.valid\" class=\"help-block\">First Name is required</div>\n    </div>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !username.valid }\">\n      <label>Username</label>\n      <input type=\"text\" class=\"form-control\" name=\"username\" [(ngModel)]=\"model.username\" #username=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !username.valid\" class=\"help-block\">User Name is required</div>\n    </div>\n\n    <div class=\"form-group\">\n      <label >Email</label>\n      <input type=\"text\"  class=\"form-control\" name=\"email\" [(ngModel)]=\"model.email\" #email=\"ngModel\" required/>\n      <div *ngIf=\"f.submitted && !email.valid\" class=\"help-block\">Email is required</div>\n\n    </div>\n    <div class=\"form-group\" [ngClass]=\"{ 'has-error': f.submitted && !password.valid }\">\n      <label>Password</label>\n      <input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"model.password\" #password=\"ngModel\" required />\n      <div *ngIf=\"f.submitted && !password.valid\" class=\"help-block\">Password is required</div>\n    </div>\n\n\n    <div class=\"form-group\">\n      <label >Organization</label>\n      <input type=\"password\" class=\"form-control\" name=\"password\" [(ngModel)]=\"model.organization\" #password=\"ngModel\"/>\n    </div>\n\n\n\n\n    <div class=\"form-group\">\n      <button [disabled]=\"loading\" class=\"btn btn-primary\" (click)=\"register()\">Register</button>\n      <a [routerLink]=\"['/login']\" class=\"btn btn-link\">Cancel</a>\n    </div>\n  </form>\n</div>\n"
+module.exports = "<div fxLayout=\"row\"  fxLayoutAlign=\"center\">\n  <div fxFlex=\"50\" class=\"card container-fluid\" >\n    <h4 class=\"card-title\"> Sign up </h4>\n  <form [formGroup]=\"registrationForm\"  #formDir=\"ngForm\">\n\n\n    <div class=\"form-group\">\n\n      <label for=\"fullname\">Full Name</label>\n      <input name=\"fullname\" id=\"fullname\" class=\"form-control\"\n             formControlName=\"fullname\" [(ngModel)]=\"model.fullname\" required  >\n\n      <div *ngIf=\"fullname.invalid && (fullname.dirty || fullname.touched)\"\n           class=\"alert alert-danger\">\n\n        <div *ngIf=\"fullname.errors.required\">\n          Name is required.\n        </div>\n\n      </div>\n    </div>\n\n    <div class=\"form-group\">\n\n      <label for=\"username\">Username</label>\n      <input name=\"username\" id=\"username\" class=\"form-control\"\n             formControlName=\"username\" required [(ngModel)]=\"model.username\"  >\n\n      <div *ngIf=\"username.invalid && (username.dirty || username.touched)\"\n           class=\"alert alert-danger\">\n\n        <div *ngIf=\"username.errors.required\">\n         Username is required.\n        </div>\n\n      </div>\n    </div>\n\n    <div class=\"form-group\">\n\n      <label for=\"email\">e-mail</label>\n      <input name=\"email\" id=\"email\" class=\"form-control\"\n             formControlName=\"email\" required [(ngModel)]=\"model.email\" >\n\n      <div *ngIf=\"email.invalid && (email.dirty || email.touched)\"\n           class=\"alert alert-danger\">\n\n        <div *ngIf=\"email.errors.required\">\n          email is required.\n        </div>\n        <div *ngIf=\"email.errors.email\">\n         Please enter a valid e-mail\n        </div>\n\n      </div>\n    </div>\n\n    <div class=\"form-group\">\n\n      <label for=\"password\">password</label>\n      <input name=\"password\" id=\"password\" class=\"form-control\"\n             formControlName=\"password\" required [(ngModel)]=\"model.password\">\n\n      <div *ngIf=\"password.invalid && (password.dirty || password.touched)\"\n           class=\"alert alert-danger\">\n\n        <div *ngIf=\"password.errors.required\">\n          Password is required.\n        </div>\n\n      </div>\n    </div>\n\n    <div class=\"form-group\">\n\n      <label for=\"confirmPasswordForm\">Confirm password</label>\n      <input name=\"confirmPasswordForm\" id=\"confirmPasswordForm\" [(ngModel)]=\"confirmPassword\" formControlName=\"confirmPasswordForm\"  required class=\"form-control\">\n\n\n      <div *ngIf=\"confirmPasswordForm.invalid && (confirmPasswordForm.dirty || confirmPasswordForm.touched)\"\n           class=\"alert alert-danger\">\n\n          Passwords do not match\n\n      </div>\n    </div>\n\n\n\n\n\n\n\n    <div class=\"form-group\">\n      <button [disabled]=\"loading|| !registrationForm.valid\" class=\"btn btn-primary\" (click)=\"register()\">Register</button>\n      <a [routerLink]=\"['/login']\" class=\"btn btn-link\">Cancel</a>\n    </div>\n  </form>\n\n\n\n\n\n\n</div>\n</div>\n"
 
 /***/ }),
 
@@ -1223,6 +910,7 @@ module.exports = "<div class=\"col-md-6 col-md-offset-3\">\n  <h2>Register</h2>\
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_userService_user_service__ = __webpack_require__("../../../../../src/app/service/userService/user.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1235,13 +923,56 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
 var RegisterComponent = (function () {
     function RegisterComponent(router, userService) {
         this.router = router;
         this.userService = userService;
         this.model = {};
         this.loading = false;
+        this.registrationForm = new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormGroup"]({
+            'fullname': new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormControl"](this.model.fullname, [__WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].required]),
+            'email': new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormControl"](this.model.email, [__WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].email, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].required]),
+            'username': new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormControl"](this.model.username, [__WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].required, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].minLength(4)]),
+            'password': new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormControl"](this.model.password, [__WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].required, __WEBPACK_IMPORTED_MODULE_3__angular_forms__["Validators"].minLength(8)]),
+            'confirmPasswordForm': new __WEBPACK_IMPORTED_MODULE_3__angular_forms__["FormControl"](this.confirmPassword, [this.passwordValidator(this.model.password)])
+        });
     }
+    Object.defineProperty(RegisterComponent.prototype, "fullname", {
+        get: function () {
+            return this.registrationForm.get('fullname');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RegisterComponent.prototype, "email", {
+        get: function () {
+            return this.registrationForm.get('email');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RegisterComponent.prototype, "confirmPasswordForm", {
+        get: function () {
+            return this.registrationForm.get('confirmPasswordForm');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RegisterComponent.prototype, "username", {
+        get: function () {
+            return this.registrationForm.get('username');
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RegisterComponent.prototype, "password", {
+        get: function () {
+            return this.registrationForm.get('password');
+        },
+        enumerable: true,
+        configurable: true
+    });
     RegisterComponent.prototype.register = function () {
         var _this = this;
         this.loading = true;
@@ -1253,6 +984,12 @@ var RegisterComponent = (function () {
             console.log("error");
             _this.loading = false;
         });
+    };
+    RegisterComponent.prototype.passwordValidator = function (obj) {
+        var _this = this;
+        return function (control) {
+            return _this.confirmPassword !== _this.model.password ? { 'NotMAtch': { value: control.value } } : null;
+        };
     };
     RegisterComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
@@ -1294,11 +1031,11 @@ var TokenInterceptor = (function () {
     }
     TokenInterceptor.prototype.intercept = function (request, next) {
         console.log("here");
-        request = request.clone({
-            setHeaders: {
-                Authorization: "Bearer" + localStorage.getItem('currentUser')
-            }
-        });
+        // request = request.clone({
+        //   setHeaders: {
+        //     Authorization: "Bearer"+localStorage.getItem('currentUser')
+        //   }
+        // });
         return next.handle(request);
     };
     TokenInterceptor = __decorate([

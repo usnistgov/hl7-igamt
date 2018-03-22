@@ -16,5 +16,5 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
  *
  */
 public enum ComplementKey {
-  PRESENCE, SAMEVALUE, SAMENODE, COMPAREVALUE, COMPARENODE, FORMATTED, LISTVALUE, VALUESET, GENERIC
+  PRESENCE, SAMEVALUE, COMPAREVALUE, COMPARENODE, FORMATTED, LISTVALUE, VALUESET, GENERIC
 }

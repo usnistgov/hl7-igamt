@@ -1155,7 +1155,7 @@ var ContextMenuService = (function () {
     /** @nocollapse */
     ContextMenuService.ctorParameters = function () { return [
         { type: __WEBPACK_IMPORTED_MODULE_0__angular_cdk_overlay__["b" /* Overlay */], },
-        { type: __WEBPACK_IMPORTED_MODULE_0__angular_cdk_overlay__["e" /* ScrollStrategyOptions */], },
+        { type: __WEBPACK_IMPORTED_MODULE_0__angular_cdk_overlay__["f" /* ScrollStrategyOptions */], },
     ]; };
     return ContextMenuService;
 }());
@@ -1448,7 +1448,7 @@ var ContextMenuModule = (function () {
                     ],
                     imports: [
                         __WEBPACK_IMPORTED_MODULE_1__angular_common__["CommonModule"],
-                        __WEBPACK_IMPORTED_MODULE_0__angular_cdk_overlay__["d" /* OverlayModule */],
+                        __WEBPACK_IMPORTED_MODULE_0__angular_cdk_overlay__["e" /* OverlayModule */],
                     ],
                 },] },
     ];

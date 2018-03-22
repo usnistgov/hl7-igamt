@@ -25,12 +25,8 @@ public class GenericComplement extends Complement {
 
   private Set<Parameter> parms;
 
-  public GenericComplement(ComplementKey complementKey, String name, String description,
-      Set<Parameter> parms) {
-    super(complementKey);
-    this.name = name;
-    this.description = description;
-    this.parms = parms;
+  public GenericComplement() {
+    this.complementKey = ComplementKey.GENERIC;
   }
 
   public String getName() {
@@ -57,5 +53,12 @@ public class GenericComplement extends Complement {
     this.parms = parms;
   }
 
+  @Override
+  public String toString() {
+    return "GenericComplement [name=" + name + ", description=" + description + ", parms=" + parms
+        + ", complementKey=" + complementKey + "]";
+  }
+
+  
 
 }

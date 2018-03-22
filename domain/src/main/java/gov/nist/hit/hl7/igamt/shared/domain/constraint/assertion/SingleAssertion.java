@@ -51,5 +51,9 @@ public class SingleAssertion extends Assertion {
     this.complement = complement;
   }
 
-
+  @Override
+  public String toString() {
+    return "SingleAssertion [subject=" + subject + ", verbKey=" + verbKey + ", complement="
+        + complement + "]";
+  }
 }

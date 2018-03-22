@@ -51,7 +51,6 @@ public class RegistrationController {
 			accountService.createNoramlUser(a);
 			return a;
 
-//		}
 
 
 

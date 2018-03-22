@@ -36,4 +36,6 @@ public interface DatatypeService {
 
   public void delete(CompositeKey key);
   
+  public void removeCollection();
+  
 }

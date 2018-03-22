@@ -18,14 +18,14 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement;
 public class Parameter {
 
   private String key;
-  private String value;
+  private Object obj;
 
 
 
-  public Parameter(String key, String value) {
+  public Parameter(String key, Object obj) {
     super();
     this.key = key;
-    this.value = value;
+    this.setObj(obj);
   }
 
   public String getKey() {
@@ -36,13 +36,14 @@ public class Parameter {
     this.key = key;
   }
 
-  public String getValue() {
-    return value;
+  public Object getObj() {
+    return obj;
   }
 
-  public void setValue(String value) {
-    this.value = value;
+  public void setObj(Object obj) {
+    this.obj = obj;
   }
+
 
 
 }

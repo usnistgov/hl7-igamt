@@ -11,8 +11,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import com.mongodb.MongoClient;
 
 @Configuration
-@ComponentScan({"gov.nist.healthcare.tools.hl7.v2.igamt"})
-@EnableMongoRepositories({"gov.nist.hit.hl7.igamt.legacy.repository"})
+@EnableMongoRepositories("gov.nist.hit.hl7.igamt.legacy.repository")
 public class LegacyApplicationConfig {
 
   @Bean
