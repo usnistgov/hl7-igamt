@@ -16,24 +16,24 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
  */
 public class PropertyLengthMin extends ItemProperty {
 
-  private int min;
+  private String min;
 
-  public PropertyLengthMin(int min) {
+  public PropertyLengthMin(String min) {
     super(PropertyKey.LENGTH_MIN);
     this.min = min;
   }
-  
+
   public PropertyLengthMin() {
     super(PropertyKey.LENGTH_MIN);
   }
 
-  public int getMin() {
+  public String getMin() {
     return min;
   }
 
-  public void setMin(int min) {
+  public void setMin(String min) {
     this.min = min;
   }
-  
-  
+
+
 }

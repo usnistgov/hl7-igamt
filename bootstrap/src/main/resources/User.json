@@ -1,0 +1,1378 @@
+[
+	{
+		"username" : "aberge",
+		"password" : "82701adc149db4adf341ba521fb31c0a3368ac071d61c61b97bdeccf0ac5a75d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "afair",
+		"password" : "9ca0d718b836c45c33443e1e115ba58434ba7988190c54f60b6fff7bcc1fb937",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "agunangel",
+		"password" : "dbe495c7a09b589828e87ee25c9d6806d4cac385ef67213eef2873428836f1b6",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "alajoh1",
+		"password" : "0a3d15b7ab1deafbf3f02a75e7fff03359ad60620dbaa2e1844c1acf136c24c8",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "alejandra",
+		"password" : "5646456c4da73232979589fd5def7ae94c3e98fd68d3e05b71616472f5e68377",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Alerman",
+		"password" : "5e414c2510cff28c00e1f9db0ec197756eeb0412e57ccad8bc72731438a01841",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "allmoore",
+		"password" : "7e8d3b6332716a0db9fe5a0b83811421fd493fb473129696036448889f5c05ed",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "amc9830",
+		"password" : "2452e0b3f0bceadfa7c90426ed947a0f78167070b74a9fa07f5358b22469059a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "amugerwa",
+		"password" : "fe834ca5641a8edbf6a606c8ed5989b342a0307476f6569680cd90875417bcc2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "asamson",
+		"password" : "36fe42cff006248aa1fce1686024289c9b2b9e3823e73e17f5fe02a16ea3a455",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "AShakir",
+		"password" : "e320d85e5fdc7899024d70159da80ea25867eb44636abcec475259525c9e28bb",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "awold",
+		"password" : "2299708c27436626ea7eb66ffaba0748d724ea2f0d9950bb09a22d069029d1bf",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "BCarrroll",
+		"password" : "92528dd77d39900290067a4b13fc68baf5fb69ef28d7d3a0d7a62b2ddaf0f0a7",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Bcostell",
+		"password" : "675dceb869206cc36319436dae0d5f10acb6b271e621833694d15bcd2ca7b46c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Bdajani",
+		"password" : "3bb3a1e4e816f17278c6cf4f12b593e14bf1c642547480a7396ad3757f42b0dc",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "BeckyJBarrow",
+		"password" : "aa612697c41d535db91624a4bc534e17b069544cbc80cff6ee9522215db1f83f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "berrym",
+		"password" : "65f3480dda00ef80f026f5a8ad1c5d8aad365437b2579311b8cca683e8b994f8",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Bigdaddyoyler",
+		"password" : "40f83e6b5fe27741d67f63f48dafb44d862ba9c59408b64d8c4ae0e85da487f7",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "birdkolibrie",
+		"password" : "22035fcdfe63b11de2fbe13da856bdf34293d4eb1417e4bd58f03a22384fa5c5",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "bl24und",
+		"password" : "876a42ef7231f7c0f2648206288d052282130269050fc6dc00489f573a378ca3",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Blutfi",
+		"password" : "b9a523bfbfa68e1383c84dceb4edcf1c535f2dd6a723528f82ef821d8a91eda5",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "brennan",
+		"password" : "b0949ff064c379c220e76c81c641c50d74df0259a4a4bbe201f905e10dacdabb",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "bvp0",
+		"password" : "9a37a05babda48db1649a44b954653e638bd30b7e85a8c28f7d9715306ea74cf",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "byencha",
+		"password" : "4baf973a17ed0ef7397c278d374bd04988fd31c9f0ca8682fc0db24fb56ffbd9",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ccarr",
+		"password" : "29a5389fc26e6a050b0c29c2ef9353922fb748f7eb33836f0c954bbe69fdcb17",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "cdcmessaging",
+		"password" : "280726bf2e31f505ff68e9b6fb94aad2e87c38672a40b136c3714c1d8d8566c7",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "cdcvr",
+		"password" : "5c03a24729eae775f4c0b85eeb18a81f6ecb15226482d8716b86ffdd71d28825",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "charlie",
+		"password" : "4fae7037fe59c012ad18d5632281b7e69816bb3af0374b77652026dbf1e2ea48",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "chuckakinjr",
+		"password" : "b28559b2e8749610dba567a5355af1b1cc43b264583120ffe53e81b1353a9bc2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "craig_mcclendon",
+		"password" : "a9904f303f1bde44dcabd1dca777bc624dc3ec0f36534a124ce59ec5217e8b9c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "crosin",
+		"password" : "8bc9b513c9a15c886c9dc8896a07fec503b8eab6f75b54a3ecb327bf1d29714a",
+		"enabled" : 0,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "crouzier",
+		"password" : "f1392d94fa1eb5d103ed76e6c9096b190bbfad3d046319b2fa33f77905c32e4e",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "csnewman",
+		"password" : "ee69d16d6fd1b223190868f948caff5a5071d2e65702aef07ed69ae2be22c074",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dalemnelson",
+		"password" : "880490276ceb87d749a487dad5307816b73ee65e537388a65479cef5ca1fac7a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "danielnebot",
+		"password" : "eb1db63a2e5f544af797c7461f5b05588b498f4b0cbebf47bfb5e8daac12e14f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "desaik98",
+		"password" : "981a381955fd8b4cfc50e8847dd11fa0dee5465466bd1817e979cd155b3f0d30",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dfann",
+		"password" : "5af24bf1d20516a9a2ad4525c6b2a227e56805944ced6934bd1dbe95ff0b64ae",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dmead",
+		"password" : "e7565580eeaec126002cc4c92685a5defa63201c7b1497f065ced75c070a9b1f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dnebot",
+		"password" : "a2279089063f64ddb45b6ad673492453b2f210dedf4e46ac67a9a5f0568b6a9a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "DOCFOSHEE",
+		"password" : "b184528d420be8a27bac8dc5629df0d3512f61810c34f4bb943d52814de7b6b9",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "docshare",
+		"password" : "2b31704c76d5e2a261f297b54d62309104574325239acd60c9045f4d1c693e05",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dphct",
+		"password" : "49db9a1020c4722448769054171bac732c6f5d32cb5ef6380618f610c7615fd2",
+		"enabled" : 0,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dph_ct",
+		"password" : "978f1dff3117da858811db0e10f7eecf682c1f1cdb3d2661fa092a8fc2135f3e",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "drtomc",
+		"password" : "5c081fc6a2516d804b23878c1e5630bb2209069816ee5aecbbf0868692ebdb85",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "dtrepanier",
+		"password" : "8509a9ddfb155c562bc2415c2b1d98e3263d66b5be0486d793fe77678c9bb74a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "eholt",
+		"password" : "ae5e78cf9ff67c212aac9add166763954e1ffcbc6f517972ab6b7e0da77b32fe",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "eknuden",
+		"password" : "08469d9085af92aa5676aab5948dcbdc1b17125d157a11b32692e95992b2f2a0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "elbaloo",
+		"password" : "5f13e393402b32c78b19a8a6537dd595599ae236999a767c58246a1d5428f71b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "epoiseau",
+		"password" : "2640b8086f44650dc95825d90f295723cc971d2795fa5574b3a6f8e67d8f121f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Eric",
+		"password" : "bbc3fb7fdb6dada7a83ae679cfd4f42c9b78c1477e4d40a2fdb1157cd28487a3",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "fos2",
+		"password" : "68fd27a03cdb42c63472e6a518ecbdfab86049d92a85688a890ee5f852cc1d15",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "fraiterd",
+		"password" : "804dd1e7917bee3d79a839ad7b83c2dc219cdb532af192f6bddd85eecbab7392",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "garguilo",
+		"password" : "b804a30fba375e7c45027f85410c27d5a401ca5a56e794d8850e02074cee4868",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "garywhiteNDHHS",
+		"password" : "01080bd262b67c4c09c5640d40c863bb1ec648d8bb66157db8f62e88c0aa0e26",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "gcr44",
+		"password" : "6af924664e2e90148310a0e24d56909bd8ecb7591bf8d0faebc93474a5a45c26",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "gowerg",
+		"password" : "691f3e60db5d0e1ef2a8dc7fa02a16cca26de0a79246f1fc0e9ad58a95d3b67e",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "gpassero",
+		"password" : "ba015e372a651fbae3bc970f48329633bbd214ba5e1d875c827c9c91fe4719ce",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "haff2",
+		"password" : "d77dbfd57d4a3f8ee70d055f3d15144086b29fc2bbc1c62792a074c10e1c85b2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "haffo",
+		"password" : "6592fd95cef203776d300ee1d1d00c1a69809c6f5204bb8aeccb2a6f3403dab4",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "heinze",
+		"password" : "01c34289b2be7d2b39717a6d32a59862d75dbaae60940733711f31944ca48e93",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "HIMSS_IZ",
+		"password" : "af16222926b8af44e13faf921211b783475842f4f77c46265c6e3aef22a1255c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "hl7adri",
+		"password" : "721e3073a536726ed38afcaec36e367a216a06586b25746efecd7f96f7f76e0a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "housel",
+		"password" : "cfb022da54c6304ef1ee206975fe719f2b3bdc322f94834c3761debab834c22f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "htx7",
+		"password" : "22bbfb9656d4153c013513088a395d06dc805521e314ed13b993e82d282fb6bc",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "IHEbed",
+		"password" : "28ad243c71dcbb837cd5a25cf926664b9e16dfb3376e6ec2ab2be28485dd21e0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ioana13",
+		"password" : "70b66d6c161633a95eb388e24fb34d8aeeaf5d15e72936719e28cc42687e2e2b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Jalden",
+		"password" : "074778d8017fba66f2a3db129a4ddbf808cfcde776593e7f94440b5b68e2021b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jchamber",
+		"password" : "c149be88577afd3d85a65c7245aaf9b20747013daf59afff1c1a75a425afaa97",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jcouse",
+		"password" : "54d5da823826f48a04dd13358114fc7864d7ce14604e37b0d7c3bffb0f1c1e6b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jgilbert",
+		"password" : "7734b67d77f2aa882f4848cd91b99d686b32e24b2cbbc1e8090ac596564c030c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jkrazit",
+		"password" : "fd93cfd76f73f6af0d54c109e0c93d83aa834fe359b77215acb61e0683008ff0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "JohnM",
+		"password" : "a3302cdb149036e30993cfcd95f067f68e1eb8ad8f792476792210ef54f2dda4",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "JoshBagley",
+		"password" : "ccdd66f910cc8ee2a3946b282aeae39a72cabc5af693d56e84d7aa89aa6a47e2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jpuyen",
+		"password" : "d18fc017142a425ca54ec4d71b46e068dc3edcdb181cb2be13f546723a724858",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jpuyenbr",
+		"password" : "8a26ee761a79fb9ee6d8473dfd4dcadafbcb8755df4c62c0d31a5f3cf4ae3fb8",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jschroeder",
+		"password" : "84fa412ae8ab41b0da0febc7633412156e27467e75bd4f8ee0209d6fd6b198d4",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jvizzi",
+		"password" : "09d1a737ca765af3b6cb7ff110ca8f81997e9553f0380fa7f47ef9b9ea0b4e0d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "jws84437",
+		"password" : "2104d5c4a041272f62aa049518f2238c7fb103c520b30fbbce417e91ce53dea6",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "kbrady",
+		"password" : "39cb1c38e2d6a27ed1a726938146da3e25f9026aac146c848acb81d612ebf0f0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "kenmasters",
+		"password" : "2b56cf30b1f7df1e19cb56a6c0aa17b4e707c69272d509bcac86d08034917050",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "kmurset",
+		"password" : "7805f7c1e6080d1fc53740fe90ea8bfe84b4595ae4dc57dbfacbe78f1e709aef",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "kruse2015",
+		"password" : "ee189ac8522a0107463a722c1734ab2455a8397a587b7fbc9619f95fa6cb6ded",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ksnow",
+		"password" : "e8337684520366de10497c736c1df70918ed440284354b3237de53439a6c1dfe",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "kwynne",
+		"password" : "ab25ba542e69632357d345d7a8a4b3d4716a959c1c22050ebe9e17871a34d8d2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "larsonet9",
+		"password" : "2d12c65304007560705cb8d0fe83c28a9226a69d4d288b493486726117ddb32a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "lasmith",
+		"password" : "a76fe95476043baac006bbf5f6a5d15085e923323543f4621b8d746d3d2d19e0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ldecelles",
+		"password" : "847975b1880ba7c2d0defb41097d0f6c05436bf01d3e71ff356ebbc6c485fdaa",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "llaakso",
+		"password" : "86a4505ac3a1cc0df160faa77dedd307d4df2a7ca34eb20243592f6a641418eb",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "lmoore",
+		"password" : "df2e408dcf6bc796fe1529c24d0c1428bd65f81cdef7a3104012fd0d24ab1c60",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "lori",
+		"password" : "02e817ed9004d3b66737426de59b164da54c0f22ffc5f43e86df0f7e508f4ff2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "loweye",
+		"password" : "da2e3ac2fa63a15ba60b6eb4414f23889a233cb5f552893b450dd9b1ce2ee17b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "lrodriguez6",
+		"password" : "0a489c1520cf83b7aed23d33203e986afb72d625b0af4e74bffe898c9b9e7e71",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "malayparikh",
+		"password" : "2841f517c5ce9196c8f864e404b2acb74e11d88359fcd52960a94d69bb0796ee",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "marieros",
+		"password" : "914a33e09c73152ec82febd7e6102490026b443d6d777ba92ed29a16d5637744",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "martinezale",
+		"password" : "ec9a12c741ebe889dea168779c4e9daa4bcf39203fb764134b1e3cfcb7c62eac",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "martinfammed",
+		"password" : "ed6c294e1d037e77dedb0961fa96cd723b5ccf31ea377c914de401a243a8a57f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "maryahamilton",
+		"password" : "6351e5f01fc1ce5b31047266319d0bea50346af6724e296fd140283374baebfd",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Maxence",
+		"password" : "5c2e50efb9483d4693f558b4dec0cb126586630cddc008a61943455f9b0c5769",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "maxencedev",
+		"password" : "f2abbf79a832271dbb571606bd85cc4e0fc521a2aebf0e01da3502c8003f1865",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "mellouli",
+		"password" : "51eed64bec36143b5258d2ec514d8a3352d05dec90259e9261bd496c6ebcdeb3",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Mferreira",
+		"password" : "7435d3dd0dbf856aabb6b06aa29598c36a39d7ee566927e57bee2d6555f592b0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "mgreve",
+		"password" : "88c6265f8b1920a4e2beccdab0d43f2d07906592847964f0e8ac43b223824cab",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "mkorrell",
+		"password" : "920a5db70c037f938717ec0658929358961c6e6f43ea88f119521bf853c4fae0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "MMGteam",
+		"password" : "57cda2981d16d0f795ec64fecde22e262f51f4efff448fd20c780c6e443abb94",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "mniels6",
+		"password" : "1a8a546fd2647497758cd29b0e508c644ed2494070692f854179b89eaca46fa6",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "moazampa",
+		"password" : "31403f1830b7be3cd20e2965aff1ceb4e7536d69f0eb8154bc6a877261f31ed9",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "morridr",
+		"password" : "b72a5717ade586f4ea43e7286dfc5c18ac2df41a8c84e4af177afcc4322fe207",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "mscaldas",
+		"password" : "6cc4637610fd52c2c1d230c30cb843d46b62d5156682b86f0d5322ee3c38aaca",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "muhammadc",
+		"password" : "f7581ac1806c7131ba26a827260cc499a3fddd41fe9915a6b88a66faae03b65d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "njx9",
+		"password" : "85a5df9b5194d9ad3ff64e332cf92b80e5ba04369008df391c01a4fa6d5f2d2b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "nlapres",
+		"password" : "4547ecbcd98339d2f1d657270553c4a443a97f38bf2ba99275e0561402b9bac2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Ntsakadze",
+		"password" : "792dbd36296d1f6c4e6eeac1cfe461246d2ed8cb0c2f2c28995bdb37e08fc281",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "olivier_mr",
+		"password" : "1147f22436946f829ad413ef950d283945f7b2286ccc9ae99b1611b00cb20f77",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "olivier_test1",
+		"password" : "64616bb103a5b9264b077f5406f95fcebb7a8d4938981ca1956dc00e2441befd",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ouakili",
+		"password" : "0a7a581e0801c3e2ac8765a4ad2a36049a0a90c8c7b2b0ab4f3e9ac95752672a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "paulfearon",
+		"password" : "8af1b0251c8d79ea545cb33e82b215c9d1cdfe8612bd2c263fe67e9ffd76b948",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "PeterHicks",
+		"password" : "ffa613c491f432515cc2f5139515d833df9c43c9777bd8ed2ea2d404da8eb7aa",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "phicks",
+		"password" : "b4395c3485ba952caa2bf135aa4606319c9b431d23130b54b73d8a3e6855a7a2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "PHMC",
+		"password" : "af1d50df56d60f16d35fc635b129ce546ac2ac2ad302a03ddd5ac8d042d0d2c7",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "pietroas",
+		"password" : "b0bd8c843aba1eb4e06935a0b9b75d323f17714828b740cb803098852d3f481d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Pnaik",
+		"password" : "f2a9807fb9deb3348243aa89da4a607ea83dd154e025e3d470806b2b79960ebc",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "pratikthakar9",
+		"password" : "88af2412d6792c3038b99f893eeb762293881c51a5254570b03675ec4b410f34",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "pratikthakkar",
+		"password" : "3f1908806127ce82c3e29ef873963ea45c2bfc3d46bbd2afc2364a7bc015c06a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "prsarasw",
+		"password" : "52134d76e99d3b186049bf33ef020a746f5a8bd90f4222e05aa8bd635fc5e303",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ranksc",
+		"password" : "c4d2ab850c518796f3391a1b8a4f27aa38f9cedc03b671b1d4a7806ee2f4b66d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rbsavage2",
+		"password" : "6ff0111fa4aa3604c75777f8c7605a9b5963132d783f06b56cb672499fd594f1",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Rcarballosa",
+		"password" : "04631543774ca6e0dff598f9c194759a1b728ea15d083ab53ffc412bbc063319",
+		"enabled" : 0,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rdinwell",
+		"password" : "be0676cdbc15b104e233ae90a5a6e6e52cd44e949cf9bde4a89f6fbf45f05a57",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rdrr",
+		"password" : "83f27c53cb77b660d6ad4b9defa76e34d25f74f287d151d96dfe235fd325d58b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rdrr1",
+		"password" : "bd3033e118b89658013d0ca2e337b0bff8e6888d18fd62de0ad707453c6294ce",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rgarza3",
+		"password" : "e22182abcc7bba822e44461b148318e3c654a17464c836055d701cd6e5a6d7d0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Riki",
+		"password" : "1ca139f12587db89fbf4f7f07366fe40a27d34a6b4f8686ab2149154121b6d3e",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rkevans",
+		"password" : "b902c9c5257773abca859c9395f9ad09738ef5c8b80b67ecacb021af8fcc1a91",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "robnist",
+		"password" : "aeb26b170c72b478fe28884c0553c0dcee2884a79eb70ecc81792694619d40e2",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rodeomint",
+		"password" : "6983641a4f4e31b11853cb734467b684e56462d72a471b86970cf3112047ee5c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "roopa",
+		"password" : "acdee384a5173ff9e92bee19b30a6922be735de14718c1a4d62563a8cf2535a0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rosinc",
+		"password" : "61f577f6ebbacb22d5e6781a53d0bc1aa7bc985058103b950699b36f69001884",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rossm",
+		"password" : "cf86d68087726d95a8c897b4e50541da526db5a2109b79b46ed871cbb410c1c0",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rragbeer",
+		"password" : "a852fa9d70d4675b5dd4997461bd0920ba27d70f80ec1ae05e3e837dd2a84978",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rtarar",
+		"password" : "cebb7b409465355edfb23cab0c751f4ff4295fed244453776e38b4493d41e76d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "rtarar1",
+		"password" : "087527f66de5ca80d0aebafec1ac05e4018120350262dff45b85406bf2aeb3dc",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "russellmcdonell",
+		"password" : "1d4324926bcb242ef16c38691600c9764920fbe8d24287b84bfed86ab649b8a5",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "sadaqat",
+		"password" : "9215384cc48f287d701185cc3cca0e9e16ef80cef94d182f34d3ad3f49bc2000",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "sghosh",
+		"password" : "6f4f8264f56017ba29f31d495f7270cec8eeb57cf1c2001c0b35815704f00728",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Shamil",
+		"password" : "cdabf2f72335f0825ee0a773d74fee9dddae65ca8274ca1e44baba6343f0779b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "SinghNadella",
+		"password" : "ca8c3f35f473a1b77f843337100f27703713a3d3769da61751ef57865d88791a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "sltaylor",
+		"password" : "e327d7cc4cebe2db8d8a54316a3d1fea55cd79c1ded421a512bf5fc9ac3e110c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "sltaylor007",
+		"password" : "12a6f35c7e3eb1cd3106eae11e61b82dd063c2fd9293eb5207e541939b49ed4d",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "smanganoti",
+		"password" : "763a5d6dfb97142609e751a8acedca35302f473902402d04ef4f2daed1f118b3",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "smartinez",
+		"password" : "6e4f0dd9c819bf5524e1513d98236aa1482fadb82024bc9282626ebd1bdde332",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "smartinez290",
+		"password" : "be7e9052bbbaa8b3310b77e6c443f2cf60e4f55cdcb789efb7bc6640c46b1233",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "SR_GGG",
+		"password" : "f1216c02f22465a22226f2554990c32c21e11a3cb009c7f9c9e19962c54204ac",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "stevenrconn",
+		"password" : "80b114225459160a5995733e29dafda4e670e48275c37467f9501e6ccc9447d1",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "syndromic",
+		"password" : "4f5fab5c37862d95cca0833ef5dea1b304cb44f5b2ce3b11843dd42c8e9f5ae1",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "talhamas",
+		"password" : "4ee168e0711428efbe390a39007d16d33f77255d72729b77afaead7f9d80a27c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Tannaz",
+		"password" : "40ccf661153b3c5e22fd1b9b02a2ab5cc34d370f4a86cbac1458769de4bc451b",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "tcamt",
+		"password" : "82fef29cec0c0b4d8b364282f11a26d399e4d16bc33abcad69233fe9b35d49ab",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "tcheng8000",
+		"password" : "8dfa420840c9756c66b106da48db82206f2b69ba313b7e6f0935e7ba335f9ade",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "test",
+		"password" : "492a1e0c1ee7f1162650f1b180cd14cee17698746758f3cf8a7497f828c19e16",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "test_email_notif",
+		"password" : "9578b1bbd14607da1555bdacef40a22e129170f7852ea8e078477b9494e3077c",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "ToddCoope",
+		"password" : "3e79aac79cbac0d9c2959d6d63d8f288a8924f53cfe1da91f13cce549ddcae41",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "tsandifer",
+		"password" : "597dab5709821dbdaf04fa5c34dd6e3c1b5326a96870263032dc8d9bf946c11a",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "twilkins01",
+		"password" : "d35060409a15579cb1c39e46003123ace18b1f8b29280fa7e3068a044eb40c6f",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "vfermor",
+		"password" : "de2ebe3ff2ef2185ba4e064157aa59f78fe321a9fd003a7d7274aba57d79a263",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "volovo",
+		"password" : "9f3dd8fe5429e514973ea5e3d03823ba1f587801ee94dd99be7dea91d09734c0",
+		"enabled" : 0,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "vpercab",
+		"password" : "6a3e99ec0a0a8e20cbac42ced32a4060ddbdb2eb7b058f569fe9b98c4d72b880",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "wakili",
+		"password" : "6e97c63a8e9d540dfaac09d5aeb5fbd2fc11b485d99e1806c16616c2bdb97310",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "webinspect",
+		"password" : "b74d15b91eb9584c4e4166453ebf2995e376d4fafcabebc605bf2d84a10a3da9",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "wilros",
+		"password" : "a6269cccc58573bef4a1e2d8849d8a4cf79c4edde7bc46c4530dbc557c759833",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "woorion",
+		"password" : "b9213bb06fd28bd66da3a452e79198510611d156588650f13b7b127d311c59f4",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "Youssef",
+		"password" : "672fef883a7c34fe48f30e6646fde06f56e52fdfffb3012cc2e1bf8869ed3a53",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	},
+	{
+		"username" : "zhouhong1993",
+		"password" : "d523208402f23cfb653674c10927bde1ec795e526dbc3b87484add05ea622ada",
+		"enabled" : 1,
+		"accountNonExpired" : 1,
+		"accountNonLocked" : 1,
+		"credentialsNonExpired" : 1
+	}
+]

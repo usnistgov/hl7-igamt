@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.ItemProperty;
@@ -26,10 +27,7 @@ public class ProfileComponentItem {
   private String path;
   private Set<ItemProperty> itemProperties;
 
-  public ProfileComponentItem(String path, Set<ItemProperty> itemProperties) {
-    super();
-    this.path = path;
-    this.itemProperties = itemProperties;
+  public ProfileComponentItem() {
   }
 
   public String getPath() {
@@ -46,6 +44,11 @@ public class ProfileComponentItem {
 
   public void setDeltaObjects(Set<ItemProperty> itemProperties) {
     this.itemProperties = itemProperties;
+  }
+  
+  public void addItemProperty(ItemProperty itemProperty){
+    if(itemProperties == null) this.itemProperties = new HashSet<ItemProperty>();
+    this.itemProperties.add(itemProperty);
   }
 
 }

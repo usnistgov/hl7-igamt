@@ -9,29 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain;
+package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 /**
- * @author jungyubw
- *
+ * 
+ * Created by Jungyub Woo on Feb 20, 2018.
  */
-public class DynamicMappingItem {
-  private String datatypeId;
-  private String value;
+public class PropertyRef extends ItemProperty {
 
-  public String getDatatypeId() {
-    return datatypeId;
+  private String ref;
+  
+  public PropertyRef() {
+    super(PropertyKey.REF);
   }
 
-  public void setDatatypeId(String datatypeId) {
-    this.datatypeId = datatypeId;
+  public String getRef() {
+    return ref;
   }
 
-  public String getValue() {
-    return value;
+  public void setRef(String ref) {
+    this.ref = ref;
   }
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+  
 }
