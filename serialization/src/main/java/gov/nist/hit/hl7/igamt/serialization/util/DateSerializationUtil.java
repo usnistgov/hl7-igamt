@@ -11,12 +11,19 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.service;
+package gov.nist.hit.hl7.igamt.serialization.util;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
- * @author Maxence Lefort on Mar 19, 2018.
+ * @author Maxence Lefort on Mar 22, 2018.
  */
-public abstract class SerializationService {
+public class DateSerializationUtil {
 
+  public static String serializeDate(Date date) {
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    return simpleDateFormat.format(date);
+  }
 }

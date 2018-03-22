@@ -17,6 +17,6 @@ package gov.nist.hit.hl7.igamt.serialization.service;
  *
  * @author Maxence Lefort on Mar 19, 2018.
  */
-public abstract class SerializationService {
+public abstract class ResourceSerializationService extends SerializationService {
 
 }

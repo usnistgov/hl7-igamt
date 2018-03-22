@@ -11,12 +11,12 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.service;
+package gov.nist.hit.hl7.igamt.datatype.test.serialization;
 
 /**
  *
  * @author Maxence Lefort on Mar 19, 2018.
  */
-public abstract class SerializationService {
+public class SerializableDatatypeTest {
 
 }

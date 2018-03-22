@@ -11,12 +11,28 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.service;
+package gov.nist.hit.hl7.igamt.serialization;
+
+import java.util.Date;
+
+import org.junit.Test;
+
+import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
+
+import static org.junit.Assert.*;
 
 /**
  *
- * @author Maxence Lefort on Mar 19, 2018.
+ * @author Maxence Lefort on Mar 22, 2018.
  */
-public abstract class SerializationService {
+public class DateSerializationUtilTest {
 
+  private final long DATE_IN_MILLIS = 1521731130187L;
+  private final String FORMATED_DATE = "03/22/2018";
+  
+  @Test
+  public void testSerializeDate() {
+    Date date = new Date(DATE_IN_MILLIS);
+    assertEquals(DateSerializationUtil.serializeDate(date), FORMATED_DATE);
+  }
 }

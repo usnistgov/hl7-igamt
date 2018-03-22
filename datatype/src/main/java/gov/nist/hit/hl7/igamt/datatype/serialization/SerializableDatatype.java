@@ -23,7 +23,7 @@ import nu.xom.Element;
  *
  * @author Maxence Lefort on Mar 15, 2018.
  */
-public class SerializableDatatype extends SerializableResource{
+public abstract class SerializableDatatype extends SerializableResource{
 
   /**
    * @param abstractDomain
@@ -31,6 +31,10 @@ public class SerializableDatatype extends SerializableResource{
    */
   public SerializableDatatype(Datatype datatype, String position) {
     super(datatype, position);
+  }
+  
+  public SerializableDatatype(Datatype datatype, int position) {
+    this(datatype, String.valueOf(position));
   }
 
   @Override

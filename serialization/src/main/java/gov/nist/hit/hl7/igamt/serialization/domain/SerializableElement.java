@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.serialization;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import nu.xom.Attribute;
 import nu.xom.Element;

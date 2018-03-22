@@ -11,12 +11,26 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.service;
+package gov.nist.hit.hl7.igamt.datatype.serialization;
+
+import java.util.Map;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.serialization.domain.ResourceSerializationService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  *
  * @author Maxence Lefort on Mar 19, 2018.
  */
-public abstract class SerializationService {
+public class SerializeDatatypeServiceImpl extends ResourceSerializationService {
 
+  public SerializableDatatype serializeDatatype(Datatype datatype, ExportConfiguration exportConfiguration,  Map<String, Datatype> datatypeMap, Map<String, Valueset> valueSetMap) {
+    if(datatype instanceof ComplexDatatype) {
+      return new SerializableComplexDatatype((ComplexDatatype)datatype, 1);
+    }
+    return null;
+  }
 }

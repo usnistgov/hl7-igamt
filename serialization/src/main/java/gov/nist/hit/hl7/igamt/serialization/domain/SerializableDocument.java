@@ -11,12 +11,14 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.service;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
 /**
  *
- * @author Maxence Lefort on Mar 19, 2018.
+ * @author Maxence Lefort on Mar 13, 2018.
  */
-public abstract class SerializationService {
+public interface SerializableDocument {
 
+  public SerializableDocument serializeDocument();
+  
 }

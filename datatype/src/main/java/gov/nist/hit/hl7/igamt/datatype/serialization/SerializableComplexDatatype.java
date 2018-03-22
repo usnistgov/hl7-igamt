@@ -11,14 +11,22 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.serialization;
+package gov.nist.hit.hl7.igamt.datatype.serialization;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 
 /**
  *
- * @author Maxence Lefort on Mar 13, 2018.
+ * @author Maxence Lefort on Mar 19, 2018.
  */
-public interface SerializableDocument {
+public class SerializableComplexDatatype extends SerializableDatatype {
 
-  public SerializableDocument serializeDocument();
+  public SerializableComplexDatatype(ComplexDatatype datatype, String position) {
+    super(datatype, position);
+  }
   
+  public SerializableComplexDatatype(ComplexDatatype datatype, int position) {
+    this(datatype, String.valueOf(position));
+  }
+
 }

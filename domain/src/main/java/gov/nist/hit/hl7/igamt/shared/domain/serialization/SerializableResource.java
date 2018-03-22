@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain.serialization;
 
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement;
+import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 import nu.xom.Attribute;
@@ -33,8 +35,20 @@ public abstract class SerializableResource extends SerializableElement {
   
   public Element getElement(String elementName) {
     Element element = super.getElement(elementName);
-    element.addAttribute(new Attribute("preDef",this.resource.getPreDef()));
+    element.addAttribute(new Attribute("comment",this.resource.getComment()));
+    element.addAttribute(new Attribute("createdFrom",this.resource.getCreatedFrom()));
+    element.addAttribute(new Attribute("description",this.resource.getDescription()));
+    element.addAttribute(new Attribute("name",this.resource.getName()));
     element.addAttribute(new Attribute("postDef",this.resource.getPostDef()));
+    element.addAttribute(new Attribute("preDef",this.resource.getPreDef()));
+    element.addAttribute(new Attribute("domainVersion",this.resource.getDomainInfo().getVersion()));
+    element.addAttribute(new Attribute("domainCompatibilityVersions",String.join(",", this.resource.getDomainInfo().getCompatibilityVersion())));
+    element.addAttribute(new Attribute("domainScope",this.resource.getDomainInfo().getScope().name()));
+    element.addAttribute(new Attribute("id",this.resource.getId().getId()));
+    element.addAttribute(new Attribute("publicationVersion",this.resource.getPublicationInfo().getPublicationVersion()));
+    element.addAttribute(new Attribute("publicationDate",DateSerializationUtil.serializeDate(this.resource.getPublicationInfo().getPublicationDate())));
+    element.addAttribute(new Attribute("username",this.resource.getUsername()));
+
     return element;
   }
 
@@ -44,7 +58,7 @@ public abstract class SerializableResource extends SerializableElement {
    */
   public Element serializeResourceBinding(ResourceBinding binding) {
     Element element = new Element("Binding");
-    //TODO serialize binding
+    //TODO serialize binding + implement unit test
     return element;
   }
 
