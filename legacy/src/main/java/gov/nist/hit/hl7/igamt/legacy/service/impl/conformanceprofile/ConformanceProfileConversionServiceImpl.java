@@ -102,6 +102,9 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     convertedConformanceProfile.setId(new CompositeKey(oldMessage.getId()));
     convertedConformanceProfile.setCreatedFrom(oldMessage.getCreatedFrom());
     convertedConformanceProfile.setName(oldMessage.getName());
+    convertedConformanceProfile.setStructID(oldMessage.getStructID());
+    convertedConformanceProfile.setEvent(oldMessage.getEvent());
+    convertedConformanceProfile.setMessageType(oldMessage.getMessageType());
     convertedConformanceProfile.setDescription(oldMessage.getDescription());
     DomainInfo domainInfo = new DomainInfo();
     // TODO need compatibilityVersion for message?

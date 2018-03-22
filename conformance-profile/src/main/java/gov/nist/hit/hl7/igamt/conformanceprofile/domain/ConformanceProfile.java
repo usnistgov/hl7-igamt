@@ -25,9 +25,38 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  * @author Maxence Lefort on Mar 9, 2018.
  */
 public class ConformanceProfile extends Resource {
+	
+	private String identifier;
+	private String messageType; // Message/@Type
 
-  private String identifier;
-  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+	private String event; // Message/@Event
+
+	private String structID; // Message/@StructID  private String identifier;
+	public String getMessageType() {
+		return messageType;
+	}
+
+	public void setMessageType(String messageType) {
+		this.messageType = messageType;
+	}
+
+	public String getEvent() {
+		return event;
+	}
+
+	public void setEvent(String event) {
+		this.event = event;
+	}
+
+	public String getStructID() {
+		return structID;
+	}
+
+	public void setStructID(String structID) {
+		this.structID = structID;
+	}
+
+private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
   private ResourceBinding binding;
 
   public ConformanceProfile() {
