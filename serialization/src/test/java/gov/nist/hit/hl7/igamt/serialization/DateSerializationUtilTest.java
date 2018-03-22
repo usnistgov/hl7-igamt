@@ -33,6 +33,6 @@ public class DateSerializationUtilTest {
   @Test
   public void testSerializeDate() {
     Date date = new Date(DATE_IN_MILLIS);
-    assertEquals(DateSerializationUtil.serializeDate(date), FORMATED_DATE);
+    assertEquals(FORMATED_DATE, DateSerializationUtil.serializeDate(date));
   }
 }

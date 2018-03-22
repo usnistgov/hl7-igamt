@@ -13,10 +13,50 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.test.serialization;
 
+import org.junit.Test;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatype;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import nu.xom.Element;
+
+import static org.junit.Assert.*;
+
 /**
  *
  * @author Maxence Lefort on Mar 19, 2018.
  */
 public class SerializableDatatypeTest {
+
+  private static final String TEST_EXT = "test_ext";
+  private static final String TEST_PURPOSE_AND_USE = "test_purpose_and_use";
+  private static final String TEST_POSTION = "123";
+  private static final String TEST_NAME = "test_name";
+  private static final String TEST_ID = "test_id";
+
+  
+  @Test
+  public void testSerializeDatatype() {
+    Datatype datatype = new Datatype();
+    datatype.setName(TEST_NAME);
+    datatype.setId(new CompositeKey(TEST_ID));
+    datatype.setExt(TEST_EXT);
+    datatype.setPurposeAndUse(TEST_PURPOSE_AND_USE);
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION);
+    Element testElement = serializableDatatype.serialize();
+    assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
+    assertEquals(TEST_PURPOSE_AND_USE, testElement.getAttribute("purposeAndUse").getValue());
+    assertEquals(TEST_POSTION, testElement.getAttribute("position").getValue());
+  }
+
+  @Test
+  public void testSerializeComplexDatatype() {
+
+  }
+
+  @Test
+  public void testSerializeDateTimeDatatype() {
+
+  }
 
 }

@@ -90,20 +90,20 @@ public class SerializableResourceTest {
   public void testSerialize() {
     SerializableResource serializableResource = getSerializableResourceTest();
     Element testElement = serializableResource.serialize();
-    assertEquals(testElement.getAttribute("comment").getValue(), COMMENT_TEST);
-    assertEquals(testElement.getAttribute("createdFrom").getValue(), CREATED_FROM_TEST);
-    assertEquals(testElement.getAttribute("description").getValue(), DESCRIPTION_TEST);
-    assertEquals(testElement.getAttribute("domainCompatibilityVersions").getValue(), String.join(",", DOMAIN_COMPATIBILITY_VERSIONS_TEST));
-    assertEquals(testElement.getAttribute("domainScope").getValue(), DOMAIN_SCOPE_TEST.name());
-    assertEquals(testElement.getAttribute("domainVersion").getValue(), DOMAIN_VERSION_TEST);
-    assertEquals(testElement.getAttribute("id").getValue(), COMPOSITE_KEY_TEST.getId());
-    assertEquals(testElement.getAttribute("name").getValue(), NAME_TEST);
-    assertEquals(testElement.getAttribute("postDef").getValue(), POSTDEF_TEST);
-    assertEquals(testElement.getAttribute("preDef").getValue(), PREDEF_TEST);
-    assertEquals(testElement.getAttribute("publicationDate").getValue(), DateSerializationUtil.serializeDate(PUBLICATION_DATE_TEST));
-    assertEquals(testElement.getAttribute("publicationVersion").getValue(), PUBLICATION_VERSION_TEST);
-    assertEquals(testElement.getAttribute("username").getValue(), USERNAME_TEST);
-    assertEquals(testElement.getLocalName(), RESOURCE_NAME_TEST);
+    assertEquals(COMMENT_TEST, testElement.getAttribute("comment").getValue());
+    assertEquals(CREATED_FROM_TEST, testElement.getAttribute("createdFrom").getValue());
+    assertEquals(DESCRIPTION_TEST, testElement.getAttribute("description").getValue());
+    assertEquals(String.join(",", DOMAIN_COMPATIBILITY_VERSIONS_TEST), testElement.getAttribute("domainCompatibilityVersions").getValue());
+    assertEquals(DOMAIN_SCOPE_TEST.name(), testElement.getAttribute("domainScope").getValue());
+    assertEquals(DOMAIN_VERSION_TEST, testElement.getAttribute("domainVersion").getValue());
+    assertEquals(COMPOSITE_KEY_TEST.getId(), testElement.getAttribute("id").getValue());
+    assertEquals(NAME_TEST, testElement.getAttribute("name").getValue());
+    assertEquals(POSTDEF_TEST, testElement.getAttribute("postDef").getValue());
+    assertEquals(PREDEF_TEST, testElement.getAttribute("preDef").getValue());
+    assertEquals(DateSerializationUtil.serializeDate(PUBLICATION_DATE_TEST), testElement.getAttribute("publicationDate").getValue());
+    assertEquals(PUBLICATION_VERSION_TEST, testElement.getAttribute("publicationVersion").getValue());
+    assertEquals(USERNAME_TEST, testElement.getAttribute("username").getValue());
+    assertEquals(RESOURCE_NAME_TEST, testElement.getLocalName());
     
   }
   

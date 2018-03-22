@@ -45,9 +45,9 @@ public class SerializableElementTest {
   public void testSerialize() {
     Element testElement = getTestElement().serialize();
     assertEquals(3,testElement.getAttributeCount());
-    assertEquals(testElement.getAttribute("id").getValue(), ID_TEST);
-    assertEquals(testElement.getAttribute("title").getValue(), TITLE_TEST);
-    assertEquals(testElement.getAttribute("position").getValue(), POSITION_TEST);
-    assertEquals(testElement.getQualifiedName(), ELEMENT_NAME_TEST);
+    assertEquals(ID_TEST, testElement.getAttribute("id").getValue());
+    assertEquals(TITLE_TEST, testElement.getAttribute("title").getValue());
+    assertEquals(POSITION_TEST, testElement.getAttribute("position").getValue());
+    assertEquals(ELEMENT_NAME_TEST, testElement.getQualifiedName());
   }
 }
