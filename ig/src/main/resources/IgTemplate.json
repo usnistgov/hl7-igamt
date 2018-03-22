@@ -1,0 +1,121 @@
+[
+{
+"label": "Introduction",
+"position": 1,
+"children":[	{
+			"label" :"Purpose",
+			"position":1
+			},
+			{
+			"label" :"Audience",
+			"position":2
+			},
+			{
+			"label" :"Organization of this guide",
+			"position":3
+			},
+			{
+			"label" :"Referenced profiles - antecedents",
+			"position":4
+			},
+			{
+			"label" :"Scope",
+			"position":5,	
+			"children":[{ "label" :"In Scope",
+						"position":1
+									},
+									{ "label" :"Out of Scope",
+						"position":3
+									}
+			]
+			},
+			{"label": "Out of Scope",
+			"position":6}
+	]
+},
+{
+"label" : "Use Cases",
+"position":2,
+"children": [{
+ "label" : "Actors",
+ "position":1
+ },{
+ "label":"General Assumptions",
+ "position":2,
+ "children" : [
+ 	{"label" :"Assumptions", "position":1 }
+ 	,{"label": "Pre-conditions", "position" :2}
+	 ,{"label" : "Post-conditions", "position" :3}
+ 	]	
+ },
+ 
+ {"label": "Use Case", "position":3,
+ "children":[
+ 		{"label" : "User Story", "position" : 1},
+ 		{"label": "Specific Assumptions", "position": 2,
+ 		"children": [{"label": "Assumptions", "position" :1}, {"label" :"Pre-conditions", "position": 2 },{"label":"Post-conditions", "position":3}]
+ 		
+ 		},
+ 		{"label" : "Scenario", "position":3},
+ 		{"label":"Context", "position" :4}, 
+ 		{"label":"Interaction Model", "position" : 5},
+ 		{"label":"Functional Requirements", "position" : 6}
+ 		
+ 
+ ]
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ }
+]
+
+},{
+	"label": "Message Infrastructure",
+	"position": 3,
+	"type":"PRFOILE",
+	
+	"children" : [
+	{
+	"label" : "Profile Components",
+	"type": "PROFILECOMPONENTSREGISTRY",
+	"position":1
+	}, 
+	{
+	"label" : "Conformance Profiles",
+	"type": "CONFORMANCEPROFILEREGISTRY",
+	"position":2
+	
+	}, 
+	{"label": "Composite Profiles",
+	"type": "COMPOSITEPROFILEREGISTRY",
+	"position":3
+	},
+	{
+	"label" : "Segments And Field Description",
+	"type": "SEGMENTRGISTRY",
+	"position":4
+	
+	}, 
+	{
+	"label" : "Data Types",
+	"type": "DATATYPEREGISTRY",
+	"position":5
+	
+	}, {
+	
+	"label": "Value Sets",
+	"type":"VALUESETREGISTRY",
+	"position":6
+	
+	}	
+	]
+
+
+
+}
+
+]
