@@ -4,6 +4,7 @@ import gov.nist.hit.hl7.igamt.legacy.service.impl.compositeprofilestructure.Comp
 import gov.nist.hit.hl7.igamt.legacy.service.impl.conformanceprofile.ConformanceProfileConversionServiceImpl;
 import gov.nist.hit.hl7.igamt.legacy.service.impl.datatype.DatatypeConversionServiceImpl;
 import gov.nist.hit.hl7.igamt.legacy.service.impl.igdocument.IgDocumentConversionServiceImpl;
+import gov.nist.hit.hl7.igamt.legacy.service.impl.profilecomponent.ProfileComponentConversionServiceImpl;
 import gov.nist.hit.hl7.igamt.legacy.service.impl.segment.SegmentConversionServiceImpl;
 import gov.nist.hit.hl7.igamt.legacy.service.impl.valueset.TableConversionServiceImpl;
 
@@ -14,6 +15,7 @@ public class TestConversion {
    new TableConversionServiceImpl().convert();
    new DatatypeConversionServiceImpl().convert();
    new SegmentConversionServiceImpl().convert();
+   new ProfileComponentConversionServiceImpl().convert();
    new ConformanceProfileConversionServiceImpl().convert();
    new CompositeProfileStructureConversionServiceImpl().convert();
    new IgDocumentConversionServiceImpl().convert();
