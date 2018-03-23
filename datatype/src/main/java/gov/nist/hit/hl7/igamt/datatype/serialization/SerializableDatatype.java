@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializat
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.Ref;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -76,16 +77,20 @@ public class SerializableDatatype extends SerializableResource{
     for(Component component : complexDatatype.getComponents()) {
       try {
         Element componentElement = new Element("Component");
-        componentElement.addAttribute(new Attribute("confLength",component.getConfLength()));
-        componentElement.addAttribute(new Attribute("id",component.getId()));
-        componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength()));
-        componentElement.addAttribute(new Attribute("minLength",component.getMinLength()));
-        componentElement.addAttribute(new Attribute("text",component.getText()));
+        componentElement.addAttribute(new Attribute("confLength",component.getConfLength() != null ? component.getConfLength() : ""));
+        componentElement.addAttribute(new Attribute("id",component.getId() != null ? component.getId() : ""));
+        componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength() != null ? component.getMaxLength() : ""));
+        componentElement.addAttribute(new Attribute("minLength",component.getMinLength() != null ? component.getMinLength() : ""));
+        componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
-        if(component.getRef() != null && refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())){
-          componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+        if(component.getRef() != null){
+          if(refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())) {
+            componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+          } else {
+            throw new DatatypeNotFoundException(component.getRef().getId());
+          }
         }
-        componentElement.addAttribute(new Attribute("usage",component.getUsage().toString()));
+        componentElement.addAttribute(new Attribute("usage",component.getUsage() != null ? component.getUsage().toString() : ""));
         datatypeElement.appendChild(componentElement);
       } catch (Exception exception) {
         throw new SubStructElementSerializationException(exception, component);
@@ -98,11 +103,14 @@ public class SerializableDatatype extends SerializableResource{
     DateTimeDatatype dateTimeDatatype = (DateTimeDatatype) super.getResource();
     for(DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
       Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",dateTimeComponentDefinition.getDescription()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("name",dateTimeComponentDefinition.getName()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("predicate",dateTimeComponentDefinition.getDateTimePredicate().toString()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("position",String.valueOf(dateTimeComponentDefinition.getPosition())));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",dateTimeComponentDefinition.getUsage().name()));
+      if(dateTimeComponentDefinition != null) {
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",dateTimeComponentDefinition.getDescription() != null ? dateTimeComponentDefinition.getDescription() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("name",dateTimeComponentDefinition.getName() != null ? dateTimeComponentDefinition.getName() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("predicate",dateTimeComponentDefinition.getDateTimePredicate() != null ? dateTimeComponentDefinition.getDateTimePredicate().toString() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("position",String.valueOf(dateTimeComponentDefinition.getPosition())));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",dateTimeComponentDefinition.getUsage() != null ? dateTimeComponentDefinition.getUsage().name() : ""));
+        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
+      }
     }
     return datatypeElement;
   }
