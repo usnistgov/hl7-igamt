@@ -9,29 +9,16 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain;
+package gov.nist.hit.hl7.legacy.compositeprofilestructure;
+
+import org.junit.Test;
 
 /**
  * @author jungyubw
  *
  */
-public class DynamicMappingItem {
-  private String datatypeId;
-  private String value;
-
-  public String getDatatypeId() {
-    return datatypeId;
-  }
-
-  public void setDatatypeId(String datatypeId) {
-    this.datatypeId = datatypeId;
-  }
-
-  public String getValue() {
-    return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
+public class CompositeProfileStructureConversionServiceImplTest {
+  @Test
+  public void testConvert() {
   }
 }

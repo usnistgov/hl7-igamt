@@ -4,10 +4,10 @@ import java.util.Set;
 
 
 
-public class TextSection<T extends Section> extends Section {
+public class TextSection extends Section {
   
   private String parentId;
-  private Set<T> children;
+  private Set<Section> children;
 
   
   public TextSection() {
@@ -21,12 +21,15 @@ public class TextSection<T extends Section> extends Section {
   public void setParentId(String parentId) {
     this.parentId = parentId;
   }
-  public Set<T> getChildren() {
-    return children;
-  }
-  public void setChildren(Set<T> children) {
-    this.children = children;
-  }
+
+public Set<Section> getChildren() {
+	return children;
+}
+
+public void setChildren(Set<Section> children) {
+	this.children = children;
+}
+ 
 
 
 }

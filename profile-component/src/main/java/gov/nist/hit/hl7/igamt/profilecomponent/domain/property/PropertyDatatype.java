@@ -13,31 +13,31 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-
 /**
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
 public class PropertyDatatype extends ItemProperty {
 
-  private Datatype datatype;
+  private String datatypeId;
 
-  public PropertyDatatype(Datatype datatype) {
+  public PropertyDatatype(String datatypeId) {
     super(PropertyKey.DATATYPE);
-    this.datatype = datatype;
+    this.setDatatypeId(datatypeId);
   }
-  
+
   public PropertyDatatype() {
     super(PropertyKey.DATATYPE);
   }
 
-  public Datatype getDatatype() {
-    return datatype;
+  public String getDatatypeId() {
+    return datatypeId;
   }
 
-  public void setDatatype(Datatype datatype) {
-    this.datatype = datatype;
+  public void setDatatypeId(String datatypeId) {
+    this.datatypeId = datatypeId;
   }
+
+
 
 }

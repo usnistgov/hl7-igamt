@@ -13,15 +13,30 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.compositeprofilestructure;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ApplyInfo;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfileStructure;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfiles;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.IGDocument;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ProfileComponent;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ProfileComponentLink;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SubProfileComponent;
+import gov.nist.hit.hl7.auth.domain.Account;
+import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.legacy.repository.CompositeProfileStructureRepository;
+import gov.nist.hit.hl7.igamt.legacy.repository.IGDocumentRepository;
+import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentLibraryRepository;
+import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -40,23 +55,99 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
           .getBean("compositeProfileStructureRepository");
 
   @Autowired
+  private ProfileComponentRepository oldProfileComponentRepository =
+      (ProfileComponentRepository) legacyContext.getBean("profileComponentRepository");
+
+  @Autowired
+  private IGDocumentRepository oldIGDocumentRepository =
+      (IGDocumentRepository) legacyContext.getBean("igDocumentRepository");
+
+  @Autowired
+  private ProfileComponentLibraryRepository oldProfileComponentLibraryRepository =
+      (ProfileComponentLibraryRepository) legacyContext
+          .getBean("profileComponentLibraryRepository");
+
+  @Autowired
   private CompositeProfileStructureService convertedCompositeProfileStructureService =
       (CompositeProfileStructureService) context.getBean("compositeProfileStructureService");
+
+  private AccountRepository accountRepository =
+      (AccountRepository) userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
     init();
-    List<CompositeProfileStructure> oldCompositeProfileStructures =
-        oldCompositeProfileStructureRepository.findAll();
-    for (CompositeProfileStructure oldCompositeProfileStructure : oldCompositeProfileStructures) {
-      gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure convertedCompositeProfileStructure =
-          this.convertCompositeProfileStructure(oldCompositeProfileStructure);
-      convertedCompositeProfileStructureService.save(convertedCompositeProfileStructure);
+
+    Map<String, List<String>> map = new HashMap<String, List<String>>();
+
+    List<IGDocument> oldIGDocuments = oldIGDocumentRepository.findAll();
+
+    for (IGDocument ig : oldIGDocuments) {
+      Set<ProfileComponentLink> newProfileComponentLinkSet = new HashSet<ProfileComponentLink>();
+      for (ProfileComponentLink link : ig.getProfile().getProfileComponentLibrary().getChildren()) {
+        ProfileComponent pc = oldProfileComponentRepository.findOne(link.getId());
+        if (pc != null && pc.getChildren() != null && pc.getChildren().size() > 0) {
+          List<String> spcList = new ArrayList<String>();
+
+          int index = 0;
+          for (SubProfileComponent spc : pc.getChildren()) {
+            spcList.add(spc.getId());
+            index = index + 1;
+            ProfileComponentLink newLink = new ProfileComponentLink();
+            newLink.setComment(link.getComment());
+            newLink.setDescription(link.getDescription());
+            newLink.setName(link.getName() + "_" + index);
+            newLink.setId(spc.getId());
+            newProfileComponentLinkSet.add(newLink);
+          }
+          map.put(pc.getId(), spcList);
+        }
+      }
+      ig.getProfile().getProfileComponentLibrary().setChildren(newProfileComponentLinkSet);
+      oldProfileComponentLibraryRepository.save(ig.getProfile().getProfileComponentLibrary());
+
+      for (CompositeProfileStructure cps : ig.getProfile().getCompositeProfiles().getChildren()) {
+        int index = 0;
+        List<ApplyInfo> newApplyInfoList = new ArrayList<ApplyInfo>();
+        for (ApplyInfo applyInfo : cps.getProfileComponentsInfo()) {
+          List<String> spcList = map.get(applyInfo.getId());
+          for (String newId : spcList) {
+            index = index + 1;
+            ApplyInfo newApplyInfo = new ApplyInfo();
+            newApplyInfo.setId(newId);
+            newApplyInfo.setPcDate(applyInfo.getPcDate());
+            newApplyInfo.setPosition(index);
+            newApplyInfoList.add(newApplyInfo);
+          }
+        }
+        cps.setProfileComponentsInfo(newApplyInfoList);
+        oldCompositeProfileStructureRepository.save(cps);
+      }
+
+
+
+      CompositeProfiles compositeProfiles = ig.getProfile().getCompositeProfiles();
+
+      for (CompositeProfileStructure oldCompositeProfileStructure : compositeProfiles
+          .getChildren()) {
+        gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure convertedCompositeProfileStructure =
+            this.convertCompositeProfileStructure(oldCompositeProfileStructure);
+        if (ig.getAccountId() != null) {
+          Account acc = accountRepository.findByAccountId(ig.getAccountId());
+          if (acc.getAccountId() != null) {
+            if (acc.getUsername() != null) {
+              convertedCompositeProfileStructure.setUsername(acc.getUsername());
+            }
+          }
+        }
+        convertedCompositeProfileStructureService.save(convertedCompositeProfileStructure);
+      }
     }
-    List<gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure> compositeProfileStructures =
-        convertedCompositeProfileStructureService.findAll();
-    System.out.println(oldCompositeProfileStructures.size() + " will be coverted!");
-    System.out.println(compositeProfileStructures.size() + " have be coverted!");
+
+    System.out
+        .println(oldCompositeProfileStructureRepository.findAll().size() + " will be coverted!");
+    System.out
+        .println(convertedCompositeProfileStructureService.findAll().size() + " have be coverted!");
   }
 
   private gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure convertCompositeProfileStructure(
@@ -88,7 +179,6 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
     convertedCompositeProfileStructure.setPostDef(oldCompositeProfileStructure.getDefPostText());
     convertedCompositeProfileStructure.setPreDef(oldCompositeProfileStructure.getDefPreText());
     convertedCompositeProfileStructure.setPublicationInfo(publicationInfo);
-    convertedCompositeProfileStructure.setUsername(null);
 
     return convertedCompositeProfileStructure;
   }

@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
+import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 
 /**
  *
@@ -21,24 +21,67 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.Predicate;
  */
 public class PropertyPredicate extends ItemProperty {
 
-  private Predicate predicate;
+  private Usage trueUsage;
+  private Usage falseUsage;
+  private String constraintTarget;
+  private String description;
+  private String assertion;
 
-  public PropertyPredicate(Predicate predicate) {
-    super(PropertyKey.PREDICATE);
-    this.predicate = predicate;
-  }
 
   public PropertyPredicate() {
     super(PropertyKey.PREDICATE);
   }
 
-  public Predicate getPredicate() {
-    return predicate;
+
+  public Usage getTrueUsage() {
+    return trueUsage;
   }
 
-  public void setPredicate(Predicate predicate) {
-    this.predicate = predicate;
+
+  public void setTrueUsage(Usage trueUsage) {
+    this.trueUsage = trueUsage;
   }
+
+
+  public Usage getFalseUsage() {
+    return falseUsage;
+  }
+
+
+  public void setFalseUsage(Usage falseUsage) {
+    this.falseUsage = falseUsage;
+  }
+
+
+  public String getConstraintTarget() {
+    return constraintTarget;
+  }
+
+
+  public void setConstraintTarget(String constraintTarget) {
+    this.constraintTarget = constraintTarget;
+  }
+
+
+  public String getDescription() {
+    return description;
+  }
+
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+
+  public String getAssertion() {
+    return assertion;
+  }
+
+
+  public void setAssertion(String assertion) {
+    this.assertion = assertion;
+  }
+
 
 
 }

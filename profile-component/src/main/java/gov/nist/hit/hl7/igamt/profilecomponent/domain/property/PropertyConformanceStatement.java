@@ -13,31 +13,57 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement;
-
 /**
  *
  * @author Maxence Lefort on Feb 22, 2018.
  */
 public class PropertyConformanceStatement extends ItemProperty {
 
-  private ConformanceStatement conformanceStatement;
+  private String constraintId;
+  private String description;
+  private String assertionScript;
 
-  public PropertyConformanceStatement(ConformanceStatement conformanceStatement) {
-    super(PropertyKey.CONFORMANCE_STATEMENT);
-    this.conformanceStatement = conformanceStatement;
-  }
-  
+
+
   public PropertyConformanceStatement() {
     super(PropertyKey.CONFORMANCE_STATEMENT);
   }
 
-  public ConformanceStatement getConformanceStatement() {
-    return conformanceStatement;
+
+
+  public String getConstraintId() {
+    return constraintId;
   }
 
-  public void setConformanceStatement(ConformanceStatement conformanceStatement) {
-    this.conformanceStatement = conformanceStatement;
+
+
+  public void setConstraintId(String constraintId) {
+    this.constraintId = constraintId;
   }
+
+
+
+  public String getDescription() {
+    return description;
+  }
+
+
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+
+
+  public String getAssertionScript() {
+    return assertionScript;
+  }
+
+
+
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
+  }
+
 
 }

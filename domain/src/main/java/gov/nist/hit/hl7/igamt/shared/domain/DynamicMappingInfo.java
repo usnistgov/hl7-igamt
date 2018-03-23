@@ -11,9 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.shared.domain;
 
+import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
 
 /**
  * @author jungyubw
@@ -24,36 +23,28 @@ public class DynamicMappingInfo {
   /*
    * OBX-2
    */
-  private Path referencePath;
+  private String referencePath;
 
   /*
    * OBX-5
    */
-  private Path variesDatatypePath;
+  private String variesDatatypePath;
 
   private Set<DynamicMappingItem> items;
 
-  public DynamicMappingInfo(Path referencePath, Path variesDatatypePath,
-      Set<DynamicMappingItem> items) {
-    super();
-    this.referencePath = referencePath;
-    this.variesDatatypePath = variesDatatypePath;
-    this.items = items;
-  }
-
-  public Path getReferencePath() {
+  public String getReferencePath() {
     return referencePath;
   }
 
-  public void setReferencePath(Path referencePath) {
+  public void setReferencePath(String referencePath) {
     this.referencePath = referencePath;
   }
 
-  public Path getVariesDatatypePath() {
+  public String getVariesDatatypePath() {
     return variesDatatypePath;
   }
 
-  public void setVariesDatatypePath(Path variesDatatypePath) {
+  public void setVariesDatatypePath(String variesDatatypePath) {
     this.variesDatatypePath = variesDatatypePath;
   }
 
@@ -64,7 +55,9 @@ public class DynamicMappingInfo {
   public void setItems(Set<DynamicMappingItem> items) {
     this.items = items;
   }
-
-
-
+  
+  public void addItem(DynamicMappingItem item){
+    if(this.items == null) this.items = new HashSet<DynamicMappingItem>();
+    this.items.add(item);
+  }
 }
