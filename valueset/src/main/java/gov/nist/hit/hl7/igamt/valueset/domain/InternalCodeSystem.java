@@ -12,6 +12,13 @@ public class InternalCodeSystem {
     super();
   }
 
+  public InternalCodeSystem(String identifier, String description, URL url) {
+    super();
+    this.identifier = identifier;
+    this.description = description;
+    this.url = url;
+  }
+
   public String getIdentifier() {
     return identifier;
   }
