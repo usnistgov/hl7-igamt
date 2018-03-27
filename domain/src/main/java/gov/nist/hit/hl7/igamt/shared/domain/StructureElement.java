@@ -8,6 +8,20 @@ public class StructureElement {
   private String text;
   private boolean custom = false;
   
+  public StructureElement() {
+    super();
+  }
+  
+  public StructureElement(String id, int position, Usage usage, Type type, String text,
+      boolean custom) {
+    super();
+    this.id = id;
+    this.position = position;
+    this.usage = usage;
+    this.type = type;
+    this.text = text;
+    this.custom = custom;
+  }
   
   public int getPosition() {
     return position;
@@ -32,10 +46,6 @@ public class StructureElement {
   }
   public void setCustom(boolean custom) {
     this.custom = custom;
-  }
-  public StructureElement() {
-    super();
-    // TODO Auto-generated constructor stub
   }
   public Type getType() {
     return type;

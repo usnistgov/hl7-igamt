@@ -10,6 +10,17 @@ public class SubStructElement extends StructureElement {
   public SubStructElement() {
     super();
   }
+  
+  
+  public SubStructElement(String id, int position, Usage usage, Type type, String text,
+      boolean custom, String maxLength, String minLength, String confLength, Ref ref) {
+    super(id, position, usage, type, text, custom);
+    this.maxLength = maxLength;
+    this.minLength = minLength;
+    this.confLength = confLength;
+    this.ref = ref;
+  }
+
   public String getMaxLength() {
     return maxLength;
   }

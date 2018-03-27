@@ -1,0 +1,23 @@
+<Segment position="123" title="test_name" comment=""
+	createdFrom="" description="" name="test_name" postDef="" preDef=""
+	domainVersion="" domainCompatibilityVersions="" domainScope="" id="test_id"
+	publicationVersion="" publicationDate="" username="" ext="test_ext">
+	<DynamicMapping referencePath="test_dm_ref_path"
+		variesDatatypePath="test_dm_varies_dt_path">
+		<DynamicMappingItem datatype="test_dm2_dt_name"
+			value="test_dm2_value" />
+		<DynamicMappingItem datatype="test_dm1_dt_name"
+			value="test_dm1_value" />
+	</DynamicMapping>
+	<Binding />
+	<Fields>
+		<Field confLength="test_field2_conf_length" id="test_field2_id"
+			maxLength="test_field2_max_length" minLength="test_field2_min_length"
+			text="test_field2_text" max="13" min="0" position="2"
+			datatype="test_field2_dt_name" usage="R" />
+		<Field confLength="test_field1_conf_length" id="test_field1_id"
+			maxLength="test_field1_max_length" minLength="test_field1_min_length"
+			text="test_field1_text" max="5" min="1" position="1"
+			datatype="test_field1_dt_name" usage="R" />
+	</Fields>
+</Segment>
