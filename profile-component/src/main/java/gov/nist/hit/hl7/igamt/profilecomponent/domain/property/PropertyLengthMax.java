@@ -17,9 +17,9 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
  */
 public class PropertyLengthMax extends ItemProperty {
 
-  private int max;
+  private String max;
 
-  public PropertyLengthMax(int max) {
+  public PropertyLengthMax(String max) {
     super(PropertyKey.LENGTH_MAX);
     this.max = max;
   }
@@ -28,11 +28,11 @@ public class PropertyLengthMax extends ItemProperty {
     super(PropertyKey.LENGTH_MAX);
   }
 
-  public int getMax() {
+  public String getMax() {
     return max;
   }
 
-  public void setMax(int max) {
+  public void setMax(String max) {
     this.max = max;
   }
   

@@ -4,6 +4,7 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Field;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
@@ -12,6 +13,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 public class Segment extends Resource {
   private String ext;
+  private DynamicMappingInfo dynamicMappingInfo;
   private ResourceBinding binding;
 
   private Set<Field> children;
@@ -42,6 +44,14 @@ public class Segment extends Resource {
 
   public void setExt(String ext) {
     this.ext = ext;
+  }
+
+  public DynamicMappingInfo getDynamicMappingInfo() {
+    return dynamicMappingInfo;
+  }
+
+  public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
+    this.dynamicMappingInfo = dynamicMappingInfo;
   }
 
 
