@@ -56,7 +56,7 @@ public class ConformanceProfile extends Resource {
 		this.structID = structID;
 	}
 
-private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
   private ResourceBinding binding;
 
   public ConformanceProfile() {

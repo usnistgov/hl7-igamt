@@ -33,11 +33,25 @@ public interface ValuesetService {
   public Valueset save(Valueset valueset);
 
   public List<Valueset> findAll();
-
+  
   public void delete(Valueset valueset);
-
+  
   public void delete(CompositeKey id);
   
   public void removeCollection();
+  
+  public List<Valueset> findByDomainInfoVersion(String version);
+  
+  public List<Valueset> findByDomainInfoScope(String scope);
+  
+  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  
+  public List<Valueset> findByBindingIdentifier(String bindingIdentifier);
+  
+  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version, String bindingIdentifier);
+  
+  public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier);
+  
+  public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
 
 }

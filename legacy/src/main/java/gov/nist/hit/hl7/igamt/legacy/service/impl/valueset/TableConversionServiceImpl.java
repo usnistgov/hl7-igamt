@@ -107,7 +107,7 @@ public class TableConversionServiceImpl implements ConversionService {
     v.setPublicationInfo(publicationInfo);
     if (table.getScope().equals(SCOPE.HL7STANDARD)) {
       DomainInfo domainInfo = new DomainInfo();
-      domainInfo.setVersion(table.getVersion());
+      domainInfo.setVersion(table.getHl7Version());
       // TODO need check
       domainInfo.setCompatibilityVersion(new HashSet<String>());
       domainInfo.setScope(Scope.HL7STANDARD);

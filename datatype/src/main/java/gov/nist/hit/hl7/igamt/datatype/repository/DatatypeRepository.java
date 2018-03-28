@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -23,5 +25,11 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  * @author Maxence Lefort on Mar 1, 2018.
  */
 public interface DatatypeRepository extends MongoRepository<Datatype, CompositeKey> {
-
+	List<Datatype> findByDomainInfoVersion(String version);
+	List<Datatype> findByDomainInfoScope(String scope);
+	List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	List<Datatype> findByName(String name);
+	List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+	List<Datatype> findByDomainInfoVersionAndName(String version, String name);
+	List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
 }

@@ -71,5 +71,71 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService{
     conformanceProfileRepository.deleteAll();
     
   }
+
+@Override
+public List<ConformanceProfile> findByIdentifier(String identifier) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByIdentifier(identifier);
+}
+
+@Override
+public List<ConformanceProfile> findByMessageType(String messageType) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByMessageType(messageType);
+}
+
+@Override
+public List<ConformanceProfile> findByEvent(String messageType) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByEvent(messageType);
+}
+
+@Override
+public List<ConformanceProfile> findByStructID(String messageType) {
+	return conformanceProfileRepository.findByStructID(messageType);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoVersion(String version) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoVersion(version);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoScope(String scope) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoScope(scope);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
+}
+
+@Override
+public List<ConformanceProfile> findByName(String name) {
+	// TODO Auto-generated method stub
+	return  conformanceProfileRepository.findByName(name);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
+		String name) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoScopeAndDomainInfoVersionAndName(scope, version, name);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoVersionAndName(version, name);
+}
+
+@Override
+public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name) {
+	// TODO Auto-generated method stub
+	return conformanceProfileRepository.findByDomainInfoScopeAndName(scope, name);
+}
   
 }

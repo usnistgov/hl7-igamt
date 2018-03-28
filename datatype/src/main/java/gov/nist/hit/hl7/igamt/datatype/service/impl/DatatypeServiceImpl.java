@@ -73,5 +73,47 @@ public class DatatypeServiceImpl implements DatatypeService {
   public void removeCollection() {
     datatypeRepository.deleteAll();
   }
+
+@Override
+public List<Datatype> findByDomainInfoVersion(String version) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoVersion(version);
+}
+
+@Override
+public List<Datatype> findByDomainInfoScope(String scope) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoScope(scope);
+}
+
+@Override
+public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersion( scope, verion) ;
+}
+
+@Override
+public List<Datatype> findByName(String name) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByName(name) ;
+}
+
+@Override
+public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersionAndName( scope,  version,  name);
+}
+
+@Override
+public List<Datatype> findByDomainInfoVersionAndName(String version, String name) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoVersionAndName(version, name);
+}
+
+@Override
+public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByDomainInfoScopeAndName(scope, name);
+}
   
 }
