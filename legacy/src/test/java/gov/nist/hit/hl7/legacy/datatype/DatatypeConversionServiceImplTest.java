@@ -16,9 +16,6 @@ package gov.nist.hit.hl7.legacy.datatype;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-//import org.springframework.test.context.ActiveProfiles;
-//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;

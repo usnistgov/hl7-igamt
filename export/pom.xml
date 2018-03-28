@@ -8,18 +8,13 @@
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>shared-domain</artifactId>
+	<artifactId>export</artifactId>
 	<version>${parent.version}</version>
-	<name>shared-domain</name>
-	<url>http://maven.apache.org</url>
+	<name>export</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
+		
 	</dependencies>
 </project>
