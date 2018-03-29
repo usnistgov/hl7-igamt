@@ -82,6 +82,7 @@ public class SerializableSegment extends SerializableResource {
           if(field != null) {
             Element fieldElement = new Element("Field");
             fieldElement.addAttribute(new Attribute("confLength",field.getConfLength() != null ? field.getConfLength() : ""));
+            fieldElement.addAttribute(new Attribute("name",field.getName() != null ? field.getName() : ""));
             fieldElement.addAttribute(new Attribute("id",field.getId() != null ? field.getId() : ""));
             fieldElement.addAttribute(new Attribute("maxLength",field.getMaxLength() != null ? field.getMaxLength() : ""));
             fieldElement.addAttribute(new Attribute("minLength",field.getMinLength() != null ? field.getMinLength() : ""));

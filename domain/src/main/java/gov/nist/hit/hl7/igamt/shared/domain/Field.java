@@ -10,9 +10,9 @@ public class Field extends SubStructElement {
     this.setType(Type.FIELD);
   }
 
-  public Field(String id, int position, Usage usage, String text, boolean custom,
+  public Field(String id, String name, int position, Usage usage, String text, boolean custom,
       String maxLength, String minLength, String confLength, Ref ref, int min, int max) {
-    super(id, position, usage, Type.FIELD, text, custom, maxLength, minLength, confLength, ref);
+    super(id, name, position, usage, Type.FIELD, text, custom, maxLength, minLength, confLength, ref);
     this.min = min;
     this.max = max;
   }

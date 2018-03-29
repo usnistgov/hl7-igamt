@@ -48,6 +48,7 @@ public class SerializableDatatypeTest {
   private static final String TEST_NAME = "test_name";
   private static final String TEST_ID = "test_id";
   
+  private static final String TEST_COMPONENT1_NAME = "test_component1_name";
   private static final String TEST_COMPONENT1_CONF_LENGTH = "test_component1_conf_length";
   private static final String TEST_COMPONENT1_ID = "test_component1_id";
   private static final String TEST_COMPONENT1_MAX_LENGTH = "test_component1_max_length";
@@ -83,6 +84,7 @@ public class SerializableDatatypeTest {
     datatype.setId(new CompositeKey(TEST_ID));
     Set<Component> components = new HashSet<>();
     Component component1 = new Component();
+    component1.setName(TEST_COMPONENT1_NAME);
     component1.setConfLength(TEST_COMPONENT1_CONF_LENGTH);
     component1.setId(TEST_COMPONENT1_ID);
     component1.setMaxLength(TEST_COMPONENT1_MAX_LENGTH);
@@ -106,6 +108,7 @@ public class SerializableDatatypeTest {
     Elements componentElements = testElement.getChildElements("Component");
     assertEquals(1, componentElements.size());
     Element testComponent = componentElements.get(0);
+    assertEquals(TEST_COMPONENT1_NAME, testComponent.getAttribute("name").getValue());
     assertEquals(TEST_COMPONENT1_CONF_LENGTH, testComponent.getAttribute("confLength").getValue());
     assertEquals(TEST_COMPONENT1_ID, testComponent.getAttribute("id").getValue());
     assertEquals(TEST_COMPONENT1_MAX_LENGTH, testComponent.getAttribute("maxLength").getValue());

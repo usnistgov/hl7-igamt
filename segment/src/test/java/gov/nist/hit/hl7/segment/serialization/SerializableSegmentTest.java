@@ -61,6 +61,7 @@ public class SerializableSegmentTest {
   private static final DynamicMappingInfo TEST_DM = new DynamicMappingInfo(TEST_DM_REF_PATH, TEST_DM_VARIES_DT_PATH, new HashSet<DynamicMappingItem>(Arrays.asList(TEST_DM_ITEM1,TEST_DM_ITEM2)));
 
   //field1
+  private static final String TEST_FIELD1_NAME = "test_field1_name";
   private static final String TEST_FIELD1_ID = "test_field1_id";
   private static final int TEST_FIELD1_POSITION = 1;
   private static final Usage TEST_FIELD1_USAGE = Usage.R;
@@ -74,11 +75,12 @@ public class SerializableSegmentTest {
   private static final Ref TEST_FIELD1_REF = new Ref(TEST_FIELD1_DT_ID);
   private static final int TEST_FIELD1_MIN = 1;
   private static final int TEST_FIELD1_MAX = 5;
-  private static final Field TEST_FIELD1 = new Field(TEST_FIELD1_ID, TEST_FIELD1_POSITION, TEST_FIELD1_USAGE,
+  private static final Field TEST_FIELD1 = new Field(TEST_FIELD1_ID, TEST_FIELD1_NAME, TEST_FIELD1_POSITION, TEST_FIELD1_USAGE,
       TEST_FIELD1_TEXT, TEST_FIELD1_CUSTOM, TEST_FIELD1_MAXLENGTH, TEST_FIELD1_MINLENGTH, 
       TEST_FIELD1_CONFLENGTH, TEST_FIELD1_REF, TEST_FIELD1_MIN, TEST_FIELD1_MAX);
   
 //field2
+  private static final String TEST_FIELD2_NAME = "test_field2_name";
   private static final String TEST_FIELD2_ID = "test_field2_id";
   private static final int TEST_FIELD2_POSITION = 2;
   private static final Usage TEST_FIELD2_USAGE = Usage.R;
@@ -92,7 +94,7 @@ public class SerializableSegmentTest {
   private static final Ref TEST_FIELD2_REF = new Ref(TEST_FIELD2_DT_ID);
   private static final int TEST_FIELD2_MIN = 0;
   private static final int TEST_FIELD2_MAX = 13;
-  private static final Field TEST_FIELD2 = new Field(TEST_FIELD2_ID, TEST_FIELD2_POSITION, TEST_FIELD2_USAGE,
+  private static final Field TEST_FIELD2 = new Field(TEST_FIELD2_ID, TEST_FIELD2_NAME, TEST_FIELD2_POSITION, TEST_FIELD2_USAGE,
       TEST_FIELD2_TEXT, TEST_FIELD2_CUSTOM, TEST_FIELD2_MAXLENGTH, TEST_FIELD2_MINLENGTH, 
       TEST_FIELD2_CONFLENGTH, TEST_FIELD2_REF, TEST_FIELD2_MIN, TEST_FIELD2_MAX);
   
@@ -142,6 +144,7 @@ public class SerializableSegmentTest {
     for(int i=0; i<testFieldsElements.size(); i++) {
       Element testFieldElement = testFieldsElements.get(i);
       if(testFieldElement.getAttribute("id").getValue().equals(TEST_FIELD1_ID)) {
+        assertEquals(TEST_FIELD1_NAME, testFieldElement.getAttribute("name").getValue());
         assertEquals(TEST_FIELD1_CONFLENGTH, testFieldElement.getAttribute("confLength").getValue());
         assertEquals(TEST_FIELD1_MAXLENGTH, testFieldElement.getAttribute("maxLength").getValue());
         assertEquals(TEST_FIELD1_MINLENGTH, testFieldElement.getAttribute("minLength").getValue());
@@ -153,6 +156,7 @@ public class SerializableSegmentTest {
         assertEquals(String.valueOf(TEST_FIELD1_CUSTOM), testFieldElement.getAttribute("custom").getValue());
         assertEquals(TEST_FIELD1_USAGE.name(), testFieldElement.getAttribute("usage").getValue());
       } else if(testFieldElement.getAttribute("id").getValue().equals(TEST_FIELD2_ID)) {
+        assertEquals(TEST_FIELD2_NAME, testFieldElement.getAttribute("name").getValue());
         assertEquals(TEST_FIELD2_CONFLENGTH, testFieldElement.getAttribute("confLength").getValue());
         assertEquals(TEST_FIELD2_MAXLENGTH, testFieldElement.getAttribute("maxLength").getValue());
         assertEquals(TEST_FIELD2_MINLENGTH, testFieldElement.getAttribute("minLength").getValue());

@@ -79,6 +79,7 @@ public class SerializableDatatype extends SerializableResource{
         Element componentElement = new Element("Component");
         componentElement.addAttribute(new Attribute("confLength",component.getConfLength() != null ? component.getConfLength() : ""));
         componentElement.addAttribute(new Attribute("id",component.getId() != null ? component.getId() : ""));
+        componentElement.addAttribute(new Attribute("name",component.getName() != null ? component.getName() : ""));
         componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength() != null ? component.getMaxLength() : ""));
         componentElement.addAttribute(new Attribute("minLength",component.getMinLength() != null ? component.getMinLength() : ""));
         componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
