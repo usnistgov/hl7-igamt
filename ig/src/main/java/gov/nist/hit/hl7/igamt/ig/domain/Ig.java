@@ -1,7 +1,5 @@
 package gov.nist.hit.hl7.igamt.ig.domain;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -26,7 +24,7 @@ public class Ig extends AbstractDomain {
   
 
 
-  public IgMetaData getMetaData1() {
+  public IgMetaData getMetaData() {
     return metaData;
   }
 
