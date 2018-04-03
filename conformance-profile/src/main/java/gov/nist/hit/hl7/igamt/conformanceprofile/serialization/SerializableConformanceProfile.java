@@ -100,7 +100,7 @@ public class SerializableConformanceProfile extends SerializableResource {
     }
     if (msgStructElement != null) {
       msgStructElement.addAttribute(new Attribute("min", String.valueOf(msgStructElm.getMin())));
-      msgStructElement.addAttribute(new Attribute("max", String.valueOf(msgStructElm.getMax())));
+      msgStructElement.addAttribute(new Attribute("max", msgStructElm.getMax()));
     }
     return msgStructElement;
   }
@@ -137,9 +137,11 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   private Element serializeGroup(Group group) throws MsgStructElementSerializationException {
     Element groupElement = new Element("Group");
-    Element binding = super.serializeResourceBinding(group.getBinding());
-    if (binding != null) {
-      groupElement.appendChild(binding);
+    if(group.getBinding() != null) {
+      Element binding = super.serializeResourceBinding(group.getBinding());
+      if (binding != null) {
+        groupElement.appendChild(binding);
+      }
     }
     groupElement.addAttribute(new Attribute("name", group.getName()));
     for (MsgStructElement msgStructElm : group.getChildren()) {
