@@ -72,5 +72,47 @@ public class SegmentServiceImpl implements SegmentService {
   public void removeCollection() {
     segmentRepository.deleteAll();
   }
+
+@Override
+public List<Segment> findByDomainInfoVersion(String version) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByDomainInfoVersion(version) ;
+}
+
+@Override
+public List<Segment> findByDomainInfoScope(String scope) {
+	// TODO Auto-generated method stub
+	return findByDomainInfoScope(scope);
+}
+
+@Override
+public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String version) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByDomainInfoScopeAndDomainInfoVersion(scope,version);
+}
+
+@Override
+public List<Segment> findByName(String name) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByName(name);
+}
+
+@Override
+public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByDomainInfoScopeAndDomainInfoVersionAndName(scope,version,name);
+}
+
+@Override
+public List<Segment> findByDomainInfoVersionAndName(String version, String name) {
+	// TODO Auto-generated method stub
+	return  segmentRepository.findByDomainInfoVersionAndName(version,name);
+}
+
+@Override
+public List<Segment> findByDomainInfoScopeAndName(String scope, String name) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByDomainInfoScopeAndName(scope,name);
+}
   
 }

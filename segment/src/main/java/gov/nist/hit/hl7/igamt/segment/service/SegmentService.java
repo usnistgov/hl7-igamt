@@ -38,4 +38,18 @@ public interface SegmentService {
   
   public void removeCollection();
   
+  public List<Segment> findByDomainInfoVersion(String version);
+  
+  public List<Segment> findByDomainInfoScope(String scope);
+	
+  public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	
+  public List<Segment> findByName(String name);
+	
+  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+	
+  public List<Segment> findByDomainInfoVersionAndName(String version, String name);
+	
+  public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+  
 }

@@ -73,8 +73,6 @@ public class DatatypeConversionServiceImpl implements ConversionService {
     }
     List<gov.nist.hit.hl7.igamt.datatype.domain.Datatype> datatypes =
         convertedDatatypeService.findAll();
-    System.out.println(oldDatatypes.size() + " will be coverted!");
-    System.out.println(datatypes.size() + " have be coverted!");
   }
 
   public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
