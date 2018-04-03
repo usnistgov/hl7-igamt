@@ -32,6 +32,18 @@ public class DynamicMappingInfo {
 
   private Set<DynamicMappingItem> items;
 
+  public DynamicMappingInfo() {
+    super();
+  }
+
+  public DynamicMappingInfo(String referencePath, String variesDatatypePath,
+      Set<DynamicMappingItem> items) {
+    super();
+    this.referencePath = referencePath;
+    this.variesDatatypePath = variesDatatypePath;
+    this.items = items;
+  }
+
   public String getReferencePath() {
     return referencePath;
   }

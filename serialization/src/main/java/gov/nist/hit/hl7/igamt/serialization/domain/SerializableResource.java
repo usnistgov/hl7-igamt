@@ -13,9 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import java.util.Set;
+
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -85,9 +88,51 @@ public abstract class SerializableResource extends SerializableElement {
    * @return
    */
   public Element serializeResourceBinding(ResourceBinding binding) {
-    Element element = new Element("Binding");
-    // TODO serialize binding + implement unit test
-    return element;
+    Element bindingElement = new Element("Binding");
+    // TODO implement unit test
+    bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
+    if(binding.getChildren().size() > 0) {
+      Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren());
+      if(structureElementBindingsElement != null) {
+        bindingElement.appendChild(structureElementBindingsElement);
+      }
+    }
+    //TODO add conformancestatements & crossrefs
+    return bindingElement;
+  }
+
+  /**
+   * @param children
+   * @return
+   */
+  private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings) {
+    Element structureElementBindingsElement = new Element("StructureElementBindings");
+    for(StructureElementBinding structureElementBinding : structureElementBindings) {
+      if(structureElementBinding != null) {
+        Element structureElementBindingElement = this.serializeStructureElementBinding(structureElementBinding);
+        if(structureElementBindingElement != null) {
+          structureElementBindingsElement.appendChild(structureElementBindingElement);
+        }
+      }
+    }
+    return structureElementBindingsElement;
+  }
+
+  /**
+   * @param structureElementBinding
+   * @return
+   */
+  private Element serializeStructureElementBinding(
+      StructureElementBinding structureElementBinding) {
+    Element structureElementBindingElement = new Element("structureElementBinding");
+    if(structureElementBinding.getChildren().size()>0) {
+      Element structureElementBindingsElement = this.serializeStructureElementBindings(structureElementBinding.getChildren());
+      if(structureElementBindingsElement != null) {
+        structureElementBindingElement.appendChild(structureElementBindingsElement);
+      }
+    }
+    //TODO add all elements in binding
+    return structureElementBindingElement;
   }
 
   public Resource getResource() {

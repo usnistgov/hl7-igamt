@@ -37,6 +37,7 @@ public class SerializationException extends Exception {
     this.originException = originException;
     this.type = type;
     this.location = location;
+    this.message = message;
   }
   
   public SerializationException(Exception originException, Type type, String location) {
@@ -48,15 +49,16 @@ public class SerializationException extends Exception {
     errorBuilder.append(type.name());
     errorBuilder.append("[");
     errorBuilder.append(this.location);
-    errorBuilder.append("] ");
+    errorBuilder.append("]");
     if(this.message != null) {
+      errorBuilder.append(" -> ");
       errorBuilder.append(this.message);
     }
-    errorBuilder.append("=> ");
+    errorBuilder.append(" => ");
     if(originException instanceof SerializationException) {
       errorBuilder.append(((SerializationException)originException).printError());
     } else {
-      errorBuilder.append(originException.getClass());
+      errorBuilder.append(originException.getClass().getName());
       errorBuilder.append(" -> ");
       errorBuilder.append(originException.getLocalizedMessage());
     }
@@ -74,6 +76,38 @@ public class SerializationException extends Exception {
     //removing the last comma
     stringBuilder.deleteCharAt(stringBuilder.length());
     return stringBuilder.toString();
+  }
+
+  public Exception getOriginException() {
+    return originException;
+  }
+
+  public void setOriginException(Exception originException) {
+    this.originException = originException;
+  }
+
+  public Type getType() {
+    return type;
+  }
+
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  public void setMessage(String message) {
+    this.message = message;
   }
   
 }
