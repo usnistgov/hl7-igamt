@@ -80,5 +80,48 @@ public class ValuesetServiceImpl implements ValuesetService {
   public void removeCollection() {
     valuesetRepository.deleteAll();
   }
+
+@Override
+public List<Valueset> findByDomainInfoVersion(String version) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoVersion(version);
+}
+
+@Override
+public List<Valueset> findByDomainInfoScope(String scope) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoScope(scope);
+}
+
+@Override
+public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersion(scope,  verion);
+}
+
+@Override
+public List<Valueset> findByBindingIdentifier(String bindingIdentifier) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByBindingIdentifier(bindingIdentifier);
+}
+
+@Override
+public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version,
+		String bindingIdentifier) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(scope, version, bindingIdentifier);
+}
+
+@Override
+public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoVersionAndBindingIdentifier(version,  bindingIdentifier) ;
+}
+
+@Override
+public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
+}
   
 }

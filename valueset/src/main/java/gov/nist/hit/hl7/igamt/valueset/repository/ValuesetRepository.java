@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +28,14 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @Repository
 public interface ValuesetRepository extends MongoRepository<Valueset, CompositeKey> {
+	
+	List<Valueset> findByDomainInfoVersion(String version);
+	List<Valueset> findByDomainInfoScope(String scope);
+	List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	List<Valueset> findByBindingIdentifier(String bindingIdentifier);
+	List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version, String bindingIdentifier);
+	List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier);
+	List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
+
 
 }

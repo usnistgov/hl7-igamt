@@ -24,17 +24,40 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public interface ConformanceProfileService {
 
-  public ConformanceProfile findByKey(CompositeKey key);
-  
-  public ConformanceProfile create(ConformanceProfile conformanceProfile);
+	public ConformanceProfile findByKey(CompositeKey key);
 
-  public ConformanceProfile save(ConformanceProfile conformanceProfile);
+	public ConformanceProfile create(ConformanceProfile conformanceProfile);
 
-  public List<ConformanceProfile> findAll();
+	public ConformanceProfile save(ConformanceProfile conformanceProfile);
 
-  public void delete(ConformanceProfile conformanceProfile);
+	public List<ConformanceProfile> findAll();
 
-  public void delete(CompositeKey key);
-  
-  public void removeCollection();
+	public void delete(ConformanceProfile conformanceProfile);
+
+	public void delete(CompositeKey key);
+
+	public void removeCollection();
+
+	public List<ConformanceProfile> findByIdentifier(String identifier);
+
+	public List<ConformanceProfile> findByMessageType(String messageType);
+
+	public List<ConformanceProfile> findByEvent(String messageType);
+
+	public List<ConformanceProfile> findByStructID(String messageType);
+
+	public List<ConformanceProfile> findByDomainInfoVersion(String version);
+
+	public List<ConformanceProfile> findByDomainInfoScope(String scope);
+
+	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+
+	public List<ConformanceProfile> findByName(String name);
+
+	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
+			String name);
+
+	public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
+
+	public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
 }

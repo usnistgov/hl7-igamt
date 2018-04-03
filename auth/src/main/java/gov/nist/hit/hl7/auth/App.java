@@ -33,34 +33,8 @@ public class App
         System.out.println( "Hello World!" );
         
    
-        File UserFile = new ClassPathResource("User.json").getFile();
         
-        File AccountFile = new ClassPathResource("Account.json").getFile();
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        
-        List<OldUser> users = objectMapper.readValue(new FileInputStream(UserFile), new TypeReference<List<OldUser>>(){});
-        Map<String, OldUser> usersMap= users.stream().collect(
-        		
-                Collectors.groupingBy(OldUser::getUsername, Collectors.collectingAndThen(Collectors.toList(), x -> {
-                		return x.get(0);
-                }))              // returns a LinkedHashMap, keep order
-                
-        		);
-        	
-        
-        List<OldAccount> accounts = objectMapper.readValue(new FileInputStream( AccountFile), new TypeReference<List<OldAccount>>(){});
-        Map<String, OldAccount> accountsMap= accounts.stream().collect(
-        		
-                Collectors.groupingBy(OldAccount::getUsername, Collectors.collectingAndThen(Collectors.toList(), x -> {
-                		return x.get(0);
-                }))              // returns a LinkedHashMap, keep order
-                
-        		);
        
-        
-        
 
 
         
