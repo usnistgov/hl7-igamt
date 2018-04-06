@@ -11,35 +11,34 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.domain;
+package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
+import java.util.Map;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import nu.xom.Attribute;
 import nu.xom.Element;
 
 /**
  *
- * @author Maxence Lefort on Mar 13, 2018.
+ * @author Maxence Lefort on Apr 5, 2018.
  */
-public abstract class SerializableSection extends SerializableElement{
+public class SectionSerializationUtil {
 
-  private Section section;
-
-  public SerializableSection(Section section) {
-    super(section.getId(), String.valueOf(section.getPosition()), section.getLabel());
-    this.section = section;
+  public static Element serializeSection(Section section, Map<String,Datatype> datatypesMap) throws SerializationException {
+    if(section != null) {
+      SerializableSection serializableSection = SerializableSectionFactory.getSerializableSection(section,datatypesMap);
+      if(serializableSection != null) {
+        return serializableSection.serialize();
+      }
+    }
+    return null;
   }
-
-  public Section getSection() {
-    return section;
-  }
-
-  public Element getElement() throws SerializationException {
-    Element sectionElement = super.getElement("Section");
-    sectionElement.addAttribute(new Attribute("description",section.getDescription() != null ? section.getDescription() : ""));
-    sectionElement.addAttribute(new Attribute("type",section.getType() != null ? section.getType().name() : ""));
-    return sectionElement;
+  
+  public static Element serializeSection(Section section) throws SerializationException {
+    return serializeSection(section, null);
   }
   
 }

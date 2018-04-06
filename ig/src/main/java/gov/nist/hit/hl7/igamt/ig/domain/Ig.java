@@ -20,7 +20,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
 public class Ig extends AbstractDomain {
 
   private IgMetaData metaData;
-  private Set<TextSection> content= new HashSet<TextSection>() ;
+  private Set<Section> content= new HashSet<Section>() ;
   
 
 
@@ -31,10 +31,10 @@ public class Ig extends AbstractDomain {
   public void setMetaData(IgMetaData metaData) {
     this.metaData = metaData;
   }
-  public Set<TextSection> getContent() {
+  public Set<Section> getContent() {
     return content;
   }
-  public void setContent(Set<TextSection> content) {
+  public void setContent(Set<Section> content) {
     this.content = content;
   }
 
@@ -55,9 +55,8 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	// TODO Auto-generated constructor stub
 }
 
-	@SuppressWarnings({ "unused", "unchecked" })
-	private TextSection getProfile(){
-		for( TextSection  t : this.content) {
+	public TextSection getProfile(){
+		for( Section  t : this.content) {
 		if(t instanceof TextSection) {
 			if(t.getType().equals(Type.PROFILE)) {
 				return (TextSection)t;
@@ -69,8 +68,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private Registry getDatatypeLibrary() {
+    public Registry getDatatypeLibrary() {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -83,8 +81,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private Registry getSegmentLibrary() {
+	public Registry getSegmentLibrary() {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -98,8 +95,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private Registry getConformanceProfileLibrary() {
+	public Registry getConformanceProfileLibrary() {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -112,8 +108,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		
 	}
 
-	@SuppressWarnings("unused")
-	private Registry getCompositeProfileLibrary() {
+	public Registry getCompositeProfileLibrary() {
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
 				if(s.getType().equals(Type.CONFORMANCEPROFILEREGISTRY)) {
@@ -125,8 +120,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		
 	}
 	
-	@SuppressWarnings("unused")
-	private Registry getProfileComponentLibrary() {	
+	public Registry getProfileComponentLibrary() {	
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
 				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
@@ -137,8 +131,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		return null;
 		
 	}
-	@SuppressWarnings("unused")
-	private Registry getValueSetLibrary() {
+	public Registry getValueSetLibrary() {
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof ValueSetRegistry) {
 					return (ValueSetRegistry)s;
@@ -147,16 +140,14 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		return null;
 	}
 	
-	@SuppressWarnings("unused")
-	private void setValueSetLibrary( ValueSetRegistry valueSetRegistry) {
+	public void setValueSetLibrary( ValueSetRegistry valueSetRegistry) {
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof ValueSetRegistry) {
 				s= valueSetRegistry;
 				}
 			}
 	}
-	@SuppressWarnings("unused")
-	private void setProfileComponentLibrary(Registry profileComponentRegistry ) {	
+	public void setProfileComponentLibrary(Registry profileComponentRegistry ) {	
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
 				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
@@ -165,8 +156,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 			}
 		}		
 	}
-	@SuppressWarnings("unused")
-	private void setCompositeProfileLibrary(Registry compositeProfileRegistry ) {	
+	public void setCompositeProfileLibrary(Registry compositeProfileRegistry ) {	
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
 				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
@@ -177,8 +167,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	}
 	
 	
-	@SuppressWarnings("unused")
-	private void  setSegmentLibrary(Registry segmentRegistry) {
+	public void  setSegmentLibrary(Registry segmentRegistry) {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -189,8 +178,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		}		
 	}
 	
-	@SuppressWarnings("unused")
-	private void setDatatypeLibrary(Registry datatypeRegistry ) {
+	public void setDatatypeLibrary(Registry datatypeRegistry ) {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -201,8 +189,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void setConformanceProfileLibrary(Registry segmentRegistry) {
+	public void setConformanceProfileLibrary(Registry segmentRegistry) {
 		
 		for(Section s : this.getProfile().getChildren()) {
 			if(s instanceof Registry) {
@@ -213,9 +200,8 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		}
 	}
 	
-	@SuppressWarnings({ "unused" })
-	private void setProfile(TextSection s){
-		for( TextSection  t : this.content) {
+	public void setProfile(TextSection s){
+		for( Section  t : this.content) {
 		if(t instanceof TextSection) {
 			if(t.getType().equals(Type.PROFILE)) {
 				t=s;

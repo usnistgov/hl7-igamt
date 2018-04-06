@@ -49,7 +49,7 @@ public class SerializableSegment extends SerializableResource {
   @Override
   public Element serialize() throws ResourceSerializationException {
     Element segmentElement = super.getElement("Segment");
-    Segment segment = (Segment) this.getResource();
+    Segment segment = (Segment) this.getAbstractDomain();
     try {
       segmentElement.addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
       try {

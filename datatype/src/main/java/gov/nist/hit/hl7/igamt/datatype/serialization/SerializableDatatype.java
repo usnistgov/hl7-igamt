@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -35,13 +35,13 @@ import nu.xom.Element;
  */
 public class SerializableDatatype extends SerializableResource{
 
-  private HashMap<Ref,String> refDatatypeLabelMap = null;
+  private Map<Ref,String> refDatatypeLabelMap = null;
   
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, HashMap<Ref,String> refDatatypeLabelMap) {
+  public SerializableDatatype(Datatype datatype, String position, Map<Ref,String> refDatatypeLabelMap) {
     super(datatype, position);
     this.refDatatypeLabelMap = refDatatypeLabelMap;
   }
@@ -54,7 +54,7 @@ public class SerializableDatatype extends SerializableResource{
   public Element serialize() throws ResourceSerializationException {
     try {
       Element datatypeElement = super.getElement("Datatype");
-      Datatype datatype = (Datatype) this.resource;
+      Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
       Element bindingElement = super.serializeResourceBinding(datatype.getBinding());
@@ -68,12 +68,12 @@ public class SerializableDatatype extends SerializableResource{
       }
       return datatypeElement;
     } catch (Exception exception) {
-      throw new ResourceSerializationException(exception, Type.DATATYPE, this.resource);
+      throw new ResourceSerializationException(exception, Type.DATATYPE, (Datatype) this.getAbstractDomain());
     }
   }
 
   private Element serializeComplexDatatype(Element datatypeElement) throws SubStructElementSerializationException {
-    ComplexDatatype complexDatatype = (ComplexDatatype) super.getResource();
+    ComplexDatatype complexDatatype = (ComplexDatatype) super.getAbstractDomain();
     for(Component component : complexDatatype.getComponents()) {
       try {
         Element componentElement = new Element("Component");
@@ -101,7 +101,7 @@ public class SerializableDatatype extends SerializableResource{
   }
   
   private Element serializeDateTimeDatatype(Element datatypeElement) {
-    DateTimeDatatype dateTimeDatatype = (DateTimeDatatype) super.getResource();
+    DateTimeDatatype dateTimeDatatype = (DateTimeDatatype) super.getAbstractDomain();
     for(DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
       Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
       if(dateTimeComponentDefinition != null) {
