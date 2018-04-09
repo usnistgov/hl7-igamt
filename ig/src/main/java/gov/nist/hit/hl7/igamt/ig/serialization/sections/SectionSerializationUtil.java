@@ -15,10 +15,13 @@ package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
 /**
@@ -27,18 +30,23 @@ import nu.xom.Element;
  */
 public class SectionSerializationUtil {
 
-  public static Element serializeSection(Section section, Map<String,Datatype> datatypesMap) throws SerializationException {
-    if(section != null) {
-      SerializableSection serializableSection = SerializableSectionFactory.getSerializableSection(section,datatypesMap);
-      if(serializableSection != null) {
+  public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
+      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
+      throws SerializationException {
+    if (section != null) {
+      SerializableSection serializableSection =
+          SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
+              valueSetsMap, segmentsMap, conformanceProfilesMap);
+      if (serializableSection != null) {
         return serializableSection.serialize();
       }
     }
     return null;
   }
-  
+
   public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null);
+    return serializeSection(section, null, null, null, null, null);
   }
-  
+
 }

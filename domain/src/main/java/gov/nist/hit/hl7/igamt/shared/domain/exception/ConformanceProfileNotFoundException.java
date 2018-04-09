@@ -17,11 +17,11 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
  *
  * @author Maxence Lefort on Mar 22, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+public class ConformanceProfileNotFoundException extends Exception {
 
   private static final long serialVersionUID = 6099795044591697558L;
 
-  public DatatypeNotFoundException(String id) {
+  public ConformanceProfileNotFoundException(String id) {
     super("Datatype with id "+id+" not found");
   }
   

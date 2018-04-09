@@ -13,7 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -21,7 +20,6 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
 import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Element;
@@ -33,27 +31,15 @@ import nu.xom.Element;
 public class SerializableDatatypeRegistry extends SerializableSection {
 
   private Map<String, Datatype> datatypesMap;
-  private Map<Ref, String> datatypeNamesMap;
+  private Map<String, String> datatypeNamesMap;
   
   /**
    * @param section
    */
-  public SerializableDatatypeRegistry(Registry registry, Map<String, Datatype> datatypesMap) {
+  public SerializableDatatypeRegistry(Registry registry, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap) {
     super(registry);
     this.datatypesMap = datatypesMap;
-    this.populateDatatypeNamesMap();
-  }
-
-  private void populateDatatypeNamesMap() {
-    datatypeNamesMap = new HashMap<>();
-    if(datatypesMap != null) {
-      for(String datatypeId : datatypesMap.keySet()) {
-        Datatype datatype = datatypesMap.get(datatypeId);
-        if(datatype != null) {
-          datatypeNamesMap.put(new Ref(datatypeId),datatype.getName());
-        }
-      }
-    }
+    this.datatypeNamesMap = datatypeNamesMap;
   }
 
   @Override

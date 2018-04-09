@@ -13,16 +13,18 @@
  */
 package gov.nist.hit.hl7.igamt.ig.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.serialization.sections.SectionSerializationUtil;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Attribute;
@@ -34,20 +36,30 @@ import nu.xom.Element;
  */
 public class SerializableIG extends SerializableAbstractDomain {
 
-  Map<String, Datatype> datatypesMap;
-  Map<String, Valueset> valueSetsMap;
-  
+  private Map<String, Datatype> datatypesMap;
+  private Map<String, Valueset> valueSetsMap;
+  private Map<String, String> datatypeNamesMap;
+  private Map<String, Segment> segmentsMap;
+  private Map<String, ConformanceProfile> conformanceProfilesMap;
+
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableIG(AbstractDomain abstractDomain, String position, Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap) {
+  public SerializableIG(AbstractDomain abstractDomain, String position,
+      Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
     super(abstractDomain, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
+    this.segmentsMap = segmentsMap;
+    this.conformanceProfilesMap = conformanceProfilesMap;
+    this.populateDatatypeNamesMap();
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement#serialize()
    */
   @Override
@@ -55,17 +67,30 @@ public class SerializableIG extends SerializableAbstractDomain {
     Ig igDocument = (Ig) this.getAbstractDomain();
     Element igDocumentElement = super.getElement("Document");
     Element igMetadata = serializeIgMetadata(igDocument.getMetaData());
-    if(igMetadata != null) {
+    if (igMetadata != null) {
       igDocumentElement.appendChild(igMetadata);
     }
-    
-    for(Section section : igDocument.getContent()) {
-      Element sectionElement = SectionSerializationUtil.serializeSection(section,datatypesMap);
-      if(sectionElement != null) {
+
+    for (Section section : igDocument.getContent()) {
+      Element sectionElement = SectionSerializationUtil.serializeSection(section, datatypesMap,
+          datatypeNamesMap, valueSetsMap, segmentsMap, conformanceProfilesMap);
+      if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }
     }
     return igDocumentElement;
+  }
+
+  private void populateDatatypeNamesMap() {
+    datatypeNamesMap = new HashMap<>();
+    if (datatypesMap != null) {
+      for (String datatypeId : datatypesMap.keySet()) {
+        Datatype datatype = datatypesMap.get(datatypeId);
+        if (datatype != null) {
+          datatypeNamesMap.put(datatypeId, datatype.getName());
+        }
+      }
+    }
   }
 
   /**
@@ -74,13 +99,20 @@ public class SerializableIG extends SerializableAbstractDomain {
    */
   private Element serializeIgMetadata(IgMetaData metaData) {
     Element igMetadataElement = new Element("IgMetadata");
-    igMetadataElement.addAttribute(new Attribute("topics",metaData.getTopics() != null ? metaData.getTopics() : ""));
-    igMetadataElement.addAttribute(new Attribute("specificationName",metaData.getSpecificationName() != null ? metaData.getSpecificationName() : ""));
-    igMetadataElement.addAttribute(new Attribute("identifier",metaData.getIdentifier() != null ? metaData.getIdentifier() : ""));
-    igMetadataElement.addAttribute(new Attribute("implementationNotes",metaData.getImplementationNotes() != null ? metaData.getImplementationNotes() : ""));
-    igMetadataElement.addAttribute(new Attribute("orgName",metaData.getOrgName() != null ? metaData.getOrgName() : ""));
-    igMetadataElement.addAttribute(new Attribute("coverPicture",metaData.getCoverPicture() != null ? metaData.getCoverPicture() : ""));
-    igMetadataElement.addAttribute(new Attribute("subTitle",metaData.getSubTitle() != null ? metaData.getSubTitle() : ""));
+    igMetadataElement.addAttribute(
+        new Attribute("topics", metaData.getTopics() != null ? metaData.getTopics() : ""));
+    igMetadataElement.addAttribute(new Attribute("specificationName",
+        metaData.getSpecificationName() != null ? metaData.getSpecificationName() : ""));
+    igMetadataElement.addAttribute(new Attribute("identifier",
+        metaData.getIdentifier() != null ? metaData.getIdentifier() : ""));
+    igMetadataElement.addAttribute(new Attribute("implementationNotes",
+        metaData.getImplementationNotes() != null ? metaData.getImplementationNotes() : ""));
+    igMetadataElement.addAttribute(
+        new Attribute("orgName", metaData.getOrgName() != null ? metaData.getOrgName() : ""));
+    igMetadataElement.addAttribute(new Attribute("coverPicture",
+        metaData.getCoverPicture() != null ? metaData.getCoverPicture() : ""));
+    igMetadataElement.addAttribute(
+        new Attribute("subTitle", metaData.getSubTitle() != null ? metaData.getSubTitle() : ""));
     return igMetadataElement;
   }
 

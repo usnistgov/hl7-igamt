@@ -15,14 +15,20 @@ package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.serialization.SerializableConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatypeRegistry;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.serialization.SerializableSegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetRegistry;
 import nu.xom.Element;
 
 /**
@@ -31,18 +37,18 @@ import nu.xom.Element;
  */
 public class SerializableSectionFactory {
 
-  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap) {
+  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String,Valueset> valuesetsMap, Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
     SerializableSection serializableSection = null;
     if(Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection)section);
     } else if(Type.DATATYPEREGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableDatatypeRegistry((Registry) section, datatypesMap);
+      serializableSection = new SerializableDatatypeRegistry((Registry) section, datatypesMap, datatypeNamesMap);
     } else if(Type.VALUESETREGISTRY.equals(section.getType())) {
-      
+      serializableSection = new SerializableValuesetRegistry((Registry) section, valuesetsMap);
     } else if(Type.SEGMENTRGISTRY.equals(section.getType())) {
-      
+      serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap);
     } else if(Type.MESSAGEREGISTRY.equals(section.getType())) {
-      
+      serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap);
     } else if(Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       
     } else if(Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {

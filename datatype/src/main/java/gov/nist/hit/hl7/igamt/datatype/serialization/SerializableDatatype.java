@@ -23,7 +23,6 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Attribute;
@@ -35,13 +34,13 @@ import nu.xom.Element;
  */
 public class SerializableDatatype extends SerializableResource{
 
-  private Map<Ref,String> refDatatypeLabelMap = null;
+  private Map<String,String> refDatatypeLabelMap = null;
   
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, Map<Ref,String> refDatatypeLabelMap) {
+  public SerializableDatatype(Datatype datatype, String position, Map<String,String> refDatatypeLabelMap) {
     super(datatype, position);
     this.refDatatypeLabelMap = refDatatypeLabelMap;
   }
@@ -85,8 +84,8 @@ public class SerializableDatatype extends SerializableResource{
         componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
         if(component.getRef() != null){
-          if(refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())) {
-            componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+          if(refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef().getId())) {
+            componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef().getId())));
           } else {
             throw new DatatypeNotFoundException(component.getRef().getId());
           }
