@@ -19,10 +19,10 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
  */
 public class ConformanceProfileNotFoundException extends Exception {
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  private static final long serialVersionUID = -1993944139439499892L;
 
   public ConformanceProfileNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
+    super("Conformance profile with id "+id+" not found");
   }
   
 }

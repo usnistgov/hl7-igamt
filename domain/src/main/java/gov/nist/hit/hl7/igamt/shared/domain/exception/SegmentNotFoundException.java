@@ -19,7 +19,7 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
  */
 public class SegmentNotFoundException extends Exception {
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  private static final long serialVersionUID = 5027333480195464563L;
 
   public SegmentNotFoundException(String id) {
     super("Segment with id "+id+" not found");
