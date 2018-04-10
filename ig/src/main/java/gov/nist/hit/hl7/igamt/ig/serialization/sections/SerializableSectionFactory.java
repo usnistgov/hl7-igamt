@@ -47,13 +47,11 @@ public class SerializableSectionFactory {
       serializableSection = new SerializableValuesetRegistry((Registry) section, valuesetsMap);
     } else if(Type.SEGMENTRGISTRY.equals(section.getType())) {
       serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap);
-    } else if(Type.MESSAGEREGISTRY.equals(section.getType())) {
+    } else if(Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap);
     } else if(Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       
     } else if(Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
-      
-    } else if(Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       
     } else {
       serializableSection = new SerializableSection(section) {
