@@ -37,12 +37,12 @@ import nu.xom.Element;
  */
 public class SerializableSectionFactory {
 
-  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String,Valueset> valuesetsMap, Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
+  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String,Valueset> valuesetsMap, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
     SerializableSection serializableSection = null;
     if(Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection)section);
     } else if(Type.DATATYPEREGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableDatatypeRegistry((Registry) section, datatypesMap, datatypeNamesMap);
+      serializableSection = new SerializableDatatypeRegistry((Registry) section, datatypesMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.VALUESETREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableValuesetRegistry((Registry) section, valuesetsMap);
     } else if(Type.SEGMENTRGISTRY.equals(section.getType())) {

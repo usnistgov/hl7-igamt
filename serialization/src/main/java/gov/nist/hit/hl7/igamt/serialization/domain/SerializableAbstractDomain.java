@@ -86,8 +86,9 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   /**
    * @param binding
    * @return
+   * @throws ValuesetNotFoundException 
    */
-  public Element serializeResourceBinding(ResourceBinding binding, Map<String, String> valuesetNamesMap) {
+  public Element serializeResourceBinding(ResourceBinding binding, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     Element bindingElement = new Element("Binding");
     // TODO implement unit test
     bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
@@ -104,20 +105,16 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   /**
    * @param children
    * @return
+   * @throws ValuesetNotFoundException 
    */
-  private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap) {
+  private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     Element structureElementBindingsElement = new Element("StructureElementBindings");
     for(StructureElementBinding structureElementBinding : structureElementBindings) {
-      try {
       if(structureElementBinding != null) {
-        
         Element structureElementBindingElement = this.serializeStructureElementBinding(structureElementBinding, valuesetNamesMap);
         if(structureElementBindingElement != null) {
           structureElementBindingsElement.appendChild(structureElementBindingElement);
         }
-      }
-      } catch (Exception exception) {
-        
       }
     }
     return structureElementBindingsElement;
@@ -131,7 +128,7 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   private Element serializeStructureElementBinding(
       StructureElementBinding structureElementBinding, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     Element structureElementBindingElement = new Element("StructureElementBinding");
-    if(structureElementBinding.getChildren().size()>0) {
+    if(structureElementBinding != null && structureElementBinding.getChildren() != null && structureElementBinding.getChildren().size()>0) {
       Element structureElementBindingsElement = this.serializeStructureElementBindings(structureElementBinding.getChildren(), valuesetNamesMap);
       if(structureElementBindingsElement != null) {
         structureElementBindingElement.appendChild(structureElementBindingsElement);
@@ -161,6 +158,7 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
         valuesetBindingElement.addAttribute(new Attribute("name",valuesetNamesMap.get(valuesetBinding.getValuesetId())));
         valuesetBindingElement.addAttribute(new Attribute("strength",valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
         valuesetBindingElement.addAttribute(new Attribute("strength",valuesetBinding.getValuesetLocations() != null ? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations()) : ""));
+        return valuesetBindingElement;
       } else {
         throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
       }

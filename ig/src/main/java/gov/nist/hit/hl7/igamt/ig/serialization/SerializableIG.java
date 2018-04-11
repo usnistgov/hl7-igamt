@@ -38,6 +38,7 @@ public class SerializableIG extends SerializableAbstractDomain {
 
   private Map<String, Datatype> datatypesMap;
   private Map<String, Valueset> valueSetsMap;
+  private Map<String, String> valuesetNamesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
@@ -54,7 +55,7 @@ public class SerializableIG extends SerializableAbstractDomain {
     this.valueSetsMap = valueSetsMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
-    this.populateDatatypeNamesMap();
+    this.populateNamesMap();
   }
 
   /*
@@ -73,7 +74,7 @@ public class SerializableIG extends SerializableAbstractDomain {
 
     for (Section section : igDocument.getContent()) {
       Element sectionElement = SectionSerializationUtil.serializeSection(section, datatypesMap,
-          datatypeNamesMap, valueSetsMap, segmentsMap, conformanceProfilesMap);
+          datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }
@@ -81,13 +82,22 @@ public class SerializableIG extends SerializableAbstractDomain {
     return igDocumentElement;
   }
 
-  private void populateDatatypeNamesMap() {
+  private void populateNamesMap() {
     datatypeNamesMap = new HashMap<>();
     if (datatypesMap != null) {
       for (String datatypeId : datatypesMap.keySet()) {
         Datatype datatype = datatypesMap.get(datatypeId);
         if (datatype != null) {
           datatypeNamesMap.put(datatypeId, datatype.getName());
+        }
+      }
+    }
+    valuesetNamesMap = new HashMap<>();
+    if (valueSetsMap != null) {
+      for (String valuesetId : valueSetsMap.keySet()) {
+        Valueset valueset = valueSetsMap.get(valuesetId);
+        if (valueset != null) {
+          valuesetNamesMap.put(valuesetId, valueset.getName());
         }
       }
     }

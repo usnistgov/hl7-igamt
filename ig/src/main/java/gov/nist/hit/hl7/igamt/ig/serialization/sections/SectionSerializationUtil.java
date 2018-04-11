@@ -31,13 +31,13 @@ import nu.xom.Element;
 public class SectionSerializationUtil {
 
   public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap, Map<String, String> valuesetNamesMap, 
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
       throws SerializationException {
     if (section != null) {
       SerializableSection serializableSection =
           SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
-              valueSetsMap, segmentsMap, conformanceProfilesMap);
+              valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
       if (serializableSection != null) {
         return serializableSection.serialize();
       }
@@ -46,7 +46,7 @@ public class SectionSerializationUtil {
   }
 
   public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null, null, null, null, null);
+    return serializeSection(section, null, null, null, null, null, null);
   }
 
 }
