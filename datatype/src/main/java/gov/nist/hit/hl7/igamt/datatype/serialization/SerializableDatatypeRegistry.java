@@ -32,14 +32,16 @@ public class SerializableDatatypeRegistry extends SerializableSection {
 
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetNamesMap;
   
   /**
    * @param section
    */
-  public SerializableDatatypeRegistry(Registry registry, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap) {
+  public SerializableDatatypeRegistry(Registry registry, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(registry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   @Override
@@ -52,7 +54,7 @@ public class SerializableDatatypeRegistry extends SerializableSection {
           for(Link datatypeLink : datatypeRegistry.getChildren()) {
             if(datatypesMap.containsKey(datatypeLink.getId().getId())) {
               Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
-              SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),datatypeNamesMap);
+              SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),datatypeNamesMap, valuesetNamesMap);
               Element datatypeElement = serializableDatatype.serialize();
               if(datatypeElement!=null) {
                 datatypeRegistryElement.appendChild(datatypeElement);

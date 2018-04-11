@@ -34,15 +34,17 @@ import nu.xom.Element;
  */
 public class SerializableDatatype extends SerializableResource{
 
-  private Map<String,String> refDatatypeLabelMap = null;
+  private Map<String,String> datatypeNamesMap = null;
+  private Map<String, String> valuesetNamesMap = null;
   
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, Map<String,String> refDatatypeLabelMap) {
+  public SerializableDatatype(Datatype datatype, String position, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(datatype, position);
-    this.refDatatypeLabelMap = refDatatypeLabelMap;
+    this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
   
   public SerializableDatatype(Datatype datatype, String position) {
@@ -56,9 +58,11 @@ public class SerializableDatatype extends SerializableResource{
       Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
-      Element bindingElement = super.serializeResourceBinding(datatype.getBinding());
-      if(bindingElement != null) {
-        datatypeElement.appendChild(bindingElement);
+      if(datatype.getBinding() != null) {
+        Element bindingElement = super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
+        if(bindingElement != null) {
+          datatypeElement.appendChild(bindingElement);
+        }
       }
       if(datatype instanceof ComplexDatatype) {
         datatypeElement = serializeComplexDatatype(datatypeElement);
@@ -84,8 +88,8 @@ public class SerializableDatatype extends SerializableResource{
         componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
         if(component.getRef() != null){
-          if(refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef().getId())) {
-            componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef().getId())));
+          if(datatypeNamesMap != null && datatypeNamesMap.containsKey(component.getRef().getId())) {
+            componentElement.addAttribute(new Attribute("datatype",datatypeNamesMap.get(component.getRef().getId())));
           } else {
             throw new DatatypeNotFoundException(component.getRef().getId());
           }
