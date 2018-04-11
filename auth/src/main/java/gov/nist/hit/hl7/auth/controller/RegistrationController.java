@@ -28,7 +28,6 @@ public class RegistrationController {
 	public @ResponseBody Account register( @RequestBody RegistrationRequest user) throws Exception{
 		Account a = new Account();
 		
-		System.out.println("MATCHED");
 		
 		if(accountService.emailExist(user.getEmail())) { 
 			throw new Exception ("Email Already Used");

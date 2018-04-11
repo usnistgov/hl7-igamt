@@ -162,10 +162,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__igdocument_list_routing_module__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/igdocument-list-routing.module.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_primeng_primeng__ = __webpack_require__("../../../../primeng/primeng.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_primeng_primeng___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_primeng_primeng__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__angular_material__ = __webpack_require__("../../../material/esm5/material.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__angular_material_list__ = __webpack_require__("../../../material/esm5/list.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__angular_material_icon__ = __webpack_require__("../../../material/esm5/icon.es5.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__igdocument_list_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/igdocument-list.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__igdocument_list_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/igdocument-list.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -183,9 +180,10 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 
 
 
-
-
-
+// import { MatButtonModule } from '@angular/material';
+// import {MatListModule} from '@angular/material/list';
+//
+// import {MatIconModule} from '@angular/material/icon';
 
 var IgDocumentListModule = (function () {
     function IgDocumentListModule() {
@@ -197,12 +195,11 @@ var IgDocumentListModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_7__igdocument_list_routing_module__["a" /* IgDocumentListRoutingModule */],
                 __WEBPACK_IMPORTED_MODULE_8_primeng_primeng__["TabMenuModule"],
                 __WEBPACK_IMPORTED_MODULE_8_primeng_primeng__["OrderListModule"], __WEBPACK_IMPORTED_MODULE_8_primeng_primeng__["PickListModule"],
-                __WEBPACK_IMPORTED_MODULE_9__angular_material__["a" /* MatButtonModule */], __WEBPACK_IMPORTED_MODULE_10__angular_material_list__["a" /* MatListModule */], __WEBPACK_IMPORTED_MODULE_11__angular_material_icon__["a" /* MatIconModule */]
             ],
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_2__igdocument_list_component__["a" /* IgDocumentListComponent */], __WEBPACK_IMPORTED_MODULE_3__my_igs_my_igs_component__["a" /* MyIgsComponent */], __WEBPACK_IMPORTED_MODULE_4__preloaded_igs_preloaded_igs_component__["a" /* PreloadedIgsComponent */], __WEBPACK_IMPORTED_MODULE_5__shared_igs_shared_igs_component__["a" /* SharedIgsComponent */], __WEBPACK_IMPORTED_MODULE_6__all_igs_all_igs_component__["a" /* AllIgsComponent */]
             ],
-            providers: [__WEBPACK_IMPORTED_MODULE_12__igdocument_list_service__["a" /* IgListService */]]
+            providers: [__WEBPACK_IMPORTED_MODULE_9__igdocument_list_service__["a" /* IgListService */]]
         })
     ], IgDocumentListModule);
     return IgDocumentListModule;
@@ -254,7 +251,7 @@ var IgListService = (function () {
 /***/ "../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div style=\"align:center; width:90%;\nmargin-left:200px;\nmargin-right:auto;margin-top: 30px\">\n\n<p-orderList [value]=\"igs\"  [responsive]=\"true\" header=\"User IG Document\" styleClass=\"list-ig\"\n             filter=\"filter\" filterBy=\"metaData.title\" filterPlaceholder=\"  Filter by title\" dragdrop=\"true\" dragdropScope=\"igdocument\">\n  <ng-template let-ig pTemplate=\"item\">\n    <div style=\"height: 100px;\">\n    <div routerLink=\"{{'/ig-documents/igdocuments-edit/'+ig.id}}\" [queryParams]=\"{ readOnly: false }\"><a>{{ig.metaData.title}} </a></div>\n\n    <button  style=\"float: right\" (click)=\"open(ig,false)\" class=\"btn btn-sm btn-warning\">Edit</button>\n    <button   style=\"float: right\" (click)=\"open(ig,true)\" pButton type=\"button\" class=\"btn btn-sm btn-primary\">Read</button>\n      <button pButton type=\"button\" class=\"ui-button-info\"></button>\n\n    </div>\n  </ng-template>\n</p-orderList>\n</div>\n\n\n"
+module.exports = "<!--<div style=\"align:center; width:90%;-->\n<!--margin-left:200px;-->\n<!--margin-right:auto;margin-top: 30px\">-->\n\n<!--<p-orderList [value]=\"igs\"  [responsive]=\"true\" header=\"User IG Document\" styleClass=\"list-ig\"-->\n             <!--filter=\"filter\" filterBy=\"metaData.title\" filterPlaceholder=\"  Filter by title\" dragdrop=\"true\" dragdropScope=\"igdocument\">-->\n  <!--<ng-template let-ig pTemplate=\"item\">-->\n    <!--<div style=\"height: 100px;\">-->\n    <!--<div routerLink=\"{{'/ig-documents/igdocuments-edit/'+ig.id}}\" [queryParams]=\"{ readOnly: false }\"><a>{{ig.metaData.title}} </a></div>-->\n\n    <!--<button  style=\"float: right\" (click)=\"open(ig,false)\" class=\"btn btn-sm btn-warning\">Edit</button>-->\n    <!--<button   style=\"float: right\" (click)=\"open(ig,true)\" pButton type=\"button\" class=\"btn btn-sm btn-primary\">Read</button>-->\n      <!--<button pButton type=\"button\" class=\"ui-button-info\"></button>-->\n\n    <!--</div>-->\n  <!--</ng-template>-->\n<!--</p-orderList>-->\n<!--</div>-->\n\n\n"
 
 /***/ }),
 

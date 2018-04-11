@@ -25,14 +25,11 @@ public class JWTAuthorizationFilter extends  OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
 			throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		
 				String jwt = request.getHeader(SecurityConstants.HEADER_STRING);
 				if(jwt == null ||!jwt.startsWith(SecurityConstants.TOKEN_PREFIX)) {
 						chain.doFilter(request,response); return;
-						
 				}
 				Claims claims = Jwts.parser().setSigningKey(SecurityConstants.SECRET).parseClaimsJws(jwt.replace(SecurityConstants.TOKEN_PREFIX, "")).getBody();
-				
 				String username= claims.getSubject();
 				ArrayList<Map<String,String>> roles = (ArrayList<Map<String, String>>) claims.get("roles");
 				
@@ -40,11 +37,10 @@ public class JWTAuthorizationFilter extends  OncePerRequestFilter {
 				roles.forEach(r ->{
 					authorities.add(new SimpleGrantedAuthority(r.get("authority")));
 				});
-				
-				UsernamePasswordAuthenticationToken authenticatedUser= new UsernamePasswordAuthenticationToken(username, null,authorities);
-				
-				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
+//				UsernamePasswordAuthenticationToken authenticatedUser= new UsernamePasswordAuthenticationToken(username, null,authorities);
+//				SecurityContextHolder.getContext().setAuthentication(authenticatedUser);
 				chain.doFilter(request, response);
-
-}
+				
+				
+				}
 }

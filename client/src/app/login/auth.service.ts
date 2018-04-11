@@ -25,13 +25,20 @@ export class AuthService {
   }
 
   login(username,password): BehaviorSubject<boolean> {
+    console.log(username);
 
-    this.http.post('api/login',{username:username,password:password},{ observe: 'response' }).subscribe(data => {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json'
+      })
+    };
+
+    this.http.post('/login',{username:username,password:password},httpOptions).subscribe(data => {
       console.log(data);
-      let token = data.headers.get('Authorization');
-      console.log(token);
-
-      localStorage.setItem('currentUser', token );
+      // let token = data.headers.get('Authorization');
+      // console.log(token);
+      //
+      // localStorage.setItem('currentUser', token );
 
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
@@ -42,9 +49,6 @@ export class AuthService {
       }
     );
     return  this.isLoggedIn;
-
-
-
 
   }
 

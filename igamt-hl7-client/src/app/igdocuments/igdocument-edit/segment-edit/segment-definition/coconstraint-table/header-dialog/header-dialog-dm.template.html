@@ -1,0 +1,12 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false"  appendTo="body">
+    <p-header>
+        Select Data Element
+    </p-header>
+    <p-dropdown [disabled]="fixed" [style]="{'width':'100%'}" placeholder="Value Type" [options]="selectorTypes" [(ngModel)]="type" appendTo="body"></p-dropdown>
+    <div style="max-height: 500px; overflow-y : scroll;">
+      <segment-tree [segment]="_segment" (nodeSelect)="setNode($event)"></segment-tree>
+    </div>
+    <p-footer>
+        <button type="button" *ngIf="type && node" (click)="addHeader()" class="btn btn-success" pButton icon="fa-check" > Select </button>
+    </p-footer>
+</p-dialog>

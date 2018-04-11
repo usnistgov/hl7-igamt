@@ -32,15 +32,15 @@
     </li>
 
 
-  <li  *ngIf="node.data.referenceType=='segments'"
+    <li  *ngIf="node.data.referenceType=='segments'"
        pDroppable="section">
     <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
-  </li>
+    </li>
 
-  <li  *ngIf="node.data.referenceType=='datatypelibrary'"
+     <li  *ngIf="node.data.referenceType=='datatypelibrary'"
        pDroppable="section">
-    <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
-  </li>
+      <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
 
   <li  *ngIf="node.data.referenceType=='tablelibrary'"
        pDroppable="section">

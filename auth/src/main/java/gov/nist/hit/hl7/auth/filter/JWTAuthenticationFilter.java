@@ -27,7 +27,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
 	
-
+	
 	@Autowired
 	private ShaPasswordEncoder encoder;
 	
@@ -35,7 +35,6 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		super(new AntPathRequestMatcher(url));
 		setAuthenticationManager(authenticationManager);
 
-		// TODO Auto-generated constructor stub
 	}
 	
 
@@ -46,6 +45,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		 ObjectMapper mapper = 
 								new ObjectMapper()
 	        .configure(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		 
 		LoginRequest creds = new LoginRequest();
 		
 		creds=  mapper.readValue(request.getInputStream(), LoginRequest.class);

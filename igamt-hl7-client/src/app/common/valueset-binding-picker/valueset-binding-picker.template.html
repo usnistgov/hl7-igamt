@@ -1,0 +1,37 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false" appendTo="body">
+    <p-header>
+        Select Value Set Bindings
+    </p-header>
+    <div class="g-row">
+        <p-dataTable styleClass="ui-g-6" [value]="tables" [globalFilter]="gb" [(selection)]="selectedTables" dataKey="bindingIdentifier" [rows]="10" [paginator]="true" [pageLinks]="3" [rowsPerPageOptions]="[5,10,20]" >
+            <p-header>
+                <div class="ui-inputgroup" style="width: 100%;">
+                    <span class="ui-inputgroup-addon"><i class="fa fa-search"></i></span>
+                    <input #gb type="text" pInputText size="50" placeholder="Filter" style="width: 100%;">
+                </div>
+            </p-header>
+            <p-column [style]="{'width':'38px'}" selectionMode="multiple"></p-column>
+            <p-column header="Binding Identifier" field="bindingIdentifier">
+                <ng-template pTemplate="body" let-vs="rowData">
+                    <span class="badge" [ngClass]="{'label-HL7' : getScopeLabel(vs)==='HL7', 'label-USE': getScopeLabel(vs)==='USR','label-MASTER':getScopeLabel(vs)==='MAS','label-PRL':getScopeLabel(vs)==='PRL','label-PVS':getScopeLabel(vs)==='PVS'}">{{getScopeLabel(vs)}} {{hasSameVersion(vs)}}</span> {{vs.bindingIdentifier}}
+                </ng-template>
+            </p-column>
+            <p-column header="Name" field="name"></p-column>
+        </p-dataTable>
+        <p-dataList [value]="selectedTables" styleClass="ui-g-6" emptyMessage="No Value Set Selected">
+            <p-header>Selected Tables</p-header>
+            <ng-template let-vs pTemplate="item">
+                <div class="ui-g ui-g-nopad">
+                    <span class="ui-g-4">
+                        <span class="badge" [ngClass]="{'label-HL7' : getScopeLabel(vs)==='HL7', 'label-USE': getScopeLabel(vs)==='USR','label-MASTER':getScopeLabel(vs)==='MAS','label-PRL':getScopeLabel(vs)==='PRL','label-PVS':getScopeLabel(vs)==='PVS'}">{{getScopeLabel(vs)}} {{hasSameVersion(vs)}}</span> {{vs.bindingIdentifier}} {{vs.name}}
+                    </span>
+                    <p-dropdown class="ui-g-4" [options]="bindingStrength" [(ngModel)]="vs.bindingStrength" placeholder="Binding Strength" [style]="{'width' : '100%', 'overflow' : 'visible'}"></p-dropdown>
+                    <p-dropdown class="ui-g-4" [options]="bindingLocation" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" [style]="{'width' : '100%', 'overflow' : 'visible'}"></p-dropdown>
+                </div>
+            </ng-template>
+        </p-dataList>
+    </div>
+    <p-footer>
+        <button pButton class="btn btn-success" (click)="select()">Select</button>
+    </p-footer>
+</p-dialog>

@@ -40,19 +40,15 @@
 			<version>1.8.0.RELEASE</version>
 		</dependency>
 	</dependencies>
-	<modules>
-		<module>domain</module>
-		<module>auth</module>
-		<module>profile-component</module>
-		<module>composite-profile</module>
-		<module>ig</module>
-		<module>datatype</module>
-		<module>valueset</module>
-		<module>legacy</module>
-		<module>bootstrap</module>
-		<module>conformance-profile</module>
-		<module>export</module>
-		<module>serialization</module>
-		<module>segment</module>
-	</modules>
+<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>io.spring.platform</groupId>
+				<artifactId>platform-bom</artifactId>
+				<version>1.1.2.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

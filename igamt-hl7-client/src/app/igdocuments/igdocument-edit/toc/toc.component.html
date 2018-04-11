@@ -1,0 +1,72 @@
+<p-tree [value]="treeData" draggableNodes="true" droppableNodes="true" selectionMode="single" styleClass="toc">
+  <ng-template let-node  pTemplate="default">
+
+<div *ngIf="node.data">
+    <li   *ngIf="node.data.referenceType==='root'" [contextMenu]="basicMenu"
+         pDroppable="['section', 'profile']" >
+      <span  (click)="print(node)">{{node.data.sectionTitle}}</span>
+      <!--<p-contextMenu  [target]="root" appendTo="body" [model]="rootMenu"></p-contextMenu>-->
+
+      <!--<context-menu #basicMenu>-->
+        <!--<ng-template contextMenuItem (execute)="AddSection(node)">-->
+          <!--Add Section-->
+        <!--</ng-template>-->
+      <!--</context-menu>-->
+    </li>
+
+
+    <li  *ngIf="node.data.referenceType=='section'"
+         pDraggable="section" pDroppable="section">
+      <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
+
+    <li  *ngIf="node.data.referenceType=='profile'"
+         pDraggable="section">
+      <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
+
+
+    <li  *ngIf="node.data.referenceType=='messages'"
+       pDroppable="section">
+        <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
+
+
+    <li  *ngIf="node.data.referenceType=='segments'"
+       pDroppable="section">
+    <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
+
+     <li  *ngIf="node.data.referenceType=='datatypelibrary'"
+       pDroppable="section">
+      <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+    </li>
+
+  <li  *ngIf="node.data.referenceType=='tablelibrary'"
+       pDroppable="section">
+    <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+  </li>
+
+
+  <li  *ngIf="node.data.referenceType=='compositeprofiles'"
+       pDroppable="section">
+    <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+  </li>
+  <li  *ngIf="node.data.referenceType=='profilecomponents'"
+       pDroppable="section">
+    <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
+  </li>
+
+  <li *ngIf="node.data.ref">
+   <button (click)="setActualNode(node)">Click</button>
+    <display-label [elm]="node.data.ref" ></display-label>
+  </li>
+
+</div>
+  </ng-template>
+
+
+
+</p-tree>
+
+

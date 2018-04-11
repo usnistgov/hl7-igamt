@@ -36,6 +36,7 @@ import { RegisterComponent } from './register/register.component';
 import {UserService} from "./service/userService/user.service";
 
 import { FlexLayoutModule } from "@angular/flex-layout";
+import {SafePipe} from "./safe";
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { FlexLayoutModule } from "@angular/flex-layout";
     AppFooterComponent,
     NotFoundComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    SafePipe
   ],
   exports : [ ],
   imports: [
@@ -72,7 +74,7 @@ import { FlexLayoutModule } from "@angular/flex-layout";
       useClass: TokenInterceptor,
       multi: true
     },
-     AppInfoService,
+    AppInfoService,
     WorkspaceService,
     GeneralConfigurationService,
     IndexedDbService,

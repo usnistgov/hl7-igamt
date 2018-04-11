@@ -1700,7 +1700,7 @@ exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-b
 
 
 // module
-exports.push([module.i, ".segment-tree-table {\n  max-height: 500px;\n  overflow-y : scroll;\n}\n\n.tt-table {\n  height: 500px;\n}\n\n\n.empty {\n  width: 100%;\n  height: 100%;\n  background-color: #221010;\n}\n\n.valueset {\n  width:300px;\n}\n\n.colordiv {\n  background-color: #221010;\n}\n\n.ui-treetable thead th, .ui-treetable tbody td, .ui-treetable tfoot td{\n  background-color: #221010;\n}\n\n.label-segment-binding-icon {\n  color: blue !important;\n}\n\n.label-field-binding-icon {\n  color:purple !important;\n}\n\n.label-component-binding-icon {\n  color:#d400d4 !important;\n}", ""]);
+exports.push([module.i, ".segment-tree-table {\n  max-height: 500px;\n  overflow-y : scroll;\n}\n\n.tt-table {\n  height: 500px;\n}\n\n.empty {\n  width: 100%;\n  height: 100%;\n  background-color: #221010;\n}\n\n.valueset {\n  width:300px;\n}\n\n.colordiv {\n  background-color: #221010;\n}\n\n.ui-treetable thead th, .ui-treetable tbody td, .ui-treetable tfoot td{\n  background-color: #221010;\n}\n\n.label-segment-binding-icon {\n  color: blue !important;\n}\n\n.label-field-binding-icon {\n  color:purple !important;\n}\n\n.label-component-binding-icon {\n  color:#d400d4 !important;\n}", ""]);
 
 // exports
 

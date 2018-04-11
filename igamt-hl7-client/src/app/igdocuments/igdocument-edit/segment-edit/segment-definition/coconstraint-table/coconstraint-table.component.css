@@ -1,0 +1,69 @@
+input {
+    width: 100%;
+}
+
+.table-header {
+    text-align: center;
+}
+
+.table-ndef {
+    background-color: #6e6e6e;
+}
+
+.invalid {
+    border : 1px solid red;
+}
+
+.wide {
+    min-width: 200px;
+    max-width: 200px;
+}
+
+.small {
+    min-width: 100px;
+    max-width: 100px;
+}
+
+.selector-header{
+    background-color: rgb(21, 130, 225);
+}
+
+.data-header {
+    background-color: rgb(239,239,239);
+}
+
+.user-header {
+    background-color: rgb(114, 207, 75);
+}
+
+.ng-valid[required], .ng-valid.required  {
+    /*border-bottom: 1px solid #42A948; !* green *!*/
+}
+
+.ng-invalid:not(form)  {
+    border-bottom: 2px solid #d82320; /* red */
+}
+
+input::-webkit-input-placeholder {
+    color: red !important;
+    text-align: center;
+}
+
+input:-moz-placeholder {
+    color: red !important;
+    text-align: center;
+}
+
+input::-moz-placeholder {
+    color: red !important;
+    text-align: center;
+}
+
+input:-ms-input-placeholder {
+    color: red !important;
+    text-align: center;
+}
+
+.label-gray {
+  background-color: gray;
+}

@@ -34,7 +34,7 @@ public class Datatype extends Resource {
 
   public ResourceBinding getBinding() {
 	return binding;
-}
+ }
 
   public void setBinding(ResourceBinding binding) {
   	this.binding = binding;

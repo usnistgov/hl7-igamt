@@ -154,12 +154,12 @@ public class AccountServiceImpl implements AccountService {
 
 	@Override
 	public void createAccountsFromLegacy() throws IOException {
-        System.out.println( "Hello World!" );
         
         
-        File UserFile = new ClassPathResource("User.json").getFile();
+        File UserFile = new File("/Users/ena3/hl7-igamt/auth/src/main/resources/json/User.json");
+        		
         
-        File AccountFile = new ClassPathResource("Account.json").getFile();
+        File AccountFile = new File("/Users/ena3/hl7-igamt/auth/src/main/resources/json/Account.json");
 
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);

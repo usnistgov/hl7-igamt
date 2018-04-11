@@ -12,7 +12,6 @@ public abstract class AbstractDomain {
   private DomainInfo domainInfo;
   private String username;
   private Long accountID; // to faciltate conversion 
-
   private String comment;
   private String description;
   private String createdFrom;

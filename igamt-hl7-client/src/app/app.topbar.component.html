@@ -1,0 +1,163 @@
+<div class="topbar clearfix">
+
+    <img class="logo" alt="apollo-layout" src="assets/layout/images/apollo_logo.png" />
+    <a id="menu-button" href="#" (click)="app.onMenuButtonClick($event)">
+        <i class="fa fa-align-left"></i>
+    </a>
+
+    <a href="#" class="profile" (click)="app.onTopbarMenuButtonClick($event)">
+        <span class="username">Sarah Miller</span>
+        <img src="assets/layout/images/avatar/avatar.png" alt="apollo-layout" />
+        <i class="fa fa-angle-down"></i>
+    </a>
+
+    <!--<span class="topbar-search">-->
+        <!--<input type="text" pInputText placeholder="Search"/>-->
+        <!--<span class="fa fa-search"></span>-->
+    <!--</span>-->
+
+    <!--<span class="topbar-themeswitcher">-->
+        <!--<p-inputSwitch [(ngModel)]="app.darkTheme" (onChange)="themeChange($event)"></p-inputSwitch>-->
+    <!--</span>-->
+
+    <ul class="topbar-menu fadeInDown" [ngClass]="{'topbar-menu-visible': app.topbarMenuActive}">
+        <li #profile [ngClass]="{'menuitem-active':app.activeTopbarItem === profile}" (click)="app.onTopbarItemClick($event, profile)">
+            <a href="#">
+                <i class="topbar-icon fa fa-fw fa-user"></i>
+                <span class="topbar-item-name">Profile</span>
+            </a>
+            <ul>
+                <li role="menuitem">
+                    <a href="#">
+                        <i class="fa fa-fw fa-user"></i>
+                        <span>Profile</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                        <i class="fa fa-fw fa-user-secret"></i>
+                        <span>Privacy</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                        <i class="fa fa-fw fa-cog"></i>
+                        <span>Settings</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-sign-out"></i>
+                      <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li #settings [ngClass]="{'menuitem-active':app.activeTopbarItem === settings}" (click)="app.onTopbarItemClick($event, settings)">
+            <a href="#">
+                <i class="topbar-icon fa fa-fw fa-cog"></i>
+                <span class="topbar-item-name">Settings</span>
+            </a>
+            <ul>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-paint-brush"></i>
+                      <span>Change Theme</span>
+                      <span class="topbar-badge">1</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-star-o"></i>
+                      <span>Favorites</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                        <i class="fa fa-fw fa-lock"></i>
+                        <span>Lock Screen</span>
+                        <span class="topbar-badge">3</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-picture-o"></i>
+                      <span>Wallpaper</span>
+                    </a>
+                </li>
+          </ul>
+        </li>
+        <li #messages [ngClass]="{'menuitem-active':app.activeTopbarItem === messages}" (click)="app.onTopbarItemClick($event, messages)">
+            <a href="#">
+                <i class="topbar-icon fa fa-fw fa-envelope-o"></i>
+                <span class="topbar-item-name">Messages</span>
+                <span class="topbar-badge">5</span>
+            </a>
+            <ul>
+                <li role="menuitem">
+                  <a href="#" class="topbar-message">
+                    <img src="assets/layout/images/avatar/avatar1.png" alt="avatar1" style="width: 35px;"/>
+                    <span>Give me a call</span>
+                  </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="topbar-message">
+                      <img src="assets/layout/images/avatar/avatar2.png" alt="avatar2" style="width: 35px;"/>
+                      <span>Reports attached</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="topbar-message">
+                      <img src="assets/layout/images/avatar/avatar3.png" alt="avatar3" style="width: 35px;"/>
+                      <span>About your invoice</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="topbar-message">
+                      <img src="assets/layout/images/avatar/avatar2.png" alt="avatar2" style="width: 35px;"/>
+                      <span>Meeting today</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#" class="topbar-message">
+                      <img src="assets/layout/images/avatar/avatar4.png" alt="avatar4" style="width: 35px;"/>
+                      <span>Out of office</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+        <li #notifications [ngClass]="{'menuitem-active':app.activeTopbarItem === notifications}" (click)="app.onTopbarItemClick($event, notifications)">
+            <a href="#">
+                <i class="topbar-icon fa fa-fw fa-bell-o"></i>
+                <span class="topbar-item-name">Notifications</span>
+                <span class="topbar-badge">2</span>
+            </a>
+            <ul>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-tasks"></i>
+                      <span>Pending tasks</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-calendar-check-o"></i>
+                      <span>Meeting today</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-download"></i>
+                      <span>Download</span>
+                    </a>
+                </li>
+                <li role="menuitem">
+                    <a href="#">
+                      <i class="fa fa-fw fa-plane"></i>
+                      <span>Book flight</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>

@@ -1,8 +1,6 @@
 package gov.nist.hit.hl7.auth.domain;
 
-import javax.validation.constraints.NotNull;
 
-import org.hibernate.validator.constraints.NotEmpty;
 
 public class RegistrationRequest {
 	private String username;

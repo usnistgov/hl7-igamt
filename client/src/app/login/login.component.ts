@@ -1,6 +1,8 @@
-import {Component,Inject,forwardRef} from '@angular/core';
+import {Component, Inject, forwardRef, ElementRef} from '@angular/core';
 import { Router }      from '@angular/router';
 import { AuthService } from './auth.service';
+import {DomSanitizer,SafeResourceUrl} from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-login',
@@ -11,11 +13,12 @@ export class LoginComponent {
   username: string;
   password: string;
 
-  constructor(public authService: AuthService, public router: Router) {
+  constructor(public authService: AuthService, public router: Router,public sanitizer:DomSanitizer,    private hostElement: ElementRef,
+  ) {
   }
 
+
   login() {
-    this.message = 'Trying to log in ...';
 
     this.authService.login(this.username,this.password).subscribe(x => {
       if (x==true) {
@@ -36,6 +39,12 @@ export class LoginComponent {
   }
   register(){
     this.router.navigate(["/register"]);
+  }
+
+  ngOnInit() {
+    const iframe = this.hostElement.nativeElement.querySelector('iframe');
+    iframe.src ="https://www.youtube.com/";
+
   }
 
 }

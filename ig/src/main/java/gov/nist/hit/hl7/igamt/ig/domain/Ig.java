@@ -1,7 +1,5 @@
 package gov.nist.hit.hl7.igamt.ig.domain;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
@@ -33,9 +31,13 @@ public class Ig extends AbstractDomain {
   public void setMetaData(IgMetaData metaData) {
     this.metaData = metaData;
   }
+  
+  
   public Set<TextSection> getContent() {
     return content;
   }
+  
+  
   public void setContent(Set<TextSection> content) {
     this.content = content;
   }
@@ -57,7 +59,7 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	// TODO Auto-generated constructor stub
 }
 
-	@SuppressWarnings({ "unused", "unchecked" })
+	@SuppressWarnings({ "unused" })
 	private TextSection getProfile(){
 		for( TextSection  t : this.content) {
 		if(t instanceof TextSection) {
@@ -222,9 +224,8 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 			if(t.getType().equals(Type.PROFILE)) {
 				t=s;
 			}
+		  }
 		}
-		}
-		
 	}
 	
 	

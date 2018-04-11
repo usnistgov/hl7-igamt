@@ -16,13 +16,5 @@ public interface IgService {
 	  public List<Ig> findAll();
 	  public void delete(CompositeKey id);
 	  public Ig save(Ig ig);
-	  
-
-	  
-
-	  
-
-	 
-	
 
 }

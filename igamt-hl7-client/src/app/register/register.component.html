@@ -1,0 +1,84 @@
+  <div class="card">
+    <h4 class="card-title"> Sign up </h4>
+  <form [formGroup]="registrationForm" novalidate>
+
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input name="fullname" id="fullname" placeholder="Full Name" formControlName="fullname" [(ngModel)]="model.fullname"  pInputText required class="ui-g-9">
+
+        <p-message severity="error" text="Name is required" *ngIf="fullname.invalid && (fullname.dirty || fullname.touched)"></p-message>
+    </div>
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input name="username" id="username" pInputText placeholder="Username"
+             formControlName="username" required [(ngModel)]="model.username" class="ui-g-9">
+
+      <div *ngIf="username.invalid && (username.dirty || username.touched)">
+        <p-message severity="error" text="username is required" *ngIf="username.errors.required"></p-message>
+
+      </div>
+    </div>
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input name="email" id="email" pInputText placeholder="E-mail"
+             formControlName="email" required [(ngModel)]="model.email" class="ui-g-9">
+
+      <div *ngIf="email.invalid && (email.dirty || email.touched)">
+
+        <p-message severity="error" text=" Email is required" *ngIf="email.errors.required">
+        </p-message>
+        <p-message severity="error" text="Please enter a valid e-mail" *ngIf="email.errors.email&&!email.errors.required"></p-message>
+
+      </div>
+    </div>
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input name="password" id="password"  type="password" placeholder="password"
+             formControlName="password" required [(ngModel)]="model.password" class="ui-g-9">
+
+      <div *ngIf="password.invalid && (password.dirty || password.touched)">
+
+        <p-message *ngIf="password.errors.required" severity="error" text="Password is required">
+        </p-message>
+        <p-message *ngIf="password.errors.minlength" severity="error" text="Password is to Short">
+        </p-message>
+
+
+      </div>
+    </div>
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input name="confirmPasswordForm" id="confirmPasswordForm" [(ngModel)]="confirmPassword" formControlName="confirmPasswordForm" placeholder="Confirm Password" required  pInputText class="ui-g-9">
+
+
+      <div *ngIf="confirmPasswordForm.invalid && (confirmPasswordForm.dirty || confirmPasswordForm.touched)">
+        <p-message severity="error" text="Passwords do not match">
+        </p-message>
+
+
+      </div>
+    </div>
+
+
+
+
+
+
+    <div class="ui-g-6" style="margin-top:30px">
+
+      <button pButton style="margin-bottom:10px" class="blue-btn" (click)="register()" label="Register" [disabled]="!registrationForm.valid"></button>
+      <a [routerLink]="['/login']" class="btn btn-link">Cancel</a>
+    </div>
+  </form>
+
+
+
+
+
+
+</div>
