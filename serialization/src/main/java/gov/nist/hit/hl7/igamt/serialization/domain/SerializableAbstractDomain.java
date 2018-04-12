@@ -13,16 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.ValuesetNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -86,97 +82,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   /**
    * @param binding
    * @return
-   * @throws ValuesetNotFoundException 
+   * @throws SerializationException 
    */
-  public Element serializeResourceBinding(ResourceBinding binding, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    Element bindingElement = new Element("Binding");
-    // TODO implement unit test
-    bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
-    if(binding.getChildren().size() > 0) {
-      Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren(),valuesetNamesMap);
-      if(structureElementBindingsElement != null) {
-        bindingElement.appendChild(structureElementBindingsElement);
-      }
-    }
-    //TODO add conformancestatements & crossrefs
-    return bindingElement;
-  }
-
-  /**
-   * @param children
-   * @return
-   * @throws ValuesetNotFoundException 
-   */
-  private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    Element structureElementBindingsElement = new Element("StructureElementBindings");
-    for(StructureElementBinding structureElementBinding : structureElementBindings) {
-      if(structureElementBinding != null) {
-        Element structureElementBindingElement = this.serializeStructureElementBinding(structureElementBinding, valuesetNamesMap);
-        if(structureElementBindingElement != null) {
-          structureElementBindingsElement.appendChild(structureElementBindingElement);
-        }
-      }
-    }
-    return structureElementBindingsElement;
-  }
-
-  /**
-   * @param structureElementBinding
-   * @return
-   * @throws ValuesetNotFoundException 
-   */
-  private Element serializeStructureElementBinding(
-      StructureElementBinding structureElementBinding, Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    Element structureElementBindingElement = new Element("StructureElementBinding");
-    if(structureElementBinding != null && structureElementBinding.getChildren() != null && structureElementBinding.getChildren().size()>0) {
-      Element structureElementBindingsElement = this.serializeStructureElementBindings(structureElementBinding.getChildren(), valuesetNamesMap);
-      if(structureElementBindingsElement != null) {
-        structureElementBindingElement.appendChild(structureElementBindingsElement);
-      }
-    }
-    for(ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
-        Element valuesetBindingElement = this.serializeValuesetBinding(valuesetBinding,valuesetNamesMap);
-        if(valuesetBindingElement != null) {
-          structureElementBindingElement.appendChild(valuesetBindingElement);
-        }
-    }
-    return structureElementBindingElement;
-  }
-
-  /**
-   * @param valuesetBinding
-   * @param valuesetNamesMap
-   * @return
-   * @throws ValuesetNotFoundException 
-   */
-  private Element serializeValuesetBinding(ValuesetBinding valuesetBinding,
-      Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    if(valuesetBinding.getValuesetId() != null && !valuesetBinding.getValuesetId().isEmpty()) {
-      if(valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())){
-        Element valuesetBindingElement = new Element("ValuesetBinding");
-        valuesetBindingElement.addAttribute(new Attribute("id",valuesetBinding.getValuesetId()));
-        valuesetBindingElement.addAttribute(new Attribute("name",valuesetNamesMap.get(valuesetBinding.getValuesetId())));
-        valuesetBindingElement.addAttribute(new Attribute("strength",valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
-        valuesetBindingElement.addAttribute(new Attribute("strength",valuesetBinding.getValuesetLocations() != null ? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations()) : ""));
-        return valuesetBindingElement;
-      } else {
-        throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
-      }
-      
-    }
-    return null;
-  }
-
-  /**
-   * @param valuesetLocations
-   * @return locations as string
-   */
-  private String convertValuesetLocationsToString(Set<Integer> valuesetLocations) {
-    Set<String> valuesetLocationsString = new HashSet<>();
-    for(Integer location : valuesetLocations) {
-      valuesetLocationsString.add(String.valueOf(location));
-    }
-    return String.join(",", valuesetLocationsString);
+  public Element serializeResourceBinding(ResourceBinding binding, Map<String, String> valuesetNamesMap) throws SerializationException {
+    SerializableBinding serializableBinding = new SerializableBinding(binding, valuesetNamesMap);
+    return serializableBinding.serialize();
   }
 
   public AbstractDomain getAbstractDomain() {
