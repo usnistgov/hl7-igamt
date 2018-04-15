@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.auth.domain.Account;
-import gov.nist.hit.hl7.auth.domain.RegistrationRequest;
 import gov.nist.hit.hl7.auth.service.AccountService;
 import gov.nist.hit.hl7.auth.service.impl.AccountServiceImpl;
+import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 
 @Controller
 public class RegistrationController {

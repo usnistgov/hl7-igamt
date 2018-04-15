@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+
 @Service
 public class AuthenticationService {
 
@@ -58,7 +61,6 @@ public class AuthenticationService {
 			e.printStackTrace();
 			throw new AuthenticationException(e.getMessage());
 		}
-		// TODO Auto-generated method stub
 	}
 
 }

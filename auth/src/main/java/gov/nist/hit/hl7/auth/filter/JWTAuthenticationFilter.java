@@ -1,5 +1,8 @@
 package gov.nist.hit.hl7.auth.filter;
 import java.io.IOException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.util.Collections;
 import java.util.Date;
 
@@ -7,6 +10,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import gov.nist.hit.hl7.auth.util.crypto.CryptoUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,14 +26,16 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.auth.domain.LoginRequest;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import gov.nist.hit.hl7.auth.util.requests.*;
 public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFilter  {
 	
 	
 	@Autowired
 	private ShaPasswordEncoder encoder;
+	@Autowired
+	private CryptoUtil crypto;
 	
 	public JWTAuthenticationFilter(String url , AuthenticationManager authenticationManager) {
 		super(new AntPathRequestMatcher(url));
@@ -49,28 +55,25 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		LoginRequest creds = new LoginRequest();
 		
 		creds=  mapper.readValue(request.getInputStream(), LoginRequest.class);
-		System.out.println(creds);
-		System.out.println(creds.getPassword());
-		System.out.println(creds.getUsername());
 		
 		creds.setPassword(encoder.encodePassword(creds.getPassword(),creds.getUsername()));
-		
-		System.out.println(creds.getPassword());
-
 		Authentication ret = getAuthenticationManager().authenticate(new UsernamePasswordAuthenticationToken(creds.getUsername(),creds.getPassword(),Collections.emptyList()));
-		System.out.println(ret);
 		return ret;
 	}
 	@Override
 	protected void successfulAuthentication(HttpServletRequest request,  HttpServletResponse response,
-			 FilterChain chain,	Authentication authResult) throws IOException, ServletException {
-		// TODO Auto-generated method stub
-		
+			 FilterChain chain,	Authentication authResult) throws IOException, ServletException  {		
 		User springUser=(User) authResult.getPrincipal();
-		String jwt =Jwts.builder().setSubject(springUser.getUsername()).setExpiration(new Date(System.currentTimeMillis()+SecurityConstants.EXPIRATION_DATE)).
-				signWith(SignatureAlgorithm.HS256, SecurityConstants.SECRET).claim("roles", springUser.getAuthorities()).compact();
 		
-		response.addHeader(SecurityConstants.HEADER_STRING,jwt);
-//		super.successfulAuthentication(request, response, authResult);
+		String jwt;
+		try {
+			Key privateKey= crypto.priv();
+			jwt = Jwts.builder().setSubject(springUser.getUsername()).setExpiration(new Date(System.currentTimeMillis()+SecurityConstants.EXPIRATION_DATE)).
+					signWith(SignatureAlgorithm.RS256,privateKey).claim("roles", springUser.getAuthorities()).compact();
+			response.addHeader("Authorization",jwt);
+
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			e.printStackTrace();
+		}
 	}
 }

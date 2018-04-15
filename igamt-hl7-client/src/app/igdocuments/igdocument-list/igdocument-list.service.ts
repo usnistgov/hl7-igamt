@@ -14,12 +14,11 @@ export  class IgListService {
   getListByType(type){
 
    return  this.http.get('api/igdocuments/list/'+type);
-
-
-
-
-
-
-
   }
+
+  getMyIGs(){
+
+    return this.http.get("/api/igdocuments");
+  }
+
 }

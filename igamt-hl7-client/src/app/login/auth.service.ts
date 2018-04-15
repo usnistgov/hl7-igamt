@@ -6,7 +6,7 @@ import { Injectable } from '@angular/core';
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
-import {HttpHeaders, HttpClient} from "@angular/common/http";
+import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs";
 
 
@@ -24,14 +24,6 @@ export class AuthService {
 
   login(username,password): BehaviorSubject<boolean> {
     console.log(username);
-
-    // const httpOptions = {
-    //   headers: new HttpHeaders({
-    //     'Content-Type':  'application/json'
-    //   }),
-    // {observe:'response'}
-    // };
-
     this.http.post('/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
       console.log(data);
       let token = data.headers.get('Authorization');

@@ -1,66 +1,43 @@
 package gov.nist.hit.hl7.igamt.ig.model;
 
-
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import java.util.Date;
 
 public class TreeData {
 	
-	private String label; 
-	private DomainInfo domainInfo;
-	private String ext; 
-	private String description;
-	private Type types; 
-	private CompositeKey key;
+	private String label;
+	private Date dateUpdated;
+	private int position; 
 	
-	
-	
-	public TreeData(String label, DomainInfo domainInfo, String ext, String description, Type types, CompositeKey key) {
-		super();
-		this.label = label;
-		this.domainInfo = domainInfo;
-		this.ext = ext;
-		this.description = description;
-		this.types = types;
-		this.key = key;
-	}
+
 	public String getLabel() {
 		return label;
 	}
+
 	public void setLabel(String label) {
 		this.label = label;
 	}
-	public DomainInfo getDomainInfo() {
-		return domainInfo;
+
+	public TreeData() {
+		super();
+		// TODO Auto-generated constructor stub
 	}
-	public void setDomainInfo(DomainInfo domainInfo) {
-		this.domainInfo = domainInfo;
+
+	public Date getDateUpdated() {
+		return dateUpdated;
 	}
-	public String getExt() {
-		return ext;
+
+	public void setDateUpdated(Date dateUpdated) {
+		this.dateUpdated = dateUpdated;
 	}
-	public void setExt(String ext) {
-		this.ext = ext;
+
+	public int getPosition() {
+		return position;
 	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
-	public Type getTypes() {
-		return types;
-	}
-	public void setTypes(Type types) {
-		this.types = types;
-	}
-	public CompositeKey getKey() {
-		return key;
-	}
-	public void setKey(CompositeKey key) {
-		this.key = key;
-	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	} 
+
 
 	
 

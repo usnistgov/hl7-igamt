@@ -12,7 +12,8 @@ export class MyIgsComponent implements OnInit {
 
   constructor(private listService :IgListService, public router: Router ) {
 
-    listService.getListByType("USER").subscribe( res =>{
+    listService.getMyIGs().subscribe( res =>{
+      console.log(res);
        this.igs=res;
 
 

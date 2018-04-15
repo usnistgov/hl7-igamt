@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class testApi {
 	
-	@RequestMapping(value = "/testSecurity", method = RequestMethod.POST)
+	@RequestMapping(value = "/api/testSecurity", method = RequestMethod.POST)
 	public String tests() {
 		return "ok";
 	}

@@ -1,21 +1,64 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
+import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.TextSectionData;
+import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
+import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Link;
+import gov.nist.hit.hl7.igamt.shared.domain.Registry;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 @Service("igService")
 public class IgServiceImpl implements IgService{
 	
 	@Autowired
 	IgRepository igRepository;
+	
+	@Autowired 
+	DatatypeService datatypeService; 
+	
+	@Autowired
+	SegmentService segmentService;
+	
+	@Autowired
+	ConformanceProfileService conformanceProfileService;
+	
+	@Autowired
+	ProfileComponentService profileComponentService;
+	
+	
+	@Autowired
+	CompositeProfileStructureService compositeProfileServie;
+	
 
+	@Autowired
+	ValuesetService valueSetService;
+	
 	@Override
 	public Ig findById(CompositeKey id) {
 		// TODO Auto-generated method stub
@@ -39,5 +82,281 @@ public class IgServiceImpl implements IgService{
 		// TODO Auto-generated method stub
 		return igRepository.save(ig);
 	}
+
+	@Override
+	public List<Ig> findByUsername(String username) {
+		// TODO Auto-generated method stub
+		return igRepository.findByUsername(username);
+	}
+
+	@Override
+	public IGDisplay convertDomainToModel(Ig ig) {
+		// TODO Auto-generated method stub
+		IGDisplay igDisplay= new IGDisplay();
+		igDisplay.setMetadata(ig.getMetaData());
+		TreeNode start= new TreeNode();
+		
+		for(TextSection s: ig.getContent()) {
+			if(s.getType().equals(Type.TEXT)) {
+			TreeNode node =	createTextSectionNode(s);
+			start.getChildren().add(node);
+			}else if(s.getType().equals(Type.PROFILE)) {
+				TreeNode profileNode=createProfileNode(s);
+				start.getChildren().add(profileNode);
+			}	
+		}
+		
+		
+		return igDisplay;
+	}
+
+	private TreeNode createProfileNode(TextSection s) {
+		
+		TreeNode t = new TreeNode();
+		TextSectionData sectionTree= new TextSectionData();
+		
+		//sectionTree.setDateUpdated(s.getDateUpdated());
+		sectionTree.setLabel(s.getLabel());
+		sectionTree.setPosition(s.getPosition());
+		sectionTree.setContent(s.getDescription());
+		t.setData(sectionTree);
+		
+		
+		if(s.getChildren() !=null && !s.getChildren().isEmpty()) {
+			
+			List<TreeNode> children  = new ArrayList<TreeNode>();
+			
+			for (Section section : s.getChildren()) {
+				if(section instanceof Registry) {
+					
+					Registry registry = (Registry)section;
+					if( registry.getChildren() !=null && !registry.getChildren().isEmpty()) {
+						
+						Type type = s.getType();
+						List<TreeNode> sectionChildren= new ArrayList<TreeNode>();
+
+						if(type.equals(Type.PROFILECOMPONENTREGISTRY)) {
+					
+							sectionChildren= createPcsNodes(registry.getChildren());
+						}else if(type.equals(Type.CONFORMANCEPROFILEREGISTRY)) {
+							sectionChildren= createCpsNodes(registry.getChildren());
+
+						}else if( type.equals(Type.COMPOSITEPROFILEREGISTRY)) {
+							sectionChildren= createCompositePrfileNodes(registry.getChildren());
+
+						}else if(type.equals(Type.SEGMENTRGISTRY)) {
+							sectionChildren= createSegmentsNodes(registry.getChildren());
+
+						}else if(type.equals(Type.DATATYPEREGISTRY)) {
+							sectionChildren= createDatatypesNodes(registry.getChildren());
+
+						}else if( type.equals(Type.VALUESETREGISTRY)) {
+							sectionChildren= createValueSetsNodes(registry.getChildren());
+
+						}
+						
+					}
+					
+					
+				}
+			}
+			
+		}
+		
+		
+		return t;
+		
+	}
+
+	private List<TreeNode> createCpsNodes(Set<Link> children) {
+		// TODO Auto-generated method stub
+		// TODO Auto-generated method stub
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+			ConformanceProfile confromanceProfile= conformanceProfileService.findByKey(l.getId());
+		if(confromanceProfile !=null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(confromanceProfile.getName());
+			data.setDescription(confromanceProfile.getDescription());
+			data.setDomainInfo(confromanceProfile.getDomainInfo());
+			data.setPosition(l.getPosition());
+			data.setKey(l.getId());
+			data.setType(Type.CONFORMANCEPROFILE);
+			addChildrenByType(node, Type.CONFORMANCEPROFILE);
+			node.setData(data);
+			Nodes.add(node);
+		 }
+		}
+		return Nodes;
+	}
+
+	private List<TreeNode> createValueSetsNodes(Set<Link> children) {
+		
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+		Valueset vs= 	valueSetService.findById(l.getId());
+		if(vs !=null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(vs.getBindingIdentifier());
+			data.setDescription(vs.getName());
+			data.setPosition(l.getPosition());
+			data.setDomainInfo(vs.getDomainInfo());
+
+			data.setKey(l.getId());
+			data.setType(Type.VALUESET);
+			addChildrenByType(node, Type.VALUESET);
+			node.setData(data);
+			Nodes.add(node);
+		 }
+		}
+		return Nodes;
+		
+	
+	}
+
+	private void addChildrenByType(TreeNode v, Type valueset) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private List<TreeNode> createDatatypesNodes(Set<Link> children) {
+		// TODO Auto-generated method stub
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+		Datatype dt= 	datatypeService.findByKey(l.getId());
+		if(dt !=null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(dt.getName());
+			data.setDescription(dt.getName());
+			data.setPosition(l.getPosition());
+			data.setKey(l.getId());
+			data.setDomainInfo(dt.getDomainInfo());
+			data.setType(Type.DATATYPE);
+			addChildrenByType(node, Type.DATATYPE);
+			node.setData(data);
+			Nodes.add(node);
+		 }
+		}
+		return Nodes;
+	}
+
+	private List<TreeNode> createSegmentsNodes(Set<Link> children) {
+		// TODO Auto-generated method stub
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+		Segment segment= segmentService.findByKey(l.getId());
+		if(segment !=null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(segment.getName());
+			data.setExt(segment.getExt());
+			data.setDescription(segment.getName());
+			data.setPosition(l.getPosition());
+			data.setDomainInfo(segment.getDomainInfo());
+
+			data.setKey(l.getId());
+			data.setType(Type.SEGMENT);
+			addChildrenByType(node, Type.SEGMENT);
+			node.setData(data);
+			Nodes.add(node);
+		 }
+		}
+		return Nodes;
+	}
+
+	private List<TreeNode> createCompositePrfileNodes(Set<Link> children) {
+		
+		// TODO Auto-generated method stub
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+		CompositeProfileStructure compositeProfile= compositeProfileServie.findByKey(l.getId());
+		if(compositeProfile !=null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(compositeProfile.getName());
+			data.setDescription(compositeProfile.getName());
+			data.setDomainInfo(compositeProfile.getDomainInfo());
+			data.setPosition(l.getPosition());
+			data.setKey(l.getId());
+			data.setType(Type.COMPOSITEPROFILE);
+			addChildrenByType(node, Type.COMPOSITEPROFILE);
+			node.setData(data);
+			Nodes.add(node);
+		  }
+		}
+		return Nodes;
+	}
+
+	private List<TreeNode> createPcsNodes(Set<Link> children) {
+		// TODO Auto-generated method stub
+		List<TreeNode> Nodes= new ArrayList<TreeNode>();
+		// TODO Auto-generated method stub
+		for(Link l: children) {
+		ProfileComponent profileComponent= profileComponentService.findByCompositeKey(l.getId());
+		if(profileComponent != null) {
+			TreeNode node = new TreeNode();
+			ElementTreeData data = new ElementTreeData();
+			data.setLabel(profileComponent.getName());
+			data.setDescription(profileComponent.getName());
+			data.setDomainInfo(profileComponent.getDomainInfo());
+			data.setPosition(l.getPosition());
+			data.setKey(l.getId());
+			data.setType(Type.COMPOSITEPROFILE);
+			addChildrenByType(node, Type.COMPOSITEPROFILE);
+			node.setData(data);
+			Nodes.add(node);
+		 }
+		}
+		return Nodes;
+	}
+
+	private TreeNode createTextSectionNode(TextSection s) {	
+		TreeNode t = new TreeNode();
+		TextSectionData sectionTree= new TextSectionData();
+		
+		//sectionTree.setDateUpdated(s.getDateUpdated());
+		sectionTree.setLabel(s.getLabel());
+		sectionTree.setPosition(s.getPosition());
+		sectionTree.setContent(s.getDescription());
+		t.setData(sectionTree);
+		
+		
+		if(s.getChildren() !=null && !s.getChildren().isEmpty()) {
+			
+			List<TreeNode> children  = new ArrayList<TreeNode>();
+			
+			for (Section section : s.getChildren()) {
+				if(s instanceof TextSection) {
+					TextSection sect= (TextSection)section;
+					children.add(createTextSectionNode(sect));
+				}
+				
+			}
+			t.setChildren(children);
+			
+		}
+		
+		
+		return t;
+		
+		
+		
+	}
+
+	@Override
+	public Ig ConvertModelToDomain(IGDisplay ig) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
 
 }

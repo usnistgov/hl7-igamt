@@ -1,19 +1,17 @@
 package gov.nist.hl7.igamt.shared.authentication;
 
-import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.ModelAndView;
+
+import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
 
 @RestController
 public class AuthenticationController {
@@ -51,9 +49,7 @@ public class AuthenticationController {
 		
 		
 		@RequestMapping(value = "/register", method = RequestMethod.POST)
-		public ResponseEntity login(@RequestBody RegistrationRequest user)  throws AuthenticationException{
-			
-			
+		public ResponseEntity register(@RequestBody RegistrationRequest user)  throws AuthenticationException{			
 			try {
 				authService.register(user);
 				HttpHeaders headers = new HttpHeaders();

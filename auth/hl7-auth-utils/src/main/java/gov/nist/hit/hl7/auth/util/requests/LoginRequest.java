@@ -1,4 +1,5 @@
-package gov.nist.hit.hl7.auth.domain;
+package gov.nist.hit.hl7.auth.util.requests;
+
 
 public class LoginRequest {
 	public LoginRequest() {

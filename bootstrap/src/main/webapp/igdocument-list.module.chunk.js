@@ -237,6 +237,9 @@ var IgListService = (function () {
     IgListService.prototype.getListByType = function (type) {
         return this.http.get('api/igdocuments/list/' + type);
     };
+    IgListService.prototype.getMyIGs = function () {
+        return this.http.get("/api/igdocuments");
+    };
     IgListService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
@@ -280,7 +283,8 @@ var MyIgsComponent = (function () {
         var _this = this;
         this.listService = listService;
         this.router = router;
-        listService.getListByType("USER").subscribe(function (res) {
+        listService.getMyIGs().subscribe(function (res) {
+            console.log(res);
             _this.igs = res;
         });
     }

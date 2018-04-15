@@ -1095,12 +1095,6 @@ var AuthService = (function () {
     AuthService.prototype.login = function (username, password) {
         var _this = this;
         console.log(username);
-        // const httpOptions = {
-        //   headers: new HttpHeaders({
-        //     'Content-Type':  'application/json'
-        //   }),
-        // {observe:'response'}
-        // };
         this.http.post('/login', { username: username, password: password }, { observe: 'response' }).subscribe(function (data) {
             console.log(data);
             var token = data.headers.get('Authorization');
@@ -1356,7 +1350,11 @@ var TokenInterceptor = (function () {
     }
     TokenInterceptor.prototype.intercept = function (request, next) {
         console.log("here");
-        request = request.clone({});
+        request = request.clone({
+            setHeaders: {
+                Authorization: localStorage.getItem('currentUser')
+            }
+        });
         return next.handle(request);
     };
     TokenInterceptor = __decorate([
