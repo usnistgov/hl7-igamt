@@ -12,6 +12,10 @@ export  class TocService{
   constructor(private http : Http){
   }
 
+
+
+
+
   buildTreeFromIgDocument=function (igdocument) {
     var treeData= [];
     igdocument["content"]["data"]["referenceType"]="root";

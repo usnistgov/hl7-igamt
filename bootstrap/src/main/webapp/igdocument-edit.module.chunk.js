@@ -89,8 +89,8 @@ module.exports = "<!--HEADER-->\n<!--<ig-header></ig-header>-->\n\n<div class=\"
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__ = __webpack_require__("../../../../../src/app/service/workspace/workspace.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_http__ = __webpack_require__("../../../http/esm5/http.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -106,16 +106,15 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 var IgDocumentEditComponent = (function () {
-    function IgDocumentEditComponent(route, _ws, $http, dbService) {
-        var _this = this;
+    function IgDocumentEditComponent(route, _ws, http, dbService) {
+        // this.ig = this._ws.getCurrent(Entity.IG).subscribe(data => {this.ig=data
+        //
+        // //  this.dbService.init(this._ig);
+        // });
         this.route = route;
         this._ws = _ws;
-        this.$http = $http;
+        this.http = http;
         this.dbService = dbService;
-        this.ig = this._ws.getCurrent(__WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__["a" /* Entity */].IG).subscribe(function (data) {
-            _this.ig = data;
-            _this.dbService.init(_this._ig);
-        });
     }
     ;
     Object.defineProperty(IgDocumentEditComponent.prototype, "ig", {
@@ -172,8 +171,7 @@ var IgDocumentEditComponent = (function () {
         }),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"],
             __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__["b" /* WorkspaceService */],
-            __WEBPACK_IMPORTED_MODULE_3__angular_http__["a" /* Http */],
-            __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */]])
+            __WEBPACK_IMPORTED_MODULE_4__angular_common_http__["b" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */]])
     ], IgDocumentEditComponent);
     return IgDocumentEditComponent;
 }());
@@ -427,7 +425,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/igdocuments/igdocument-edit/toc/toc.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<p-tree [value]=\"treeData\" draggableNodes=\"true\" droppableNodes=\"true\" selectionMode=\"single\" styleClass=\"toc\">\n  <ng-template let-node  pTemplate=\"default\">\n\n<div *ngIf=\"node.data\">\n    <li   *ngIf=\"node.data.referenceType==='root'\" [contextMenu]=\"basicMenu\"\n         pDroppable=\"['section', 'profile']\" >\n      <span  (click)=\"print(node)\">{{node.data.sectionTitle}}</span>\n      <!--<p-contextMenu  [target]=\"root\" appendTo=\"body\" [model]=\"rootMenu\"></p-contextMenu>-->\n\n      <!--<context-menu #basicMenu>-->\n        <!--<ng-template contextMenuItem (execute)=\"AddSection(node)\">-->\n          <!--Add Section-->\n        <!--</ng-template>-->\n      <!--</context-menu>-->\n    </li>\n\n\n    <li  *ngIf=\"node.data.referenceType=='section'\"\n         pDraggable=\"section\" pDroppable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n    <li  *ngIf=\"node.data.referenceType=='profile'\"\n         pDraggable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n\n    <li  *ngIf=\"node.data.referenceType=='messages'\"\n       pDroppable=\"section\">\n        <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n\n    <li  *ngIf=\"node.data.referenceType=='segments'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n     <li  *ngIf=\"node.data.referenceType=='datatypelibrary'\"\n       pDroppable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n  <li  *ngIf=\"node.data.referenceType=='tablelibrary'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n\n\n  <li  *ngIf=\"node.data.referenceType=='compositeprofiles'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n  <li  *ngIf=\"node.data.referenceType=='profilecomponents'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n\n  <li *ngIf=\"node.data.ref\">\n   <button (click)=\"setActualNode(node)\">Click</button>\n    <display-label [elm]=\"node.data.ref\" ></display-label>\n  </li>\n\n</div>\n  </ng-template>\n\n\n\n</p-tree>\n\n\n"
+module.exports = "<p-tree [value]=\"treeData\" draggableNodes=\"true\" droppableNodes=\"true\" selectionMode=\"single\" styleClass=\"toc\">\n  <ng-template let-node  pTemplate=\"default\">\n\n<div *ngIf=\"node.data\">\n    <li   *ngIf=\"node.data.type==='root'\"\n         pDroppable=\"['section', 'profile']\" >\n      <span  (click)=\"print(node)\">{{node.data.sectionTitle}}</span>\n      <!--<p-contextMenu  [target]=\"root\" appendTo=\"body\" [model]=\"rootMenu\"></p-contextMenu>-->\n\n      <!--<context-menu #basicMenu>-->\n        <!--<ng-template contextMenuItem (execute)=\"AddSection(node)\">-->\n          <!--Add Section-->\n        <!--</ng-template>-->\n      <!--</context-menu>-->\n    </li>\n\n\n    <li  *ngIf=\"node.data.type=='section'\"\n         pDraggable=\"section\" pDroppable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n    <li  *ngIf=\"node.data.type=='profile'\"\n         pDraggable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n\n    <li  *ngIf=\"node.data.type=='messages'\"\n       pDroppable=\"section\">\n        <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n\n    <li  *ngIf=\"node.data.type=='segments'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n     <li  *ngIf=\"node.data.type=='datatypelibrary'\"\n       pDroppable=\"section\">\n      <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n    </li>\n\n  <li  *ngIf=\"node.data.type=='tablelibrary'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n\n\n  <li  *ngIf=\"node.data.type=='compositeprofiles'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n  <li  *ngIf=\"node.data.type=='profilecomponents'\"\n       pDroppable=\"section\">\n    <span (click)=\"print(node)\" >{{getPath(node)+\".\"+node.data.sectionTitle}}</span>\n  </li>\n\n  <!--<li *ngIf=\"node.data.ref\">-->\n   <!--<button (click)=\"setActualNode(node)\">Click</button>-->\n    <!--<display-label [elm]=\"node.data.ref\" ></display-label>-->\n  <!--</li>-->\n\n</div>\n  </ng-template>\n\n\n\n</p-tree>\n\n\n"
 
 /***/ }),
 
@@ -555,12 +553,12 @@ var TocComponent = (function () {
             return false;
         }
         if (dropNode && dropNode.parent && dropNode.parent.data) {
-            if (dragNode.data.referenceType == 'profile') {
+            if (dragNode.data.type == 'profile') {
                 console.log(dropNode);
-                return dropNode.parent.data.referenceType == 'root';
+                return dropNode.parent.data.type == 'ig';
             }
-            else if (dragNode.data.referenceType == 'section') {
-                return dropNode.parent.data.referenceType == 'root' || dropNode.parent.data.referenceType == 'section';
+            else if (dragNode.data.type == 'section') {
+                return dropNode.parent.data.type == 'root' || dropNode.parent.data.type == 'section';
             }
         }
         else {

@@ -1,16 +1,14 @@
-<div style="align:center; width:90%;
-margin-left:200px;
+<div style="align:center; width:100%;
 margin-right:auto;margin-top: 30px">
 
-<p-orderList [value]="igs"  [responsive]="true" header="User IG Document" styleClass="list-ig"
+<p-orderList [value]="igs"  [responsive]="true" header="User IG Document"
              filter="filter" filterBy="metaData.title" filterPlaceholder="  Filter by title" dragdrop="true" dragdropScope="igdocument">
   <ng-template let-ig pTemplate="item">
     <div style="height: 100px;">
-    <div routerLink="{{'/ig-documents/igdocuments-edit/'+ig.id}}" [queryParams]="{ readOnly: false }"><a>{{ig.metaData.title}} </a></div>
+    <div routerLink="{{'/ig-documents/igdocuments-edit/'+ig.id.id}}" [queryParams]="{ readOnly: false }"><a>{{ig.metaData.title}} </a></div>
 
-    <button  style="float: right" (click)="open(ig,false)" class="btn btn-sm btn-warning">Edit</button>
-    <button   style="float: right" (click)="open(ig,true)" pButton type="button" class="btn btn-sm btn-primary">Read</button>
-      <button pButton type="button" class="ui-button-info"></button>
+      <button  class="ui-button-info" pButton style="float: right" (click)="open(ig,false)" >Edit</button>
+      <button   style="float: right" (click)="open(ig,true)" pButton type="button">Read</button>
 
     </div>
   </ng-template>

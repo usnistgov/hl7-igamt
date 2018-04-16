@@ -17,6 +17,7 @@ import {PickListModule} from 'primeng/primeng';
 
 
 import {IgListService} from "./igdocument-list.service";
+import {MyIGsresolver} from "../igdocument-list/my-igs/my-igs.resolver";
 @NgModule({
 	imports: [
 		CommonModule,
@@ -29,6 +30,6 @@ import {IgListService} from "./igdocument-list.service";
 	declarations: [
 		IgDocumentListComponent, MyIgsComponent, PreloadedIgsComponent, SharedIgsComponent, AllIgsComponent
 	],
-  providers:[IgListService]
+  providers:[IgListService,MyIGsresolver]
 })
 export class IgDocumentListModule {}

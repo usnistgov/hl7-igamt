@@ -15,4 +15,6 @@ import {RouterModule} from '@angular/router';
 		RouterModule
 	]
 })
-export class IgDocumentRoutingModule {}
+export class IgDocumentRoutingModule {
+
+}

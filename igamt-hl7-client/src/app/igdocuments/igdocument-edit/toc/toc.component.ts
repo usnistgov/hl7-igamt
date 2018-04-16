@@ -142,11 +142,11 @@ export class TocComponent {
     }
     if(dropNode&&dropNode.parent&&dropNode.parent.data) {
 
-      if (dragNode.data.referenceType == 'profile') {
+      if (dragNode.data.type == 'profile') {
         console.log(dropNode);
-        return dropNode.parent.data.referenceType == 'root';
-      } else if (dragNode.data.referenceType == 'section') {
-        return dropNode.parent.data.referenceType=='root'|| dropNode.parent.data.referenceType=='section';
+        return dropNode.parent.data.type == 'ig';
+      } else if (dragNode.data.type == 'section') {
+        return dropNode.parent.data.type=='root'|| dropNode.parent.data.type=='section';
 
       }
     }else {

@@ -53,12 +53,14 @@ var AllIgsComponent = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__preloaded_igs_preloaded_igs_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/preloaded-igs/preloaded-igs.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__shared_igs_shared_igs_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/shared-igs/shared-igs.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__all_igs_all_igs_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/all-igs/all-igs.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__my_igs_my_igs_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.resolver.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
 
 
 
@@ -80,7 +82,9 @@ var IgDocumentListRoutingModule = (function () {
                             {
                                 path: '',
                                 children: [
-                                    { path: 'my-igs', component: __WEBPACK_IMPORTED_MODULE_3__my_igs_my_igs_component__["a" /* MyIgsComponent */] },
+                                    { path: 'my-igs', component: __WEBPACK_IMPORTED_MODULE_3__my_igs_my_igs_component__["a" /* MyIgsComponent */], resolve: {
+                                            res: __WEBPACK_IMPORTED_MODULE_7__my_igs_my_igs_resolver__["a" /* MyIGsresolver */]
+                                        } },
                                     { path: 'preloaded-igs', component: __WEBPACK_IMPORTED_MODULE_4__preloaded_igs_preloaded_igs_component__["a" /* PreloadedIgsComponent */] },
                                     { path: 'shared-igs', component: __WEBPACK_IMPORTED_MODULE_5__shared_igs_shared_igs_component__["a" /* SharedIgsComponent */] },
                                     { path: 'all-igs', component: __WEBPACK_IMPORTED_MODULE_6__all_igs_all_igs_component__["a" /* AllIgsComponent */] },
@@ -163,6 +167,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_primeng_primeng__ = __webpack_require__("../../../../primeng/primeng.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8_primeng_primeng___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_8_primeng_primeng__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__igdocument_list_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/igdocument-list.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__igdocument_list_my_igs_my_igs_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.resolver.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -185,6 +190,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 //
 // import {MatIconModule} from '@angular/material/icon';
 
+
 var IgDocumentListModule = (function () {
     function IgDocumentListModule() {
     }
@@ -199,7 +205,7 @@ var IgDocumentListModule = (function () {
             declarations: [
                 __WEBPACK_IMPORTED_MODULE_2__igdocument_list_component__["a" /* IgDocumentListComponent */], __WEBPACK_IMPORTED_MODULE_3__my_igs_my_igs_component__["a" /* MyIgsComponent */], __WEBPACK_IMPORTED_MODULE_4__preloaded_igs_preloaded_igs_component__["a" /* PreloadedIgsComponent */], __WEBPACK_IMPORTED_MODULE_5__shared_igs_shared_igs_component__["a" /* SharedIgsComponent */], __WEBPACK_IMPORTED_MODULE_6__all_igs_all_igs_component__["a" /* AllIgsComponent */]
             ],
-            providers: [__WEBPACK_IMPORTED_MODULE_9__igdocument_list_service__["a" /* IgListService */]]
+            providers: [__WEBPACK_IMPORTED_MODULE_9__igdocument_list_service__["a" /* IgListService */], __WEBPACK_IMPORTED_MODULE_10__igdocument_list_my_igs_my_igs_resolver__["a" /* MyIGsresolver */]]
         })
     ], IgDocumentListModule);
     return IgDocumentListModule;
@@ -254,7 +260,7 @@ var IgListService = (function () {
 /***/ "../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<!--<div style=\"align:center; width:90%;-->\n<!--margin-left:200px;-->\n<!--margin-right:auto;margin-top: 30px\">-->\n\n<!--<p-orderList [value]=\"igs\"  [responsive]=\"true\" header=\"User IG Document\" styleClass=\"list-ig\"-->\n             <!--filter=\"filter\" filterBy=\"metaData.title\" filterPlaceholder=\"  Filter by title\" dragdrop=\"true\" dragdropScope=\"igdocument\">-->\n  <!--<ng-template let-ig pTemplate=\"item\">-->\n    <!--<div style=\"height: 100px;\">-->\n    <!--<div routerLink=\"{{'/ig-documents/igdocuments-edit/'+ig.id}}\" [queryParams]=\"{ readOnly: false }\"><a>{{ig.metaData.title}} </a></div>-->\n\n    <!--<button  style=\"float: right\" (click)=\"open(ig,false)\" class=\"btn btn-sm btn-warning\">Edit</button>-->\n    <!--<button   style=\"float: right\" (click)=\"open(ig,true)\" pButton type=\"button\" class=\"btn btn-sm btn-primary\">Read</button>-->\n      <!--<button pButton type=\"button\" class=\"ui-button-info\"></button>-->\n\n    <!--</div>-->\n  <!--</ng-template>-->\n<!--</p-orderList>-->\n<!--</div>-->\n\n\n"
+module.exports = "<div style=\"align:center; width:100%;\nmargin-right:auto;margin-top: 30px\">\n\n<p-orderList [value]=\"igs\"  [responsive]=\"true\" header=\"User IG Document\"\n             filter=\"filter\" filterBy=\"metaData.title\" filterPlaceholder=\"  Filter by title\" dragdrop=\"true\" dragdropScope=\"igdocument\">\n  <ng-template let-ig pTemplate=\"item\">\n    <div style=\"height: 100px;\">\n    <div routerLink=\"{{'/ig-documents/igdocuments-edit/'+ig.id.id}}\" [queryParams]=\"{ readOnly: false }\"><a>{{ig.metaData.title}} </a></div>\n\n      <button  class=\"ui-button-info\" pButton style=\"float: right\" (click)=\"open(ig,false)\" >Edit</button>\n      <button   style=\"float: right\" (click)=\"open(ig,true)\" pButton type=\"button\">Read</button>\n\n    </div>\n  </ng-template>\n</p-orderList>\n</div>\n\n\n"
 
 /***/ }),
 
@@ -264,8 +270,7 @@ module.exports = "<!--<div style=\"align:center; width:90%;-->\n<!--margin-left:
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyIgsComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__igdocument_list_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/igdocument-list.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -277,29 +282,68 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 
 
-
 var MyIgsComponent = (function () {
-    function MyIgsComponent(listService, router) {
+    function MyIgsComponent(activeRoute) {
         var _this = this;
-        this.listService = listService;
-        this.router = router;
-        listService.getMyIGs().subscribe(function (res) {
-            console.log(res);
-            _this.igs = res;
+        this.activeRoute = activeRoute;
+        this.activeRoute.data.map(function (data) { return data.res; }).subscribe(function (x) {
+            _this.igs = x;
         });
     }
     MyIgsComponent.prototype.ngOnInit = function () {
     };
     MyIgsComponent.prototype.open = function (ig, readnly) {
-        this.router.navigate(['/ig-documents/igdocuments-edit/' + ig.id], { queryParams: { readOnly: "true" } });
+        //this.router.navigate(['/ig-documents/igdocuments-edit/'+ig.id.id],{ queryParams: { readOnly: "true" } });
     };
     MyIgsComponent = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.component.html")
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__igdocument_list_service__["a" /* IgListService */], __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"]])
     ], MyIgsComponent);
     return MyIgsComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/igdocuments/igdocument-list/my-igs/my-igs.resolver.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return MyIGsresolver; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
+/**
+ * Created by ena3 on 4/16/18.
+ */
+/**
+ * Created by ena3 on 12/6/17.
+ */
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+var MyIGsresolver = (function () {
+    function MyIGsresolver(http) {
+        this.http = http;
+    }
+    MyIGsresolver.prototype.resolve = function (route, rstate) {
+        return this.http.get("/api/igdocuments");
+    };
+    MyIGsresolver = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
+    ], MyIGsresolver);
+    return MyIGsresolver;
 }());
 
 

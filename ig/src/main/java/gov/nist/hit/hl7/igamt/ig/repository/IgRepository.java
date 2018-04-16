@@ -12,6 +12,11 @@ public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
 	
 	
 	List<Ig> findByUsername(String username);
+	
+	Ig findByIdId(String ig);
+	
+	Ig findByIdVersion(int version);
+
 		
 
 }

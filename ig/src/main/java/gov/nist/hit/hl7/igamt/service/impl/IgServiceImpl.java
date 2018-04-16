@@ -14,7 +14,6 @@ import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructure
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
@@ -362,7 +361,7 @@ public class IgServiceImpl implements IgService{
 	@Override
 	public List<Ig> findLatestByUsername(String username) {
 		// TODO Auto-generated method stub
-		List<Ig> allUsersIgs=findLatestByUsername(username);
+		List<Ig> allUsersIgs=this.findLatestByUsername(username);
 		
 		Map<String, Ig> map = new HashMap<String , Ig>();
 		
@@ -382,6 +381,18 @@ public class IgServiceImpl implements IgService{
 			
 		}
 		return new ArrayList<Ig>(map.values());
+	}
+
+	@Override
+	public Ig findByIdId(String id) {
+		// TODO Auto-generated method stub
+		return igRepository.findByIdId(id);
+	}
+
+	@Override
+	public Ig findByIdVersion(int version) {
+		// TODO Auto-generated method stub
+		return igRepository.findByIdVersion(version);
 	}
 
 

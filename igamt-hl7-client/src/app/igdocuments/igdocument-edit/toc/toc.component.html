@@ -2,7 +2,7 @@
   <ng-template let-node  pTemplate="default">
 
 <div *ngIf="node.data">
-    <li   *ngIf="node.data.referenceType==='root'" [contextMenu]="basicMenu"
+    <li   *ngIf="node.data.type==='root'"
          pDroppable="['section', 'profile']" >
       <span  (click)="print(node)">{{node.data.sectionTitle}}</span>
       <!--<p-contextMenu  [target]="root" appendTo="body" [model]="rootMenu"></p-contextMenu>-->
@@ -15,52 +15,52 @@
     </li>
 
 
-    <li  *ngIf="node.data.referenceType=='section'"
+    <li  *ngIf="node.data.type=='section'"
          pDraggable="section" pDroppable="section">
       <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
     </li>
 
-    <li  *ngIf="node.data.referenceType=='profile'"
+    <li  *ngIf="node.data.type=='profile'"
          pDraggable="section">
       <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
     </li>
 
 
-    <li  *ngIf="node.data.referenceType=='messages'"
+    <li  *ngIf="node.data.type=='messages'"
        pDroppable="section">
         <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
     </li>
 
 
-    <li  *ngIf="node.data.referenceType=='segments'"
+    <li  *ngIf="node.data.type=='segments'"
        pDroppable="section">
     <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
     </li>
 
-     <li  *ngIf="node.data.referenceType=='datatypelibrary'"
+     <li  *ngIf="node.data.type=='datatypelibrary'"
        pDroppable="section">
       <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
     </li>
 
-  <li  *ngIf="node.data.referenceType=='tablelibrary'"
+  <li  *ngIf="node.data.type=='tablelibrary'"
        pDroppable="section">
     <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
   </li>
 
 
-  <li  *ngIf="node.data.referenceType=='compositeprofiles'"
+  <li  *ngIf="node.data.type=='compositeprofiles'"
        pDroppable="section">
     <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
   </li>
-  <li  *ngIf="node.data.referenceType=='profilecomponents'"
+  <li  *ngIf="node.data.type=='profilecomponents'"
        pDroppable="section">
     <span (click)="print(node)" >{{getPath(node)+"."+node.data.sectionTitle}}</span>
   </li>
 
-  <li *ngIf="node.data.ref">
-   <button (click)="setActualNode(node)">Click</button>
-    <display-label [elm]="node.data.ref" ></display-label>
-  </li>
+  <!--<li *ngIf="node.data.ref">-->
+   <!--<button (click)="setActualNode(node)">Click</button>-->
+    <!--<display-label [elm]="node.data.ref" ></display-label>-->
+  <!--</li>-->
 
 </div>
   </ng-template>

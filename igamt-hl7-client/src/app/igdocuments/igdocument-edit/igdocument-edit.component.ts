@@ -4,6 +4,7 @@ import {WorkspaceService, Entity} from "../../service/workspace/workspace.servic
 import {Http} from "@angular/http";
 import {MenuItem} from "primeng/components/common/menuitem";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
@@ -18,12 +19,15 @@ export class IgDocumentEditComponent {
 
   constructor(private route : ActivatedRoute,
               private _ws   : WorkspaceService,
-              private $http : Http,
-              private dbService: IndexedDbService){
-    this.ig = this._ws.getCurrent(Entity.IG).subscribe(data => {this.ig=data
+              private http: HttpClient,      private dbService: IndexedDbService){
+    // this.ig = this._ws.getCurrent(Entity.IG).subscribe(data => {this.ig=data
+    //
+    // //  this.dbService.init(this._ig);
+    // });
 
-      this.dbService.init(this._ig);
-    });
+
+
+
   };
 
   @Input() set ig(doc){
