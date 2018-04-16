@@ -1350,11 +1350,13 @@ var TokenInterceptor = (function () {
     }
     TokenInterceptor.prototype.intercept = function (request, next) {
         console.log("here");
-        request = request.clone({
-            setHeaders: {
-                Authorization: localStorage.getItem('currentUser')
-            }
-        });
+        if (localStorage.getItem('currentUser')) {
+            request = request.clone({
+                setHeaders: {
+                    Authorization: localStorage.getItem('currentUser')
+                }
+            });
+        }
         return next.handle(request);
     };
     TokenInterceptor = __decorate([

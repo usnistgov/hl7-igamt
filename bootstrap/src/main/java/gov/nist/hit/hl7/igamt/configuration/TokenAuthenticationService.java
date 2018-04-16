@@ -31,14 +31,16 @@ public class TokenAuthenticationService {
 	public UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) throws ExpiredJwtException, UnsupportedJwtException, MalformedJwtException, SignatureException, IllegalArgumentException, FileNotFoundException, NoSuchAlgorithmException, InvalidKeySpecException, IOException {
 		
 		
-		String jwt = request.getHeader(SecurityConstants.HEADER_STRING);
+		String jwt = request.getHeader("Authorization");
 		if(jwt != null &&!jwt.isEmpty()) {
-		Claims claims = Jwts.parser().setSigningKey(crypto.priv()).parseClaimsJws(jwt).getBody();
+		Claims claims = Jwts.parser().setSigningKey(crypto.pub()).parseClaimsJws(jwt).getBody();
 		String username= claims.getSubject();
+		System.out.println(username);
 		ArrayList<Map<String,String>> roles = (ArrayList<Map<String, String>>) claims.get("roles");
 		
 		Collection<GrantedAuthority> authorities = new ArrayList<>();
 		roles.forEach(r ->{
+			System.out.println(r);
 			authorities.add(new SimpleGrantedAuthority(r.get("authority")));
 		});
 		UsernamePasswordAuthenticationToken authenticatedUser= new UsernamePasswordAuthenticationToken(username, jwt,authorities);

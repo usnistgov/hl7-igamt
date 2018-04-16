@@ -20,6 +20,8 @@ public interface IgService {
 	  public List<Ig> findByUsername(String username);
 	  public IGDisplay convertDomainToModel(Ig ig);
 	  public Ig ConvertModelToDomain(IGDisplay ig);
+	  public List<Ig> findLatestByUsername(String username);
+
 
 
 }

@@ -9,12 +9,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.GenericFilterBean;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
@@ -22,29 +24,52 @@ import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
 @Component
-public class JWTAuthenticationFilter extends GenericFilterBean {
+public class JWTAuthenticationFilter extends OncePerRequestFilter {
 	
 	@Autowired
 	private TokenAuthenticationService tokenService;
 
+//	@Override
+//	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+//		UsernamePasswordAuthenticationToken authentication;
+//		try {
+//			authentication = tokenService.getAuthentication((HttpServletRequest) request);
+//			if(authentication ==null) {
+//				filterChain.doFilter(request,response);
+//			}else {
+//				SecurityContextHolder.getContext().setAuthentication(authentication);
+//			}
+//
+//		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException
+//				| IllegalArgumentException | NoSuchAlgorithmException | InvalidKeySpecException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+//	
+//		
+//	
+//	}
+
 	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
 		UsernamePasswordAuthenticationToken authentication;
 		try {
 			authentication = tokenService.getAuthentication((HttpServletRequest) request);
 			if(authentication ==null) {
-				filterChain.doFilter(request,response);
+				filterChain.doFilter(request,response) ; return;
+			}else {
+				SecurityContextHolder.getContext().setAuthentication(authentication);
+				filterChain.doFilter(request,response) ;
+
 			}
-			SecurityContextHolder.getContext().setAuthentication(authentication);
-			filterChain.doFilter(request, response);
+
 		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException | SignatureException
 				| IllegalArgumentException | NoSuchAlgorithmException | InvalidKeySpecException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-	
-		
-	
 	}
 }

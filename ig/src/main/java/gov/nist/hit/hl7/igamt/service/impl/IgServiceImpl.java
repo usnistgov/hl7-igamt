@@ -1,7 +1,9 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -355,6 +357,31 @@ public class IgServiceImpl implements IgService{
 	public Ig ConvertModelToDomain(IGDisplay ig) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public List<Ig> findLatestByUsername(String username) {
+		// TODO Auto-generated method stub
+		List<Ig> allUsersIgs=findLatestByUsername(username);
+		
+		Map<String, Ig> map = new HashMap<String , Ig>();
+		
+		for(Ig ig : allUsersIgs) {
+			
+		String id= ig.getId().getId();
+			if(id != null) {
+			if(!map.containsKey(id)) {
+				map.put(id, ig);
+			}else {
+				Ig current = map.get(id);
+				if(current.getId().getVersion()<ig.getId().getVersion()) {
+					map.put(id, ig);
+					}
+				}
+			}
+			
+		}
+		return new ArrayList<Ig>(map.values());
 	}
 
 
