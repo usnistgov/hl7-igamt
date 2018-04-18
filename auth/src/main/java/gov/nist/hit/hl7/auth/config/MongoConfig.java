@@ -20,17 +20,19 @@ public class MongoConfig extends AbstractMongoConfiguration {
 	
 	@Override
 	protected String getDatabaseName() {
-		return env.getProperty("userdb");
+//		return env.getProperty("userdb");
+		return "igamt-user";
 	}
 	@Override
 	protected String getAuthenticationDatabaseName() {
 		// TODO Auto-generated method stub
-		return env.getProperty("userdb");
+//		return env.getProperty("userdb");
+		return "igamt-user";
 	}
 
 	@Override
 	public Mongo mongo() throws Exception {
-		return new MongoClient(new ServerAddress(env.getProperty("host"),27017));
+		return new MongoClient(new ServerAddress(env.getProperty("localhost"),27017));
 	}
 	
 	@Override

@@ -6,8 +6,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.crypto.Data;
+
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.Mongo;
 
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -18,7 +25,9 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.IgToc;
 import gov.nist.hit.hl7.igamt.ig.model.TextSectionData;
+import gov.nist.hit.hl7.igamt.ig.model.TreeData;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -96,6 +105,9 @@ public class IgServiceImpl implements IgService{
 		IGDisplay igDisplay= new IGDisplay();
 		igDisplay.setMetadata(ig.getMetaData());
 		TreeNode start= new TreeNode();
+		TreeData data = new TreeData();
+		data.setType(Type.IGDOCUMENT);
+		start.setData(data);
 		
 		for(TextSection s: ig.getContent()) {
 			if(s.getType().equals(Type.TEXT)) {
@@ -106,39 +118,54 @@ public class IgServiceImpl implements IgService{
 				start.getChildren().add(profileNode);
 			}	
 		}
+		IgToc toc = new IgToc();
+		List<TreeNode> nodes= new ArrayList<TreeNode>();
+		nodes.add(start);
 		
+		toc.setContent(nodes);
+		
+		igDisplay.setToc(toc);
 		
 		return igDisplay;
 	}
 
 	private TreeNode createProfileNode(TextSection s) {
 		
-		TreeNode t = new TreeNode();
+		TreeNode profileNode = new TreeNode();
 		TextSectionData sectionTree= new TextSectionData();
+		
 		
 		//sectionTree.setDateUpdated(s.getDateUpdated());
 		sectionTree.setLabel(s.getLabel());
+		sectionTree.setType(s.getType());
 		sectionTree.setPosition(s.getPosition());
 		sectionTree.setContent(s.getDescription());
-		t.setData(sectionTree);
+		profileNode.setData(sectionTree);
 		
-		
+		List<TreeNode> profileChildren  = new ArrayList<TreeNode>();
+
 		if(s.getChildren() !=null && !s.getChildren().isEmpty()) {
 			
-			List<TreeNode> children  = new ArrayList<TreeNode>();
 			
 			for (Section section : s.getChildren()) {
 				if(section instanceof Registry) {
 					
-					Registry registry = (Registry)section;
+					Registry registry = (Registry) section;
+					TreeNode childNode= new TreeNode();
+					TreeData  childData=new TreeData();
+					childData.setPosition(registry.getPosition());
+					childData.setLabel(registry.getLabel());
+					Type type = section.getType();
+					childData.setType(type);
+					childNode.setData(childData);
 					if( registry.getChildren() !=null && !registry.getChildren().isEmpty()) {
 						
-						Type type = s.getType();
-						List<TreeNode> sectionChildren= new ArrayList<TreeNode>();
+
+						List<TreeNode> sectionChildren= new ArrayList<TreeNode>();						
 
 						if(type.equals(Type.PROFILECOMPONENTREGISTRY)) {
-					
-							sectionChildren= createPcsNodes(registry.getChildren());
+							sectionChildren= createPcsNodes(registry.getChildren());				
+							
 						}else if(type.equals(Type.CONFORMANCEPROFILEREGISTRY)) {
 							sectionChildren= createCpsNodes(registry.getChildren());
 
@@ -155,17 +182,19 @@ public class IgServiceImpl implements IgService{
 							sectionChildren= createValueSetsNodes(registry.getChildren());
 
 						}
-						
+						childNode.setChildren(sectionChildren);
 					}
 					
+					profileChildren.add(childNode);
 					
 				}
 			}
 			
 		}
+		profileNode.setChildren(profileChildren);
 		
 		
-		return t;
+		return profileNode;
 		
 	}
 
@@ -206,7 +235,6 @@ public class IgServiceImpl implements IgService{
 			data.setDescription(vs.getName());
 			data.setPosition(l.getPosition());
 			data.setDomainInfo(vs.getDomainInfo());
-
 			data.setKey(l.getId());
 			data.setType(Type.VALUESET);
 			addChildrenByType(node, Type.VALUESET);
@@ -326,6 +354,7 @@ public class IgServiceImpl implements IgService{
 		//sectionTree.setDateUpdated(s.getDateUpdated());
 		sectionTree.setLabel(s.getLabel());
 		sectionTree.setPosition(s.getPosition());
+		sectionTree.setType(Type.TEXT);
 		sectionTree.setContent(s.getDescription());
 		t.setData(sectionTree);
 		
@@ -361,7 +390,7 @@ public class IgServiceImpl implements IgService{
 	@Override
 	public List<Ig> findLatestByUsername(String username) {
 		// TODO Auto-generated method stub
-		List<Ig> allUsersIgs=this.findLatestByUsername(username);
+		List<Ig> allUsersIgs=this.findByUsername(username);
 		
 		Map<String, Ig> map = new HashMap<String , Ig>();
 		
@@ -384,17 +413,30 @@ public class IgServiceImpl implements IgService{
 	}
 
 	@Override
-	public Ig findByIdId(String id) {
-		// TODO Auto-generated method stub
-		return igRepository.findByIdId(id);
-	}
+	public Ig findLatestById(String id) {
+//		return igRepository.findOne(new CompositeKey(id, 1));
+//		 new Sort(Sort.Direction.DESC, "_id.version"));
+		
+		Ig ig= igRepository.findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version") ).get(0);
+		return ig;
+		
+	
+//		List<Ig> igs=igRepository.findByIdId(new Mongo.ObjectId(id));
+//		if(igs !=null && !igs.isEmpty()){
+//			Ig ig = igs.get(0);
+//			if(igs.size()>1) {
+//				for( int i =1; i<igs.size(); i++) {
+//					if(igs.get(i).getId().getVersion()>ig.getId().getVersion()) {
+//						ig = igs.get(i);
+//					}
+//				}
+//			}
+//			return ig;
+//				
+//	}
+//		return null;
 
-	@Override
-	public Ig findByIdVersion(int version) {
-		// TODO Auto-generated method stub
-		return igRepository.findByIdVersion(version);
 	}
-
 
 
 }

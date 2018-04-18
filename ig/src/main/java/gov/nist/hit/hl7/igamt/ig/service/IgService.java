@@ -21,7 +21,6 @@ public interface IgService {
 	  public IGDisplay convertDomainToModel(Ig ig);
 	  public Ig ConvertModelToDomain(IGDisplay ig);
 	  public List<Ig> findLatestByUsername(String username);
-	  public 	Ig findByIdId(String ig);
-	  public Ig findByIdVersion(int version);
+	  public Ig findLatestById(String id);
 		
 }

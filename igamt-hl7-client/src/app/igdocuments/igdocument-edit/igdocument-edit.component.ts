@@ -3,7 +3,7 @@ import {ActivatedRoute} from "@angular/router";
 import {WorkspaceService, Entity} from "../../service/workspace/workspace.service";
 import {Http} from "@angular/http";
 import {MenuItem} from "primeng/components/common/menuitem";
-import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+// import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {HttpClient} from "@angular/common/http";
 
 @Component({
@@ -18,15 +18,14 @@ export class IgDocumentEditComponent {
 
 
   constructor(private route : ActivatedRoute,
-              private _ws   : WorkspaceService,
-              private http: HttpClient,      private dbService: IndexedDbService){
-    // this.ig = this._ws.getCurrent(Entity.IG).subscribe(data => {this.ig=data
-    //
-    // //  this.dbService.init(this._ig);
-    // });
+              private http: HttpClient){
 
 
-
+      this.route.data.map(data =>data.currentIg).subscribe(x=>{
+        console.log(x);
+        this._ig= x;
+        console.log(this._ig);
+      });
 
   };
 

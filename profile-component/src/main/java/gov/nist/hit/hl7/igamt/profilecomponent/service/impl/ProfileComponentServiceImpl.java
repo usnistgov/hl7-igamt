@@ -52,7 +52,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public ProfileComponent save(ProfileComponent profileComponent) {
-    profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
+    //profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
     profileComponent = profileComponentRepository.save(profileComponent);
     return profileComponent;
   }

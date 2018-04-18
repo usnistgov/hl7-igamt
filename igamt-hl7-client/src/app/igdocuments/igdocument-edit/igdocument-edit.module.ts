@@ -5,7 +5,6 @@ import {IgDocumentMetadataComponent} from './igdocument-metadata/igdocument-meta
 import {SectionComponent} from './section/section.component';
 import {IgDocumentEditRoutingModule} from './igdocument-edit-routing.module';
 import {AccordionModule, ButtonModule, TabViewModule, GrowlModule} from 'primeng/primeng';
-import {IgDocumentGuard} from "./igdocument-edit.guard";
 import {TocComponent} from "./toc/toc.component";
 import {MenubarModule} from "primeng/components/menubar/menubar";
 import {TooltipModule} from "primeng/components/tooltip/tooltip";
@@ -16,8 +15,9 @@ import {TreeModule} from "primeng/components/tree/tree";
 import {TreeDragDropService} from "primeng/components/common/treedragdropservice";
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
 import {MenuItem} from 'primeng/primeng';
-import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+// import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import { FormsModule } from '@angular/forms';
+import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 
 
 @NgModule({
@@ -42,7 +42,7 @@ import { FormsModule } from '@angular/forms';
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent
 	],
   providers : [
-    IgDocumentGuard, TocService,TreeDragDropService
+   TocService,TreeDragDropService,IgdocumentEditResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

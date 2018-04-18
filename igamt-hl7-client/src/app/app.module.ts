@@ -71,7 +71,7 @@ import { TooltipModule } from 'primeng/primeng';
 import {KeyFilterModule} from 'primeng/keyfilter';
 import {MessageModule} from 'primeng/message';
 
-import { TreeModule } from 'primeng/primeng';
+// import { TreeModule } from 'primeng/primeng';
 import { TreeTableModule } from 'primeng/primeng';
 import { AppComponent } from './app.component';
 import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
@@ -81,15 +81,15 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component'
 import {WorkspaceService} from "./service/workspace/workspace.service";
-import {IndexedDbService} from './service/indexed-db/indexed-db.service';
-import {DatatypesService} from './service/datatypes/datatypes.service';
-import {ValueSetsService} from './service/valueSets/valueSets.service';
+// import {IndexedDbService} from './service/indexed-db/indexed-db.service';
+// import {DatatypesService} from './service/datatypes/datatypes.service';
+// import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-import {SegmentsService} from "./service/segments/segments.service";
-import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
+// import {SegmentsService} from "./service/segments/segments.service";
+// import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -101,11 +101,14 @@ import {AboutComponent} from "./about/about.component";
 import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
+import { TreeModule } from 'angular-tree-component';
+
 
 
 @NgModule({
     imports: [
         BrowserModule,
+        TreeModule,
         FormsModule,
         AppRoutes,
         HttpClientModule,
@@ -177,10 +180,10 @@ import {RegisterComponent} from "./register/register.component";
         ToggleButtonModule,
         ToolbarModule,
         TooltipModule,
-        TreeModule,
         TreeTableModule,
         CommonModule,
         ReactiveFormsModule,
+
         AlertModule.forRoot()
 
     ],
@@ -208,13 +211,13 @@ import {RegisterComponent} from "./register/register.component";
       useClass: TokenInterceptor,
       multi: true
     },
-    WorkspaceService,
-    GeneralConfigurationService,
-    IndexedDbService,
-    DatatypesService,
-    ValueSetsService,
-    SegmentsService,
-    ProfileComponentsService,
+    // WorkspaceService,
+    // GeneralConfigurationService,
+    // IndexedDbService,
+    // DatatypesService,
+    // ValueSetsService,
+    // SegmentsService,
+    // ProfileComponentsService,
     AuthService,
     AuthGuard,
     UserService

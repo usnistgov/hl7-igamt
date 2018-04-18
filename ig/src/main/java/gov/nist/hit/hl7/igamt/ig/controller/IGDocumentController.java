@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 
 @RestController
@@ -53,7 +54,7 @@ public class IGDocumentController {
 	
 	@RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET,produces = {"application/json"})
 
-	public @ResponseBody IGDisplay getIgDisplay(@PathVariable String id){
+	public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id){
 		
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
@@ -61,7 +62,7 @@ public class IGDocumentController {
 			
 			
 			String username = authentication.getPrincipal().toString();
-			Ig igdoument =igService.findByIdId(id);
+			Ig igdoument =igService.findLatestById(id);
 			IGDisplay ret = igService.convertDomainToModel(igdoument);
 			return ret;
 			

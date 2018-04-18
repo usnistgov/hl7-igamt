@@ -2,26 +2,23 @@
  * Created by ena3 on 10/26/17.
  */
 import {Injectable}  from "@angular/core";
-import {Http} from "@angular/http";
-import {canChangeSeconds} from "ngx-bootstrap/timepicker/timepicker-controls.util";
+
 
 
 @Injectable()
 export  class TocService{
 
-  constructor(private http : Http){
+  constructor(){
   }
 
 
 
 
 
-  buildTreeFromIgDocument=function (igdocument) {
+  addaptToc=function (toc) {
     var treeData= [];
-    igdocument["content"]["data"]["referenceType"]="root";
-    igdocument["content"]["expanded"]=true;
-    igdocument["content"]["data"]["sectionTitle"]="Table of Content";
-    treeData.push(igdocument["content"]);
+    toc["expanded"]=true;
+    treeData.push(toc);
 
     return treeData;
 

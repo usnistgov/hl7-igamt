@@ -3,14 +3,14 @@ import {RouterModule} from '@angular/router'
 import {IgDocumentEditComponent} from './igdocument-edit.component';
 import {IgDocumentMetadataComponent} from './igdocument-metadata/igdocument-metadata.component';
 import {SectionComponent} from './section/section.component';
-import {IgDocumentGuard} from "./igdocument-edit.guard";
+import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 
 @NgModule({
 	imports: [
 		RouterModule.forChild([
 			{
-				path: ':id',
-        canActivate : [ IgDocumentGuard ],
+				path: ':igId',
+        resolve:{currentIg:IgdocumentEditResolver },
 				component: IgDocumentEditComponent,
         children: [
           { path: 'igdocument-metadata', component: IgDocumentMetadataComponent },

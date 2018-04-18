@@ -48,7 +48,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment save(Segment segment) {
-    segment.setId(CompositeKeyUtil.updateVersion(segment.getId()));
+   // segment.setId(CompositeKeyUtil.updateVersion(segment.getId()));
     segment = segmentRepository.save(segment);
     return segment;
   }

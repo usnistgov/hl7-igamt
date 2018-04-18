@@ -6,7 +6,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 public class ElementTreeData  extends TreeData{
 	
-	private Type type; 
+
 	private CompositeKey key;
 	private DomainInfo domainInfo;
 	private String ext; 
@@ -34,12 +34,7 @@ public class ElementTreeData  extends TreeData{
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	public Type getType() {
-		return type;
-	}
-	public void setType(Type type) {
-		this.type = type;
-	}
+
 	public CompositeKey getKey() {
 		return key;
 	}

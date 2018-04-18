@@ -2,8 +2,11 @@ package gov.nist.hit.hl7.igamt.ig.model;
 
 import java.util.Date;
 
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
+
 public class TreeData {
 	
+	private Type type; 
 	private String label;
 	private Date dateUpdated;
 	private int position; 
@@ -36,6 +39,14 @@ public class TreeData {
 
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	public Type getType() {
+		return type;
+	}
+
+	public void setType(Type type) {
+		this.type = type;
 	} 
 
 

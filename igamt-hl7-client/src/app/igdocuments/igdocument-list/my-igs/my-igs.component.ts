@@ -10,8 +10,8 @@ export class MyIgsComponent implements OnInit {
 
   igs :any
 
-  constructor(public activeRoute: ActivatedRoute ) {
-    this.activeRoute.data.map(data =>data.res).subscribe(x=>{
+  constructor(public activeRoute: ActivatedRoute,public  router:Router) {
+    this.activeRoute.data.map(data =>data.myIgs).subscribe(x=>{
       this.igs=x;
 
 
@@ -27,7 +27,8 @@ export class MyIgsComponent implements OnInit {
   }
 
   open(ig,readnly){
-    //this.router.navigate(['/ig-documents/igdocuments-edit/'+ig.id.id],{ queryParams: { readOnly: "true" } });
+    console.log(ig.id.id);
+    this.router.navigate(['/ig-documents/igdocuments-edit/'+ig.id.id],{ queryParams: { readOnly: "true" } });
   }
 
 }

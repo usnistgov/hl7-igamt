@@ -2,11 +2,12 @@ import {Component, Input, ViewChildren} from "@angular/core";
 import {WorkspaceService, Entity} from "../../../service/workspace/workspace.service";
 import {TocService} from "./toc.service";
 import  {ViewChild} from '@angular/core';
-import {UITreeNode, Tree} from "primeng/components/tree/tree";
+ import {UITreeNode, Tree} from "primeng/components/tree/tree";
 import {TreeNode} from "primeng/components/common/treenode";
 import {falseIfMissing} from "protractor/built/util";
 // import {ContextMenuModule,MenuItem} from 'primeng/primeng';
 // import {ContextMenuComponent} from "ngx-contextmenu";
+
 
 
 @Component({
@@ -16,7 +17,7 @@ import {falseIfMissing} from "protractor/built/util";
 })
 export class TocComponent {
   @ViewChild(Tree) toc :Tree;
-  //rootMenu: MenuItem[];
+  //IGDOCUMENTMenu: MenuItem[];
   public items = [
     { name: 'John', otherProperty: 'Foo' },
     { name: 'Joe', otherProperty: 'Bar' }
@@ -26,10 +27,10 @@ export class TocComponent {
 
 
   _ig : any;
-  currentNode: any;
 
   treeData: any;
-  constructor(private _ws : WorkspaceService, private  tocService:TocService){
+  constructor(private  tocService:TocService){
+
 
   }
 
@@ -39,14 +40,17 @@ export class TocComponent {
 
 
   ngOnInit() {
-    var ctrl=this;
+        var ctrl=this;
 
-    this.ig = this._ws.getCurrent(Entity.IG).subscribe(data =>{
-      this.ig= data
-      this.treeData = this.tocService.buildTreeFromIgDocument(this._ig);
+      this.treeData = [this._ig.toc.content];
+
+      console.log(this.treeData);
 
 
-      // this.rootMenu= [{label: "add Section", command:function(event){
+      this.treeData= this.tocService.addaptToc(this._ig.toc.content[0]);
+
+
+      // this.IGDOCUMENTMenu= [{label: "add Section", command:function(event){
       //   console.log(event);
       //   var data= {position: 4, sectionTitle: "New Section", referenceId: "", referenceType: "section", sectionContent: null};
       //   var node={};
@@ -56,8 +60,6 @@ export class TocComponent {
       //
       // }}];
       this.toc.allowDrop = this.allow;
-      // this.toc.draggableNodes = true;
-      // this.toc.droppableNodes = true;
       this.toc.onNodeDrop.subscribe(x => {
         for(let a = 0; a<x.dragNode.parent.children.length; a++){
           x.dragNode.parent.children[a].data.position=a+1;
@@ -79,7 +81,6 @@ export class TocComponent {
 
 
 
-    });
 
     // this.toc.dragDropService.stopDrag = function (x) {
     //   console.log("HT");
@@ -103,7 +104,7 @@ export class TocComponent {
 
   getPath =function (node) {
     if(node.data.position){
-      if(node.parent.data.referenceType=="root"){
+      if(node.parent.data.type=="IGDOCUMENT"){
         return node.data.position;
       }else{
         return this.getPath(node.parent)+"."+node.data.position;
@@ -142,11 +143,11 @@ export class TocComponent {
     }
     if(dropNode&&dropNode.parent&&dropNode.parent.data) {
 
-      if (dragNode.data.type == 'profile') {
+      if (dragNode.data.type == 'PROFILE') {
         console.log(dropNode);
-        return dropNode.parent.data.type == 'ig';
-      } else if (dragNode.data.type == 'section') {
-        return dropNode.parent.data.type=='root'|| dropNode.parent.data.type=='section';
+        return dropNode.parent.data.type == 'IGDOCUMENT';
+      } else if (dragNode.data.type == 'TEXT') {
+        return dropNode.parent.data.type=='IGDOCUMENT'|| dropNode.parent.data.type=='TEXT';
 
       }
     }else {
@@ -156,15 +157,15 @@ export class TocComponent {
 
   };
   setActualNode(node: Node){
-      this._ws.setCurrent(Entity.CURRENTNODE, node);
+     // this._ws.setCurrent(Entity.CURRENTNODE, node);
      // this.currentNode=node;
      // console.log(node);
      // this.currentNode.data.ref.name="test";
 
   }
-  AddSection(parent:TreeNode){
+  Addtext(parent:TreeNode){
       console.log(parent);
-      var data= { position: 4, sectionTitle: "New Section", referenceId: "", referenceType: "section", sectionContent: null};
+      var data= { position: 4, textTitle: "New text", referenceId: "", referenceType: "text", textContent: null};
       let node:TreeNode ={};
       node.data=data;
       parent.children.push(node);

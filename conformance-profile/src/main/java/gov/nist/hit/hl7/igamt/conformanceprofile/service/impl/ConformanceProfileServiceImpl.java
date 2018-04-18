@@ -47,7 +47,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService{
 
   @Override
   public ConformanceProfile save(ConformanceProfile conformanceProfile) {
-    conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+  //  conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
     return conformanceProfileRepository.save(conformanceProfile);
   }
 
