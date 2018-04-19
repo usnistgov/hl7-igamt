@@ -11,13 +11,16 @@ import {TooltipModule} from "primeng/components/tooltip/tooltip";
 import {TieredMenuModule} from "primeng/components/tieredmenu/tieredmenu";
 import {UtilsModule} from "../../utils/utils.module";
 import {TocService} from "./toc/toc.service";
-import {TreeModule} from "primeng/components/tree/tree";
 import {TreeDragDropService} from "primeng/components/common/treedragdropservice";
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
 import {MenuItem} from 'primeng/primeng';
 // import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import { FormsModule } from '@angular/forms';
 import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
+import { TreeModule } from 'angular-tree-component';
+import {OverlayPanelModule} from 'primeng/overlaypanel';
+import {ContextMenuModule} from "ngx-contextmenu";
+import {ActivatedRouteSnapshot} from "@angular/router";
 
 
 @NgModule({
@@ -25,6 +28,7 @@ import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 		CommonModule,
 		IgDocumentEditRoutingModule,
     AccordionModule,
+    OverlayPanelModule,
     ButtonModule,
     TabViewModule,
     GrowlModule,
@@ -32,12 +36,14 @@ import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
     TooltipModule,
     TieredMenuModule,
     UtilsModule,
-    TreeModule,
     DragDropModule,
-    FormsModule
+    FormsModule,
+    TreeModule,
+    ContextMenuModule.forRoot()
 
 
-	],
+
+],
 	declarations: [
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent
 	],

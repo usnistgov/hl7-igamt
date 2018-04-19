@@ -15,8 +15,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
     console.log("Calling resolver");
-    return this.http.get("/api/igdocuments/"+route.params["igId"]+"/display");
-
+     return this.http.get("/api/igdocuments/"+route.params["igId"]+"/display");
   }
 
 }

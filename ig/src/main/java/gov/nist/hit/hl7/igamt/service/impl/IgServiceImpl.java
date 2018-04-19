@@ -262,7 +262,7 @@ public class IgServiceImpl implements IgService{
 			TreeNode node = new TreeNode();
 			ElementTreeData data = new ElementTreeData();
 			data.setLabel(dt.getName());
-			data.setDescription(dt.getName());
+			data.setDescription(dt.getDescription());
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());
 			data.setDomainInfo(dt.getDomainInfo());
@@ -286,7 +286,7 @@ public class IgServiceImpl implements IgService{
 			ElementTreeData data = new ElementTreeData();
 			data.setLabel(segment.getName());
 			data.setExt(segment.getExt());
-			data.setDescription(segment.getName());
+			data.setDescription(segment.getDescription());
 			data.setPosition(l.getPosition());
 			data.setDomainInfo(segment.getDomainInfo());
 
@@ -311,7 +311,7 @@ public class IgServiceImpl implements IgService{
 			TreeNode node = new TreeNode();
 			ElementTreeData data = new ElementTreeData();
 			data.setLabel(compositeProfile.getName());
-			data.setDescription(compositeProfile.getName());
+			data.setDescription(compositeProfile.getDescription());
 			data.setDomainInfo(compositeProfile.getDomainInfo());
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());

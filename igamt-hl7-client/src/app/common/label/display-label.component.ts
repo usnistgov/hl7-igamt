@@ -2,11 +2,8 @@
  * Created by hnt5 on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
-import { Router, ActivatedRoute, ParamMap } from '@angular/router';
+import {Router, ActivatedRoute, ParamMap, ActivatedRouteSnapshot} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
-
-import {WorkspaceService, Entity} from "../../service/workspace/workspace.service";
-
 @Component({
   selector : 'display-label',
   templateUrl : './display-label.component.html',
@@ -16,16 +13,15 @@ export class DisplayLabelComponent {
   _elm : any;
   _ig : any;
 
+  @Input()
+  igId : any;
 
   constructor(
-    private _ws : WorkspaceService,
     private route: ActivatedRoute,
-    private router: Router
-
-
-  ){}
+    private router: Router,
+  ){
+  }
   ngOnInit(){
-   this._ws.getCurrent(Entity.IG).subscribe(data=>{this._ig=data});
 
   }
 
@@ -39,16 +35,17 @@ export class DisplayLabelComponent {
 
   getScopeLabel() {
 
-    if (this.elm &&this.elm.scope) {
-      if (this.elm.scope === 'HL7STANDARD') {
+    if (this.elm.domainInfo&& this.elm.domainInfo.scope) {
+      let scope = this.elm.domainInfo.scope;
+      if (scope === 'HL7STANDARD') {
         return 'HL7';
-      } else if (this.elm.scope === 'USER') {
+      } else if (scope === 'USER') {
         return 'USR';
-      } else if (this.elm.scope === 'MASTER') {
+      } else if (scope === 'MASTER') {
         return 'MAS';
-      } else if (this.elm.scope === 'PRELOADED') {
+      } else if (scope=== 'PRELOADED') {
         return 'PRL';
-      } else if (this.elm.scope === 'PHINVADS') {
+      } else if (scope === 'PHINVADS') {
         return 'PVS';
       } else {
         return null ;
@@ -59,9 +56,9 @@ export class DisplayLabelComponent {
   getElementLabel(){
     var type =this.elm.type;
     if(type){
-      if (type === 'segment') {
+      if (type === 'SEGMENT') {
         return this.getSegmentLabel(this.elm);
-      } else if (type='datatype') {
+      } else if (type='DATATYPE') {
         return this.getDatatypeLabel(this.elm);
       } else if (type==='table') {
         console.log("Called");
@@ -77,57 +74,61 @@ export class DisplayLabelComponent {
   }
 
   getVersion(){
-    return this.elm.hl7Version ? this.elm.hl7Version : '';
+    return this.elm.domainInfo.version ? this.elm.domainInfo.version : '';
   };
   getSegmentLabel(elm){
     if(!elm.ext || elm.ext==''){
-      return elm.name+"-"+elm.description;
+      return elm.label+"-"+elm.description;
     }else{
-      return elm.name+"_"+elm.ext+elm.description;
+      return elm.label+"_"+elm.ext+elm.description;
     }
   };
 
   getDatatypeLabel(elm){
     if(!elm.ext || elm.ext==''){
-      return elm.name+"-"+elm.description;
+      return elm.label+"-"+elm.description;
     }else{
-      return elm.name+"_"+elm.ext+elm.description;
+      return elm.label+"_"+elm.ext+elm.description;
     }
   };
   getTableLabel(elm){
-    return elm.bindingIdentifier+"-"+elm.name;
+    return elm.bindingIdentifier+"-"+elm.label;
 
 
   };
 
   getMessageLabel(elm){
-    return elm.name+"-"+elm.description;
+    return elm.label+"-"+elm.description;
 
 
 
   };
   getProfileComponentsLabel(elm){
-    return elm.name+"-"+elm.description;
+    return elm.label+"-"+elm.description;
 
   };
 
   getCompositeProfileLabel(elm){
-    return elm.name+"-"+elm.description;
+    return elm.label+"-"+elm.description;
 
 
   };
 
   goTo() {
-    var type=this.elm.type;
-    var IgdocumentId=this._ig.id;
+    console.log(this.elm);
+    var type=this.elm.type.toLowerCase();
+    console.log(this.route);
+
+
+
 
     this.route.queryParams
       .subscribe(params => {
         console.log(params); // {order: "popular"}
 
-
-        var link="/ig-documents/igdocuments-edit/"+IgdocumentId+"/"+this.elm.type+"/"+this.elm.id;
-        this.router.navigate([link], params); // add the parameters to the end
+        //this.router.navigate(["../segment/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+        var link="/ig-documents/igdocuments-edit/"+this.igId+"/"+"segment"+"/"+this.elm.key.id;
+        this.router.navigate([link], {queryParams:params}); // add the parameters to the end
       });
 
 

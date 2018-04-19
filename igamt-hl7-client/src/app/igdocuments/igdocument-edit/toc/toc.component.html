@@ -1,63 +1,101 @@
-<!--<p-tree [value]="treeData" [draggableNodes]="true" [droppableNodes]="true" selectionMode="single" styleClass="toc">-->
-  <!--<ng-template let-node  pTemplate="default">-->
+<tree-root [nodes]="ig.toc.content" [options]="options" *ngIf="ig.toc.content" #treeroot>
 
- <!--<div *ngIf="node.data">-->
-    <!--<li   *ngIf="node.data.type==='IGDOCUMENT'">-->
-      <!--<span  (click)="print(node)"> Table of Content</span>-->
-      <!--&lt;!&ndash;<p-contextMenu  [target]="root" appendTo="body" [model]="rootMenu"></p-contextMenu>&ndash;&gt;-->
+  <ng-template #treeNodeTemplate let-node let-index="index">
+    <ng-container [ngSwitch]="node.data.data.type">
+      <ng-container *ngSwitchCase="'IGDOCUMENT'">
+        <span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>
 
-      <!--&lt;!&ndash;<context-menu #basicMenu>&ndash;&gt;-->
-        <!--&lt;!&ndash;<ng-template contextMenuItem (execute)="AddTEXT(node)">&ndash;&gt;-->
-          <!--&lt;!&ndash;Add TEXT&ndash;&gt;-->
-        <!--&lt;!&ndash;</ng-template>&ndash;&gt;-->
-      <!--&lt;!&ndash;</context-menu>&ndash;&gt;-->
-    <!--</li>-->
+        <context-menu #igcontextmenu>
+          <ng-template contextMenuItem (execute)="addSection(node)">
+            <i class="fa fa-plus"></i> Add Section
+          </ng-template>
+        </context-menu>
+      </ng-container>
 
+      <ng-container *ngSwitchCase="'TEXT'">
+        <span [contextMenu]="textcontextmenu" (click)="path(node)"> {{getPath(node)}}{{node.data.data.label}}</span>
+        <context-menu #textcontextmenu>
+          <ng-template contextMenuItem (execute)="addSection(node)">
+            <i class="fa fa-plus"></i> Add Section
+          </ng-template>
+          <ng-template contextMenuItem (execute)="addSection(node)">
+            <i class="fa fa-copy"></i> Copy Section
+          </ng-template>
+          <ng-template contextMenuItem (execute)="addSection(node)">
+            <i class="fa fa-remove"></i> Delete Section
+          </ng-template>
 
-    <!--<li  *ngIf="node.data.type=='TEXT'">-->
-      <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-    <!--</li>-->
+        </context-menu>
 
-    <!--<li  *ngIf="node.data.type=='PROFILE'">-->
-      <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-    <!--</li>-->
-
-
-    <!--<li  *ngIf="node.data.type=='CONFORMANCEPROFILEREGISTRY'">-->
-        <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-    <!--</li>-->
-
-
-    <!--<li  *ngIf="node.data.type=='SEGMENTRGISTRY'">-->
-    <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-    <!--</li>-->
-
-     <!--<li  *ngIf="node.data.type=='DATATYPEREGISTRY'">-->
-      <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-    <!--</li>-->
-
-  <!--<li  *ngIf="node.data.type=='VALUESETREGISTRY'">-->
-    <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-  <!--</li>-->
+      </ng-container>
 
 
-  <!--<li  *ngIf="node.data.type=='COMPOSITEPROFILEREGISTRY'">-->
-    <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-  <!--</li>-->
-  <!--<li  *ngIf="node.data.type=='PROFILECOMPONENTREGISTRY'">-->
-    <!--<span (click)="print(node)" >{{getPath(node)+"."+node.data.label}}</span>-->
-  <!--</li>-->
+      <ng-container *ngSwitchCase="'PROFILE'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
 
-  <!--&lt;!&ndash;<li *ngIf="node.data.ref">&ndash;&gt;-->
-   <!--&lt;!&ndash;<button (click)="setActualNode(node)">Click</button>&ndash;&gt;-->
-    <!--&lt;!&ndash;<display-label [elm]="node.data.ref" ></display-label>&ndash;&gt;-->
-  <!--&lt;!&ndash;</li>&ndash;&gt;-->
 
-<!--</div>-->
-  <!--</ng-template>-->
+      <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
 
 
 
-<!--</p-tree>-->
+      <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+        <span>{{node.data.data.label}} </span>
+      </ng-container>
+
+
+
+      <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'DATATYPE'">
+        <display-label [elm]="node.data.data" [igId]="igId"></display-label>
+
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+
+      <ng-container *ngSwitchCase="'SEGMENT'">
+        <display-label [elm]="node.data.data" [igId]="igId"></display-label>
+
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'VALUESET'" >
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+      <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+        <span>{{node.data.data.label}}</span>
+      </ng-container>
+
+    </ng-container>
+
+
+  </ng-template>
+</tree-root>
 
 

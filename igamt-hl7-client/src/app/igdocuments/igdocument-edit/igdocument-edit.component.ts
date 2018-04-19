@@ -20,7 +20,6 @@ export class IgDocumentEditComponent {
   constructor(private route : ActivatedRoute,
               private http: HttpClient){
 
-
       this.route.data.map(data =>data.currentIg).subscribe(x=>{
         console.log(x);
         this._ig= x;
@@ -28,6 +27,8 @@ export class IgDocumentEditComponent {
       });
 
   };
+
+
 
   @Input() set ig(doc){
     this._ig = doc;

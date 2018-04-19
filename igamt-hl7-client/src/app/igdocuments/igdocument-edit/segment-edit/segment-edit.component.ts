@@ -29,10 +29,10 @@ export class SegmentEditComponent {
     this._segment = segment;
   }
 
-  constructor(private _ws : WorkspaceService,    private route: ActivatedRoute,
+  constructor(  private route: ActivatedRoute,
               private router: Router){
 
-     _ws.getCurrent(Entity.SEGMENT).subscribe(data =>this.segment=data);
+    // _ws.getCurrent(Entity.SEGMENT).subscribe(data =>this.segment=data);
 
 
 

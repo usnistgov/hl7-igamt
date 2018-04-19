@@ -10,7 +10,7 @@ import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 		RouterModule.forChild([
 			{
 				path: ':igId',
-        resolve:{currentIg:IgdocumentEditResolver },
+        resolve:{currentIg:IgdocumentEditResolver},
 				component: IgDocumentEditComponent,
         children: [
           { path: 'igdocument-metadata', component: IgDocumentMetadataComponent },

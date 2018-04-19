@@ -12,7 +12,7 @@ import {AuthGuard} from "./../../../login/auth-guard.service";
   imports: [
     RouterModule.forChild([
       {
-        path: ':id',
+        path: ':segmentId',
         component: SegmentEditComponent,
         children: [
           {

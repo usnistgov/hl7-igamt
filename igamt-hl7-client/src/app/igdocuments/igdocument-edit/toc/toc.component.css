@@ -1,11 +1,17 @@
-
-.ui-treenode-droppoint{
-  height: 800px !important;
-  max-height: 800px !important;
-  background-color: #00a5bb;
-
+.ngx-contextmenu .dropdown-menu {
+  padding: 0;
 }
-li .ui-treenode-droppoint {
-  height: 12px !important;
-  list-style-type: none;
+.ngx-contextmenu li {
+  display: block;
+  text-transform: uppercase;
+  text-align: center;
+}
+.ngx-contextmenu li:first-child {
+  border-top:none;
+}
+.ngx-contextmenu a {
+  display: block;
+  padding: 0.5em 1em;
+}
+.ngx-contextmenu a:hover {
 }

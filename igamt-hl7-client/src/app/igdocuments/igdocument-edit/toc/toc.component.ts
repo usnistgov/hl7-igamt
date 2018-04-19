@@ -1,13 +1,11 @@
-import {Component, Input, ViewChildren} from "@angular/core";
+import {Component, Input, ViewChildren, ViewChild} from "@angular/core";
 import {WorkspaceService, Entity} from "../../../service/workspace/workspace.service";
 import {TocService} from "./toc.service";
-import  {ViewChild} from '@angular/core';
- import {UITreeNode, Tree} from "primeng/components/tree/tree";
-import {TreeNode} from "primeng/components/common/treenode";
-import {falseIfMissing} from "protractor/built/util";
-// import {ContextMenuModule,MenuItem} from 'primeng/primeng';
-// import {ContextMenuComponent} from "ngx-contextmenu";
+import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "angular-tree-component";
 
+import {MenuItem} from 'primeng/api';
+import {ContextMenuComponent} from "ngx-contextmenu";
+import {ActivatedRoute} from "@angular/router";
 
 
 @Component({
@@ -16,160 +14,133 @@ import {falseIfMissing} from "protractor/built/util";
   styleUrls:["./toc.component.css"]
 })
 export class TocComponent {
-  @ViewChild(Tree) toc :Tree;
-  //IGDOCUMENTMenu: MenuItem[];
-  public items = [
-    { name: 'John', otherProperty: 'Foo' },
-    { name: 'Joe', otherProperty: 'Bar' }
-  ];
-
-  // @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+  @Input() ig : any;
+  @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+  igId:any;
 
 
-  _ig : any;
+  @ViewChild(TreeComponent) private tree: TreeComponent;
+  @ViewChild('igcontextmenu') public igcontextmenu: ContextMenuComponent;
+  @ViewChild('textcontextmenu') public textcontextmenu: ContextMenuComponent;
+  @ViewChild('datatypescontextmenu') public datatypescontextmenu: ContextMenuComponent;
 
+
+
+
+
+  currentNode:TreeNode;
+
+
+  private items: MenuItem[];
+
+  nodes: any[];
   treeData: any;
-  constructor(private  tocService:TocService){
+  options = {
+    allowDrag: (node: TreeNode) =>{ return node.data.data.type=="TEXT"|| node.data.data.type=='CONFORMANCEPROFILE'||node.data.data.type=='PROFILE'},
+    actionMapping: {
+      mouse: {
+        drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
 
+          if(from.data.data.type== "TEXT" && (to.parent.data.data.type=="TEXT"||to.parent.data.data.type=="IGDOCUMENT")){
+            console.log("Dropping");
+            TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
+
+          }
+          if(from.data.data.type== "PROFILE" && to.parent.data.data.type=="IGDOCUMENT") {
+            console.log("Dropping");
+
+            TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
+
+
+          }
+
+
+          // use from to get the dragged node.
+          // use to.parent and to.index to get the drop location
+        },
+
+        contextMenu: (model: any, node: any, event: any) => {
+          event.preventDefault();
+          this.onContextMenu(event, node);
+          console.log('in context menu...');
+        }
+      }
+    }
+  };
+
+
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute){
+
+    console.log(this.ig);
 
   }
 
-  @Input() set ig(ig){
-    this._ig = ig;
-  }
 
 
   ngOnInit() {
-        var ctrl=this;
+    this.igId= this.sp.snapshot.params["igId"];
+  }
+  print(node){
+    console.log(node);
+  }
+  ngAfterViewInit() {
+    console.log(this.ig);
+  }
 
-      this.treeData = [this._ig.toc.content];
+  getItemFromTargetType(node:TreeNode) {
+    this.currentNode=node;
 
-      console.log(this.treeData);
+    if (node.data.data.type == 'IGDOCUMENT') {
 
+      this.items =  [
+        {label: 'Add Section', icon: 'fa-plus', command :(event)=>{
 
-      this.treeData= this.tocService.addaptToc(this._ig.toc.content[0]);
-
-
-      // this.IGDOCUMENTMenu= [{label: "add Section", command:function(event){
-      //   console.log(event);
-      //   var data= {position: 4, sectionTitle: "New Section", referenceId: "", referenceType: "section", sectionContent: null};
-      //   var node={};
-      //   node["data"]=data;
-      //   ctrl.treeData[0].children.push(node);
-      //
-      //
-      // }}];
-      this.toc.allowDrop = this.allow;
-      this.toc.onNodeDrop.subscribe(x => {
-        for(let a = 0; a<x.dragNode.parent.children.length; a++){
-          x.dragNode.parent.children[a].data.position=a+1;
+          console.log(event);
         }
-
-        for(let c = 0; c<x.dropNode.children.length; c++){
-          if(x.dropNode.children[c].data){
-            x.dropNode.children[c].data.position=c+1;
-
-          }
         }
-        for(let b = 0; b<x.dropNode.parent.children.length; b++){
-          x.dropNode.parent.children[b].data.position=b+1;
-        }
+      ];
 
-      });
-
-
-
-
-
-
-    // this.toc.dragDropService.stopDrag = function (x) {
-    //   console.log("HT");
-    //   console.log(x);
-    // };
-
-
-
-
-
-
-
+      return this.items;
+   }
+  }
+  onContextMenu(event, node){
 
 
   }
 
-  print =function (obj) {
-    console.log("Printing Obj");
-    console.log(obj);
+  addSection(node:TreeNode){
+    //console.log(this.toc);
+
+    let data1 ={
+      label: "new Section",
+      content:"",
+      type:"TEXT",
+      position: node.data.children.length+1
+    };
+    var newNode = {id : "bla",data:data1, children :[]};
+
+    console.log(node);
+
+    node.data.children.push(newNode);
+    node.treeModel.update();
+
+    console.log(this.ig.toc.content);
+
+
   };
 
   getPath =function (node) {
-    if(node.data.position){
-      if(node.parent.data.type=="IGDOCUMENT"){
-        return node.data.position;
+    node.data.data.position= parseInt(node.index)+1;
+      if(node.parent.data.data.type=="IGDOCUMENT"){
+        return  node.data.data.position+".";
       }else{
-        return this.getPath(node.parent)+"."+node.data.position;
+        return this.getPath(node.parent)+ node.data.data.position+".";
       }
-    }
   };
 
-  onDragStart(event,node) {
-    console.log(event);
-
-    console.log("Drag Start");
-  };
-  onDragEnd(event, node) {
-    console.log("DRAG END ")
-
-
-  };
-  onDrop(event) {
-    console.log("Performed");
-    console.log(event);
-  };
-  onDragEnter(event, node) {
-
-  };
-  onDragLeave(event, node) {
-  };
-
-  prevent(dragNode: TreeNode, dropNode: TreeNode, dragNodeScope: any) {
-    console.log("Called");
-    return false;
-  };
-
-  allow(dragNode: TreeNode, dropNode: TreeNode, dragNodeScope: any) {
-    if(dragNode==dropNode){
-      return false;
-    }
-    if(dropNode&&dropNode.parent&&dropNode.parent.data) {
-
-      if (dragNode.data.type == 'PROFILE') {
-        console.log(dropNode);
-        return dropNode.parent.data.type == 'IGDOCUMENT';
-      } else if (dragNode.data.type == 'TEXT') {
-        return dropNode.parent.data.type=='IGDOCUMENT'|| dropNode.parent.data.type=='TEXT';
-
-      }
-    }else {
-      return false;
-    }
-
-
-  };
-  setActualNode(node: Node){
-     // this._ws.setCurrent(Entity.CURRENTNODE, node);
-     // this.currentNode=node;
-     // console.log(node);
-     // this.currentNode.data.ref.name="test";
-
+  path(node){
+    console.log(node);
+    return node.path;
   }
-  Addtext(parent:TreeNode){
-      console.log(parent);
-      var data= { position: 4, textTitle: "New text", referenceId: "", referenceType: "text", textContent: null};
-      let node:TreeNode ={};
-      node.data=data;
-      parent.children.push(node);
-  }
-
 
 }
