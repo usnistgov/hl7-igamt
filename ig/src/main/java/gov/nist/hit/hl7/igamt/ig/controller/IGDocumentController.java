@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.ig.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.ListElement;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
@@ -32,18 +34,20 @@ public class IGDocumentController {
 	
 	@RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,produces = {"application/json"})
 
-	public @ResponseBody List<Ig> getUserIG(){
+	public @ResponseBody List<ListElement> getUserIG(){
 		
 		Authentication authentication = SecurityContextHolder.getContext()
 				.getAuthentication();
 		if (authentication != null) {
-			
 			String username = authentication.getPrincipal().toString();
-			List<Ig> igdouments =igService.findByUsername(username);
+			List<Ig> igdouments =igService.findLatestByUsername(username);
 			System.out.println(igdouments.size());
-			return igdouments;
+			return igService.convertListToDisplayList(igdouments);
 		}else {
-			return null;
+			
+			
+			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+				
 		}
 		
 		
