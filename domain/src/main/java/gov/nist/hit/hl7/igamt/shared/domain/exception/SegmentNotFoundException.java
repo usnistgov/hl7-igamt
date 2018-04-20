@@ -17,12 +17,12 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
  *
  * @author Maxence Lefort on Mar 22, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+public class SegmentNotFoundException extends Exception {
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  private static final long serialVersionUID = 5027333480195464563L;
 
-  public DatatypeNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
+  public SegmentNotFoundException(String id) {
+    super("Segment with id "+id+" not found");
   }
   
 }

@@ -11,18 +11,20 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.exception;
+package gov.nist.hit.hl7.igamt.ig.service;
+
+import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Apr 9, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+@Service("igSerializationService")
+public interface IgSerializationService {
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  public String serializeIgDocument(Ig igDocument) throws SerializationException;
 
-  public DatatypeNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
-  }
-  
 }

@@ -11,35 +11,42 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.domain;
+package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import nu.xom.Attribute;
+import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import nu.xom.Element;
 
 /**
  *
- * @author Maxence Lefort on Mar 13, 2018.
+ * @author Maxence Lefort on Apr 5, 2018.
  */
-public abstract class SerializableSection extends SerializableElement{
+public class SerializableTextSection extends SerializableSection {
 
-  private Section section;
-
-  public SerializableSection(Section section) {
-    super(section.getId(), String.valueOf(section.getPosition()), section.getLabel());
-    this.section = section;
+  /**
+   * @param section
+   */
+  public SerializableTextSection(TextSection textSection) {
+    super(textSection);
   }
 
-  public Section getSection() {
-    return section;
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement#serialize()
+   */
+  @Override
+  public Element serialize() throws SerializationException {
+    Element textSectionElement = super.getElement();
+    for (Section child : ((TextSection) super.getSection()).getChildren()) {
+      Element childElement = SectionSerializationUtil.serializeSection(child);
+      if (child != null) {
+        textSectionElement.appendChild(childElement);
+      }
+    }
+    return textSectionElement;
   }
 
-  public Element getElement() throws SerializationException {
-    Element sectionElement = super.getElement("Section");
-    sectionElement.addAttribute(new Attribute("description",section.getDescription() != null ? section.getDescription() : ""));
-    sectionElement.addAttribute(new Attribute("type",section.getType() != null ? section.getType().name() : ""));
-    return sectionElement;
-  }
-  
 }

@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.valueset.serialization;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
@@ -42,7 +43,7 @@ public class SerializableValueSet extends SerializableResource {
   public Element serialize() throws SerializationException {
     try {
       Element valueSetElement = super.getElement("Valueset");
-      Valueset valueSet = (Valueset) this.resource;
+      Valueset valueSet = (Valueset) this.getAbstractDomain();
       valueSetElement.addAttribute(new Attribute("bindingIdentifier",valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
       valueSetElement.addAttribute(new Attribute("oid",valueSet.getOid() != null ? valueSet.getOid() : ""));
       valueSetElement.addAttribute(new Attribute("intensionalComment",valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
@@ -90,7 +91,7 @@ public class SerializableValueSet extends SerializableResource {
       }
       return valueSetElement;
     } catch (Exception exception) {
-      throw new ResourceSerializationException(exception, Type.VALUESET, this.resource);
+      throw new ResourceSerializationException(exception, Type.VALUESET, (Resource) this.getAbstractDomain());
     }
   }
   

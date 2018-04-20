@@ -15,14 +15,13 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Apr 9, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+public class ValuesetNotFoundException extends Exception{
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  private static final long serialVersionUID = 3425565153244575063L;
 
-  public DatatypeNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
+  public ValuesetNotFoundException(String id) {
+    super("Value set with id "+id+" not found");
   }
-  
 }

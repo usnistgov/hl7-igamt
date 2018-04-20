@@ -18,6 +18,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -60,7 +61,7 @@ public class SerializableDatatypeTest {
   private static final String TEST_COMPONENT1_REF_LABEL = "test_component1_ref_label";
   private static final Ref REF_COMPONENT1 = new Ref(TEST_COMPONENT1_REF_ID);
 
-
+  
   
   
   
@@ -101,9 +102,9 @@ public class SerializableDatatypeTest {
   @Test
   public void testSerializeComplexDatatype() throws ResourceSerializationException {
     Datatype datatype = getComplexDatatype();
-    HashMap<Ref, String> refDatatypeLabel = new HashMap<>();
-    refDatatypeLabel.put(REF_COMPONENT1, TEST_COMPONENT1_REF_LABEL);
-    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION,refDatatypeLabel);
+    Map<String, String> refDatatypeLabel = new HashMap<>();
+    refDatatypeLabel.put(REF_COMPONENT1.getId(), TEST_COMPONENT1_REF_LABEL);
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION,refDatatypeLabel,new HashMap<String, String>());
     Element testElement = serializableDatatype.serialize();
     Elements componentElements = testElement.getChildElements("Component");
     assertEquals(1, componentElements.size());

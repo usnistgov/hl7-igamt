@@ -11,18 +11,28 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.shared.domain.exception;
+package gov.nist.hit.hl7.igamt.serialization.exception;
+
+import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Apr 6, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+public class RegistrySerializationException extends SerializationException {
 
-  private static final long serialVersionUID = 6099795044591697558L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8518854801349174831L;
 
-  public DatatypeNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
+  /**
+   * @param originException
+   * @param type
+   * @param location
+   */
+  public RegistrySerializationException(Exception originException, Registry registry) {
+    super(originException, registry.getType(), registry.getLabel());
   }
-  
+
 }

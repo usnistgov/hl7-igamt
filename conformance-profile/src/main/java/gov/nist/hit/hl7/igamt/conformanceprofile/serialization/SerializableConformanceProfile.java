@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializat
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Group;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
@@ -46,7 +47,7 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   @Override
   public Element serialize() throws ResourceSerializationException {
-    ConformanceProfile conformanceProfile = (ConformanceProfile) this.resource;
+    ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
     if (conformanceProfile != null) {
       try {
         Element element = super.getElement("ConformanceProfile");
@@ -74,7 +75,7 @@ public class SerializableConformanceProfile extends SerializableResource {
         }
         return element;
       } catch (Exception exception) {
-        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE, this.resource);
+        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE, (Resource) this.getAbstractDomain());
       }
     }
     return null;
@@ -100,7 +101,7 @@ public class SerializableConformanceProfile extends SerializableResource {
     }
     if (msgStructElement != null) {
       msgStructElement.addAttribute(new Attribute("min", String.valueOf(msgStructElm.getMin())));
-      msgStructElement.addAttribute(new Attribute("max", String.valueOf(msgStructElm.getMax())));
+      msgStructElement.addAttribute(new Attribute("max", msgStructElm.getMax()));
     }
     return msgStructElement;
   }
@@ -137,9 +138,11 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   private Element serializeGroup(Group group) throws MsgStructElementSerializationException {
     Element groupElement = new Element("Group");
-    Element binding = super.serializeResourceBinding(group.getBinding());
-    if (binding != null) {
-      groupElement.appendChild(binding);
+    if(group.getBinding() != null) {
+      Element binding = super.serializeResourceBinding(group.getBinding());
+      if (binding != null) {
+        groupElement.appendChild(binding);
+      }
     }
     groupElement.addAttribute(new Attribute("name", group.getName()));
     for (MsgStructElement msgStructElm : group.getChildren()) {
