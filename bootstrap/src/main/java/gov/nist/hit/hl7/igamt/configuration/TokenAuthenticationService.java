@@ -33,7 +33,7 @@ public class TokenAuthenticationService {
 		
 		String jwt = request.getHeader("Authorization");
 		if(jwt != null &&!jwt.isEmpty()) {
-		Claims claims = Jwts.parser().setSigningKey(crypto.pub()).parseClaimsJws(jwt).getBody();
+		Claims claims = Jwts.parser().setSigningKey(crypto.pub(System.getenv("publicKey"))).parseClaimsJws(jwt).getBody();
 		String username= claims.getSubject();
 		System.out.println(username);
 		ArrayList<Map<String,String>> roles = (ArrayList<Map<String, String>>) claims.get("roles");

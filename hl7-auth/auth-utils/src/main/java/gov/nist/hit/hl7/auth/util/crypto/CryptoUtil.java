@@ -10,8 +10,8 @@ import java.security.spec.InvalidKeySpecException;
 public interface CryptoUtil {
 
 	
-	public PublicKey pub() throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException;
-	public PrivateKey priv() throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException ;
+	public PublicKey pub(String path) throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException;
+	public PrivateKey priv(String path) throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException ;
 
 
 

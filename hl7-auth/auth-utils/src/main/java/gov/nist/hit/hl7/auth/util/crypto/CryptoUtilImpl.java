@@ -21,8 +21,8 @@ public class CryptoUtilImpl implements CryptoUtil {
 }
 	
 	@Override
-	public PublicKey pub() throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException{
-		byte[] cert_bytes = IOUtils.toByteArray(new FileInputStream(System.getenv("publicKey")));
+	public PublicKey pub(String path ) throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException{
+		byte[] cert_bytes = IOUtils.toByteArray(new FileInputStream(path));
 	    X509EncodedKeySpec ks = new X509EncodedKeySpec(cert_bytes);
 	    KeyFactory kf = KeyFactory.getInstance("RSA");
 	    kf.generatePublic(ks);
@@ -31,8 +31,8 @@ public class CryptoUtilImpl implements CryptoUtil {
 	
 	
 	@Override
-	public PrivateKey priv() throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
-		byte[] bytes = IOUtils.toByteArray(new FileInputStream(System.getenv("privateKey")));
+	public PrivateKey priv(String path) throws FileNotFoundException, IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+		byte[] bytes = IOUtils.toByteArray(new FileInputStream(path));
 		PKCS8EncodedKeySpec ks = new PKCS8EncodedKeySpec(bytes);
 		KeyFactory kf = KeyFactory.getInstance("RSA");
 		

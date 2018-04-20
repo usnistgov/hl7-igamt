@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import gov.nist.hit.hl7.auth.util.crypto.CryptoUtil;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
@@ -36,6 +37,7 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 	private ShaPasswordEncoder encoder;
 	@Autowired
 	private CryptoUtil crypto;
+	@Autowired Environment env;
 	
 	public JWTAuthenticationFilter(String url , AuthenticationManager authenticationManager) {
 		super(new AntPathRequestMatcher(url));
@@ -67,8 +69,8 @@ public class JWTAuthenticationFilter extends AbstractAuthenticationProcessingFil
 		
 		String jwt;
 		try {
-			Key privateKey= crypto.priv();
-			jwt = Jwts.builder().setSubject(springUser.getUsername()).setExpiration(new Date(System.currentTimeMillis()+SecurityConstants.EXPIRATION_DATE)).
+			Key privateKey= crypto.priv(System.getenv("privateKey"));
+			jwt = Jwts.builder().setSubject(springUser.getUsername()).setExpiration(new Date(System.currentTimeMillis()+gov.nist.hit.hl7.auth.util.crypto.SecurityConstants.EXPIRATION_DATE)).
 					signWith(SignatureAlgorithm.RS256,privateKey).claim("roles", springUser.getAuthorities()).compact();
 			response.addHeader("Authorization",jwt);
 

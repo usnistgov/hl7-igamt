@@ -1,5 +1,4 @@
-package gov.nist.hit.hl7.auth.filter;
-
+package gov.nist.hit.hl7.auth.util.crypto;
 public class SecurityConstants {
 	public static final String SECRET = "@Bscde6ip23097524293293"; //temporary 
 	public static final long EXPIRATION_DATE= 864_000_000;//10 days
