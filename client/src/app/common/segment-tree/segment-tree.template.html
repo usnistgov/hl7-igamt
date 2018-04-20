@@ -1,5 +1,0 @@
-<p-tree [style]="{'width':'100%'}" [value]="tree" (onNodeExpand)="loadNode($event)" (onNodeSelect)="nodeSelected($event)" selectionMode="single" [(selection)]="selectedNode">
-    <ng-template let-node pTemplate="default">
-      <display-badge [type]="node.data.obj.type"></display-badge> {{node.data.obj.position}} {{node.label}}
-    </ng-template>
-</p-tree>

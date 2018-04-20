@@ -51,4 +51,18 @@
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
+	
+	<modules>
+		<module>domain</module>
+		<module>profile-component</module>
+		<module>composite-profile</module>
+		<module>ig</module>
+		<module>datatype</module>
+		<module>valueset</module>
+		<module>bootstrap</module>
+		<module>conformance-profile</module>
+		<module>export</module>
+		<module>serialization</module>
+		<module>segment</module>
+	</modules>
 </project>
