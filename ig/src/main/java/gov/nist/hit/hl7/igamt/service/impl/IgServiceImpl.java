@@ -450,10 +450,31 @@ public class IgServiceImpl implements IgService{
 			
 			element.setCoverpage(ig.getMetaData().getCoverPicture());
 			element.setDateUpdated(ig.getUpdateDate());
-			
+			element.setTitle(ig.getMetaData().getTitle());
+			element.setSubtitle(ig.getMetaData().getSubTitle());
+			//element.setConfrmanceProfiles(confrmanceProfiles);
+			element.setCoverpage(ig.getMetaData().getCoverPicture());
+			element.setId(ig.getId());
+			List<String> conformanceProfileNames=new ArrayList<String>();
+			Registry conformanceProfileRegistry= ig.getConformanceProfileLibrary();
+			if(conformanceProfileRegistry !=null) {
+				if(conformanceProfileRegistry.getChildren() !=null) {
+					for(Link i : conformanceProfileRegistry.getChildren()) {
+						ConformanceProfile	 conformanceProfile=conformanceProfileService.findDisplayFormat(i.getId());
+ 						if(conformanceProfile !=null) {
+						conformanceProfileNames.add(conformanceProfile.getName()+ conformanceProfile.getIdentifier());
+						}
+					}
+				}
+			}
+			element.setConformanceProfiles(conformanceProfileNames);
+			igs.add(element);
 		}
 		return igs;
 	}
+	
+	
+	
 	
 
 }

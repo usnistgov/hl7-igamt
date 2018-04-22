@@ -42,6 +42,7 @@ public class IGDocumentController {
 			String username = authentication.getPrincipal().toString();
 			List<Ig> igdouments =igService.findLatestByUsername(username);
 			System.out.println(igdouments.size());
+			
 			return igService.convertListToDisplayList(igdouments);
 		}else {
 			

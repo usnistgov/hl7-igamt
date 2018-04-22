@@ -1,18 +1,54 @@
-<div style="align:center; width:100%;
-margin-right:auto;margin-top: 30px">
+<p-dataView [value]="igs" [paginator]="true" [rows]="10" [sortField]="sortField" [sortOrder]="sortOrder" [filterBy]="'title,subtitle,username'" #dv>
+  <p-header>
+  <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By"
+                (onChange)="onSortChange($event)" [autoWidth]="false" [style]="{'min-width':'15em'}"></p-dropdown>
 
-<p-orderList [value]="igs"  [responsive]="true" header="User IG Document"
-             filter="filter" filterBy="metaData.title" filterPlaceholder="  Filter by title" dragdrop="true" dragdropScope="igdocument">
-  <ng-template let-ig pTemplate="item">
-    <div style="height: 100px;">
-    <div routerLink="{{'/ig-documents/igdocuments-edit/'+ig.id.id}}" [queryParams]="{ readOnly: false }"><a>{{ig.metaData.title}} </a></div>
+    <input type="search" pInputText placeholder="Search by Title" (keyup)="dv.filter($event.target.value)" style="float: right" >
 
-      <button  class="ui-button-info" pButton style="float: right" (click)="open(ig,false)" >Edit</button>
-      <button   style="float: right" (click)="open(ig,true)" pButton type="button">Read</button>
+  </p-header>
 
+  <ng-template let-ig pTemplate="listItem">
+
+    <div class="ui-g" style="border-bottom: 1px dashed">
+      <div class="ui-g-9 ui-g-nopad" >
+        <div class="ui-g-2">
+          <img *ngIf="ig.coverpage!=null"src={{ig.coverpage}}  width="60" height="60" style="padding: 10px">
+          <img *ngIf="ig.coverpage==null"  src="../../../../assets/layout/images/404.png" width="60" height="60">
+        </div>
+        <div class="ui-g-10">
+          <div>
+            <a class="point" style="font-size: 28px;font-family: RobotoDraft, Roboto, sans-serif; font-weight: 500;" routerLink="{{'/ig-documents/igdocuments-edit/'+ig.id.id}}" [queryParams]="{ readOnly: false }">{{ig.title}} </a>
+          </div>
+          <span *ngIf="ig.dateUpdated">
+            <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date}}
+          </span>
+          <span *ngIf="ig.username">
+            ,<i class="fa fa-user"></i> Author:  {{ig.username}}
+          </span>
+
+        </div>
+        <div class="ui-g-12">
+          <div class="ui-g-2">
+           <strong> Conformane Profiles: </strong>
+          </div>
+          <div class="ui-g-10">
+            <span class="badge" style="margin-right: 4px; margin-bottom: 4px;     border-radius: 5.25rem;
+    background: gray;
+    color: white;" *ngFor="let cp of ig.conformanceProfiles"> {{cp}}</span>
+          </div>
+
+          </div>
+      </div>
+      <div class="ui-g-3">
+        <div style="float: right">
+        <p-button styleClass="indigo-btn" (click)="open(ig,false)" label="Edit" icon="fa fa-pencil" iconPos="left"></p-button>
+        <p-button styleClass="ui-button-secondary" (click)="open(ig,true)" label="Read" icon="fa fa-eye" iconPos="left"></p-button>
+        <p-button styleClass="purple-btn" label="Copy" icon="fa fa-copy" iconPos="left"></p-button>
+        <p-button styleClass="red-btn"  label="Delete" icon="fa fa-remove" iconPos="left"></p-button>
+        </div>
+      </div>
     </div>
+
   </ng-template>
-</p-orderList>
-</div>
 
-
+</p-dataView>

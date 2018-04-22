@@ -17,9 +17,12 @@ import {MyIGsresolver} from "./my-igs/my-igs.resolver";
 					{
 						path: '',
 						children: [
-							{ path: 'my-igs', component: MyIgsComponent, resolve:{
+							{ path: 'my-igs', component: MyIgsComponent,
+
+                resolve:{
 						  myIgs: MyIGsresolver
-              } },
+              }
+							},
 							{ path: 'preloaded-igs', component: PreloadedIgsComponent },
 							{ path: 'shared-igs', component: SharedIgsComponent },
 							{ path: 'all-igs', component: AllIgsComponent },
