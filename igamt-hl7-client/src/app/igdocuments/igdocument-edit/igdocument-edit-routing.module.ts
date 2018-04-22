@@ -14,7 +14,7 @@ import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 				component: IgDocumentEditComponent,
         children: [
           { path: 'igdocument-metadata', component: IgDocumentMetadataComponent },
-          { path: 'section', component: SectionComponent },
+          { path: 'section/:id', component: SectionComponent },
           { path: '', component: IgDocumentMetadataComponent },
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' }
           // { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' }

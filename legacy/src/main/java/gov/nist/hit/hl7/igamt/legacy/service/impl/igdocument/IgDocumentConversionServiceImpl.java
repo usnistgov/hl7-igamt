@@ -116,13 +116,13 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		
 		if(ig.getChildSections() !=null && !ig.getChildSections().isEmpty())
 		addNaratives(newIg, ig.getChildSections());
-		addProfile(newIg, ig.getProfile());
+		addProfile(newIg, ig.getProfile(),ig.getChildSections().size()+1);
 			
 		igService.save(newIg);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addProfile(Ig newIg, Profile profile) {
+	private void addProfile(Ig newIg, Profile profile,int position) {
 		
 		TextSection infra= new TextSection();
 		
@@ -132,7 +132,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		infra.setType(Type.PROFILE);
 		infra.setLabel("Message Infrastructure");
 		
-		infra.setPosition(newIg.getContent().size()+1);
+		infra.setPosition(position);
 		Registry profileComponent= createProfileComponentSection(profile.getProfileComponentLibrary());
 		profileComponent.setPosition(1);
 		Registry conformanceProfile= createConformanceProfile(profile.getMessages());
@@ -157,7 +157,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		children.add(valueSets);
 		infra.setChildren(children);
 		infra.setParentId(newIg.getId().getId());
-		infra.setPosition(newIg.getContent().size());
 		newIg.getContent().add(infra);
 		igService.save(newIg);
 		

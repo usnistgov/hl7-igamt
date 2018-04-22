@@ -6,6 +6,7 @@ import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "
 import {MenuItem} from 'primeng/api';
 import {ContextMenuComponent} from "ngx-contextmenu";
 import {ActivatedRoute} from "@angular/router";
+import {SelectItem} from "primeng/components/common/selectitem";
 
 
 @Component({
@@ -17,6 +18,10 @@ export class TocComponent {
   @Input() ig : any;
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   igId:any;
+
+
+  types: SelectItem[];
+  selectedType: any;
 
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
@@ -70,12 +75,31 @@ export class TocComponent {
 
 
   constructor( private  tocService:TocService,    private sp: ActivatedRoute){
+    this.types=[
+
+
+      {label:"TEXT",value:"TEXT"},
+      {label:"CONFORMANCEPROFILE",value:"CONFORMANCEPROFILE"},
+      {label:"SEGMENT",value:"SEGMENT"},
+
+      {label:"MESSAGE",value:"CONFORMANCEPROFILE"},
+      {label:"PRFOILECOMPONENT",value:"PROFILECOMPONENT"},
+      {label:"Composite Profile ",value:"COMPOSITEPROFILE"},
+      {label:"Value Set",value:"VALUESET"},
+      {label:"Definition", value:"DISPLAY"}
+
+    ]
+
 
     console.log(this.ig);
 
   }
 
-
+  filterFn(value){
+    this.tree.treeModel.filterNodes((node) => {
+      return node.data.data.label.startsWith(value);
+    });
+  }
 
   ngOnInit() {
     this.igId= this.sp.snapshot.params["igId"];
@@ -130,7 +154,7 @@ export class TocComponent {
   };
 
   getPath =function (node) {
-    node.data.data.position= parseInt(node.index)+1;
+    // node.data.data.position= parseInt(node.index)+1;
       if(node.parent.data.data.type=="IGDOCUMENT"){
         return  node.data.data.position+".";
       }else{
@@ -142,5 +166,19 @@ export class TocComponent {
     console.log(node);
     return node.path;
   }
+
+  collapseAll(){
+    this.tree.treeModel.collapseAll();
+  }
+
+  filterByTypes(){
+    console.log("")
+    this.tree.treeModel.filterNodes((node) => {
+
+    return this.selectedType==node.data.data.type;
+
+    });
+  }
+
 
 }

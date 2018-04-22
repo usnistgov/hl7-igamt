@@ -21,7 +21,10 @@ import { TreeModule } from 'angular-tree-component';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {ContextMenuModule} from "ngx-contextmenu";
 import {ActivatedRouteSnapshot} from "@angular/router";
+import {PanelModule} from 'primeng/panel';
+import {MultiSelectModule} from 'primeng/multiselect';
 
+import {DropdownModule} from 'primeng/dropdown';
 
 @NgModule({
 	imports: [
@@ -39,8 +42,11 @@ import {ActivatedRouteSnapshot} from "@angular/router";
     DragDropModule,
     FormsModule,
     TreeModule,
-    ContextMenuModule.forRoot()
-
+    PanelModule,
+    MultiSelectModule,
+    FormsModule,
+ContextMenuModule.forRoot(),
+    DropdownModule,
 
 
 ],

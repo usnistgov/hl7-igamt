@@ -66,7 +66,6 @@ public class IGDocumentController {
 		if (authentication != null) {
 			
 			
-			String username = authentication.getPrincipal().toString();
 			Ig igdoument =igService.findLatestById(id);
 			IGDisplay ret = igService.convertDomainToModel(igdoument);
 			return ret;

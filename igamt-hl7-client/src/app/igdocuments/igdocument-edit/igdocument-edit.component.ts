@@ -5,6 +5,7 @@ import {Http} from "@angular/http";
 import {MenuItem} from "primeng/components/common/menuitem";
 // import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {HttpClient} from "@angular/common/http";
+import {SelectItem} from "primeng/components/common/selectitem";
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
@@ -19,6 +20,11 @@ export class IgDocumentEditComponent {
 
   constructor(private route : ActivatedRoute,
               private http: HttpClient){
+
+
+
+
+
 
       this.route.data.map(data =>data.currentIg).subscribe(x=>{
         console.log(x);

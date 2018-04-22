@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.DefinitionTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgToc;
@@ -110,20 +112,25 @@ public class IgServiceImpl implements IgService{
 		data.setType(Type.IGDOCUMENT);
 		data.setLabel("TABLE OF CONTENT ");
 		start.setData(data);
-		
+		List<TreeNode> firstLevel= new ArrayList<TreeNode>();
 		for(TextSection s: ig.getContent()) {
 			if(s.getType().equals(Type.TEXT)) {
 			TreeNode node =	createTextSectionNode(s);
-			start.getChildren().add(node);
+				firstLevel.add(node);
 			}else if(s.getType().equals(Type.PROFILE)) {
 				TreeNode profileNode=createProfileNode(s);
-				start.getChildren().add(profileNode);
+				firstLevel.add(profileNode);
 			}	
 		}
+		firstLevel.sort((h1, h2) -> h1.compareTo(h2));
+
+		start.setChildren(firstLevel);
+		
+
 		IgToc toc = new IgToc();
 		List<TreeNode> nodes= new ArrayList<TreeNode>();
 		nodes.add(start);
-		
+
 		toc.setContent(nodes);
 		
 		igDisplay.setToc(toc);
@@ -137,7 +144,6 @@ public class IgServiceImpl implements IgService{
 		TextSectionData sectionTree= new TextSectionData();
 		
 		
-		//sectionTree.setDateUpdated(s.getDateUpdated());
 		sectionTree.setLabel(s.getLabel());
 		sectionTree.setType(s.getType());
 		sectionTree.setPosition(s.getPosition());
@@ -191,8 +197,11 @@ public class IgServiceImpl implements IgService{
 					
 				}
 			}
+			profileChildren.sort((h1, h2) -> h1.compareTo(h2));
+
 			
 		}
+
 		profileNode.setChildren(profileChildren);
 		
 		
@@ -215,12 +224,15 @@ public class IgServiceImpl implements IgService{
 			data.setDomainInfo(confromanceProfile.getDomainInfo());
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());
+			node.setData(data);
+
 			data.setType(Type.CONFORMANCEPROFILE);
 			addChildrenByType(node, Type.CONFORMANCEPROFILE);
-			node.setData(data);
 			Nodes.add(node);
 		 }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 	}
 
@@ -239,17 +251,145 @@ public class IgServiceImpl implements IgService{
 			data.setDomainInfo(vs.getDomainInfo());
 			data.setKey(l.getId());
 			data.setType(Type.VALUESET);
-			addChildrenByType(node, Type.VALUESET);
 			node.setData(data);
+			addChildrenByType(node, Type.VALUESET);
 			Nodes.add(node);
 		 }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 		
 	
 	}
 
-	private void addChildrenByType(TreeNode v, Type valueset) {
+	private void addChildrenByType(TreeNode v, Type type) {
+		Type referenceType = type;
+		
+		
+		TreeNode metadataNode=new TreeNode();
+		DefinitionTreeData metadataData=new DefinitionTreeData(); 
+		metadataData.setLabel("MetaData");
+		metadataData.setPosition(1);
+		metadataData.setKey(v.getData().getKey());
+		metadataData.setReferenceType(referenceType);
+		metadataNode.setData(metadataData);
+		v.getChildren().add(metadataNode);
+		
+		
+		
+		TreeNode definition=new TreeNode();
+		DefinitionTreeData definitionData=new DefinitionTreeData(); 
+		definitionData.setLabel("Definition");
+		definitionData.setPosition(2);
+		definitionData.setKey(v.getData().getKey());
+		definitionData.setReferenceType(referenceType);
+		definition.setData(definitionData);
+		addDefinitionNodesByType(definition, referenceType);
+		
+		v.getChildren().add(definition);
+		
+		
+		 TreeNode crosRefs=new TreeNode();
+		 DefinitionTreeData  crosRefsData=new DefinitionTreeData(); 
+		 crosRefsData.setLabel("Cross-References");
+		 crosRefsData.setPosition(3);
+		 crosRefsData.setKey(v.getData().getKey());
+		 crosRefsData.setReferenceType(referenceType);
+		 crosRefs.setData( crosRefsData);
+		 v.getChildren().add(crosRefs);
+		
+		
+		
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void addDefinitionNodesByType(TreeNode definition, Type referenceType) {
+		
+		
+		TreeNode prefDef=new TreeNode();
+		DefinitionTreeData prefDefData=new DefinitionTreeData(); 
+		prefDefData.setLabel("Pre-Text");
+		prefDefData.setPosition(1);
+		prefDefData.setKey(definition.getData().getKey());
+		prefDefData.setReferenceType(referenceType);
+		prefDef.setData(prefDefData);
+		definition.getChildren().add(prefDef);
+		
+		
+		TreeNode structure=new TreeNode();
+		DefinitionTreeData structureData=new DefinitionTreeData(); 
+		structureData.setLabel("Structure");
+		structureData.setPosition(2);
+		structureData.setKey(definition.getData().getKey());
+		structureData.setReferenceType(referenceType);
+		structure.setData(structureData);
+		definition.getChildren().add(structure);
+		
+		
+		TreeNode postDef=new TreeNode();
+		DefinitionTreeData postDefData=new DefinitionTreeData(); 
+		postDefData.setLabel("Post-Text");
+		postDefData.setPosition(3);
+		postDefData.setKey(definition.getData().getKey());
+		postDefData.setReferenceType(referenceType);
+		postDef.setData(postDefData);
+		definition.getChildren().add(postDef);
+		
+		
+		
+		TreeNode ConfStat=new TreeNode();
+		DefinitionTreeData ConfStatData=new DefinitionTreeData(); 
+		ConfStatData.setLabel("Conformance Statement");
+		ConfStatData.setPosition(4);
+		ConfStatData.setKey(definition.getData().getKey());
+		ConfStatData.setReferenceType(referenceType);
+		ConfStat.setData(ConfStatData);
+		definition.getChildren().add(ConfStat);
+		
+		TreeNode predicates=new TreeNode();
+		DefinitionTreeData predicatesData=new DefinitionTreeData(); 
+		predicatesData.setLabel("Predicates");
+		predicatesData.setPosition(5);
+		predicatesData.setKey(definition.getData().getKey());
+		predicatesData.setReferenceType(referenceType);
+		predicates.setData(predicatesData);
+		definition.getChildren().add(predicates);
+		
+		
+		if(referenceType.equals(Type.SEGMENT)) {
+			Segment s= segmentService.findByKey(definition.getData().getKey());
+			if(s !=null) {
+				if(s.getName().equals("OBX")){
+					
+					TreeNode DynamicMapping=new TreeNode();
+					DefinitionTreeData DynamicMappingData=new DefinitionTreeData(); 
+					DynamicMappingData.setLabel("Dynamic Mapping");
+					DynamicMappingData.setPosition(6);
+					DynamicMappingData.setKey(definition.getData().getKey());
+					DynamicMappingData.setReferenceType(referenceType);
+					DynamicMapping.setData(DynamicMappingData);
+					definition.getChildren().add(DynamicMapping);
+					
+					
+					TreeNode CoConstraints=new TreeNode();
+					DefinitionTreeData CoConstraintsData=new DefinitionTreeData(); 
+					CoConstraintsData.setLabel("Co-Constraints");
+					CoConstraintsData.setPosition(5);
+					CoConstraintsData.setKey(definition.getData().getKey());
+					CoConstraintsData.setReferenceType(referenceType);
+					CoConstraints.setData(CoConstraintsData);
+					definition.getChildren().add(CoConstraints);
+					
+					
+					
+				}	
+			}
+			
+		}
+		
+		
 		// TODO Auto-generated method stub
 		
 	}
@@ -269,11 +409,14 @@ public class IgServiceImpl implements IgService{
 			data.setKey(l.getId());
 			data.setDomainInfo(dt.getDomainInfo());
 			data.setType(Type.DATATYPE);
-			addChildrenByType(node, Type.DATATYPE);
 			node.setData(data);
+
+			addChildrenByType(node, Type.DATATYPE);
 			Nodes.add(node);
 		 }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 	}
 
@@ -294,11 +437,14 @@ public class IgServiceImpl implements IgService{
 
 			data.setKey(l.getId());
 			data.setType(Type.SEGMENT);
-			addChildrenByType(node, Type.SEGMENT);
 			node.setData(data);
+
+			addChildrenByType(node, Type.SEGMENT);
 			Nodes.add(node);
 		 }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 	}
 
@@ -318,11 +464,14 @@ public class IgServiceImpl implements IgService{
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());
 			data.setType(Type.COMPOSITEPROFILE);
-			addChildrenByType(node, Type.COMPOSITEPROFILE);
 			node.setData(data);
+
+			addChildrenByType(node, Type.COMPOSITEPROFILE);
 			Nodes.add(node);
 		  }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 	}
 
@@ -341,11 +490,13 @@ public class IgServiceImpl implements IgService{
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());
 			data.setType(Type.COMPOSITEPROFILE);
-			addChildrenByType(node, Type.COMPOSITEPROFILE);
 			node.setData(data);
+			addChildrenByType(node, Type.COMPOSITEPROFILE);
 			Nodes.add(node);
 		 }
 		}
+		Nodes.sort((h1, h2) -> h1.compareTo(h2));
+
 		return Nodes;
 	}
 
@@ -372,6 +523,8 @@ public class IgServiceImpl implements IgService{
 				}
 				
 			}
+			children.sort((h1, h2) -> h1.compareTo(h2));
+
 			t.setChildren(children);
 			
 		}
