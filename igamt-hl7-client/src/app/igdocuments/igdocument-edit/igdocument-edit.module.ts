@@ -25,6 +25,8 @@ import {PanelModule} from 'primeng/panel';
 import {MultiSelectModule} from 'primeng/multiselect';
 
 import {DropdownModule} from 'primeng/dropdown';
+import {SectionResolver} from "./section/sectionResolver.resolver";
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 
 @NgModule({
 	imports: [
@@ -47,6 +49,8 @@ import {DropdownModule} from 'primeng/dropdown';
     FormsModule,
 ContextMenuModule.forRoot(),
     DropdownModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot()
 
 
 ],
@@ -54,7 +58,7 @@ ContextMenuModule.forRoot(),
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent
 	],
   providers : [
-   TocService,TreeDragDropService,IgdocumentEditResolver
+   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

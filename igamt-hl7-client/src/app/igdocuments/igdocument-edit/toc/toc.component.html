@@ -1,12 +1,12 @@
-<!--<p-panel header="Display Options" [toggleable]="true">-->
-  <!--&lt;!&ndash;<input id="filter" #filter (keyup)="filterFn(filter.value)" placeholder="filter nodes"/>&ndash;&gt;-->
+<p-panel header="Display Options" [toggleable]="true">
+  <input id="filter" #filter (keyup)="filterFn(filter.value)" placeholder="filter nodes"/>
 
-  <!--&lt;!&ndash;<p-dropdown [options]="types" [(ngModel)]="selectedType" (onChange)="filterByTypes()"></p-dropdown>&ndash;&gt;-->
+  <p-dropdown [options]="types" [(ngModel)]="selectedType" (onChange)="filterByTypes()"></p-dropdown>
 
-<!--</p-panel>-->
+</p-panel>
 
 <p-panel header="Content">
-<tree-root [nodes]="ig.toc.content" [options]="options" *ngIf="ig.toc.content" #treeroot>
+<tree-root [nodes]="ig.toc.content" [options]="options" #treeroot>
 
   <ng-template #treeNodeTemplate let-node let-index="index">
     <ng-container [ngSwitch]="node.data.data.type">
@@ -39,38 +39,38 @@
 
 
       <ng-container *ngSwitchCase="'PROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
 
       <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
       <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
 
       <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'SEGMENTRGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
       <ng-container *ngSwitchCase="'DATATYPE'">
@@ -79,29 +79,29 @@
       </ng-container>
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'SEGMENT'">
-        <display-label [elm]="node.data.data" [igId]="igId"></display-label>
+        {{getPath(node)}} <display-label [elm]="node.data.data" [igId]="igId"></display-label>
 
       </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESET'" >
-        <span>{{node.data.data.label}}</span>
+        {{getPath(node)}}  <display-label [elm]="node.data.data" [igId]="igId"></display-label>
       </ng-container>
       <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-        <span>{{node.data.data.label}}</span>
+        {{getPath(node)}}    <span>{{node.data.data.label}}</span>
       </ng-container>
 
       <ng-container *ngSwitchCase="'DISPLAY'">
-        <span>{{node.data.data.label}}</span>
+        {{getPath(node)}}  <span>{{node.data.data.label}}</span>
       </ng-container>
 
     </ng-container>

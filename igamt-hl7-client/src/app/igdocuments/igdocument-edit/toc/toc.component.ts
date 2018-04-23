@@ -15,10 +15,11 @@ import {SelectItem} from "primeng/components/common/selectitem";
   styleUrls:["./toc.component.css"]
 })
 export class TocComponent {
-  @Input() ig : any;
+  // @Input() ig : any;
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   igId:any;
 
+  ig:any;
 
   types: SelectItem[];
   selectedType: any;
@@ -75,6 +76,11 @@ export class TocComponent {
 
 
   constructor( private  tocService:TocService,    private sp: ActivatedRoute){
+    this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      console.log(x);
+      this.ig= x;
+      console.log(this.ig);
+    });
     this.types=[
 
 
@@ -103,6 +109,12 @@ export class TocComponent {
 
   ngOnInit() {
     this.igId= this.sp.snapshot.params["igId"];
+    this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      console.log(x);
+      this.ig= x;
+      console.log(this.ig);
+    });
+    console.log( this.igId);
   }
   print(node){
     console.log(node);
@@ -154,7 +166,7 @@ export class TocComponent {
   };
 
   getPath =function (node) {
-    // node.data.data.position= parseInt(node.index)+1;
+      node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
       if(node.parent.data.data.type=="IGDOCUMENT"){
         return  node.data.data.position+".";
       }else{
