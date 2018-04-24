@@ -79,6 +79,16 @@ export class IndexedDbService {
       }
     });
   }
+
+  public getSegmentMetadata (id, callback) {
+    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async () => {
+      this.changedObjectsDatabase.segments.where('id').equals(id)
+        .keys(keys => keys.map(key => ({metadata: key[1]}))).then(segmentMetadata => {
+        callback(segmentMetadata);
+      });
+    });
+  }
+
   public saveDatatype(datatype) {
     this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async() => {
       let savedDatatype = await this.changedObjectsDatabase.datatypes.get(datatype.id);

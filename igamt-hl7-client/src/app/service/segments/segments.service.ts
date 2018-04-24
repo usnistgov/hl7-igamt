@@ -1,14 +1,19 @@
-// import {Injectable} from '@angular/core';
-// import { Http} from '@angular/http';
-// import {HttpClient} from "@angular/common/http";
-//
-// @Injectable()
-// export class SegmentsService {
-//   constructor(private http: HttpClient) {}
-//   // public getSegments(libId, callback) {
-//   //   this.http.get('api/segment-library/' +libId+ '/segments').map(res => res.json()).subscribe(data => {
-//   //     callback(data);
-//   //   });
-//   // }
-//
-// }
+import {Injectable} from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
+import { IndexedDbService } from '../indexed-db/indexed-db.service';
+
+@Injectable()
+export class SegmentsService {
+  constructor(private http: HttpClientModule, private indexedDbService: IndexedDbService) {}
+  public getSegmentMetadata(id, callback) {
+    this.indexedDbService.getSegmentMetadata(id, function(clientSegmentMetadata){
+      if (clientSegmentMetadata.isUndefined()) {
+        this.http.get('api/segments/' + id + '/metadata').then(function(serverSegmentMetadata){
+          callback(serverSegmentMetadata);
+        });
+      } else {
+        callback(clientSegmentMetadata);
+      }
+    });
+  }
+}
