@@ -107,12 +107,27 @@ export class IndexedDbService {
   public saveSegment(segment) {
     console.log(segment);
     this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async() => {
-      await this.changedObjectsDatabase.segments.put({
-        'id': segment.id,
-        'metadata': segment.metadata,
-        'definition': segment.definition,
-        'crossReference': segment.crossReference
-      });
+      let savedSegment = await this.changedObjectsDatabase.segments.get(segment.id);
+      if (savedSegment.isUndefined()) {
+        savedSegment = new IObject();
+        savedSegment.id = segment.id;
+      }
+      let changesToBeSaved = false;
+      if (!segment.metadata.isUndefined()) {
+        savedSegment.metadata = segment.metadata;
+        changesToBeSaved = true;
+      }
+      if (!segment.definition.isUndefined()) {
+        savedSegment.definition = segment.definition;
+        changesToBeSaved = true;
+      }
+      if (!segment.metadata.isUndefined()) {
+        savedSegment.crossReference = segment.crossReference;
+        changesToBeSaved = true;
+      }
+      if (changesToBeSaved) {
+        await this.changedObjectsDatabase.segments.put(savedSegment);
+      }
     });
   }
 
