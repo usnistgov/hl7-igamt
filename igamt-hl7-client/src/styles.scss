@@ -1,8 +1,26 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~angular-tree-component/dist/angular-tree-component.css';
 @import "./app/igdocuments/igdocument-edit/toc/toc.component.css";
 body .ui-widget-header {
   background: #39a3f4;
   border: 1px solid #39a3f4;
   font-weight: 700;
 }
+
+
+.ig-top-bar .ui-widget-header {
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  font-weight: 700;
+  border-bottom: 1px dashed;
+  margin:0;
+
+}
+
+.custom-menu .ui-panelmenu .ui-panelmenu-header > a {
+  padding: 0.429em 0.857em;
+  background-color: #ffffff;
+  color: #424242;
+  border: 1px solid #ffffff;
+  outline: 0 none;
+}
+

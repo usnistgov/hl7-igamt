@@ -1,18 +1,43 @@
 <!--HEADER-->
 <!--<ig-header></ig-header>-->
+<div>
+<div class="ig-top-bar">
+<p-toolbar>
 
+  <span class="ig-title">{{_ig.metadata.title}}</span>
+  <span class="ig-date">{{_ig.metadata.dateUpdated|date}}</span>
+
+  <div class="ui-toolbar-group-right">
+    <button pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
+    <button pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+    <button pButton type="button" label="save" class="green-btn" icon="fa-check"></button>
+
+
+
+
+
+  </div>
+
+  <div class="ui-toolbar-group-right">
+    <p-splitButton label="Save" icon="fa-check" [model]="items"></p-splitButton>
+  </div>
+</p-toolbar>
+</div>
 <div class="ui-g" style="padding : 0;">
 
   <!--TOC-->
-  <div class="ui-g-3" style="padding : 0;">
+
+
+  <div class="ui-g-3 no-margin" style="padding : 0;">
     <igamt-toc></igamt-toc>
   </div>
 
   <!--ROUTE-->
-  <div class="ui-g-9" style="padding : 0;">
+  <div class=" card ui-g-9 " style="padding : 0;">
     <router-outlet></router-outlet>
   </div>
 
 </div>
 
 
+</div>

@@ -252,7 +252,7 @@ public class IgServiceImpl implements IgService{
 			data.setKey(l.getId());
 			data.setType(Type.VALUESET);
 			node.setData(data);
-			addChildrenByType(node, Type.VALUESET);
+//			addChildrenByType(node, Type.VALUESET);
 			Nodes.add(node);
 		 }
 		}
@@ -264,44 +264,44 @@ public class IgServiceImpl implements IgService{
 	}
 
 	private void addChildrenByType(TreeNode v, Type type) {
-		Type referenceType = type;
-		
-		
-		TreeNode metadataNode=new TreeNode();
-		DefinitionTreeData metadataData=new DefinitionTreeData(); 
-		metadataData.setLabel("MetaData");
-		metadataData.setPosition(1);
-		metadataData.setKey(v.getData().getKey());
-		metadataData.setReferenceType(referenceType);
-		metadataNode.setData(metadataData);
-		v.getChildren().add(metadataNode);
-		
-		
-		
-		TreeNode definition=new TreeNode();
-		DefinitionTreeData definitionData=new DefinitionTreeData(); 
-		definitionData.setLabel("Definition");
-		definitionData.setPosition(2);
-		definitionData.setKey(v.getData().getKey());
-		definitionData.setReferenceType(referenceType);
-		definition.setData(definitionData);
-		addDefinitionNodesByType(definition, referenceType);
-		
-		v.getChildren().add(definition);
-		
-		
-		 TreeNode crosRefs=new TreeNode();
-		 DefinitionTreeData  crosRefsData=new DefinitionTreeData(); 
-		 crosRefsData.setLabel("Cross-References");
-		 crosRefsData.setPosition(3);
-		 crosRefsData.setKey(v.getData().getKey());
-		 crosRefsData.setReferenceType(referenceType);
-		 crosRefs.setData( crosRefsData);
-		 v.getChildren().add(crosRefs);
-		
-		
-		
-		// TODO Auto-generated method stub
+//		Type referenceType = type;
+//		
+//		
+//		TreeNode metadataNode=new TreeNode();
+//		DefinitionTreeData metadataData=new DefinitionTreeData(); 
+//		metadataData.setLabel("MetaData");
+//		metadataData.setPosition(1);
+//		metadataData.setKey(v.getData().getKey());
+//		metadataData.setReferenceType(referenceType);
+//		metadataNode.setData(metadataData);
+//		v.getChildren().add(metadataNode);
+//		
+//		
+//		
+//		TreeNode definition=new TreeNode();
+//		DefinitionTreeData definitionData=new DefinitionTreeData(); 
+//		definitionData.setLabel("Definition");
+//		definitionData.setPosition(2);
+//		definitionData.setKey(v.getData().getKey());
+//		definitionData.setReferenceType(referenceType);
+//		definition.setData(definitionData);
+//		addDefinitionNodesByType(definition, referenceType);
+//		
+//		v.getChildren().add(definition);
+//		
+//		
+//		 TreeNode crosRefs=new TreeNode();
+//		 DefinitionTreeData  crosRefsData=new DefinitionTreeData(); 
+//		 crosRefsData.setLabel("Cross-References");
+//		 crosRefsData.setPosition(3);
+//		 crosRefsData.setKey(v.getData().getKey());
+//		 crosRefsData.setReferenceType(referenceType);
+//		 crosRefs.setData( crosRefsData);
+//		 v.getChildren().add(crosRefs);
+//		
+//		
+//		
+//		// TODO Auto-generated method stub
 		
 	}
 
@@ -608,6 +608,7 @@ public class IgServiceImpl implements IgService{
 			//element.setConfrmanceProfiles(confrmanceProfiles);
 			element.setCoverpage(ig.getMetaData().getCoverPicture());
 			element.setId(ig.getId());
+			element.setUsername(ig.getUsername());
 			List<String> conformanceProfileNames=new ArrayList<String>();
 			Registry conformanceProfileRegistry= ig.getConformanceProfileLibrary();
 			if(conformanceProfileRegistry !=null) {
