@@ -43,7 +43,7 @@ export class MyIgsComponent implements OnInit {
 
   open(ig,readnly){
     console.log(ig.id.id);
-    this.router.navigate(['/ig-documents/igdocuments-edit/'+ig.id.id],{ queryParams: { readOnly: "true" } });
+    this.router.navigate(['/ig/'+ig.id.id],{ queryParams: { readOnly: "true" } });
   }
 
   onSortChange(event) {
