@@ -4,8 +4,31 @@
 <div class="ig-top-bar">
 <p-toolbar>
 
-  <span class="ig-title">{{_ig.metadata.title}}</span>
-  <span class="ig-date">{{_ig.metadata.dateUpdated|date}}</span>
+  <span class="ig-title">{{ig.metadata.title}}</span>
+  <span class="ig-date">{{ig.dateUpdated|date}}</span>
+  <span class="ig-date">{{ig.username}}</span>
+
+  <div class="ui-toolbar-group-left">
+  <div class="ui-inputgroup u-g-12" >
+    <button pButton type="button"  icon="fa-search" ></button>
+    <input type="text" [(ngModel)]="searchFilter" pInputText placeholder="Search By Name" id="filter" #filter (keyup)="filterFn()" >{{searchFilter}}
+  </div>
+  <!--<input id="filter" #filter (keyup)="filterFn(filter.value)" placeholder="filter nodes"/>-->
+
+    <p-multiSelect defaultLabel="Types"  [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()"></p-multiSelect>
+
+
+
+    <p-multiSelect defaultLabel="SCOPE"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()"></p-multiSelect>
+
+
+
+    <button style="float: right;" pButton label="Expand All" type="button"  icon="fa-expand-alt" (click)="expandAll()"></button>
+    <button pButton style="float:left" label="Collapse All" type="button"  icon="fa-compress-alt" (click)="collapseAll()"></button>
+
+
+  </div>
+
 
   <div class="ui-toolbar-group-right">
     <button pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
@@ -29,12 +52,126 @@
 
 
   <div class="ui-g-3 no-margin" style="padding : 0;">
-    <igamt-toc></igamt-toc>
+    <!--<igamt-toc></igamt-toc>-->
+
+    <tree-root [nodes]="ig.toc.content" [options]="options" #treeroot>
+
+      <ng-template #treeNodeTemplate let-node let-index="index">
+        <ng-container [ngSwitch]="node.data.data.type">
+          <ng-container *ngSwitchCase="'IGDOCUMENT'">
+            <span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>
+
+            <context-menu #igcontextmenu>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-plus"></i> Add Section
+              </ng-template>
+            </context-menu>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'TEXT'">
+            <span [contextMenu]="textcontextmenu" (click)="path(node)"> {{getPath(node)}}{{node.data.data.label}}</span>
+            <context-menu #textcontextmenu>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-plus"></i> Add Section
+              </ng-template>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-copy"></i> Copy Section
+              </ng-template>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-remove"></i> Delete Section
+              </ng-template>
+
+            </context-menu>
+
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'PROFILE'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+
+          <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'SEGMENTRGISTRY'">
+
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'DATATYPE'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+            <span>  {{node.data.data.label}}</span>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'SEGMENT'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+
+
+
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'VALUESET'" >
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>      </ng-container>
+          <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+
+            <span>{{node.data.data.label}}</span>
+            <display-menu *ngIf="node.active" [elm]="node.data.data"></display-menu>
+
+
+          </ng-container>
+
+
+        </ng-container>
+
+
+      </ng-template>
+
+
+
+    </tree-root>
   </div>
 
   <!--ROUTE-->
   <div class=" card ui-g-9 " style="padding : 0;">
-    <router-outlet></router-outlet>
+    <!--<router-outlet></router-outlet>-->
   </div>
 
 </div>

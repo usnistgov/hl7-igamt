@@ -138,9 +138,6 @@ export class TocComponent {
 
   }
 
-  isFiltred(node,value){
-    return node.data.data.label.startsWith(value);
-  }
 
 
   ngOnInit() {
