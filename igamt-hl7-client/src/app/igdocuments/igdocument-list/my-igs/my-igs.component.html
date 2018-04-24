@@ -17,10 +17,10 @@
         </div>
         <div class="ui-g-10">
           <div>
-            <a class="point" style="font-size: 28px;font-family: RobotoDraft, Roboto, sans-serif; font-weight: 500;" (click)="open(ig,true)" [queryParams]="{ readOnly: false }">{{ig.title}} </a>
+            <a class="point" style="font-size: 28px;font-family: RobotoDraft, Roboto, sans-serif; font-weight: 500;" (click)="open(ig,false)">{{ig.title}} </a>
           </div>
           <span *ngIf="ig.dateUpdated">
-            <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date:'short'}}
+            <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date }}
           </span>
           <span *ngIf="ig.username">
             ,<i class="fa fa-user"></i> Author:  {{ig.username}}

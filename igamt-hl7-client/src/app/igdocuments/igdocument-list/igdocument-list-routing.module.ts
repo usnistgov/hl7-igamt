@@ -20,8 +20,8 @@ import {MyIGsresolver} from "./my-igs/my-igs.resolver";
 							{ path: 'my-igs', component: MyIgsComponent,
 
                 resolve:{
-						  myIgs: MyIGsresolver
-              }
+						        myIgs: MyIGsresolver
+                  }
 							},
 							{ path: 'preloaded-igs', component: PreloadedIgsComponent },
 							{ path: 'shared-igs', component: SharedIgsComponent },
