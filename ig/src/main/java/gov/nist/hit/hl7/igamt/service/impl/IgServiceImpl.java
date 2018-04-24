@@ -107,10 +107,13 @@ public class IgServiceImpl implements IgService{
 		// TODO Auto-generated method stub
 		IGDisplay igDisplay= new IGDisplay();
 		igDisplay.setMetadata(ig.getMetaData());
+		igDisplay.setAuthor(ig.getUsername());
+		igDisplay.setDateUpdated(ig.getUpdateDate());
 		TreeNode start= new TreeNode();
 		TreeData data = new TreeData();
 		data.setType(Type.IGDOCUMENT);
 		data.setLabel("TABLE OF CONTENT ");
+		start.setExpanded(true);
 		start.setData(data);
 		List<TreeNode> firstLevel= new ArrayList<TreeNode>();
 		for(TextSection s: ig.getContent()) {
@@ -439,7 +442,7 @@ public class IgServiceImpl implements IgService{
 			data.setType(Type.SEGMENT);
 			node.setData(data);
 
-			addChildrenByType(node, Type.SEGMENT);
+			//addChildrenByType(node, Type.SEGMENT);
 			Nodes.add(node);
 		 }
 		}
