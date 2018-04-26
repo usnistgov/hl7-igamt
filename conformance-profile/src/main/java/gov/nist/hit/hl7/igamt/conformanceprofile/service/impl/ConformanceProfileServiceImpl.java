@@ -47,7 +47,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService{
 
   @Override
   public ConformanceProfile save(ConformanceProfile conformanceProfile) {
-    conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+  //  conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
     return conformanceProfileRepository.save(conformanceProfile);
   }
 
@@ -136,6 +136,16 @@ public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, S
 public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name) {
 	// TODO Auto-generated method stub
 	return conformanceProfileRepository.findByDomainInfoScopeAndName(scope, name);
+}
+
+@Override
+public ConformanceProfile findDisplayFormat(CompositeKey id) {
+	List<ConformanceProfile> cps=conformanceProfileRepository.findDisplayFormat(id);
+	if(cps !=null && ! cps.isEmpty()) {
+		return cps.get(0);
+	}
+	// TODO Auto-generated method stub
+	return null;
 }
   
 }

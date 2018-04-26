@@ -1,0 +1,457 @@
+<div class="ui-g dashboard">
+    <div class="ui-g-12 ui-md-3">
+        <div class="overview-box overview-box-1">
+            <h1>SALES</h1>
+            <div class="overview-value">$25,620</div>
+            <div class="overview-ratio">
+                <div class="overview-direction">
+                  <i class="fa fa-arrow-up" ></i>
+                </div>
+                <div class="overview-ratio-value">
+                  51%
+                </div>
+            </div>
+            <img src="assets/layout/images/dashboard/graph-blue.svg" alt="apollo-layout"/>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-3">
+        <div class="overview-box overview-box-2">
+            <h1>VIEWS</h1>
+            <div class="overview-value">9521</div>
+            <div class="overview-ratio">
+                <div class="overview-direction">
+                  <i class="fa fa-arrow-up" ></i>
+                </div>
+                <div class="overview-ratio-value">
+                  36%
+                </div>
+            </div>
+            <img src="assets/layout/images/dashboard/graph-green.svg" alt="apollo-layout"/>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-3">
+        <div class="overview-box overview-box-3">
+            <h1>USERS</h1>
+            <div class="overview-value">452</div>
+            <div class="overview-ratio">
+                <div class="overview-direction">
+                  <i class="fa fa-arrow-up"></i>
+                </div>
+                <div class="overview-ratio-value">
+                  19%
+                </div>
+            </div>
+            <img src="assets/layout/images/dashboard/graph-yellow.svg" alt="apollo-layout"/>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-3">
+        <div class="overview-box overview-box-4">
+            <h1>SOCIAL</h1>
+            <div class="overview-value">65922</div>
+            <div class="overview-ratio">
+                <div class="overview-direction">
+                  <i class="fa fa-arrow-up" ></i>
+                </div>
+                <div class="overview-ratio-value">
+                  25%
+                </div>
+            </div>
+            <img src="assets/layout/images/dashboard/graph-red.svg" alt="apollo-layout"/>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <p-panel header="Status" class="circle-panel">
+            <div class="ui-g">
+                <div class="ui-g-12 ui-lg-3 ui-md-6">
+                    <div class="status-title" style="color:#6ebc3b">Users</div>
+                    <div class="circle1">
+                      <i class="fa fa-user"></i>
+                      <span>95</span>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-lg-3 ui-md-6">
+                    <div class="status-title" style="color:#f6a821">Mobile</div>
+                    <div class="circle2">
+                      <i class="fa fa-mobile"></i>
+                      <span>95</span>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-lg-3 ui-md-6">
+                    <div class="status-title" style="color:#039ade">Pageviews</div>
+                    <div class="circle3">
+                      <i class="fa fa-eye"></i>
+                      <span>95</span>
+                    </div>
+                </div>
+                <div class="ui-g-12 ui-lg-3 ui-md-6">
+                    <div class="status-title" style="color:#d66351">Sales</div>
+                    <div class="circle4">
+                      <i class="fa fa-dollar"></i>
+                      <span>95</span>
+                    </div>
+                </div>
+            </div>
+        </p-panel>
+    </div>
+
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4 task-list">
+        <p-panel header="TASKS" [style]="{minHeight: '360px'}">
+            <ul>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Sales Reports</span>
+                    <i class="fa fa-briefcase"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Pay Invoices</span>
+                    <i class="fa fa-credit-card"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Dinner with Tony</span>
+                    <i class="fa fa-cutlery"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Client Meeting</span>
+                    <i class="fa fa-user"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">New Theme</span>
+                    <i class="fa fa-paint-brush"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Flight Ticket</span>
+                    <i class="fa fa-fighter-jet"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Generate Charts</span>
+                    <i class="fa fa-area-chart"></i>
+                </li>
+                <li>
+                    <p-checkbox binary="true"></p-checkbox>
+                    <span class="task-name">Call Client</span>
+                    <i class="fa fa-phone"></i>
+                </li>
+            </ul>
+        </p-panel>
+    </div>
+
+    <div class="ui-g-12 ui-md-6 ui-lg-4 ui-fluid contact-form">
+        <p-panel header="CONTACT US" [style]="{minHeight: '360px'}">
+            <div class="ui-g">
+                <div class="ui-g-12">
+                    <p-dropdown [options]="cities" [autoWidth]="false" [(ngModel)]="selectedCity"></p-dropdown>
+                </div>
+                <div class="ui-g-12">
+                    <input type="text" pInputText placeholder="Name" >
+                </div>
+                <div class="ui-g-12">
+                    <input type="text" pInputText placeholder="Email">
+                </div>
+                <div class="ui-g-12">
+                    <input type="text" pInputText placeholder="Location">
+                </div>
+                <div class="ui-g-12">
+                    <textarea type="text" pInputTextarea placeholder="Message"></textarea>
+                </div>
+                <div class="ui-g-12">
+                    <button type="button" label="Send" icon="fa-paper-plane-o" pButton></button>
+                </div>
+            </div>
+        </p-panel>
+    </div>
+    <div class="ui-g-12 ui-lg-4 contacts">
+        <p-panel header="CONTACTS" [style]="{minHeight: '360px'}">
+            <ul>
+                <li class="clearfix">
+                    <img src="assets/layout/images/avatar/avatar.png" library="verona-layout" width="45"/>
+                    <div class="contact-info">
+                        <span class="name">Samantha Owens (me)</span>
+                        <span class="location">jane@pf-verona.com</span>
+                    </div>
+                    <div class="contact-actions">
+                        <button type="button" pButton icon="fa-microphone"></button>
+                        <button type="button" pButton icon="fa-phone" class="green-btn"></button>
+                    </div>
+                </li>
+                <li class="clearfix">
+                    <img src="assets/layout/images/avatar/avatar1.png" library="verona-layout" width="45"/>
+                    <div class="contact-info">
+                        <span class="name">Joshua Williams</span>
+                        <span class="location">joshua@pf-verona.com</span>
+                    </div>
+                    <div class="contact-actions">
+                      <button type="button" pButton icon="fa-microphone"></button>
+                      <button type="button" pButton icon="fa-phone" class="green-btn"></button>
+                    </div>
+                </li>
+                <li class="clearfix">
+                    <img src="assets/layout/images/avatar/avatar2.png" library="verona-layout" width="45"/>
+                    <div class="contact-info">
+                        <span class="name">Emily Clark</span>
+                        <span class="location">emily@pf-verona.com</span>
+                    </div>
+                    <div class="contact-actions">
+                      <button type="button" pButton icon="fa-microphone"></button>
+                      <button type="button" pButton icon="fa-phone" class="green-btn"></button>
+                    </div>
+                </li>
+                <li class="clearfix">
+                    <img src="assets/layout/images/avatar/avatar3.png" library="verona-layout" width="45"/>
+                    <div class="contact-info">
+                        <span class="name">Tim Johnson</span>
+                        <span class="location">tim@pf-verona.com</span>
+                    </div>
+                    <div class="contact-actions">
+                      <button type="button" pButton icon="fa-microphone"></button>
+                      <button type="button" pButton icon="fa-phone" class="green-btn"></button>
+                    </div>
+                </li>
+                <li class="clearfix">
+                    <img src="assets/layout/images/avatar/avatar4.png" library="verona-layout" width="45"/>
+                    <div class="contact-info">
+                        <span class="name">David Stark</span>
+                        <span class="location">kelly@pf-verona.com</span>
+                    </div>
+                    <div class="contact-actions">
+                      <button type="button" pButton icon="fa-microphone"></button>
+                      <button type="button" pButton icon="fa-phone" class="green-btn"></button>
+                    </div>
+                </li>
+            </ul>
+        </p-panel>
+    </div>
+
+    <div class="ui-g-12 ui-lg-8 chat">
+        <p-panel header="Chat">
+            <ul>
+                <li class="clearfix message-from">
+                    <img src="assets/layout/images/avatar/avatar2.png">
+                    <span>Retro occupy organic, stumptown shabby chic pour-over roof party DIY normcore.</span>
+                </li>
+                <li class="clearfix message-own">
+                    <img src="assets/layout/images/avatar/avatar.png">
+                    <span>Actually artisan organic occupy, Wes Anderson ugh whatever pour-over gastropub selvage.</span>
+                </li>
+                <li class="clearfix message-from">
+                    <img src="assets/layout/images/avatar/avatar2.png">
+                    <span>Chillwave craft beer tote bag stumptown quinoa hashtag.</span>
+                </li>
+                <li class="clearfix message-own">
+                    <img src="assets/layout/images/avatar/avatar.png">
+                    <span>Dreamcatcher locavore iPhone chillwave, occupy trust fund slow-carb distillery art party narwhal.</span>
+                </li>
+                <li class="clearfix message-own">
+                    <span>Sed ut perspiciatis unde omnis iste natus.</span>
+                </li>
+                <li class="clearfix message-from">
+                    <img src="assets/layout/images/avatar/avatar2.png">
+                    <span>Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse.</span>
+                </li>
+                <li class="clearfix message-own">
+                    <img src="assets/layout/images/avatar/avatar.png">
+                    <span>At vero eos et accusamus.</span>
+                </li>
+            </ul>
+            <div class="new-message">
+                <div class="message-attachment">
+                    <i class="fa fa-paperclip"></i>
+                </div>
+                <div class="message-input">
+                    <input type="text" placeholder="Write a message" />
+                </div>
+            </div>
+        </p-panel>
+
+        <div class="sales-panel">
+            <div class="card">
+                <p-table [columns]="cols" [value]="cars" selectionMode="single" dataKey="vin" [(selection)]="selectedCar" [responsive]="true" [paginator]="true" [rows]="10">
+                    <ng-template pTemplate="caption">
+                        Recent Sales
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                            <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                              {{col.header}}
+                              <p-sortIcon [field]="col.field"></p-sortIcon>
+                            </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                        <tr [pSelectableRow]="rowData">
+                            <td *ngFor="let col of columns">
+                              {{rowData[col.field]}}
+                            </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-g-12 ui-lg-4">
+        <div class="card timeline ui-fluid">
+            <div class="ui-g">
+                <div class="ui-g-3">
+                    <span class="event-time">just now</span>
+                    <i class="fa fa-map-signs" style="color:#147df0"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#147df0">Katherine May</span>
+                    <span class="event-text">Lorem ipsun dolor amet</span>
+                    <div class="event-content">
+                        <img src="assets/layout/images/dashboard/bridge.png" library="verona-layout" width="100"/>
+                    </div>
+                </div>
+
+                <div class="ui-g-3">
+                    <span class="event-time">12h ago</span>
+                    <i class="fa fa-star" style="color:#ed3c76"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#ed3c76">Brandon Santos</span>
+                    <span class="event-text">Ab nobis, magnam sunt eum. Laudantium, repudiandae, similique!.</span>
+                </div>
+
+                <div class="ui-g-3">
+                    <span class="event-time">15h ago</span>
+                    <i class="fa fa-comment" style="color:#3e9018"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#2EB872">Stephan Ward</span>
+                    <span class="event-text">Omnis veniam quibusdam ratione est repellat qui nam quisquam ab mollitia dolores ullam voluptates, similique, dignissimos.</span>
+                </div>
+
+                <div class="ui-g-3">
+                    <span class="event-time">2d ago</span>
+                    <i class="fa fa-map" style="color:#ffb200"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#ffb200">Jason Smith</span>
+                    <span class="event-text">Laudantium, repudiandae, similique!</span>
+                    <div class="event-content">
+                        <img src="assets/layout/images/dashboard/map.png">
+                    </div>
+                </div>
+
+                <div class="ui-g-3">
+                    <span class="event-time">1w ago</span>
+                    <i class="fa fa-heart" style="color:#633ea5"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner">Kevin Cox</span>
+                    <span class="event-text">Quibusdam ratione est repellat qui nam quisquam veniam quibusdam ratione.</span>
+                </div>
+
+                <div class="ui-g-3">
+                    <span class="event-time">2w ago</span>
+                    <i class="fa fa-history" style="color:#599597"></i>
+                </div>
+                <div class="ui-g-9">
+                    <span class="event-owner" style="color:#599597">Walter White</span>
+                    <span class="event-text">I am the one who knocks!</span>
+                </div>
+                <div class="ui-g-12">
+                    <button pButton type="button" icon="fa-refresh" label="Refresh"></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-g-12 ui-md-6">
+        <p-panel header="Core 1 Data">
+          <p-chart type="line" [data]="chartData"></p-chart>
+        </p-panel>
+    </div>
+    <div class="ui-g-12 ui-md-6">
+        <p-panel header="Disk Spaces" styleClass="disk-spaces">
+            <span>4.2 TB Used</span>
+            <p-progressBar [value]="75"></p-progressBar>
+
+            <span>2.9 TB Used</span>
+            <p-progressBar [value]="45"></p-progressBar>
+
+            <span>5.9 TB Used</span>
+            <p-progressBar [value]="85"></p-progressBar>
+        </p-panel>
+    </div>
+
+    <div class="ui-g-12 ui-lg-4">
+        <div class="user-card card">
+            <div class="user-card-header">
+              <p-menu #menu popup="popup" [model]="items" appendTo="body"></p-menu>
+              <button pButton type="button" icon="fa-plus" class="secondary-btn" (click)="menu.toggle($event)"></button>
+            </div>
+            <div class="user-card-content">
+                <img src="assets/layout/images/avatar/avatar.png" alt="apollo-layout" />
+
+                <div class="user-card-name">
+                  <span>Sarah Miller</span>
+                </div>
+
+                <div class="user-detail">
+                  <ul>
+                    <li class="clearfix">
+                      <i class="fa fa-tasks fa-fw"></i>
+                      <span class="project-title">Tasks</span>
+                      <span class="project-detail">3 open</span>
+                      <div class="project-progressbar">
+                        <div class="project-progressbar-value" style="width: 50%"></div>
+                      </div>
+                    </li>
+                    <li class="clearfix">
+                      <i class="fa fa-usd fa-fw"></i>
+                      <span class="project-title">Revenue</span>
+                      <span class="project-detail">+20%</span>
+                      <div class="project-progressbar">
+                        <div class="project-progressbar-value" style="width: 20%"></div>
+                      </div>
+                    </li>
+                    <li class="clearfix">
+                      <i class="fa fa-credit-card fa-fw"></i>
+                      <span class="project-title">Payments</span>
+                      <span class="project-detail">24 new</span>
+                      <div class="project-progressbar">
+                        <div class="project-progressbar-value" style="width: 65%"></div>
+                      </div>
+                    </li>
+                    <li class="clearfix">
+                      <i class="fa fa-users fa-fw"></i>
+                      <span class="project-title">Clients</span>
+                      <span class="project-detail">+80%</span>
+                      <div class="project-progressbar">
+                        <div class="project-progressbar-value" style="width: 80%"></div>
+                      </div>
+                    </li>
+                    <li class="clearfix">
+                      <i class="fa fa-users fa-fw"></i>
+                      <span class="project-title">Turnover</span>
+                      <span class="project-detail">+40%</span>
+                      <div class="project-progressbar">
+                        <div class="project-progressbar-value" style="width: 40%"></div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="card map">
+          <h1>Map</h1>
+          <img src="assets/layout/images/dashboard/location.jpg" alt="apollo-layout" />
+        </div>
+    </div>
+
+    <div class="ui-g-12 ui-md-8">
+        <p-panel header="Scheduled Maintenances" [style]="{'height':'100%'}">
+          <p-schedule [events]="events" defaultDate="2016-01-12"></p-schedule>
+        </p-panel>
+    </div>
+</div>

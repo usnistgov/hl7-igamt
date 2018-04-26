@@ -1,0 +1,564 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="card docs no-margin">
+
+            <h1>Current Version</h1>
+            <p>Angular 5.2.0 and PrimeNG 5.2.0</p>
+
+            <h1>Getting Started</h1>
+            <p>Apollo is a true native application template for Angular and is distributed as a CLI project. If you don't have CLI installed already run the following commands to set it up. In case
+            you have an application that do not use CLI, skip the <a href="#noncli">Integration with an Existing Non CLI Application</a> part.
+            Apollo is distributed with PrimeNG 5.2.x and Angular 5.2.x based on Angular CLI 1.6.x.</p>
+<pre>
+npm install -g @angular/cli
+</pre>
+
+            <p>Once CLI is ready in your system, extract the contents of the Apollo zip file distribution, cd to the directory,
+            install the libraries from npm and then execute "ng serve" to run the application in your local environment at http://localhost:4200/.</p>
+<pre>
+cd apollo
+npm install
+ng serve
+</pre>
+
+            <p>That's it, you may now start with the development of your application.</p>
+
+            <h1>Important CLI Commands</h1>
+            <p>Following commands are derived from CLI.</p>
+<pre>
+Run 'ng serve' for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+
+Run 'ng generate component component-name' to generate a new component. You can also use `ng generate directive/pipe/service/class/module`.
+
+Run 'ng build' to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+
+Run 'ng test' to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+Run 'ng e2e' to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+
+Run 'ng help' for more options.
+</pre>
+
+            <h1>Structure</h1>
+            <p>Apollo consists of 3 main parts; the application layout, layout resources and theme resources for PrimeNG components. <i>app.component.html</i> inside app folder is the html template for the base layout,
+                required resources for the layout are placed inside the <i>src/assets/layout</i> folder and similarly theme resources are inside <i>src/assets/theme</i> folder.
+            </p>
+
+            <h1>Template</h1>
+            <p>Main layout is the html view of the app.component.ts, it is divided into a couple of sections such as topbar, menu and footer. Here is the code for
+                the main template. The component class app.component.ts implements the logic such as opening menus, managing layout modes and so on.
+            </p>
+<pre>
+&lt;div class="layout-wrapper" (click)="onLayoutClick()"
+    [ngClass]="&#123;'layout-horizontal': isHorizontal(),
+                'layout-overlay': isOverlay(),
+                'layout-static': isStatic(),
+                'layout-slim':isSlim(),
+                'layout-static-inactive': staticMenuDesktopInactive,
+                'layout-mobile-active': staticMenuMobileActive,
+                'layout-overlay-active':overlayMenuActive&#125;"&gt;
+
+    &lt;app-topbar&gt;&lt;/app-topbar&gt;
+    &lt;div class="layout-menu-container" (click)="onMenuClick($event)"&gt;
+        &lt;p-scrollPanel #layoutMenuScroller [style]="&#123;height: '100%'&#125;"&gt;
+            &lt;div class="layout-menu-content"&gt;
+                &lt;div class="layout-menu-title"&gt;MENU&lt;/div&gt;
+                &lt;app-menu [reset]="resetMenu"&gt;&lt;/app-menu&gt;
+                &lt;div class="layout-menu-footer"&gt;
+                    &lt;div class="layout-menu-footer-title"&gt;TASKS&lt;/div&gt;
+
+                    &lt;div class="layout-menu-footer-content"&gt;
+                        &lt;p-progressBar [value]="50" [showValue]="false"&gt;&lt;/p-progressBar&gt;
+                        Today
+
+                        &lt;p-progressBar [value]="80" [showValue]="false"&gt;&lt;/p-progressBar&gt;
+                        Overall
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/p-scrollPanel&gt;
+    &lt;/div&gt;
+
+    &lt;div class="layout-content"&gt;
+        &lt;app-breadcrumb&gt;&lt;/app-breadcrumb&gt;
+
+        &lt;div class="layout-content-container"&gt;
+            &lt;router-outlet&gt;&lt;/router-outlet&gt;
+        &lt;/div&gt;
+
+        &lt;app-footer&gt;&lt;/app-footer&gt;
+        &lt;div class="layout-mask" *ngIf="staticMenuMobileActive"&gt;&lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+
+            <h1>Menu</h1>
+            <p>Menu is a separate component defined in app.menu.component.ts file based on PrimeNG MenuModel API. In order to define the menuitems,
+            navigate to this file and define your own model as a nested structure. Here is the menu component from the sample application. The helper
+            app-submenu component is also available in the same file.</p>
+<pre>
+import &#123;Component, Input, OnInit&#125; from '@angular/core';
+import &#123;trigger, state, style, transition, animate&#125; from '@angular/animations';
+import &#123;MenuItem&#125; from 'primeng/primeng';
+import &#123;AppComponent&#125; from './app.component';
+
+@Component(&#123;
+    selector: 'app-menu',
+    template: `
+        &lt;ul app-submenu [item]="model" root="true" class="layout-menu" [reset]="reset" visible="true"&gt;&lt;/ul&gt;
+    `
+&#125;)
+export class AppMenuComponent implements OnInit &#123;
+
+    @Input() reset: boolean;
+
+    model: any[];
+
+    constructor(public app: AppComponent) &#123;&#125;
+
+    ngOnInit() &#123;
+        this.model = [
+            &#123;label: 'Dashboard', icon: 'fa fa-fw fa-dashboard', routerLink: ['/']&#125;,
+            &#123;
+                label: 'Menu', icon: 'fa fa-fw fa-bars',
+                items: [
+                    &#123;label: 'Horizontal', icon: 'fa fa-fw fa-arrows-v', command: event =&gt; this.app.menuMode = 'horizontal'&#125;,
+                    &#123;label: 'Overlay', icon: 'fa fa-fw fa-arrows-h', command: event =&gt; this.app.menuMode = 'overlay'&#125;,
+                    &#123;label: 'Static', icon: 'fa fa-fw fa-bars', command: event =&gt; this.app.menuMode = 'static'&#125;,
+                    &#123;label: 'Slim', icon: 'fa fa-fw fa-window-restore', command: event =&gt; this.app.menuMode = 'slim'&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Dark', icon: 'fa fa-fw fa-circle', badge: '8',
+                items: [
+                    &#123;label: 'Blue', styleClass: 'blue-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('blue-dark'); &#125;&#125;,
+                    &#123;label: 'Green', styleClass: 'green-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('green-dark'); &#125;&#125;,
+                    &#123;label: 'Cyan', styleClass: 'cyan-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('cyan-dark'); &#125;&#125;,
+                    &#123;label: 'Purple', styleClass: 'purple-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('purple-dark'); &#125;&#125;,
+                    &#123;label: 'Indigo', styleClass: 'indigo-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('indigo-dark'); &#125;&#125;,
+                    &#123;label: 'Yellow', styleClass: 'yellow-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('yellow-dark'); &#125;&#125;,
+                    &#123;label: 'Orange', styleClass: 'orange-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('orange-dark'); &#125;&#125;,
+                    &#123;label: 'Pink', styleClass: 'pink-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('pink-dark'); &#125;&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Light', icon: 'fa fa-fw fa-circle-o', badge: '8',
+                items: [
+                    &#123;label: 'Blue', styleClass: 'blue-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('blue-light'); &#125;&#125;,
+                    &#123;label: 'Green', styleClass: 'green-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('green-light'); &#125;&#125;,
+                    &#123;label: 'Cyan', styleClass: 'cyan-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('cyan-light'); &#125;&#125;,
+                    &#123;label: 'Purple', styleClass: 'purple-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('purple-light'); &#125;&#125;,
+                    &#123;label: 'Indigo', styleClass: 'indigo-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('indigo-light'); &#125;&#125;,
+                    &#123;label: 'Yellow', styleClass: 'yellow-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('yellow-light'); &#125;&#125;,
+                    &#123;label: 'Orange', styleClass: 'orange-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('orange-light'); &#125;&#125;,
+                    &#123;label: 'Pink', styleClass: 'pink-theme', icon: 'fa fa-fw fa-paint-brush',
+                        command: (event) =&gt; &#123;this.app.changeTheme('pink-light'); &#125;&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Components', icon: 'fa fa-fw fa-sitemap',
+                items: [
+                    &#123;label: 'Sample Page', icon: 'fa fa-fw fa-columns', routerLink: ['/sample']&#125;,
+                    &#123;label: 'Forms', icon: 'fa fa-fw fa-code', routerLink: ['/forms']&#125;,
+                    &#123;label: 'Data', icon: 'fa fa-fw fa-table', routerLink: ['/data']&#125;,
+                    &#123;label: 'Panels', icon: 'fa fa-fw fa-list-alt', routerLink: ['/panels']&#125;,
+                    &#123;label: 'Overlays', icon: 'fa fa-fw fa-square', routerLink: ['/overlays']&#125;,
+                    &#123;label: 'Menus', icon: 'fa fa-fw fa-minus-square-o', routerLink: ['/menus']&#125;,
+                    &#123;label: 'Messages', icon: 'fa fa-fw fa-circle-o-notch', routerLink: ['/messages']&#125;,
+                    &#123;label: 'Charts', icon: 'fa fa-fw fa-area-chart', routerLink: ['/charts']&#125;,
+                    &#123;label: 'File', icon: 'fa fa-fw fa-arrow-circle-o-up', routerLink: ['/file']&#125;,
+                    &#123;label: 'Misc', icon: 'fa fa-fw fa-user-secret', routerLink: ['/misc']&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Pages', icon: 'fa fa-fw fa-life-saver',
+                items: [
+                    &#123;label: 'Empty Page', icon: 'fa fa-fw fa-square-o', routerLink: ['/empty']&#125;,
+                    &#123;label: 'Landing Page', icon: 'fa fa-fw fa-globe', url: 'assets/pages/landing.html', target: '_blank'&#125;,
+                    &#123;label: 'Login Page', icon: 'fa fa-fw fa-sign-in', url: 'assets/pages/login.html', target: '_blank'&#125;,
+                    &#123;label: 'Error Page', icon: 'fa fa-fw fa-exclamation-circle', url: 'assets/pages/error.html', target: '_blank'&#125;,
+                    &#123;label: '404 Page', icon: 'fa fa-fw fa-times', url: 'assets/pages/404.html', target: '_blank'&#125;,
+                    &#123;label: 'Access Denied Page', icon: 'fa fa-fw fa-exclamation-triangle',
+                        url: 'assets/pages/access.html', target: '_blank'&#125;
+                ]
+            &#125;,
+            &#123;
+                label: 'Hierarchy', icon: 'fa fa-fw fa-gg',
+                items: [
+                    &#123;
+                        label: 'Submenu 1', icon: 'fa fa-fw fa-sign-in',
+                        items: [
+                            &#123;
+                                label: 'Submenu 1.1', icon: 'fa fa-fw fa-sign-in',
+                                items: [
+                                    &#123;label: 'Submenu 1.1.1', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 1.1.2', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 1.1.3', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                ]
+                            &#125;,
+                            &#123;
+                                label: 'Submenu 1.2', icon: 'fa fa-fw fa-sign-in',
+                                items: [
+                                    &#123;label: 'Submenu 1.2.1', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 1.2.2', icon: 'fa fa-fw fa-sign-in'&#125;
+                                ]
+                            &#125;,
+                        ]
+                    &#125;,
+                    &#123;
+                        label: 'Submenu 2', icon: 'fa fa-fw fa-sign-in',
+                        items: [
+                            &#123;
+                                label: 'Submenu 2.1', icon: 'fa fa-fw fa-sign-in',
+                                items: [
+                                    &#123;label: 'Submenu 2.1.1', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 2.1.2', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 2.1.3', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                ]
+                            &#125;,
+                            &#123;
+                                label: 'Submenu 2.2', icon: 'fa fa-fw fa-sign-in',
+                                items: [
+                                    &#123;label: 'Submenu 2.2.1', icon: 'fa fa-fw fa-sign-in'&#125;,
+                                    &#123;label: 'Submenu 2.2.2', icon: 'fa fa-fw fa-sign-in'&#125;
+                                ]
+                            &#125;,
+                        ]
+                    &#125;
+                ]
+            &#125;,
+            &#123;label: 'Documentation', icon: 'fa fa-fw fa-book', routerLink: ['/documentation']&#125;
+        ];
+    &#125;
+&#125;
+</pre>
+
+
+            <h1>Integration with an Existing CLI Project</h1>
+            <p>To setup Apollo in an existing project, copy the <i>src/assets</i> folder to your projects folder with the same name
+                and replace the contents of app.component.ts, app.component.html with their counterparts in Apollo under <i>src/app</i> folder.</p>
+
+          <p>Install PrimeNG</p>
+<pre>
+npm install primeng@latest --save
+</pre>
+
+          <p>Add PrimeNG CSS at styles section in angular-cli.json.</p>
+
+<pre>
+"styles": [
+    "../node_modules/primeng/resources/primeng.min.css",        //required: PrimeNG components
+    "styles.scss"                                               //your styles and overrides
+],
+</pre>
+
+            <p>Last part is adding theme and layout css files, in the CLI app they are defined using link tags in index.html so the demo can switch them on
+            the fly by changing the path however if this is not a requirement, you may also add them to the styles configuration so they go inside the bundle.</p>
+
+            <h1 id="noncli">Integration with an Existing Non-CLI Project</h1>
+            <p>For an existing project that do not use CLI, setup steps are more or less similar. Start with installing the dependencies listed above in package.json</p>
+            <p>Copy the <i>src/assets</i> folder to your application and include the resources listed above with a module bundler like webpack or using link-script tags.</p>
+            <p>Finally copy the contents of app.component.html to your application's main component template such as <i>app/application.html</i> along
+            with the sub components which are app.menu.component.ts, app.breadcrumb.component.ts, app.app.topbar.component.ts and app.footer.component.ts.</p>
+
+            <h1>Theme</h1>
+            <p>Apollo provides 16 PrimeNG themes out of the box, setup of a theme is simple by including the css of theme to your bundle that are located inside resources/theme folder.</p>
+
+            <ul>
+                <li>theme-blue-dark</li>
+                <li>theme-blue-light</li>
+                <li>theme-cyan-dark</li>
+                <li>theme-cyan-light</li>
+                <li>theme-green-dark</li>
+                <li>theme-green-light</li>
+                <li>theme-indigo-dark</li>
+                <li>theme-indigo-light</li>
+                <li>theme-orange-dark</li>
+                <li>theme-orange-light</li>
+                <li>theme-pink-dark</li>
+                <li>theme-pink-light</li>
+                <li>theme-purple-dark</li>
+                <li>theme-purple-light</li>
+                <li>theme-yellow-dark</li>
+                <li>theme-yellow-light</li>
+            </ul>
+
+            <p>A custom theme can be developed by the following steps.</p>
+            <ul>
+                <li>Choose a custom theme name such as theme-myown.</li>
+                <li>Create a file named theme-myown.scss under <i>assets/theme folder</i>.</li>
+                <li>Define the variables listed below and import the <i>/sass/theme/_theme.scss</i> file.</li>
+                <li>Build the scss to generate css</li>
+                <li>Include the generated theme.css to your page.</li>
+            </ul>
+
+            <p>Here are the variables required to create a theme.</p>
+
+<pre>
+$primaryColor:#39a3f4;
+$primaryTextColor:#ffffff;
+
+@import '../sass/theme/_theme_light.scss';
+</pre>
+
+            <p>If you are creating a dark theme, import the _theme_dark.scss instead;</p>
+<pre>
+$primaryColor:#39a3f4;
+$primaryTextColor:#ffffff;
+
+@import '../sass/theme/_theme_light.scss';
+</pre>
+
+            <p> An example sass command to compile the css would be;</p>
+
+<pre>
+sass src/assets/theme/theme-myown.scss src/assets/theme/theme-myown.css
+</pre>
+
+            <p>Watch mode is handy to avoid compiling everytime when a change is made, instead use the following command
+            so that sass generates the file whenever you make a customization. This builds all css files whenever a change is made to any scss file.</p>
+<pre>
+sass -w src/assets/ --sourcemap=none
+</pre>
+
+            <p>Same can also be applied to layout itself;</p>
+            <ul>
+                <li>Choose a layout name such as layout-myown.</li>
+                <li>Create an empty file named layout-myown.scss inside <i>assets/layout/css</i> folder.</li>
+                <li>Define the variables listed below and import the <i>/sass/layout/_layout.scss</i> file.</li>
+                <li>Build the scss to generate css</li>
+                <li>Serve the css by importing it using a link tag or a bundler.</li>
+            </ul>
+
+            <p>Here are the variables required to create a layout.</p>
+
+<pre>
+$primaryColor:#39a3f4;
+$primaryTextColor:#ffffff;
+$menuBgColor:#243447;
+$menuitemTextColor:#9fadb7;
+$submenuActiveBgColor:#151f2a;
+$menuItemHoverTextColor:#39a3f4;
+$menuItemActiveTextColor:#39a3f4;
+
+$bodyBgColor:#141d26;
+$textColor:#d8d8d8;
+$textSecondaryColor:#acacac;
+$placeholderColor:#6c6c6c;
+$dividerColor:#121213;
+
+@import '../../sass/layout/_layout.scss';
+</pre>
+
+            <h1>Common SASS Variables</h1>
+            <p>In case you'd like to customize the shared variables, the _variables.scss files are where the options are defined for layout and theme.</p>
+
+<h3>sass/variables/_commons.scss</h3>
+<pre>
+$fontFamily:"Source Sans Pro",Arial,sans-serif;
+$fontSize:14px;
+$borderRadius:2px;
+$transitionDuration:.3s;
+
+/* Predefined Colors */
+$blue:#39a3f4;
+$green:#6ebc3b;
+$purple:#7E57C2;
+$cyan:#26C6DA;
+$pink:#EC407A;
+$indigo:#5C6BC0;
+$orange:#f6a821;
+$yellow:#ffc800;
+$red:#EF5350;
+</pre>
+
+<h3>sass/variables/_theme_light.scss</h3>
+<pre>
+@import '../variables';
+
+$textColor:#424242;
+$textSecondaryColor:#7a7a7a;
+$dividerColor:#dddddd;
+
+/* Header */
+$headerPadding:.429em .857em;
+$headerBgColor:#f5f5f5;
+$headerBorderColor:#d8d8d8;
+$headerTextColor:#424242;
+$headerHoverBgColor:#dcdcdc;
+$headerHoverTextColor:#424242;
+$headerIconColor:#424242;
+$headerIconHoverColor:$primaryColor;
+
+/* Contents */
+$contentPadding:.429em .857em;
+$contentBorderColor:#d8d8d8;
+$contentBgColor:#ffffff;
+
+/* Forms */
+$inputBgColor:#ffffff;
+$inputPadding:.429em;
+$inputBorderColor:#cccccc;
+$inputHoverBorderColor:$primaryColor;
+$inputGroupAddonBgColor:#f5f5f5;
+
+/* Buttons */
+$toggleButtonBgColor:#b6b7c2;
+
+/* List Items */
+$listItemPadding:.429em .857em;
+
+/* Messages */
+$infoMessageBgColor:#60b5f6;
+$infoMessageTextColor:#ffffff;
+$warnMessageBgColor:#FFC800;
+$warnMessageTextColor:#141d26;
+$errorMessageBgColor:#EF5350;
+$errorMessageTextColor:#ffffff;
+$successMessageBgColor:#79ab58;
+$successMessageTextColor:#ffffff;
+
+/* Data */
+$datatableCellBorderColor:#d8d8d8;
+$datableEvenRowBgColor:#f9f9f9;
+
+/* TabView */
+$tabHeaderPadding:.571em .857em;
+
+@import './_theme.scss';
+</pre>
+
+<h3>sass/variables/_theme_dark.scss</h3>
+<pre>
+@import '../variables';
+
+$textColor:#d8d8d8;
+$textSecondaryColor:#acacac;
+$dividerColor:#121213;
+
+/* Header */
+$headerPadding:.429em .857em;
+$headerBgColor:#1b3548;
+$headerBorderColor:#121213;
+$headerTextColor:#9fadb7;
+$headerHoverBgColor:#485d6c;
+$headerHoverTextColor:#ffffff;
+$headerIconColor:#9fadb7;
+$headerIconHoverColor:#ffffff;
+
+/* Contents */
+$contentPadding:.429em .857em;
+$contentBorderColor:#121213;
+$contentBgColor:#1c2937;
+
+/* Forms */
+$inputBgColor:#141e27;
+$inputPadding:.429em;
+$inputBorderColor:#121213;
+$inputHoverBorderColor:$primaryColor;
+$inputGroupAddonBgColor:#1b3548;
+
+/* Buttons */
+$toggleButtonBgColor:#323e4b;
+
+/* List Items */
+$listItemPadding:.429em .857em;
+
+/* Messages */
+$infoMessageBgColor:#60b5f6;
+$infoMessageTextColor:#ffffff;
+$warnMessageBgColor:#FFC800;
+$warnMessageTextColor:#141d26;
+$errorMessageBgColor:#EF5350;
+$errorMessageTextColor:#ffffff;
+$successMessageBgColor:#79ab58;
+$successMessageTextColor:#ffffff;
+
+/* Data */
+$datatableCellBorderColor:#121213;
+$datableEvenRowBgColor:#15222F;
+
+/* TabView */
+$tabHeaderPadding:.571em .857em;
+
+@import './_theme.scss';
+</pre>
+
+            <h1>Menu Modes</h1>
+            <p>Menu has 4 modes, static, overlay, slim and horizontal. Layout container element in app.component.html is used to define which mode to use by adding specific classes. List
+            below indicates the style classes for each mode. In addition menu</p>
+            <ul>
+                <li>Static: "layout-wrapper layout-static"</li>
+                <li>Overlay: "layout-wrapper layout-overlay"</li>
+                <li>Popup: "layout-wrapper layout-popup"</li>
+                <li>Horizontal: "layout-wrapper layout-horizontal"</li>
+            </ul>
+
+            <p>For example to create a horizontal menu, the div element should be in following form;</p>
+<pre>
+&lt;div class="layout-wrapper layout-horizontal"&gt;
+</pre>
+
+            <h1>Breadcrumb</h1>
+            <p>Apollo has an optional built-in breadcrumb section right below the topbar.
+                The items are dynamically generated using a BreadcrumbService where each main page that goes into the router-outlet should provide a collection of MenuItem instances.
+                Here is an example component that updates the breadcrumb.</p>
+<pre>
+import &#123;Component&#125; from '@angular/core';
+import &#123;BreadcrumbService&#125; from '../../breadcrumb.service';
+
+@Component(&#123;
+    templateUrl: './emptydemo.component.html'
+&#125;)
+export class ControlPanelComponent &#123;
+
+    constructor(private breadcrumbService: BreadcrumbService) &#123;
+        this.breadcrumbService.setItems([
+            &#123;label: 'Admin'&#125;,
+            &#123;label: 'Control Panel', routerLink: ['/controlpanel']&#125;
+        ]);
+    &#125;
+
+&#125;
+</pre>
+
+            <p>It is also possible to leave the choice to the user by keeping the preference at a component and using an ngClass expression so that user can switch between modes. Sample
+            application has an example implementation of such use case. Refer to app.component.ts for an example.</p>
+
+            <h1>Grid CSS</h1>
+            <p>Apollo uses PrimeNG Grid CSS (ui-g-*) throughout the demos, although any Grid library can be used with it. Apollo itself does not depend on Grid CSS.</p>
+
+            <h1>Customizing Styles</h1>
+            <p>It is suggested to write your customizations in styles.scss file or another file instead of adding them to the
+                scss files under sass folders to avoid maintenance issues after an update.</p>
+
+            <h1>Migration Guide</h1>
+            <p>For seamless updates and easier maintenance, we suggest keeping your CSS customizations in a separate sass file such as styles.scss as defined in .angular-cli.json so that your changes are not overriden with an update.</p>
+
+            <h4>1.0.0 to 5.2.0</h4>
+            <p>Adds support for PrimeNG 5.2.0 (e.g. TurboTable), replaces nanoscroller with PrimeNG ScrollPanel and reimplements ripple effect to run outside of NgZone for better performance.</p>
+            <ul>
+              <li>Remove nanoscroller as it is replaced by ScrollPanel component of PrimeNG.</li>
+              <li>Update app.component.ts and app.component.html.</li>
+              <li>Update app.menu.component.ts.</li>
+              <li>Update layout css files.</li>
+              <li>Update theme css files.</li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,335 @@
+<div class="ui-fluid">
+    <div class="ui-g">
+        <div class="ui-g-12">
+            <div class="ui-messages ui-widget ui-corner-all ui-messages-success" style="margin: 0 0 1em 0; display: block">
+                <span class="ui-messages-icon fa fa-fw fa-2x fa-check"></span>
+                <ul>
+                    <li>
+                        <span class="ui-messages-summary" style="font-size:16px">Apollo provides a theme for all 70+ PrimeNG Components. This page contains samples of the commonly used components for demo purposes.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card no-margin">
+                <h1>Form Elements</h1>
+                <div class="ui-g form-group">
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="input">Input</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <input id="input" type="text" pInputText/>
+                        </div>
+                        
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="textarea">Textarea</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <textarea [rows]="3" [cols]="30" pInputTextarea autoResize="autoResize"></textarea>
+                        </div>
+                        
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="calendar">Calendar</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-calendar id="calendar"></p-calendar>
+                        </div>
+                        
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="autocomplete">AutoComplete</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-autoComplete [(ngModel)]="country" [suggestions]="filteredCountries" (completeMethod)="filterCountry($event)" field="name"
+                                placeholder="Countries" [minLength]="1"></p-autoComplete>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="dropdown">Dropdown</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-dropdown id="dropdown" [options]="cities1" [(ngModel)]="selectedCity1" [autoWidth]="false"></p-dropdown>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="password">Password</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <input id="password" pPassword type="password" [feedback]="false"/>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            Button
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <button pButton type="button" label="Edit" icon="fa-edit"></button>
+                        </div>
+    
+                        <div class="ui-g-12 ui-md-4">
+                            SplitButton
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-splitButton label="Save" icon="fa-save" [model]="splitButtonItems"></p-splitButton>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="multiselect">MultiSelect</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-multiSelect id="multiselect" [options]="carOptions" [(ngModel)]="selectedMultiSelectCars"></p-multiSelect>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="slider">Slider</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-slider></p-slider>
+                        </div>
+                    </div>
+                    
+                    <div class="ui-g-12 ui-md-6">
+                        <div class="ui-g-12 ui-md-4">
+                            Checkbox
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <div class="ui-g">
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-checkbox name="cg" value="Ultima" label="Ultima" [(ngModel)]="checkboxValues"></p-checkbox>
+                                </div>
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-checkbox name="cg" value="Icarus" label="Icarus" [(ngModel)]="checkboxValues"></p-checkbox>
+                                </div>
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-checkbox name="cg" value="Omega" label="Omega" [(ngModel)]="checkboxValues"></p-checkbox>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            RadioButton
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <div class="ui-g">
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-radioButton name="rg" value="Ultima" label="Ultima" [(ngModel)]="radioValue"></p-radioButton>
+                                </div>
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-radioButton name="rg" value="Icarus" label="Icarus" [(ngModel)]="radioValue"></p-radioButton>
+                                </div>
+                                <div class="ui-g-12 ui-md-4">
+                                    <p-radioButton name="rg" value="Omega" label="Omega" [(ngModel)]="radioValue"></p-radioButton>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="mask">Mask</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-inputMask mask="99/99/9999" slotChar="dd/mm/yyyy" placeholder="Date"></p-inputMask>
+                        </div>
+                    
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="spinner">Spinner</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-spinner></p-spinner>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            ToggleButton
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-toggleButton [(ngModel)]="toggleButtonChecked"></p-toggleButton>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            SelectButton
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-selectButton [options]="types" [(ngModel)]="selectedType"></p-selectButton>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            Dialog
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <button type="button" label="Login" icon="fa-external-link" (click)="dialogVisible=true" pButton></button>
+                        </div>
+
+                        <div class="ui-g-12 ui-md-4">
+                            <label for="listbox">Listbox</label>
+                        </div>
+                        <div class="ui-g-12 ui-md-8">
+                            <p-listbox [options]="cities2" [(ngModel)]="selectedCity2"></p-listbox>
+                        </div>
+                    </div>
+                </div>
+
+                <p-dialog header="Login" [resizable]="false" responsive="true" [(visible)]="dialogVisible">
+                    <div class="ui-g form-group" style="margin-bottom: 16px;">
+                        <div class="ui-g-12">
+                            <input type="text" pInputText placeholder="Name">
+                        </div>
+                        <div class="ui-g-12">
+                            <input type="password" pInputText placeholder="Password">
+                        </div>
+                    </div>
+
+                    <p-footer>
+                        <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                            <button type="button" label="Login" icon="fa-user" (click)="dialogVisible=false" pButton></button>
+                        </div>
+                    </p-footer>
+                </p-dialog>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>List of Cars</h1>
+                <p-table [columns]="cols" [value]="cars" selectionMode="single" dataKey="vin" [(selection)]="selectedCar3" [responsive]="true">
+                    <ng-template pTemplate="caption">
+                        DataTable
+                    </ng-template>
+                    <ng-template pTemplate="header" let-columns>
+                        <tr>
+                          <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                            {{col.header}}
+                            <p-sortIcon [field]="col.field"></p-sortIcon>
+                          </th>
+                        </tr>
+                    </ng-template>
+                    <ng-template pTemplate="body" let-rowData let-columns="columns">
+                        <tr [pSelectableRow]="rowData">
+                          <td *ngFor="let col of columns">
+                            {{rowData[col.field]}}
+                          </td>
+                        </tr>
+                    </ng-template>
+                </p-table>
+            </div>
+        </div>
+
+        <div class="ui-g-12 ui-lg-6">
+            <!-- Left Side -->
+            <div class="card card-w-title">
+                <h1>DataGrid</h1>
+                <p-dataGrid [value]="carsLarge" [paginator]="true" paginatorPosition="both" [rows]="20">
+                    <p-header>
+                        List of Cars
+                    </p-header>
+                    <ng-template let-car pTemplate="item">
+                        <div style="padding:3px" class="ui-g-12 ui-md-3">
+                            <p-panel [header]="car.vin" [style]="{'text-align':'center'}">
+                                <img src="assets/demo/images/car/{{car.brand}}.png" width="50">
+                                <div class="car-detail">{{car.year}} - {{car.color}}</div>
+                            </p-panel>
+                        </div>
+                    </ng-template>
+                </p-dataGrid>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>Tree</h1>
+                <p-tree [value]="filesTree"></p-tree>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>Menu</h1>
+                <p-menu [model]="menuItems"></p-menu>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>PanelMenu</h1>
+                <p-panelMenu [model]="panelMenuItems"></p-panelMenu>
+            </div>
+        </div>
+        <div class="ui-g-12 ui-lg-6">
+            <!-- Right Side -->
+            <div class="card card-w-title">
+                <h1>PickList</h1>
+                <p-pickList [source]="sourceCars" [target]="targetCars" sourceHeader="Available" targetHeader="Selected" [responsive]="true">
+                    <ng-template let-car pTemplate="item">
+                        <span>{{car.brand}}</span>
+                    </ng-template>
+                </p-pickList>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>OrderList</h1>
+                <p-orderList [value]="orderListCars" [listStyle]="{'height':'250px'}" [responsive]="true" header="OrderList">
+                    <ng-template let-car pTemplate="item">
+                        <div class="ui-helper-clearfix">
+                            <img src="assets/demo/images/car/{{car.brand}}.png" style="display:inline-block;margin:2px 0 2px 2px" width="50"/>
+                            <div style="font-size:14px;float:right;margin:15px 5px 0 0">{{car.brand}} - {{car.year}} - {{car.color}}</div>
+                        </div>
+                    </ng-template>
+                </p-orderList>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>Accordion Panel</h1>
+                <p-accordion>
+                    <p-accordionTab header="Godfather I" [selected]="true">
+                        The story begins as Don Vito Corleone, the head of a New York Mafia family, overseeshis daughter's wedding. His beloved son ichael has just come home from the war, but does not intend to become part of his father's business. T hrough Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family, kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+                    </p-accordionTab>
+                    <p-accordionTab header="Godfather II">
+                        Francis Ford Coppola's legendary continuation and sequel to his landmark 1972 film, The_Godfather parallels the young Vito Corleone's rise with his son Michael's spiritual fall, deepening The_Godfather's depiction of the dark side of the American dream. In the early 1900s, the child Vito flees his Sicilian village for America after the local Mafia kills his family. Vito struggles to make a living, legally or illegally, for his wife and growing brood in Little Italy, killing the local Black Hand Fanucci after he demands his customary cut of the tyro's business. With Fanucci gone, Vito's communal stature grows.
+                    </p-accordionTab>
+                    <p-accordionTab header="Godfather III">
+                        After a break of more than  15 years, director Francis Ford Coppola and writer Mario Puzo returned to the well for this third and final story of the fictional Corleone crime family. Two decades have passed, and crime kingpin Michael Corleone, now divorced from his wife Kay has nearly succeeded in keeping his promise that his family would one day be completely legitimate.
+                    </p-accordionTab>
+                </p-accordion>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>Panel</h1>
+                <p-panel header="Godfather I" [toggleable]="true">
+                    The story begins as Don Vito Corleone, the head of a New York Mafia family, oversees his daughter's wedding.
+                    His beloved son Michael has just come home from the war, but does not intend to become part of his father's business.
+                    Through Michael's life the nature of the family business becomes clear. The business of the family is just like the head of the family,
+                    kind and benevolent to those who give respect, but given to ruthless violence whenever anything stands against the good of the family.
+                </p-panel>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>ProgressBar - Static Display</h1>
+                <p-progressBar [value]="50"></p-progressBar>
+            </div>
+
+            <div class="card card-w-title">
+                <h1>Heading 1</h1>
+
+                <h2>Heading 2</h2>
+
+                <h3>Heading 3</h3>
+
+                <h4>Heading 4</h4>
+            </div>
+        </div>
+
+        <div class="ui-g-12">
+            <div class="card card-w-title">
+                <h1>Carousel</h1>
+                <p-carousel headerText="Cars" [value]="carouselCars">
+                    <ng-template let-car pTemplate="item">
+                        <div class="ui-g" style="text-align:center">
+                            <div class="ui-g-12" style="text-align:Center">
+                                <img src="assets/demo/images/car/{{car.brand}}.png" />
+                            </div>
+                            <div class="ui-g-6">Vin: </div>
+                            <div class="ui-g-6" style="font-weight:bold">{{car.vin}}</div>
+
+                            <div class="ui-g-6">Year: </div>
+                            <div class="ui-g-6" style="font-weight:bold">{{car.year}}</div>
+
+                            <div class="ui-g-6">Brand: </div>
+                            <div class="ui-g-6" style="font-weight:bold">{{car.brand}}</div>
+
+                            <div class="ui-g-6">Color: </div>
+                            <div class="ui-g-6" style="font-weight:bold">{{car.color}}</div>
+                        </div>
+                    </ng-template>
+                </p-carousel>
+            </div>
+        </div>
+    </div>
+</div>

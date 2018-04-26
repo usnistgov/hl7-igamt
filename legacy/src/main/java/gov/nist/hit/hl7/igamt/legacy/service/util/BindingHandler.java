@@ -332,12 +332,14 @@ public class BindingHandler {
   }
 
   private ValuesetStrength mapValueSetStrength(ValueSetBindingStrength bindingStrength) {
+	  if( bindingStrength !=null) {
     if (bindingStrength.equals(ValueSetBindingStrength.R)) {
       return ValuesetStrength.R;
     } else if (bindingStrength.equals(ValueSetBindingStrength.S)) {
       return ValuesetStrength.S;
     } else if (bindingStrength.equals(ValueSetBindingStrength.U)) {
       return ValuesetStrength.U;
+    }
     }
     return null;
   }

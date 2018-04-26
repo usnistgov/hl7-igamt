@@ -11,12 +11,9 @@ public abstract class AbstractDomain {
   private PublicationInfo publicationInfo;
   private DomainInfo domainInfo;
   private String username;
-  private Long accountID; // to faciltate conversion 
-
   private String comment;
   private String description;
   private String createdFrom;
-  
   private Date creationDate;
   private Date updateDate;
   
@@ -105,15 +102,6 @@ public abstract class AbstractDomain {
   public void setUsername(String username) {
     this.username = username;
   }
-
-public Long getAccountID() {
-	return accountID;
-}
-
-public void setAccountID(Long accountID) {
-	this.accountID = accountID;
-}
-
 public Date getCreationDate() {
 	return creationDate;
 }

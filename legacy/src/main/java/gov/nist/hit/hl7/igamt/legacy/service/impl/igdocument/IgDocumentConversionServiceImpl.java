@@ -9,6 +9,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfiles;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DatatypeLibrary;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DatatypeLink;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.IGDocument;
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.IGDocumentScope;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Message;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Messages;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Profile;
@@ -26,8 +27,10 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.legacy.repository.IGDocumentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
 import gov.nist.hit.hl7.igamt.shared.domain.Registry;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetConfigForExport;
@@ -91,11 +94,21 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newMetaData.setTopics(ig.getMetaData().getTopics());
 		newMetaData.setSpecificationName(ig.getMetaData().getSpecificationName());
 		newMetaData.setSubTitle(ig.getMetaData().getSubTitle());
+		newMetaData.setTitle(ig.getMetaData().getTitle());
 		newIg.setMetaData(newMetaData);		
 		newIg.setComment(ig.getComment());
 		newIg.setCreatedFrom(ig.getCreatedFrom());
 		newIg.setDescription(ig.getMetaData().getDescription());
-		newIg.setDomainInfo(null);
+		DomainInfo domain= new DomainInfo();
+		if(ig.getScope().equals(IGDocumentScope.PRELOADED)) {
+		domain.setScope(Scope.PRELOADED);
+		}else if(ig.getScope().equals(IGDocumentScope.USER)) {
+			domain.setScope(Scope.USER);
+		}else if(ig.getScope().equals(IGDocumentScope.HL7STANDARD)) {
+			domain.setScope(Scope.HL7STANDARD);
+
+		}
+		newIg.setDomainInfo(domain);
 		newIg.setName(ig.getMetaData().getTitle());
 		newIg.setUpdateDate(ig.getDateUpdated());
 		newIg.setCreationDate(ig.getDateUpdated());
@@ -103,13 +116,13 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		
 		if(ig.getChildSections() !=null && !ig.getChildSections().isEmpty())
 		addNaratives(newIg, ig.getChildSections());
-		addProfile(newIg, ig.getProfile());
+		addProfile(newIg, ig.getProfile(),ig.getChildSections().size()+1);
 			
 		igService.save(newIg);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addProfile(Ig newIg, Profile profile) {
+	private void addProfile(Ig newIg, Profile profile,int position) {
 		
 		TextSection infra= new TextSection();
 		
@@ -119,7 +132,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		infra.setType(Type.PROFILE);
 		infra.setLabel("Message Infrastructure");
 		
-		infra.setPosition(newIg.getContent().size()+1);
+		infra.setPosition(position);
 		Registry profileComponent= createProfileComponentSection(profile.getProfileComponentLibrary());
 		profileComponent.setPosition(1);
 		Registry conformanceProfile= createConformanceProfile(profile.getMessages());
@@ -144,7 +157,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		children.add(valueSets);
 		infra.setChildren(children);
 		infra.setParentId(newIg.getId().getId());
-		infra.setPosition(newIg.getContent().size());
 		newIg.getContent().add(infra);
 		igService.save(newIg);
 		

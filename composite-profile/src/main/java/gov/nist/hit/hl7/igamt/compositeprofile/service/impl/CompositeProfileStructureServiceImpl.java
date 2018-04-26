@@ -45,8 +45,8 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure) {
-    compositeProfileStructure
-        .setId(CompositeKeyUtil.updateVersion(compositeProfileStructure.getId()));
+//    compositeProfileStructure
+//        .setId(CompositeKeyUtil.updateVersion(compositeProfileStructure.getId()));
     return compositeProfileStructureRepository.save(compositeProfileStructure);
   }
 

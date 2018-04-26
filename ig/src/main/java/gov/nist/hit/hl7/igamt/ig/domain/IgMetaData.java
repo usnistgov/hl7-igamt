@@ -17,7 +17,8 @@ package gov.nist.hit.hl7.igamt.ig.domain;
  *
  */
 public class IgMetaData {
-	
+	  private String title;
+
 	  private String topics;
 	  private String specificationName;
 	  private String identifier;
@@ -71,6 +72,12 @@ public class IgMetaData {
 	}
 	public void setSubTitle(String subTitle) {
 		this.subTitle = subTitle;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	  

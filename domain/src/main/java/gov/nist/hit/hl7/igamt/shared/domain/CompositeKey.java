@@ -17,6 +17,7 @@ import java.io.Serializable;
 import javax.persistence.GeneratedValue;
 
 import org.bson.types.ObjectId;
+import org.springframework.data.annotation.Id;
 
 /**
  * @author ena3
@@ -29,6 +30,7 @@ public class CompositeKey implements Serializable {
    */
   private static final long serialVersionUID = -5077046386179385282L;
   @GeneratedValue
+  @Id
   private String id; 
   private int version;
   private static final int firstVersion = 1;

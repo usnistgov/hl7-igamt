@@ -1,0 +1,159 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="card no-margin">
+            <h1>DataTable</h1>
+            <p-table [columns]="cols" [value]="cars1" selectionMode="single" dataKey="vin" [(selection)]="selectedCar"
+                     [paginator]="true" [rows]="10" [responsive]="true" paginatorPosition="both" [responsive]="true">
+                <ng-template pTemplate="caption">
+                  Single with Row Click
+                </ng-template>
+                <ng-template pTemplate="header" let-columns>
+                    <tr>
+                      <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                        {{col.header}}
+                        <p-sortIcon [field]="col.field"></p-sortIcon>
+                      </th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns">
+                    <tr [pSelectableRow]="rowData">
+                      <td *ngFor="let col of columns">
+                        {{rowData[col.field]}}
+                      </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </div>
+    </div>
+    <div class="ui-g-12">
+        <!-- Left Side -->
+        <div class="card">
+            <h1>DataGrid</h1>
+            <p-dataGrid [value]="cars2" [paginator]="true" [rows]="6" paginatorPosition="both" [rowsPerPageOptions]="[3,6,9,12,16]">
+                <p-header>
+                    Grid of Cars
+                </p-header>
+                <ng-template let-car pTemplate="item">
+                    <div class="ui-g-12 ui-md-4">
+                        <p-panel [header]="car.brand" [style]="{'text-align':'center'}">
+                            <div style="padding: 1em">
+                                <div class="car-detail">{{car.color}} - {{car.year}}</div>
+                                <br>
+                                <img src="assets/demo/images/car/{{car.brand}}.png" width="100px">
+                            </div>
+                        </p-panel>
+                    </div>
+                </ng-template>
+            </p-dataGrid>
+        </div>
+    </div>
+
+    <div class="ui-g-12 ui-md-8">
+        <div class="card">
+            <h1>PickList</h1>
+            <p-pickList [source]="sourceCars" [target]="targetCars" filterBy="brand" filterPlaceholder="Search by Brand" sourceHeader="Available" targetHeader="Selected" [responsive]="true"
+                [sourceStyle]="{'height':'250px'}" [targetStyle]="{'height':'250px'}">
+                <ng-template let-car pTemplate="item">
+                    <div class="ui-helper-clearfix">
+                        <img src="assets/demo/images/car/{{car.brand}}.png" style="display:inline-block;margin:2px 0 2px 2px; width: 50px"/>
+                        <div style="font-size:16px;float:right;margin:15px 5px 0 0">{{car.brand}}</div>
+                    </div>
+                </ng-template>
+            </p-pickList>
+        </div>
+    </div>
+
+    <div class="ui-g-12 ui-md-4">
+        <div class="card">
+            <h1>OrderList</h1>
+            <p-orderList [value]="orderListCars" [listStyle]="{'height':'250px'}" [responsive]="true" header="OrderList" filterBy="brand" filterPlaceholder="Search by Brand">
+                <ng-template let-car pTemplate="item">
+                    <div class="ui-helper-clearfix">
+                        <img src="assets/demo/images/car/{{car.brand}}.png" style="display:inline-block;margin:2px 0 2px 2px; width: 50px" />
+                        <div style="font-size:16px;float:right;margin:15px 5px 0 0">{{car.brand}}</div>
+                    </div>
+                </ng-template>
+            </p-orderList>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>DataList</h1>
+            <p-dataList [value]="cars3" [paginator]="true" [rows]="5" styleClass="cars-datalist" paginatorPosition="both">
+                <p-header>
+                    List of Cars
+                </p-header>
+                <ng-template let-car pTemplate="item">
+                    <div style="border-bottom: 1px solid #eaeaea" class="clearfix car-item">
+                        <img src="assets/demo/images/car/{{car.brand}}.png" width="48" style="display:inline-block;margin:24px;vertical-align:middle"/>
+                        <div class="car-details" style="display:inline-block;vertical-align:middle">
+                            <p>{{car.brand}}</p>
+                            <p style="color:#757575">{{car.year}} - {{car.color}}</p>
+                        </div>
+                        <button type="button" pButton icon="fa-search" style="margin:28px 24px 0 0;float:right"></button>
+                    </div>
+                </ng-template>
+            </p-dataList>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>Tree</h1>
+            <p-tree [value]="files1" selectionMode="single" [(selection)]="selectedNode1"></p-tree>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card" style="overflow:auto">
+            <h1>Organization Chart</h1>
+            <p-organizationChart [value]="data" selectionMode="single" [(selection)]="selectedNode"></p-organizationChart>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>TreeTable</h1>
+            <p-treeTable [value]="files2" selectionMode="checkbox" [(selection)]="selectedNode2">
+                <p-header>Basic</p-header>
+                <p-column field="name" header="Name"></p-column>
+                <p-column field="size" header="Size"></p-column>
+                <p-column field="type" header="Type"></p-column>
+            </p-treeTable>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>Carousel</h1>
+            <p-carousel headerText="Cars" [value]="carouselCars">
+                <ng-template let-car pTemplate="item">
+                    <div class="ui-g" style="text-align:center">
+                        <div class="ui-g-12" style="padding:2em">
+                            <img src="assets/demo/images/car/{{car.brand}}.png">
+                        </div>
+                        <div class="ui-g-6" style="text-align:right">Vin: </div>
+                        <div class="ui-g-6" style="font-weight:bold">{{car.vin}}</div>
+
+                        <div class="ui-g-6">Year: </div>
+                        <div class="ui-g-6" style="font-weight:bold">{{car.year}}</div>
+
+                        <div class="ui-g-6">Brand: </div>
+                        <div class="ui-g-6" style="font-weight:bold">{{car.brand}}</div>
+
+                        <div class="ui-g-6">Color: </div>
+                        <div class="ui-g-6" style="font-weight:bold">{{car.color}}</div>
+                    </div>
+                </ng-template>
+            </p-carousel>
+        </div>
+    </div>
+
+    <div class="ui-g-12">
+        <div class="card">
+            <h1>Schedule</h1>
+            <p-schedule [events]="events" defaultDate="2016-01-12" [header]="scheduleHeader"></p-schedule>
+        </div>
+    </div>
+</div>

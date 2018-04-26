@@ -50,7 +50,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype save(Datatype datatype) {
-    datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
+  //  datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
     datatype = datatypeRepository.save(datatype);
     return datatype;
   }

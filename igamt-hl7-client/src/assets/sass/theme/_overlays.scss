@@ -1,0 +1,196 @@
+body {
+    .ui-overlaypanel {
+        @include overlay-shadow();
+        border: grey;
+        
+        .ui-overlaypanel-close {
+            background-color: $primaryColor;
+            color: $primaryTextColor;
+            text-align: center;
+            width: 1.538em;
+            height: 1.538em;
+            line-height: 1.538em;
+            @include transition(background-color $transitionDuration);
+            
+            &:hover {
+                background-color: darken($primaryColor, 5%);
+                color: $primaryTextColor;
+            }
+            
+            span {
+                width: 0.692em;
+                line-height: inherit;
+                position: relative;
+                right: .05em;
+            }
+        }
+    }
+    
+    .ui-dialog {
+        @include overlay-shadow();
+        border: grey;
+        
+        .ui-dialog-titlebar {
+            padding: 1em;
+            
+            .ui-dialog-title {
+                margin: 0;
+                float: none;
+                vertical-align: middle;
+            }
+            
+            .ui-dialog-titlebar-icon {
+                color: $headerIconColor;
+                border: 0 none;
+                @include transition(color $transitionDuration);
+                padding: 0;
+                margin-left: .35em;
+                font-size: $fontSize + 2;
+                
+                &:hover {
+                    color: darken($headerIconHoverColor, 10%);
+                }
+            }
+        }
+        
+        .ui-dialog-content {
+            padding: 1em;
+        }
+        
+        .ui-dialog-footer {
+            padding: $headerPadding;
+            text-align: right;
+            border-width: 1px 0 0 0;
+            
+            button {
+                margin: 0 .35em 0 0;
+            }
+        }
+                
+        &.ui-confirm-dialog {
+            .ui-dialog-content {
+                padding: 1.5em;
+                
+                > span {
+                    float: none;
+                    display: inline-block;
+                    vertical-align: middle;
+                    line-height: $fontSize;
+                    margin: 0;
+                    
+                    &.ui-icon {
+                        margin-right: .35em;
+                        font-size: $fontSize + 2;
+                    }
+                }
+            }
+        }
+    }
+        
+    .ui-tooltip {
+        .ui-tooltip-text {
+            @include overlay-shadow();
+        }
+        
+        &.ui-state-error {
+            border: 0 none;
+        }
+        
+        .ui-tooltip {        
+            .ui-tooltip-text {
+                background-color: grey;
+                color: grey;
+                @include overlay-shadow();
+            }
+            
+            &.ui-state-error {
+                border: 0 none;
+            }
+            
+            &.ui-tooltip-right {
+                .ui-tooltip-arrow {
+                    border-right-color: grey;
+                }
+            }
+            
+            &.ui-tooltip-left {
+                .ui-tooltip-arrow {
+                    border-left-color: grey;
+                }
+            }
+            
+            &.ui-tooltip-top {
+                .ui-tooltip-arrow {
+                    border-top-color: grey;
+                }
+            }
+            
+            &.ui-tooltip-bottom {
+                .ui-tooltip-arrow {
+                    border-bottom-color: grey;
+                }
+            }
+        }
+    }
+    
+    .ui-lightbox {
+        @include overlay-shadow();
+        
+        .ui-lightbox-caption {
+            padding: $headerPadding;
+            
+            .ui-lightbox-caption-text {
+                color: $headerTextColor;
+                margin: 0;
+            }
+            
+            .ui-lightbox-close {
+                padding: 0;
+                color: $headerTextColor;
+                @include transition(color $transitionDuration);
+                
+                &:hover {
+                    color: lighten($primaryColor, 10%);
+                }
+            }
+        }
+        
+        .ui-lightbox-content-wrapper {
+            overflow: hidden;
+                      
+            .ui-lightbox-nav-left {
+                @include icon_override("\f053");
+                @include transition(all $transitionDuration);
+                font-size: 24px;
+                margin-left: 4px;
+
+                &:hover {
+                    @include scale(1.2);
+                }
+                
+                span {
+                    display: none;
+                }
+            }
+            
+            .ui-lightbox-nav-right {
+                @include icon_override("\f054");
+                @include transition(all $transitionDuration);
+                font-size: 24px;
+                margin-right: 4px;
+                
+                &:hover {
+                    @include scale(1.2);
+                }
+                
+                span {
+                    display: none;
+                }
+            }
+            
+            .ui-lightbox-content.ui-lightbox-loading ~ a {
+                display: none;
+            }
+        }
+    }
+}

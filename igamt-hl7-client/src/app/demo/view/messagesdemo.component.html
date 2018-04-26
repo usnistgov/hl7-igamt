@@ -1,0 +1,15 @@
+<div class="ui-g">
+    <div class="ui-g-12">
+        <div class="card no-margin">
+            <h1>Messages and Growl</h1>
+            <p-messages [value]="msgs"></p-messages>
+            <p-growl [value]="msgs" sticky="sticky"></p-growl>
+
+            <button type="button" pButton (click)="showInfo()" label="Info" style="width:100px" class="blue-btn"></button>
+            <button type="button" pButton (click)="showSuccess()" label="Success" style="width:100px" class="green-btn"></button>
+            <button type="button" pButton (click)="showWarn()" label="Warn" class="orange-btn" style="width:100px"></button>
+            <button type="button" pButton (click)="showError()" label="Error" class="pink-btn" style="width:100px"></button>
+            <button type="button" pButton (click)="showMultiple()" label="Multiple" class="purple-btn" style="width:100px"></button>
+        </div>
+    </div>
+</div>

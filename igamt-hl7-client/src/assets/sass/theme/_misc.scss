@@ -1,0 +1,48 @@
+body {
+    .ui-progressbar {
+        border: 0 none;
+        background-color: $dividerColor;
+
+        .ui-progressbar-value {
+            border: 0 none;
+            background: lighten($primaryColor,10%);
+            margin: 0;
+            @include border-radius(0);
+        }
+
+        .ui-progressbar-label {
+            margin-top: -1px;
+        }
+    }
+
+    .ui-galleria {
+        .ui-galleria-nav-prev {
+            @include icon_override("\f053");
+            font-size: 18px;
+            margin-bottom: -5px;
+            margin-left: -5px;
+
+            &:hover {
+                color: $primaryColor;
+            }
+        }
+
+        .ui-galleria-nav-next {
+            @include icon_override("\f054");
+            font-size: 18px;
+            margin-bottom: -5px;
+            margin-right: -5px;
+
+            &:hover {
+                color: $primaryColor;
+            }
+        }
+    }
+
+    .ui-terminal {
+        input {
+            font-family: $fontFamily;
+            font-size: $fontSize;
+        }
+    }
+}
