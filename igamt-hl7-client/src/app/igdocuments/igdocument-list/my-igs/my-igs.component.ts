@@ -15,6 +15,7 @@ export class MyIgsComponent implements OnInit {
   sortKey: string;
 
   sortField: string;
+  moreInfoMap={};
 
   sortOrder: number;
 
@@ -42,7 +43,6 @@ export class MyIgsComponent implements OnInit {
   }
 
   open(ig,readnly){
-    console.log(ig.id.id);
     this.router.navigate(['/ig/'+ig.id.id],{ queryParams: { readOnly: "true" } });
   }
 
@@ -58,6 +58,16 @@ export class MyIgsComponent implements OnInit {
       this.sortOrder = 1;
       this.sortField = value;
     }
+  }
+
+  toggleMoreInfo(id){
+    if(this.moreInfoMap[id.id]){
+      this.moreInfoMap[id.id]=!this.moreInfoMap[id.id];
+    }else{
+      this.moreInfoMap[id.id]=true;
+    }
+    console.log(this.moreInfoMap);
+
   }
 
 }
