@@ -9,7 +9,7 @@ import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "
 
 import {MenuItem} from 'primeng/api';
 import {ContextMenuComponent} from "ngx-contextmenu";
-import {ActivatedRoute} from "@angular/router";
+import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
@@ -20,6 +20,8 @@ export class IgDocumentEditComponent {
   igId:any;
 
   ig:any;
+  currentUrl:any;
+  hideToc:false;
 
   activeNode:any;
 
@@ -29,23 +31,23 @@ export class IgDocumentEditComponent {
   types: SelectItem[]=[
 
 
-    {label:"TEXT",value:"TEXT"},
-    {label:"CONFORMANCEPROFILE",value:"CONFORMANCEPROFILE"},
-    {label:"SEGMENT",value:"SEGMENT"},
-    {label:"DATA TYPES",value:"DATATYPE"},
+    {label:"Narrative",value:"TEXT"},
+    {label:"Conforamance profile",value:"CONFORMANCEPROFILE"},
+    {label:"Segment",value:"SEGMENT"},
+    {label:"Data Type",value:"DATATYPE"},
 
-    {label:"PRFOILECOMPONENT",value:"PROFILECOMPONENT"},
+    {label:"Profile Component",value:"PROFILECOMPONENT"},
     {label:"Composite Profile ",value:"COMPOSITEPROFILE"},
-    {label:"Value Set",value:"VALUESET"}
+    {label:"ValueSet",value:"VALUESET"}
   ];
 
 
   scopes: SelectItem[]=[
 
 
-    {label:"HL7STANARD",value:"HL7STANDARD"},
+    {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
-    {label:"HL7 FLAVORS",value:"MASTER"}
+    {label:"HL7 Flavors",value:"MASTER"}
 
   ];
 
@@ -77,22 +79,18 @@ export class IgDocumentEditComponent {
       mouse: {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
 
-          if(from.data.data.type== "TEXT" && (to.parent.data.data.type=="TEXT"||to.parent.data.data.type=="IGDOCUMENT")){
+          if(from.data.data.type== "TEXT" && (!this.isOrphan(to) && to.parent.data.data.type=="TEXT"||this.isOrphan(to))){
             console.log("Dropping");
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
           }
-          if(from.data.data.type== "PROFILE" && to.parent.data.data.type=="IGDOCUMENT") {
+          if(from.data.data.type== "PROFILE" && this.isOrphan(to)) {
             console.log("Dropping");
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
 
           }
-
-
-          // use from to get the dragged node.
-          // use to.parent and to.index to get the drop location
         },
         mouse: {
           click: TREE_ACTIONS.ACTIVATE
@@ -106,10 +104,22 @@ export class IgDocumentEditComponent {
     }
   };
 
+  isOrphan(node:any){
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute){
+
+    return node.parent&&!node.parent.parent!=null;
 
 
+  }
+
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router){
+
+    router.events.subscribe(event => {
+
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+      }
+    });
   }
 
   filterFn(){
@@ -133,18 +143,54 @@ export class IgDocumentEditComponent {
 
   ngOnInit() {
     this.igId= this.sp.snapshot.params["igId"];
+    console.log("======URl");
+
+    this.sp.children[0].children[0].url.subscribe(x=>{console.log(x)})
+    console.log("======eee");
+
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
-      console.log(x);
       this.ig= x;
-      console.log(this.ig);
+      console.log(this.ig.toc.content);
+      console.log(this.ig.toc.content.children);
+
+
+      this.nodes=this.ig.toc.content[0].children;
+
     });
-    console.log( this.igId);
+
+
+
+  }
+
+  toggleHideToc(){
+
+
+    this.hideToc= !this.hideToc;
 
   }
   print(node){
     console.log(node);
   }
   ngAfterViewInit() {
+    console.log(this.currentUrl);
+
+    this.tree.treeModel.filterNodes((node) => {
+
+
+
+      if(this.currentUrl.includes(node.data.data.type.toLowerCase())){
+        console.log(node);
+        if(node.data.data.key&& node.data.data.key.id ){
+         if( this.currentUrl.includes(node.data.data.key.id)){
+           this.activeNode=node.id;
+           return true;
+
+         }
+
+        }
+      }
+
+    });
     console.log(this.ig);
   }
 
@@ -192,7 +238,7 @@ export class IgDocumentEditComponent {
 
   getPath =function (node) {
     node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
-    if(node.parent.data.data.type=="IGDOCUMENT"){
+    if(this.isOrphan(node)){
       return  node.data.data.position+".";
     }else{
       return this.getPath(node.parent)+ node.data.data.position+".";
@@ -223,5 +269,6 @@ export class IgDocumentEditComponent {
   activateNode(node){
     this.activeNode=node;
   }
+
 
 }

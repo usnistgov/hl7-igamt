@@ -1,4 +1,18 @@
 <div class="custom-menu">
-<p-panelMenu [model]="items" [style]="{'width':'250px'}"></p-panelMenu>
+
+
+    <ul style="list-style-type: none;">
+
+        <li *ngFor="let item of items">
+         <span [ngClass]="{'active-node':activeId==item.id}"> <i class="{{item.icon}}"></i>
+          <a  (click)="goTo(item)">
+          {{item.label}}
+
+          </a>
+         </span>
+
+        </li>
+
+    </ul>
 
 </div>

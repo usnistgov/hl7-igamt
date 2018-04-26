@@ -6,6 +6,7 @@ import {Router, ActivatedRoute, ParamMap, ActivatedRouteSnapshot} from '@angular
 import 'rxjs/add/operator/switchMap';
 import {MenuItem} from "primeng/components/common/menuitem";
 import {QueryParamsHandling} from "@angular/router/src/config";
+import {SubMenu} from "./SubMenu";
 @Component({
   selector : 'display-menu',
   templateUrl : './display-menu.component.html',
@@ -14,189 +15,78 @@ import {QueryParamsHandling} from "@angular/router/src/config";
 export class DisplayMenuComponent {
   @Input()
   elm : any;
-  private items: MenuItem[];
+  private items: SubMenu[];
 
   @Input()
   igId : any;
 
+  activeId: string;
+
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-  ){
-
-
+    private router: Router){
   }
+
+
   ngOnInit(){
       console.log(this.elm);
+      if(this.elm.type){
+       this.items= this.getMenuItems();
 
-
-      if(this.elm.type=='SEGMENT' && this.elm.label=='OBX'){
-        this.items=[
-          {
-            label: 'MetaData',
-            icon: 'fa-file-o',
-           command: (event) => {
-              this.goTo(this.elm.type,"metadata");
-              }
-          },
-          {
-            label: 'Definition',
-            icon: 'fa-edit',
-            items: [
-              {label: 'Pre Definition',   command: (event) => {
-                this.goTo(this.elm.type,"preDef");
-              }},
-              {label: 'Structure',  command: (event) => {
-                this.goTo(this.elm.type,"structure");
-              }},
-            {label: 'Post-Definition',  command: (event) => {
-              this.goTo(this.elm.type,"postDef");
-            }},
-              {label:'Conformance Statement',  command: (event) => {
-                this.goTo(this.elm.type,"conformanceStatement");
-              }},
-              {label:'Predicates' ,  command: (event) => {
-                this.goTo(this.elm.type,"predicate");
-              }}
-            ]
-          },
-          {label: 'Cross-References', icon: 'fa-mail-reply'},
-
-
-          {
-            label: 'Actions',
-            icon: 'fa-gear',
-            items: [
-              {
-                label: 'Delete',
-                icon: 'fa-remove',
-
-              },
-              {
-                label: 'Copy',
-                icon: 'fa-copy'
-              }
-            ]
-          }
-        ];
-      }
-      else if(this.elm.label=='OBX'&&this.elm.type!=='VALUESET' ){
-
-        this.items=[
-          {
-            label: 'MetaData',
-            icon: 'fa-file-o',
-            command: (event) => {
-              this.goTo(this.elm.type,"metadata");
-            }
-          },
-          {
-            label: 'Definition',
-            icon: 'fa-edit',
-
-
-            items: [
-              {label: 'Pre Definition',   command: (event) => {
-                this.goTo(this.elm.type,"preDef");
-              }},
-              {label: 'Structure',  command: (event) => {
-                this.goTo(this.elm.type,"structure");
-              }},
-              {label: 'Post-Definition',  command: (event) => {
-                this.goTo(this.elm.type,"postDef");
-              }},
-              {label:'Conformance Statement',  command: (event) => {
-                this.goTo(this.elm.type,"conformanceStatement");
-              }},
-              {label:'Predicates' ,  command: (event) => {
-                this.goTo(this.elm.type,"predicate");
-              }}
-
-            ]
-          },
-          {label: 'Cross-References', icon: 'fa-mail-reply'},
-
-
-          {
-            label: 'Actions',
-            icon: 'fa-gear',
-            items: [
-              {
-                label: 'Delete',
-                icon: 'fa-remove',
-
-              },
-              {
-                label: 'Copy',
-                icon: 'fa-copy'
-              }
-            ]
-          }
-        ];
-      }else{
-
-
-        this.items=[
-          {
-            label: 'MetaData',
-            icon: 'fa-file-o',
-            command: (event) => {
-              this.goTo(this.elm.type,"metadata");
-            }
-          },
-          {
-            label: 'Definition',
-            icon: 'fa-edit',
-
-
-            items: [
-              {label: 'Pre Definition',   command: (event) => {
-                this.goTo(this.elm.type,"preDef");
-              }},
-              {label: 'Structure',  command: (event) => {
-                this.goTo(this.elm.type,"structure");
-              }},
-              {label: 'Post-Definition',  command: (event) => {
-                this.goTo(this.elm.type,"postDef");
-              }}
-
-            ]
-          },
-          {label: 'Cross-References', icon: 'fa-mail-reply'},
-
-
-          {
-            label: 'Actions',
-            icon: 'fa-gear',
-            items: [
-              {
-                label: 'Delete',
-                icon: 'fa-remove',
-
-              },
-              {
-                label: 'Copy',
-                icon: 'fa-copy'
-              }
-            ]
-          }
-        ];
-
+        }
       }
 
+
+
+
+
+
+
+
+  goTo(item:SubMenu){
+    let type=this.elm.type.toLowerCase();
+    this.activeId=item.id;
+    console.log(item);
+
+    console.log(this.activeId);
+    this.router.navigate(["./"+type+"/"+this.elm.key.id+"/"+item.value],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+
   }
 
 
-  goTo(type,tab){
-    type=type.toLowerCase();
-    this.router.navigate(["./"+type+"/"+this.elm.key.id+"/"+tab],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+  getMenuItems(){
+    let ret :SubMenu[]=[];
+    let type = this.elm.type.toLowerCase();
+    ret.push( new SubMenu("metadata"+this.elm.key.id,"metadata","Meta Data", "fa fa-edit"));
+
+    ret.push(new SubMenu("preDef"+this.elm.key.id,"preDef","Pre Definition", "fa fa-mail-reply"));
+
+
+
+    ret.push(new  SubMenu("structure"+this.elm.key.id,"structure","Structure", "fa fa-table"));
+
+    ret.push(  new SubMenu("postDef"+this.elm.key.id,"postDef","Post Definition", "fa fa-mail-forward"));
+
+    ret.push(  new SubMenu("conformanceStatement"+this.elm.key.id,"conformanceStatement","Conformance Statement", "fa fa-table"));
+
+    if(type=='segment'&& this.elm.label=="OBX"){
+
+      ret.push( new SubMenu("coConstraint"+this.elm.key.id,"coConstraint","Co-Constraint", "fa fa-table"));
+
+      ret.push( new SubMenu("dynamicMapping"+this.elm.key.id,"dynamicMapping","Dynamic Mapping", "fa fa-table"));
+
+    }
+
+    ret.push(  new SubMenu("crossRef"+this.elm.key.id,"crossRef","Cross Reference", "fa fa-list"));
+
+
+  return ret;
 
   }
 
-  getStyle(label){
 
 
-  }
+
 
 
 }

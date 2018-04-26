@@ -1,3 +1,4 @@
+<div class="list-ig">
 <p-dataView [value]="igs" [paginator]="true" [rows]="10" [sortField]="sortField" [sortOrder]="sortOrder" [filterBy]="'title,subtitle,username'" #dv>
   <p-header>
   <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By"
@@ -52,3 +53,4 @@
   </ng-template>
 
 </p-dataView>
+</div>

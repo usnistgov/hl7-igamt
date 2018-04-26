@@ -1,60 +1,71 @@
-<!--HEADER-->
-<!--<ig-header></ig-header>-->
 <div>
-<div class="ig-top-bar">
-<p-toolbar>
 
-  <span class="ig-title">{{ig.metadata.title}}</span>
-  <span class="ig-date">{{ig.dateUpdated|date}}</span>
-  <span class="ig-date">{{ig.username}}</span>
+      <span class="ig-title">{{ig.metadata.title}}</span>
+              <span class="ig-title">{{ig.metadata.title}}</span>
 
-  <div class="ui-toolbar-group-left">
-  <div class="ui-inputgroup u-g-12" >
-    <button pButton type="button"  icon="fa-search" ></button>
-    <input type="text" [(ngModel)]="searchFilter" pInputText placeholder="Search By Name" id="filter" #filter (keyup)="filterFn()" >{{searchFilter}}
-  </div>
-  <!--<input id="filter" #filter (keyup)="filterFn(filter.value)" placeholder="filter nodes"/>-->
+              <span class="ig-title">{{ig.metadata.title}}</span>
 
-    <p-multiSelect defaultLabel="Types"  [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()"></p-multiSelect>
+    <hr style="margin-top: 0rem;
+    margin-bottom: 0rem;
+    border: 0;
+    border-top: 1px solid #f5f5f5;"/>
+      <span class="ig-date" *ngIf="ig.dateUpdated">
 
+            <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date }}
+      </span>
 
 
-    <p-multiSelect defaultLabel="SCOPE"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()"></p-multiSelect>
-
-
-
-    <button style="float: right;" pButton label="Expand All" type="button"  icon="fa-expand-alt" (click)="expandAll()"></button>
-    <button pButton style="float:left" label="Collapse All" type="button"  icon="fa-compress-alt" (click)="collapseAll()"></button>
-
-
-  </div>
-
-
-  <div class="ui-toolbar-group-right">
-    <button pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
-    <button pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
-    <button pButton type="button" label="save" class="green-btn" icon="fa-check"></button>
-
-
-
-
-
-  </div>
-
-  <div class="ui-toolbar-group-right">
-    <p-splitButton label="Save" icon="fa-check" [model]="items"></p-splitButton>
-  </div>
-</p-toolbar>
 </div>
-<div class="ui-g" style="padding : 0;">
-
-  <!--TOC-->
 
 
-  <div class="ui-g-3 no-margin" style="padding : 0;">
-    <!--<igamt-toc></igamt-toc>-->
+<p-toolbar class="toc-filter-toolbar">
 
-    <tree-root [nodes]="ig.toc.content" [options]="options" #treeroot>
+  <div class="multiselect-adapter">
+
+
+    <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Search By Name" id="filter" #filter (keyup)="filterFn()">
+    <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()"></p-multiSelect>
+
+    <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()"></p-multiSelect>
+    <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="Export" class="red-btn" icon="fa-refresh"></button>
+    <button  style="float: right" pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="share" class="red-btn" icon="fa-refresh"></button>
+    <button style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button style="float: right" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+  </div>
+
+
+
+
+</p-toolbar>
+<div class="ui-g">
+<div *ngIf="hideToc"  style="width: 50px">
+
+  <div (click)="toggleHideToc()"   class="panel-leftheading ">
+    <p-header class="panel-lefttitle"> <i class="fa fa-eye"></i>Table of Content</p-header>
+  </div>
+
+
+</div>
+
+<div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
+  <div class="ui-g-3 no-margin" style="padding : 0;"  *ngIf="!hideToc">
+  <p-panel [toggleable]="false">
+    <p-header>
+
+      Table Of Content
+      <button  style="float: right" pButton type="button"  icon="fa-arrow-left"  (click)="toggleHideToc()"></button>
+
+      <button style="float: right" pButton type="button"  icon="fa-compress"  (click)="collapseAll()"></button>
+      <button  style="float: right" pButton type="button"  icon="fa-expand"  (click)="collapseAll()"></button>
+
+
+
+
+
+    </p-header>
+    <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
       <ng-template #treeNodeTemplate let-node let-index="index">
         <ng-container [ngSwitch]="node.data.data.type">
@@ -167,14 +178,12 @@
 
 
     </tree-root>
+  </p-panel>
   </div>
 
   <!--ROUTE-->
-  <div class=" card ui-g-9 " style="padding : 0;">
-    <!--<router-outlet></router-outlet>-->
+  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;">
+        <router-outlet></router-outlet>
   </div>
-
 </div>
-
-
 </div>

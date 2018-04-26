@@ -24,3 +24,113 @@
   cursor: pointer;
 }
 
+.active-node{
+  color:#39a3f4;
+}
+
+
+.active-node{
+  color:#39a3f4 !important;
+}
+.layout-content-container{
+  padding: 3px !important;
+}
+
+.multiselect-adapter .ui-multiselect .ui-multiselect-label-container {
+  width: 150px;
+  height: 28px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.multiselect-adapter  input{
+  width: 150px;
+  height: 28px;
+  padding: 0px;
+  margin-top: 1px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  -moz-transition: border-color 0.3s, box-shadow 0.3s;
+  -o-transition: border-color 0.3s, box-shadow 0.3s;
+  -webkit-transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: "Source Sans Pro", Arial, sans-serif;
+  font-size: 12px;
+  border-radius: 2px;
+
+
+}
+.multiselect-adapter  .span{
+  width: 150px;
+  height: 28px;
+  padding: 0px;
+  margin-top: 1px;
+  background: #ffffff;
+  border: 1px solid #cccccc;
+  -moz-transition: border-color 0.3s, box-shadow 0.3s;
+  -o-transition: border-color 0.3s, box-shadow 0.3s;
+  -webkit-transition: border-color 0.3s, box-shadow 0.3s;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-family: "Source Sans Pro", Arial, sans-serif;
+  font-size: 12px;
+  border-radius: 2px;
+}
+.toc-filter-toolbar .ui-toolbar {
+  background-color: #f5f5f5;
+  border-color: #d8d8d8;
+  padding: 1px;
+  font-size: 12px;
+}
+
+.rotate {
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  transform: rotate(90deg);
+
+}
+
+.panel-leftheading
+{
+  width: 42px;
+  border-right: 1px solid transparent;
+  border-bottom: 1px solid transparent;
+  border-top-right-radius: 3px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  float: left;
+  height: 100%;
+  position: absolute;
+  width: 4%;
+  height: 800px;
+  background-color: whitesmoke;
+  padding-top: 200px;
+  padding-right: 0px;
+  cursor: pointer;
+}
+
+.panel-lefttitle
+{
+  margin-top: 0;
+  margin-bottom: 0;
+  margin-left: 38px;
+  font-size: 24px;
+  color: inherit;
+  -webkit-transform: rotate(90deg);
+  -webkit-transform-origin: left top;
+  -moz-transform: rotate(90deg);
+  -moz-transform-origin: left top;
+  -ms-transform: rotate(90deg);
+  -ms-transform-origin: left top;
+  -o-transform: rotate(90deg);
+  -o-transform-origin: left top;
+  transform: rotate(90deg);
+  transform-origin: left top;
+  position: absolute;
+  white-space: nowrap;
+}
+.ig-title{
+  font-size: 16px;
+  font-weight: 800;
+}
