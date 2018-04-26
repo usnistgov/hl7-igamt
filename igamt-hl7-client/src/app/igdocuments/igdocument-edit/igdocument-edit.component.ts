@@ -21,7 +21,7 @@ export class IgDocumentEditComponent {
 
   ig:any;
   currentUrl:any;
-  hideToc:false;
+  hideToc=false;
 
   activeNode:any;
 
@@ -158,7 +158,7 @@ export class IgDocumentEditComponent {
   toggleHideToc(){
 
 
-    this.hideToc= !this.hideToc;
+    this.hideToc=!this.hideToc;
 
   }
   print(node){
