@@ -61,11 +61,6 @@ export class IgDocumentEditComponent {
   @ViewChild('igcontextmenu') public igcontextmenu: ContextMenuComponent;
   @ViewChild('textcontextmenu') public textcontextmenu: ContextMenuComponent;
   @ViewChild('datatypescontextmenu') public datatypescontextmenu: ContextMenuComponent;
-
-
-
-
-
   currentNode:TreeNode;
 
 
@@ -116,6 +111,7 @@ export class IgDocumentEditComponent {
 
     router.events.subscribe(event => {
 
+
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
       }
@@ -123,6 +119,7 @@ export class IgDocumentEditComponent {
   }
 
   filterFn(){
+    this.hideToc=false; // show the TOC if we filter
     this.tree.treeModel.filterNodes((node) => {
       if(node.data.data.domainInfo) {
 
@@ -143,10 +140,6 @@ export class IgDocumentEditComponent {
 
   ngOnInit() {
     this.igId= this.sp.snapshot.params["igId"];
-    console.log("======URl");
-
-    this.sp.children[0].children[0].url.subscribe(x=>{console.log(x)})
-    console.log("======eee");
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.ig= x;
@@ -172,27 +165,57 @@ export class IgDocumentEditComponent {
     console.log(node);
   }
   ngAfterViewInit() {
-    console.log(this.currentUrl);
 
+
+    var index = this.currentUrl.indexOf("/ig/");
+    var fromIg=  this.currentUrl.substring(this.currentUrl.indexOf("/ig/")+4);
+
+    var paramIndex= fromIg.indexOf('?');
+    console.log(paramIndex);
+    if(paramIndex>-1){
+      fromIg=fromIg.substring(0,paramIndex);
+    }
+    var slashIndex= fromIg.indexOf("/");
+
+    if(slashIndex<0){
+      console.log("OPENING IG")
+      this.expandAll();
+    }else{
+      var fromChild = fromIg.substring(slashIndex+1,fromIg.length);
+      this.filterByUrl(fromChild);
+
+    }
+
+  }
+
+
+
+  filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
 
 
+        if(node.data.data.key){
 
-      if(this.currentUrl.includes(node.data.data.type.toLowerCase())){
-        console.log(node);
-        if(node.data.data.key&& node.data.data.key.id ){
-         if( this.currentUrl.includes(node.data.data.key.id)){
-           this.activeNode=node.id;
-           return true;
+          if(node.data.data.key&& node.data.data.key.id) {
+            if (this.currentUrl.includes(node.data.data.key.id)) {
+              this.activeNode = node.id;
+              return true;
 
-         }
+            }
+          }
 
+
+        }else{
         }
-      }
+
+
 
     });
-    console.log(this.ig);
   }
+
+
+
+
 
   getItemFromTargetType(node:TreeNode) {
     this.currentNode=node;
@@ -215,23 +238,20 @@ export class IgDocumentEditComponent {
 
   }
 
-  addSection(node:TreeNode){
+  addSection(){
     //console.log(this.toc);
 
     let data1 ={
       label: "new Section",
       content:"",
       type:"TEXT",
-      position: node.data.children.length+1
+      position: this.tree.treeModel.nodes.length+1
     };
     var newNode = {id : "bla",data:data1, children :[]};
+    this.tree.treeModel.nodes.push(newNode);
 
-    console.log(node);
+    this.tree.treeModel.update();
 
-    node.data.children.push(newNode);
-    node.treeModel.update();
-
-    console.log(this.ig.toc.content);
 
 
   };

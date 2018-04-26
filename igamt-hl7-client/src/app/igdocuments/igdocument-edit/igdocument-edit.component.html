@@ -1,4 +1,5 @@
 <div>
+<div>
 
       <span class="ig-title">{{ig.metadata.title}}</span>
               <span class="ig-title">{{ig.metadata.title}}</span>
@@ -23,27 +24,30 @@
   <div class="multiselect-adapter">
 
 
-    <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Search By Name" id="filter" #filter (keyup)="filterFn()">
-    <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()"></p-multiSelect>
+    <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
+    <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
 
-    <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()"></p-multiSelect>
-    <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
-    <button  style="float: right" pButton type="button" label="Export" class="red-btn" icon="fa-refresh"></button>
-    <button  style="float: right" pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
-    <button  style="float: right" pButton type="button" label="share" class="red-btn" icon="fa-refresh"></button>
+    <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()" pTooltip="Filter by Scope" tooltipPosition="top" ></p-multiSelect>
     <button style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
     <button style="float: right" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+
+    <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="Export"  icon="fa-download"></button>
+    <button  style="float: right" pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="share"  icon="fa-share"></button>
+
   </div>
 
 
 
 
 </p-toolbar>
+</div>
 <div class="ui-g">
 <div *ngIf="hideToc"  style="width: 50px">
 
   <div (click)="toggleHideToc()"   class="panel-leftheading ">
-    <p-header class="panel-lefttitle"> <i class="fa fa-eye"></i>Table of Content</p-header>
+    <p-header class="panel-lefttitle" pTooltip="Show TOC "  tooltipPosition="bottom" > <i class="fa fa-eye"></i>Table of Content</p-header>
   </div>
 
 
@@ -52,14 +56,12 @@
 <div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
   <div class="ui-g-3 no-margin" style="padding : 0;"  *ngIf="!hideToc">
   <p-panel [toggleable]="false">
-    <p-header>
-
+    <p-header class="toc-panel-header">
       Table Of Content
-      <button  style="float: right" pButton type="button"  icon="fa-arrow-left"  (click)="toggleHideToc()"></button>
-
-      <button style="float: right" pButton type="button"  icon="fa-compress"  (click)="collapseAll()"></button>
-      <button  style="float: right" pButton type="button"  icon="fa-expand"  (click)="collapseAll()"></button>
-
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
+      <button style="float: right;padding: 0px" pButton type="button"  icon="fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
+      <button  style="float: right;padding: 0px" pButton type="button"  icon="fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
 
 
 

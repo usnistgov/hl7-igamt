@@ -134,3 +134,11 @@
   font-size: 16px;
   font-weight: 800;
 }
+.ig-date{
+  font-size: 11px;
+  font-style: italic;
+}
+
+.toc-panel-header .ui-button.ui-button-icon-only .ui-button-text {
+  padding: 0px;
+}

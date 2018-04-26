@@ -4,8 +4,6 @@
 import {Component, Input} from "@angular/core";
 import {Router, ActivatedRoute, ParamMap, ActivatedRouteSnapshot} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
-import {MenuItem} from "primeng/components/common/menuitem";
-import {QueryParamsHandling} from "@angular/router/src/config";
 import {SubMenu} from "./SubMenu";
 @Component({
   selector : 'display-menu',
@@ -57,27 +55,27 @@ export class DisplayMenuComponent {
   getMenuItems(){
     let ret :SubMenu[]=[];
     let type = this.elm.type.toLowerCase();
-    ret.push( new SubMenu("metadata"+this.elm.key.id,"metadata","Meta Data", "fa fa-edit"));
+    ret.push( new SubMenu("metadata"+"/"+this.elm.key.id,"metadata","Meta Data", "fa fa-edit"));
 
-    ret.push(new SubMenu("preDef"+this.elm.key.id,"preDef","Pre Definition", "fa fa-mail-reply"));
+    ret.push(new SubMenu("preDef"+"/"+this.elm.key.id,"preDef","Pre Definition", "fa fa-mail-reply"));
 
 
 
-    ret.push(new  SubMenu("structure"+this.elm.key.id,"structure","Structure", "fa fa-table"));
+    ret.push(new  SubMenu("structure"+"/"+this.elm.key.id,"structure","Structure", "fa fa-table"));
 
-    ret.push(  new SubMenu("postDef"+this.elm.key.id,"postDef","Post Definition", "fa fa-mail-forward"));
+    ret.push(new SubMenu("postDef"+"/"+this.elm.key.id,"postDef","Post Definition", "fa fa-mail-forward"));
 
-    ret.push(  new SubMenu("conformanceStatement"+this.elm.key.id,"conformanceStatement","Conformance Statement", "fa fa-table"));
+    ret.push(new SubMenu("conformanceStatement"+"/"+this.elm.key.id,"conformanceStatement","Conformance Statement", "fa fa-table"));
 
     if(type=='segment'&& this.elm.label=="OBX"){
 
-      ret.push( new SubMenu("coConstraint"+this.elm.key.id,"coConstraint","Co-Constraint", "fa fa-table"));
+      ret.push( new SubMenu("coConstraint"+"/"+this.elm.key.id,"coConstraint","Co-Constraint", "fa fa-table"));
 
-      ret.push( new SubMenu("dynamicMapping"+this.elm.key.id,"dynamicMapping","Dynamic Mapping", "fa fa-table"));
+      ret.push( new SubMenu("dynamicMapping"+"/"+this.elm.key.id,"dynamicMapping","Dynamic Mapping", "fa fa-table"));
 
     }
 
-    ret.push(  new SubMenu("crossRef"+this.elm.key.id,"crossRef","Cross Reference", "fa fa-list"));
+    ret.push(  new SubMenu("crossRef"+"/"+this.elm.key.id,"crossRef","Cross Reference", "fa fa-list"));
 
 
   return ret;
