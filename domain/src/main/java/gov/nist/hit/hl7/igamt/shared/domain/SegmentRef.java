@@ -1,22 +1,25 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
 public class SegmentRef extends MsgStructElement {
- private Ref Ref;
+  private Ref ref;
 
-public SegmentRef() {
-  
-  super();
-  this.setType(Type.SEGMENTREF);
-  // TODO Auto-generated constructor stub
-}
+  public SegmentRef() {
+    super();
+    this.setType(Type.SEGMENTREF);
+  }
 
-public Ref getRef() {
-  return Ref;
-}
+  public SegmentRef(String id, String name, int position, Usage usage, String text, boolean custom,
+      int min, String max, Ref ref) {
+    super(id, name, position, usage, Type.SEGMENTREF, text, custom, min, max);
+    this.ref = ref;
+  }
 
-public void setRef(Ref ref) {
-  Ref = ref;
-}
+  public Ref getRef() {
+    return ref;
+  }
 
- 
+  public void setRef(Ref ref) {
+    this.ref = ref;
+  }
+
 }

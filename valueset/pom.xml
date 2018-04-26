@@ -9,7 +9,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>valueset</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>valueset</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -19,6 +18,11 @@
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>shared-domain</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>serialization</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 	</dependencies>

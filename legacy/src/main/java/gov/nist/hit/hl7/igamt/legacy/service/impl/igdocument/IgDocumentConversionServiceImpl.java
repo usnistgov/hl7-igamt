@@ -286,7 +286,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	}
 	private void addNaratives(Ig newIg, Set<Section> childSections) {
 		// TODO Auto-generated method stub
-		Set<TextSection> children = new HashSet<TextSection>();
+		Set<gov.nist.hit.hl7.igamt.shared.domain.Section> children = new HashSet<>();
 		
 		
 		

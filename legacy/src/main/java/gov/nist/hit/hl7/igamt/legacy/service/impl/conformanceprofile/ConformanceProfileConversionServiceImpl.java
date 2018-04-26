@@ -152,7 +152,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     gov.nist.hit.hl7.igamt.shared.domain.Group newGroup =
         new gov.nist.hit.hl7.igamt.shared.domain.Group();
 
-    if (g.getAdded().equals(Constant.YES)) {
+    if (g.isAdded().equals(Constant.YES)) {
       newGroup.setCustom(true);
     } else {
       newGroup.setCustom(false);
@@ -190,7 +190,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     gov.nist.hit.hl7.igamt.shared.domain.SegmentRef newSegmentRef =
         new gov.nist.hit.hl7.igamt.shared.domain.SegmentRef();
 
-    if (sr.getAdded().equals(Constant.YES)) {
+    if (sr.isAdded().equals(Constant.YES)) {
       newSegmentRef.setCustom(true);
     } else {
       newSegmentRef.setCustom(false);

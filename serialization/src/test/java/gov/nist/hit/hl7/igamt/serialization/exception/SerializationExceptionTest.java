@@ -13,11 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
-
-import static org.junit.Assert.*;
 
 /**
  *
@@ -28,14 +28,31 @@ public class SerializationExceptionTest {
   private final String TEST_EXCEPTION_MESSAGE = "test_exception_message";
   private final Exception TEST_EXCEPTION = new NullPointerException(TEST_EXCEPTION_MESSAGE);
   private final Type TEST_TYPE = Type.COMPONENT;
+  private final Type TEST_TYPE_PARENT = Type.DATATYPE;
   private final String TEST_LOCATION = "test_location";
+  private final String TEST_LOCATION_PARENT = "test_location_parent";
   private final String TEST_MESSAGE = "test_message";
-
+  private final String TEST_MESSAGE_PARENT = "test_message_parent";
+  
+  private SerializationException serializationException = new SerializationException(TEST_EXCEPTION,TEST_TYPE,TEST_LOCATION,TEST_MESSAGE);
   
   @Test
   public void testPrintError() {
-    SerializationException serializationException = new SerializationException(TEST_EXCEPTION,TEST_TYPE,TEST_LOCATION,TEST_MESSAGE);
     String testError = serializationException.printError();
-    assertEquals(TEST_TYPE+"["+TEST_LOCATION+"] => "+TEST_EXCEPTION.getClass()+" -> "+TEST_EXCEPTION_MESSAGE, testError);
+    assertEquals(TEST_TYPE+"["+TEST_LOCATION+"] -> "+TEST_MESSAGE+" => java.lang.NullPointerException -> "+TEST_EXCEPTION_MESSAGE, testError);
+  }
+  
+  @Test
+  public void testPrintErrorNullMessage() {
+    serializationException.setMessage(null);
+    String testError = serializationException.printError();
+    assertEquals(TEST_TYPE+"["+TEST_LOCATION+"] => java.lang.NullPointerException -> "+TEST_EXCEPTION_MESSAGE, testError);
+  }
+  
+  @Test
+  public void testRecursivePrintError() {
+    SerializationException serializationExceptionParent = new SerializationException(serializationException,TEST_TYPE_PARENT,TEST_LOCATION_PARENT,TEST_MESSAGE_PARENT);
+    String testError = serializationExceptionParent.printError();
+    assertEquals(TEST_TYPE_PARENT+"["+TEST_LOCATION_PARENT+"] -> "+TEST_MESSAGE_PARENT+" => "+TEST_TYPE+"["+TEST_LOCATION+"] -> "+TEST_MESSAGE+" => java.lang.NullPointerException -> "+TEST_EXCEPTION_MESSAGE, testError);
   }
 }

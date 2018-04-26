@@ -13,10 +13,13 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.segment;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
@@ -31,6 +34,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.Ref;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 /**
  *
@@ -113,6 +118,27 @@ public class SegmentConversionServiceImpl implements ConversionService {
       }
     }
     
+    if(oldSegment.getFields().size()>0) {
+      Set<gov.nist.hit.hl7.igamt.shared.domain.Field> fields = new HashSet<>();
+      for(Field field : oldSegment.getFields()) {
+        gov.nist.hit.hl7.igamt.shared.domain.Field newField = new gov.nist.hit.hl7.igamt.shared.domain.Field();
+        newField.setConfLength(field.getConfLength());
+        newField.setCustom(field.isAdded());
+        newField.setId(field.getId());
+        newField.setMax(Integer.parseInt(field.getMax()));
+        newField.setMaxLength(field.getMaxLength());
+        newField.setMin(field.getMin());
+        newField.setMinLength(field.getMinLength());
+        newField.setName(field.getName());
+        newField.setPosition(field.getPosition());
+        newField.setRef(new Ref(field.getDatatype().getId()));
+        newField.setText(field.getText());
+        newField.setType(Type.FIELD);
+        newField.setUsage(ConversionUtil.convertUsage(field.getUsage()));
+        fields.add(newField);
+      }
+      convertedSegment.setChildren(fields);
+    }
     
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
         .convertResourceBinding(oldSegment));

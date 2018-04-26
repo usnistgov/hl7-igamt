@@ -13,62 +13,33 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import nu.xom.Attribute;
 import nu.xom.Element;
 
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public class SerializableSection extends SerializableElement{
+public abstract class SerializableSection extends SerializableElement{
 
-  private String description;
-  protected Set<SerializableElement> children;
+  private Section section;
 
-  public SerializableSection(String id, String position, String title, String description) {
-    this(id, position, title);
-    this.description = description;
+  public SerializableSection(Section section) {
+    super(section.getId(), String.valueOf(section.getPosition()), section.getLabel());
+    this.section = section;
   }
 
-  public SerializableSection(String id, String position, String title, String description,
-      Set<SerializableElement> children) {
-    super(id, position, title);
-    this.description = description;
-    this.children = children;
+  public Section getSection() {
+    return section;
   }
 
-  public SerializableSection(String id, String position, String title) {
-    super(id, position, title);
-    this.children = new HashSet<>();
-    this.description = new String();
-  }
-
-  public Set<SerializableElement> getChildren() {
-    return children;
-  }
-
-  public void setChildren(Set<SerializableElement> children) {
-    this.children = children;
-  }
-
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public Element serialize() throws SerializationException {
+  public Element getElement() throws SerializationException {
     Element sectionElement = super.getElement("Section");
-    sectionElement.appendChild(description);
-    for(SerializableElement child : children) {
-      sectionElement.appendChild(child.serialize());
-    }
+    sectionElement.addAttribute(new Attribute("description",section.getDescription() != null ? section.getDescription() : ""));
+    sectionElement.addAttribute(new Attribute("type",section.getType() != null ? section.getType().name() : ""));
     return sectionElement;
   }
-
+  
 }

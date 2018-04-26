@@ -13,12 +13,18 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import nu.xom.Element;
+
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public interface SerializableDocument {
+public abstract class SerializableDocument {
 
-  public SerializableDocument serializeDocument();
+  public abstract Element serializeDocument();
+  
+  protected Element getElement() {
+    return new Element("Document");
+  }
   
 }

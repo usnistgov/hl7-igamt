@@ -86,7 +86,6 @@ public class DatatypeConversionServiceImpl implements ConversionService {
 
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
 
-
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
     if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();
@@ -102,6 +101,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
         gov.nist.hit.hl7.igamt.shared.domain.Component convertedComponent =
             new gov.nist.hit.hl7.igamt.shared.domain.Component();
         convertedComponent.setId(component.getId());
+        convertedComponent.setName(component.getName());
         convertedComponent.setConfLength(component.getConfLength());
         convertedComponent.setCustom(false);
         convertedComponent.setMaxLength(component.getMaxLength());
