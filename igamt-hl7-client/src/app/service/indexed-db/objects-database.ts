@@ -12,33 +12,6 @@ interface ISection {
   content?: object;
 }
 
-/*
-export interface IDatatype {
-  id?: string;
-  datatype?: object;
-}
-export interface IValueSet {
-  id?: string;
-  valueSet?: object;
-}
-export interface ISegment {
-  id?: string;
-  segment?: object;
-}
-export interface ISection {
-  id?: string;
-  section?: object;
-}
-export interface IProfileComponent {
-  id?: string;
-  profileComponent?: object;
-}
-export interface IProfile {
-  id?: string;
-  profile?: object;
-}
-*/
-
 export class ObjectsDatabase extends Dexie {
   datatypes: Dexie.Table<IObject, number>;
   valueSets: Dexie.Table<IObject, number>;
