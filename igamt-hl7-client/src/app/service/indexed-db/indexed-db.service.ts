@@ -143,37 +143,35 @@ export class IndexedDbService {
   }
 
   public persistChanges() {
-    this.getAllChanges().then(changedObjects => {
-      console.log('persist5');
-      console.log(JSON.stringify(changedObjects));
-    });
-  }
-  private getAllChanges(): Promise<any> {
     const changedObjects = new ChangedObjects(this.igDocumentId);
-    console.log('persist1');
     const promises = [];
     promises.push(new Promise((resolve, reject) => {
       this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async () => {
         changedObjects.segments = await this.changedObjectsDatabase.segments.toArray();
-        console.log('persist2');
         resolve();
       });
     }));
     promises.push(new Promise((resolve, reject) => {
       this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async () => {
         changedObjects.datatypes = await this.changedObjectsDatabase.datatypes.toArray();
-        console.log('persist3');
         resolve();
       });
     }));
     promises.push(new Promise((resolve, reject) => {
       this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valueSets, async () => {
         changedObjects.valuesets = await this.changedObjectsDatabase.valueSets.toArray();
-        console.log('persist4');
         resolve();
       });
     }));
-    return Promise.all(promises);
+    const doPersist = this.doPersist;
+    Promise.all(promises).then(function(){
+      doPersist(changedObjects);
+    });
+  }
+
+  private doPersist(changedObjects) {
+    console.log(JSON.stringify(changedObjects));
+    // TODO call igService.save
   }
 }
 
