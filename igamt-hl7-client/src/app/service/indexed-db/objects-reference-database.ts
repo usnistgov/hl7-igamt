@@ -15,7 +15,7 @@ export class ObjectsReferenceDatabase extends Dexie {
       profileComponents: '&id',
       conformanceProfiles: '&id',
       compositeProfiles: '&id',
-      valueSets: '&id'
+      valuesets: '&id'
     });
   }
 }

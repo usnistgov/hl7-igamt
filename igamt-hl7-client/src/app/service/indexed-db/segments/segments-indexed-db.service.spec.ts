@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import {SegmentIndexedDbService} from './segment-indexed-db.service';
+import {SegmentsIndexedDbService} from './segments-indexed-db.service';
 
 describe('SegmentIndexedDbService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [SegmentIndexedDbService]
+      providers: [SegmentsIndexedDbService]
     });
   });
 
-  it('should be created', inject([SegmentIndexedDbService], (service: SegmentIndexedDbService) => {
+  it('should be created', inject([SegmentsIndexedDbService], (service: SegmentsIndexedDbService) => {
     expect(service).toBeTruthy();
   }));
 });

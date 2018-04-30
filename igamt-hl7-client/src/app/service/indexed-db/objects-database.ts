@@ -23,7 +23,7 @@ export class ObjectsDatabase extends Dexie {
       profileComponents: '&id',
       conformanceProfiles: '&id',
       compositeProfiles: '&id',
-      valueSets: '&id'
+      valuesets: '&id'
     });
   }
 }

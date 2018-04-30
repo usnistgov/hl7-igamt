@@ -82,7 +82,9 @@ import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/com
 import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
-import {SegmentIndexedDbService} from './service/indexed-db/segment-indexed-db.service';
+import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
+import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
+import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
 // import {DatatypesService} from './service/datatypes/datatypes.service';
 // import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {AppRoutes} from './app.routes';
@@ -214,7 +216,9 @@ import { TreeModule } from 'angular-tree-component';
     // WorkspaceService,
     // GeneralConfigurationService,
      IndexedDbService,
-     SegmentIndexedDbService,
+     SegmentsIndexedDbService,
+    DatatypesIndexedDbService,
+    ValuesetsIndexedDbService,
     // DatatypesService,
     // ValueSetsService,
      SegmentsService,

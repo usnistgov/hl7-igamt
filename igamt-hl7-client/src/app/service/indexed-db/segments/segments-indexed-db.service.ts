@@ -1,10 +1,9 @@
 import {Injectable} from '@angular/core';
-import {IndexedDbService} from './indexed-db.service';
-import {IObject} from './objects-database';
-import IndexedDbUtils from "./indexed-db-utils";
+import {IndexedDbService} from '../indexed-db.service';
+import IndexedDbUtils from '../indexed-db-utils';
 
 @Injectable()
-export class SegmentIndexedDbService {
+export class SegmentsIndexedDbService {
 
   constructor(private indexeddbService: IndexedDbService) {
 
