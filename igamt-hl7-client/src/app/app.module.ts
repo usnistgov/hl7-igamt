@@ -79,16 +79,17 @@ import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/common';
-import { DocumentationComponent } from './documentation/documentation.component'
+import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
-// import {IndexedDbService} from './service/indexed-db/indexed-db.service';
+import {IndexedDbService} from './service/indexed-db/indexed-db.service';
+import {SegmentIndexedDbService} from './service/indexed-db/segment-indexed-db.service';
 // import {DatatypesService} from './service/datatypes/datatypes.service';
 // import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-// import {SegmentsService} from "./service/segments/segments.service";
+import {SegmentsService} from './service/segments/segments.service';
 // import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
@@ -102,7 +103,6 @@ import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import { TreeModule } from 'angular-tree-component';
-
 
 
 @NgModule({
@@ -213,10 +213,11 @@ import { TreeModule } from 'angular-tree-component';
     },
     // WorkspaceService,
     // GeneralConfigurationService,
-    // IndexedDbService,
+     IndexedDbService,
+     SegmentIndexedDbService,
     // DatatypesService,
     // ValueSetsService,
-    // SegmentsService,
+     SegmentsService,
     // ProfileComponentsService,
     AuthService,
     AuthGuard,

@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 
 import { ObjectsDatabase, IObject } from './objects-database';
 import { ObjectsReferenceDatabase } from './objects-reference-database';
+import Dexie from 'dexie';
 
 @Injectable()
 export class IndexedDbService {
@@ -11,70 +12,38 @@ export class IndexedDbService {
   addedObjectsDatabase;
   igDocumentId?: string;
   constructor() {
-    if (this.changedObjectsDatabase == null) {
+    Dexie.delete('ChangedObjectsDatabase').then(() => {
+      console.log('ChangedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete ChangedObjectsDatabase');
+    }).finally(() => {
       this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    }
-    if (this.removedObjectsDatabase == null) {
+    });
+    Dexie.delete('RemovedObjectsDatabase').then(() => {
+      console.log('RemovedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete RemovedObjectsDatabase');
+    }).finally(() => {
       this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
-    }
-    if (this.createdObjectsDatabase == null) {
+    });
+    Dexie.delete('CreatedObjectsDatabase').then(() => {
+      console.log('CreatedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete CreatedObjectsDatabase');
+    }).finally(() => {
       this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
-    }
-    if (this.addedObjectsDatabase == null) {
+    });
+    Dexie.delete('AddedObjectsDatabase').then(() => {
+      console.log('AddedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete AddedObjectsDatabase');
+    }).finally(() => {
       this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
-    }
+    });
   }
-  public init() {}
 
   public initializeDatabase (igDocumentId) {
     this.igDocumentId = igDocumentId;
-    // this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase, async () => {
-    //   this.changedObjectsDatabase.clear();
-    // });
-    // this.removedObjectsDatabase.transaction('rw', this.removedObjectsDatabase, async () => {
-    //   this.removedObjectsDatabase.clear();
-    // });
-    // this.createdObjectsDatabase.transaction('rw', this.createdObjectsDatabase, async () => {
-    //   this.createdObjectsDatabase.clear();
-    // });
-    // this.addedObjectsDatabase.transaction('rw', this.addedObjectsDatabase, async () => {
-    //   this.addedObjectsDatabase.clear();
-    // });
-  }
-
-  public getSegment (id, callback) {
-    let segment;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async() => {
-      segment = await this.changedObjectsDatabase.segments.get(id);
-      callback(segment);
-    });
-  }
-
-  public getSegmentMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async () => {
-      const segment = await this.changedObjectsDatabase.segments.get(id);
-      if (segment != null) {
-        callback(segment.metadata);
-      }
-    });
-  }
-
-  public getSegmentDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async () => {
-      const segment = await this.changedObjectsDatabase.segments.get(id);
-      if (segment != null) {
-        callback(segment.definition);
-      }
-    });
-  }
-
-  public getSegmentCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async () => {
-      const segment = await this.changedObjectsDatabase.segments.get(id);
-      if (segment != null) {
-        callback(segment.crossReference);
-      }
-    });
   }
 
   public getDatatype (id, callback) {
@@ -114,15 +83,15 @@ export class IndexedDbService {
 
   public getValueset (id, callback) {
     let valueset;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valuesets, async() => {
-      valueset = await this.changedObjectsDatabase.valuesets.get(id);
+    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async() => {
+      valueset = await this.changedObjectsDatabase.valueSets.get(id);
       callback(valueset);
     });
   }
 
   public getValuesetMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valuesets, async () => {
-      const valueset = await this.changedObjectsDatabase.valuesets.get(id);
+    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
+      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
       if (valueset != null) {
         callback(valueset.metadata);
       }
@@ -130,8 +99,8 @@ export class IndexedDbService {
   }
 
   public getValuesetDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valuesets, async () => {
-      const valueset = await this.changedObjectsDatabase.valuesets.get(id);
+    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
+      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
       if (valueset != null) {
         callback(valueset.definition);
       }
@@ -139,8 +108,8 @@ export class IndexedDbService {
   }
 
   public getValuesetCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valuesets, async () => {
-      const valueset = await this.changedObjectsDatabase.valuesets.get(id);
+    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
+      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
       if (valueset != null) {
         callback(valueset.crossReference);
       }
@@ -172,32 +141,6 @@ export class IndexedDbService {
       }
     });
   }
-  public saveSegment(segment) {
-    console.log(segment);
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async() => {
-      let savedSegment = await this.changedObjectsDatabase.segments.get(segment.id);
-      if (savedSegment == null) {
-        savedSegment = new IObject();
-        savedSegment.id = segment.id;
-      }
-      let changesToBeSaved = false;
-      if (segment.metadata != null) {
-        savedSegment.metadata = segment.metadata;
-        changesToBeSaved = true;
-      }
-      if (segment.definition != null) {
-        savedSegment.definition = segment.definition;
-        changesToBeSaved = true;
-      }
-      if (segment.metadata != null) {
-        savedSegment.crossReference = segment.crossReference;
-        changesToBeSaved = true;
-      }
-      if (changesToBeSaved) {
-        await this.changedObjectsDatabase.segments.put(savedSegment);
-      }
-    });
-  }
 
   public persistChanges() {
     this.getAllChanges().then(changedObjects => {
@@ -224,8 +167,8 @@ export class IndexedDbService {
       });
     }));
     promises.push(new Promise((resolve, reject) => {
-      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valuesets, async () => {
-        changedObjects.valuesets = await this.changedObjectsDatabase.valuesets.toArray();
+      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valueSets, async () => {
+        changedObjects.valuesets = await this.changedObjectsDatabase.valueSets.toArray();
         console.log('persist4');
         resolve();
       });
