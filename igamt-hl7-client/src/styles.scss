@@ -7,12 +7,6 @@ body{
 
 }
 
-body .ui-widget, body .ui-widget .ui-widget {
-  font-family: 'Open Sans', sans-serif;
-
-}
-
-
 span.ig-list-title{
   color: #5c6bc0 !important;
   font-weight: 600;
@@ -26,12 +20,9 @@ span:hover.ig-list-title{
   font-style: italic;
   font-size: 12px;
   font-weight: 500;
-
-
-
 }
-.ig-list-user{
 
+.ig-list-user{
 }
 .ig-list-image{
   width: 50px;
@@ -44,10 +35,6 @@ span:hover.ig-list-title{
   padding-top: 10px;
   padding-bottom: 10px;
   padding-left: 0px;
-
-
-
-
 }
 
 .ig-list-cp-badge{
@@ -65,7 +52,6 @@ span:hover.ig-list-title{
   font-weight: bold;
 
 }
-
 .ui-dataview .ui-dataview-header, .ui-dataview .ui-dataview-footer {
   padding: 1px;
   margin: 0px;
@@ -82,3 +68,5 @@ span:hover.ig-list-title{
 .ig-list-border{
   border-bottom: #d8d8d8 1px dashed;
 }
+
+

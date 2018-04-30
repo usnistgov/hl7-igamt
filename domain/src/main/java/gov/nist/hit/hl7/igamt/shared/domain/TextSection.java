@@ -22,13 +22,13 @@ public class TextSection extends Section {
     this.parentId = parentId;
   }
 
-public Set<Section> getChildren() {
+  public Set<Section> getChildren() {
 	return children;
-}
+  }
 
-public void setChildren(Set<Section> children) {
+  public void setChildren(Set<Section> children) {
 	this.children = children;
-}
+  }
  
 
 

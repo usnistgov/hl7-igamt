@@ -67,22 +67,27 @@
 
 
     </p-header>
+    <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
     <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
       <ng-template #treeNodeTemplate let-node let-index="index">
         <ng-container [ngSwitch]="node.data.data.type">
-          <ng-container *ngSwitchCase="'IGDOCUMENT'">
-            <span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>
+          <!--<ng-container *ngSwitchCase="'IGDOCUMENT'">-->
+            <!--<span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>-->
 
-            <context-menu #igcontextmenu>
-              <ng-template contextMenuItem (execute)="addSection(node)">
-                <i class="fa fa-plus"></i> Add Section
-              </ng-template>
-            </context-menu>
-          </ng-container>
+            <!--<context-menu #igcontextmenu>-->
+              <!--<ng-template contextMenuItem (execute)="addSection(node)">-->
+                <!--<i class="fa fa-plus"></i> Add Section-->
+              <!--</ng-template>-->
+            <!--</context-menu>-->
+          <!--</ng-container>-->
 
           <ng-container *ngSwitchCase="'TEXT'">
-            <span [contextMenu]="textcontextmenu" (click)="path(node)"> {{getPath(node)}}{{node.data.data.label}}</span>
+
+            <!--<display-label [elm]="node.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>-->
+
+
+            <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)"> {{getPath(node)}}{{node.data.data.label}}</span>
             <context-menu #textcontextmenu>
               <ng-template contextMenuItem (execute)="addSection(node)">
                 <i class="fa fa-plus"></i> Add Section
@@ -100,7 +105,7 @@
 
 
           <ng-container *ngSwitchCase="'PROFILE'">
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <span (click)="print(node)"> {{getPath(node)}} {{node.data.data.label}}</span>
           </ng-container>
 
 
@@ -136,12 +141,12 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPE'">
-            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
             <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
           </ng-container>
 
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
             <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
           </ng-container>
 

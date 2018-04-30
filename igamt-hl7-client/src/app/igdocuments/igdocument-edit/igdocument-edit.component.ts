@@ -75,12 +75,10 @@ export class IgDocumentEditComponent {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
 
           if(from.data.data.type== "TEXT" && (!this.isOrphan(to) && to.parent.data.data.type=="TEXT"||this.isOrphan(to))){
-            console.log("Dropping");
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
           }
           if(from.data.data.type== "PROFILE" && this.isOrphan(to)) {
-            console.log("Dropping");
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
@@ -102,7 +100,7 @@ export class IgDocumentEditComponent {
   isOrphan(node:any){
 
 
-    return node.parent&&!node.parent.parent!=null;
+    return node.parent&&!node.parent.parent;
 
 
   }
@@ -181,8 +179,19 @@ export class IgDocumentEditComponent {
       console.log("OPENING IG")
       this.expandAll();
     }else{
-      var fromChild = fromIg.substring(slashIndex+1,fromIg.length);
-      this.filterByUrl(fromChild);
+        var fromChild = fromIg.substring(slashIndex+1,fromIg.length);
+
+
+       var childId= fromChild.substring(fromChild.indexOf("/")+1,fromChild.length);
+        console.log(childId);
+        let node=this.tree.treeModel.getNodeById(childId);
+        if(node){
+
+            node.setIsActive(true);
+            this.activateNode(node);
+        }
+
+
 
     }
 
@@ -206,6 +215,7 @@ export class IgDocumentEditComponent {
 
 
         }else{
+
         }
 
 
@@ -287,8 +297,37 @@ export class IgDocumentEditComponent {
 
 
   activateNode(node){
-    this.activeNode=node;
+    this.activeNode=node.id;
   }
+
+
+
+  goToSection(id) {
+
+    this.sp.queryParams
+      .subscribe(params => {
+        console.log(params);
+
+        this.router.navigate(["./section/"+id],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
+
+      });
+
+
+
+  }
+goToMetaData(){
+  this.sp.queryParams
+    .subscribe(params => {
+
+      this.router.navigate(["./metadata/"],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
+
+    });
+}
+
+
+
+
+
 
 
 
