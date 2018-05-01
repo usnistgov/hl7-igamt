@@ -15,13 +15,17 @@ package gov.nist.hit.hl7.igamt.segment.service;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 /**
  *
@@ -30,6 +34,9 @@ import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 @Service("segmentService")
 public class SegmentServiceImpl implements SegmentService {
+  
+  @Autowired
+  private MongoTemplate mongoTemplate;
 
   @Autowired
   private SegmentRepository segmentRepository;
@@ -113,6 +120,19 @@ public List<Segment> findByDomainInfoVersionAndName(String version, String name)
 public List<Segment> findByDomainInfoScopeAndName(String scope, String name) {
 	// TODO Auto-generated method stub
 	return segmentRepository.findByDomainInfoScopeAndName(scope,name);
+}
+
+/* (non-Javadoc)
+ * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#findLatestById(java.lang.String)
+ */
+@Override
+public Segment findLatestById(String id) {
+  Query query = new Query();
+  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+  query.limit(1);
+  Segment segment = mongoTemplate.findOne(query, Segment.class);
+  return segment;
 }
   
 }
