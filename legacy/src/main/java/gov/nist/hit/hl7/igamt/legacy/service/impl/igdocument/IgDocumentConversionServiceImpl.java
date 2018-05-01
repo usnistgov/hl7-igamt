@@ -240,6 +240,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		Registry ret = new Registry();
 		ret.setType(Type.DATATYPEREGISTRY);
 		ret.setLabel("Data Types");
+		ret.setId(datatypeLibrary.getId());
 		List <DatatypeLink > ordred = datatypeLibrary.getChildren().stream().sorted().collect(Collectors.toList());
 		for( int i = 0 ; i < ordred.size(); i++) {
 			CompositeKey key =  new CompositeKey (ordred.get(i).getId());
@@ -257,6 +258,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	private Registry createSegment(SegmentLibrary segmentLibrary) {
 		Registry ret = new Registry();
 		ret.setType(Type.SEGMENTRGISTRY);
+		ret.setId(segmentLibrary.getId());
 		ret.setLabel("Segments and Fields Description");
 		List <SegmentLink > ordred = segmentLibrary.getChildren().stream().sorted().collect(Collectors.toList());
 		for( int i = 0 ; i < ordred.size(); i++) {
@@ -275,6 +277,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		
 		Registry ret = new Registry();
 		ret.setType(Type.CONFORMANCEPROFILEREGISTRY);
+		ret.setId(messages.getId());
 		ret.setLabel("Conformance profiles");	
 		for( Message m : messages.getChildren()) {
 			CompositeKey key =  new CompositeKey (m.getId());
@@ -286,12 +289,9 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 	}
 	private void addNaratives(Ig newIg, Set<Section> childSections) {
 		// TODO Auto-generated method stub
-		Set<gov.nist.hit.hl7.igamt.shared.domain.Section> children = new HashSet<>();
-		
-		
-		
+		Set<gov.nist.hit.hl7.igamt.shared.domain.TextSection> children = new HashSet<TextSection>();
 		for(Section s : childSections) {
-			children.add(createTextSectionFromSection( s,newIg.getId().getId()));
+			children.add(createTextSectionFromSection(s,newIg.getId().getId()));
 			}
 		newIg.setContent(children);
 

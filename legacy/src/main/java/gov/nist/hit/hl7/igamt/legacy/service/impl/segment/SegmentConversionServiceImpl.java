@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
@@ -82,7 +83,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
     convertedSegment.setDescription(oldSegment.getDescription());
     DomainInfo domainInfo = new DomainInfo();
     domainInfo.setScope(ConversionUtil.convertScope(oldSegment.getScope()));
-    domainInfo.setVersion(oldSegment.getVersion());
+    domainInfo.setVersion(oldSegment.getHl7Version());
     convertedSegment.setDomainInfo(domainInfo);
     convertedSegment.setExt(oldSegment.getExt());
     convertedSegment.setPostDef(oldSegment.getText2());
@@ -123,7 +124,12 @@ public class SegmentConversionServiceImpl implements ConversionService {
       for(Field field : oldSegment.getFields()) {
         gov.nist.hit.hl7.igamt.shared.domain.Field newField = new gov.nist.hit.hl7.igamt.shared.domain.Field();
         newField.setConfLength(field.getConfLength());
-        newField.setCustom(field.isAdded());
+       
+        if (field.getAdded().equals(Constant.YES)) {
+        	 newField.setCustom(true);
+        } else {
+        	 newField.setCustom(false);
+        }
         newField.setId(field.getId());
         newField.setMax(Integer.parseInt(field.getMax()));
         newField.setMaxLength(field.getMaxLength());

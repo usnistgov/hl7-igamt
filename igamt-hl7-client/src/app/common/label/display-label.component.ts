@@ -34,7 +34,10 @@ export class DisplayLabelComponent {
   }
 
   getScopeLabel() {
+    if(this.elm.type=='TEXT'){
+      return null;
 
+    }
     if (this.elm.domainInfo&& this.elm.domainInfo.scope) {
       let scope = this.elm.domainInfo.scope;
       if (scope === 'HL7STANDARD') {
@@ -70,6 +73,9 @@ export class DisplayLabelComponent {
       } else if(type ==='compositeprofile'){
         return this.getCompositeProfileLabel(this.elm);
       }
+      if(type=='TEXT'){
+        return this.elm.label;
+      }
     }
   }
 
@@ -99,9 +105,6 @@ export class DisplayLabelComponent {
 
   getMessageLabel(elm){
     return elm.label+"-"+elm.description;
-
-
-
   };
   getProfileComponentsLabel(elm){
     return elm.label+"-"+elm.description;
@@ -117,16 +120,19 @@ export class DisplayLabelComponent {
   goTo() {
     console.log(this.elm);
     var type=this.elm.type.toLowerCase();
-    console.log(this.route);
+    let id ="";
+    if(type=='text'){
+      type="section";
+      id=this.elm.id;
 
-
-
-
+    }else{
+     id= this.elm.key.id;
+    }
     this.route.queryParams
       .subscribe(params => {
         console.log(params); // {order: "popular"}
 
-        this.router.navigate(["./segment/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+        this.router.navigate(["./"+type+"/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
 
       });
 

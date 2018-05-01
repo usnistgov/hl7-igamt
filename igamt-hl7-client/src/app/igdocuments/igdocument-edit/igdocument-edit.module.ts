@@ -30,6 +30,7 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PanelMenuModule} from 'primeng/panelmenu';
 import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
+import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
 @NgModule({
 	imports: [
 		CommonModule,
@@ -63,7 +64,7 @@ import { ToolbarModule } from 'primeng/primeng';
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,DisplayMenuComponent
 	],
   providers : [
-   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver
+   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver,IgMetaDataResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
