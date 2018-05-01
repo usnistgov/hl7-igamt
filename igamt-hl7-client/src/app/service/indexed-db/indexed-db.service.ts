@@ -146,25 +146,33 @@ export class IndexedDbService {
     const changedObjects = new ChangedObjects(this.igDocumentId);
     const promises = [];
     promises.push(new Promise((resolve, reject) => {
+      console.log('Loading changed segments');
       this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async () => {
         changedObjects.segments = await this.changedObjectsDatabase.segments.toArray();
+        console.log('Changed segments successfully loaded');
         resolve();
       });
     }));
     promises.push(new Promise((resolve, reject) => {
+      console.log('Loading changed datatypes');
       this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async () => {
         changedObjects.datatypes = await this.changedObjectsDatabase.datatypes.toArray();
+        console.log('Changed datatypes successfully loaded');
         resolve();
       });
     }));
     promises.push(new Promise((resolve, reject) => {
-      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valueSets, async () => {
-        changedObjects.valuesets = await this.changedObjectsDatabase.valueSets.toArray();
+      console.log('Loading changed valuesets');
+      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valuesets, async () => {
+        changedObjects.valuesets = await this.changedObjectsDatabase.valuesets.toArray();
+        console.log('Changed valuesets successfully loaded');
         resolve();
       });
     }));
     const doPersist = this.doPersist;
     Promise.all(promises).then(function(){
+      console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
+        + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
       doPersist(changedObjects);
     });
   }

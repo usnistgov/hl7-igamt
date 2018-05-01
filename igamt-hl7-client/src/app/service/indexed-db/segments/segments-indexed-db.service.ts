@@ -54,7 +54,7 @@ export class SegmentsIndexedDbService {
   }
 
   private doSave(segment, savedSegment) {
-    savedSegment = IndexedDbUtils.populateIObject(savedSegment, segment);
+    savedSegment = IndexedDbUtils.populateIObject(segment, savedSegment);
     this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.segments, async() => {
       await this.indexeddbService.changedObjectsDatabase.segments.put(savedSegment);
     });

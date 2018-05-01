@@ -55,7 +55,7 @@ export class DatatypesIndexedDbService {
   }
 
   private doSave(datatype, savedDatatype) {
-    savedDatatype = IndexedDbUtils.populateIObject(savedDatatype, datatype);
+    savedDatatype = IndexedDbUtils.populateIObject(datatype, savedDatatype);
     this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.datatypes, async() => {
       await this.indexeddbService.changedObjectsDatabase.datatypes.put(savedDatatype);
     });

@@ -54,7 +54,7 @@ export class ValuesetsIndexedDbService {
   }
 
   private doSave(valueset, savedValueset) {
-    savedValueset = IndexedDbUtils.populateIObject(savedValueset, valueset);
+    savedValueset = IndexedDbUtils.populateIObject(valueset, savedValueset);
     this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.valuesets, async() => {
       await this.indexeddbService.changedObjectsDatabase.valuesets.put(savedValueset);
     });
