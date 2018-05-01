@@ -137,5 +137,15 @@ public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, Strin
 	// TODO Auto-generated method stub
 	return conformanceProfileRepository.findByDomainInfoScopeAndName(scope, name);
 }
+
+@Override
+public ConformanceProfile findDisplayFormat(CompositeKey id) {
+	List<ConformanceProfile> cps=conformanceProfileRepository.findDisplayFormat(id);
+	if(cps !=null && ! cps.isEmpty()) {
+		return cps.get(0);
+	}
+	// TODO Auto-generated method stub
+	return null;
+}
   
 }

@@ -1,18 +1,191 @@
-<!--HEADER-->
-<!--<ig-header></ig-header>-->
+<div>
+<div>
 
-<div class="ui-g" style="padding : 0;">
+      <span class="ig-title">{{ig.metadata.title}}</span>
+              <span class="ig-title">{{ig.metadata.title}}</span>
 
-  <!--TOC-->
-  <div class="ui-g-3" style="padding : 0;">
-    <igamt-toc [ig]="_ig"></igamt-toc>
-  </div>
+              <span class="ig-title">{{ig.metadata.title}}</span>
 
-  <!--ROUTE-->
-  <div class="ui-g-9" style="padding : 0;">
-    <router-outlet></router-outlet>
-  </div>
+    <hr style="margin-top: 0rem;
+    margin-bottom: 0rem;
+    border: 0;
+    border-top: 1px solid #f5f5f5;"/>
+      <span class="ig-date" *ngIf="ig.dateUpdated">
+
+            <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date }}
+      </span>
+
 
 </div>
 
 
+<p-toolbar class="toc-filter-toolbar">
+
+  <div class="multiselect-adapter">
+
+
+    <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
+    <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
+
+    <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()" pTooltip="Filter by Scope" tooltipPosition="top" ></p-multiSelect>
+    <button style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button style="float: right" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+
+    <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="Export"  icon="fa-download"></button>
+    <button  style="float: right" pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
+    <button  style="float: right" pButton type="button" label="share"  icon="fa-share"></button>
+
+  </div>
+
+
+
+
+</p-toolbar>
+</div>
+<div class="ui-g">
+<div *ngIf="hideToc"  style="width: 50px">
+
+  <div (click)="toggleHideToc()"   class="panel-leftheading ">
+    <p-header class="panel-lefttitle" pTooltip="Show TOC "  tooltipPosition="bottom" > <i class="fa fa-eye"></i>Table of Content</p-header>
+  </div>
+
+
+</div>
+
+<div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
+  <div class="ui-g-3 no-margin" style="padding : 0;"  *ngIf="!hideToc">
+  <p-panel [toggleable]="false">
+    <p-header class="toc-panel-header">
+      Table Of Content
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
+      <button style="float: right;padding: 0px" pButton type="button"  icon="fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
+      <button  style="float: right;padding: 0px" pButton type="button"  icon="fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
+
+
+
+
+    </p-header>
+    <tree-root [nodes]="nodes"  #treeroot [options]="options">
+
+      <ng-template #treeNodeTemplate let-node let-index="index">
+        <ng-container [ngSwitch]="node.data.data.type">
+          <ng-container *ngSwitchCase="'IGDOCUMENT'">
+            <span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>
+
+            <context-menu #igcontextmenu>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-plus"></i> Add Section
+              </ng-template>
+            </context-menu>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'TEXT'">
+            <span [contextMenu]="textcontextmenu" (click)="path(node)"> {{getPath(node)}}{{node.data.data.label}}</span>
+            <context-menu #textcontextmenu>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-plus"></i> Add Section
+              </ng-template>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-copy"></i> Copy Section
+              </ng-template>
+              <ng-template contextMenuItem (execute)="addSection(node)">
+                <i class="fa fa-remove"></i> Delete Section
+              </ng-template>
+
+            </context-menu>
+
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'PROFILE'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+
+          <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'SEGMENTRGISTRY'">
+
+            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'DATATYPE'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+            <span>  {{node.data.data.label}}</span>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+          </ng-container>
+
+
+          <ng-container *ngSwitchCase="'SEGMENT'">
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+
+
+
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'VALUESET'" >
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>      </ng-container>
+          <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+
+            <span>{{node.data.data.label}}</span>
+            <display-menu *ngIf="node.active" [elm]="node.data.data"></display-menu>
+
+
+          </ng-container>
+
+
+        </ng-container>
+
+
+      </ng-template>
+
+
+
+    </tree-root>
+  </p-panel>
+  </div>
+
+  <!--ROUTE-->
+  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;">
+        <router-outlet></router-outlet>
+  </div>
+</div>
+</div>

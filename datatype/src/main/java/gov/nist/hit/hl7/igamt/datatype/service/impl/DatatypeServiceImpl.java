@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 /**
@@ -115,5 +116,9 @@ public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
 	// TODO Auto-generated method stub
 	return datatypeRepository.findByDomainInfoScopeAndName(scope, name);
 }
+  @Override
+  public List<Datatype> findByScope(Scope scope) {
+    return datatypeRepository.findByScope(scope);
+  }
   
 }

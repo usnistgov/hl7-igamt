@@ -1,4 +1,38 @@
-<tree-root [nodes]="ig.toc.content" [options]="options" *ngIf="ig.toc.content" #treeroot>
+<div class="card" style="padding: 0px">
+
+
+<p-panel [toggleable]="true" expandIcon="fa-filter" collapseIcon="fa-filter">
+
+  <div class="ui-inputgroup u-g-12" >
+    <button pButton type="button"  icon="fa-search" ></button>
+    <input type="text" [(ngModel)]="searchFilter" pInputText placeholder="Search By Name" id="filter" #filter (keyup)="filterFn()" style="width:100%">{{searchFilter}}
+  </div>
+  <!--<input id="filter" #filter (keyup)="filterFn(filter.value)" placeholder="filter nodes"/>-->
+    <div class="ui-g-12">
+
+      <p-multiSelect defaultLabel="Types" [style]="{'width':'100%'}" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()"></p-multiSelect>
+
+    </div>
+
+    <div class="ui-g-12">
+
+       <p-multiSelect defaultLabel="SCOPE" [style]="{'width':'100%'}" [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()"></p-multiSelect>
+
+    </div>
+
+  <div class="ui-g-12">
+
+    <button style="float: right;" pButton label="Expand All" type="button"  icon="fa-expand-alt" (click)="expandAll()"></button>
+    <button pButton style="float:left" label="Collapse All" type="button"  icon="fa-compress-alt" (click)="collapseAll()"></button>
+
+
+  </div>
+
+
+
+</p-panel>
+<div class="toc-container card-body">
+<tree-root [nodes]="ig.toc.content" [options]="options" #treeroot>
 
   <ng-template #treeNodeTemplate let-node let-index="index">
     <ng-container [ngSwitch]="node.data.data.type">
@@ -31,71 +65,87 @@
 
 
       <ng-container *ngSwitchCase="'PROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
 
       <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
       <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
-        <span>{{node.data.data.label}} </span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
 
       <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
 
-      <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
-        <span>{{node.data.data.label}}</span>
+      <ng-container *ngSwitchCase="'SEGMENTRGISTRY'">
+
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
       <ng-container *ngSwitchCase="'DATATYPE'">
-        <display-label [elm]="node.data.data" [igId]="igId"></display-label>
-
+        <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+        <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
       </ng-container>
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+        <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-        <span>{{node.data.data.label}}</span>
+        <span>  {{node.data.data.label}}</span>
+        <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
       </ng-container>
 
 
       <ng-container *ngSwitchCase="'SEGMENT'">
-        <display-label [elm]="node.data.data" [igId]="igId"></display-label>
+        <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+        <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+
+
 
       </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESET'" >
-        <span>{{node.data.data.label}}</span>
-      </ng-container>
+        <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+        <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>      </ng-container>
       <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-        <span>{{node.data.data.label}}</span>
+
+         <span>{{node.data.data.label}}</span>
+        <display-menu *ngIf="node.active" [elm]="node.data.data"></display-menu>
+
+
       </ng-container>
+
 
     </ng-container>
 
 
   </ng-template>
+
+
+
 </tree-root>
+</div>
+</div>
 
 

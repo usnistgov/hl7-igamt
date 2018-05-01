@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.Date;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+
 public class ListElement {
 
 	private String title;
@@ -10,8 +12,10 @@ public class ListElement {
 	private String coverpage;
 	private String subtitle;
 	private Date dateUpdated;
-	private List<String> confrmanceProfiles;
+	private CompositeKey id; 
 	private String username;
+	private List<String> participants;
+	private List<String> conformanceProfiles;
 
 	public String getTitle() {
 		return title;
@@ -45,12 +49,12 @@ public class ListElement {
 		this.dateUpdated = date;
 	}
 
-	public List<String> getConfrmanceProfiles() {
-		return confrmanceProfiles;
+	public List<String> getConformanceProfiles() {
+		return conformanceProfiles;
 	}
 
-	public void setConfrmanceProfiles(List<String> confrmanceProfiles) {
-		this.confrmanceProfiles = confrmanceProfiles;
+	public void setConformanceProfiles(List<String> confrmanceProfiles) {
+		this.conformanceProfiles = confrmanceProfiles;
 	}
 
 	public String getUsername() {
@@ -71,6 +75,22 @@ public class ListElement {
 
 	public void setPosition(int position) {
 		this.position = position;
+	}
+
+	public CompositeKey getId() {
+		return id;
+	}
+
+	public void setId(CompositeKey id) {
+		this.id = id;
+	}
+
+	public List<String> getParticipants() {
+		return participants;
+	}
+
+	public void setParticipants(List<String> participants) {
+		this.participants = participants;
 	}
 
 }

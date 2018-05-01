@@ -18,6 +18,16 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 public class DynamicMappingItem {
   private String datatypeId;
   private String value;
+  
+  public DynamicMappingItem() {
+    super();
+  }
+
+  public DynamicMappingItem(String datatypeId, String value) {
+    super();
+    this.datatypeId = datatypeId;
+    this.value = value;
+  }
 
   public String getDatatypeId() {
     return datatypeId;

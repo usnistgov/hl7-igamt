@@ -6,6 +6,7 @@ import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "
 import {MenuItem} from 'primeng/api';
 import {ContextMenuComponent} from "ngx-contextmenu";
 import {ActivatedRoute} from "@angular/router";
+import {SelectItem} from "primeng/components/common/selectitem";
 
 
 @Component({
@@ -14,10 +15,45 @@ import {ActivatedRoute} from "@angular/router";
   styleUrls:["./toc.component.css"]
 })
 export class TocComponent {
-  @Input() ig : any;
+  // @Input() ig : any;
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   igId:any;
 
+  ig:any;
+
+  activeNode:any;
+
+  searchFilter:string="";
+
+
+  types: SelectItem[]=[
+
+
+  {label:"TEXT",value:"TEXT"},
+  {label:"CONFORMANCEPROFILE",value:"CONFORMANCEPROFILE"},
+  {label:"SEGMENT",value:"SEGMENT"},
+  {label:"DATA TYPES",value:"DATATYPE"},
+
+  {label:"PRFOILECOMPONENT",value:"PROFILECOMPONENT"},
+  {label:"Composite Profile ",value:"COMPOSITEPROFILE"},
+  {label:"Value Set",value:"VALUESET"}
+];
+
+
+  scopes: SelectItem[]=[
+
+
+    {label:"HL7STANARD",value:"HL7STANDARD"},
+    {label:"USER",value:"USER"},
+    {label:"HL7 FLAVORS",value:"MASTER"}
+
+  ];
+
+
+  selectedScopes: SelectItem[];
+
+
+  selectedTypes :SelectItem[];
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
   @ViewChild('igcontextmenu') public igcontextmenu: ContextMenuComponent;
@@ -58,7 +94,9 @@ export class TocComponent {
           // use from to get the dragged node.
           // use to.parent and to.index to get the drop location
         },
-
+        mouse: {
+          click: TREE_ACTIONS.ACTIVATE
+        },
         contextMenu: (model: any, node: any, event: any) => {
           event.preventDefault();
           this.onContextMenu(event, node);
@@ -70,8 +108,33 @@ export class TocComponent {
 
 
   constructor( private  tocService:TocService,    private sp: ActivatedRoute){
+    this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      console.log(x);
+      this.ig= x;
+      console.log(this.ig);
+    });
+
+
 
     console.log(this.ig);
+
+
+  }
+
+  filterFn(){
+    this.tree.treeModel.filterNodes((node) => {
+      if(node.data.data.domainInfo) {
+
+        if (node.data.data.domainInfo.scope) {
+
+          return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1);
+        }
+
+      }
+      return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.length==0);
+
+
+    });
 
   }
 
@@ -79,6 +142,17 @@ export class TocComponent {
 
   ngOnInit() {
     this.igId= this.sp.snapshot.params["igId"];
+    this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      console.log(x);
+      this.ig= x;
+      console.log(this.ig);
+    });
+    console.log( this.igId);
+
+
+
+
+
   }
   print(node){
     console.log(node);
@@ -130,7 +204,7 @@ export class TocComponent {
   };
 
   getPath =function (node) {
-    node.data.data.position= parseInt(node.index)+1;
+      node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
       if(node.parent.data.data.type=="IGDOCUMENT"){
         return  node.data.data.position+".";
       }else{
@@ -142,5 +216,26 @@ export class TocComponent {
     console.log(node);
     return node.path;
   }
+
+  collapseAll(){
+    this.tree.treeModel.collapseAll();
+  }
+  expandAll(){
+    this.tree.treeModel.expandAll();
+  }
+
+  filterByTypes(){
+    this.tree.treeModel.filterNodes((node) => {
+
+    return (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1) && node.data.data.label.startsWith(this.searchFilter);
+
+    });
+  }
+
+
+  activateNode(node){
+      this.activeNode=node;
+  }
+
 
 }

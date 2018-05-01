@@ -21,8 +21,15 @@ import { TreeModule } from 'angular-tree-component';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {ContextMenuModule} from "ngx-contextmenu";
 import {ActivatedRouteSnapshot} from "@angular/router";
+import {PanelModule} from 'primeng/panel';
+import {MultiSelectModule} from 'primeng/multiselect';
 
-
+import {DropdownModule} from 'primeng/dropdown';
+import {SectionResolver} from "./section/sectionResolver.resolver";
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
+import {PanelMenuModule} from 'primeng/panelmenu';
+import {DisplayMenuComponent} from './displayMenu/display-menu.component';
+import { ToolbarModule } from 'primeng/primeng';
 @NgModule({
 	imports: [
 		CommonModule,
@@ -39,16 +46,24 @@ import {ActivatedRouteSnapshot} from "@angular/router";
     DragDropModule,
     FormsModule,
     TreeModule,
-    ContextMenuModule.forRoot()
+    PanelModule,
+    MultiSelectModule,
+    FormsModule,
+    ContextMenuModule.forRoot(),
+    DropdownModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot(),
+    PanelMenuModule,
+    ToolbarModule
 
 
 
 ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,DisplayMenuComponent
 	],
   providers : [
-   TocService,TreeDragDropService,IgdocumentEditResolver
+   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

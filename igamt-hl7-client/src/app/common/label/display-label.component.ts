@@ -126,9 +126,8 @@ export class DisplayLabelComponent {
       .subscribe(params => {
         console.log(params); // {order: "popular"}
 
-        //this.router.navigate(["../segment/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
-        var link="/ig-documents/igdocuments-edit/"+this.igId+"/"+"segment"+"/"+this.elm.key.id;
-        this.router.navigate([link], {queryParams:params}); // add the parameters to the end
+        this.router.navigate(["./segment/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+
       });
 
 

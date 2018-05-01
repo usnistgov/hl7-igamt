@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.ig.model;
 
 import java.util.Date;
 
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 public class TreeData {
@@ -10,6 +11,8 @@ public class TreeData {
 	private String label;
 	private Date dateUpdated;
 	private int position; 
+	private CompositeKey key;
+
 	
 
 	public String getLabel() {
@@ -47,6 +50,14 @@ public class TreeData {
 
 	public void setType(Type type) {
 		this.type = type;
+	}
+
+	public CompositeKey getKey() {
+		return key;
+	}
+
+	public void setKey(CompositeKey key) {
+		this.key = key;
 	} 
 
 

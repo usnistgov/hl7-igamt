@@ -14,18 +14,29 @@ import {PickListModule} from 'primeng/primeng';
 // import {MatListModule} from '@angular/material/list';
 //
 // import {MatIconModule} from '@angular/material/icon';
-
+import {NgModel, FormsModule} from '@angular/forms';
 
 import {IgListService} from "./igdocument-list.service";
 import {MyIGsresolver} from "../igdocument-list/my-igs/my-igs.resolver";
+import {DataViewModule} from 'primeng/dataview';
+import {DropdownModule} from 'primeng/dropdown';
+import {InputTextModule} from 'primeng/inputtext';
+import {ButtonModule} from 'primeng/button';
+
+
 @NgModule({
 	imports: [
 		CommonModule,
+    ButtonModule,
 		IgDocumentListRoutingModule,
 		TabMenuModule,
     OrderListModule,PickListModule,
-    // MatButtonModule,MatListModule,MatIconModule
+    DropdownModule,
+    FormsModule,
+    InputTextModule,
 
+    // MatButtonModule,MatListModule,MatIconModule
+    DataViewModule
 	],
 	declarations: [
 		IgDocumentListComponent, MyIgsComponent, PreloadedIgsComponent, SharedIgsComponent, AllIgsComponent

@@ -11,6 +11,8 @@ import {RegisterComponent} from "./register/register.component";
 export const routes: Routes = [
   {path: '', component: HomeComponent},
   {path: 'ig-documents', loadChildren: './igdocuments/igdocument.module#IgDocumentModule'},
+  { path: 'ig', loadChildren: './igdocuments/igdocument-edit/igdocument-edit.module#IgDocumentEditModule' },
+
   {path: 'datatype-libraries', loadChildren: './datatype-library/datatype-library.module#DatatypeLibraryModule'},
   {path: 'shared-data', loadChildren: './shared-elements/shared-elements.module#SharedElementsModule'},
   {path: 'comparator', loadChildren: './delta/delta.module#DeltaModule'},

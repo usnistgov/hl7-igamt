@@ -19,6 +19,8 @@ package gov.nist.hit.hl7.igamt.shared.domain.exception;
  */
 public class DatatypeNotFoundException extends Exception {
 
+  private static final long serialVersionUID = 6099795044591697558L;
+
   public DatatypeNotFoundException(String id) {
     super("Datatype with id "+id+" not found");
   }

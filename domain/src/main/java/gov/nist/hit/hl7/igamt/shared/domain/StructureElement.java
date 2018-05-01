@@ -2,12 +2,28 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 
 public class StructureElement {
   private String id;
+  private String name;
   private int position;
   private Usage usage;
   private Type type;
   private String text;
   private boolean custom = false;
   
+  public StructureElement() {
+    super();
+  }
+  
+  public StructureElement(String id, String name, int position, Usage usage, Type type, String text,
+      boolean custom) {
+    super();
+    this.id = id;
+    this.name = name;
+    this.position = position;
+    this.usage = usage;
+    this.type = type;
+    this.text = text;
+    this.custom = custom;
+  }
   
   public int getPosition() {
     return position;
@@ -33,10 +49,6 @@ public class StructureElement {
   public void setCustom(boolean custom) {
     this.custom = custom;
   }
-  public StructureElement() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
   public Type getType() {
     return type;
   }
@@ -48,6 +60,14 @@ public class StructureElement {
   }
   public void setId(String id) {
     this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 }
