@@ -11,7 +11,14 @@ public class ValueSetRegistry extends Registry {
     this.setType(Type.VALUESET);
   }
 
-  public HashMap<String, Boolean> getCodesPresence() {
+  public ValueSetRegistry(String id, String description, Type type, int position, String label) {
+	super(id, description, type, position, label);
+    this.setType(Type.VALUESET);
+
+	// TODO Auto-generated constructor stub
+}
+
+public HashMap<String, Boolean> getCodesPresence() {
     return codesPresence;
   }
   public void setCodesPresence(HashMap<String, Boolean> codesPresence) {

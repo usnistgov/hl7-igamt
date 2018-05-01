@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 @Repository("igRepository")
 public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
 	
@@ -26,6 +27,7 @@ public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
 //	 Page<Ig> findLatestById(Pageable pageable);
 	 @Query(value = "{ '_id._id' : ?0 }")
 	List<Ig> findLatestById(ObjectId id, Sort sort);
-		
+
+	List<Ig> findByDomainInfoScope(String scope);		
 
 }

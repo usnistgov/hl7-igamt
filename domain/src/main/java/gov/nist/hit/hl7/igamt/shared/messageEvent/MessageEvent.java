@@ -5,28 +5,34 @@ import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 @Document
-public class MessageEvents {
+public class MessageEvent {
 	@Id
-  private String id;
+  private CompositeKey id;
 
   private String name;
 
-  private final String type = "message";
+  private Type type = Type.EVENTS;
 
   private Set<Event> children = new HashSet<Event>();
 
   private String description;
+  
+  private String hl7Version;
 
-  public MessageEvents() {
+  public MessageEvent() {
     super();
   }
 
-  public MessageEvents(String id, String structId, Set<String> events, String description) {
+  public MessageEvent(CompositeKey id, String structId, Set<String> events, String description,String hl7Version) {
     this.id = id;
     this.name = structId;
     createEvents(events,structId);
     this.description = description;
+    this.hl7Version=hl7Version;
   }
 
   void createEvents(Set<String> events,String parentStructId) {
@@ -35,7 +41,7 @@ public class MessageEvents {
     }
   }
 
-  public String getId() {
+  public CompositeKey getId() {
     return id;
   }
 
@@ -43,11 +49,15 @@ public class MessageEvents {
     return name;
   }
 
-  public String getType() {
+  public Type getType() {
     return type;
   }
 
-  public Set<Event> getChildren() {
+  public void setType(Type type) {
+	this.type = type;
+}
+
+public Set<Event> getChildren() {
     return children;
   }
 
@@ -55,7 +65,7 @@ public class MessageEvents {
     return description;
   }
 
-public void setId(String id) {
+public void setId(CompositeKey id) {
 	this.id = id;
 }
 
@@ -69,6 +79,14 @@ public void setChildren(Set<Event> children) {
 
 public void setDescription(String description) {
 	this.description = description;
+}
+
+public String getHl7Version() {
+	return hl7Version;
+}
+
+public void setHl7Version(String hl7Version) {
+	this.hl7Version = hl7Version;
 }
   
   

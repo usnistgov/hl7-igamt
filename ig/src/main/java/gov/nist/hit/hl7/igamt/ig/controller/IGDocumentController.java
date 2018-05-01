@@ -19,6 +19,8 @@ import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ListElement;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
 
 
 @RestController
@@ -26,6 +28,12 @@ public class IGDocumentController {
 
 	@Autowired 
 	IgService igService;
+	
+	@Autowired 
+	MessageEventService  messageEventService;
+	
+	
+	
 	
 	public IGDocumentController() {
 		// TODO Auto-generated constructor stub
@@ -50,10 +58,7 @@ public class IGDocumentController {
 			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 				
 		}
-		
-		
-		
-		
+
 	}
 	
 	
@@ -70,6 +75,23 @@ public class IGDocumentController {
 			IGDisplay ret = igService.convertDomainToModel(igdoument);
 			return ret;
 			
+		}else {
+			//redirect 
+			return null;
+		}
+		
+	}
+	
+	
+	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET,produces = {"application/json"})
+
+	public @ResponseBody List<MessageEventTreeNode> getMessageEvents(@PathVariable("version") String version){
+		
+		Authentication authentication = SecurityContextHolder.getContext()
+				.getAuthentication();
+		if (authentication != null) {
+		return 	messageEventService.findByHl7Version(version);
+
 		}else {
 			return null;
 		}

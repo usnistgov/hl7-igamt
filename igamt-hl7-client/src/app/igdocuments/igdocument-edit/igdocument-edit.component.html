@@ -158,7 +158,7 @@
 
 
           <ng-container *ngSwitchCase="'SEGMENT'">
-            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
             <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
 
 

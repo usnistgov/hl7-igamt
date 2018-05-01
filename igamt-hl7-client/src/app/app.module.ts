@@ -211,7 +211,7 @@ import { TreeModule } from 'angular-tree-component';
       useClass: TokenInterceptor,
       multi: true
     },
-    // WorkspaceService,
+     WorkspaceService,
     // GeneralConfigurationService,
     // IndexedDbService,
     // DatatypesService,

@@ -8,6 +8,7 @@ import {IgDocumentCreateService} from "./igdocument-create.service";
 import {TreeNode} from "primeng/components/common/treenode";
 import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {Router, ActivatedRoute} from "@angular/router";
+import {MenuItem} from 'primeng/api';
 
 
 @Component({
@@ -15,74 +16,77 @@ import {Router, ActivatedRoute} from "@angular/router";
 })
 export class IgDocumentCreateComponent {
   isLinear = true;
-  tableValue :TreeNode[];
+  tableValue :any;
   loading=false;
+  activeIndex: number = 1;
+  selectedVerion:any;
 
   metaData= {
     title:"",
     subTitle:"",
     organization:""
   };
+  items: MenuItem[];
+
 
   selectedNodes: TreeNode[];
   firstFormGroup: FormGroup;
-  msgEvts: any[];
+  msgEvts=[];
   messageEventMap={};
   secondFormGroup: FormGroup;
   // @ViewChild('stepper') private myStepper: MatStepper;
   hl7Versions: any[];
   selcetedVersion: any;
 
-  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService, private workSpace : WorkspaceService,
-              private router: Router,    private route: ActivatedRoute,
+  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService,
+              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService
   ) {
 
-    this.hl7Versions=this.workSpace.getAppInfo()["hl7Versions"];
-
-    console.log(this.workSpace.getAppInfo());
+    this.hl7Versions=ws.getAppConstant().hl7Versions;
   }
 
   ngOnInit() {
 
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
-    });
+    this.items = [{
+      label: 'Meta Data ',
+      command: (event: any) => {
+        this.activeIndex = 0;
+      }
+    },
+      {
+        label: 'Conformane Profiles',
+        command: (event: any) => {
+          this.activeIndex = 1;
+        }
+      }];
+
+
+
+
+
   }
 
 
   totalStepsCount: number;
 
 
-
-
-  ngAfterViewInit() {
-    // this.totalStepsCount = this.myStepper._steps.length;
-  }
-  //
-  // goBack(stepper: MatStepper) {
-  //   stepper.previous();
-  // }
-  // goForward(stepper: MatStepper) {
-  //   stepper.next();
-  // }
-
-
-  getMessages(hl7Version){
+  getMessages(v){
     this.tableValue=[];
-    this.createService.getMessagesByVersion(hl7Version).then(
+    console.log(v);
+    console.log(v);
+    this.createService.getMessagesByVersion(v).subscribe(x=>{
 
-      res => this.tableValue= res
-    )
+      console.log(this.selectedVerion);
+
+      this.tableValue=x;
+    })
   }
 
-  load(){
-    console.log(this.selectedNodes);
-    this.selectedNodes=[];
-    this.getMessages(this.selcetedVersion);
-  }
+  // load(){
+  //   console.log(this.selectedNodes);
+  //   this.selectedNodes=[];
+  //   this.getMessages(this.selcetedVersion);
+  // }
 
   nodeSelect(event){
     console.log(event);
@@ -146,6 +150,7 @@ export class IgDocumentCreateComponent {
     }
    this.msgEvts=Object.keys(this.messageEventMap).map((key)=>{ return {id:key, children:this.messageEventMap[key].children}});
 
+    console.log(this.msgEvts);
 
   }
 
@@ -160,10 +165,10 @@ export class IgDocumentCreateComponent {
   wrapper.metaData=this.metaData;
   wrapper.hl7Version=this.selcetedVersion;
 
-    this.createService.createIntegrationProfile(wrapper).then(
+    this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
 
-        this.goTo(res.id);
+        // this.goTo(res.id);
       }
     )
 
@@ -175,7 +180,7 @@ export class IgDocumentCreateComponent {
 
     this.route.queryParams
       .subscribe(params => {
-        var link="/ig-documents/igdocuments-edit/"+id;
+        var link="/ig/"+id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
@@ -183,5 +188,48 @@ export class IgDocumentCreateComponent {
 
 
   }
+
+  print(obj){
+
+    console.log(obj);
+    // this.submitEvent();
+    // this.getMessages();
+  }
+
+  selectNode(event){
+    let node=event.node;
+
+    if(node.children&& node.children.length>0){
+      for(let i=0;i<node.children.length;i++){
+
+        let index = this.msgEvts.indexOf(node.children[i].data);
+        if(index<0){
+          this.msgEvts.push(node.children[i].data);
+        }
+      }
+    }else {
+      this.msgEvts.push(node.data);
+    }
+  }
+
+  unselectNode(event){
+    if(event.node.children&& event.node.children.length>0){
+      for(let i=0;i<event.node.children.length;i++){
+        this.unselectdata(event.node.children[i].data);
+      }
+    }else {
+      this.unselectdata(event.node.data);
+    }
+
+  }
+
+  unselectdata(data){
+    let index = this.msgEvts.indexOf(data);
+    if(index >-1){
+      this.msgEvts.splice(index,1);
+    }
+
+  }
+
 
 }

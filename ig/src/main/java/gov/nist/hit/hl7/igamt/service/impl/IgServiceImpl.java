@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -11,10 +12,14 @@ import javax.xml.crypto.Data;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.Mongo;
 
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -24,6 +29,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.model.DefinitionTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
@@ -34,6 +40,7 @@ import gov.nist.hit.hl7.igamt.ig.model.TreeData;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -44,8 +51,26 @@ import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.core.io.ClassPathResource;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 @Service("igService")
 public class IgServiceImpl implements IgService{
 	
@@ -635,6 +660,81 @@ public class IgServiceImpl implements IgService{
 			igs.add(element);
 		}
 		return igs;
+	}
+
+	@Override
+	public List<Ig> finByScope(String string) {
+		// TODO Auto-generated method stub
+		return igRepository.findByDomainInfoScope(string);
+	}
+
+	@Override
+	public Ig CreateEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException{
+		// TODO Auto-generated method stub
+	        File ig = new ClassPathResource("IgTemplate.json").getFile();
+	        	ObjectMapper objectMapper = new ObjectMapper();
+	        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+	        List<SectionTemplate> igTemplates = objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>(){});
+	        Ig emptyIg = new Ig();
+	        emptyIg.setMetaData(new IgMetaData());
+	        Set<TextSection> content= new HashSet<TextSection>();
+	        for(SectionTemplate template : igTemplates) {
+	        	if(template.getType().equals(Type.TEXT.toString())) {
+	        		content.add(createSectionContent(template));
+	         	} else if(template.getType().equals(Type.PROFILE.toString())) {
+	        		content.add(createProfileContent(template));
+	         	}
+	        }
+	        emptyIg.setContent(content);
+			return emptyIg;
+	}
+
+	private TextSection createProfileContent(SectionTemplate template) {
+		// TODO Auto-generated method stub
+		TextSection section = new TextSection();
+		section.setId( new ObjectId().toString());
+		section.setType(Type.PROFILE);
+		section.setLabel(template.getLabel());
+		section.setPosition(template.getPosition());
+		if(template.getChildren()!=null) {
+			Set<Section> children = new HashSet<Section>();
+		    for(SectionTemplate child : template.getChildren()) {
+		    		if(child.getType() !=Type.VALUESETREGISTRY.getValue()) {
+		    			Registry r= new Registry(new ObjectId().toString(), null, Type.fromString(child.getType()), child.getPosition(), child.getLabel());
+		    			children.add(r);
+		    		}else {
+		    			ValueSetRegistry r= new ValueSetRegistry(new ObjectId().toString(), null, Type.fromString(child.getType()), child.getPosition(), child.getLabel());
+		    			children.add(r);
+		    		}
+	        }
+			section.setChildren(children);
+			
+		}
+		return section;
+		
+	
+	}
+
+	private TextSection createSectionContent(SectionTemplate template) {
+		// TODO Auto-generated method stub
+		TextSection section = new TextSection();
+		section.setId( new ObjectId().toString());
+		section.setType(Type.TEXT);
+		section.setDescription("");
+		section.setLabel(template.getLabel());
+		section.setPosition(template.getPosition());
+		
+		if(template.getChildren()!=null) {
+		Set<Section> children = new HashSet<Section>();
+		    for(SectionTemplate child : template.getChildren()) {
+	        	if(child.getType().equals(Type.TEXT.toString())) {
+	        		children.add(createSectionContent(template));
+	        	}
+	        }
+			section.setChildren(children);
+		}
+		return section;
+		
 	}
 	
 	

@@ -1,10 +1,11 @@
 package gov.nist.hit.hl7.igamt.shared.messageEvent;
 
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 public class Event {
 
-  String id;
+  private CompositeKey id;
   String name;
   String parentStructId;
   final Type type = Type.EVENT;
@@ -13,7 +14,7 @@ public class Event {
     super();
   }
 
-  public Event(String id, String event,String parentStructId) {
+  public Event(CompositeKey id, String event,String parentStructId) {
     super();
     this.id = id;
     this.name = event;
@@ -28,7 +29,7 @@ public void setParentStructId(String parentStructId) {
 	this.parentStructId = parentStructId;
 }
 
-public String getId() {
+public CompositeKey getId() {
     return id;
   }
 
@@ -44,7 +45,7 @@ public Type getType() {
 	return type;
 }
 
-public void setId(String id) {
+public void setId(CompositeKey id) {
 	this.id = id;
 }
 }

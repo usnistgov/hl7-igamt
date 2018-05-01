@@ -75,10 +75,12 @@ export class IgDocumentEditComponent {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
 
           if(from.data.data.type== "TEXT" && (!this.isOrphan(to) && to.parent.data.data.type=="TEXT"||this.isOrphan(to))){
+            console.log(from);
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
           }
           if(from.data.data.type== "PROFILE" && this.isOrphan(to)) {
+            console.log(from);
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 

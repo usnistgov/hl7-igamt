@@ -1,7 +1,11 @@
 package gov.nist.hit.hl7;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -14,10 +18,14 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
+import gov.nist.hit.hl7.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.shared.config.SharedConstant;
+import gov.nist.hit.hl7.igamt.shared.config.SharedConstantService;
+
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt.configuration","gov.nist.hl7.igamt.shared.authentication","gov.nist.hit.hl7.auth.util"})
+@ComponentScan({"gov.nist.hit.hl7.igamt.configuration","gov.nist.hl7.igamt.shared.authentication","gov.nist.hl7.igamt.shared.config","gov.nist.hit.hl7.auth.util","gov.nist.hit.hl7.factory"})
 
 public class BootstrapApplication implements CommandLineRunner {
 
@@ -25,6 +33,10 @@ public class BootstrapApplication implements CommandLineRunner {
 		SpringApplication.run(BootstrapApplication.class, args);
 		
 	}
+	@Autowired 
+	MessageEventFacory messageEventFactory;
+	@Autowired
+	SharedConstantService sharedConstantService;
 
 	@Bean
 	public ShaPasswordEncoder encoder() {
@@ -60,20 +72,61 @@ public class BootstrapApplication implements CommandLineRunner {
 
 	
 	}
-	@PostConstruct
-	void  converAccounts() {
-//		try {
-//			Privilege user= 	new Privilege("USER");
-//			Privilege admin = 	new Privilege("ADMIN");
-//			
-//			priviliges.save(user);
-//			priviliges.save(admin);
-//			
-//			accountService.createAccountsFromLegacy();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-	}
+//	@PostConstruct
+//	void  converAccounts() {
+////		try {
+////			Privilege user= 	new Privilege("USER");
+////			Privilege admin = 	new Privilege("ADMIN");
+////			
+////			priviliges.save(user);
+////			priviliges.save(admin);
+////			
+////			accountService.createAccountsFromLegacy();
+////		} catch (IOException e) {
+////			// TODO Auto-generated catch block
+////			e.printStackTrace();
+////		}
+//		
+//	}
+	
+//	
+//	@PostConstruct
+//	void createMessageEvent() {
+//		System.out.println("creating message Event");
+//		messageEventFactory.createMessageEvent();
+//	}
+//	
+	
+//	@PostConstruct
+//	void createSharedConstant() {
+//		SharedConstant constant= new SharedConstant();
+//		List<String> hl7Versions=new ArrayList<String>();
+//		hl7Versions.add("2.3.1");
+//		hl7Versions.add("2.4");
+//		hl7Versions.add("2.5");
+//		hl7Versions.add("2.5.1");
+//		hl7Versions.add("2.6");
+//		hl7Versions.add("2.7");
+//		hl7Versions.add("2.7.1");
+//		hl7Versions.add("2.8");
+//		hl7Versions.add("2.8.1");
+//		hl7Versions.add("2.8.2");
+//		
+//		List<String> usages=new ArrayList<String>();
+//		
+//		 usages.add("R");
+//		 usages.add("RE");
+//		 usages.add("RC");
+//		 usages.add("C");
+//		 usages.add("X");
+//
+//		 constant.setHl7Versions(hl7Versions);
+//		 constant.setUsages(usages);
+//
+//
+//		 sharedConstantService.save(constant);
+//
+//		
+//		
+//	}
 }

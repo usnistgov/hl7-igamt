@@ -73,4 +73,13 @@ public class CodeSystemServiceImpl implements CodeSystemService {
     codeSystemRepository.deleteAll();
   }
 
+
+@Override
+public List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(String scope, String hl7version,
+		String identifier) {
+	// TODO Auto-generated method stub
+	return  codeSystemRepository.findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(scope,  hl7version, identifier);
+}
+  
+
 }

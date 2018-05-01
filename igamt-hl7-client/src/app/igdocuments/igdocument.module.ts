@@ -5,6 +5,7 @@ import {IgDocumentRoutingModule} from './igdocument-routing.module';
 import {TabMenuModule} from 'primeng/primeng';
 import {ButtonModule} from 'primeng/primeng';
 
+import {StepsModule} from 'primeng/steps';
 
 @NgModule({
 	imports: [
@@ -12,6 +13,8 @@ import {ButtonModule} from 'primeng/primeng';
 		FormsModule,
     ButtonModule,
 		TabMenuModule,
+    StepsModule,
+
 		IgDocumentRoutingModule
 	],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],

@@ -38,6 +38,18 @@ public class Section {
   public void setLabel(String label) {
 	this.label = label;
   }
+public Section(String id, String description, Type type, int position, String label) {
+	super();
+	this.id = id;
+	this.description = description;
+	this.type = type;
+	this.position = position;
+	this.label = label;
+}
+public Section() {
+	super();
+	// TODO Auto-generated constructor stub
+}
 
 
 }

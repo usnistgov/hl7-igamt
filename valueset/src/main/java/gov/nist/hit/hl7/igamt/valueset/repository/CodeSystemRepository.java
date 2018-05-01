@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,5 +28,10 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 
 @Repository
 public interface CodeSystemRepository extends MongoRepository<CodeSystem, CompositeKey> {
+	
+	List<CodeSystem> findByIdentifier(String identifier);
+	List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(String scope, String hl7version,
+			String identifier);
+
 
 }

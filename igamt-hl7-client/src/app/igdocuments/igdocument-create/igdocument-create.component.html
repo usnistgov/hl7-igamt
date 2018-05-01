@@ -1,82 +1,34 @@
-<!--<mat-horizontal-stepper #stepper [linear]="isLinear">-->
-  <!--<mat-step [stepControl]="firstFormGroup">-->
-    <!--<ng-template matStepLabel>MetaData</ng-template>-->
-    <!--<form [formGroup]="firstFormGroup">-->
-      <!--<mat-form-field class="ui-g-12">-->
-        <!--<input  matInput placeholder="IG Document Title" [(ngModel)]="metaData.title" name="title" formControlName="firstCtrl" required>-->
-      <!--</mat-form-field>-->
-      <!--<mat-form-field class="ui-g-12">-->
-        <!--<input [(ngModel)]="metaData.subTitle" matInput placeholder="IG Document Subtitle" name="subTitle" formControlName="firstCtrl">-->
-      <!--</mat-form-field>-->
+<p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="false"></p-steps>
+<div class="ui-g-12">
 
-      <!--<mat-form-field class="ui-g-12">-->
-        <!--<input matInput  [(ngModel)]="metaData.organization" placeholder="Organization" name="organization" formControlName="firstCtrl">-->
-      <!--</mat-form-field>-->
-      <!--<div>-->
-        <!--<button matStepperNext style="float: right" class="btn btn-primary" type="button">Next</button>-->
-      <!--</div>-->
-    <!--</form>-->
-  <!--</mat-step>-->
-  <!--<mat-step>-->
-    <!--<ng-template matStepLabel>Message Events</ng-template>-->
-    <!--<label>Hl7 Version</label>-->
-    <!--<mat-radio-group  [(ngModel)]="selcetedVersion" (change)="load()">-->
-      <!--<mat-radio-button  *ngFor="let v of hl7Versions" value="{{v}}">{{v}}</mat-radio-button>-->
-    <!--</mat-radio-group>-->
+  <p-radioButton *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
 
 
 
-    <!--<p-treeTable [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectedNodes" [style]="{'margin-top':'50px', 'max-height':'400px', 'overflow':'scroll'}"-->
-                 <!--[style]="{'margin-top':'50px'}" >-->
+</div>
 
-      <!--<p-header>Message Event</p-header>-->
-      <!--<p-column>-->
-          <!--<ng-template let-col let-node="rowData" pTemplate="header">-->
-            <!--Message-->
-          <!--</ng-template>-->
-          <!--<ng-template let-col let-node="rowData" pTemplate="body">-->
-            <!--<span *ngIf="node.data.type=='message'">-->
-           <!--{{node.data.name}}-->
-            <!--</span>-->
-          <!--</ng-template>-->
-      <!--</p-column>-->
+<div style="margin-top: 100px;">
+  <p-treeTable [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectedNodes" [style]="{'margin-top':'50px', 'max-height':'400px', 'overflow':'scroll'}"
+               [style]="{'margin-top':'50px'}" (onNodeSelect)="selectNode($event)" (onNodeUnselect)="unselectNode($event)">
+    <p-header >Editable Cells with Templating</p-header>
+    <p-column  header="Name">
+      <ng-template let-node="rowData" pTemplate="body">
+        <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
 
-      <!--<p-column>-->
-        <!--<ng-template let-col let-node="rowData" pTemplate="header">-->
-          <!--Message Event-->
-        <!--</ng-template>-->
-        <!--<ng-template let-col let-node="rowData" pTemplate="body">-->
-            <!--<span *ngIf="node.data.type!=='message'">-->
-                       <!--{{node.data.name}}-->
-            <!--</span>-->
-        <!--</ng-template>-->
-      <!--</p-column>-->
+      </ng-template>
+    </p-column>
+    <p-column  header="Event Types">
+      <ng-template let-node="rowData" pTemplate="body">
+      <span *ngIf="node.data.type=='EVENT' "> {{node.data.name}}</span>
+      </ng-template>
+    </p-column>
+    <p-column  header="Description">
+      <ng-template let-node="rowData" pTemplate="body">
+        {{node.data.description}}
+      </ng-template>
+    </p-column>
+  </p-treeTable>
 
-
-
-      <!--<p-column field="description" header="Description"></p-column>-->
-    <!--</p-treeTable>-->
-    <!--<p>Selected Nodes: <span *ngFor="let file of selectedNodes">{{file.data.name}} </span></p>-->
-    <!--<div>-->
-      <!--<button (click)="goBack(stepper)" type="button" [disabled]="stepper.selectedIndex === 0">Backdd</button>-->
-      <!--<button (click)="goForward(stepper);submitEvent()" type="button" [disabled]="stepper.selectedIndex === stepper._steps.length-1">Next</button>-->
-    <!--</div>-->
-  <!--</mat-step>-->
-  <!--<mat-step>-->
-    <!--<ng-template matStepLabel>Done</ng-template>-->
-    <!--<mat-progress-spinner *ngIf="loading"></mat-progress-spinner>-->
-
-    <!--<div>-->
-      <!--<button (click)="goBack(stepper)" type="button" [disabled]="stepper.selectedIndex === 0" >Backdd</button>-->
-    <!--</div>-->
-    <!--<button (click)="create()" type="button">Submit</button>-->
-
-  <!--</mat-step>-->
-
-
-  <!--&lt;!&ndash; one option &ndash;&gt;-->
-
-<!--</mat-horizontal-stepper>-->
-
-<!--&lt;!&ndash; second option &ndash;&gt;-->
+<button (click)="print(selectedNodes)"> print</button>
+</div>
 
