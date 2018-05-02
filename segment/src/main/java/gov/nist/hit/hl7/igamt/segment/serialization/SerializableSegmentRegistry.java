@@ -33,15 +33,17 @@ public class SerializableSegmentRegistry extends SerializableSection {
 
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetNamesMap;
 
   /**
    * @param section
    */
   public SerializableSegmentRegistry(Section section, Map<String, Segment> segmentsMap,
-      Map<String, String> datatypeNamesMap) {
+      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(section);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   /*
@@ -60,7 +62,7 @@ public class SerializableSegmentRegistry extends SerializableSection {
             if (segmentsMap.containsKey(segmentLink.getId().getId())) {
               Segment segment = segmentsMap.get(segmentLink.getId().getId());
               SerializableSegment serializableSegment =
-                  new SerializableSegment(segment, position, datatypeNamesMap);
+                  new SerializableSegment(segment, position, datatypeNamesMap, valuesetNamesMap);
               Element segmentElement = serializableSegment.serialize();
               if (segmentElement != null) {
                 segmentRegistryElement.appendChild(segmentElement);

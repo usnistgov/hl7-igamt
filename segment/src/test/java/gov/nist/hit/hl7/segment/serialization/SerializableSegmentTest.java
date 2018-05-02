@@ -119,7 +119,9 @@ public class SerializableSegmentTest {
     datatypesMap.put(TEST_FIELD2_DT_ID, TEST_FIELD2_DT_NAME);
     datatypesMap.put(TEST_DM1_DT_ID, TEST_DM1_DT_NAME);
     datatypesMap.put(TEST_DM2_DT_ID, TEST_DM2_DT_NAME);
-    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap);
+    //TODO need to check
+    Map<String,String> valuesetsMap = new HashMap<>();
+    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
     Element testElement = serializableSegment.serialize();
     assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
     assertEquals(1, testElement.getChildElements("DynamicMapping").size());
@@ -180,7 +182,9 @@ public class SerializableSegmentTest {
     Map<String,String> datatypesMap = new HashMap<>();
     datatypesMap.put(TEST_DM1_DT_ID, TEST_DM1_DT_NAME);
     datatypesMap.put(TEST_DM2_DT_ID, TEST_DM2_DT_NAME);
-    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap);
+    //TODO need to check
+    Map<String,String> valuesetsMap = new HashMap<>();
+    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
     try {
       serializableSegment.serialize();
     } catch (ResourceSerializationException e) {
