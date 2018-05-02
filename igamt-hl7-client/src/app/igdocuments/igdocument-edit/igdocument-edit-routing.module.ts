@@ -5,6 +5,7 @@ import {IgDocumentMetadataComponent} from './igdocument-metadata/igdocument-meta
 import {SectionComponent} from './section/section.component';
 import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 import {SectionResolver} from "./section/sectionResolver.resolver"
+import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
 
 @NgModule({
 	imports: [
@@ -12,8 +13,8 @@ import {SectionResolver} from "./section/sectionResolver.resolver"
 			{
 				path: ':igId', resolve:{currentIg:IgdocumentEditResolver}, component: IgDocumentEditComponent,
         children: [
-          { path: 'igdocument-metadata', component: IgDocumentMetadataComponent },
-          { path: "section/:sectionId", component: SectionComponent,resolve:{SectionResolver} },
+          { path: 'metadata', component: IgDocumentMetadataComponent,resolve:{metadata : IgMetaDataResolver} },
+          { path: "section/:sectionId", component: SectionComponent,resolve:{currentSection : SectionResolver} },
           { path: '', component: IgDocumentMetadataComponent },
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' }
           // { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' }

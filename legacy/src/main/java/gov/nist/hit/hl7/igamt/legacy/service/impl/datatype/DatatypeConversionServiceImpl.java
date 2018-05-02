@@ -86,7 +86,6 @@ public class DatatypeConversionServiceImpl implements ConversionService {
 
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {
 
-
     gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertedDatatype;
     if (oldDatatype.getName().equals("DTM")) {
       convertedDatatype = new DateTimeDatatype();

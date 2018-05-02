@@ -29,7 +29,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 public interface SegmentService {
 
   public Segment findByKey(CompositeKey key);
-
+  
   public Segment findLatestById(String id);
 
   public Segment create(Segment segment);

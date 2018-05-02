@@ -32,12 +32,12 @@ public class Section {
   public void setPosition(int position) {
     this.position = position;
   }
-public String getLabel() {
+  public String getLabel() {
 	return label;
-}
-public void setLabel(String label) {
+  }
+  public void setLabel(String label) {
 	this.label = label;
-}
+  }
 
 
 }

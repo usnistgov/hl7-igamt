@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -23,8 +23,8 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -34,15 +34,17 @@ import nu.xom.Element;
  */
 public class SerializableDatatype extends SerializableResource{
 
-  private HashMap<Ref,String> refDatatypeLabelMap = null;
+  private Map<String,String> datatypeNamesMap = null;
+  private Map<String, String> valuesetNamesMap = null;
   
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, HashMap<Ref,String> refDatatypeLabelMap) {
+  public SerializableDatatype(Datatype datatype, String position, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(datatype, position);
-    this.refDatatypeLabelMap = refDatatypeLabelMap;
+    this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
   
   public SerializableDatatype(Datatype datatype, String position) {
@@ -53,12 +55,14 @@ public class SerializableDatatype extends SerializableResource{
   public Element serialize() throws ResourceSerializationException {
     try {
       Element datatypeElement = super.getElement("Datatype");
-      Datatype datatype = (Datatype) this.resource;
+      Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
-      Element bindingElement = super.serializeResourceBinding(datatype.getBinding());
-      if(bindingElement != null) {
-        datatypeElement.appendChild(bindingElement);
+      if(datatype.getBinding() != null) {
+        Element bindingElement = super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
+        if(bindingElement != null) {
+          datatypeElement.appendChild(bindingElement);
+        }
       }
       if(datatype instanceof ComplexDatatype) {
         datatypeElement = serializeComplexDatatype(datatypeElement);
@@ -67,25 +71,30 @@ public class SerializableDatatype extends SerializableResource{
       }
       return datatypeElement;
     } catch (Exception exception) {
-      throw new ResourceSerializationException(exception, Type.DATATYPE, this.resource);
+      throw new ResourceSerializationException(exception, Type.DATATYPE, (Datatype) this.getAbstractDomain());
     }
   }
 
   private Element serializeComplexDatatype(Element datatypeElement) throws SubStructElementSerializationException {
-    ComplexDatatype complexDatatype = (ComplexDatatype) super.getResource();
+    ComplexDatatype complexDatatype = (ComplexDatatype) super.getAbstractDomain();
     for(Component component : complexDatatype.getComponents()) {
       try {
         Element componentElement = new Element("Component");
-        componentElement.addAttribute(new Attribute("confLength",component.getConfLength()));
-        componentElement.addAttribute(new Attribute("id",component.getId()));
-        componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength()));
-        componentElement.addAttribute(new Attribute("minLength",component.getMinLength()));
-        componentElement.addAttribute(new Attribute("text",component.getText()));
+        componentElement.addAttribute(new Attribute("confLength",component.getConfLength() != null ? component.getConfLength() : ""));
+        componentElement.addAttribute(new Attribute("id",component.getId() != null ? component.getId() : ""));
+        componentElement.addAttribute(new Attribute("name",component.getName() != null ? component.getName() : ""));
+        componentElement.addAttribute(new Attribute("maxLength",component.getMaxLength() != null ? component.getMaxLength() : ""));
+        componentElement.addAttribute(new Attribute("minLength",component.getMinLength() != null ? component.getMinLength() : ""));
+        componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
-        if(component.getRef() != null && refDatatypeLabelMap != null && refDatatypeLabelMap.containsKey(component.getRef())){
-          componentElement.addAttribute(new Attribute("datatype",refDatatypeLabelMap.get(component.getRef())));
+        if(component.getRef() != null){
+          if(datatypeNamesMap != null && datatypeNamesMap.containsKey(component.getRef().getId())) {
+            componentElement.addAttribute(new Attribute("datatype",datatypeNamesMap.get(component.getRef().getId())));
+          } else {
+            throw new DatatypeNotFoundException(component.getRef().getId());
+          }
         }
-        componentElement.addAttribute(new Attribute("usage",component.getUsage().toString()));
+        componentElement.addAttribute(new Attribute("usage",component.getUsage() != null ? component.getUsage().toString() : ""));
         datatypeElement.appendChild(componentElement);
       } catch (Exception exception) {
         throw new SubStructElementSerializationException(exception, component);
@@ -95,14 +104,17 @@ public class SerializableDatatype extends SerializableResource{
   }
   
   private Element serializeDateTimeDatatype(Element datatypeElement) {
-    DateTimeDatatype dateTimeDatatype = (DateTimeDatatype) super.getResource();
+    DateTimeDatatype dateTimeDatatype = (DateTimeDatatype) super.getAbstractDomain();
     for(DateTimeComponentDefinition dateTimeComponentDefinition : dateTimeDatatype.getDateTimeConstraints().getDateTimeComponentDefinitions()) {
       Element dateTimeComponentDefinitionElement = new Element("DateTimeComponentDefinition");
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",dateTimeComponentDefinition.getDescription()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("name",dateTimeComponentDefinition.getName()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("predicate",dateTimeComponentDefinition.getDateTimePredicate().toString()));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("position",String.valueOf(dateTimeComponentDefinition.getPosition())));
-      dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",dateTimeComponentDefinition.getUsage().name()));
+      if(dateTimeComponentDefinition != null) {
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("description",dateTimeComponentDefinition.getDescription() != null ? dateTimeComponentDefinition.getDescription() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("name",dateTimeComponentDefinition.getName() != null ? dateTimeComponentDefinition.getName() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("predicate",dateTimeComponentDefinition.getDateTimePredicate() != null ? dateTimeComponentDefinition.getDateTimePredicate().toString() : ""));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("position",String.valueOf(dateTimeComponentDefinition.getPosition())));
+        dateTimeComponentDefinitionElement.addAttribute(new Attribute("usage",dateTimeComponentDefinition.getUsage() != null ? dateTimeComponentDefinition.getUsage().name() : ""));
+        datatypeElement.appendChild(dateTimeComponentDefinitionElement);
+      }
     }
     return datatypeElement;
   }

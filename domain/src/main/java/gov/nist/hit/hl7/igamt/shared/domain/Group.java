@@ -16,6 +16,13 @@ public class Group extends MsgStructElement {
     this.setType(Type.GROUP);
   }
 
+  public Group(String id, String name, int position, Usage usage, String text,
+      boolean custom, int min, String max, Set<MsgStructElement> children, ResourceBinding binding) {
+    super(id, name, position, usage, Type.GROUP, text, custom, min, max);
+    this.children = children;
+    this.binding = binding;
+  }
+
   public Set<MsgStructElement> getChildren() {
     return children;
   }

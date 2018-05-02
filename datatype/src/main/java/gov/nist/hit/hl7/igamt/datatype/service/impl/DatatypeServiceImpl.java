@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
 /**
  *
@@ -126,4 +127,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     return datatype;
   }
 
+  @Override
+  public List<Datatype> findByScope(Scope scope) {
+    return datatypeRepository.findByScope(scope);
+  }
 }

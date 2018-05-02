@@ -9,7 +9,9 @@ public class TreeNode implements Comparable<TreeNode>{
 	
 	private TreeData data; 
 	private List<TreeNode>  children;
-	private boolean isExpanded =false;
+	private String id;
+
+	private boolean isExpanded =true;
 	
 	public TreeNode() {
 		children=new ArrayList<TreeNode>();
@@ -37,6 +39,12 @@ public class TreeNode implements Comparable<TreeNode>{
 	}
 	public void setExpanded(boolean isExpanded) {
 		this.isExpanded = isExpanded;
+	}
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
 	} 
 
 }

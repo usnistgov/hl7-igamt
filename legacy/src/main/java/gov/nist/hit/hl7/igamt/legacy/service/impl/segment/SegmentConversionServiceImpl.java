@@ -15,9 +15,12 @@ package gov.nist.hit.hl7.igamt.legacy.service.impl.segment;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
@@ -81,7 +84,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
     convertedSegment.setDescription(oldSegment.getDescription());
     DomainInfo domainInfo = new DomainInfo();
     domainInfo.setScope(ConversionUtil.convertScope(oldSegment.getScope()));
-    domainInfo.setVersion(oldSegment.getVersion());
+    domainInfo.setVersion(oldSegment.getHl7Version());
     convertedSegment.setDomainInfo(domainInfo);
     convertedSegment.setExt(oldSegment.getExt());
     convertedSegment.setPostDef(oldSegment.getText2());
@@ -117,27 +120,32 @@ public class SegmentConversionServiceImpl implements ConversionService {
       }
     }
     
-    if (oldSegment.getFields().size() > 0) {
-      HashSet<gov.nist.hit.hl7.igamt.shared.domain.Field> convertedFields = new HashSet<>();
-      for (Field f : oldSegment.getFields()) {
-        gov.nist.hit.hl7.igamt.shared.domain.Field convertedField =
-            new gov.nist.hit.hl7.igamt.shared.domain.Field();
-        convertedField.setId(f.getId());
-        convertedField.setName(f.getName());
-        convertedField.setConfLength(f.getConfLength());
-        convertedField.setCustom(false);
-        if(f.getMin() != null) convertedField.setMin(f.getMin());
-        if(f.getMax() != null) convertedField.setMax(f.getMax());
-        convertedField.setMaxLength(f.getMaxLength());
-        convertedField.setMinLength(f.getMinLength());
-        convertedField.setPosition(f.getPosition());
-        convertedField.setRef(new Ref(f.getDatatype().getId()));
-        convertedField.setText(f.getText());
-        convertedField.setType(Type.FIELD);
-        convertedField.setUsage(ConversionUtil.convertUsage(f.getUsage()));
-        convertedFields.add(convertedField);
+
+    if(oldSegment.getFields().size()>0) {
+      Set<gov.nist.hit.hl7.igamt.shared.domain.Field> fields = new HashSet<>();
+      for(Field field : oldSegment.getFields()) {
+        gov.nist.hit.hl7.igamt.shared.domain.Field newField = new gov.nist.hit.hl7.igamt.shared.domain.Field();
+        newField.setConfLength(field.getConfLength());
+       
+        if (field.getAdded().equals(Constant.YES)) {
+        	 newField.setCustom(true);
+        } else {
+        	 newField.setCustom(false);
+        }
+        newField.setId(field.getId());
+        newField.setMax(field.getMax());
+        newField.setMaxLength(field.getMaxLength());
+        newField.setMin(field.getMin());
+        newField.setMinLength(field.getMinLength());
+        newField.setName(field.getName());
+        newField.setPosition(field.getPosition());
+        newField.setRef(new Ref(field.getDatatype().getId()));
+        newField.setText(field.getText());
+        newField.setType(Type.FIELD);
+        newField.setUsage(ConversionUtil.convertUsage(field.getUsage()));
+        fields.add(newField);
       }
-      convertedSegment.setChildren(convertedFields);
+      convertedSegment.setChildren(fields);
     }
     
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)

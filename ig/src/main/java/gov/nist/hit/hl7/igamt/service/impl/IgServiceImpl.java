@@ -126,10 +126,7 @@ public class IgServiceImpl implements IgService{
 			}	
 		}
 		firstLevel.sort((h1, h2) -> h1.compareTo(h2));
-
 		start.setChildren(firstLevel);
-		
-
 		IgToc toc = new IgToc();
 		List<TreeNode> nodes= new ArrayList<TreeNode>();
 		nodes.add(start);
@@ -151,6 +148,7 @@ public class IgServiceImpl implements IgService{
 		sectionTree.setType(s.getType());
 		sectionTree.setPosition(s.getPosition());
 		sectionTree.setContent(s.getDescription());
+		profileNode.setId(s.getId());
 		profileNode.setData(sectionTree);
 		
 		List<TreeNode> profileChildren  = new ArrayList<TreeNode>();
@@ -164,6 +162,7 @@ public class IgServiceImpl implements IgService{
 					Registry registry = (Registry) section;
 					TreeNode childNode= new TreeNode();
 					TreeData  childData=new TreeData();
+					childNode.setId(registry.getId());
 					childData.setPosition(registry.getPosition());
 					childData.setLabel(registry.getLabel());
 					Type type = section.getType();
@@ -228,6 +227,7 @@ public class IgServiceImpl implements IgService{
 			data.setPosition(l.getPosition());
 			data.setKey(l.getId());
 			node.setData(data);
+			node.setId(l.getId().getId());
 
 			data.setType(Type.CONFORMANCEPROFILE);
 			addChildrenByType(node, Type.CONFORMANCEPROFILE);
@@ -255,6 +255,7 @@ public class IgServiceImpl implements IgService{
 			data.setKey(l.getId());
 			data.setType(Type.VALUESET);
 			node.setData(data);
+			node.setId(l.getId().getId());
 //			addChildrenByType(node, Type.VALUESET);
 			Nodes.add(node);
 		 }
@@ -440,6 +441,8 @@ public class IgServiceImpl implements IgService{
 
 			data.setKey(l.getId());
 			data.setType(Type.SEGMENT);
+			node.setId(l.getId().getId());
+
 			node.setData(data);
 
 			//addChildrenByType(node, Type.SEGMENT);
@@ -468,6 +471,8 @@ public class IgServiceImpl implements IgService{
 			data.setKey(l.getId());
 			data.setType(Type.COMPOSITEPROFILE);
 			node.setData(data);
+			node.setId(l.getId().getId());
+
 
 			addChildrenByType(node, Type.COMPOSITEPROFILE);
 			Nodes.add(node);
@@ -511,6 +516,8 @@ public class IgServiceImpl implements IgService{
 		sectionTree.setLabel(s.getLabel());
 		sectionTree.setPosition(s.getPosition());
 		sectionTree.setType(Type.TEXT);
+		t.setId(s.getId());
+
 		sectionTree.setContent(s.getDescription());
 		t.setData(sectionTree);
 		

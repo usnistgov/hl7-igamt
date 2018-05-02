@@ -1,9 +1,72 @@
 /* You can add global styles to this file, and also import other style files */
 @import "./app/igdocuments/igdocument-edit/toc/toc.component.css";
 @import "./app/igdocuments/igdocument-edit/igdocument-edit.component.css";
-.list-ig .ui-widget-header {
-  background: #39a3f4;
-  border: 1px solid #39a3f4;
-  font-weight: 700;
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+body{
+  font-family: 'Open Sans', sans-serif;
+
 }
+
+span.ig-list-title{
+  color: #5c6bc0 !important;
+  font-weight: 600;
+}
+span:hover.ig-list-title{
+  text-decoration: underline !important;
+}
+
+
+.ig-list-date{
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.ig-list-user{
+}
+.ig-list-image{
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.ig-list-image-container{
+  padding-right: 0px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 0px;
+}
+
+.ig-list-cp-badge{
+  margin-right: 4px;
+  margin-bottom: 4px;
+  border-radius: 5.25rem;
+  background: gray;
+  color: white;
+}
+
+.ig-list-more-info-title{
+
+  color: black;
+  font-size: 13px;
+  font-weight: bold;
+
+}
+.ui-dataview .ui-dataview-header, .ui-dataview .ui-dataview-footer {
+  padding: 1px;
+  margin: 0px;
+}
+.panel-gray{
+  background-color: #d8d8d8 !important;
+}
+
+.list-ig .ui-dataview .ui-dataview-header, .ui-dataview .ui-dataview-footer {
+  padding: 2px;
+  margin: 2px;
+  background-color: #d8d8d8;
+}
+.ig-list-border{
+  border-bottom: #d8d8d8 1px dashed;
+}
+
 
