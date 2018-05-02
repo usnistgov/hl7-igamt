@@ -81,6 +81,7 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
+import {IgDocumentService} from './service/ig-document/ig-document.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
 import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
@@ -215,7 +216,8 @@ import { TreeModule } from 'angular-tree-component';
     },
     // WorkspaceService,
     // GeneralConfigurationService,
-     IndexedDbService,
+    IgDocumentService,
+    IndexedDbService,
      SegmentsIndexedDbService,
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
