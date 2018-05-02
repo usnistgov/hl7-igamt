@@ -212,7 +212,7 @@ import { TreeModule } from 'angular-tree-component';
       multi: true
     },
     // WorkspaceService,
-    // GeneralConfigurationService,
+    GeneralConfigurationService,
     // IndexedDbService,
     // DatatypesService,
     // ValueSetsService,

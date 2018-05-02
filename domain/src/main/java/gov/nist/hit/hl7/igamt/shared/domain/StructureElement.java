@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 
 public class StructureElement {
   private String id;
+  private String name;
   private int position;
   private Usage usage;
   private Type type;
@@ -48,6 +49,12 @@ public class StructureElement {
   }
   public void setId(String id) {
     this.id = id;
+  }
+  public String getName() {
+    return name;
+  }
+  public void setName(String name) {
+    this.name = name;
   }
 
 }

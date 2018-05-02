@@ -10,9 +10,7 @@ import {SectionResolver} from "./section/sectionResolver.resolver"
 	imports: [
 		RouterModule.forChild([
 			{
-				path: ':igId',
-        resolve:{currentIg:IgdocumentEditResolver},
-				component: IgDocumentEditComponent,
+				path: ':igId', resolve:{currentIg:IgdocumentEditResolver}, component: IgDocumentEditComponent,
         children: [
           { path: 'igdocument-metadata', component: IgDocumentMetadataComponent },
           { path: "section/:sectionId", component: SectionComponent,resolve:{SectionResolver} },

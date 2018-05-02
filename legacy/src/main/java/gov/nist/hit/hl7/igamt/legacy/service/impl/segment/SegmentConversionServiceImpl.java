@@ -13,10 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.legacy.service.impl.segment;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
@@ -31,6 +33,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.shared.domain.Ref;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 /**
  *
@@ -113,6 +117,28 @@ public class SegmentConversionServiceImpl implements ConversionService {
       }
     }
     
+    if (oldSegment.getFields().size() > 0) {
+      HashSet<gov.nist.hit.hl7.igamt.shared.domain.Field> convertedFields = new HashSet<>();
+      for (Field f : oldSegment.getFields()) {
+        gov.nist.hit.hl7.igamt.shared.domain.Field convertedField =
+            new gov.nist.hit.hl7.igamt.shared.domain.Field();
+        convertedField.setId(f.getId());
+        convertedField.setName(f.getName());
+        convertedField.setConfLength(f.getConfLength());
+        convertedField.setCustom(false);
+        if(f.getMin() != null) convertedField.setMin(f.getMin());
+        if(f.getMax() != null) convertedField.setMax(f.getMax());
+        convertedField.setMaxLength(f.getMaxLength());
+        convertedField.setMinLength(f.getMinLength());
+        convertedField.setPosition(f.getPosition());
+        convertedField.setRef(new Ref(f.getDatatype().getId()));
+        convertedField.setText(f.getText());
+        convertedField.setType(Type.FIELD);
+        convertedField.setUsage(ConversionUtil.convertUsage(f.getUsage()));
+        convertedFields.add(convertedField);
+      }
+      convertedSegment.setChildren(convertedFields);
+    }
     
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
         .convertResourceBinding(oldSegment));

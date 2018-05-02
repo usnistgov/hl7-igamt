@@ -21,7 +21,7 @@ export class IgDocumentEditComponent {
 
   ig:any;
   currentUrl:any;
-  hideToc:false;
+  hideToc:boolean=false;
 
   activeNode:any;
 

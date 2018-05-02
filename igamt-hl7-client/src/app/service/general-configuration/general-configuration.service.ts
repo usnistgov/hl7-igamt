@@ -2,7 +2,6 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -13,7 +12,7 @@ export class GeneralConfigurationService {
 
   _valueSetAllowedComponents : any;
 
-  constructor(private http : Http){
+  constructor(){
 
     //TODO GETTING USAGES FROM API
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];

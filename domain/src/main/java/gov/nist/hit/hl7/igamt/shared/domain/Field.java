@@ -3,7 +3,7 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 public class Field extends SubStructElement {
   
   private int min; 
-  private int max; 
+  private String max; 
   public Field() {
     // TODO Auto-generated constructor stub
     super();
@@ -15,10 +15,10 @@ public class Field extends SubStructElement {
   public void setMin(int min) {
     this.min = min;
   }
-  public int getMax() {
+  public String getMax() {
     return max;
   }
-  public void setMax(int max) {
+  public void setMax(String max) {
     this.max = max;
   }
 
