@@ -2,7 +2,7 @@ import Dexie from 'dexie';
 
 export class Node {
   id?: string;
-  definition?: object;
+  structure?: object;
 }
 
 export class NodeDatabase extends Dexie {

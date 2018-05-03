@@ -35,12 +35,37 @@ export class SegmentsIndexedDbService {
     }
   }
 
-  public getSegmentDefinition(id, callback) {
+  public getSegmentStructure(id, callback) {
     if (this.indexeddbService.changedObjectsDatabase != null) {
       this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
-          callback(segment.definition);
+          callback(segment.structure);
+        }
+      });
+    } else {
+      callback(null);
+    }
+  }
+
+  public getSegmentPreDef(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
+        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
+        if (segment != null) {
+          callback(segment.preDef);
+        }
+      });
+    } else {
+      callback(null);
+    }
+  }
+  public getSegmentPostDef(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
+        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
+        if (segment != null) {
+          callback(segment.postDef);
         }
       });
     } else {
