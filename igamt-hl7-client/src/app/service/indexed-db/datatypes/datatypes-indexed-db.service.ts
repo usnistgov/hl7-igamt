@@ -1,7 +1,6 @@
 import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
-import {IObject} from '../objects-database';
-import IndexedDbUtils from "../indexed-db-utils";
+import IndexedDbUtils from '../indexed-db-utils';
 
 @Injectable()
 export class DatatypesIndexedDbService {
@@ -11,53 +10,99 @@ export class DatatypesIndexedDbService {
   }
 
 
-  public getDatatype (id, callback) {
+  public getDatatype(id, callback) {
     let datatype;
-    this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async() => {
-      datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
-      callback(datatype);
-    });
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        callback(datatype);
+      });
+    } else {
+      callback(null);
+    }
   }
 
-  public getDatatypeMetadata (id, callback) {
-    this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.metadata);
-      }
-    });
+  public getDatatypeMetadata(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        if (datatype != null) {
+          callback(datatype.metadata);
+        }
+      });
+    } else {
+      callback(null);
+    }
   }
 
-  public getDatatypeDefinition (id, callback) {
-    this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.definition);
-      }
-    });
+  public getDatatypeStructure(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        if (datatype != null) {
+          callback(datatype.structure);
+        }
+      });
+    } else {
+      callback(null);
+    }
   }
 
-  public getDatatypeCrossReference (id, callback) {
-    this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.crossReference);
-      }
-    });
+  public getDatatypePreDef(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        if (datatype != null) {
+          callback(datatype.preDef);
+        }
+      });
+    } else {
+      callback(null);
+    }
+  }
+  public getDatatypePostDef(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        if (datatype != null) {
+          callback(datatype.postDef);
+        }
+      });
+    } else {
+      callback(null);
+    }
+  }
+
+  public getDatatypeCrossReference(id, callback) {
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+
+      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
+        if (datatype != null) {
+          callback(datatype.crossReference);
+        }
+      });
+    } else {
+      callback(null);
+    }
   }
 
   public saveDatatype(datatype) {
     console.log(datatype);
-    this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.datatypes, async() => {
-      const savedDatatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(datatype.id);
-      this.doSave(datatype, savedDatatype);
-    });
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        const savedDatatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(datatype.id);
+        this.doSave(datatype, savedDatatype);
+      });
+    }
   }
 
   private doSave(datatype, savedDatatype) {
     savedDatatype = IndexedDbUtils.populateIObject(datatype, savedDatatype);
-    this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.datatypes, async() => {
-      await this.indexeddbService.changedObjectsDatabase.datatypes.put(savedDatatype);
-    });
+    if (this.indexeddbService.changedObjectsDatabase != null) {
+      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+        await this.indexeddbService.changedObjectsDatabase.datatypes.put(savedDatatype);
+      });
+    }
   }
 }
