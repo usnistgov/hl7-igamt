@@ -20,9 +20,11 @@ export class SegmentsService {
 
   public getSegmentStructure(id, callback) {
     const http = this.http;
+    const segmentsIndexedDbService = this.segmentsIndexedDbService;
     this.segmentsIndexedDbService.getSegmentStructure(id, function(clientSegmentStructure){
       if (clientSegmentStructure == null) {
         http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
+          segmentsIndexedDbService.saveSegmentStructureToNodeDatabase(id, serverSegmentStructure);
           callback(serverSegmentStructure);
         });
       } else {

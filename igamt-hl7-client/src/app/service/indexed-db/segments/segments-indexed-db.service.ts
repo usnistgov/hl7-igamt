@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
 import IndexedDbUtils from '../indexed-db-utils';
+import {Node} from "../node-database";
 
 @Injectable()
 export class SegmentsIndexedDbService {
@@ -108,6 +109,17 @@ export class SegmentsIndexedDbService {
       this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.segments, async () => {
         const savedSegment = await this.indexeddbService.changedObjectsDatabase.segments.get(segment.id);
         this.doSave(segment, savedSegment);
+      });
+    }
+  }
+
+  public saveSegmentStructureToNodeDatabase(id, segmentStructure) {
+    if (this.indexeddbService.nodeDatabase != null) {
+      this.indexeddbService.nodeDatabase.transaction('r', this.indexeddbService.nodeDatabase.segments, async () => {
+        const segmentNode = new Node();
+        segmentNode.id = id;
+        segmentNode.structure = segmentStructure;
+        await this.indexeddbService.nodeDatabase.segments.put(segmentNode);
       });
     }
   }
