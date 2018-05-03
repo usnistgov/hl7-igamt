@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.datatype.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
@@ -57,5 +58,7 @@ public interface DatatypeService {
   public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
+
+  public DatatypeStructure convertDomainToStructure(Datatype datatype);
 
 }

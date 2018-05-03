@@ -9,6 +9,10 @@ import {Observable} from "rxjs";
 
 import 'rxjs/add/operator/filter';
 import {TocService} from "../../toc/toc.service";
+import {SegmentsService} from "../../../../service/segments/segments.service";
+// import {SegmentsIndexedDbService} from "../../../../service/indexed-db/segments/segments-indexed-db.service";
+import {HttpClient} from "@angular/common/http";
+import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 
 
 
@@ -22,7 +26,7 @@ export class SegmentEditMetadataComponent {
   segmentId:any;
   segmentMetadata:any;
 
-  constructor(private route: ActivatedRoute, private  router : Router){
+  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -31,10 +35,18 @@ export class SegmentEditMetadataComponent {
   }
 
   ngOnInit() {
+      this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
     this.segmentId= this.route.snapshot.params["segmentId"];
+    console.log("Segment Metadata init");
+    console.log(this.segmentId);
+
+    this.segmentsService.getSegmentMetadata(this.segmentId, function(metadata){
+      console.log("CallBack for getSegmentMetadata");
+      console.log(metadata);
+    });
+
+
     this.route.data.map(data => data.currentSegmentMetadata).subscribe(x => {
-      console.log("SEGMENT METADATA LOADING");
-      console.log(x);
       this.segmentMetadata = x;
     });
   }

@@ -16,10 +16,10 @@ import {SegmentPostdefResolver} from "./segment-postdef.resolver";
   imports: [
     RouterModule.forChild([
         {
-            path: ':segmentId', resolve:{currentSegmentMetadata:SegmentMetadataResolver}, component: SegmentEditMetadataComponent,
+            path: ':segmentId', component: SegmentEditMetadataComponent,
         },
         {
-            path: ':segmentId/metadata', resolve:{currentSegmentMetadata:SegmentMetadataResolver}, component: SegmentEditMetadataComponent,
+            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,
         },
         {
             path: ':segmentId/preDef', resolve:{currentSegmentPredef:SegmentPredefResolver}, component: SegmentEditPredefComponent,

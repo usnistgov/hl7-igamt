@@ -20,9 +20,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
@@ -130,5 +134,34 @@ public class DatatypeServiceImpl implements DatatypeService {
   @Override
   public List<Datatype> findByScope(Scope scope) {
     return datatypeRepository.findByScope(scope);
+  }
+
+  @Override
+  public DatatypeStructure convertDomainToStructure(Datatype datatype) {
+    if (datatype != null) {
+      DatatypeStructure result = new DatatypeStructure();
+      result.setId(datatype.getId());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      if (datatype.getExt() != null) {
+        result.setLabel(datatype.getName() + datatype.getExt());
+      } else {
+        result.setLabel(datatype.getName());
+      }
+      result.setBinding(datatype.getBinding());
+
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDt = (ComplexDatatype) datatype;
+        if (cDt.getComponents() != null && cDt.getComponents().size() > 0) {
+          for (Component c : cDt.getComponents()) {
+            ComponentDisplay componentDisplay = new ComponentDisplay();
+            componentDisplay.setData(c);
+            result.addChild(componentDisplay);
+          }
+        }
+      }
+      return result;
+    }
+    return null;
   }
 }

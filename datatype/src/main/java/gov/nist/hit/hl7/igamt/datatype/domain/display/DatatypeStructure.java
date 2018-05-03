@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.segment.domain.display;
+package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -7,14 +7,14 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
-public class SegmentStructure {
+public class DatatypeStructure {
   private CompositeKey id;
   private String label;
   private Scope scope;
   private String version;
   private ResourceBinding binding;
 
-  private TreeSet<FieldDisplay> structure;
+  private TreeSet<ComponentDisplay> structure;
 
   public CompositeKey getId() {
     return id;
@@ -24,18 +24,18 @@ public class SegmentStructure {
     this.id = id;
   }
 
-  public TreeSet<FieldDisplay> getChildren() {
+  public TreeSet<ComponentDisplay> getChildren() {
     return structure;
   }
 
-  public void setChildren(TreeSet<FieldDisplay> structure) {
+  public void setChildren(TreeSet<ComponentDisplay> structure) {
     this.structure = structure;
   }
 
-  public void addChild(FieldDisplay fieldDisplay) {
+  public void addChild(ComponentDisplay componentDisplay) {
     if (this.structure == null)
-      this.structure = new TreeSet<FieldDisplay>(new PositionCompForFieldDisplay());
-    this.structure.add(fieldDisplay);
+      this.structure = new TreeSet<ComponentDisplay>(new PositionCompForComponentDisplay());
+    this.structure.add(componentDisplay);
   }
 
   public String getLabel() {
@@ -74,9 +74,9 @@ public class SegmentStructure {
 }
 
 
-class PositionCompForFieldDisplay implements Comparator<FieldDisplay> {
+class PositionCompForComponentDisplay implements Comparator<ComponentDisplay> {
   @Override
-  public int compare(FieldDisplay e1, FieldDisplay e2) {
+  public int compare(ComponentDisplay e1, ComponentDisplay e2) {
     if (e1.getData().getPosition() > e2.getData().getPosition()) {
       return 1;
     } else {
