@@ -41,6 +41,21 @@ export class SegmentsIndexedDbService {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
           callback(segment.structure);
+        } else {
+          this.getSegmentStructureFromNodeDatabase(id, callback);
+        }
+      });
+    } else {
+      callback(null);
+    }
+  }
+
+  private getSegmentStructureFromNodeDatabase(id, callback) {
+    if (this.indexeddbService.nodeDatabase != null) {
+      this.indexeddbService.nodeDatabase.transaction('r', this.indexeddbService.nodeDatabase.segments, async () => {
+        const segmentStructure = await this.indexeddbService.nodeDatabase.segments.get(id);
+        if (segmentStructure != null) {
+          callback(segmentStructure.structure);
         }
       });
     } else {
