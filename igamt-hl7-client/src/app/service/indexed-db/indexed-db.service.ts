@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import { ObjectsDatabase, IObject } from './objects-database';
 import { ObjectsReferenceDatabase } from './objects-reference-database';
 import Dexie from 'dexie';
+import {IgDocumentService} from "../ig-document/ig-document.service";
 
 @Injectable()
 export class IndexedDbService {
@@ -11,7 +12,7 @@ export class IndexedDbService {
   createdObjectsDatabase;
   addedObjectsDatabase;
   igDocumentId?: string;
-  constructor() {
+  constructor(public igDocumentService: IgDocumentService) {
     Dexie.delete('ChangedObjectsDatabase').then(() => {
       console.log('ChangedObjectsDatabase successfully deleted');
     }).catch((err) => {
@@ -170,16 +171,17 @@ export class IndexedDbService {
       });
     }));
     const doPersist = this.doPersist;
+    const igDocumentService = this.igDocumentService;
     Promise.all(promises).then(function(){
       console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
         + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
-      doPersist(changedObjects);
+      doPersist(changedObjects, igDocumentService);
     });
   }
 
-  private doPersist(changedObjects) {
+  private doPersist(changedObjects, igDocumentService) {
     console.log(JSON.stringify(changedObjects));
-    // TODO call igService.save
+    igDocumentService.save(changedObjects);
   }
 }
 
