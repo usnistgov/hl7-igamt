@@ -1,14 +1,15 @@
 import {Injectable} from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import {SegmentsIndexedDbService} from '../indexed-db/segments/segments-indexed-db.service';
 
 @Injectable()
 export class SegmentsService {
-  constructor(private http: HttpClientModule, private segmentsIndexedDbService: SegmentsIndexedDbService) {}
+  constructor(private http: HttpClient, private segmentsIndexedDbService: SegmentsIndexedDbService) {}
   public getSegmentMetadata(id, callback) {
+    const http = this.http;
     this.segmentsIndexedDbService.getSegmentMetadata(id, function(clientSegmentMetadata){
       if (clientSegmentMetadata == null) {
-        this.http.get('api/segments/' + id + '/metadata').then(function(serverSegmentMetadata){
+        http.get('api/segments/' + id + '/metadata').subscribe(serverSegmentMetadata => {
           callback(serverSegmentMetadata);
         });
       } else {
