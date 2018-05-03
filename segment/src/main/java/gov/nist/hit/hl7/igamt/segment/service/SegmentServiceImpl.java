@@ -12,7 +12,11 @@
  * 
  */
 package gov.nist.hit.hl7.igamt.segment.service;
-
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +37,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
+  @Autowired
+  private MongoTemplate mongoTemplate;
   
   @Override
   public Segment findByKey(CompositeKey key) {
@@ -114,5 +120,13 @@ public List<Segment> findByDomainInfoScopeAndName(String scope, String name) {
 	// TODO Auto-generated method stub
 	return segmentRepository.findByDomainInfoScopeAndName(scope,name);
 }
-  
+@Override  
+public Segment getLatestById(String id) {
+	  Query query = new Query();
+	  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+	  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+	  query.limit(1);
+	  Segment segment = mongoTemplate.findOne(query, Segment.class);
+	  return segment;
+	}
 }

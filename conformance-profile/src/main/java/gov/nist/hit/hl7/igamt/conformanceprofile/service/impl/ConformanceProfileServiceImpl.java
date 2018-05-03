@@ -14,6 +14,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.util.List;
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +38,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService{
 
   @Autowired
   ConformanceProfileRepository conformanceProfileRepository;
+  @Autowired
+  private MongoTemplate mongoTemplate;
 
   @Override
   public ConformanceProfile findByKey(CompositeKey key) {
@@ -146,6 +153,17 @@ public ConformanceProfile findDisplayFormat(CompositeKey id) {
 	}
 	// TODO Auto-generated method stub
 	return null;
+}
+
+@Override
+public ConformanceProfile getLatestById(String id) {
+	// TODO Auto-generated method stub
+	  Query query = new Query();
+	  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+	  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+	  query.limit(1);
+	  ConformanceProfile conformanceProfile = mongoTemplate.findOne(query, ConformanceProfile.class);
+	  return conformanceProfile;
 }
   
 }

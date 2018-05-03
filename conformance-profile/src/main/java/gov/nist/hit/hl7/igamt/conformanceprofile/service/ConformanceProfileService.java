@@ -62,5 +62,11 @@ public interface ConformanceProfileService {
 	public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
 
 	ConformanceProfile findDisplayFormat(CompositeKey id);
+	
+	ConformanceProfile getLatestById(String id);
+
+	
+	
+	
 
 }

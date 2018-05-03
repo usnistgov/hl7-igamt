@@ -1,6 +1,7 @@
 [
 {
 "label": "Introduction",
+"type":"TEXT",
 "position": 1,
 "children":[	{
 			"label" :"Purpose",
@@ -113,12 +114,12 @@
 },{
 	"label": "Message Infrastructure",
 	"position": 3,
-	"type":"PRFOILE",
+	"type":"PROFILE",
 	
 	"children" : [
 	{
 	"label" : "Profile Components",
-	"type": "PROFILECOMPONENTSREGISTRY",
+	"type": "PROFILECOMPONENTREGISTRY",
 	"position":1
 	}, 
 	{
@@ -133,7 +134,7 @@
 	},
 	{
 	"label" : "Segments And Field Description",
-	"type": "SEGMENTRGISTRY",
+	"type": "SEGMENTREGISTRY",
 	"position":4	
 	}, 
 	{

@@ -144,10 +144,12 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 	@SuppressWarnings("unused")
 	public Registry getValueSetLibrary() {
 		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof ValueSetRegistry) {
-					return (ValueSetRegistry)s;
+			if(s instanceof Registry) {
+				if(s.getType().equals(Type.VALUESETREGISTRY)) {
+					return (Registry)s;
 				}
 			}
+		}
 		return null;
 	}
 	

@@ -15,7 +15,12 @@ package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -24,6 +29,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
+
 
 /**
  *
@@ -35,6 +41,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
   
   @Override
   public Datatype findByKey(CompositeKey key) {
@@ -120,5 +129,18 @@ public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
   public List<Datatype> findByScope(Scope scope) {
     return datatypeRepository.findByScope(scope);
   }
+
+@Override
+public Datatype getLatestById(String id) {
+
+		  Query query = new Query();
+		  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+		  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+		  query.limit(1);
+		  Datatype datatype = mongoTemplate.findOne(query, Datatype.class);
+		  return datatype;
+		}
+  
+  
   
 }

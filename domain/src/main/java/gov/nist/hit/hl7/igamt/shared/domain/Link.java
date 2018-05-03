@@ -9,6 +9,11 @@ public class Link {
     this.id = id;
     this.position = position;
   }
+ 
+ public Link(CompositeKey id) {
+	    super();
+	    this.id = id;
+	  }
  public CompositeKey getId() {
   return id;
 }
@@ -20,6 +25,11 @@ public class Link {
 }
  public void setPosition(int position) {
   this.position = position;
+}
+
+public Link() {
+	super();
+	// TODO Auto-generated constructor stub
 }
 
 }

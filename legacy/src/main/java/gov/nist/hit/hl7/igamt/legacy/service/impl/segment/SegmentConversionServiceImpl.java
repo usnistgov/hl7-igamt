@@ -131,7 +131,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
         	 newField.setCustom(false);
         }
         newField.setId(field.getId());
-        newField.setMax(Integer.parseInt(field.getMax()));
+        newField.setMax(field.getMax());
         newField.setMaxLength(field.getMaxLength());
         newField.setMin(field.getMin());
         newField.setMinLength(field.getMinLength());

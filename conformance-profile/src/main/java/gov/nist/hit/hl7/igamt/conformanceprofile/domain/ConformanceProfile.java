@@ -16,8 +16,10 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 /**
@@ -90,5 +92,29 @@ public class ConformanceProfile extends Resource {
   public void addChild(MsgStructElement mse) {
     this.children.add(mse);
   }
+  
+  public ConformanceProfile clone() {
+	  
+	  ConformanceProfile clone = new ConformanceProfile();
+	  clone.setBinding(this.binding);
+	  clone.setChildren(children);
+	  clone.setComment(this.getComment());
+	  clone.setCreatedFrom(this.getId().getId());
+	  clone.setDescription(this.getDescription());
+	  DomainInfo domainInfo= this.getDomainInfo();
+	  domainInfo.setScope(Scope.USER);
+	  this.setEvent(this.getEvent());
+	  this.setId(null);
+	  this.setMessageType(messageType);
+	  this.setIdentifier(identifier);
+	  this.setPostDef(this.getPostDef());
+	  this.setPreDef(this.getPreDef());
+	  this.setStructID(structID);
+	  this.setName(this.getName());
+	  this.setDomainInfo(domainInfo);
+	  return clone;
+	  
+  };
+  
 
 }

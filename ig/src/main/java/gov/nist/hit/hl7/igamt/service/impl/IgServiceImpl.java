@@ -728,7 +728,7 @@ public class IgServiceImpl implements IgService{
 		Set<Section> children = new HashSet<Section>();
 		    for(SectionTemplate child : template.getChildren()) {
 	        	if(child.getType().equals(Type.TEXT.toString())) {
-	        		children.add(createSectionContent(template));
+	        		children.add(createSectionContent(child));
 	        	}
 	        }
 			section.setChildren(children);

@@ -15,7 +15,12 @@ package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -34,6 +39,9 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Autowired
   private ValuesetRepository valuesetRepository;
+  
+  @Autowired
+  private MongoTemplate mongoTemplate;
   
   @Override
   public Valueset findById(CompositeKey id) {
@@ -122,6 +130,18 @@ public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version
 public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier) {
 	// TODO Auto-generated method stub
 	return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
+}
+
+@Override
+public Valueset getLatestById(String id) {
+	// TODO Auto-generated method stub  Query query = new Query();
+	  Query query = new Query();
+
+	  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+	  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+	  query.limit(1);
+	  Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
+	  return valueset;
 }
   
 }

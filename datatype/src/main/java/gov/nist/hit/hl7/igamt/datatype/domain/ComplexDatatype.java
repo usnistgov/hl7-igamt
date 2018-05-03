@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
@@ -23,7 +24,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Component;
  */
 public class ComplexDatatype extends Datatype {
 
-  private Set<Component> components;
+  private Set<Component> components=new HashSet<Component>();
 
   public ComplexDatatype() {
     super();

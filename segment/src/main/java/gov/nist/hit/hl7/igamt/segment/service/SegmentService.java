@@ -51,5 +51,7 @@ public interface SegmentService {
   public List<Segment> findByDomainInfoVersionAndName(String version, String name);
 	
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+
+  public Segment getLatestById(String id);
   
 }

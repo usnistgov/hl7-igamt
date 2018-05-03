@@ -53,5 +53,8 @@ public interface ValuesetService {
   public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier);
   
   public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
+  
+  public Valueset getLatestById(String id);
+
 
 }

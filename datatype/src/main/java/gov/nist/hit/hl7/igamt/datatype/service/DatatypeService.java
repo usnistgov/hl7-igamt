@@ -55,4 +55,7 @@ public interface DatatypeService {
   
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
   
+  public Datatype getLatestById(String id);
+
+  
 }

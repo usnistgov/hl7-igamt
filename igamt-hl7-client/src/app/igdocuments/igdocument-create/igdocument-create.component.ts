@@ -22,9 +22,6 @@ export class IgDocumentCreateComponent {
   selectedVerion:any;
 
   metaData= {
-    title:"",
-    subTitle:"",
-    organization:""
   };
   items: MenuItem[];
 
@@ -157,30 +154,28 @@ export class IgDocumentCreateComponent {
 
   create(){
     this.loading=true;
-    this.submitEvent();
-  let wrapper:any ={};
+    let wrapper:any ={};
 
 
   wrapper.msgEvts=this.msgEvts;
   wrapper.metaData=this.metaData;
-  wrapper.hl7Version=this.selcetedVersion;
 
     this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
-
-        // this.goTo(res.id);
+         console.log(res);
+         this.goTo(res);
       }
     )
 
 
   };
 
-  goTo(id) {
+  goTo(res:any) {
 
 
     this.route.queryParams
       .subscribe(params => {
-        var link="/ig/"+id;
+        var link="/ig/"+res.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
@@ -230,6 +225,8 @@ export class IgDocumentCreateComponent {
     }
 
   }
+
+
 
 
 }
