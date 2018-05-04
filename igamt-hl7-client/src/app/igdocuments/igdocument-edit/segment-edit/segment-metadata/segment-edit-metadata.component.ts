@@ -35,19 +35,11 @@ export class SegmentEditMetadataComponent {
   }
 
   ngOnInit() {
+      //TODO temp
       this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
-    this.segmentId= this.route.snapshot.params["segmentId"];
-    console.log("Segment Metadata init");
-    console.log(this.segmentId);
-
-    this.segmentsService.getSegmentMetadata(this.segmentId, function(metadata){
-      console.log("CallBack for getSegmentMetadata");
-      console.log(metadata);
-    });
-
-
-    this.route.data.map(data => data.currentSegmentMetadata).subscribe(x => {
-      this.segmentMetadata = x;
-    });
+      this.segmentId = this.route.snapshot.params["segmentId"];
+      this.segmentsService.getSegmentMetadata(this.segmentId, metadata  => {
+        this.segmentMetadata = metadata;
+      });
   }
 }

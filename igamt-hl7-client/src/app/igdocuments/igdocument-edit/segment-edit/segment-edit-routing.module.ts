@@ -7,10 +7,6 @@ import {SegmentEditMetadataComponent} from "./segment-metadata/segment-edit-meta
 import {SegmentEditPredefComponent} from "./segment-predef/segment-edit-predef.component";
 import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postdef.component";
 import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
-import {SegmentMetadataResolver} from "./segment-metadata.resolver";
-import {SegmentStructureResolver} from "./segment-structure.resolver";
-import {SegmentPredefResolver} from "./segment-predef.resolver";
-import {SegmentPostdefResolver} from "./segment-postdef.resolver";
 
 @NgModule({
   imports: [
@@ -22,13 +18,13 @@ import {SegmentPostdefResolver} from "./segment-postdef.resolver";
             path: ':segmentId/metadata', component: SegmentEditMetadataComponent,
         },
         {
-            path: ':segmentId/preDef', resolve:{currentSegmentPredef:SegmentPredefResolver}, component: SegmentEditPredefComponent,
+            path: ':segmentId/preDef', component: SegmentEditPredefComponent,
         },
         {
-            path: ':segmentId/structure', resolve:{currentSegmentStructure:SegmentStructureResolver}, component: SegmentEditStructureComponent,
+            path: ':segmentId/structure', component: SegmentEditStructureComponent,
         },
         {
-            path: ':segmentId/postDef', resolve:{currentSegmentPostdef:SegmentPostdefResolver}, component: SegmentEditPostdefComponent,
+            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,
         }
     ])
   ],

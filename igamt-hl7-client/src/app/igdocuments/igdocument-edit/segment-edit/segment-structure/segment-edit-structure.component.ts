@@ -6,7 +6,8 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 
-
+import {SegmentsService} from "../../../../service/segments/segments.service";
+import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 
 @Component({
   selector : 'segment-edit',
@@ -19,7 +20,7 @@ export class SegmentEditStructureComponent {
   segmentStructure:any;
   usages:any;
 
-  constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService){
+  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -27,13 +28,13 @@ export class SegmentEditStructureComponent {
     });
   }
 
-  ngOnInit() {
-    this.segmentId= this.route.snapshot.params["segmentId"];
-    this.route.data.map(data => data.currentSegmentStructure).subscribe(x => {
-      console.log("SEGMENT STRUCTURE LOADING");
-      console.log(x);
-      this.segmentStructure = x;
-    });
-    this.usages = this.configService.usages;
-  }
+    ngOnInit() {
+        //TODO temp
+        this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
+        this.segmentId = this.route.snapshot.params["segmentId"];
+        this.segmentsService.getSegmentStructure(this.segmentId, structure  => {
+            this.segmentStructure = structure;
+        });
+    }
+
 }

@@ -15,10 +15,6 @@ import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 
 import {UtilsModule} from "../../../utils/utils.module";
-import {SegmentMetadataResolver} from "./segment-metadata.resolver";
-import {SegmentStructureResolver} from "./segment-structure.resolver";
-import {SegmentPredefResolver} from "./segment-predef.resolver";
-import {SegmentPostdefResolver} from "./segment-postdef.resolver";
 
 
 @NgModule({
@@ -32,7 +28,7 @@ import {SegmentPostdefResolver} from "./segment-postdef.resolver";
     UtilsModule,
     TreeTableModule
   ],
-  providers : [SegmentMetadataResolver, SegmentStructureResolver, SegmentPredefResolver, SegmentPostdefResolver],
+  providers : [],
   declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

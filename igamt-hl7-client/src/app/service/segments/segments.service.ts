@@ -5,6 +5,7 @@ import {SegmentsIndexedDbService} from '../indexed-db/segments/segments-indexed-
 @Injectable()
 export class SegmentsService {
   constructor(private http: HttpClient, private segmentsIndexedDbService: SegmentsIndexedDbService) {}
+
   public getSegmentMetadata(id, callback) {
     const http = this.http;
     this.segmentsIndexedDbService.getSegmentMetadata(id, function(clientSegmentMetadata){
@@ -13,19 +14,21 @@ export class SegmentsService {
           callback(serverSegmentMetadata);
         });
       } else {
-        callback(clientSegmentMetadata);
+          callback(clientSegmentMetadata);
       }
     });
   }
-  public getSegmentDefinition(id, callback) {
+  public getSegmentStructure(id, callback) {
+      const http = this.http;
     this.segmentsIndexedDbService.getSegmentDefinition(id, function(clientSegmentMetadata){
-      if (clientSegmentMetadata == null) {
-        this.http.get('api/segments/' + id + '/definition').then(function(serverSegmentMetadata){
-          callback(serverSegmentMetadata);
-        });
-      } else {
-        callback(clientSegmentMetadata);
-      }
+        if (clientSegmentMetadata == null) {
+            http.get('api/segments/' + id + '/structure').subscribe(serverSegmentMetadata => {
+                callback(serverSegmentMetadata);
+            });
+        } else {
+            callback(clientSegmentMetadata);
+        }
+
     });
   }
   public getSegmentCrossReferences(id, callback) {
