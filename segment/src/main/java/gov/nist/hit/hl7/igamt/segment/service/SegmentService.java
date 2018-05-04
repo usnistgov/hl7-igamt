@@ -16,6 +16,10 @@ package gov.nist.hit.hl7.igamt.segment.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
@@ -37,21 +41,30 @@ public interface SegmentService {
   public void delete(Segment segment);
 
   public void delete(CompositeKey key);
-  
+
   public void removeCollection();
-  
+
   public List<Segment> findByDomainInfoVersion(String version);
-  
+
   public List<Segment> findByDomainInfoScope(String scope);
-	
+
   public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-	
+
   public List<Segment> findByName(String name);
-	
-  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
-	
+
+  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
+
   public List<Segment> findByDomainInfoVersionAndName(String version, String name);
-	
+
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
-  
+
+  public SegmentStructure convertDomainToStructure(Segment segment);
+
+  public SegmentMetadata convertDomainToMetadata(Segment segment);
+
+  public SegmentPreDef convertDomainToPredef(Segment segment);
+
+  public SegmentPostDef convertDomainToPostdef(Segment segment);
+
 }

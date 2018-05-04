@@ -46,9 +46,9 @@ public class SerializableSectionFactory {
     } else if(Type.VALUESETREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableValuesetRegistry((Registry) section, valuesetsMap);
     } else if(Type.SEGMENTRGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap);
+      serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap);
+      serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       
     } else if(Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {

@@ -15,15 +15,20 @@ package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
 
 /**
  *
@@ -35,12 +40,12 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
-  
+
   @Override
   public Datatype findByKey(CompositeKey key) {
     return datatypeRepository.findOne(key);
   }
-  
+
   @Override
   public Datatype create(Datatype datatype) {
     datatype.setId(new CompositeKey());
@@ -50,7 +55,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype save(Datatype datatype) {
-  //  datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
+    // datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
     datatype = datatypeRepository.save(datatype);
     return datatype;
   }
@@ -75,50 +80,88 @@ public class DatatypeServiceImpl implements DatatypeService {
     datatypeRepository.deleteAll();
   }
 
-@Override
-public List<Datatype> findByDomainInfoVersion(String version) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoVersion(version);
-}
+  @Override
+  public List<Datatype> findByDomainInfoVersion(String version) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoVersion(version);
+  }
 
-@Override
-public List<Datatype> findByDomainInfoScope(String scope) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoScope(scope);
-}
+  @Override
+  public List<Datatype> findByDomainInfoScope(String scope) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoScope(scope);
+  }
 
-@Override
-public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersion( scope, verion) ;
-}
+  @Override
+  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
+  }
 
-@Override
-public List<Datatype> findByName(String name) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByName(name) ;
-}
+  @Override
+  public List<Datatype> findByName(String name) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByName(name);
+  }
 
-@Override
-public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersionAndName( scope,  version,  name);
-}
+  @Override
+  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoScopeAndDomainInfoVersionAndName(scope, version,
+        name);
+  }
 
-@Override
-public List<Datatype> findByDomainInfoVersionAndName(String version, String name) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoVersionAndName(version, name);
-}
+  @Override
+  public List<Datatype> findByDomainInfoVersionAndName(String version, String name) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoVersionAndName(version, name);
+  }
 
-@Override
-public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
-	// TODO Auto-generated method stub
-	return datatypeRepository.findByDomainInfoScopeAndName(scope, name);
-}
+  @Override
+  public List<Datatype> findByDomainInfoScopeAndName(String scope, String name) {
+    // TODO Auto-generated method stub
+    return datatypeRepository.findByDomainInfoScopeAndName(scope, name);
+  }
+
+  @Override
+  public Datatype findLatestById(String id) {
+    Datatype datatype = datatypeRepository
+        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
+    return datatype;
+  }
+
   @Override
   public List<Datatype> findByScope(Scope scope) {
     return datatypeRepository.findByScope(scope);
   }
-  
+
+  @Override
+  public DatatypeStructure convertDomainToStructure(Datatype datatype) {
+    if (datatype != null) {
+      DatatypeStructure result = new DatatypeStructure();
+      result.setId(datatype.getId());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      if (datatype.getExt() != null) {
+        result.setLabel(datatype.getName() + datatype.getExt());
+      } else {
+        result.setLabel(datatype.getName());
+      }
+      result.setBinding(datatype.getBinding());
+
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDt = (ComplexDatatype) datatype;
+        if (cDt.getComponents() != null && cDt.getComponents().size() > 0) {
+          for (Component c : cDt.getComponents()) {
+            ComponentDisplay componentDisplay = new ComponentDisplay();
+            componentDisplay.setData(c);
+            result.addChild(componentDisplay);
+          }
+        }
+      }
+      return result;
+    }
+    return null;
+  }
 }

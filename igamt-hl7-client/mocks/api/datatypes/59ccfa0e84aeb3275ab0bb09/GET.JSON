@@ -1,0 +1,165 @@
+{
+  "id": {
+    "id": "59ccfa0e84aeb3275ab0bb09",
+    "version": 1
+  },
+  "label": "CWETXT",
+  "scope": "ARCHIVED",
+  "version": "2.6",
+  "binding": {
+    "elementId": "59ccfa0e84aeb3275ab0bb09",
+    "children": [
+      {
+        "elementId": "59bbe249a9acdef2ee04f3bf",
+        "children": null,
+        "comments": null,
+        "valuesetBindings": [{
+          "valuesetId": "565f3ab5d4c6e52cfd43ab09",
+          "strength": "R",
+          "valuesetLocations": []
+        }],
+        "internalSingleCode": null,
+        "externalSingleCode": null,
+        "constantValue": null,
+        "predicate": null,
+        "predicateCrossRefs": null
+      },
+      {
+        "elementId": "59bbe249a9acdef2ee04f3bc",
+        "children": null,
+        "comments": null,
+        "valuesetBindings": [{
+          "valuesetId": "565f3ab5d4c6e52cfd43ab09",
+          "strength": "R",
+          "valuesetLocations": []
+        }],
+        "internalSingleCode": null,
+        "externalSingleCode": null,
+        "constantValue": null,
+        "predicate": null,
+        "predicateCrossRefs": null
+      }
+    ],
+    "conformanceStatements": null,
+    "conformanceStatementCrossRefs": null
+  },
+  "children": [
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3ba",
+      "name": "Identifier",
+      "position": 1,
+      "usage": "R",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bb",
+      "name": "Text",
+      "position": 2,
+      "usage": "RE",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "199",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bc",
+      "name": "Name of Coding System",
+      "position": 3,
+      "usage": "RE",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b92a"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bd",
+      "name": "Alternate Identifier",
+      "position": 4,
+      "usage": "O",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3be",
+      "name": "Alternate Text",
+      "position": 5,
+      "usage": "O",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "199",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bf",
+      "name": "Name of Alternate Coding System",
+      "position": 6,
+      "usage": "O",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b92a"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3c0",
+      "name": "Coding System Version ID",
+      "position": 7,
+      "usage": "C",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "10",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3c1",
+      "name": "Alternate Coding System Version ID",
+      "position": 8,
+      "usage": "O",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "10",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3c2",
+      "name": "Original Text",
+      "position": 9,
+      "usage": "O",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "199",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "565f3ab5d4c6e52cfd43b962"}
+    }}
+  ]
+}

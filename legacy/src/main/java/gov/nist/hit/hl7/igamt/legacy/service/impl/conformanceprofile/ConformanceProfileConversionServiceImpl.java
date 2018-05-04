@@ -199,9 +199,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     newSegmentRef.setMax(sr.getMax());
     newSegmentRef.setMin(sr.getMin());
     newSegmentRef.setPosition(sr.getPosition());
-    Ref ref = new Ref();
-    ref.setId(sr.getRef().getId());
-    newSegmentRef.setRef(ref);
+    newSegmentRef.setRef(new Ref(sr.getRef().getId()));
     // Text???
     newSegmentRef.setText(sr.getAuthorNotes());
     newSegmentRef.setType(Type.SEGMENTREF);

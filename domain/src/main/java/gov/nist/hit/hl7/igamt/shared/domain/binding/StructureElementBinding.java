@@ -24,7 +24,7 @@ public class StructureElementBinding extends Binding {
 
   private Set<Comment> comments;
   private Set<ValuesetBinding> valuesetBindings;
-  private String singleCodeId;
+  private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
   private String constantValue;
   private Predicate predicate;
@@ -49,15 +49,7 @@ public class StructureElementBinding extends Binding {
   public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
     this.valuesetBindings = valuesetBindings;
   }
-
-  public String getSingleCodeId() {
-    return singleCodeId;
-  }
-
-  public void setSingleCodeId(String singleCodeId) {
-    this.singleCodeId = singleCodeId;
-  }
-
+  
   public Predicate getPredicate() {
     return predicate;
   }
@@ -98,5 +90,13 @@ public class StructureElementBinding extends Binding {
 
   public void setExternalSingleCode(ExternalSingleCode externalSingleCode) {
     this.externalSingleCode = externalSingleCode;
+  }
+
+  public InternalSingleCode getInternalSingleCode() {
+    return internalSingleCode;
+  }
+
+  public void setInternalSingleCode(InternalSingleCode internalSingleCode) {
+    this.internalSingleCode = internalSingleCode;
   }
 }

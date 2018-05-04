@@ -215,7 +215,7 @@ import { TreeModule } from 'angular-tree-component';
       multi: true
     },
     // WorkspaceService,
-    // GeneralConfigurationService,
+    GeneralConfigurationService,
     IgDocumentService,
     IndexedDbService,
      SegmentsIndexedDbService,

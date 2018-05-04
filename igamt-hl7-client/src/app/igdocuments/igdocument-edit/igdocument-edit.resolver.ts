@@ -22,7 +22,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     console.log("calling url with "+igId);
     console.log(route);
 
-    return this.http.get("/api/igdocuments/"+igId+"/display");
+    return this.http.get("/api/igdocuments/"+igId+"/structure");
   }
 
 }
