@@ -13,18 +13,28 @@
  */
 package gov.nist.hit.hl7.igamt.ig.model;
 
+import java.io.Serializable;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 
 /**
  *
  * @author Maxence Lefort on May 1, 2018.
  */
-public class ChangedObjects {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ChangedObjects implements Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 6170223697898010975L;
   private String igDocumentId;
-  private List<ChangedObject> segments;
-  private List<ChangedObject> datatypes;
-  private List<ChangedObject> valuesets;
+  private List<ChangedSegment> segments;
+//  private List<ChangedObject> datatypes;
+//  private List<ChangedObject> valuesets;
 
   public ChangedObjects() {}
 
@@ -35,31 +45,15 @@ public class ChangedObjects {
   public void setIgDocumentId(String igDocumentId) {
     this.igDocumentId = igDocumentId;
   }
-
-  public List<ChangedObject> getSegments() {
+  
+  public List<ChangedSegment> getSegments() {
     return segments;
   }
 
-  public void setSegments(List<ChangedObject> segments) {
+  public void setSegments(List<ChangedSegment> segments) {
     this.segments = segments;
   }
 
-  public List<ChangedObject> getDatatypes() {
-    return datatypes;
-  }
-
-  public void setDatatypes(List<ChangedObject> datatypes) {
-    this.datatypes = datatypes;
-  }
-
-  public List<ChangedObject> getValuesets() {
-    return valuesets;
-  }
-
-  public void setValuesets(List<ChangedObject> valuesets) {
-    this.valuesets = valuesets;
-  }
-  
   @Override
   public String toString() {
     return "{igDocumentId="+this.getIgDocumentId()+", segments count="+this.getSegments().size()+"}";

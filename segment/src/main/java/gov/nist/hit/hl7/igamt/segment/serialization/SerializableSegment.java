@@ -20,7 +20,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.DynamicMappingSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
-import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
@@ -36,8 +35,9 @@ import nu.xom.Element;
  */
 public class SerializableSegment extends SerializableResource {
 
-  private Map<String, String> datatypesMap = null;
-  private Map<String, String> valuesetNamesMap = null;
+  private Map<String, String> datatypesMap;
+  private Map<String, String> valuesetNamesMap;
+  
   /**
    * @param segment
    * @param position
@@ -49,7 +49,7 @@ public class SerializableSegment extends SerializableResource {
   }
 
   @Override
-  public Element serialize() throws SerializationException {
+  public Element serialize() throws ResourceSerializationException {
     Element segmentElement = super.getElement("Segment");
     Segment segment = (Segment) this.getAbstractDomain();
     try {
