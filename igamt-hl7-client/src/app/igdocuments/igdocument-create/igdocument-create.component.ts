@@ -9,6 +9,7 @@ import {TreeNode} from "primeng/components/common/treenode";
 import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {Router, ActivatedRoute} from "@angular/router";
 import {MenuItem} from 'primeng/api';
+import {BreadcrumbService} from "../../breadcrumb.service";
 
 
 @Component({
@@ -17,15 +18,18 @@ import {MenuItem} from 'primeng/api';
 export class IgDocumentCreateComponent {
   isLinear = true;
   tableValue :any;
+  tableValueMap={};
   loading=false;
-  activeIndex: number = 1;
+  uploadedFiles: any[] = [];
+  activeIndex: number = 0;
   selectedVerion:any;
+  blockUI=false;
 
-  metaData= {
-  };
+  metaData: any= {};
   items: MenuItem[];
+  path: MenuItem[];
 
-
+  selectdNodeMap={};
   selectedNodes: TreeNode[];
   firstFormGroup: FormGroup;
   msgEvts=[];
@@ -33,12 +37,13 @@ export class IgDocumentCreateComponent {
   secondFormGroup: FormGroup;
   // @ViewChild('stepper') private myStepper: MatStepper;
   hl7Versions: any[];
-  selcetedVersion: any;
+  selcetedVersion: any =null;
 
   constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService,
-              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService
+              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
   ) {
-
+    this.path=[{label:"Igdocuments"},{label:"create new IG document"}];
+    this.breadCrump.setItems(this.path);
     this.hl7Versions=ws.getAppConstant().hl7Versions;
   }
 
@@ -46,15 +51,10 @@ export class IgDocumentCreateComponent {
 
     this.items = [{
       label: 'Meta Data ',
-      command: (event: any) => {
-        this.activeIndex = 0;
-      }
+
     },
       {
-        label: 'Conformane Profiles',
-        command: (event: any) => {
-          this.activeIndex = 1;
-        }
+        label: 'Conformane Profiles'
       }];
 
 
@@ -69,21 +69,29 @@ export class IgDocumentCreateComponent {
 
   getMessages(v){
     this.tableValue=[];
+    this.selectedVerion=v;
     console.log(v);
-    console.log(v);
-    this.createService.getMessagesByVersion(v).subscribe(x=>{
+    if(this.tableValueMap[v]){
 
-      console.log(this.selectedVerion);
 
-      this.tableValue=x;
-    })
+      this.tableValue=this.tableValueMap[this.selectedVerion];
+      if(this.selectdNodeMap[v]){
+        this.selectdNodeMap[this. selcetedVersion]=this.selectdNodeMap[v];
+
+      }
+
+    }else{
+      this.createService.getMessagesByVersion(v).subscribe(x=>{
+
+        console.log(this.selectedVerion);
+        this.tableValue=x;
+        this.tableValueMap[this.selectedVerion]= this.tableValue;
+        this.selectdNodeMap[this.selectedVerion]=this.selectdNodeMap[this. selcetedVersion];
+      })
+
+    }
+
   }
-
-  // load(){
-  //   console.log(this.selectedNodes);
-  //   this.selectedNodes=[];
-  //   this.getMessages(this.selcetedVersion);
-  // }
 
   nodeSelect(event){
     console.log(event);
@@ -110,32 +118,32 @@ export class IgDocumentCreateComponent {
   };
 
   submitEvent(){
-    for(let i=0 ;i<this.selectedNodes.length; i++){
-      if(this.selectedNodes[i].data.parentStructId){
-        if(this.selectedNodes[i].parent.data.id){
-          if(this.messageEventMap[this.selectedNodes[i].parent.data.id]){
-            if(this.messageEventMap[this.selectedNodes[i].parent.data.id].children) {
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-                name:this.selectedNodes[i].data.name,
-                parentStructId:this.selectedNodes[i].parent.data.structId
+    for(let i=0 ;i<this.selectdNodeMap[this. selcetedVersion].length; i++){
+      if(this.selectdNodeMap[this. selcetedVersion][i].data.parentStructId){
+        if(this.selectdNodeMap[this. selcetedVersion][i].parent.data.id){
+          if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]){
+            if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children) {
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
 
               });
             }else{
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children=[];
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-                name:this.selectedNodes[i].data.name,
-                parentStructId:this.selectedNodes[i].parent.data.structId
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
 
               })
             }
           }else{
-            this.messageEventMap[this.selectedNodes[i].parent.data.id]={};
-            this.messageEventMap[this.selectedNodes[i].parent.data.id].children=[];
-            this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-              name:this.selectedNodes[i].data.name,
-              parentStructId:this.selectedNodes[i].parent.data.structId
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]={};
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+              name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+              parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
             })
 
@@ -153,22 +161,42 @@ export class IgDocumentCreateComponent {
 
 
   create(){
-    this.loading=true;
     let wrapper:any ={};
 
 
+  let versions= Object.keys(this.selectdNodeMap);
+
+
+    for(let i = 0 ; i<versions.length; i++){
+      let version = versions[i];
+      console.log(this.selectdNodeMap[version]);
+      for(let j =0 ; j<this.selectdNodeMap[version].length; j++){
+        this.selectNode(this.selectdNodeMap[version][j]);
+      }
+
+  };
+
   wrapper.msgEvts=this.msgEvts;
   wrapper.metaData=this.metaData;
+  this.blockUI=true;
+
 
     this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
          console.log(res);
          this.goTo(res);
+         this.blockUI=false;
       }
     )
 
 
   };
+
+  convertNodeToData(){
+
+
+
+  }
 
   goTo(res:any) {
 
@@ -191,38 +219,119 @@ export class IgDocumentCreateComponent {
     // this.getMessages();
   }
 
-  selectNode(event){
-    let node=event.node;
+  selectEvent(event){
+    this.selectNode(event.node);
+
+  }
+  selectNode(node){
 
     if(node.children&& node.children.length>0){
-      for(let i=0;i<node.children.length;i++){
-
-        let index = this.msgEvts.indexOf(node.children[i].data);
-        if(index<0){
-          this.msgEvts.push(node.children[i].data);
-        }
-      }
     }else {
       this.msgEvts.push(node.data);
     }
   }
 
-  unselectNode(event){
-    if(event.node.children&& event.node.children.length>0){
-      for(let i=0;i<event.node.children.length;i++){
-        this.unselectdata(event.node.children[i].data);
+  unselectEvent(event){
+
+    this.unselectNode(event.node);
+  }
+
+
+  unselectNode(node){
+    if(node.children&& node.children.length>0){
+      for(let i=0;i<node.children.length;i++){
+        this.unselectdata(node.children[i].data);
       }
     }else {
-      this.unselectdata(event.node.data);
+      this.unselectdata(node.data);
     }
+  };
 
-  }
 
   unselectdata(data){
     let index = this.msgEvts.indexOf(data);
     if(index >-1){
       this.msgEvts.splice(index,1);
     }
+
+  }
+
+  next(ev){
+    console.log("call next")
+    this.activeIndex=1;
+
+  }
+  previous(ev){
+
+    console.log("call previous")
+    this.activeIndex=0;
+
+  }
+
+  unselect(selected :any){
+    console.log(selected);
+
+    let index = this.selectdNodeMap[this.selcetedVersion].indexOf(selected);
+    if(index >-1){
+      this.selectdNodeMap[this.selcetedVersion].splice(index,1);
+      if(selected.parent){
+        this.unselectParent(selected.parent);
+      }
+    }
+  }
+
+  unselectParent(parent){
+
+    parent.partialSelected=this.getPartialSelection(parent);
+    console.log(parent.partialSelected);
+    this.unselect(parent);
+
+  }
+
+  getPartialSelection(parent){
+    for(let i=0; i<parent.children.length; i++){
+      if(this.selectdNodeMap[this.selcetedVersion].indexOf(parent.children[i])>-1){
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+
+
+  getSelected(){
+    let ret=[];
+
+    let versions= Object.keys(this.selectdNodeMap);
+    if(versions.length>0){
+      for(let i = 0 ; i<versions.length; i++) {
+        let version = versions[i];
+        if (this.selectdNodeMap[version]){
+          for (let j = 0; j < this.selectdNodeMap[version].length; j++) {
+            if(this.selectdNodeMap[version][j].parent){
+              ret.push(this.selectdNodeMap[version][j])
+
+            }
+            // this.selectNode(this.selectdNodeMap[version][j]);
+          }
+      }
+      };
+    }
+
+    return ret;
+
+
+  }
+
+  upload(event) {
+    this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
+
+    for(let file of event.files) {
+      this.uploadedFiles.push(file);
+
+    }
+
 
   }
 

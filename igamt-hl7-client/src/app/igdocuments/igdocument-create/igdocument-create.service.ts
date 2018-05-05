@@ -22,5 +22,8 @@ export  class IgDocumentCreateService {
 
   }
 
+  getImageByName(name){
+    return this.http.get('/')
+  }
 
 }

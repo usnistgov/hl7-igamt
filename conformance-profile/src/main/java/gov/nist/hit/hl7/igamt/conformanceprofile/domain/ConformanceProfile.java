@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -112,6 +113,8 @@ public class ConformanceProfile extends Resource {
 	  this.setStructID(structID);
 	  this.setName(this.getName());
 	  this.setDomainInfo(domainInfo);
+	  this.setCreationDate(new Date());
+	  this.setUpdateDate(new Date());
 	  return clone;
 	  
   };

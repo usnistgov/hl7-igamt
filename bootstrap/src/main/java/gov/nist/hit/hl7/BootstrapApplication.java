@@ -13,19 +13,24 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.annotation.Order;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.MultipartFilter;
 
 import gov.nist.hit.hl7.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.shared.config.SharedConstant;
 import gov.nist.hit.hl7.igamt.shared.config.SharedConstantService;
 
 @SpringBootApplication
-@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
+
+@EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class,MultipartAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt.configuration","gov.nist.hl7.igamt.shared.authentication","gov.nist.hl7.igamt.shared.config","gov.nist.hit.hl7.auth.util","gov.nist.hit.hl7.factory"})
+@ComponentScan({"gov.nist.hit.hl7.igamt.configuration","gov.nist.hl7.igamt.shared.authentication","gov.nist.hl7.igamt.shared.config","gov.nist.hit.hl7.auth.util","gov.nist.hit.hl7.factory","gov.nist.hit.hl7.igamt.shared.util"})
 
 public class BootstrapApplication implements CommandLineRunner {
 
@@ -41,6 +46,13 @@ public class BootstrapApplication implements CommandLineRunner {
 	@Bean
 	public ShaPasswordEncoder encoder() {
 		return new ShaPasswordEncoder(256);
+	}
+	
+	@Bean(name = "multipartResolver")
+	public CommonsMultipartResolver multipartResolver() {
+	    CommonsMultipartResolver multipartResolver 
+	            = new CommonsMultipartResolver();
+	    return multipartResolver;
 	}
 //	 @Bean
 //	  public FilterRegistrationBean jwtFilter() {

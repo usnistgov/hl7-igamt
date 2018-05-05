@@ -12,6 +12,7 @@ public class TextSection extends Section {
   
   public TextSection() {
     super();
+    
     this.setType(Type.TEXT);
   }
 

@@ -102,8 +102,8 @@ import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import { TreeModule } from 'angular-tree-component';
-
-
+import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
+import {BreadcrumbService} from "./breadcrumb.service";
 
 @NgModule({
     imports: [
@@ -203,7 +203,8 @@ import { TreeModule } from 'angular-tree-component';
         NotFoundComponent,
         LoginComponent,
         RegisterComponent,
-        DocumentationComponent
+        DocumentationComponent,
+      AppBreadcrumbComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
@@ -220,7 +221,8 @@ import { TreeModule } from 'angular-tree-component';
     // ProfileComponentsService,
     AuthService,
     AuthGuard,
-    UserService
+    UserService,
+    BreadcrumbService
   ],
     bootstrap: [AppComponent]
 })
