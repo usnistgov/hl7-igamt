@@ -15,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -96,6 +99,9 @@ public class IgServiceImpl implements IgService{
 
 	@Autowired
 	ValuesetService valueSetService;
+	
+	  @Autowired
+	  private MongoTemplate mongoTemplate;
 	
 	@Override
 	public Ig findById(CompositeKey id) {
@@ -603,29 +609,14 @@ public class IgServiceImpl implements IgService{
 	}
 
 	@Override
-	public Ig findLatestById(String id) {
-//		return igRepository.findOne(new CompositeKey(id, 1));
-//		 new Sort(Sort.Direction.DESC, "_id.version"));
-		
-		Ig ig= igRepository.findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version") ).get(0);
-		return ig;
-		
+	public Ig findLatestById(String id) {		
+	  Query query = new Query();
+      query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+      query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+      query.limit(1);
+      Ig ig = mongoTemplate.findOne(query, Ig.class);
+      return ig;
 	
-//		List<Ig> igs=igRepository.findByIdId(new Mongo.ObjectId(id));
-//		if(igs !=null && !igs.isEmpty()){
-//			Ig ig = igs.get(0);
-//			if(igs.size()>1) {
-//				for( int i =1; i<igs.size(); i++) {
-//					if(igs.get(i).getId().getVersion()>ig.getId().getVersion()) {
-//						ig = igs.get(i);
-//					}
-//				}
-//			}
-//			return ig;
-//				
-//	}
-//		return null;
-
 	}
 
 	@Override

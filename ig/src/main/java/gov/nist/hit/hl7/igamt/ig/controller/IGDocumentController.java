@@ -130,6 +130,7 @@ public class IGDocumentController {
 					clone.setEvent(ev.getName());
 					clone.setId(new CompositeKey());
 					clone=conformanceProfileService.save(clone);
+					clone.setName(profile.getName());
 					savedIds.add(clone.getId().getId());
 				}
 			}
