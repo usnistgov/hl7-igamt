@@ -86,13 +86,13 @@ import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
 import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
 import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
-// import {DatatypesService} from './service/datatypes/datatypes.service';
 // import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
 import {SegmentsService} from './service/segments/segments.service';
+import {DatatypesService} from './service/datatypes/datatypes.service';
 // import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
@@ -221,10 +221,10 @@ import { TreeModule } from 'angular-tree-component';
      SegmentsIndexedDbService,
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
-    // DatatypesService,
+    DatatypesService,
     // ValueSetsService,
      SegmentsService,
-    // ProfileComponentsService,
+     // ProfileComponentsService,
     AuthService,
     AuthGuard,
     UserService
