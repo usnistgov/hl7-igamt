@@ -33,15 +33,17 @@ public class SerializableSegmentRegistry extends SerializableSection {
 
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetNamesMap;
 
   /**
    * @param section
    */
   public SerializableSegmentRegistry(Section section, Map<String, Segment> segmentsMap,
-      Map<String, String> datatypeNamesMap) {
+      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(section);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   /*
@@ -55,15 +57,17 @@ public class SerializableSegmentRegistry extends SerializableSection {
     try {
       Element segmentRegistryElement = super.getElement();
       if (segmentRegistry != null) {
-        if (!segmentRegistry.getChildren().isEmpty()) {
+        if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
           for (Link segmentLink : segmentRegistry.getChildren()) {
             if (segmentsMap.containsKey(segmentLink.getId().getId())) {
               Segment segment = segmentsMap.get(segmentLink.getId().getId());
               SerializableSegment serializableSegment =
-                  new SerializableSegment(segment, position, datatypeNamesMap);
-              Element segmentElement = serializableSegment.serialize();
-              if (segmentElement != null) {
-                segmentRegistryElement.appendChild(segmentElement);
+                  new SerializableSegment(segment, super.position, this.datatypeNamesMap, this.valuesetNamesMap);
+              if(serializableSegment != null) {
+                Element segmentElement = serializableSegment.serialize();
+                if (segmentElement != null) {
+                  segmentRegistryElement.appendChild(segmentElement);
+                }
               }
             } else {
               throw new SegmentNotFoundException(segmentLink.getId().getId());

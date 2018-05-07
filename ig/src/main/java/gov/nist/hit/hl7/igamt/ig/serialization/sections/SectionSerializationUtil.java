@@ -17,6 +17,7 @@ import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -35,11 +36,15 @@ public class SectionSerializationUtil {
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
       throws SerializationException {
     if (section != null) {
-      SerializableSection serializableSection =
-          SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
-              valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
-      if (serializableSection != null) {
-        return serializableSection.serialize();
+      try {
+        SerializableSection serializableSection =
+            SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
+                valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
+        if (serializableSection != null) {
+          return serializableSection.serialize();
+        }
+      } catch (Exception exception) {
+        throw new SectionSerializationException(exception, section);
       }
     }
     return null;

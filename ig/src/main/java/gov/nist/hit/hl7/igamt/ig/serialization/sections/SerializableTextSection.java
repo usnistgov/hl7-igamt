@@ -40,10 +40,12 @@ public class SerializableTextSection extends SerializableSection {
   @Override
   public Element serialize() throws SerializationException {
     Element textSectionElement = super.getElement();
-    for (Section child : ((TextSection) super.getSection()).getChildren()) {
-      Element childElement = SectionSerializationUtil.serializeSection(child);
-      if (child != null) {
-        textSectionElement.appendChild(childElement);
+    if(((TextSection) super.getSection()).getChildren() != null) {
+      for (Section child : ((TextSection) super.getSection()).getChildren()) {
+        Element childElement = SectionSerializationUtil.serializeSection(child);
+        if (child != null) {
+          textSectionElement.appendChild(childElement);
+        }
       }
     }
     return textSectionElement;

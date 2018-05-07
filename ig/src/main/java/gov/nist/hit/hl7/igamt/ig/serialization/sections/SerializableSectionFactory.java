@@ -37,18 +37,23 @@ import nu.xom.Element;
  */
 public class SerializableSectionFactory {
 
-  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String,Valueset> valuesetsMap, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
+  public static SerializableSection getSerializableSection(Section section, Map<String,Datatype> datatypesMap, 
+      Map<String, String> datatypeNamesMap, Map<String,Valueset> valuesetsMap, Map<String, String> valuesetNamesMap, 
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
     SerializableSection serializableSection = null;
     if(Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection)section);
+    } else if(Type.PROFILE.equals(section.getType())) {
+      serializableSection = new SerializableProfile((TextSection) section, datatypesMap, datatypeNamesMap, valuesetsMap, 
+          valuesetNamesMap, segmentsMap, conformanceProfilesMap);
     } else if(Type.DATATYPEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableDatatypeRegistry((Registry) section, datatypesMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.VALUESETREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableValuesetRegistry((Registry) section, valuesetsMap);
     } else if(Type.SEGMENTRGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap);
+      serializableSection = new SerializableSegmentRegistry((Registry) section, segmentsMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
-      serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap);
+      serializableSection = new SerializableConformanceProfileRegistry((Registry) section, conformanceProfilesMap, datatypeNamesMap, valuesetNamesMap);
     } else if(Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       
     } else if(Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {

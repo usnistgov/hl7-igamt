@@ -32,14 +32,16 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
 
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetNamesMap;
   
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Registry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> datatypeNamesMap) {
+  public SerializableConformanceProfileRegistry(Registry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   /* (non-Javadoc)
@@ -55,7 +57,7 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap, valuesetNamesMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);

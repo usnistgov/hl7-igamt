@@ -11,29 +11,22 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.exception;
+package gov.nist.hit.hl7.igamt.ig.serialization.exception;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on May 7, 2018.
  */
-public class ResourceSerializationException extends SerializationException {
+public class SectionSerializationException extends SerializationException {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -3476863921150657947L;
-  
-  public ResourceSerializationException(Exception originException, Type type, Resource resource, String message) {
-    super(originException,type,"id="+resource.getId().getId()+",version="+resource.getId().getVersion()+",name="+resource.getName());
-    this.message = message;
+  public SectionSerializationException(Exception originException, Section section) {
+    super(originException, Type.SECTION, "id="+section.getId()+", title= " + section.getLabel());
   }
+
   
-  public ResourceSerializationException(Exception originException, Type type, Resource resource) {
-    this(originException,type,resource,null);
-  }
-  
+
 }

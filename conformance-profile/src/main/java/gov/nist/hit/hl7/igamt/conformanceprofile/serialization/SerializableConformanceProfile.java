@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Group;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
@@ -35,14 +36,16 @@ import nu.xom.Element;
 public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String,String> datatypeMap;
+  private Map<String, String> valuesetNamesMap;
   
   /**
    * @param resource
    * @param position
    */
-  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, Map<String,String> datatypeMap) {
+  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, Map<String,String> datatypeMap, Map<String, String> valuesetNamesMap) {
     super(conformanceProfile, position);
     this.datatypeMap = datatypeMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   @Override
@@ -139,10 +142,16 @@ public class SerializableConformanceProfile extends SerializableResource {
   private Element serializeGroup(Group group) throws MsgStructElementSerializationException {
     Element groupElement = new Element("Group");
     if(group.getBinding() != null) {
-      Element binding = super.serializeResourceBinding(group.getBinding());
+      Element binding;
+      try {
+        binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap);
+      } catch (SerializationException exception) {
+        throw new MsgStructElementSerializationException(exception, group);
+      }
       if (binding != null) {
         groupElement.appendChild(binding);
       }
+      
     }
     groupElement.addAttribute(new Attribute("name", group.getName()));
     for (MsgStructElement msgStructElm : group.getChildren()) {

@@ -1,0 +1,1408 @@
+<Document position="1" title="OML_O21 Implementation Guide" comment="" createdFrom="" description="" name="OML_O21 Implementation Guide" domainVersion="" domainCompatibilityVersions="" domainScope="USER" id="57450d1ed4c6f57e6965564c" publicationVersion="" publicationDate="" username="olivier_test1">
+    <IgMetadata topics="" specificationName="" identifier="" implementationNotes="" orgName="NIST" coverPicture="" subTitle="NIST" />
+    <Section id="57450d1dd4c6f57e69643817" position="4" title="Message Infrastructure" description="" type="PROFILE">
+        <Section id="57450d1ed4c6f57e69655648" position="6" title="Value Sets" description="" type="VALUESETREGISTRY">
+            <Valueset position="9" title="Physician ID" comment="" createdFrom="" description="" name="Physician ID" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d600" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0010" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeac3cb">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3cc" codeSystemId="5ad4d862e2813f7f0eeac3cb" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="85" title="Room type" comment="" createdFrom="" description="" name="Room type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcce" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0145" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="6" codeSystemIds="5ad4d862e2813f7f0eeac8f4">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8f5" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8f9" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8fa" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8f7" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8f6" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8f8" codeSystemId="5ad4d862e2813f7f0eeac8f4" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="49" title="Type of Agreement" comment="" createdFrom="" description="" name="Type of Agreement" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e18d" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0098" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eeacdb2">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdb3" codeSystemId="5ad4d863e2813f7f0eeacdb2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdb5" codeSystemId="5ad4d863e2813f7f0eeacdb2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdb4" codeSystemId="5ad4d863e2813f7f0eeacdb2" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="11" title="Patient Type" comment="" createdFrom="" description="" name="Patient Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="58780a91bbfb5d70ef47bd95" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0018" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8c8e2813f7f0eed2449">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed244a" codeSystemId="5ad4d8c8e2813f7f0eed2449" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="125" title="Diagnosis Classification" comment="" createdFrom="" description="" name="Diagnosis Classification" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e82e" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0228" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="8" codeSystemIds="5ad4d8b8e2813f7f0eead458">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45e" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45c" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead459" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45b" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45a" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45d" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead45f" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead460" codeSystemId="5ad4d8b8e2813f7f0eead458" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="105" title="Telecommunication equipment type" comment="" createdFrom="" description="" name="Telecommunication equipment type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e56d" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0202" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="9" codeSystemIds="5ad4d863e2813f7f0eead196">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead197" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead198" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19c" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19f" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19b" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19e" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead199" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19a" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead19d" codeSystemId="5ad4d863e2813f7f0eead196" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="180" title="Carrier type" comment="" createdFrom="" description="" name="Carrier type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dad0" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0378" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeac6f6">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac6f7" codeSystemId="5ad4d862e2813f7f0eeac6f6" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="70" title="Allergen Type" comment="" createdFrom="" description="" name="Allergen Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d6da" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0127" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="8" codeSystemIds="5ad4d862e2813f7f0eeac452">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac45a" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac458" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac459" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac456" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac457" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac454" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac453" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac455" codeSystemId="5ad4d862e2813f7f0eeac452" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="121" title="Contact Reason" comment="" createdFrom="" description="" name="Contact Reason" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e7ef" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0222" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead419">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead41a" codeSystemId="5ad4d8b8e2813f7f0eead419" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="144" title="Coverage Type" comment="" createdFrom="" description="" name="Coverage Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e2e9" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0309" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eeacf12">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf13" codeSystemId="5ad4d863e2813f7f0eeacf12" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf14" codeSystemId="5ad4d863e2813f7f0eeacf12" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf15" codeSystemId="5ad4d863e2813f7f0eeacf12" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="191" title="Mode of Arrival Code" comment="" createdFrom="" description="" name="Mode of Arrival Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e52a" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0430" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d863e2813f7f0eead153">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead154" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead159" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead157" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead155" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead156" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead15a" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead158" codeSystemId="5ad4d863e2813f7f0eead153" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="87" title="Policy type" comment="" createdFrom="" description="" name="Policy type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcb1" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0147" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="5" codeSystemIds="5ad4d862e2813f7f0eeac8d7">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8dc" codeSystemId="5ad4d862e2813f7f0eeac8d7" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8db" codeSystemId="5ad4d862e2813f7f0eeac8d7" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8da" codeSystemId="5ad4d862e2813f7f0eeac8d7" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8d9" codeSystemId="5ad4d862e2813f7f0eeac8d7" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8d8" codeSystemId="5ad4d862e2813f7f0eeac8d7" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="88" title="Money or percentage indicator" comment="" createdFrom="" description="" name="Money or percentage indicator" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcc6" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0148" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d862e2813f7f0eeac8ec">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8ee" codeSystemId="5ad4d862e2813f7f0eeac8ec" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8ed" codeSystemId="5ad4d862e2813f7f0eeac8ec" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="84" title="Eligibility Source" comment="" createdFrom="" description="" name="Eligibility Source" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcfe" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0144" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d862e2813f7f0eeac924">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac925" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac92b" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac926" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac927" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac928" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac929" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac92a" codeSystemId="5ad4d862e2813f7f0eeac924" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="101" title="Address type" comment="" createdFrom="" description="" name="Address type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e0a7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0190" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="13" codeSystemIds="5ad4d862e2813f7f0eeacccc">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd7" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd3" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd9" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacccf" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd0" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd6" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacccd" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd1" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd5" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccce" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd4" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd8" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccd2" codeSystemId="5ad4d862e2813f7f0eeacccc" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="224" title="Sequence condition" comment="" createdFrom="" description="" name="Sequence condition" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e21e" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0524" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eeace43">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace44" codeSystemId="5ad4d863e2813f7f0eeace43" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace46" codeSystemId="5ad4d863e2813f7f0eeace43" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace45" codeSystemId="5ad4d863e2813f7f0eeace43" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="197" title="Immunization Registry Status" comment="" createdFrom="" description="" name="Immunization Registry Status" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e676" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0441" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d863e2813f7f0eead29f">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a0" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a5" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a2" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a3" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a4" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a6" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2a1" codeSystemId="5ad4d863e2813f7f0eead29f" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="108" title="Price type" comment="" createdFrom="" description="" name="Price type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e560" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0205" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d863e2813f7f0eead189">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18d" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18e" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18f" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18a" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18c" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead18b" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead190" codeSystemId="5ad4d863e2813f7f0eead189" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="192" title="Recreational Drug Use Code" comment="" createdFrom="" description="" name="Recreational Drug Use Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e35b" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0431" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d863e2813f7f0eeacf84">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf8a" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf85" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf86" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf8b" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf88" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf87" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf89" codeSystemId="5ad4d863e2813f7f0eeacf84" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="113" title="Purge Status Code" comment="" createdFrom="" description="" name="Purge Status Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e6e8" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0213" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eead311">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead312" codeSystemId="5ad4d863e2813f7f0eead311" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead313" codeSystemId="5ad4d863e2813f7f0eead311" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead314" codeSystemId="5ad4d863e2813f7f0eead311" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="128" title="Non-Concur Code/Description" comment="" createdFrom="" description="" name="Non-Concur Code/Description" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e907" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0233" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead531">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead532" codeSystemId="5ad4d8b8e2813f7f0eead531" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="97" title="Coordination of Benefits" comment="" createdFrom="" description="" name="Coordination of Benefits" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43de8b" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0173" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d862e2813f7f0eeacab1">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacab3" codeSystemId="5ad4d862e2813f7f0eeacab1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacab2" codeSystemId="5ad4d862e2813f7f0eeacab1" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="222" title="Service Request Relationship" comment="" createdFrom="" description="" name="Service Request Relationship" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e1c1" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0506" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="5" codeSystemIds="5ad4d863e2813f7f0eeacde6">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacde7" codeSystemId="5ad4d863e2813f7f0eeacde6" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacde9" codeSystemId="5ad4d863e2813f7f0eeacde6" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdea" codeSystemId="5ad4d863e2813f7f0eeacde6" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacde8" codeSystemId="5ad4d863e2813f7f0eeacde6" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdeb" codeSystemId="5ad4d863e2813f7f0eeacde6" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="152" title="Employee classification" comment="" createdFrom="" description="" name="Employee classification" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e69d" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0328" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eead2c6">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c7" codeSystemId="5ad4d863e2813f7f0eead2c6" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="7" title="Admission Type" comment="" createdFrom="" description="" name="Admission Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="58780a91bbfb5d70ef47bdb6" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0007" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d8c8e2813f7f0eed2462">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2463" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2464" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2468" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2465" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2466" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2467" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2469" codeSystemId="5ad4d8c8e2813f7f0eed2462" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="42" title="Performed by" comment="" createdFrom="" description="" name="Performed by" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e15f" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0084" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eeacd84">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacd85" codeSystemId="5ad4d863e2813f7f0eeacd84" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="67" title="Result Status" comment="" createdFrom="" description="" name="Result Status" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d7a4" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0123" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="11" codeSystemIds="5ad4d862e2813f7f0eeac506">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50e" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50a" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac510" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac511" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac509" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50d" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac507" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50c" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac508" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50b" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac50f" codeSystemId="5ad4d862e2813f7f0eeac506" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="103" title="Name type" comment="" createdFrom="" description="" name="Name type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e5e7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0200" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="13" codeSystemIds="5ad4d863e2813f7f0eead210">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead211" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead217" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead21c" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead214" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead21d" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead212" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead215" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead21a" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead218" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead21b" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead213" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead219" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead216" codeSystemId="5ad4d863e2813f7f0eead210" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="151" title="Job code" comment="" createdFrom="" description="" name="Job code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e693" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0327" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eead2bc">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2bd" codeSystemId="5ad4d863e2813f7f0eead2bc" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="147" title="Policy Source" comment="" createdFrom="" description="" name="Policy Source" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e352" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0313" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eeacf7b">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf7c" codeSystemId="5ad4d863e2813f7f0eeacf7b" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="53" title="Version ID" comment="" createdFrom="" description="" name="Version ID" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e7d8" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0104" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="9" codeSystemIds="5ad4d8b8e2813f7f0eead402">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead404" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead40a" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead405" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead406" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead40b" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead407" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead408" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead409" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead403" codeSystemId="5ad4d8b8e2813f7f0eead402" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="219" title="Sequence/Results Flag" comment="" createdFrom="" description="" name="Sequence/Results Flag" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e1c7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0503" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eeacdec">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdee" codeSystemId="5ad4d863e2813f7f0eeacdec" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacdef" codeSystemId="5ad4d863e2813f7f0eeacdec" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacded" codeSystemId="5ad4d863e2813f7f0eeacdec" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="2" title="Marital Status" comment="" createdFrom="" description="" name="Marital Status" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d793" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0002" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="16" codeSystemIds="5ad4d862e2813f7f0eeac4f5">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4f8" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac504" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4f7" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4f9" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4f6" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac500" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4fe" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4fa" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4fc" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac503" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac505" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac502" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4fb" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4fd" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac4ff" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac501" codeSystemId="5ad4d862e2813f7f0eeac4f5" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="12" title="Bad Debt Agency Code" comment="" createdFrom="" description="" name="Bad Debt Agency Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43da65" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0021" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeac691">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac692" codeSystemId="5ad4d862e2813f7f0eeac691" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="185" title="Analyte repeat status" comment="" createdFrom="" description="" name="Analyte repeat status" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcbb" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0389" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="4" codeSystemIds="5ad4d862e2813f7f0eeac8e1">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8e4" codeSystemId="5ad4d862e2813f7f0eeac8e1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8e5" codeSystemId="5ad4d862e2813f7f0eeac8e1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8e2" codeSystemId="5ad4d862e2813f7f0eeac8e1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8e3" codeSystemId="5ad4d862e2813f7f0eeac8e1" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="37" title="Diagnostic Service Section ID" comment="" createdFrom="" description="" name="Diagnostic Service Section ID" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e078" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0074" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="39" codeSystemIds="5ad4d862e2813f7f0eeacc9d">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc9e" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccbe" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccc1" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccab" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca3" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb2" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb0" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca4" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb3" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccbf" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccba" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca9" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccbd" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccbb" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccae" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb5" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca5" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccc2" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca6" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb8" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccc4" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb6" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc9f" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccad" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca8" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb9" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb4" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca1" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca7" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccc3" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca0" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb1" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccc0" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccbc" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacca2" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccaf" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccb7" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccac" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaccaa" codeSystemId="5ad4d862e2813f7f0eeacc9d" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="207" title="Order Type" comment="" createdFrom="" description="" name="Order Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e84e" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0482" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d8b8e2813f7f0eead478">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead47a" codeSystemId="5ad4d8b8e2813f7f0eead478" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead479" codeSystemId="5ad4d8b8e2813f7f0eead478" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="175" title="Treatment" comment="" createdFrom="" description="" name="Treatment" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d617" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0373" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="8" codeSystemIds="5ad4d862e2813f7f0eeac3e2">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e5" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e7" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e6" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e3" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e4" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e8" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3e9" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac3ea" codeSystemId="5ad4d862e2813f7f0eeac3e2" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="182" title="Separator type" comment="" createdFrom="" description="" name="Separator type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43daa2" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0380" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeac6ce">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac6cf" codeSystemId="5ad4d862e2813f7f0eeac6ce" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="116" title="Patient Status Code" comment="" createdFrom="" description="" name="Patient Status Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e6b7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0216" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d863e2813f7f0eead2e0">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2e1" codeSystemId="5ad4d863e2813f7f0eead2e0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2e2" codeSystemId="5ad4d863e2813f7f0eead2e0" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="228" title="Notify Clergy Code" comment="" createdFrom="" description="" name="Notify Clergy Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e260" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0534" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="5" codeSystemIds="5ad4d863e2813f7f0eeace85">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace87" codeSystemId="5ad4d863e2813f7f0eeace85" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace89" codeSystemId="5ad4d863e2813f7f0eeace85" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace86" codeSystemId="5ad4d863e2813f7f0eeace85" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace88" codeSystemId="5ad4d863e2813f7f0eeace85" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace8a" codeSystemId="5ad4d863e2813f7f0eeace85" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="187" title="Country code" comment="" createdFrom="" description="" name="Country code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43ddf7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0399" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeaca1d">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaca1e" codeSystemId="5ad4d862e2813f7f0eeaca1d" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="109" title="Segment action code" comment="" createdFrom="" description="" name="Segment action code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e68f" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0206" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d863e2813f7f0eead2b8">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2bb" codeSystemId="5ad4d863e2813f7f0eead2b8" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2ba" codeSystemId="5ad4d863e2813f7f0eead2b8" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2b9" codeSystemId="5ad4d863e2813f7f0eead2b8" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="198" title="Name assembly order" comment="" createdFrom="" description="" name="Name assembly order" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e57c" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0444" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d863e2813f7f0eead1a5">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead1a6" codeSystemId="5ad4d863e2813f7f0eead1a5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead1a7" codeSystemId="5ad4d863e2813f7f0eead1a5" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="36" title="Interest Rate Code" comment="" createdFrom="" description="" name="Interest Rate Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e076" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0073" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeacc9b">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc9c" codeSystemId="5ad4d862e2813f7f0eeacc9b" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="227" title="Precision" comment="" createdFrom="" description="" name="Precision" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e227" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0529" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="6" codeSystemIds="5ad4d863e2813f7f0eeace4c">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace52" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace4f" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace51" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace4d" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace4e" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeace50" codeSystemId="5ad4d863e2813f7f0eeace4c" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="206" title="Medically Necessary Duplicate Procedure Reason" comment="" createdFrom="" description="" name="Medically Necessary Duplicate Procedure Reason" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e9e7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0476" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead611">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead612" codeSystemId="5ad4d8b8e2813f7f0eead611" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="57" title="Discharge Disposition" comment="" createdFrom="" description="" name="Discharge Disposition" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e8f5" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0112" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="17" codeSystemIds="5ad4d8b8e2813f7f0eead51f">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead523" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52e" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead524" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead525" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead520" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead527" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52f" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead522" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52a" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead530" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52b" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead526" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead521" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead529" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52d" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead52c" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead528" codeSystemId="5ad4d8b8e2813f7f0eead51f" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="159" title="Military Recipient" comment="" createdFrom="" description="" name="Military Recipient" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e824" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0342" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead44e">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead44f" codeSystemId="5ad4d8b8e2813f7f0eead44e" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="3" title="Event type" comment="" createdFrom="" description="" name="Event type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="58780a91bbfb5d70ef47bf32" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0003" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="288" codeSystemIds="5ad4d8c8e2813f7f0eed24c5">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25be" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2590" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2527" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24df" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25db" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2592" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2545" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2546" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2515" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24fd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2597" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2584" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25de" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ac" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25cd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25bd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2514" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25cc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2517" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2571" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2500" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2576" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2589" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2594" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2569" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2540" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24c9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25dd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2575" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24cb" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2555" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ca" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2591" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2542" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25aa" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ef" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2547" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2550" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2587" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2523" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25da" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2565" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2574" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2562" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2566" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24de" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ff" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2529" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25cf" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25bb" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2513" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2580" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24fc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2502" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2599" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24c8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2509" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24fe" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2552" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2521" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2577" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ce" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2531" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ce" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24c7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2598" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24cf" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2520" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2505" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2532" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ee" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2516" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ad" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2585" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25cb" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2528" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25dc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2526" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2553" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2572" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2573" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2595" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2536" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2510" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2507" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e1" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24db" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2548" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25af" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2559" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2534" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2570" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2568" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2544" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2503" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2538" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ed" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2554" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2506" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2508" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2541" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24da" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25df" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2586" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2524" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2519" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2551" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2581" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ae" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2561" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2564" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2512" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2556" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2583" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ca" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2535" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24c6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2578" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2596" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2593" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24dd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed253f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2539" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2579" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2525" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2504" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d2" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2567" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c5" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed259e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24fb" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2558" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2518" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24cd" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2588" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2530" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed258b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2560" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24cc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24eb" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25d7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2522" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2543" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2533" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2557" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ba" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25bc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251d" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25ab" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25c7" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250c" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ea" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed252b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed256e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25b9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24d8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2537" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e6" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2501" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25e4" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24ec" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24dc" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2549" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed254a" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a9" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2511" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25bf" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24f3" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed250b" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24fa" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed251f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2582" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed25a8" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed257e" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed255f" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed24e0" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8c8e2813f7f0eed2563" codeSystemId="5ad4d8c8e2813f7f0eed24c5" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="62" title="Account Status" comment="" createdFrom="" description="" name="Account Status" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e8b9" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0117" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead4e3">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead4e4" codeSystemId="5ad4d8b8e2813f7f0eead4e3" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="129" title="Census tract" comment="" createdFrom="" description="" name="Census tract" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43df59" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0288" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d862e2813f7f0eeacb7e">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacb7f" codeSystemId="5ad4d862e2813f7f0eeacb7e" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="66" title="Charge type" comment="" createdFrom="" description="" name="Charge type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43da16" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0122" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="8" codeSystemIds="5ad4d862e2813f7f0eeac652">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac658" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac653" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac657" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac659" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac655" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac654" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac65a" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac656" codeSystemId="5ad4d862e2813f7f0eeac652" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="210" title="Specimen Type" comment="" createdFrom="" description="" name="Specimen Type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43d8e7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0487" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="269" codeSystemIds="5ad4d862e2813f7f0eeac529">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac595" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac617" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac592" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac545" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac562" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac627" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ba" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac604" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5cc" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac634" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac570" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5da" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac558" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac561" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac549" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac598" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac564" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac629" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ff" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ef" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac577" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac619" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac586" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5fe" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac612" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac580" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac546" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ec" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5fa" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5dd" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac581" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac536" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac596" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac618" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac631" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac582" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac608" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac579" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5cd" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac578" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5af" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac624" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5fb" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac589" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac605" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac623" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac593" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac559" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ab" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac552" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac594" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac635" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac610" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac544" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac585" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5fc" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac609" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac603" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac532" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac540" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac583" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac615" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac538" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac550" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac606" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac588" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac611" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac568" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac571" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac553" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac575" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac542" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac601" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac534" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac626" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac555" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e1" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac602" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac530" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ea" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ee" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac53d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5de" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac628" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac541" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac636" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac548" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5cb" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac591" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac574" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac52e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac543" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac633" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ca" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5bd" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5be" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac600" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac620" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac614" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac556" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac566" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac630" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac587" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5db" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac547" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac590" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5bc" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac563" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac62a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ad" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac567" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5dc" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac535" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac622" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac539" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac59d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5bb" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ae" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac597" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac531" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5fd" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac572" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac573" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5eb" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac533" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5cf" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac60d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac551" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac55a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ac" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac621" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac584" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f2" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac576" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61c" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac557" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac554" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac537" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac61d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac560" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5a3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ce" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e4" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5ed" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56b" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5bf" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e5" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac613" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac607" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5f3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5e8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac616" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac632" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56d" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac58f" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b6" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac57e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d7" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac569" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac56a" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b9" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac54e" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac565" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5c3" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5df" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5aa" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac625" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5d8" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac599" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac5b0" codeSystemId="5ad4d862e2813f7f0eeac529" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="93" title="Accept/application acknowledgment conditions" comment="" createdFrom="" description="" name="Accept/application acknowledgment conditions" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43de56" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0155" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="4" codeSystemIds="5ad4d862e2813f7f0eeaca7c">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaca7e" codeSystemId="5ad4d862e2813f7f0eeaca7c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaca7d" codeSystemId="5ad4d862e2813f7f0eeaca7c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaca80" codeSystemId="5ad4d862e2813f7f0eeaca7c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeaca7f" codeSystemId="5ad4d862e2813f7f0eeaca7c" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="115" title="Publicity Code" comment="" createdFrom="" description="" name="Publicity Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e6a7" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0215" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="4" codeSystemIds="5ad4d863e2813f7f0eead2d0">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2d2" codeSystemId="5ad4d863e2813f7f0eead2d0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2d3" codeSystemId="5ad4d863e2813f7f0eead2d0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2d1" codeSystemId="5ad4d863e2813f7f0eead2d0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2d4" codeSystemId="5ad4d863e2813f7f0eead2d0" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="123" title="Transport Arranged" comment="" createdFrom="" description="" name="Transport Arranged" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e7ce" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0224" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d8b8e2813f7f0eead3f8">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead3fa" codeSystemId="5ad4d8b8e2813f7f0eead3f8" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead3fb" codeSystemId="5ad4d8b8e2813f7f0eead3f8" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead3f9" codeSystemId="5ad4d8b8e2813f7f0eead3f8" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="86" title="Amount type" comment="" createdFrom="" description="" name="Amount type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dcdb" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0146" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="5" codeSystemIds="5ad4d862e2813f7f0eeac901">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac902" codeSystemId="5ad4d862e2813f7f0eeac901" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac906" codeSystemId="5ad4d862e2813f7f0eeac901" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac903" codeSystemId="5ad4d862e2813f7f0eeac901" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac904" codeSystemId="5ad4d862e2813f7f0eeac901" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac905" codeSystemId="5ad4d862e2813f7f0eeac901" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="149" title="Organ Donor Code" comment="" createdFrom="" description="" name="Organ Donor Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e534" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0316" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d863e2813f7f0eead15d">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead163" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead164" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead161" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead15f" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead162" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead160" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead15e" codeSystemId="5ad4d863e2813f7f0eead15d" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="155" title="Practitioner ID number type" comment="" createdFrom="" description="" name="Practitioner ID number type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e751" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0338" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="12" codeSystemIds="5ad4d863e2813f7f0eead37b">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead37c" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead37f" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead386" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead37d" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead37e" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead387" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead381" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead382" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead385" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead384" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead383" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead380" codeSystemId="5ad4d863e2813f7f0eead37b" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="162" title="Appeal Reason" comment="" createdFrom="" description="" name="Appeal Reason" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e7d2" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0345" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d8b8e2813f7f0eead3fc">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead3fd" codeSystemId="5ad4d8b8e2813f7f0eead3fc" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="202" title="Name context" comment="" createdFrom="" description="" name="Name context" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e695" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0448" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eead2be">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2bf" codeSystemId="5ad4d863e2813f7f0eead2be" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="153" title="Driver's license issuing authority" comment="" createdFrom="" description="" name="Driver's license issuing authority" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e735" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0333" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eead35e">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead35f" codeSystemId="5ad4d863e2813f7f0eead35e" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="112" title="Nationality" comment="" createdFrom="" description="" name="Nationality" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e733" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0212" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eead35c">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead35d" codeSystemId="5ad4d863e2813f7f0eead35c" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="209" title="Extended Priority Codes" comment="" createdFrom="" description="" name="Extended Priority Codes" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43da2c" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0485" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="7" codeSystemIds="5ad4d862e2813f7f0eeac668">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66a" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66f" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac669" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66b" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66c" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66d" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac66e" codeSystemId="5ad4d862e2813f7f0eeac668" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="179" title="Other environmental factors" comment="" createdFrom="" description="" name="Other environmental factors" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43db44" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0377" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="2" codeSystemIds="5ad4d862e2813f7f0eeac76a">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac76b" codeSystemId="5ad4d862e2813f7f0eeac76a" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac76c" codeSystemId="5ad4d862e2813f7f0eeac76a" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="90" title="Certification patient type" comment="" createdFrom="" description="" name="Certification patient type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dc7b" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0150" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="4" codeSystemIds="5ad4d862e2813f7f0eeac8a1">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8a4" codeSystemId="5ad4d862e2813f7f0eeac8a1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8a5" codeSystemId="5ad4d862e2813f7f0eeac8a1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8a2" codeSystemId="5ad4d862e2813f7f0eeac8a1" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeac8a3" codeSystemId="5ad4d862e2813f7f0eeac8a1" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="124" title="Escort Required" comment="" createdFrom="" description="" name="Escort Required" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e7e2" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0225" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="3" codeSystemIds="5ad4d8b8e2813f7f0eead40c">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead40d" codeSystemId="5ad4d8b8e2813f7f0eead40c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead40e" codeSystemId="5ad4d8b8e2813f7f0eead40c" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead40f" codeSystemId="5ad4d8b8e2813f7f0eead40c" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="194" title="Precaution Code" comment="" createdFrom="" description="" name="Precaution Code" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e348" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0433" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="9" codeSystemIds="5ad4d863e2813f7f0eeacf71">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf74" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf72" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf75" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf76" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf79" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf7a" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf77" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf73" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf78" codeSystemId="5ad4d863e2813f7f0eeacf71" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="110" title="Processing mode" comment="" createdFrom="" description="" name="Processing mode" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e697" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0207" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="5" codeSystemIds="5ad4d863e2813f7f0eead2c0">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c3" codeSystemId="5ad4d863e2813f7f0eead2c0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c5" codeSystemId="5ad4d863e2813f7f0eead2c0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c4" codeSystemId="5ad4d863e2813f7f0eead2c0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c2" codeSystemId="5ad4d863e2813f7f0eead2c0" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d863e2813f7f0eead2c1" codeSystemId="5ad4d863e2813f7f0eead2c0" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="164" title="Message structure" comment="" createdFrom="" description="" name="Message structure" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e909" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0354" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="199" codeSystemIds="5ad4d8b8e2813f7f0eead533">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5aa" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead553" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead557" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead581" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead561" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5bb" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead566" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead563" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead537" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ad" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead567" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead583" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5bd" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ed" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead556" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5dc" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead534" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ee" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead571" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5be" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead546" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead584" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead544" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead587" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5fa" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead596" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead574" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ef" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead548" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead545" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead585" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5cd" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead541" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead586" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ab" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5df" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead549" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5eb" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead593" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead572" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead569" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ca" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5cb" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead594" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead55b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ce" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead578" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead536" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead573" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead590" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5cf" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead591" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5de" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead582" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5bf" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5bc" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5db" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e5" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ec" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead579" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead555" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ae" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead592" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead575" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead552" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead597" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead550" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead547" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ac" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead551" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead559" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead576" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ba" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead59d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a6" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead599" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead560" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead568" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead589" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead539" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead538" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d3" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5cc" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead562" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d2" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead543" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5dd" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead535" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead558" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead56a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead542" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e7" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead565" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d1" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53d" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead554" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead564" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5e8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5ea" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5f9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead598" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5da" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead540" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5af" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead53f" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead588" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead57b" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead580" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58e" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a0" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead595" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5a9" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead54c" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5c4" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead577" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5b8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead5d8" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead570" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d8b8e2813f7f0eead58a" codeSystemId="5ad4d8b8e2813f7f0eead533" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="230" title="Specimen Type Modifier" comment="" createdFrom="" description="" name="Specimen Type Modifier" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43e2db" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0541" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="1" codeSystemIds="5ad4d863e2813f7f0eeacf04">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d863e2813f7f0eeacf05" codeSystemId="5ad4d863e2813f7f0eeacf04" position="0" usage="P" />
+                </CodeRefs>
+            </Valueset>
+            <Valueset position="38" title="Message type" comment="" createdFrom="" description="" name="Message type" domainVersion="2.5.1" domainCompatibilityVersions="" domainScope="HL7STANDARD" id="565f3ab6d4c6e52cfd43dffa" publicationVersion="0" publicationDate="04/16/2018" username="" postDef="" preDef="" bindingIdentifier="0076" oid="UNSPECIFIED" intensionalComment="" url="" managedBy="Internal-Internally Managed" stability="Not defined" contentDefinition="Not defined" numberOfCodes="123" codeSystemIds="5ad4d862e2813f7f0eeacc1f">
+                <CodeRefs>
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc86" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc4d" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc6f" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc97" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc64" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc75" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc76" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc37" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc91" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+                    <CodeRef codeId="5ad4d862e2813f7f0eeacc38" codeSystemId="5ad4d862e2813f7f0eeacc1f" position="0" usage="P" />
+        

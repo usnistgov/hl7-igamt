@@ -27,7 +27,7 @@ public abstract class SerializableSection extends SerializableElement{
   private Section section;
 
   public SerializableSection(Section section) {
-    super(section.getId(), String.valueOf(section.getPosition()), section.getLabel());
+    super(section.getId() != null ? section.getId() : "", String.valueOf(section.getPosition()), section.getLabel() != null ? section.getLabel() : "");
     this.section = section;
   }
 

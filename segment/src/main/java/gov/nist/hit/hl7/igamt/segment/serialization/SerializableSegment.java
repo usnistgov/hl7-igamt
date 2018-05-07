@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.DynamicMappingSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
@@ -36,14 +37,16 @@ import nu.xom.Element;
 public class SerializableSegment extends SerializableResource {
 
   private Map<String, String> datatypesMap;
+  private Map<String, String> valuesetNamesMap;
   
   /**
    * @param segment
    * @param position
    */
-  public SerializableSegment(Segment segment, String position, Map<String, String> datatypesMap) {
+  public SerializableSegment(Segment segment, String position, Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   @Override
@@ -52,24 +55,30 @@ public class SerializableSegment extends SerializableResource {
     Segment segment = (Segment) this.getAbstractDomain();
     try {
       segmentElement.addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
-      try {
-        Element dynamicMappingElement = this.serializeDynamicMapping(segment.getDynamicMappingInfo());
-        if(dynamicMappingElement != null) {
-          segmentElement.appendChild(dynamicMappingElement);
+      if(segment.getDynamicMappingInfo() != null) {
+        try {
+          Element dynamicMappingElement = this.serializeDynamicMapping(segment.getDynamicMappingInfo());
+          if(dynamicMappingElement != null) {
+            segmentElement.appendChild(dynamicMappingElement);
+          }
+        } catch (DatatypeNotFoundException exception) {
+          throw new DynamicMappingSerializationException(exception, segment.getDynamicMappingInfo());
         }
-      } catch (DatatypeNotFoundException exception) {
-        throw new DynamicMappingSerializationException();
       }
-      Element bindingElement = super.serializeResourceBinding(segment.getBinding());
-      if(bindingElement != null) {
-        segmentElement.appendChild(bindingElement);
+      if(segment.getBinding() != null) {
+        Element bindingElement = super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
+        if(bindingElement != null) {
+          segmentElement.appendChild(bindingElement);
+        }
       }
-      Element fieldsElement = this.serializeFields(segment.getChildren());
-      if(fieldsElement != null) {
-        segmentElement.appendChild(fieldsElement);
+      if(segment.getChildren() != null) {
+        Element fieldsElement = this.serializeFields(segment.getChildren());
+        if(fieldsElement != null) {
+          segmentElement.appendChild(fieldsElement);
+        }
       }
       return segmentElement;
-    } catch (DynamicMappingSerializationException | SubStructElementSerializationException exception) {
+    } catch (SerializationException exception) {
       throw new ResourceSerializationException(exception, Type.SEGMENT, segment);
     }
   }
