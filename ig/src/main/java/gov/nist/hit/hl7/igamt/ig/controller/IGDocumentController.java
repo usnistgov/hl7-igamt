@@ -69,12 +69,9 @@ public class IGDocumentController {
 			
 			return igService.convertListToDisplayList(igdouments);
 		}else {
-			
-			
 			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 				
 		}
-
 	}
 	
 	
@@ -93,7 +90,7 @@ public class IGDocumentController {
 			
 		}else {
 			//redirect 
-			return null;
+          throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 		}
 		
 	}
@@ -109,7 +106,7 @@ public class IGDocumentController {
 		return 	messageEventService.findByHl7Version(version);
 
 		}else {
-			return null;
+          throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 		}
 		
 	}

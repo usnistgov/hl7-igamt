@@ -2,13 +2,11 @@ package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.crypto.Data;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +60,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.security.KeyManagementException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -132,6 +131,12 @@ public class IgServiceImpl implements IgService{
 		// TODO Auto-generated method stub
 		return igRepository.findByUsername(username);
 	}
+	
+	   @Override
+	    public List<Ig> findIgIdsForUser(String username) {
+	        // TODO Auto-generated method stub
+	        return igRepository.findIgIdsForUser(username);
+	    }
 
 	@Override
 	public IGDisplay convertDomainToModel(Ig ig) {
@@ -586,26 +591,34 @@ public class IgServiceImpl implements IgService{
 	@Override
 	public List<Ig> findLatestByUsername(String username) {
 		// TODO Auto-generated method stub
-		List<Ig> allUsersIgs=this.findByUsername(username);
+		List<Ig> allUsersIgs=this.findIgIdsForUser(username);
 		
-		Map<String, Ig> map = new HashMap<String , Ig>();
+		Map<String, Integer> map = new HashMap<String , Integer>();
 		
 		for(Ig ig : allUsersIgs) {
-			
 		String id= ig.getId().getId();
+		
 			if(id != null) {
 			if(!map.containsKey(id)) {
-				map.put(id, ig);
+				map.put(id, ig.getId().getVersion());
 			}else {
-				Ig current = map.get(id);
-				if(current.getId().getVersion()<ig.getId().getVersion()) {
-					map.put(id, ig);
+				int current = map.get(id);
+				if(current<ig.getId().getVersion()) {
+					map.put(id, ig.getId().getVersion());
 					}
 				}
 			}
 			
+		} 
+		
+		List<Ig> allIgs = new ArrayList<Ig>();
+		
+		for(String id : map.keySet()) {
+		Ig ig =  this.findById(new CompositeKey(id,map.get(id)));
+		
+		allIgs.add(ig);
 		}
-		return new ArrayList<Ig>(map.values());
+		return allIgs;
 	}
 
 	@Override
@@ -714,7 +727,6 @@ public class IgServiceImpl implements IgService{
 		section.setDescription("");
 		section.setLabel(template.getLabel());
 		section.setPosition(template.getPosition());
-		
 		if(template.getChildren()!=null) {
 		Set<Section> children = new HashSet<Section>();
 		    for(SectionTemplate child : template.getChildren()) {

@@ -16,13 +16,14 @@ export  class IgMetaDataResolver implements Resolve<any>{
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
+    console.log("calling resolver");
 
                 if(!route.parent.data["currentIg"]){
                   this.router.navigate(["/404"]);
                   return Observable.empty();
                 }
                 else{
-
+                  console.log(route.parent.data["currentIg"].metadata);
                  return Observable.of(route.parent.data["currentIg"].metadata)
                 }
 

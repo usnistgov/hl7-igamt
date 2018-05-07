@@ -31,6 +31,8 @@ import {PanelMenuModule} from 'primeng/panelmenu';
 import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
+import {StepsModule} from "primeng/components/steps/steps";
+import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 @NgModule({
 	imports: [
 		CommonModule,
@@ -55,11 +57,15 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
     PanelMenuModule,
-    ToolbarModule
+    ToolbarModule,
+    FileUploadModule
 
 
 
-],
+
+
+
+  ],
 	declarations: [
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,DisplayMenuComponent
 	],

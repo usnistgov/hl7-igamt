@@ -5,13 +5,13 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 public class Registry extends Section{
-	  private Set<Link> children = new HashSet<Link>();
+  private Set<Link> children = new HashSet<Link>();
 
   
   public Registry(String id, String description, Type type, int position, String label) {
 		super(id, description, type, position, label);
 		// TODO Auto-generated constructor stub
-	}
+  }
 
   public Set<Link> getChildren() {
     return children;
@@ -21,7 +21,6 @@ public class Registry extends Section{
   }
 public Registry() {
 	super();
-	// TODO Auto-generated constructor stub
 }
 
 

@@ -31,6 +31,11 @@ public interface IgService {
 	  public List<ListElement> convertListToDisplayList(List<Ig> igdouments);
 	  public List<Ig> finByScope(String string);
 	  public Ig CreateEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
+    /**
+     * @param username
+     * @return
+     */
+    List<Ig> findIgIdsForUser(String username);
 
 		
 }

@@ -28,7 +28,7 @@
     <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
 
     <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()" pTooltip="Filter by Scope" tooltipPosition="top" ></p-multiSelect>
-    <button style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button  (click)="print(igForm)" style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
     <button style="float: right" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
 
     <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
@@ -173,16 +173,11 @@
             <span>{{node.data.data.label}}</span>
             <display-menu *ngIf="node.active" [elm]="node.data.data"></display-menu>
 
-
           </ng-container>
-
 
         </ng-container>
 
-
       </ng-template>
-
-
 
     </tree-root>
   </p-panel>
@@ -190,7 +185,10 @@
 
   <!--ROUTE-->
   <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;">
-        <router-outlet></router-outlet>
+    <form #igForm="ngForm" novalidate>
+      <router-outlet></router-outlet>
+
+    </form>
   </div>
 </div>
 </div>

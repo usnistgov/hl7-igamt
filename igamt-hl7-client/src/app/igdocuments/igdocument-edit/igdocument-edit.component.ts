@@ -162,6 +162,7 @@ export class IgDocumentEditComponent {
 
   }
   print(node){
+    console.log("calling print  ");
     console.log(node);
   }
   ngAfterViewInit() {

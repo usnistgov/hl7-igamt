@@ -1,7 +1,7 @@
 <p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="true"></p-steps>
 <div *ngIf="activeIndex==1">
   <div >
-    <label class="metadata-label"> Select Hl7 Version</label> <p-radioButton *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
+    <label class="metadata-label"> Select Hl7 Version</label>  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
   </div>
 
   <div>
@@ -35,18 +35,6 @@
         </ng-template>
       </p-column>
     </p-treeTable>
-
-
-    <div *ngIf="">
-      <ng-container *ngFor="let selected of selectdNodeMap[selectedVerion]">
-
-        <label class="badge cp-badge" (click)="unselect(selected)" *ngIf="selected.parent">
-          {{selected.data.name}}-{{selected.data.parentStructId}}-{{selected.parent.data.hl7Version}}
-          <i class="fa fa-remove cp-remove" (click)="unselect(selected)"></i>
-        </label>
-
-      </ng-container>
-    </div>
 
 <div class="ui-g-offset-10">
 

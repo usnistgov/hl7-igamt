@@ -16,7 +16,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 @Repository("igRepository")
 public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
 	
-	
+    @Query(value = "{ '_id._id' : ?0 }")
+
 	List<Ig> findByUsername(String username);
 	
 	List<Ig> findByIdId(String id);
@@ -29,5 +30,8 @@ public interface IgRepository extends MongoRepository<Ig, CompositeKey> {
 	List<Ig> findLatestById(ObjectId id, Sort sort);
 
 	List<Ig> findByDomainInfoScope(String scope);		
+	
+    @Query(value = "{ 'username' : ?0 }", fields= "{_id : 1}")
+    List<Ig>  findIgIdsForUser(String username);
 
 }

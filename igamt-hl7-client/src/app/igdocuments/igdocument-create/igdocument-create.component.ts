@@ -49,13 +49,16 @@ export class IgDocumentCreateComponent {
 
   ngOnInit() {
 
-    this.items = [{
-      label: 'Meta Data ',
-
-    },
+    this.items = [
       {
-        label: 'Conformane Profiles'
-      }];
+      label: 'Ig Documents ',
+
+      },
+      {
+        label: 'Create new IG documents ',
+      }
+
+      ];
 
 
 
@@ -313,7 +316,6 @@ export class IgDocumentCreateComponent {
               ret.push(this.selectdNodeMap[version][j])
 
             }
-            // this.selectNode(this.selectdNodeMap[version][j]);
           }
       }
       };
