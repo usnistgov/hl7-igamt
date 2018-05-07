@@ -1,26 +1,19 @@
 /**
- * Created by ena3 on 12/5/17.
+ * Created by hnt5 on 10/23/17.
  */
 import {RouterModule} from "@angular/router";
 import {NgModule} from "@angular/core";
-import {DatatypeEditComponent} from "./datatype-edit.component";
-import {DatatypeGuard} from "./datatype-edit.guard";
+import {DatatypeEditStructureComponent} from "./datatype-structure/datatype-edit-structure.component";
 
 @NgModule({
   imports: [
     RouterModule.forChild([
-      {
-        path: ':id',
-        component: DatatypeEditComponent,
-        canActivate : [ DatatypeGuard ],
-        children: [
-          {
-            path: 'definition',
-            loadChildren: './datatype-definition/datatype-definition.module#DatatypeDefinitionModule'
-          }
-        ]
-      }
-
+        {
+            path: ':datatypeId', component: DatatypeEditStructureComponent,
+        },
+        {
+            path: ':datatypeId/structure', component: DatatypeEditStructureComponent,
+        }
     ])
   ],
   exports: [

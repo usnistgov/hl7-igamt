@@ -57,6 +57,8 @@ export class SegmentsIndexedDbService {
         const segmentStructure = await this.indexeddbService.nodeDatabase.segments.get(id);
         if (segmentStructure != null) {
           callback(segmentStructure.structure);
+        }else {
+            callback(null);
         }
       });
     } else {

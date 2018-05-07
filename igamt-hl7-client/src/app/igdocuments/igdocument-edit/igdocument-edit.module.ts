@@ -32,6 +32,7 @@ import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
+import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
 
 
 @NgModule({
@@ -59,7 +60,8 @@ import {SegmentEditModule} from "./segment-edit/segment-edit.module";
     FroalaViewModule.forRoot(),
     PanelMenuModule,
     ToolbarModule,
-        SegmentEditModule
+        SegmentEditModule,
+        DatatypeEditModule
 
 
 
