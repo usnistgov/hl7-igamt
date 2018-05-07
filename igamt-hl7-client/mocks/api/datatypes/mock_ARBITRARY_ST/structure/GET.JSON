@@ -1,9 +1,9 @@
 {
   "id": {
-    "id": "565f3ab5d4c6e52cfd43b956",
+    "id": "mock_ARBITRARY_ST",
     "version": 1
   },
-  "label": "SI",
+  "label": "ST",
   "scope": "HL7STANDARD",
   "version": "2.6",
   "binding": null,

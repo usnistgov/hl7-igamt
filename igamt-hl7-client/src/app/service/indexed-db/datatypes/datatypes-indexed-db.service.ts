@@ -41,6 +41,8 @@ export class DatatypesIndexedDbService {
         const datatype = await this.indexeddbService.changedObjectsDatabase.datatypes.get(id);
         if (datatype != null) {
           callback(datatype.structure);
+        }else{
+            callback(null);
         }
       });
     } else {
