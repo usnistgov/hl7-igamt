@@ -40,7 +40,7 @@ export class SegmentsIndexedDbService {
     if (this.indexeddbService.changedObjectsDatabase != null) {
       this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null) {
+        if (segment != null && segment.structure != null) {
           callback(segment.structure);
         } else {
           this.getSegmentStructureFromNodeDatabase(id, callback);
