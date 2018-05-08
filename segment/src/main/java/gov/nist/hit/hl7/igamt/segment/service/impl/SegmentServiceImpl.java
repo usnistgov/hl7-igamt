@@ -23,13 +23,13 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -167,9 +167,9 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public SegmentMetadata convertDomainToMetadata(Segment segment) {
+  public DisplayMetadata convertDomainToMetadata(Segment segment) {
     if (segment != null) {
-      SegmentMetadata result = new SegmentMetadata();
+      DisplayMetadata result = new DisplayMetadata();
       result.setAuthorNote(segment.getComment());
       result.setDescription(segment.getDescription());
       result.setExt(segment.getExt());
@@ -183,9 +183,9 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public SegmentPreDef convertDomainToPredef(Segment segment) {
+  public PreDef convertDomainToPredef(Segment segment) {
     if (segment != null) {
-      SegmentPreDef result = new SegmentPreDef();
+      PreDef result = new PreDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
       result.setVersion(segment.getDomainInfo().getVersion());
@@ -201,9 +201,9 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public SegmentPostDef convertDomainToPostdef(Segment segment) {
+  public PostDef convertDomainToPostdef(Segment segment) {
     if (segment != null) {
-      SegmentPostDef result = new SegmentPostDef();
+      PostDef result = new PostDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
       result.setVersion(segment.getDomainInfo().getVersion());

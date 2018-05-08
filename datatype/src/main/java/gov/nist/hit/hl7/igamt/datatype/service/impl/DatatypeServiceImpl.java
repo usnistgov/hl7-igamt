@@ -13,7 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +24,12 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.shared.domain.Component;
@@ -162,6 +168,112 @@ public class DatatypeServiceImpl implements DatatypeService {
       }
       return result;
     }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToMetadata(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+   */
+  @Override
+  public DisplayMetadata convertDomainToMetadata(Datatype datatype) {
+    if (datatype != null) {
+      DisplayMetadata result = new DisplayMetadata();
+      result.setAuthorNote(datatype.getComment());
+      result.setDescription(datatype.getDescription());
+      result.setExt(datatype.getExt());
+      result.setId(datatype.getId());
+      result.setName(datatype.getName());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPredef(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+   */
+  @Override
+  public PreDef convertDomainToPredef(Datatype datatype) {
+    if (datatype != null) {
+      PreDef result = new PreDef();
+      result.setId(datatype.getId());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      if (datatype.getExt() != null) {
+        result.setLabel(datatype.getName() + datatype.getExt());
+      } else {
+        result.setLabel(datatype.getName());
+      }
+      result.setPreDef(datatype.getPreDef());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPostdef(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+   */
+  @Override
+  public PostDef convertDomainToPostdef(Datatype datatype) {
+    if (datatype != null) {
+      PostDef result = new PostDef();
+      result.setId(datatype.getId());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      if (datatype.getExt() != null) {
+        result.setLabel(datatype.getName() + datatype.getExt());
+      } else {
+        result.setLabel(datatype.getName());
+      }
+      result.setPostDef(datatype.getPreDef());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveDatatype(gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype)
+   */
+  @Override
+  public Datatype saveDatatype(ChangedDatatype changedDatatype) {
+    if(changedDatatype != null && changedDatatype.getId() != null){
+      Datatype datatype = this.findLatestById(changedDatatype.getId());
+      
+      if(datatype != null){
+        if(changedDatatype.getMetadata() != null){
+          datatype.setDescription(changedDatatype.getMetadata().getDescription());
+          datatype.setExt(changedDatatype.getMetadata().getExt());
+          datatype.setName(changedDatatype.getMetadata().getName());
+          datatype.setComment(changedDatatype.getMetadata().getAuthorNote());
+          datatype.getDomainInfo().setScope(changedDatatype.getMetadata().getScope());
+          datatype.getDomainInfo().setVersion(changedDatatype.getMetadata().getVersion());
+        }
+        
+        if(changedDatatype.getPostDef() != null){
+          datatype.setPostDef(changedDatatype.getPostDef().getPostDef());
+        }
+        
+        if(changedDatatype.getPreDef() != null){
+          datatype.setPreDef(changedDatatype.getPreDef().getPreDef());
+        }
+        
+        if(changedDatatype.getStructure() != null){
+          changedDatatype.getStructure().getChildren();
+          datatype.setBinding(changedDatatype.getStructure().getBinding());
+          Set<Component> components = new HashSet<Component>();
+          for(ComponentDisplay cd : changedDatatype.getStructure().getChildren()){
+            components.add(cd.getData());
+          }
+          if(components.size() > 0){
+            ComplexDatatype cDatatype = (ComplexDatatype)datatype;
+            cDatatype.setComponents(components);  
+          }
+        }
+      }
+      return this.save(datatype);   
+    }
+   
     return null;
   }
 }

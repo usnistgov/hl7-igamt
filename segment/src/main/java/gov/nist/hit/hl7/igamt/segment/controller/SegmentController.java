@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
@@ -43,7 +43,7 @@ public class SegmentController {
   @RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody SegmentMetadata getSegmentMetadata(@PathVariable("id") String id) {
+  public @ResponseBody DisplayMetadata getSegmentMetadata(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       Segment segment = segmentService.findLatestById(id);
@@ -56,7 +56,7 @@ public class SegmentController {
   @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody SegmentPreDef getSegmentPredef(@PathVariable("id") String id) {
+  public @ResponseBody PreDef getSegmentPredef(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       Segment segment = segmentService.findLatestById(id);
@@ -69,7 +69,7 @@ public class SegmentController {
   @RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody SegmentPostDef getSegmentPostdef(@PathVariable("id") String id) {
+  public @ResponseBody PostDef getSegmentPostdef(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       Segment segment = segmentService.findLatestById(id);

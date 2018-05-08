@@ -15,11 +15,11 @@ package gov.nist.hit.hl7.igamt.segment.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
@@ -62,11 +62,11 @@ public interface SegmentService {
 
   public SegmentStructure convertDomainToStructure(Segment segment);
 
-  public SegmentMetadata convertDomainToMetadata(Segment segment);
+  public DisplayMetadata convertDomainToMetadata(Segment segment);
 
-  public SegmentPreDef convertDomainToPredef(Segment segment);
+  public PreDef convertDomainToPredef(Segment segment);
 
-  public SegmentPostDef convertDomainToPostdef(Segment segment);
+  public PostDef convertDomainToPostdef(Segment segment);
   
   public Segment saveSegment(ChangedSegment changedSegment);
 
