@@ -259,7 +259,6 @@ public class DatatypeServiceImpl implements DatatypeService {
         }
         
         if(changedDatatype.getStructure() != null){
-          changedDatatype.getStructure().getChildren();
           datatype.setBinding(changedDatatype.getStructure().getBinding());
           Set<Component> components = new HashSet<Component>();
           for(ComponentDisplay cd : changedDatatype.getStructure().getChildren()){

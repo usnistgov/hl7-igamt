@@ -245,7 +245,6 @@ public class SegmentServiceImpl implements SegmentService {
         }
         
         if(changedSegment.getStructure() != null){
-          changedSegment.getStructure().getChildren();
           segment.setBinding(changedSegment.getStructure().getBinding());
           Set<Field> fields = new HashSet<Field>();
           for(FieldDisplay fd : changedSegment.getStructure().getChildren()){
