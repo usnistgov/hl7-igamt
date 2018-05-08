@@ -15,6 +15,8 @@ package gov.nist.hit.hl7.igamt.export.configuration;
 
 import java.util.ArrayList;
 
+import javax.persistence.Column;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,14 +24,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-@Document(collection = "exportConfig")
+@Document(collection = "exportConfiguration")
 public class ExportConfiguration {
 
   @Id
   private String id;
   boolean defaultType = false;
   private String name;
-  private Long accountId;
+  @Column(unique=true)
+  private String username;
   private boolean unboundHL7 = false;
   private boolean unboundCustom = false;
   private boolean includeVaries = false;
@@ -85,7 +88,7 @@ public class ExportConfiguration {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
-    defaultConfiguration.setAccountId(null);
+    defaultConfiguration.setUsername(null);
     defaultConfiguration.setIncludeMessageTable(true);
     defaultConfiguration.setIncludeSegmentTable(true);
     defaultConfiguration.setIncludeDatatypeTable(true);
@@ -241,15 +244,20 @@ public class ExportConfiguration {
   }
 
 
-
-  public Long getAccountId() {
-    return accountId;
+  public String getUsername() {
+    return username;
   }
 
 
 
-  public void setAccountId(Long accountId) {
-    this.accountId = accountId;
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+
+
+  public static int getMaxCode() {
+    return MAX_CODE;
   }
 
 
