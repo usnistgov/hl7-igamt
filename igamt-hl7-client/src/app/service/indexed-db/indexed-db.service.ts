@@ -2,7 +2,10 @@ import {Injectable} from '@angular/core';
 
 import { ObjectsDatabase, IObject } from './objects-database';
 import { ObjectsReferenceDatabase } from './objects-reference-database';
-import {isUndefined} from 'ngx-bootstrap/bs-moment/utils/type-checks';
+import Dexie from 'dexie';
+import {IgDocumentService} from '../ig-document/ig-document.service';
+import {NodeDatabase} from './node-database';
+import {TocDatabase} from "./toc-database";
 
 @Injectable()
 export class IndexedDbService {
@@ -10,126 +13,126 @@ export class IndexedDbService {
   removedObjectsDatabase;
   createdObjectsDatabase;
   addedObjectsDatabase;
+  nodeDatabase;
+  tocDataBase;
+
   igDocumentId?: string;
-  constructor(igDocumentId) {
-    this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
-    this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
-    this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
+  constructor(public igDocumentService: IgDocumentService) {
+    Dexie.delete('ChangedObjectsDatabase').then(() => {
+      console.log('ChangedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete ChangedObjectsDatabase');
+    }).finally(() => {
+      this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+    });
+    Dexie.delete('RemovedObjectsDatabase').then(() => {
+      console.log('RemovedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete RemovedObjectsDatabase');
+    }).finally(() => {
+      this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
+    });
+    Dexie.delete('CreatedObjectsDatabase').then(() => {
+      console.log('CreatedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete CreatedObjectsDatabase');
+    }).finally(() => {
+      this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
+    });
+    Dexie.delete('AddedObjectsDatabase').then(() => {
+      console.log('AddedObjectsDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete AddedObjectsDatabase');
+    }).finally(() => {
+      this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
+    });
+    Dexie.delete('NodeDatabase').then(() => {
+      console.log('NodeDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete NodeDatabase');
+    }).finally(() => {
+      this.nodeDatabase = new NodeDatabase('NodeDatabase');
+    });
+    Dexie.delete('tocDataBase').then(() => {
+      console.log('tocDataBase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete NodeDatabase');
+    }).finally(() => {
+      this.tocDataBase = new TocDatabase('tocDataBase');
+    });
+  }
+
+  public initializeDatabase (igDocumentId ) {
     this.igDocumentId = igDocumentId;
   }
-  public init() {
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase, async() => {
-       this.changedObjectsDatabase.clear();
-    });
-    this.removedObjectsDatabase.transaction('rw', this.removedObjectsDatabase, async() => {
-       this.removedObjectsDatabase.clear();
-    });
-    this.createdObjectsDatabase.transaction('rw', this.createdObjectsDatabase, async() => {
-       this.createdObjectsDatabase.clear();
-    });
-    this.addedObjectsDatabase.transaction('rw', this.addedObjectsDatabase, async() => {
-      this.addedObjectsDatabase.clear();
-    });
-  }
+  public addTocElements (profileComponents,conformanceProfiles,compositeProfiles,segments,valueSets) {
+    console.log("addding segment");
+      this.tocDataBase.transaction('rw', this.tocDataBase.segments, async () => {
 
-  public getDatatype (id, callback, field) {
-    let datatype;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async() => {
-      datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        if (field === 'metadata') {
-          callback(datatype.metadata);
-        } else if (field === 'definition') {
-          callback(datatype.definition);
-        } else if (field === 'crossReference') {
-          callback(datatype.crossReference);
-        }
-      }
-    });
-  }
-  public getValueSet (id, callback, field) {
-    let valueSet;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async() => {
-      valueSet = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueSet != null) {
-        if (field === 'metadata') {
-          callback(valueSet.metadata);
-        } else if (field === 'definition') {
-          callback(valueSet.definition);
-        } else if (field === 'crossReference') {
-          callback(valueSet.crossReference);
-        }
-      }
-    });
-  }
-
-  public getSegment (id, callback, field) {
-    let segment;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.segments, async() => {
-      segment = await this.changedObjectsDatabase.segments.get(id);
-      if (segment != null) {
-        if (field === 'metadata') {
-          callback(segment.metadata);
-        } else if (field === 'definition') {
-          callback(segment.definition);
-        } else if (field === 'crossReference') {
-          callback(segment.crossReference);
-        }
-      }
-    });
-  }
-  public saveDatatype(datatype) {
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async() => {
-      let savedDatatype = await this.changedObjectsDatabase.datatypes.get(datatype.id);
-      if (savedDatatype.isUndefined()) {
-        savedDatatype = new IObject();
-        savedDatatype.id = datatype.id;
-      }
-      let changesToBeSaved = false;
-      if (!datatype.metadata.isUndefined()) {
-        savedDatatype.metadata = datatype.metadata;
-        changesToBeSaved = true;
-      }
-      if (!datatype.definition.isUndefined()) {
-        savedDatatype.definition = datatype.definition;
-        changesToBeSaved = true;
-      }
-      if (!datatype.metadata.isUndefined()) {
-        savedDatatype.crossReference = datatype.crossReference;
-        changesToBeSaved = true;
-      }
-      if (changesToBeSaved) {
-        await this.changedObjectsDatabase.datatypes.put(savedDatatype);
-      }
-    });
-  }
-  public saveSegment(segment) {
-    console.log(segment);
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async() => {
-      await this.changedObjectsDatabase.segments.put({
-        'id': segment.id,
-        'metadata': segment.metadata,
-        'definition': segment.definition,
-        'crossReference': segment.crossReference
+        await this.tocDataBase.segments.bulkPut(segments);
       });
-    });
   }
+
+
 
   public persistChanges() {
     const changedObjects = new ChangedObjects(this.igDocumentId);
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async() => {
-      changedObjects.segments = await this.changedObjectsDatabase.segments.toArray();
+    const promises = [];
+    promises.push(new Promise((resolve, reject) => {
+      console.log('Loading changed segments');
+      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async () => {
+        changedObjects.segments = await this.changedObjectsDatabase.segments.toArray();
+        console.log('Changed segments successfully loaded');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      console.log('Loading changed datatypes');
+      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async () => {
+        changedObjects.datatypes = await this.changedObjectsDatabase.datatypes.toArray();
+        console.log('Changed datatypes successfully loaded');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      console.log('Loading changed valuesets');
+      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valuesets, async () => {
+        changedObjects.valuesets = await this.changedObjectsDatabase.valuesets.toArray();
+        console.log('Changed valuesets successfully loaded');
+        resolve();
+      });
+    }));
+    const doPersist = this.doPersist;
+    const igDocumentService = this.igDocumentService;
+    Promise.all(promises).then(function(){
+      console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
+        + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
+      doPersist(changedObjects, igDocumentService);
     });
-    // call igDocumentService save method
+  }
+
+  private doPersist(changedObjects, igDocumentService) {
+    console.log(JSON.stringify(changedObjects));
+    igDocumentService.save(changedObjects);
   }
 
 }
 
 class ChangedObjects {
   igDocumentId?: string;
-  segments?: IObject;
-  datatypes?: IObject;
+  segments?: Array<IObject>;
+  datatypes?: Array<IObject>;
+  valuesets?: Array<IObject>;
+  constructor(igDocumentId) {
+    this.igDocumentId = igDocumentId;
+  }
+}
+
+class TocElements {
+  igDocumentId?: string;
+  segments?: Array<IObject>;
+  datatypes?: Array<IObject>;
+  valuesets?: Array<IObject>;
   constructor(igDocumentId) {
     this.igDocumentId = igDocumentId;
   }

@@ -11,9 +11,7 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
 	imports: [
 		RouterModule.forChild([
 			{
-				path: ':igId',
-        resolve:{currentIg:IgdocumentEditResolver},
-				component: IgDocumentEditComponent,
+				path: ':igId', resolve:{currentIg:IgdocumentEditResolver}, component: IgDocumentEditComponent,
         children: [
           { path: 'metadata', component: IgDocumentMetadataComponent,resolve:{metadata : IgMetaDataResolver} },
           { path: "section/:sectionId", component: SectionComponent,resolve:{currentSection : SectionResolver} },

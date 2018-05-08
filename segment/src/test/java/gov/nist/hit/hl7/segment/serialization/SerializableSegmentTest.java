@@ -74,7 +74,7 @@ public class SerializableSegmentTest {
   private static final String TEST_FIELD1_DT_NAME = "test_field1_dt_name";
   private static final Ref TEST_FIELD1_REF = new Ref(TEST_FIELD1_DT_ID);
   private static final int TEST_FIELD1_MIN = 1;
-  private static final int TEST_FIELD1_MAX = 5;
+  private static final String TEST_FIELD1_MAX = "5";
   private static final Field TEST_FIELD1 = new Field(TEST_FIELD1_ID, TEST_FIELD1_NAME, TEST_FIELD1_POSITION, TEST_FIELD1_USAGE,
       TEST_FIELD1_TEXT, TEST_FIELD1_CUSTOM, TEST_FIELD1_MAXLENGTH, TEST_FIELD1_MINLENGTH, 
       TEST_FIELD1_CONFLENGTH, TEST_FIELD1_REF, TEST_FIELD1_MIN, TEST_FIELD1_MAX);
@@ -93,7 +93,7 @@ public class SerializableSegmentTest {
   private static final String TEST_FIELD2_DT_NAME = "test_field2_dt_name";
   private static final Ref TEST_FIELD2_REF = new Ref(TEST_FIELD2_DT_ID);
   private static final int TEST_FIELD2_MIN = 0;
-  private static final int TEST_FIELD2_MAX = 13;
+  private static final String TEST_FIELD2_MAX = "13";
   private static final Field TEST_FIELD2 = new Field(TEST_FIELD2_ID, TEST_FIELD2_NAME, TEST_FIELD2_POSITION, TEST_FIELD2_USAGE,
       TEST_FIELD2_TEXT, TEST_FIELD2_CUSTOM, TEST_FIELD2_MAXLENGTH, TEST_FIELD2_MINLENGTH, 
       TEST_FIELD2_CONFLENGTH, TEST_FIELD2_REF, TEST_FIELD2_MIN, TEST_FIELD2_MAX);
@@ -119,7 +119,9 @@ public class SerializableSegmentTest {
     datatypesMap.put(TEST_FIELD2_DT_ID, TEST_FIELD2_DT_NAME);
     datatypesMap.put(TEST_DM1_DT_ID, TEST_DM1_DT_NAME);
     datatypesMap.put(TEST_DM2_DT_ID, TEST_DM2_DT_NAME);
-    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap);
+    //TODO need to check
+    Map<String,String> valuesetsMap = new HashMap<>();
+    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
     Element testElement = serializableSegment.serialize();
     assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
     assertEquals(1, testElement.getChildElements("DynamicMapping").size());
@@ -180,7 +182,9 @@ public class SerializableSegmentTest {
     Map<String,String> datatypesMap = new HashMap<>();
     datatypesMap.put(TEST_DM1_DT_ID, TEST_DM1_DT_NAME);
     datatypesMap.put(TEST_DM2_DT_ID, TEST_DM2_DT_NAME);
-    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap);
+    //TODO need to check
+    Map<String,String> valuesetsMap = new HashMap<>();
+    SerializableSegment serializableSegment = new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
     try {
       serializableSegment.serialize();
     } catch (ResourceSerializationException e) {

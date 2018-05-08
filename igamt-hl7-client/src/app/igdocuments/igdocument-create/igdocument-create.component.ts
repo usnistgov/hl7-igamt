@@ -27,6 +27,7 @@ export class IgDocumentCreateComponent {
 
   metaData: any= {};
   items: MenuItem[];
+  breadCurmp:MenuItem[];
   path: MenuItem[];
 
   selectdNodeMap={};
@@ -51,16 +52,28 @@ export class IgDocumentCreateComponent {
 
     this.items = [
       {
-      label: 'Ig Documents ',
+      label: 'Meta Data ',
 
       },
       {
-        label: 'Create new IG documents ',
+        label: 'Conformane Profiles'
       }
 
       ];
 
 
+
+
+    this.breadCurmp = [
+      {
+        label: 'IG Documents ',
+
+      },
+      {
+        label: 'Create New IG Document'
+      }
+
+    ];
 
 
 

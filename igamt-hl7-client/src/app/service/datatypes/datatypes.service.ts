@@ -1,16 +1,22 @@
-// import {Injectable} from '@angular/core';
-// import { Http} from '@angular/http';
-// import {HttpClient} from "@angular/common/http";
-//
-// @Injectable()
-// export class DatatypesService {
-//   constructor(private http: HttpClient) {}
-//   // public getDatatypes(libId, callback) {
-//   //   this.http.get('api/datatype-library/' +libId+ '/datatypes').map(res => res.json()).subscribe(data => {
-//   //     callback(data);
-//   //   });
-//   // }
-//   /*public saveDatatypes(datatypes) {
-//     this.http.post('api/datatypes/save', datatypes);
-//   }*/
-// }
+import {Injectable} from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import {DatatypesIndexedDbService} from '../indexed-db/datatypes/datatypes-indexed-db.service';
+
+@Injectable()
+export class DatatypesService {
+    constructor(private http: HttpClient, private datatypesIndexedDbService: DatatypesIndexedDbService) {}
+
+    public getDatatypeStructure(id, callback) {
+        const http = this.http;
+        this.datatypesIndexedDbService.getDatatypeStructure(id, function(clientDatatypeStructure){
+            if (clientDatatypeStructure == null) {
+                http.get('api/datatypes/' + id + '/structure').subscribe(serverDatatypeStructure => {
+                    callback(serverDatatypeStructure);
+                });
+            } else {
+                callback(clientDatatypeStructure);
+            }
+
+        });
+    }
+}

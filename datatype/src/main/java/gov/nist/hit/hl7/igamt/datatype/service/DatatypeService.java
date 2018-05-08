@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.datatype.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
@@ -26,6 +27,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 public interface DatatypeService {
 
   public Datatype findByKey(CompositeKey key);
+
+  public Datatype findLatestById(String id);
 
   public Datatype create(Datatype datatype);
 
@@ -38,24 +41,26 @@ public interface DatatypeService {
   public void delete(Datatype datatype);
 
   public void delete(CompositeKey key);
-  
+
   public void removeCollection();
-  
+
   public List<Datatype> findByDomainInfoVersion(String version);
-	
+
   public List<Datatype> findByDomainInfoScope(String scope);
-	
+
   public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-  
+
   public List<Datatype> findByName(String name);
-  
-  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
-  
+
+  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
+
   public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
-  
+
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
   
   public Datatype getLatestById(String id);
 
-  
+  public DatatypeStructure convertDomainToStructure(Datatype datatype);
+
 }

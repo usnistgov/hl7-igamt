@@ -1,0 +1,72 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_CWE",
+    "version": 1
+  },
+  "label": "CWETXT",
+  "scope": "ARCHIVED",
+  "version": "2.6",
+  "binding": {
+    "elementId": "59ccfa0e84aeb3275ab0bb09",
+    "children": [
+      {
+        "elementId": "59bbe249a9acdef2ee04f3ba",
+        "children": null,
+        "comments": null,
+        "valuesetBindings": [{
+          "valuesetId": "DDDDD",
+          "strength": "R",
+          "valuesetLocations": []
+        }],
+        "internalSingleCode": null,
+        "externalSingleCode": null,
+        "constantValue": null,
+        "predicate": null,
+        "predicateCrossRefs": null
+      }
+    ],
+    "conformanceStatements": null,
+    "conformanceStatementCrossRefs": null
+  },
+  "children": [
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3ba",
+      "name": "Identifier",
+      "position": 1,
+      "usage": "R",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ID"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bb",
+      "name": "Text",
+      "position": 2,
+      "usage": "RE",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "199",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ST"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bc",
+      "name": "Name of Coding System",
+      "position": 3,
+      "usage": "RE",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ID"}
+    }}
+  ]
+}

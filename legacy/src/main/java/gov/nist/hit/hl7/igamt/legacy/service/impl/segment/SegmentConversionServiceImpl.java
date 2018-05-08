@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
@@ -119,6 +120,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
       }
     }
     
+
     if(oldSegment.getFields().size()>0) {
       Set<gov.nist.hit.hl7.igamt.shared.domain.Field> fields = new HashSet<>();
       for(Field field : oldSegment.getFields()) {

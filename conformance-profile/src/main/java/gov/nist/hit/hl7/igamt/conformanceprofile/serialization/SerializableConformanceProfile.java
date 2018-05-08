@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Group;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
@@ -35,14 +36,16 @@ import nu.xom.Element;
 public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String,String> datatypeMap;
+  private Map<String,String> valuesetMap;
   
   /**
    * @param resource
    * @param position
    */
-  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, Map<String,String> datatypeMap) {
+  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, Map<String,String> datatypeMap, Map<String,String> valuesetMap) {
     super(conformanceProfile, position);
     this.datatypeMap = datatypeMap;
+    this.valuesetMap = valuesetMap;
   }
 
   @Override
@@ -84,10 +87,11 @@ public class SerializableConformanceProfile extends SerializableResource {
   /**
    * @param msgStructElm
    * @return
+   * @throws SerializationException 
    * @throws Exception
    */
   private Element serializeMsgStructElement(MsgStructElement msgStructElm)
-      throws MsgStructElementSerializationException {
+      throws SerializationException {
     Element msgStructElement;
     if (msgStructElm instanceof Group) {
       msgStructElement = serializeGroup((Group) msgStructElm);
@@ -136,10 +140,10 @@ public class SerializableConformanceProfile extends SerializableResource {
     }
   }
 
-  private Element serializeGroup(Group group) throws MsgStructElementSerializationException {
+  private Element serializeGroup(Group group) throws SerializationException {
     Element groupElement = new Element("Group");
     if(group.getBinding() != null) {
-      Element binding = super.serializeResourceBinding(group.getBinding());
+      Element binding = super.serializeResourceBinding(group.getBinding(), this.valuesetMap);
       if (binding != null) {
         groupElement.appendChild(binding);
       }

@@ -25,6 +25,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ListElement;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -95,6 +96,11 @@ public class IGDocumentController {
 		
 	}
 	
+	@RequestMapping(value = "api/igdocuments/{id}/save", method = RequestMethod.POST)
+	public void save(@RequestBody ChangedObjects changedObjects) {
+	  System.out.println(changedObjects.toString());
+	}
+	
 	
 	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET,produces = {"application/json"})
 
@@ -126,8 +132,8 @@ public class IGDocumentController {
 					clone.setUsername(username);
 					clone.setEvent(ev.getName());
 					clone.setId(new CompositeKey());
+	                clone.setName(profile.getName());
 					clone=conformanceProfileService.save(clone);
-					clone.setName(profile.getName());
 					savedIds.add(clone.getId().getId());
 				}
 			}

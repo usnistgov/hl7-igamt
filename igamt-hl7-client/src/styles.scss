@@ -23,6 +23,9 @@ span:hover.ig-list-title{
 }
 
 .ig-list-user{
+  font-style: italic;
+  font-size: 12px;
+  font-weight: 500;
 }
 .ig-list-image{
   width: 50px;
@@ -87,4 +90,13 @@ span:hover.ig-list-title{
 
 .cp-remove{
   cursor: pointer;
+}
+
+body .ui-breadcrumb {
+  background-color: #e9ecef;
+  border: 1px solid #d8d8d8;
+  height: 20px;
+  padding: 0px;
+  font-size: 11px;
+  line-height: 1;
 }

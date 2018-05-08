@@ -24,12 +24,17 @@
 
           </div>
           <span *ngIf="ig.dateUpdated" class="ig-list-date">
-            <i class="fa fa-calendar"></i> Date Updated:{{ig.dateUpdated|date }} <a (click)="toggleMoreInfo(ig.id)" style="text-decoration: underline; cursor: pointer"> More details...</a>
-
+            <i class="fa fa-calendar"></i> Date Updated:{{ig.dateUpdated|date }}
           </span>
           <span *ngIf="ig.username" class="ig-list-user">
-            ,<i class="fa fa-user"></i> Author:  {{ig.username}}
+            ,<i class="fa fa-user"></i> Author:  {{ig.username}},
           </span>
+          <span class="ig-list-date">
+
+            <a (click)="toggleMoreInfo(ig.id)" style="text-decoration: underline; cursor: pointer"> More details...</a>
+
+          </span>
+
 
 
           <div  *ngIf="moreInfoMap[ig.id.id]==true">

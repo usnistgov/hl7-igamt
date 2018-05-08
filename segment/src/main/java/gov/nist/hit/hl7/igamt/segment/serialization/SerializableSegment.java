@@ -36,14 +36,16 @@ import nu.xom.Element;
 public class SerializableSegment extends SerializableResource {
 
   private Map<String, String> datatypesMap;
+  private Map<String, String> valuesetNamesMap;
   
   /**
    * @param segment
    * @param position
    */
-  public SerializableSegment(Segment segment, String position, Map<String, String> datatypesMap) {
+  public SerializableSegment(Segment segment, String position, Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
   }
 
   @Override
@@ -60,7 +62,7 @@ public class SerializableSegment extends SerializableResource {
       } catch (DatatypeNotFoundException exception) {
         throw new DynamicMappingSerializationException();
       }
-      Element bindingElement = super.serializeResourceBinding(segment.getBinding());
+      Element bindingElement = super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
       if(bindingElement != null) {
         segmentElement.appendChild(bindingElement);
       }

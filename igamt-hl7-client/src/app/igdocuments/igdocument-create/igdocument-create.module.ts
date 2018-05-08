@@ -17,6 +17,7 @@ import {ButtonModule} from "primeng/components/button/button";
 import {BlockUIModule} from 'primeng/blockui';
 import {FileUploadModule} from 'primeng/fileupload';
 
+import {BreadcrumbModule} from 'primeng/breadcrumb';
 
 @NgModule({
   imports: [
@@ -31,6 +32,7 @@ import {FileUploadModule} from 'primeng/fileupload';
     BlockUIModule,
     FileUploadModule,
     MessageModule,
+    BreadcrumbModule,
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
 
 

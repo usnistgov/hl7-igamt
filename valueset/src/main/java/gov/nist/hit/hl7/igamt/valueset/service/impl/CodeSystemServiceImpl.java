@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -79,6 +80,15 @@ public List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(S
 		String identifier) {
 	// TODO Auto-generated method stub
 	return  codeSystemRepository.findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(scope,  hl7version, identifier);
+}
+
+/* (non-Javadoc)
+ * @see gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService#findLatestById(java.lang.String)
+ */
+@Override
+public CodeSystem findLatestById(String id) {
+  // TODO Auto-generated method stub
+  return null;
 }
   
 

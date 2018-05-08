@@ -1,0 +1,38 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_XCN",
+    "version": 1
+  },
+  "label": "XCN",
+  "scope": "ARCHIVED",
+  "version": "2.6",
+  "binding": null,
+  "children": [
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3ba",
+      "name": "Identifier",
+      "position": 1,
+      "usage": "R",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "20",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ID"}
+    }},
+    {"data": {
+      "id": "59bbe249a9acdef2ee04f3bb",
+      "name": "FIELD22_CWE",
+      "position": 2,
+      "usage": "RE",
+      "type": "COMPONENT",
+      "text": "",
+      "custom": false,
+      "maxLength": "199",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_CWE"}
+    }}
+  ]
+}

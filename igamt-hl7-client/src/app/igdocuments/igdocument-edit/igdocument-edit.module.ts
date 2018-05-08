@@ -33,6 +33,9 @@ import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
 import {StepsModule} from "primeng/components/steps/steps";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
+import {SegmentEditModule} from "./segment-edit/segment-edit.module";
+
+
 @NgModule({
 	imports: [
 		CommonModule,
@@ -58,7 +61,8 @@ import {FileUploadModule} from "primeng/components/fileupload/fileupload";
     FroalaViewModule.forRoot(),
     PanelMenuModule,
     ToolbarModule,
-    FileUploadModule
+    FileUploadModule,
+    SegmentEditModule
 
 
 

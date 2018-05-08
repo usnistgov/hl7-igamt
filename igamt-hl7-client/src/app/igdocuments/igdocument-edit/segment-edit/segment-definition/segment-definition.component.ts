@@ -12,13 +12,5 @@ export class SegmentDefinitionComponent {
   constructor(private route : ActivatedRoute){}
 
   ngOnInit(){
-    this.segmentDefTabs = [
-      {label: 'Pre-text', routerLink:'./pre'},
-      {label: 'Structure', routerLink:'./structure'},
-      {label: 'Post-text', routerLink:'./post'},
-      {label: 'Conf. Statements', routerLink:'./confstatements'},
-      {label: 'Predicates', routerLink:'./predicates'},
-      {label: 'Co-constraints', routerLink : './coconstraints'}
-    ];
   }
 }

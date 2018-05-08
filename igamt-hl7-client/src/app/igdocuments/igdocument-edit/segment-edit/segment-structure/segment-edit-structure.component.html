@@ -1,0 +1,148 @@
+<h2>Segment Structure</h2>
+
+<div *ngIf="segmentStructure">
+    <p-treeTable [value]="segmentStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
+
+        <p-column header="Name" [style]="{'width':'350px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <display-badge [type]="node.data.type"></display-badge>{{node.data.position}}. {{node.data.name}}
+            </ng-template>
+        </p-column>
+
+        <p-column header="Usage" [style]="{'width':'100px'}" >
+            <ng-template let-col let-node="rowData" pTemplate="body" >
+                <div *ngIf="node.data.type === 'FIELD'">
+                    <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
+                </div>
+                <div *ngIf="node.data.type !== 'FIELD'">
+                    {{node.data.usage}}
+                </div>
+            </ng-template>
+
+        </p-column>
+
+        <p-column header="Cardinality" [style]="{'width':'100px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.type === 'FIELD'">
+                    <input [(ngModel)]="node.data.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"/>
+                    <input [(ngModel)]="node.data.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
+                </div>
+            </ng-template>
+        </p-column>
+
+        <p-column header="Length" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.type === 'FIELD'">
+                    <div *ngIf="node.data.minLength !== 'NA' && node.data.datatype.leaf">
+                        <input [(ngModel)]="node.data.minLength" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
+                        <input [(ngModel)]="node.data.maxLength" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
+                        <i class="fa fa-times" (click)="delLength(node)" style="width:20%;"></i>
+                    </div>
+                </div>
+                <div *ngIf="node.data.type !== 'FIELD'">
+                    [{{node.data.minLength}}..{{node.data.maxLength}}]
+                </div>
+            </ng-template>
+        </p-column>
+
+        <p-column header="Conf. Length" [style]="{'width':'120px'}" >
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.type === 'FIELD'">
+                    <ng-container *ngIf="node.data.confLength !== 'NA' && node.data.datatype.leaf">
+                        <input [(ngModel)]="node.data.confLength" type="text" style="width: 80%;border-width:0px 0px 1px 0px"/>
+                        <i class="fa fa-times" (click)="delConfLength(node)" style="width:20%;"></i>
+                    </ng-container>
+                </div>
+                <div *ngIf="node.data.type !== 'FIELD'">
+                    {{node.data.confLength}}
+                </div>
+            </ng-template>
+        </p-column>
+
+        <p-column header="Datatype" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="!node.data.datatype.editMode">
+                    <display-ref [elm]="node.data.datatype"></display-ref>
+                    <i class="fa fa-pencil" *ngIf="node.data.type === 'FIELD'" (click)="makeEditModeBasic(node)"></i>
+                </div>
+                <div *ngIf="node.data.datatype.editMode === 'basic'">
+                    <p-dropdown [options]="node.data.dtOptions" [(ngModel)]="node.data.datatype" (onChange)="onDatatypeChange(node)" appendTo="body" [style]="{'width':'100%'}">
+                        <ng-template let-dt pTemplate="body">
+                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                                <display-ref *ngIf="dt.label !== 'Change Datatype root'" [elm]="dt.value"></display-ref>
+                                <span *ngIf="dt.label==='Change Datatype root'"(click)="makeEditModeAll(node)">{{dt.label}}</span>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+                <div *ngIf="node.data.datatype.editMode === 'all'">
+                    <p-dropdown [options]="datatypeOptions" [(ngModel)]="node.data.datatype" (onChange)="onDatatypeChange(node)" appendTo="body" [style]="{'width':'100%'}" filter="true">
+                        <ng-template let-dt pTemplate="body">
+                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                                <display-ref [elm]="dt.value"></display-ref>
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+            </ng-template>
+        </p-column>
+        <p-column header="ValueSet" [style]="{'width':'150px'}">
+            <ng-template let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.valuesetAllowed">
+                    <div *ngIf="node.data.segmentBinding">
+                        <div *ngFor="let vs of node.data.segmentBinding.valuesetBindings">
+                            <display-ref [elm]="vs"></display-ref>
+                            <i class="fa fa-times" (click)="delValueSetBinding(node.data.segmentBinding, vs)" style="width:20%;"></i>
+                        </div>
+                    </div>
+                    <i class="fa fa-plus" (click)="addNewValueSetBinding(node)"></i>
+                </div>
+
+            </ng-template>
+        </p-column>
+
+
+        <p-column header="Single Code" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+            </ng-template>
+        </p-column>
+
+        <p-column header="Constant Value" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+            </ng-template>
+        </p-column>
+
+        <p-column header="Predicate" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+            </ng-template>
+        </p-column>
+        <p-column header="Text Definition" [style]="{'width':'150px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.type === 'FIELD'">
+                    <ng-container *ngIf="node.data.text">
+                        <span (click)="editTextDefinition(node)">{{truncate(node.data.text)}}</span>
+                        <i class="fa fa-times" (click)="delTextDefinition(node)" style="width:20%;"></i>
+                    </ng-container>
+                    <ng-container *ngIf="!node.data.text">
+                        <i class="fa fa-pencil" (click)="editTextDefinition(node)"></i>
+                    </ng-container>
+                </div>
+            </ng-template>
+        </p-column>
+        <p-column header="Comment" [style]="{'width':'100px'}">
+            <ng-template let-col let-node="rowData" pTemplate="body">
+
+            </ng-template>
+        </p-column>
+
+        <!--<p-column header="DATA" [style]="{'width':'800px'}">-->
+            <!--<ng-template let-col let-node="rowData" pTemplate="body">-->
+                <!--<pre>{{node.data | json}}</pre>-->
+            <!--</ng-template>-->
+        <!--</p-column>-->
+    </p-treeTable>
+
+    <p-dialog *ngIf="selectedNode" header="Edit Text Definition of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
+        <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
+    </p-dialog>
+</div>
