@@ -18,10 +18,17 @@ import java.util.List;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
+
+import com.mongodb.WriteResult;
 
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
@@ -29,7 +36,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Field;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -43,6 +49,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
+  
+  @Autowired
+  MongoTemplate mongoTemplate;
 
   @Autowired
   DatatypeService datatypeService;
@@ -208,6 +217,42 @@ public class SegmentServiceImpl implements SegmentService {
       result.setPostDef(segment.getPreDef());
       return result;
     }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveMetadata(gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata)
+   */
+  @Override
+  public Segment saveSegment(ChangedSegment changedSegment) {
+    if(changedSegment != null && changedSegment.getId() != null){
+      Segment segment = this.findLatestById(changedSegment.getId());
+      
+      if(segment != null){
+        if(changedSegment.getMetadata() != null){
+          segment.setDescription(changedSegment.getMetadata().getDescription());
+          segment.setExt(changedSegment.getMetadata().getExt());
+          segment.setName(changedSegment.getMetadata().getName());
+          segment.setComment(changedSegment.getMetadata().getAuthorNote());
+          segment.getDomainInfo().setScope(changedSegment.getMetadata().getScope());
+          segment.getDomainInfo().setVersion(changedSegment.getMetadata().getVersion());
+        }
+        
+        if(changedSegment.getPostDef() != null){
+          segment.setPostDef(changedSegment.getPostDef().getPostDef());
+        }
+        
+        if(changedSegment.getPreDef() != null){
+          segment.setPreDef(changedSegment.getPreDef().getPreDef());
+        }
+        
+        if(changedSegment.getStructure() != null){
+//TODO
+        }
+      }
+      return this.save(segment);   
+    }
+   
     return null;
   }
 
