@@ -13,18 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
-
-import com.mongodb.WriteResult;
 
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -247,7 +244,13 @@ public class SegmentServiceImpl implements SegmentService {
         }
         
         if(changedSegment.getStructure() != null){
-//TODO
+          changedSegment.getStructure().getChildren();
+          segment.setBinding(changedSegment.getStructure().getBinding());
+          Set<Field> fields = new HashSet<Field>();
+          for(FieldDisplay fd : changedSegment.getStructure().getChildren()){
+            fields.add(fd.getData());
+          }
+          segment.setChildren(fields);
         }
       }
       return this.save(segment);   
@@ -255,5 +258,4 @@ public class SegmentServiceImpl implements SegmentService {
    
     return null;
   }
-
 }
