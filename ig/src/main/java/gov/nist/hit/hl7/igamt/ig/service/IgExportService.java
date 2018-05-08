@@ -11,17 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service;
+package gov.nist.hit.hl7.igamt.ig.service;
 
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
-public interface ExportService {
+public interface IgExportService {
 
-  public ExportedFile exportSerializedElementToHtml(String serializedElement) throws ExportException;
-  
+  public ExportedFile exportIgDocumentToHtml(String igDocumentId) throws ExportException;
+
 }

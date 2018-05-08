@@ -11,17 +11,37 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service;
-
-import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
-import gov.nist.hit.hl7.igamt.export.exception.ExportException;
+package gov.nist.hit.hl7.igamt.export.exception;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
-public interface ExportService {
+public class ExportException extends Exception {
 
-  public ExportedFile exportSerializedElementToHtml(String serializedElement) throws ExportException;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 2531849434075776303L;
   
+  private Exception source;
+
+  public ExportException(Exception source) {
+    super();
+    this.source = source;
+  }
+  
+  public ExportException(Exception source, String message) {
+    super(message);
+    this.source = source;
+  }
+
+  public Exception getSource() {
+    return source;
+  }
+
+  public void setSource(Exception source) {
+    this.source = source;
+  }
+
 }
