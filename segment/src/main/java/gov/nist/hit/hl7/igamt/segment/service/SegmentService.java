@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
