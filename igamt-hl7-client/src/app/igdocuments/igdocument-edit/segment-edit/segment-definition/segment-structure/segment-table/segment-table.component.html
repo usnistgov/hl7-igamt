@@ -1,3 +1,5 @@
+....
+
 <div style="overflow: scroll;">
 
   <div class="table-context">
@@ -15,12 +17,12 @@
     </span>
       Component
   </div>
-
+<!--
   <p-treeTable [value]="tree" (onNodeExpand)="loadNode($event)" tableStyleClass="table-condensed table-stripped table-bordered">
     
     <p-column field="obj.name" header="Name" [style]="{'width':'350px'}">
       <ng-template let-col let-node="rowData" pTemplate="body">
-        <display-badge [type]="node.data.obj.type"></display-badge> {{node.data.obj.position}} {{node.data.obj.name}}
+        <structure-badge [type]="node.data.obj.type"></structure-badge> {{node.data.obj.position}} {{node.data.obj.name}}
       </ng-template>
     </p-column>
 
@@ -76,14 +78,14 @@
     <p-column header="Datatype" [style]="{'width':'150px'}">
       <ng-template let-col let-node="rowData" pTemplate="body">
         <div *ngIf="!node.data.obj.datatype.edit">
-          <display-label [elm]="node.data.obj.datatype"></display-label>
+          <structure-label [elm]="node.data.obj.datatype"></structure-label>
           <i class="fa fa-pencil" *ngIf="node.data.obj.type === 'field'" (click)="makeEditModeDT(node)"></i>
         </div>
         <div *ngIf="node.data.obj.datatype.edit">
             <p-dropdown [options]="node.data.obj.datatype.options" [(ngModel)]="node.data.obj.datatype" (onChange)="onChange(node)" appendTo="body" [style]="{'width':'100%'}">
                 <ng-template let-dt pTemplate="body">
                     <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                        <display-label *ngIf="dt.label!=='Change Datatype root'" [elm]="dt.value"></display-label>
+                        <structure-label *ngIf="dt.label!=='Change Datatype root'" [elm]="dt.value"></structure-label>
                         <span *ngIf="dt.label==='Change Datatype root'">{{dt.label}}</span>
                     </div>
                 </ng-template>
@@ -175,7 +177,7 @@
         </ng-template>
     </p-column>
   </p-treeTable>
-
+-->
 </div>
 
-<datatype-binding-picker></datatype-binding-picker>
+<!--<datatype-binding-picker></datatype-binding-picker>-->

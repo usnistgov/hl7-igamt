@@ -16,6 +16,11 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
@@ -24,43 +29,57 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public interface ConformanceProfileService {
 
-	public ConformanceProfile findByKey(CompositeKey key);
+  public ConformanceProfile findByKey(CompositeKey key);
 
-	public ConformanceProfile create(ConformanceProfile conformanceProfile);
+  public ConformanceProfile findLatestById(String id);
 
-	public ConformanceProfile save(ConformanceProfile conformanceProfile);
+  public ConformanceProfile create(ConformanceProfile conformanceProfile);
 
-	public List<ConformanceProfile> findAll();
+  public ConformanceProfile save(ConformanceProfile conformanceProfile);
 
-	public void delete(ConformanceProfile conformanceProfile);
+  public List<ConformanceProfile> findAll();
 
-	public void delete(CompositeKey key);
+  public void delete(ConformanceProfile conformanceProfile);
 
-	public void removeCollection();
+  public void delete(CompositeKey key);
 
-	public List<ConformanceProfile> findByIdentifier(String identifier);
+  public void removeCollection();
 
-	public List<ConformanceProfile> findByMessageType(String messageType);
+  public List<ConformanceProfile> findByIdentifier(String identifier);
 
-	public List<ConformanceProfile> findByEvent(String messageType);
+  public List<ConformanceProfile> findByMessageType(String messageType);
 
-	public List<ConformanceProfile> findByStructID(String messageType);
+  public List<ConformanceProfile> findByEvent(String messageType);
 
-	public List<ConformanceProfile> findByDomainInfoVersion(String version);
+  public List<ConformanceProfile> findByStructID(String messageType);
 
-	public List<ConformanceProfile> findByDomainInfoScope(String scope);
+  public List<ConformanceProfile> findByDomainInfoVersion(String version);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  public List<ConformanceProfile> findByDomainInfoScope(String scope);
 
-	public List<ConformanceProfile> findByName(String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope,
+      String verion);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
-			String name);
+  public List<ConformanceProfile> findByName(String name);
 
-	public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
+  public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
 
-	ConformanceProfile findDisplayFormat(CompositeKey id);
+  public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
+
+  ConformanceProfile findDisplayFormat(CompositeKey id);
+
+  public ConformanceProfileStructure convertDomainToStructure(
+      ConformanceProfile conformanceProfile);
+
+  public DisplayMetadata convertDomainToMetadata(ConformanceProfile conformanceProfile);
+
+  public PreDef convertDomainToPredef(ConformanceProfile conformanceProfile);
+
+  public PostDef convertDomainToPostdef(ConformanceProfile conformanceProfile);
+
+  public ConformanceProfile saveConformanceProfile(ChangedConformanceProfile changedConformanceProfile);
 
 }

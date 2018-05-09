@@ -19,7 +19,6 @@ declare var $ :any;
 export class SegmentTableComponent {
 
   @Input() segment;
-  @ViewChild(DatatypeBindingPickerComponent) dtPicker: DatatypeBindingPickerComponent;
 
   usages : any[];
   tree;
@@ -108,21 +107,21 @@ export class SegmentTableComponent {
   }
 
   openDTDialog(node) {
-    this.dtPicker.open({
-      selectedDatatypeId: node.data.obj.datatype.id
-    }).subscribe(
-      result => {
-        if(result){
-          node.data.obj.datatype = result;
-          node.children = null;
-          if(node.data.obj.datatype.numOfChildren > 0){
-            this.treeNodeService.getComponentsAsTreeNodes(node, this.segment).then(nodes => node.children = nodes);
-          }else {
-            node.leaf = true;
-          }
-
-        }
-      }
-    );
+    // this.dtPicker.open({
+    //   selectedDatatypeId: node.data.obj.datatype.id
+    // }).subscribe(
+    //   result => {
+    //     if(result){
+    //       node.data.obj.datatype = result;
+    //       node.children = null;
+    //       if(node.data.obj.datatype.numOfChildren > 0){
+    //         this.treeNodeService.getComponentsAsTreeNodes(node, this.segment).then(nodes => node.children = nodes);
+    //       }else {
+    //         node.leaf = true;
+    //       }
+    //
+    //     }
+    //   }
+    // );
   }
 }

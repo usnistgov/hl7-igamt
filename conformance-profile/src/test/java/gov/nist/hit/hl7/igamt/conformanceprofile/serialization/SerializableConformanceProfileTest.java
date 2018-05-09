@@ -80,8 +80,10 @@ public class SerializableConformanceProfileTest {
     Map<String, String> datatypeMap = new HashMap<>();
     datatypeMap.put("test_segmentref1_ref", "test_segmentref1_datatype");
     datatypeMap.put("test_segmentref2_ref", "test_segmentref2_datatype");
+    //TODO need to check
+    Map<String, String> valuesetMap = new HashMap<>();
     SerializableConformanceProfile serializableConformanceProfile =
-        new SerializableConformanceProfile(conformanceProfile, "1", datatypeMap);
+        new SerializableConformanceProfile(conformanceProfile, "1", datatypeMap, valuesetMap);
     Element conformanceProfileElement = serializableConformanceProfile.serialize();
     assertEquals(TEST_IDENTIFIER, conformanceProfileElement.getAttribute("identifier").getValue());
     assertEquals(TEST_MESSAGETYPE, conformanceProfileElement.getAttribute("messageType").getValue());

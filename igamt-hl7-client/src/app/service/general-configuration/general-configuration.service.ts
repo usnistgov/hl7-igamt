@@ -2,7 +2,6 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -13,12 +12,30 @@ export class GeneralConfigurationService {
 
   _valueSetAllowedComponents : any;
 
-  constructor(private http : Http){
+  _singleValueSetDTs: any;
+
+  _valueSetAllowedFields:any;
+
+  _valuesetStrengthOptions:any;
+
+  _codedElementDTs:any;
+
+  constructor(){
 
     //TODO GETTING USAGES FROM API
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
+    this._valuesetStrengthOptions = [ { label : 'Select Strength', value : null},{ label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
-    this._valueSetAllowedComponents = 
+    this._codedElementDTs = ["CE", "CF", "CWE", "CNE", "CSU"];
+    this._singleValueSetDTs = ["ID", "IS", "ST", "NM", "HD"];
+    this._valueSetAllowedFields =[
+        {
+          "segmentName": "PID",
+          "location": 23,
+          "type":"FIELD"
+        }
+    ];
+    this._valueSetAllowedComponents =
     [
       {
         "dtName": "CNS",
@@ -108,4 +125,32 @@ export class GeneralConfigurationService {
     return this._valueSetAllowedComponents;
   }
 
+  isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
+    if(this._valueSetAllowedDTs.includes(dtName)) return true;
+    if(this._valueSetAllowedFields.includes({
+        "segmentName": SegmentName,
+        "location": position,
+        "type":type
+    })) return true;
+
+    if(this._valueSetAllowedComponents.includes({
+          "dtName": parrentDT,
+          "location": position
+    })) return true;
+    return false;
+  }
+
+  isMultipleValuseSetAllowed(dtName){
+    if(this._singleValueSetDTs.includes(dtName)) return false;
+    return true;
+  }
+
+  getValuesetLocations(dtName, version){
+    if(this._codedElementDTs.includes(dtName)){
+      if(['2.1', '2.2', '2.3', '2.3.1', '2.4', '2.5', '2.5.1', '2.6'].includes(version)) return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] }];
+      if(['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] },{ label : '1 or 4 or 10', value : [1,4,10] }];
+    }
+    return null;
+
+  }
 }
