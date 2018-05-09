@@ -65,7 +65,7 @@ export class IndexedDbService {
   public initializeDatabase (igDocumentId ) {
     this.igDocumentId = igDocumentId;
   }
-  public addTocElements (profileComponents,conformanceProfiles,compositeProfiles,segments,valueSets) {
+  public addTocElements (profileComponents, conformanceProfiles, compositeProfiles, segments, valueSets) {
     console.log("addding segment");
       this.tocDataBase.transaction('rw', this.tocDataBase.segments, async () => {
 
