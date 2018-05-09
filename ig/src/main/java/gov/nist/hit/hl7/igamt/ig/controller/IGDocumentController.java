@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.service.impl.CrudService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -41,6 +42,10 @@ public class IGDocumentController {
 
 	@Autowired 
 	IgService igService;
+	
+
+    @Autowired 
+    DisplayConverterService displayConverter ;
 	
 	@Autowired 
 	MessageEventService  messageEventService;
@@ -86,7 +91,7 @@ public class IGDocumentController {
 			
 			
 			Ig igdoument =igService.findLatestById(id);
-			IGDisplay ret = igService.convertDomainToModel(igdoument);
+			IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
 			return ret;
 			
 		}else {

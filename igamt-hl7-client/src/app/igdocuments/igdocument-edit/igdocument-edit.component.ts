@@ -144,11 +144,10 @@ export class IgDocumentEditComponent {
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.ig= x;
-      console.log(this.ig.toc.content);
-      console.log(this.ig.toc.content.children);
 
 
-      this.nodes=this.ig.toc.content[0].children;
+
+      this.nodes=this.ig.toc;
 
     });
 

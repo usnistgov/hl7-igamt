@@ -1,10 +1,11 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class DomainInfo {
   private String version;
-  private Set<String> compatibilityVersion;
+  private Set<String> compatibilityVersion=new HashSet<String>();
   private Scope scope;
   public String getVersion() {
     return version;
@@ -27,6 +28,12 @@ public class DomainInfo {
   }
   public void setScope(Scope scope) {
     this.scope = scope;
+  }
+  public DomainInfo(String version, Scope scope) {
+    super();
+    this.version = version;
+    this.scope = scope;
+    this.compatibilityVersion.add(version);
   }
   
   

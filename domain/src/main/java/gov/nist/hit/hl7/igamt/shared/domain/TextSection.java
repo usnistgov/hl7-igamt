@@ -6,28 +6,22 @@ import java.util.Set;
 
 public class TextSection extends Section {
   
-  private String parentId;
-  private Set<Section> children;
+  public TextSection(String id, String description, Type type, int position, String label) {
+    super(id, description, type, position, label);
+  }
+
+  private Set<TextSection> children;
 
   
   public TextSection() {
     super();
     
-    this.setType(Type.TEXT);
   }
-
-  public String getParentId() {
-    return parentId;
-  }
-  public void setParentId(String parentId) {
-    this.parentId = parentId;
-  }
-
-  public Set<Section> getChildren() {
+  public Set<TextSection> getChildren() {
 	return children;
   }
 
-  public void setChildren(Set<Section> children) {
+  public void setChildren(Set<TextSection> children) {
 	this.children = children;
   }
  

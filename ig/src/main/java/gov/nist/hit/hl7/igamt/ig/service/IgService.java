@@ -24,18 +24,13 @@ public interface IgService {
 	  public void delete(CompositeKey id);
 	  public Ig save(Ig ig);
 	  public List<Ig> findByUsername(String username);
-	  public IGDisplay convertDomainToModel(Ig ig);
-	  public Ig ConvertModelToDomain(IGDisplay ig);
+
 	  public List<Ig> findLatestByUsername(String username);
 	  public Ig findLatestById(String id);
 	  public List<ListElement> convertListToDisplayList(List<Ig> igdouments);
 	  public List<Ig> finByScope(String string);
 	  public Ig CreateEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
-    /**
-     * @param username
-     * @return
-     */
-    List<Ig> findIgIdsForUser(String username);
+      List<Ig> findIgIdsForUser(String username);
 
 		
 }

@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.shared.domain;
 public class Link {
   private CompositeKey id;
   private int position;
+  private DomainInfo domainInfo;
+  private Type type;
   
  public Link(CompositeKey id, int position) {
     super();
@@ -30,6 +32,22 @@ public class Link {
 public Link() {
 	super();
 	// TODO Auto-generated constructor stub
+}
+
+public DomainInfo getDomainInfo() {
+  return domainInfo;
+}
+
+public void setDomainInfo(DomainInfo domainInfo) {
+  this.domainInfo = domainInfo;
+}
+
+public Type getType() {
+  return type;
+}
+
+public void setType(Type type) {
+  this.type = type;
 }
 
 }

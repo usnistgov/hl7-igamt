@@ -31,7 +31,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     console.log(igId)
       this.http.get("/api/igdocuments/"+igId+"/display").subscribe(x=>{
        this.ig= x;
-        this.parseToc(this.ig.toc.content[0]);
+        this.parseToc(this.ig.toc);
 
     });
 

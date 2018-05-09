@@ -20,11 +20,15 @@ import gov.nist.hit.hl7.igamt.shared.domain.Field;
 import gov.nist.hit.hl7.igamt.shared.domain.Group;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.Registry;
+import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 @Service
@@ -45,7 +49,7 @@ public class CrudServiceImpl implements CrudService {
 
 	@Override
 	public void addConformanceProfiles(Set<String> ids, Ig ig) {
-		Registry reg= ig.getConformanceProfileLibrary();
+	  ConformanceProfileRegistry reg= ig.getConformanceProfileRegistry();
 		if(reg!=null) {
 			if(reg.getChildren()!=null) {
 			Set<String> existants= mapLinkToId(reg.getChildren())	;
@@ -58,11 +62,8 @@ public class CrudServiceImpl implements CrudService {
 			reg.getChildren().add(link);
 				}
 			}
+		 }
 		}
-		}
-		
-		
-		
 	}
 
 	private void addDependecies(ConformanceProfile cp, Ig ig) {
@@ -109,7 +110,7 @@ public class CrudServiceImpl implements CrudService {
 
 	@Override
 	public void addSegments(Set<String> ids, Ig ig) {
-		Registry reg= ig.getSegmentLibrary();
+	  SegmentRegistry reg= ig.getSegmentRegistry();
 		if(reg!=null) {
 			if(reg.getChildren()!=null) {
 			Set<String> existants= mapLinkToId(reg.getChildren());
@@ -175,7 +176,7 @@ public class CrudServiceImpl implements CrudService {
 	@Override
 	public void addDatatypes(Set<String> ids, Ig ig) {
 		// TODO Auto-generated method stub
-		Registry reg= ig.getDatatypeLibrary();
+	  DatatypeRegistry reg= ig.getDatatypeRegistry();
 		if(reg!=null) {
 			if(reg.getChildren()!=null) {
 			Set<String> existants= mapLinkToId(reg.getChildren())	;
@@ -191,7 +192,7 @@ public class CrudServiceImpl implements CrudService {
 				}
 			}
 		}
-			}
+	}
 
 	}
 	private void addDependecies(ComplexDatatype datatype, Ig ig) {
@@ -222,7 +223,7 @@ public class CrudServiceImpl implements CrudService {
 	@Override
 	public void addValueSets(Set<String> ids, Ig ig) {
 		// TODO Auto-generated method stub
-		Registry reg= ig.getValueSetLibrary();
+	    ValueSetRegistry reg= ig.getValueSetRegistry();
 		if(reg!=null) {
 			if(reg.getChildren()!=null) {
 			Set<String> existants= mapLinkToId(reg.getChildren());
@@ -232,9 +233,8 @@ public class CrudServiceImpl implements CrudService {
 			if(valueSet !=null) {
 			Link link= new Link(valueSet.getId());
 			reg.getChildren().add(link);
-			
 				}
-			}
+			  }
 			}
 		}
 	}
@@ -244,6 +244,9 @@ public class CrudServiceImpl implements CrudService {
         Set<String> ids = links.stream().map(x -> x.getId().getId()).collect(Collectors.toSet());
 		return ids;
 	}
+	
+	
+	
 
 	
 	
