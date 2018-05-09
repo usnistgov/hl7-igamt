@@ -3,15 +3,15 @@
  */
 import Dexie from 'dexie';
 
-export class TreeData {
+export class TocNode {
   id?: string;
-  data?: any;
+  treeNode?: any;
 }
 
 export class TocDatabase extends Dexie {
 
-  constructor(name) {
-    super(name);
+  constructor() {
+    super('tocDataBase');
     this.version(1).stores({
       datatypes: '&id',
       segments: '&id',
