@@ -1,14 +1,14 @@
-package gov.nist.hit.hl7.igamt.segment.domain.display;
+package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
-public class SegmentPostDef {
+public class PreDef {
   private CompositeKey id;
   private String label;
   private Scope scope;
   private String version;
-  private String postDef;
+  private String preDef;
 
   public CompositeKey getId() {
     return id;
@@ -42,12 +42,12 @@ public class SegmentPostDef {
     this.version = version;
   }
 
-  public String getPostDef() {
-    return postDef;
+  public String getPreDef() {
+    return preDef;
   }
 
-  public void setPostDef(String postDef) {
-    this.postDef = postDef;
+  public void setPreDef(String preDef) {
+    this.preDef = preDef;
   }
 
 

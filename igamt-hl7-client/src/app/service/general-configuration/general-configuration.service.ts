@@ -16,10 +16,12 @@ export class GeneralConfigurationService {
 
   _valueSetAllowedFields:any;
 
+  _valuesetStrengthOptions:any;
   constructor(){
 
     //TODO GETTING USAGES FROM API
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
+    this._valuesetStrengthOptions = [ { label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
     this._singleValueSetDTs = ["ID", "IS", "ST", "NM", "HD"];
     this._valueSetAllowedFields =[

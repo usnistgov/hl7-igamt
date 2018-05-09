@@ -16,7 +16,11 @@ package gov.nist.hit.hl7.igamt.datatype.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
@@ -35,7 +39,7 @@ public interface DatatypeService {
   public Datatype save(Datatype datatype);
 
   public List<Datatype> findAll();
-  
+
   public List<Datatype> findByScope(Scope scope);
 
   public void delete(Datatype datatype);
@@ -63,4 +67,11 @@ public interface DatatypeService {
 
   public DatatypeStructure convertDomainToStructure(Datatype datatype);
 
+  public DisplayMetadata convertDomainToMetadata(Datatype datatype);
+
+  public PreDef convertDomainToPredef(Datatype datatype);
+
+  public PostDef convertDomainToPostdef(Datatype datatype);
+
+  public Datatype saveDatatype(ChangedDatatype changedDatatype);
 }

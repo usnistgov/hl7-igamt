@@ -1,9 +1,9 @@
-package gov.nist.hit.hl7.igamt.segment.domain.display;
+package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
-public class SegmentMetadata {
+public class DisplayMetadata {
   private CompositeKey id;
   private Scope scope;
   private String version;

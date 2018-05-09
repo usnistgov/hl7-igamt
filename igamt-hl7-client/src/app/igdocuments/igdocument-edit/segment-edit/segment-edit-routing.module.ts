@@ -12,7 +12,7 @@ import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-st
   imports: [
     RouterModule.forChild([
         {
-            path: ':segmentId', component: SegmentEditMetadataComponent,
+            path: ':segmentId', component: SegmentEditStructureComponent,
         },
         {
             path: ':segmentId/metadata', component: SegmentEditMetadataComponent,

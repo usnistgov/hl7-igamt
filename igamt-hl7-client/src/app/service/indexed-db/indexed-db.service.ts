@@ -122,6 +122,7 @@ class ChangedObjects {
   igDocumentId?: string;
   segments?: Array<IObject>;
   datatypes?: Array<IObject>;
+  conformanceProfiles?: Array<IObject>;
   valuesets?: Array<IObject>;
   constructor(igDocumentId) {
     this.igDocumentId = igDocumentId;

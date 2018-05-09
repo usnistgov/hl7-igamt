@@ -34,12 +34,13 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
 import {StepsModule} from "primeng/components/steps/steps";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
+import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
 
 
 @NgModule({
 	imports: [
-		CommonModule,
-		IgDocumentEditRoutingModule,
+	  CommonModule,
+    IgDocumentEditRoutingModule,
     AccordionModule,
     OverlayPanelModule,
     ButtonModule,
@@ -62,19 +63,14 @@ import {SegmentEditModule} from "./segment-edit/segment-edit.module";
     PanelMenuModule,
     ToolbarModule,
     FileUploadModule,
-    SegmentEditModule
-
-
-
-
-
-
+    SegmentEditModule,
+    DatatypeEditModule
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,DisplayMenuComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent
 	],
   providers : [
-   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver,IgMetaDataResolver
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

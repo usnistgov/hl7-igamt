@@ -28,36 +28,37 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  * @author Maxence Lefort on Mar 9, 2018.
  */
 public class ConformanceProfile extends Resource {
-	
-	private String identifier;
-	private String messageType; // Message/@Type
 
-	private String event; // Message/@Event
+  private String identifier;
+  private String messageType; // Message/@Type
 
-	private String structID; // Message/@StructID  private String identifier;
-	public String getMessageType() {
-		return messageType;
-	}
+  private String event; // Message/@Event
 
-	public void setMessageType(String messageType) {
-		this.messageType = messageType;
-	}
+  private String structID; // Message/@StructID private String identifier;
 
-	public String getEvent() {
-		return event;
-	}
+  public String getMessageType() {
+    return messageType;
+  }
 
-	public void setEvent(String event) {
-		this.event = event;
-	}
+  public void setMessageType(String messageType) {
+    this.messageType = messageType;
+  }
 
-	public String getStructID() {
-		return structID;
-	}
+  public String getEvent() {
+    return event;
+  }
 
-	public void setStructID(String structID) {
-		this.structID = structID;
-	}
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+  public String getStructID() {
+    return structID;
+  }
+
+  public void setStructID(String structID) {
+    this.structID = structID;
+  }
 
   private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
   private ResourceBinding binding;
