@@ -17,12 +17,16 @@ export class GeneralConfigurationService {
   _valueSetAllowedFields:any;
 
   _valuesetStrengthOptions:any;
+
+  _codedElementDTs:any;
+
   constructor(){
 
     //TODO GETTING USAGES FROM API
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
-    this._valuesetStrengthOptions = [ { label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
+    this._valuesetStrengthOptions = [ { label : 'Select Strength', value : null},{ label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
+    this._codedElementDTs = ["CE", "CF", "CWE", "CNE", "CSU"];
     this._singleValueSetDTs = ["ID", "IS", "ST", "NM", "HD"];
     this._valueSetAllowedFields =[
         {
@@ -141,4 +145,12 @@ export class GeneralConfigurationService {
     return true;
   }
 
+  getValuesetLocations(dtName, version){
+    if(this._codedElementDTs.includes(dtName)){
+      if(['2.1', '2.2', '2.3', '2.3.1', '2.4', '2.5', '2.5.1', '2.6'].includes(version)) return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] }];
+      if(['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] },{ label : '1 or 4 or 10', value : [1,4,10] }];
+    }
+    return null;
+
+  }
 }
