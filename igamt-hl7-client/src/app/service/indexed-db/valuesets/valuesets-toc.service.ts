@@ -43,7 +43,11 @@ export class ValuesetsTocService {
   public bulkAdd(valuesets: Array<TocNode>) {
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.valuesets, async () => {
-        await this.indexeddbService.tocDataBase.valuesets.bulkPut(valuesets);
+        this.indexeddbService.tocDataBase.valuesets.bulkPut(valuesets).subscribe(success => {
+          return true;
+        }, error => {
+          return false;
+        });
       });
     }
   }

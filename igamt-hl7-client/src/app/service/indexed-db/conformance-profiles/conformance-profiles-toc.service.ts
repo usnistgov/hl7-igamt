@@ -43,7 +43,11 @@ export class ConformanceProfilesTocService {
   public bulkAdd(conformanceProfiles: Array<TocNode>) {
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.conformanceProfiles, async () => {
-        await this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
+        this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles).subscribe(success => {
+          return true;
+        }, error => {
+          return false;
+        });
       });
     }
   }

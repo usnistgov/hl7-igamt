@@ -43,7 +43,11 @@ export class ProfileComponentsTocService {
   public bulkAdd(profileComponents: Array<TocNode>) {
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.profileComponents, async () => {
-        await this.indexeddbService.tocDataBase.profileComponents.bulkPut(profileComponents);
+        this.indexeddbService.tocDataBase.profileComponents.bulkPut(profileComponents).subscribe(success => {
+          return true;
+        }, error => {
+          return false;
+        });
       });
     }
   }

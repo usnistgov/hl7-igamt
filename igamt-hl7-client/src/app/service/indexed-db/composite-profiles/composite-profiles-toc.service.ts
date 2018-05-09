@@ -43,7 +43,11 @@ export class CompositeProfilesTocService {
   public bulkAdd(compositeProfiles: Array<TocNode>) {
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.compositeProfiles, async () => {
-        await this.indexeddbService.tocDataBase.compositeProfiles.bulkPut(compositeProfiles);
+        this.indexeddbService.tocDataBase.compositeProfiles.bulkPut(compositeProfiles).subscribe(success => {
+          return true;
+        }, error => {
+          return false;
+        });
       });
     }
   }
