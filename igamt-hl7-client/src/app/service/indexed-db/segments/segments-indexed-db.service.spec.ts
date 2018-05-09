@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import {SegmentsIndexedDbService} from './segments-indexed-db.service';
 
-describe('SegmentIndexedDbService', () => {
+describe('SegmentsIndexedDbService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [SegmentsIndexedDbService]
