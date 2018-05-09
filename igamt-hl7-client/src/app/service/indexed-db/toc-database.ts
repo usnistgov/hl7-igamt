@@ -15,7 +15,7 @@ export class TocDatabase extends Dexie {
     this.version(1).stores({
       datatypes: '&id',
       segments: '&id',
-      valueSets: '&id',
+      valuesets: '&id',
       conformanceProfiles: '&id',
       compositeProfiles: '&id',
       profileComponents: '&id',
