@@ -46,8 +46,8 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   parseToc(toc:any){
 
 
-    for(let i =0 ; i<toc.children.length; i++){
-      let node= toc.children[i];
+    for(let i =0 ; i<toc.length; i++){
+      let node= toc[i];
       if(node.data.type=='PROFILE'){
         this.parseProfile(node);
 
@@ -69,7 +69,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
       else if (node.data.type == 'COMPOSITEPROFILEREGISTRY'){
         this.compositeProfiles = node.children;
       }
-      else if (node.data.type == 'SEGMENTRGISTRY'){
+      else if (node.data.type == 'SEGMENTREGISTRY'){
         this.segments = node.children;
       }
       else if (node.data.type == 'DATATYPEREGISTRY'){

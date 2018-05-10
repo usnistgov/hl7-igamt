@@ -28,9 +28,9 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.service.impl.CrudService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
@@ -148,7 +148,7 @@ public class IGDocumentController {
              empty.setCreationDate(date);
              empty.setUpdateDate(date);
              empty.setMetaData(wrapper.getMetaData());
-             crudService.addConformanceProfiles(savedIds, empty);
+             crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
              igService.save(empty);
              return empty.getId();
 		

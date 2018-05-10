@@ -34,6 +34,19 @@ public Link() {
 	// TODO Auto-generated constructor stub
 }
 
+/**
+ * @param id2
+ * @param domainInfo2
+ * @param i
+ */
+public Link(CompositeKey id2, DomainInfo domainInfo2, int position) {
+  this.id=id2;
+  this.domainInfo=domainInfo2;
+  this.position=position;
+  
+  // TODO Auto-generated constructor stub
+}
+
 public DomainInfo getDomainInfo() {
   return domainInfo;
 }
@@ -50,4 +63,13 @@ public void setType(Type type) {
   this.type = type;
 }
 
+@Override
+public boolean equals(Object obj) {
+  // TODO Auto-generated method stub
+ if(obj instanceof Link) {
+   return ((Link)obj).getId().getId().equals(this.getId().getId());
+ }else {
+   return false;
+ }
+}
 }

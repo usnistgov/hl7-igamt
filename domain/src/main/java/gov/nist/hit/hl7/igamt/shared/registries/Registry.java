@@ -23,6 +23,13 @@ public class Registry{
   public Registry() {
  
   }
+  /**
+   * @return
+   */
+  public Type getType() {
+    // TODO Auto-generated method stub
+    return type;
+  }
 
 
 }

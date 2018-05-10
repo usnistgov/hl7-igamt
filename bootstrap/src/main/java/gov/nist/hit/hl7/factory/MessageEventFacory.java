@@ -48,7 +48,7 @@ public class MessageEventFacory {
 	public void  createMessageEvent(){
 		List<Ig> standardIgs= igdocumentService.finByScope(SCOPE.HL7STANDARD.toString());
 		for( Ig ig:standardIgs) {
-		Registry messages= ig.getConformanceProfileLibrary();
+		Registry messages= ig.getConformanceProfileRegistry();
 		List<ConformanceProfile> shortConformanceProfiles=new ArrayList<ConformanceProfile> ();
 		for(Link l:messages.getChildren()) {
 			ConformanceProfile  cp  = conformanceProfileService.findDisplayFormat(l.getId());
