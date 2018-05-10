@@ -1,7 +1,7 @@
-<h2>Segment Structure</h2>
+<h2>Datatype Structure</h2>
 
-<div *ngIf="segmentStructure">
-    <p-treeTable [value]="segmentStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
+<div *ngIf="datatypeStructure">
+    <p-treeTable [value]="datatypeStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
 
         <p-column header="Name" [style]="{'width':'350px'}">
             <ng-template let-col let-node="rowData" pTemplate="body">
@@ -11,35 +11,26 @@
 
         <p-column header="Usage" [style]="{'width':'100px'}" >
             <ng-template let-col let-node="rowData" pTemplate="body" >
-                <div *ngIf="node.data.type === 'FIELD'">
+                <div *ngIf="node.data.type === 'COMPONENT'">
                     <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
                 </div>
-                <div *ngIf="node.data.type !== 'FIELD'">
+                <div *ngIf="node.data.type !== 'COMPONENT'">
                     {{node.data.usage}}
                 </div>
             </ng-template>
 
         </p-column>
 
-        <p-column header="Cardinality" [style]="{'width':'100px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.type === 'FIELD'">
-                    <input required id="min" [(ngModel)]="node.data.min" type="number" #min="ngModel" style="width:45%;border-width:0px 0px 1px 0px"/>
-                    <input required id="max" [(ngModel)]="node.data.max" type="text" #max="ngModel" style="width:45%;border-width:0px 0px 1px 0px"/>
-                </div>
-            </ng-template>
-        </p-column>
-
         <p-column header="Length" [style]="{'width':'150px'}">
             <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.type === 'FIELD'">
+                <div *ngIf="node.data.type === 'COMPONENT'">
                     <div *ngIf="node.data.minLength !== 'NA' && node.data.datatype.leaf">
                         <input [(ngModel)]="node.data.minLength" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
                         <input [(ngModel)]="node.data.maxLength" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
                         <i class="fa fa-times" (click)="delLength(node)" style="width:20%;"></i>
                     </div>
                 </div>
-                <div *ngIf="node.data.type !== 'FIELD'">
+                <div *ngIf="node.data.type !== 'COMPONENT'">
                     [{{node.data.minLength}}..{{node.data.maxLength}}]
                 </div>
             </ng-template>
@@ -47,13 +38,13 @@
 
         <p-column header="Conf. Length" [style]="{'width':'120px'}" >
             <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.type === 'FIELD'">
+                <div *ngIf="node.data.type === 'COMPONENT'">
                     <ng-container *ngIf="node.data.confLength !== 'NA' && node.data.datatype.leaf">
                         <input [(ngModel)]="node.data.confLength" type="text" style="width: 80%;border-width:0px 0px 1px 0px"/>
                         <i class="fa fa-times" (click)="delConfLength(node)" style="width:20%;"></i>
                     </ng-container>
                 </div>
-                <div *ngIf="node.data.type !== 'FIELD'">
+                <div *ngIf="node.data.type !== 'COMPONENT'">
                     {{node.data.confLength}}
                 </div>
             </ng-template>
@@ -63,7 +54,7 @@
             <ng-template let-col let-node="rowData" pTemplate="body">
                 <div *ngIf="!node.data.datatype.editMode">
                     <display-ref [elm]="node.data.datatype"></display-ref>
-                    <i class="fa fa-pencil" *ngIf="node.data.type === 'FIELD'" (click)="makeEditModeBasic(node)"></i>
+                    <i class="fa fa-pencil" *ngIf="node.data.type === 'COMPONENT'" (click)="makeEditModeBasic(node)"></i>
                 </div>
                 <div *ngIf="node.data.datatype.editMode === 'basic'">
                     <p-dropdown [options]="node.data.dtOptions" [(ngModel)]="node.data.datatype" (onChange)="onDatatypeChange(node)" appendTo="body" [style]="{'width':'100%'}">
@@ -134,7 +125,7 @@
         </p-column>
         <p-column header="Text Definition" [style]="{'width':'150px'}">
             <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.type === 'FIELD'">
+                <div *ngIf="node.data.type === 'COMPONENT'">
                     <ng-container *ngIf="node.data.text">
                         <span (click)="editTextDefinition(node)">{{truncate(node.data.text)}}</span>
                         <i class="fa fa-times" (click)="delTextDefinition(node)" style="width:20%;"></i>

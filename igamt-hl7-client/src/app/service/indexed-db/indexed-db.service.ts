@@ -5,7 +5,7 @@ import { ObjectsReferenceDatabase } from './objects-reference-database';
 import Dexie from 'dexie';
 import {IgDocumentService} from '../ig-document/ig-document.service';
 import {NodeDatabase} from './node-database';
-import {TocDatabase} from "./toc-database";
+import {TocDatabase} from './toc-database';
 
 @Injectable()
 export class IndexedDbService {
@@ -58,22 +58,13 @@ export class IndexedDbService {
     }).catch((err) => {
       console.error('Could not delete NodeDatabase');
     }).finally(() => {
-      this.tocDataBase = new TocDatabase('tocDataBase');
+      this.tocDataBase = new TocDatabase();
     });
   }
 
   public initializeDatabase (igDocumentId ) {
     this.igDocumentId = igDocumentId;
   }
-  public addTocElements (profileComponents,conformanceProfiles,compositeProfiles,segments,valueSets) {
-    console.log("addding segment");
-      this.tocDataBase.transaction('rw', this.tocDataBase.segments, async () => {
-
-        await this.tocDataBase.segments.bulkPut(segments);
-      });
-  }
-
-
 
   public persistChanges() {
     const changedObjects = new ChangedObjects(this.igDocumentId);
@@ -122,16 +113,7 @@ class ChangedObjects {
   igDocumentId?: string;
   segments?: Array<IObject>;
   datatypes?: Array<IObject>;
-  valuesets?: Array<IObject>;
-  constructor(igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
-}
-
-class TocElements {
-  igDocumentId?: string;
-  segments?: Array<IObject>;
-  datatypes?: Array<IObject>;
+  conformanceProfiles?: Array<IObject>;
   valuesets?: Array<IObject>;
   constructor(igDocumentId) {
     this.igDocumentId = igDocumentId;

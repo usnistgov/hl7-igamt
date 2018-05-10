@@ -13,7 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +25,13 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPostDef;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentPreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -176,9 +179,9 @@ public Segment getLatestById(String id) {
   }
 
   @Override
-  public SegmentMetadata convertDomainToMetadata(Segment segment) {
+  public DisplayMetadata convertDomainToMetadata(Segment segment) {
     if (segment != null) {
-      SegmentMetadata result = new SegmentMetadata();
+      DisplayMetadata result = new DisplayMetadata();
       result.setAuthorNote(segment.getComment());
       result.setDescription(segment.getDescription());
       result.setExt(segment.getExt());
@@ -192,9 +195,9 @@ public Segment getLatestById(String id) {
   }
 
   @Override
-  public SegmentPreDef convertDomainToPredef(Segment segment) {
+  public PreDef convertDomainToPredef(Segment segment) {
     if (segment != null) {
-      SegmentPreDef result = new SegmentPreDef();
+      PreDef result = new PreDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
       result.setVersion(segment.getDomainInfo().getVersion());
@@ -210,9 +213,9 @@ public Segment getLatestById(String id) {
   }
 
   @Override
-  public SegmentPostDef convertDomainToPostdef(Segment segment) {
+  public PostDef convertDomainToPostdef(Segment segment) {
     if (segment != null) {
-      SegmentPostDef result = new SegmentPostDef();
+      PostDef result = new PostDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
       result.setVersion(segment.getDomainInfo().getVersion());
@@ -227,4 +230,44 @@ public Segment getLatestById(String id) {
     return null;
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveMetadata(gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata)
+   */
+  @Override
+  public Segment saveSegment(ChangedSegment changedSegment) {
+    if(changedSegment != null && changedSegment.getId() != null){
+      Segment segment = this.findLatestById(changedSegment.getId());
+      
+      if(segment != null){
+        if(changedSegment.getMetadata() != null){
+          segment.setDescription(changedSegment.getMetadata().getDescription());
+          segment.setExt(changedSegment.getMetadata().getExt());
+          segment.setName(changedSegment.getMetadata().getName());
+          segment.setComment(changedSegment.getMetadata().getAuthorNote());
+          segment.getDomainInfo().setScope(changedSegment.getMetadata().getScope());
+          segment.getDomainInfo().setVersion(changedSegment.getMetadata().getVersion());
+        }
+        
+        if(changedSegment.getPostDef() != null){
+          segment.setPostDef(changedSegment.getPostDef().getPostDef());
+        }
+        
+        if(changedSegment.getPreDef() != null){
+          segment.setPreDef(changedSegment.getPreDef().getPreDef());
+        }
+        
+        if(changedSegment.getStructure() != null){
+          segment.setBinding(changedSegment.getStructure().getBinding());
+          Set<Field> fields = new HashSet<Field>();
+          for(FieldDisplay fd : changedSegment.getStructure().getChildren()){
+            fields.add(fd.getData());
+          }
+          segment.setChildren(fields);
+        }
+      }
+      return this.save(segment);   
+    }
+   
+    return null;
+  }
 }

@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.segment.domain.display;
+package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -24,16 +24,15 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
  * @author Maxence Lefort on May 4, 2018.
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChangedSegment {
+public class ChangedConformanceProfile {
 
   private String id;
   private DisplayMetadata metadata;
   private PostDef postDef;
   private PreDef preDef;
-  private SegmentStructure structure;
-  
-  public ChangedSegment() {
-  }
+  private ConformanceProfileStructure structure;
+
+  public ChangedConformanceProfile() {}
 
   public String getId() {
     return id;
@@ -67,12 +66,13 @@ public class ChangedSegment {
     this.preDef = preDef;
   }
 
-  public SegmentStructure getStructure() {
+  public ConformanceProfileStructure getStructure() {
     return structure;
   }
 
-  public void setStructure(SegmentStructure structure) {
+  public void setStructure(ConformanceProfileStructure structure) {
     this.structure = structure;
   }
+
 
 }
