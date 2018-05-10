@@ -9,7 +9,6 @@ import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/rou
 import {Observable} from "rxjs";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {ConformanceProfilesTocService} from "../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import reject = Q.reject;
 
 @Injectable()
 export  class IgdocumentEditResolver implements Resolve<any>{

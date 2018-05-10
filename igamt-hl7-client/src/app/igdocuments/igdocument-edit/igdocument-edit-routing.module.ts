@@ -20,7 +20,7 @@ import {SaveFormsGuard} from "./section/save.guard";
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
           { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
           // { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
-        // ]
+        ]
 			},
       // {
       //   path : '**',
