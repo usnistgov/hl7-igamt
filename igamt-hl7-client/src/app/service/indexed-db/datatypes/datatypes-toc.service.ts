@@ -40,15 +40,9 @@ export class DatatypesTocService {
     }
   }
 
-  public bulkAdd(datatypes: Array<TocNode>) {
+  public bulkAdd(datatypes: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.datatypes, async () => {
-        this.indexeddbService.tocDataBase.datatypes.bulkPut(datatypes).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.datatypes.bulkPut(datatypes);
     }
   }
 }

@@ -40,15 +40,9 @@ export class SegmentsTocService {
     }
   }
 
-  public bulkAdd(segments: Array<TocNode>) {
+  public bulkAdd(segments: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.segments, async () => {
-        this.indexeddbService.tocDataBase.segments.bulkPut(segments).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.segments.bulkPut(segments);
     }
   }
 }
