@@ -13,11 +13,14 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 /**
@@ -25,36 +28,37 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  * @author Maxence Lefort on Mar 9, 2018.
  */
 public class ConformanceProfile extends Resource {
-	
-	private String identifier;
-	private String messageType; // Message/@Type
 
-	private String event; // Message/@Event
+  private String identifier;
+  private String messageType; // Message/@Type
 
-	private String structID; // Message/@StructID  private String identifier;
-	public String getMessageType() {
-		return messageType;
-	}
+  private String event; // Message/@Event
 
-	public void setMessageType(String messageType) {
-		this.messageType = messageType;
-	}
+  private String structID; // Message/@StructID private String identifier;
 
-	public String getEvent() {
-		return event;
-	}
+  public String getMessageType() {
+    return messageType;
+  }
 
-	public void setEvent(String event) {
-		this.event = event;
-	}
+  public void setMessageType(String messageType) {
+    this.messageType = messageType;
+  }
 
-	public String getStructID() {
-		return structID;
-	}
+  public String getEvent() {
+    return event;
+  }
 
-	public void setStructID(String structID) {
-		this.structID = structID;
-	}
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+  public String getStructID() {
+    return structID;
+  }
+
+  public void setStructID(String structID) {
+    this.structID = structID;
+  }
 
   private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
   private ResourceBinding binding;
@@ -90,5 +94,31 @@ public class ConformanceProfile extends Resource {
   public void addChild(MsgStructElement mse) {
     this.children.add(mse);
   }
+  
+  public ConformanceProfile clone() {
+	  
+	  ConformanceProfile clone = new ConformanceProfile();
+	  clone.setBinding(this.binding);
+	  clone.setChildren(children);
+	  clone.setComment(this.getComment());
+	  clone.setCreatedFrom(this.getId().getId());
+	  clone.setDescription(this.getDescription());
+	  DomainInfo domainInfo= this.getDomainInfo();
+	  domainInfo.setScope(Scope.USER);
+	  this.setEvent(this.getEvent());
+	  this.setId(null);
+	  this.setMessageType(messageType);
+	  this.setIdentifier(identifier);
+	  this.setPostDef(this.getPostDef());
+	  this.setPreDef(this.getPreDef());
+	  this.setStructID(structID);
+	  this.setName(this.getName());
+	  this.setDomainInfo(domainInfo);
+	  this.setCreationDate(new Date());
+	  this.setUpdateDate(new Date());
+	  return clone;
+	  
+  };
+  
 
 }

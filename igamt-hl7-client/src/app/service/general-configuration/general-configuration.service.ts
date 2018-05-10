@@ -2,7 +2,6 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -13,12 +12,26 @@ export class GeneralConfigurationService {
 
   _valueSetAllowedComponents : any;
 
-  constructor(private http : Http){
+  _singleValueSetDTs: any;
+
+  _valueSetAllowedFields:any;
+
+  _valuesetStrengthOptions:any;
+  constructor(){
 
     //TODO GETTING USAGES FROM API
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
+    this._valuesetStrengthOptions = [ { label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
-    this._valueSetAllowedComponents = 
+    this._singleValueSetDTs = ["ID", "IS", "ST", "NM", "HD"];
+    this._valueSetAllowedFields =[
+        {
+          "segmentName": "PID",
+          "location": 23,
+          "type":"FIELD"
+        }
+    ];
+    this._valueSetAllowedComponents =
     [
       {
         "dtName": "CNS",
@@ -106,6 +119,26 @@ export class GeneralConfigurationService {
 
   get valueSetAllowedComponents(){
     return this._valueSetAllowedComponents;
+  }
+
+  isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
+    if(this._valueSetAllowedDTs.includes(dtName)) return true;
+    if(this._valueSetAllowedFields.includes({
+        "segmentName": SegmentName,
+        "location": position,
+        "type":type
+    })) return true;
+
+    if(this._valueSetAllowedComponents.includes({
+          "dtName": parrentDT,
+          "location": position
+    })) return true;
+    return false;
+  }
+
+  isMultipleValuseSetAllowed(dtName){
+    if(this._singleValueSetDTs.includes(dtName)) return false;
+    return true;
   }
 
 }

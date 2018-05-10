@@ -20,8 +20,8 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.ConformanceProfileNotFoundException;
+import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import nu.xom.Element;
 
 /**
@@ -57,7 +57,7 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap, valuesetNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap, this.valuesetNamesMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);

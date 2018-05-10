@@ -73,8 +73,9 @@ public class SerializableBinding extends SerializableElement {
         }
       }
       if (binding instanceof ResourceBinding) {
-        if(((ResourceBinding) binding).getConformanceStatements() != null) {
-          for (ConformanceStatement conformanceStatement : ((ResourceBinding) binding).getConformanceStatements()) {
+        if (((ResourceBinding) binding).getConformanceStatements() != null) {
+          for (ConformanceStatement conformanceStatement : ((ResourceBinding) binding)
+              .getConformanceStatements()) {
             Element conformanceStatementElement =
                 this.serializeConformanceStatement(conformanceStatement);
             if (conformanceStatementElement != null) {
@@ -97,7 +98,7 @@ public class SerializableBinding extends SerializableElement {
   private Element serializeStructureElementBindings(
       Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap)
       throws ValuesetNotFoundException {
-    if(structureElementBindings != null) {
+    if (structureElementBindings != null) {
       Element structureElementBindingsElement = new Element("StructureElementBindings");
       for (StructureElementBinding structureElementBinding : structureElementBindings) {
         if (structureElementBinding != null) {
@@ -143,7 +144,7 @@ public class SerializableBinding extends SerializableElement {
           }
         }
       }
-      if(structureElementBinding.getComments() != null) {
+      if (structureElementBinding.getComments() != null) {
         for (Comment comment : structureElementBinding.getComments()) {
           Element commentElement = this.serializeComment(comment);
           if (commentElement != null) {
@@ -151,10 +152,15 @@ public class SerializableBinding extends SerializableElement {
           }
         }
       }
-      if (structureElementBinding.getSingleCodeId() != null) {
-        structureElementBindingElement
-            .addAttribute(new Attribute("singleCodeId", structureElementBinding.getSingleCodeId()));
+      if (structureElementBinding.getInternalSingleCode() != null) {
+        structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
+            structureElementBinding.getInternalSingleCode().getCodeId()));
       }
+      if (structureElementBinding.getConstantValue() != null) {
+        structureElementBindingElement.addAttribute(
+            new Attribute("constantValue", structureElementBinding.getConstantValue()));
+      }
+
       if (structureElementBinding.getConstantValue() != null) {
         structureElementBindingElement.addAttribute(
             new Attribute("constantValue", structureElementBinding.getConstantValue()));

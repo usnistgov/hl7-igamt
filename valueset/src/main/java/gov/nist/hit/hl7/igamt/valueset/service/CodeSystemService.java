@@ -26,6 +26,8 @@ public interface CodeSystemService {
 
   public CodeSystem findById(CompositeKey id);
 
+  public CodeSystem findLatestById(String id);
+
   public CodeSystem create(CodeSystem codeSystem);
 
   public CodeSystem save(CodeSystem codeSystem);
@@ -35,7 +37,9 @@ public interface CodeSystemService {
   public void delete(CodeSystem codeSystem);
 
   public void delete(CompositeKey id);
-  
+
   public void removeCollection();
+
+  List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier( String scope, String hl7version,String identifier);
 
 }

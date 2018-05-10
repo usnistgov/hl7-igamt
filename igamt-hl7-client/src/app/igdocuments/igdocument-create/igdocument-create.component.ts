@@ -8,6 +8,8 @@ import {IgDocumentCreateService} from "./igdocument-create.service";
 import {TreeNode} from "primeng/components/common/treenode";
 import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {Router, ActivatedRoute} from "@angular/router";
+import {MenuItem} from 'primeng/api';
+import {BreadcrumbService} from "../../breadcrumb.service";
 
 
 @Component({
@@ -15,73 +17,96 @@ import {Router, ActivatedRoute} from "@angular/router";
 })
 export class IgDocumentCreateComponent {
   isLinear = true;
-  tableValue :TreeNode[];
+  tableValue :any;
+  tableValueMap={};
   loading=false;
+  uploadedFiles: any[] = [];
+  activeIndex: number = 0;
+  selectedVerion:any;
+  blockUI=false;
 
-  metaData= {
-    title:"",
-    subTitle:"",
-    organization:""
-  };
+  metaData: any= {};
+  items: MenuItem[];
+  breadCurmp:MenuItem[];
+  path: MenuItem[];
 
+  selectdNodeMap={};
   selectedNodes: TreeNode[];
   firstFormGroup: FormGroup;
-  msgEvts: any[];
+  msgEvts=[];
   messageEventMap={};
   secondFormGroup: FormGroup;
   // @ViewChild('stepper') private myStepper: MatStepper;
   hl7Versions: any[];
-  selcetedVersion: any;
+  selcetedVersion: any =null;
 
-  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService, private workSpace : WorkspaceService,
-              private router: Router,    private route: ActivatedRoute,
+  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService,
+              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
   ) {
-
-    this.hl7Versions=this.workSpace.getAppInfo()["hl7Versions"];
-
-    console.log(this.workSpace.getAppInfo());
+    this.path=[{label:"Igdocuments"},{label:"create new IG document"}];
+    this.breadCrump.setItems(this.path);
+    this.hl7Versions=ws.getAppConstant().hl7Versions;
   }
 
   ngOnInit() {
 
-    this.firstFormGroup = this._formBuilder.group({
-      firstCtrl: ['', Validators.required]
-    });
-    this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
-    });
+    this.items = [
+      {
+      label: 'Meta Data ',
+
+      },
+      {
+        label: 'Conformane Profiles'
+      }
+
+      ];
+
+
+
+
+    this.breadCurmp = [
+      {
+        label: 'IG Documents ',
+
+      },
+      {
+        label: 'Create New IG Document'
+      }
+
+    ];
+
+
+
   }
 
 
   totalStepsCount: number;
 
 
-
-
-  ngAfterViewInit() {
-    // this.totalStepsCount = this.myStepper._steps.length;
-  }
-  //
-  // goBack(stepper: MatStepper) {
-  //   stepper.previous();
-  // }
-  // goForward(stepper: MatStepper) {
-  //   stepper.next();
-  // }
-
-
-  getMessages(hl7Version){
+  getMessages(v){
     this.tableValue=[];
-    this.createService.getMessagesByVersion(hl7Version).then(
+    this.selectedVerion=v;
+    console.log(v);
+    if(this.tableValueMap[v]){
 
-      res => this.tableValue= res
-    )
-  }
 
-  load(){
-    console.log(this.selectedNodes);
-    this.selectedNodes=[];
-    this.getMessages(this.selcetedVersion);
+      this.tableValue=this.tableValueMap[this.selectedVerion];
+      if(this.selectdNodeMap[v]){
+        this.selectdNodeMap[this. selcetedVersion]=this.selectdNodeMap[v];
+
+      }
+
+    }else{
+      this.createService.getMessagesByVersion(v).subscribe(x=>{
+
+        console.log(this.selectedVerion);
+        this.tableValue=x;
+        this.tableValueMap[this.selectedVerion]= this.tableValue;
+        this.selectdNodeMap[this.selectedVerion]=this.selectdNodeMap[this. selcetedVersion];
+      })
+
+    }
+
   }
 
   nodeSelect(event){
@@ -109,32 +134,32 @@ export class IgDocumentCreateComponent {
   };
 
   submitEvent(){
-    for(let i=0 ;i<this.selectedNodes.length; i++){
-      if(this.selectedNodes[i].data.parentStructId){
-        if(this.selectedNodes[i].parent.data.id){
-          if(this.messageEventMap[this.selectedNodes[i].parent.data.id]){
-            if(this.messageEventMap[this.selectedNodes[i].parent.data.id].children) {
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-                name:this.selectedNodes[i].data.name,
-                parentStructId:this.selectedNodes[i].parent.data.structId
+    for(let i=0 ;i<this.selectdNodeMap[this. selcetedVersion].length; i++){
+      if(this.selectdNodeMap[this. selcetedVersion][i].data.parentStructId){
+        if(this.selectdNodeMap[this. selcetedVersion][i].parent.data.id){
+          if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]){
+            if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children) {
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
 
               });
             }else{
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children=[];
-              this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-                name:this.selectedNodes[i].data.name,
-                parentStructId:this.selectedNodes[i].parent.data.structId
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
+              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
 
               })
             }
           }else{
-            this.messageEventMap[this.selectedNodes[i].parent.data.id]={};
-            this.messageEventMap[this.selectedNodes[i].parent.data.id].children=[];
-            this.messageEventMap[this.selectedNodes[i].parent.data.id].children.push({
-              name:this.selectedNodes[i].data.name,
-              parentStructId:this.selectedNodes[i].parent.data.structId
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]={};
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
+            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
+              name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
+              parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
             })
 
@@ -146,36 +171,55 @@ export class IgDocumentCreateComponent {
     }
    this.msgEvts=Object.keys(this.messageEventMap).map((key)=>{ return {id:key, children:this.messageEventMap[key].children}});
 
+    console.log(this.msgEvts);
 
   }
 
 
   create(){
-    this.loading=true;
-    this.submitEvent();
-  let wrapper:any ={};
+    let wrapper:any ={};
 
+
+  let versions= Object.keys(this.selectdNodeMap);
+
+
+    for(let i = 0 ; i<versions.length; i++){
+      let version = versions[i];
+      console.log(this.selectdNodeMap[version]);
+      for(let j =0 ; j<this.selectdNodeMap[version].length; j++){
+        this.selectNode(this.selectdNodeMap[version][j]);
+      }
+
+  };
 
   wrapper.msgEvts=this.msgEvts;
   wrapper.metaData=this.metaData;
-  wrapper.hl7Version=this.selcetedVersion;
+  this.blockUI=true;
 
-    this.createService.createIntegrationProfile(wrapper).then(
+
+    this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
-
-        this.goTo(res.id);
+         console.log(res);
+         this.goTo(res);
+         this.blockUI=false;
       }
     )
 
 
   };
 
-  goTo(id) {
+  convertNodeToData(){
+
+
+
+  }
+
+  goTo(res:any) {
 
 
     this.route.queryParams
       .subscribe(params => {
-        var link="/ig-documents/igdocuments-edit/"+id;
+        var link="/ig/"+res.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
@@ -183,5 +227,130 @@ export class IgDocumentCreateComponent {
 
 
   }
+
+  print(obj){
+
+    console.log(obj);
+    // this.submitEvent();
+    // this.getMessages();
+  }
+
+  selectEvent(event){
+    this.selectNode(event.node);
+
+  }
+  selectNode(node){
+
+    if(node.children&& node.children.length>0){
+    }else {
+      this.msgEvts.push(node.data);
+    }
+  }
+
+  unselectEvent(event){
+
+    this.unselectNode(event.node);
+  }
+
+
+  unselectNode(node){
+    if(node.children&& node.children.length>0){
+      for(let i=0;i<node.children.length;i++){
+        this.unselectdata(node.children[i].data);
+      }
+    }else {
+      this.unselectdata(node.data);
+    }
+  };
+
+
+  unselectdata(data){
+    let index = this.msgEvts.indexOf(data);
+    if(index >-1){
+      this.msgEvts.splice(index,1);
+    }
+
+  }
+
+  next(ev){
+    console.log("call next")
+    this.activeIndex=1;
+
+  }
+  previous(ev){
+
+    console.log("call previous")
+    this.activeIndex=0;
+
+  }
+
+  unselect(selected :any){
+    console.log(selected);
+
+    let index = this.selectdNodeMap[this.selcetedVersion].indexOf(selected);
+    if(index >-1){
+      this.selectdNodeMap[this.selcetedVersion].splice(index,1);
+      if(selected.parent){
+        this.unselectParent(selected.parent);
+      }
+    }
+  }
+
+  unselectParent(parent){
+
+    parent.partialSelected=this.getPartialSelection(parent);
+    console.log(parent.partialSelected);
+    this.unselect(parent);
+
+  }
+
+  getPartialSelection(parent){
+    for(let i=0; i<parent.children.length; i++){
+      if(this.selectdNodeMap[this.selcetedVersion].indexOf(parent.children[i])>-1){
+        return true;
+      }
+    }
+    return false;
+  }
+
+
+
+
+  getSelected(){
+    let ret=[];
+
+    let versions= Object.keys(this.selectdNodeMap);
+    if(versions.length>0){
+      for(let i = 0 ; i<versions.length; i++) {
+        let version = versions[i];
+        if (this.selectdNodeMap[version]){
+          for (let j = 0; j < this.selectdNodeMap[version].length; j++) {
+            if(this.selectdNodeMap[version][j].parent){
+              ret.push(this.selectdNodeMap[version][j])
+
+            }
+          }
+      }
+      };
+    }
+
+    return ret;
+
+
+  }
+
+  upload(event) {
+    this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
+
+    for(let file of event.files) {
+      this.uploadedFiles.push(file);
+
+    }
+
+
+  }
+
+
+
 
 }

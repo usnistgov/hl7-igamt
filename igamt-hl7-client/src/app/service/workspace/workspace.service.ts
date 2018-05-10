@@ -1,5 +1,4 @@
 import {Injectable} from "@angular/core";
-import {Http} from "@angular/http";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 /**
  * Created by hnt5 on 10/25/17.
@@ -24,10 +23,23 @@ export class WorkspaceService {
   private currentObj;
   private appInfo;
 
+  appConstant: any;
+
+
+
+  setAppConstant(obj: any){
+
+    this.appConstant=obj;
+  }
+
+
+  getAppConstant(){
+    return this.appConstant;
+  }
 
   private map : { [index : string] : BehaviorSubject<any> };
 
-  constructor(private http : Http){
+  constructor(){
     this.map={}
   }
 

@@ -31,10 +31,16 @@ import {PanelMenuModule} from 'primeng/panelmenu';
 import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
+import {StepsModule} from "primeng/components/steps/steps";
+import {FileUploadModule} from "primeng/components/fileupload/fileupload";
+import {SegmentEditModule} from "./segment-edit/segment-edit.module";
+import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
+
+
 @NgModule({
 	imports: [
-		CommonModule,
-		IgDocumentEditRoutingModule,
+	  CommonModule,
+    IgDocumentEditRoutingModule,
     AccordionModule,
     OverlayPanelModule,
     ButtonModule,
@@ -55,16 +61,16 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
     PanelMenuModule,
-    ToolbarModule
-
-
-
-],
+    ToolbarModule,
+    FileUploadModule,
+    SegmentEditModule,
+    DatatypeEditModule
+  ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,DisplayMenuComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent
 	],
   providers : [
-   TocService,TreeDragDropService,IgdocumentEditResolver,SectionResolver,IgMetaDataResolver
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

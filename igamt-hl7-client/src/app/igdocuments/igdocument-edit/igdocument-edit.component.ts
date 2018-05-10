@@ -21,7 +21,8 @@ export class IgDocumentEditComponent {
 
   ig:any;
   currentUrl:any;
-  hideToc=false;
+
+  hideToc:boolean=false;
 
   activeNode:any;
 
@@ -75,10 +76,12 @@ export class IgDocumentEditComponent {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
 
           if(from.data.data.type== "TEXT" && (!this.isOrphan(to) && to.parent.data.data.type=="TEXT"||this.isOrphan(to))){
+            console.log(from);
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
           }
           if(from.data.data.type== "PROFILE" && this.isOrphan(to)) {
+            console.log(from);
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
 
@@ -141,11 +144,10 @@ export class IgDocumentEditComponent {
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.ig= x;
-      console.log(this.ig.toc.content);
-      console.log(this.ig.toc.content.children);
 
 
-      this.nodes=this.ig.toc.content[0].children;
+
+      this.nodes=this.ig.toc;
 
     });
 
@@ -160,6 +162,7 @@ export class IgDocumentEditComponent {
 
   }
   print(node){
+    console.log("calling print  ");
     console.log(node);
   }
   ngAfterViewInit() {

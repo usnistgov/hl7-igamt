@@ -15,7 +15,13 @@ package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
+
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -35,18 +41,22 @@ public class ValuesetServiceImpl implements ValuesetService {
   @Autowired
   private ValuesetRepository valuesetRepository;
   
+  @Autowired
+  private MongoTemplate mongoTemplate;
+  
+
   @Override
   public Valueset findById(CompositeKey id) {
     return valuesetRepository.findOne(id);
   }
-  
+
   @Override
   public Valueset create(Valueset valueset) {
     valueset.setId(new CompositeKey());
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
-  
+
   @Override
   public Valueset createFromLegacy(Valueset valueset, String legacyId) {
     valueset.setId(new CompositeKey(legacyId));
@@ -81,47 +91,70 @@ public class ValuesetServiceImpl implements ValuesetService {
     valuesetRepository.deleteAll();
   }
 
-@Override
-public List<Valueset> findByDomainInfoVersion(String version) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoVersion(version);
-}
+  @Override
+  public List<Valueset> findByDomainInfoVersion(String version) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoVersion(version);
+  }
+
+  @Override
+  public List<Valueset> findByDomainInfoScope(String scope) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoScope(scope);
+  }
+
+  @Override
+  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersion(scope, verion);
+  }
+
+  @Override
+  public List<Valueset> findByBindingIdentifier(String bindingIdentifier) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByBindingIdentifier(bindingIdentifier);
+  }
+
+  @Override
+  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope,
+      String version, String bindingIdentifier) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(scope,
+        version, bindingIdentifier);
+  }
+
+  @Override
+  public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version,
+      String bindingIdentifier) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoVersionAndBindingIdentifier(version,
+        bindingIdentifier);
+  }
+
+  @Override
+  public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope,
+      String bindingIdentifier) {
+    // TODO Auto-generated method stub
+    return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
+  }
+
+  @Override
+  public Valueset findLatestById(String id) {
+    Valueset valueset = valuesetRepository
+        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
+    return valueset;
+  }
+
 
 @Override
-public List<Valueset> findByDomainInfoScope(String scope) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoScope(scope);
-}
+public Valueset getLatestById(String id) {
+	// TODO Auto-generated method stub  Query query = new Query();
+	  Query query = new Query();
 
-@Override
-public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersion(scope,  verion);
+	  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+	  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+	  query.limit(1);
+	  Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
+	  return valueset;
 }
-
-@Override
-public List<Valueset> findByBindingIdentifier(String bindingIdentifier) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByBindingIdentifier(bindingIdentifier);
-}
-
-@Override
-public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version,
-		String bindingIdentifier) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(scope, version, bindingIdentifier);
-}
-
-@Override
-public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoVersionAndBindingIdentifier(version,  bindingIdentifier) ;
-}
-
-@Override
-public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier) {
-	// TODO Auto-generated method stub
-	return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
-}
-  
 }

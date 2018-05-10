@@ -35,14 +35,15 @@ import nu.xom.Element;
  */
 public class SerializableConformanceProfile extends SerializableResource {
 
-  private Map<String,String> datatypeMap;
+  private Map<String, String> datatypeMap;
   private Map<String, String> valuesetNamesMap;
-  
+
   /**
    * @param resource
    * @param position
    */
-  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, Map<String,String> datatypeMap, Map<String, String> valuesetNamesMap) {
+  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
+      Map<String, String> datatypeMap, Map<String, String> valuesetNamesMap) {
     super(conformanceProfile, position);
     this.datatypeMap = datatypeMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -78,7 +79,8 @@ public class SerializableConformanceProfile extends SerializableResource {
         }
         return element;
       } catch (Exception exception) {
-        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE, (Resource) this.getAbstractDomain());
+        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,
+            (Resource) this.getAbstractDomain());
       }
     }
     return null;
@@ -87,10 +89,11 @@ public class SerializableConformanceProfile extends SerializableResource {
   /**
    * @param msgStructElm
    * @return
+   * @throws SerializationException
    * @throws Exception
    */
   private Element serializeMsgStructElement(MsgStructElement msgStructElm)
-      throws MsgStructElementSerializationException {
+      throws SerializationException {
     Element msgStructElement;
     if (msgStructElm instanceof Group) {
       msgStructElement = serializeGroup((Group) msgStructElm);
@@ -110,38 +113,43 @@ public class SerializableConformanceProfile extends SerializableResource {
   }
 
   /**
-   * @param msgStructElm
-   * @return
-   * @throws  
+   * @param msgStructElm @return @throws
    */
   private Element serializeSegmentRef(SegmentRef segmentRef)
       throws MsgStructElementSerializationException {
     Element segmentRefElement = new Element("SegmentRef");
     try {
-      if(segmentRef.getRef() != null && segmentRef.getRef().getId() != null) {
-        if(this.datatypeMap.containsKey(segmentRef.getRef().getId())){
-          segmentRefElement.addAttribute(new Attribute("datatype",this.datatypeMap.get(segmentRef.getRef().getId())));
+      if (segmentRef.getRef() != null && segmentRef.getRef().getId() != null) {
+        if (this.datatypeMap.containsKey(segmentRef.getRef().getId())) {
+          segmentRefElement.addAttribute(
+              new Attribute("datatype", this.datatypeMap.get(segmentRef.getRef().getId())));
         } else {
           throw new DatatypeNotFoundException(segmentRef.getRef().getId());
         }
       }
-      segmentRefElement.addAttribute(new Attribute("id",segmentRef.getId() != null ? segmentRef.getId() : ""));
-      segmentRefElement.addAttribute(new Attribute("position",String.valueOf(segmentRef.getPosition())));
-      segmentRefElement.addAttribute(new Attribute("name",segmentRef.getName() != null ? segmentRef.getName() : ""));
-      segmentRefElement.addAttribute(new Attribute("text",segmentRef.getText() != null ? segmentRef.getText() : ""));
-      segmentRefElement.addAttribute(new Attribute("max",segmentRef.getMax() != null ? segmentRef.getMax() : ""));
-      segmentRefElement.addAttribute(new Attribute("min",String.valueOf(segmentRef.getMin())));
-      segmentRefElement.addAttribute(new Attribute("type",Type.SEGMENTREF.name()));
-      segmentRefElement.addAttribute(new Attribute("usage",segmentRef.getUsage() != null ? segmentRef.getUsage().name() : ""));
+      segmentRefElement
+          .addAttribute(new Attribute("id", segmentRef.getId() != null ? segmentRef.getId() : ""));
+      segmentRefElement
+          .addAttribute(new Attribute("position", String.valueOf(segmentRef.getPosition())));
+      segmentRefElement.addAttribute(
+          new Attribute("name", segmentRef.getName() != null ? segmentRef.getName() : ""));
+      segmentRefElement.addAttribute(
+          new Attribute("text", segmentRef.getText() != null ? segmentRef.getText() : ""));
+      segmentRefElement.addAttribute(
+          new Attribute("max", segmentRef.getMax() != null ? segmentRef.getMax() : ""));
+      segmentRefElement.addAttribute(new Attribute("min", String.valueOf(segmentRef.getMin())));
+      segmentRefElement.addAttribute(new Attribute("type", Type.SEGMENTREF.name()));
+      segmentRefElement.addAttribute(new Attribute("usage",
+          segmentRef.getUsage() != null ? segmentRef.getUsage().name() : ""));
       return segmentRefElement;
     } catch (Exception exception) {
-      throw new MsgStructElementSerializationException(exception,segmentRef);
+      throw new MsgStructElementSerializationException(exception, segmentRef);
     }
   }
 
-  private Element serializeGroup(Group group) throws MsgStructElementSerializationException {
+  private Element serializeGroup(Group group) throws SerializationException {
     Element groupElement = new Element("Group");
-    if(group.getBinding() != null) {
+    if (group.getBinding() != null) {
       Element binding;
       try {
         binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap);
@@ -151,7 +159,7 @@ public class SerializableConformanceProfile extends SerializableResource {
       if (binding != null) {
         groupElement.appendChild(binding);
       }
-      
+
     }
     groupElement.addAttribute(new Attribute("name", group.getName()));
     for (MsgStructElement msgStructElm : group.getChildren()) {

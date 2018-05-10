@@ -8,11 +8,11 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class IgDocumentMetadataComponent implements OnInit {
   constructor(private sp: ActivatedRoute, private  router : Router) { }
 
-  metadata:any;
+  metaData:any;
   ngOnInit() {
     this.sp.data.map(data =>data.metadata).subscribe(x=>{
-      this.metadata= x;
-      console.log(this.metadata);
+      this.metaData= x;
+      console.log(this.metaData);
 
 
 

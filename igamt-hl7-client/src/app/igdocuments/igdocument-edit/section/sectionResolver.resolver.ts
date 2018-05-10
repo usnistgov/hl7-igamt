@@ -24,7 +24,7 @@ export  class SectionResolver implements Resolve<any>{
                 }
                 else{
                   console.log(route.parent.data["currentIg"]);
-                  let sections=route.parent.data["currentIg"].toc.content[0].children;
+                  let sections=route.parent.data["currentIg"].toc;
 
                   let section= this.findSectionById(sections,sectionId);
 

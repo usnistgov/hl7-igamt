@@ -10,13 +10,14 @@ import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
 import {ButtonModule} from 'primeng/primeng';
+import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 @NgModule({
   imports: [
     CommonModule,
     RouterModule,
     ButtonModule
   ],
-  declarations: [ DisplayBadgeComponent, EntityHeaderComponent, DtFlavorPipe, DisplayLabelComponent ],
-  exports: [ DisplayBadgeComponent, EntityHeaderComponent, DtFlavorPipe, DisplayLabelComponent]
+  declarations: [ DisplayBadgeComponent, EntityHeaderComponent, DtFlavorPipe, DisplayLabelComponent, DisplayRefComponent],
+  exports: [ DisplayBadgeComponent, EntityHeaderComponent, DtFlavorPipe, DisplayLabelComponent, DisplayRefComponent]
 })
 export class UtilsModule {}

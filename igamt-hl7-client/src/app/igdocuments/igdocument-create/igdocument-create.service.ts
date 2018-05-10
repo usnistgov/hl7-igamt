@@ -3,27 +3,27 @@
  */
 import {Injectable}  from "@angular/core";
 import {Http} from "@angular/http";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable()
 export  class IgDocumentCreateService {
-  constructor(private http: Http) {
+  constructor(private http: HttpClient) {
 
 
   }
 
   getMessagesByVersion(hl7Version :string){
-    return  this.http.post('api/igdocuments/messageListByVersion/', hl7Version)
-      .toPromise()
-      .then(res => { return <any[]> res.json()});
+     return  this.http.get('api/igdocuments/findMessageEvents/'+hl7Version);
 
   }
 
   createIntegrationProfile(wrapper){
-    return  this.http.post('api/igdocuments/createIntegrationProfile/', wrapper)
-      .toPromise()
-      .then(res => <any> res.json());
+    return this.http.post('api/igdocuments/create/', wrapper);
 
   }
 
+  getImageByName(name){
+    return this.http.get('/')
+  }
 
 }

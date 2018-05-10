@@ -7,7 +7,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 public class SectionTemplate {
 	
 	private String label; 
-	private String type= "TEXT" ;
+	private String type;
 	private int position;
 	
 	private Set<SectionTemplate> children;

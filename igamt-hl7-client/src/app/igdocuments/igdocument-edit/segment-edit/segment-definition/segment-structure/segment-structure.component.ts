@@ -12,12 +12,12 @@ export class SegmentStructureComponent {
 
   _segment : any;
 
-  constructor(private _ws : WorkspaceService){
-   _ws.getCurrent(Entity.SEGMENT).subscribe(data =>{this.segment=data});
-  }
+  // constructor(private _ws : WorkspaceService){
+   // _ws.getCurrent(Entity.SEGMENT).subscribe(data =>{this.segment=data});
+  // }
 
-  @Input() set segment(s){
-    this._segment = s;
-  }
+  // @Input() set segment(s){
+  //   this._segment = s;
+  // }
 
 }

@@ -1,0 +1,11 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_ID",
+    "version": 1
+  },
+  "label": "ID",
+  "scope": "HL7STANDARD",
+  "version": "2.6",
+  "binding": null,
+  "children": null
+}

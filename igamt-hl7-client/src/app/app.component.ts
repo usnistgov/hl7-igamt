@@ -1,6 +1,8 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import {ScrollPanel} from 'primeng/primeng';
 import { TreeModule } from 'angular-tree-component';
+import {HttpClient} from "@angular/common/http";
+import {WorkspaceService} from "./service/workspace/workspace.service";
 
 @Component({
     selector: 'app-root',
@@ -180,6 +182,18 @@ export class AppComponent implements AfterViewInit {
         } else {
           this.darkTheme = false;
         }
+    }
+
+
+    constructor(private http : HttpClient, private ws :  WorkspaceService ){
+
+      http.get("api/sharedConstant").subscribe(data=>{
+
+
+        this.ws.setAppConstant(data);
+      })
+
+
     }
 
 

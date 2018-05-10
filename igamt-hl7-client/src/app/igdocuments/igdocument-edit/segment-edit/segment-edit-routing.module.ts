@@ -3,29 +3,29 @@
  */
 import {RouterModule} from "@angular/router";
 import {NgModule} from "@angular/core";
-import {SegmentEditComponent} from "./segment-edit.component";
-// import {SegmentGuard} from "./segment-edit.guard";
-// import {CanDeactivateGuard} from "./segment-can-desactivate.service";
-import {AuthGuard} from "./../../../login/auth-guard.service";
+import {SegmentEditMetadataComponent} from "./segment-metadata/segment-edit-metadata.component";
+import {SegmentEditPredefComponent} from "./segment-predef/segment-edit-predef.component";
+import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postdef.component";
+import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
 
 @NgModule({
   imports: [
     RouterModule.forChild([
-      {
-        path: ':segmentId',
-        component: SegmentEditComponent,
-        children: [
-          {
-            path: 'definition',
-            loadChildren: './segment-definition/segment-definition.module#SegmentDefinitionModule'
-          },
-          {
-            path: 'metadata',
-            loadChildren: './segment-metadata/segment-metadata.module#SegmentMetadataModule'
-          }
-        ]
-      }
-
+        {
+            path: ':segmentId', component: SegmentEditStructureComponent,
+        },
+        {
+            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,
+        },
+        {
+            path: ':segmentId/preDef', component: SegmentEditPredefComponent,
+        },
+        {
+            path: ':segmentId/structure', component: SegmentEditStructureComponent,
+        },
+        {
+            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,
+        }
     ])
   ],
   exports: [

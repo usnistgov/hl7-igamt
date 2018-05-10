@@ -4,7 +4,10 @@ import { FormsModule } from '@angular/forms';
 import {IgDocumentRoutingModule} from './igdocument-routing.module';
 import {TabMenuModule} from 'primeng/primeng';
 import {ButtonModule} from 'primeng/primeng';
+import {MessageModule} from 'primeng/message';
 
+import {StepsModule} from 'primeng/steps';
+import {MessagesModule} from "primeng/components/messages/messages";
 
 @NgModule({
 	imports: [
@@ -12,7 +15,13 @@ import {ButtonModule} from 'primeng/primeng';
 		FormsModule,
     ButtonModule,
 		TabMenuModule,
-		IgDocumentRoutingModule
+    StepsModule,
+    MessageModule,
+    MessagesModule,
+
+
+
+    IgDocumentRoutingModule
 	],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
 	declarations: []
