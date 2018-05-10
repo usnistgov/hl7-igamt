@@ -33,9 +33,12 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         let igId= route.params["igId"];
 
         this.http.get<any>("/api/igdocuments/"+igId+"/display").subscribe(x=>{
-          this.indexedDbService.initializeDatabase(igId);
-          this.parseToc(x.toc);
-          resolve(x);
+          this.indexedDbService.initializeDatabase(igId).then( ()=>{
+
+            this.parseToc(x.toc);
+            resolve(x);
+          });
+
 
         });
 

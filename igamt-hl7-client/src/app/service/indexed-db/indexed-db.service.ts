@@ -18,53 +18,72 @@ export class IndexedDbService {
 
   igDocumentId?: string;
   constructor(public igDocumentService: IgDocumentService) {
-
   }
 
-  public initializeDatabase (igDocumentId ) {
+  public initializeDatabase(igDocumentId): Promise<{}> {
     this.igDocumentId = igDocumentId;
-    Dexie.delete('ChangedObjectsDatabase').then(() => {
-      console.log('ChangedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete ChangedObjectsDatabase');
-    }).finally(() => {
-      this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    });
-    Dexie.delete('RemovedObjectsDatabase').then(() => {
-      console.log('RemovedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete RemovedObjectsDatabase');
-    }).finally(() => {
-      this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
-    });
-    Dexie.delete('CreatedObjectsDatabase').then(() => {
-      console.log('CreatedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete CreatedObjectsDatabase');
-    }).finally(() => {
-      this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
-    });
-    Dexie.delete('AddedObjectsDatabase').then(() => {
-      console.log('AddedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete AddedObjectsDatabase');
-    }).finally(() => {
-      this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
-    });
-    Dexie.delete('NodeDatabase').then(() => {
-      console.log('NodeDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete NodeDatabase');
-    }).finally(() => {
-      this.nodeDatabase = new NodeDatabase('NodeDatabase');
-    });
-    Dexie.delete('tocDataBase').then(() => {
-      console.log('tocDataBase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete NodeDatabase');
-    }).finally(() => {
-      this.tocDataBase = new TocDatabase();
-    });
+    const promises = [];
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('ChangedObjectsDatabase').then(() => {
+        console.log('ChangedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete ChangedObjectsDatabase');
+      }).finally(() => {
+        this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('RemovedObjectsDatabase').then(() => {
+        console.log('RemovedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete RemovedObjectsDatabase');
+      }).finally(() => {
+        this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('CreatedObjectsDatabase').then(() => {
+        console.log('CreatedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete CreatedObjectsDatabase');
+      }).finally(() => {
+        this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('AddedObjectsDatabase').then(() => {
+        console.log('AddedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete AddedObjectsDatabase');
+      }).finally(() => {
+        this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('NodeDatabase').then(() => {
+        console.log('NodeDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
+        this.nodeDatabase = new NodeDatabase('NodeDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('tocDataBase').then(() => {
+        console.log('tocDataBase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
+        this.tocDataBase = new TocDatabase();
+        resolve();
+      });
+    }));
+    return Promise.all(promises);
   }
 
   public persistChanges() {

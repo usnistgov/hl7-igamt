@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy} from '@angular/core';
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 
 @Component({
-  templateUrl: './section.component.html'
+  templateUrl: './section.component.html',
+  changeDetection: ChangeDetectionStrategy.Default,
+
+
 })
 
 export class SectionComponent implements OnInit {

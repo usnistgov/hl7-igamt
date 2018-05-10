@@ -9,7 +9,7 @@ export class SaveFormsGuard implements CanDeactivate<Component> {
 
   canDeactivate(component: Component) {
     console.log("Called Desactivate");
-    console.log(component);
+    console.log(component.changeDetection);
     return true;
   }
 
