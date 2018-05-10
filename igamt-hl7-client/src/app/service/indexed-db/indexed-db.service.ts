@@ -18,6 +18,11 @@ export class IndexedDbService {
 
   igDocumentId?: string;
   constructor(public igDocumentService: IgDocumentService) {
+
+  }
+
+  public initializeDatabase (igDocumentId ) {
+    this.igDocumentId = igDocumentId;
     Dexie.delete('ChangedObjectsDatabase').then(() => {
       console.log('ChangedObjectsDatabase successfully deleted');
     }).catch((err) => {
@@ -60,10 +65,6 @@ export class IndexedDbService {
     }).finally(() => {
       this.tocDataBase = new TocDatabase();
     });
-  }
-
-  public initializeDatabase (igDocumentId ) {
-    this.igDocumentId = igDocumentId;
   }
 
   public persistChanges() {

@@ -6,6 +6,7 @@ import {SectionComponent} from './section/section.component';
 import {IgdocumentEditResolver} from './igdocument-edit.resolver';
 import {SectionResolver} from './section/sectionResolver.resolver';
 import {IgMetaDataResolver} from './igdocument-metadata/IgMetaDataResolver.resolver';
+import {SaveFormsGuard} from "./section/save.guard";
 
 @NgModule({
 	imports: [
@@ -14,12 +15,12 @@ import {IgMetaDataResolver} from './igdocument-metadata/IgMetaDataResolver.resol
 				path: ':igId', resolve: { currentIg: IgdocumentEditResolver }, component: IgDocumentEditComponent,
         children: [
           { path: 'metadata', component: IgDocumentMetadataComponent, resolve: { metadata : IgMetaDataResolver} },
-          { path: 'section/:sectionId', component: SectionComponent, resolve: { currentSection : SectionResolver} },
+          { path: 'section/:sectionId', component: SectionComponent, resolve: { currentSection : SectionResolver}, canDeactivate: [SaveFormsGuard]},
           { path: '', component: IgDocumentMetadataComponent, resolve: { metadata : IgMetaDataResolver}},
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
           { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
-          { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
-        ]
+          // { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
+        // ]
 			},
       // {
       //   path : '**',

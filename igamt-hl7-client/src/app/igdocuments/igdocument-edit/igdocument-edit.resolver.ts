@@ -8,10 +8,12 @@ import {HttpClient} from "@angular/common/http";
 import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+import {ConformanceProfilesTocService} from "../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
+import reject = Q.reject;
 
 @Injectable()
 export  class IgdocumentEditResolver implements Resolve<any>{
-  ig: any =null;
+  ig: any;
   segments:any[];
   datatypes:any[];
   profileComponents:any[];
@@ -20,26 +22,28 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   compositeProfiles: any[];
   valueSets: any[];
 
-  constructor(private http: HttpClient,public indexedDbService: IndexedDbService) {
+  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public cps:ConformanceProfilesTocService) {
 
   }
 
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
+  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
     console.log("Calling resolver");
+    return new Promise(
+      (resolve , reject) =>{
+        let igId= route.params["igId"];
 
-    let igId= route.params["igId"];
-    console.log(igId)
-      this.http.get("/api/igdocuments/"+igId+"/display").subscribe(x=>{
-       this.ig= x;
-        this.parseToc(this.ig.toc);
+        this.http.get<any>("/api/igdocuments/"+igId+"/display").subscribe(x=>{
+          this.indexedDbService.initializeDatabase(igId);
+          this.parseToc(x.toc);
+          resolve(x);
 
-    });
+        });
 
-    console.log("Calling db ");
+      }
+    )
 
-    this.indexedDbService.addTocElements(this.profileComponents,this.conformanceProfiles,this.compositeProfiles,this.segments,this.valueSets);
 
-    return Observable.of(this.ig);
+
   }
 
 
@@ -61,7 +65,9 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     for (let i = 0; i < profile.children.length; i++) {
       let node = profile.children[i];
       if (node.data.type == 'CONFORMANCEPROFILEREGISTRY'){
-        this.conformanceProfiles = node.children;
+        this.conformanceProfiles =this.convertList(node.children);
+        console.log(this.cps.bulkAdd(this.conformanceProfiles));
+
       }
       else if (node.data.type == 'PROFILECOMPONENTSREGISTRY'){
         this.profileComponents = node.children;
@@ -82,6 +88,17 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     }
 
 
+  }
+
+  convertList(list : any[]){
+    let ret : any[]=[];
+    for (let i=0; i<list.length;i++ ){
+      ret.push({id:list[i].id,treeNode:list[i].data});
+    }
+    console.log("Object to push ");
+
+    console.log(ret);
+    return ret;
   }
 
 

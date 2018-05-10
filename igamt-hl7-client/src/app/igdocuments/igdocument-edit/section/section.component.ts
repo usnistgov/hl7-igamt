@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 
 @Component({
   templateUrl: './section.component.html'
@@ -7,6 +7,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 
 export class SectionComponent implements OnInit {
   constructor( private sp: ActivatedRoute, private  router : Router) {
+
 
   }
   section:any;
@@ -20,6 +21,10 @@ export class SectionComponent implements OnInit {
 
 
     });
+
+  }
+  ngOnDestroy(){
+    console.log("destroying section");
 
   }
 

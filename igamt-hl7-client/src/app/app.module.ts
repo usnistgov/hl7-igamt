@@ -108,6 +108,7 @@ import {RegisterComponent} from "./register/register.component";
 import { TreeModule } from 'angular-tree-component';
 import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
 import {BreadcrumbService} from "./breadcrumb.service";
+import {ConformanceProfilesTocService} from "./service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
 
 
 @NgModule({
@@ -229,6 +230,7 @@ import {BreadcrumbService} from "./breadcrumb.service";
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
     DatatypesService,
+    ConformanceProfilesTocService,
     // ValueSetsService,
      SegmentsService,
      // ProfileComponentsService,

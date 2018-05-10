@@ -35,6 +35,7 @@ import {StepsModule} from "primeng/components/steps/steps";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
 import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
+import {SaveFormsGuard} from "./section/save.guard";
 
 
 @NgModule({
@@ -70,7 +71,7 @@ import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
 		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent
 	],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
