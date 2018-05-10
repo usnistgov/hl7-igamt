@@ -148,7 +148,11 @@ export class SegmentEditStructureComponent {
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.segmentsService.getSegmentStructure(this.segmentId, structure  => {
             this.segmentStructure = {};
-            this.updateDatatype(this.segmentStructure, structure.children, structure.binding, null, null, null, null, null);
+            this.segmentStructure.name = structure.name;
+            this.segmentStructure.ext = structure.ext;
+            this.segmentStructure.scope = structure.scope;
+
+            this.updateDatatype(this.segmentStructure, structure.children, structure.binding, null, null, null, null, null, null);
         });
 
         this.usages = this.configService._usages;
@@ -163,11 +167,11 @@ export class SegmentEditStructureComponent {
         }
     }
 
-    updateDatatype(node, children, currentBinding, parentFieldId, parentDT, fieldDT, segmentBinding, fieldDTbinding){
+    updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
         for (let entry of children) {
             if(!entry.data.displayData) entry.data.displayData = {};
             entry.data.displayData.datatype = this.getDatatypeLink(entry.data.ref.id);
-            entry.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(entry.data.displayData.datatype.name,entry.data.position, null, null, entry.data.displayData.type);
+            entry.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(entry.data.displayData.datatype.name,entry.data.position, parentDTName, this.segmentStructure.name, entry.data.displayData.type);
             entry.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(entry.data.displayData.datatype.name, entry.data.displayData.datatype.domainInfo.version);
             if(entry.data.displayData.valuesetAllowed) entry.data.displayData.multipleValuesetAllowed =  this.configService.isMultipleValuseSetAllowed(entry.data.displayData.datatype.name);
             if(entry.data.displayData.datatype.leaf) entry.leaf = true;
@@ -184,13 +188,13 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
             }else if(entry.data.displayData.idPath.split("-").length === 2){
                 entry.data.displayData.type = 'COMPONENT';
-                entry.data.displayData.fieldDT = parentDT;
+                entry.data.displayData.fieldDT = parentDTId;
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
             }else if(entry.data.displayData.idPath.split("-").length === 3){
                 entry.data.displayData.type = "SUBCOMPONENT";
                 entry.data.displayData.fieldDT = fieldDT;
-                entry.data.displayData.componentDT = parentDT;
+                entry.data.displayData.componentDT = parentDTId;
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
                 entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
@@ -213,9 +217,9 @@ export class SegmentEditStructureComponent {
                 displayData.hasSingleCode = true;
             }else if(displayData.fieldDTbinding && displayData.fieldDTbinding.externalSingleCode && displayData.fieldDTbinding.externalSingleCode !== ''){
                 displayData.hasSingleCode = true;
-            }else if(displayData.fieldDTbinding && displayData.componentDTbinding.internalSingleCode && displayData.componentDTbinding.internalSingleCode !== ''){
+            }else if(displayData.componentDTbinding && displayData.componentDTbinding.internalSingleCode && displayData.componentDTbinding.internalSingleCode !== ''){
                 displayData.hasSingleCode = true;
-            }else if(displayData.fieldDTbinding && displayData.componentDTbinding.externalSingleCode && displayData.componentDTbinding.externalSingleCode !== ''){
+            }else if(displayData.componentDTbinding && displayData.componentDTbinding.externalSingleCode && displayData.componentDTbinding.externalSingleCode !== ''){
                 displayData.hasSingleCode = true;
             }else {
                 displayData.hasSingleCode = false;
@@ -231,7 +235,7 @@ export class SegmentEditStructureComponent {
                 displayData.hasValueSet = true;
             }else if(displayData.fieldDTbinding && displayData.fieldDTbinding.valuesetBindings && displayData.fieldDTbinding.valuesetBindings.length > 0){
                 displayData.hasValueSet = true;
-            }else if(displayData.fieldDTbinding && displayData.componentDTbinding.valuesetBindings && displayData.componentDTbinding.valuesetBindings.length > 0){
+            }else if(displayData.componentDTbinding && displayData.componentDTbinding.valuesetBindings && displayData.componentDTbinding.valuesetBindings.length > 0){
                 displayData.hasValueSet = true;
             }else {
                 displayData.hasValueSet = false;
@@ -315,7 +319,7 @@ export class SegmentEditStructureComponent {
         if(event.node && !event.node.children) {
             var datatypeId = event.node.data.ref.id;
             this.datatypesService.getDatatypeStructure(datatypeId, structure  => {
-                this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.fieldDT, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding);
+                this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
     }
@@ -346,12 +350,65 @@ export class SegmentEditStructureComponent {
         this.valuesetColumnWidth = '500px';
     }
 
-    makeEditModeForSingleCode(displayData){
-        if(!displayData.singleCode) displayData.singleCode = {};
-        if(displayData)
-        displayData.singleCode.newSingleCode = '';
-        displayData.singleCode.newSingleCodeSystem = '';
-        displayData.singleCode.edit = true;
+    makeEditModeForComment(c){
+        c.newComment = {};
+        c.newComment.description = c.description;
+        c.edit = true;
+    }
+
+    addNewComment(node){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = [];
+        if(!node.data.displayData.segmentBinding.comments) node.data.displayData.segmentBinding.comments = [];
+        node.data.displayData.segmentBinding.comments.push({edit:true, newComment : {description:''}});
+    }
+
+    addNewSingleCode(node){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
+        if(!node.data.displayData.segmentBinding.externalSingleCode) node.data.displayData.segmentBinding.externalSingleCode = {};
+        node.data.displayData.segmentBinding.externalSingleCode.newSingleCode = '';
+        node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem = '';
+        node.data.displayData.segmentBinding.externalSingleCode.edit = true;
+    }
+
+    submitNewSingleCode(node){
+        node.data.displayData.segmentBinding.externalSingleCode.value = node.data.displayData.segmentBinding.externalSingleCode.newSingleCode;
+        node.data.displayData.segmentBinding.externalSingleCode.codeSystem = node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem;
+        node.data.displayData.segmentBinding.externalSingleCode.edit = false;
+    }
+
+    makeEditModeForSingleCode(node){
+        node.data.displayData.segmentBinding.externalSingleCode.newSingleCode = node.data.displayData.segmentBinding.externalSingleCode.value;
+        node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem = node.data.displayData.segmentBinding.externalSingleCode.codeSystem;
+        node.data.displayData.segmentBinding.externalSingleCode.edit = true;
+    }
+
+    deleteSingleCode(node){
+        node.data.displayData.segmentBinding.externalSingleCode = null;
+        node.data.displayData.hasSingleCode = false;
+    }
+
+    addNewConstantValue(node){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
+        node.data.displayData.segmentBinding.constantValue = null;
+        node.data.displayData.segmentBinding.newConstantValue= '';
+        node.data.displayData.segmentBinding.editConstantValue = true;
+
+        console.log(node);
+    }
+
+    deleteConstantValue(node){
+        node.data.displayData.segmentBinding.constantValue = null;
+        node.data.displayData.segmentBinding.editConstantValue = false;
+    }
+
+    makeEditModeForConstantValue(node){
+        node.data.displayData.segmentBinding.newConstantValue = node.data.displayData.segmentBinding.constantValue;
+        node.data.displayData.segmentBinding.editConstantValue = true;
+    }
+
+    submitNewConstantValue(node){
+        node.data.displayData.segmentBinding.constantValue = node.data.displayData.segmentBinding.newConstantValue;
+        node.data.displayData.segmentBinding.editConstantValue = false;
     }
 
     submitNewValueSet(vs){
@@ -366,9 +423,19 @@ export class SegmentEditStructureComponent {
         this.valuesetColumnWidth = '200px';
     }
 
+    submitNewComment(c){
+        c.description = c.newComment.description;
+        c.dateupdated = new Date();
+        c.edit = false;
+    }
+
     delValueSetBinding(binding, vs, node){
         binding.valuesetBindings = _.without(binding.valuesetBindings, _.findWhere(binding.valuesetBindings, {valuesetId: vs.valuesetId}));
         this.setHasValueSet(node);
+    }
+
+    delCommentBinding(binding, c){
+        binding.comments = _.without(binding.comments, _.findWhere(binding.comments, c));
     }
 
     delTextDefinition(node){

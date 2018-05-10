@@ -4,7 +4,9 @@
     "version": 1
   },
   "label": "OBXTXT",
-  "scope": "ARCHIVED",
+  "name": "OBX",
+  "ext": "TXT",
+  "scope": "USER",
   "version": null,
   "binding": {
     "elementId": "59ccfa0e84aeb3275ab0be2c",
