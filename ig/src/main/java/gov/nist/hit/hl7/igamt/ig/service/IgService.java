@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
-import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 @Service("igService")
@@ -23,6 +23,6 @@ public interface IgService {
 	  public Ig ConvertModelToDomain(IGDisplay ig);
 	  public List<Ig> findLatestByUsername(String username);
 	  public Ig findLatestById(String id);
-	  public List<ListElement> convertListToDisplayList(List<Ig> igdouments);
+	  public List<IgSummary> convertListToDisplayList(List<Ig> igdouments);
 		
 }
