@@ -11,16 +11,14 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
 	imports: [
 		RouterModule.forChild([
 			{
-				path: ':igId',
-        resolve:{currentIg:IgdocumentEditResolver},
-				component: IgDocumentEditComponent,
+				path: ':igId', resolve:{currentIg:IgdocumentEditResolver}, component: IgDocumentEditComponent,
         children: [
           { path: 'metadata', component: IgDocumentMetadataComponent,resolve:{metadata : IgMetaDataResolver} },
           { path: "section/:sectionId", component: SectionComponent,resolve:{currentSection : SectionResolver} },
           { path: '', component: IgDocumentMetadataComponent },
-          { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' }
-          // { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' }
-
+          { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
+          { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
+          { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
         ]
 			},
       // {

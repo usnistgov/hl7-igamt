@@ -15,6 +15,8 @@ package gov.nist.hit.hl7.igamt.datatype.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -27,13 +29,24 @@ import gov.nist.hit.hl7.igamt.shared.domain.Scope;
  * @author Maxence Lefort on Mar 1, 2018.
  */
 public interface DatatypeRepository extends MongoRepository<Datatype, CompositeKey> {
-	List<Datatype> findByDomainInfoVersion(String version);
-	List<Datatype> findByDomainInfoScope(String scope);
-	List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-	List<Datatype> findByName(String name);
-	List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
-	List<Datatype> findByDomainInfoVersionAndName(String version, String name);
-	List<Datatype> findByDomainInfoScopeAndName(String scope, String name);  
+
+  List<Datatype> findByDomainInfoVersion(String version);
+
+  List<Datatype> findByDomainInfoScope(String scope);
+
+  List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+
+  List<Datatype> findByName(String name);
+
+  List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+
+  List<Datatype> findByDomainInfoVersionAndName(String version, String name);
+
+  List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
+
+  @Query(value = "{ '_id._id' : ?0 }")
+  List<Datatype> findLatestById(ObjectId id, Sort sort);
+
   @Query(value = "{ 'domainInfo.scope' : ?0 }")
   List<Datatype> findByScope(Scope scope);
 }

@@ -38,7 +38,7 @@ export class DisplayLabelComponent {
       return null;
 
     }
-    if (this.elm.domainInfo&& this.elm.domainInfo.scope) {
+    if (this.elm.domainInfo && this.elm.domainInfo.scope) {
       let scope = this.elm.domainInfo.scope;
       if (scope === 'HL7STANDARD') {
         return 'HL7';
@@ -76,6 +76,8 @@ export class DisplayLabelComponent {
       if(type=='TEXT'){
         return this.elm.label;
       }
+    }else{
+      return this.elm.label;
     }
   }
 

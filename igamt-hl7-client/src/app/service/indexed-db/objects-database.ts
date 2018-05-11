@@ -3,7 +3,9 @@ import Dexie from 'dexie';
 export class IObject {
   id?: string;
   metadata?: object;
-  definition?: object;
+  structure?: object;
+  preDef?: object;
+  postDef?: object;
   crossReference?: object;
 }
 

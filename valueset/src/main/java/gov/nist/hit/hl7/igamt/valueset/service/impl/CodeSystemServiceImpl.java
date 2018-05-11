@@ -17,6 +17,7 @@ import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -71,6 +72,13 @@ public class CodeSystemServiceImpl implements CodeSystemService {
   @Override
   public void removeCollection() {
     codeSystemRepository.deleteAll();
+  }
+
+  @Override
+  public CodeSystem findLatestById(String id) {
+    CodeSystem codeSystem = codeSystemRepository
+        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
+    return codeSystem;
   }
 
 }

@@ -141,9 +141,9 @@ public class SerializableBinding extends SerializableElement {
         structureElementBindingElement.appendChild(commentElement);
       }
     }
-    if (structureElementBinding.getSingleCodeId() != null) {
+    if (structureElementBinding.getInternalSingleCode() != null) {
       structureElementBindingElement
-          .addAttribute(new Attribute("singleCodeId", structureElementBinding.getSingleCodeId()));
+          .addAttribute(new Attribute("singleCodeId", structureElementBinding.getInternalSingleCode().getCodeId()));
     }
     if (structureElementBinding.getConstantValue() != null) {
       structureElementBindingElement

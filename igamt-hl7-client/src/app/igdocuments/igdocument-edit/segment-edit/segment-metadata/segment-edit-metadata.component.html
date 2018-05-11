@@ -1,0 +1,42 @@
+<h2>SEGMENT Metadata</h2>
+<div *ngIf="segmentMetadata">
+    <div class="ui-g">
+        <div class="ui-g-12 ui-md-12">
+            <div class="ui-g-2">
+                <label for="name">Name (Base):</label>
+            </div>
+            <div class="ui-g-10">
+                <input id="name" pInputText type="text" disabled [(ngModel)]="segmentMetadata.name" />
+            </div>
+        </div>
+
+        <div class="ui-g-12 ui-md-12">
+            <div class="ui-g-2">
+                <label for="ext">Flavor Name (Ext):</label>
+            </div>
+            <div class="ui-g-10">
+                <input id="ext" pInputText type="text" [(ngModel)]="segmentMetadata.ext" />
+            </div>
+        </div>
+
+        <div class="ui-g-12 ui-md-12">
+            <div class="ui-g-2">
+                <label for="desc">Description:</label>
+            </div>
+            <div class="ui-g-10">
+                <textarea id="desc" pInputTextarea [(ngModel)]="segmentMetadata.description"></textarea>
+            </div>
+        </div>
+
+        <div class="ui-g-12 ui-md-12">
+            <div class="ui-g-2">
+                <label for="note">Author Note:</label>
+            </div>
+            <div class="ui-g-10">
+                <textarea id="note" pInputTextarea [(ngModel)]="segmentMetadata.authorNote"></textarea>
+            </div>
+        </div>
+    </div>
+
+    <pre>{{segmentMetadata | json}}</pre>
+</div>

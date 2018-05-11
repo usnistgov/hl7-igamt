@@ -3,6 +3,8 @@ import {Injectable} from '@angular/core';
 import { ObjectsDatabase, IObject } from './objects-database';
 import { ObjectsReferenceDatabase } from './objects-reference-database';
 import Dexie from 'dexie';
+import {IgDocumentService} from '../ig-document/ig-document.service';
+import {NodeDatabase} from './node-database';
 
 @Injectable()
 export class IndexedDbService {
@@ -10,8 +12,9 @@ export class IndexedDbService {
   removedObjectsDatabase;
   createdObjectsDatabase;
   addedObjectsDatabase;
+  nodeDatabase;
   igDocumentId?: string;
-  constructor() {
+  constructor(public igDocumentService: IgDocumentService) {
     Dexie.delete('ChangedObjectsDatabase').then(() => {
       console.log('ChangedObjectsDatabase successfully deleted');
     }).catch((err) => {
@@ -40,106 +43,17 @@ export class IndexedDbService {
     }).finally(() => {
       this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
     });
+    Dexie.delete('NodeDatabase').then(() => {
+      console.log('NodeDatabase successfully deleted');
+    }).catch((err) => {
+      console.error('Could not delete NodeDatabase');
+    }).finally(() => {
+      this.nodeDatabase = new NodeDatabase('NodeDatabase');
+    });
   }
 
   public initializeDatabase (igDocumentId) {
     this.igDocumentId = igDocumentId;
-  }
-
-  public getDatatype (id, callback) {
-    let datatype;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async() => {
-      datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      callback(datatype);
-    });
-  }
-
-  public getDatatypeMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.metadata);
-      }
-    });
-  }
-
-  public getDatatypeDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.definition);
-      }
-    });
-  }
-
-  public getDatatypeCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.crossReference);
-      }
-    });
-  }
-
-  public getValueset (id, callback) {
-    let valueset;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async() => {
-      valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      callback(valueset);
-    });
-  }
-
-  public getValuesetMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.metadata);
-      }
-    });
-  }
-
-  public getValuesetDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.definition);
-      }
-    });
-  }
-
-  public getValuesetCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.crossReference);
-      }
-    });
-  }
-
-  public saveDatatype(datatype) {
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async() => {
-      let savedDatatype = await this.changedObjectsDatabase.datatypes.get(datatype.id);
-      if (savedDatatype == null) {
-        savedDatatype = new IObject();
-        savedDatatype.id = datatype.id;
-      }
-      let changesToBeSaved = false;
-      if (datatype.metadata != null) {
-        savedDatatype.metadata = datatype.metadata;
-        changesToBeSaved = true;
-      }
-      if (datatype.definition !== undefined) {
-        savedDatatype.definition = datatype.definition;
-        changesToBeSaved = true;
-      }
-      if (datatype.metadata !== undefined) {
-        savedDatatype.crossReference = datatype.crossReference;
-        changesToBeSaved = true;
-      }
-      if (changesToBeSaved) {
-        await this.changedObjectsDatabase.datatypes.put(savedDatatype);
-      }
-    });
   }
 
   public persistChanges() {
@@ -170,16 +84,17 @@ export class IndexedDbService {
       });
     }));
     const doPersist = this.doPersist;
+    const igDocumentService = this.igDocumentService;
     Promise.all(promises).then(function(){
       console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
         + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
-      doPersist(changedObjects);
+      doPersist(changedObjects, igDocumentService);
     });
   }
 
-  private doPersist(changedObjects) {
+  private doPersist(changedObjects, igDocumentService) {
     console.log(JSON.stringify(changedObjects));
-    // TODO call igService.save
+    igDocumentService.save(changedObjects);
   }
 }
 

@@ -3,15 +3,18 @@
  */
 import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {SegmentEditComponent} from "./segment-edit.component";
+import {SegmentEditMetadataComponent} from "./segment-metadata/segment-edit-metadata.component";
+import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
+import {SegmentEditPredefComponent} from "./segment-predef/segment-edit-predef.component";
+import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postdef.component";
 import {SegmentEditRoutingModule} from "./segment-edit-routing.module";
 import {TabMenuModule} from "primeng/components/tabmenu/tabmenu";
+import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
-// import {SegmentGuard} from "./segment-edit.guard";
+
 import {UtilsModule} from "../../../utils/utils.module";
-// import {CanDeactivateGuard} from "./segment-can-desactivate.service";
 
 
 @NgModule({
@@ -22,12 +25,11 @@ import {UtilsModule} from "../../../utils/utils.module";
     DialogModule,
     DropdownModule,
     SegmentEditRoutingModule,
-    UtilsModule
+    UtilsModule,
+    TreeTableModule
   ],
-  // providers : [CanDeactivateGuard ],
-  declarations: [
-    SegmentEditComponent
-  ],
+  providers : [],
+  declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}
