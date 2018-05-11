@@ -48,44 +48,57 @@ public class IgSerializationServiceImpl implements IgSerializationService {
 
   @Autowired
   private DatatypeService datatypeService;
-  
+
   @Autowired
   private ValuesetService valuesetService;
-  
+
   @Autowired
   private SegmentService segmentService;
-  
+
   @Autowired
   private ConformanceProfileService conformanceProfileService;
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.ig.service.IgSerializationService#serializeIgDocument(gov.nist.hit.hl7.igamt.ig.domain.Ig)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.IgSerializationService#serializeIgDocument(gov.nist.hit.hl7.
+   * igamt.ig.domain.Ig)
    */
   @Override
   public String serializeIgDocument(Ig igDocument) throws SerializationException {
     try {
-    Map<String, Datatype> datatypesMap = this.initializeDatatypesMap(igDocument.getDatatypeLibrary());
-    Map<String, Valueset> valuesetsMap = this.initializeValuesetsMap(igDocument.getValueSetLibrary());
-    Map<String, Segment> segmentsMap = this.initializeSegmentsMap(igDocument.getSegmentLibrary());
-    Map<String, ConformanceProfile> conformanceProfilesMap = this.initializeConformanceProfilesMap(igDocument.getConformanceProfileLibrary());
-    SerializableIG serializableIG = new SerializableIG(igDocument, "1", datatypesMap, valuesetsMap, segmentsMap, conformanceProfilesMap);
-    return serializableIG.serialize().toXML();
+      Map<String, Datatype> datatypesMap =
+          this.initializeDatatypesMap(igDocument.getDatatypeRegistry());
+      Map<String, Valueset> valuesetsMap =
+          this.initializeValuesetsMap(igDocument.getValueSetRegistry());
+      Map<String, Segment> segmentsMap =
+          this.initializeSegmentsMap(igDocument.getSegmentRegistry());
+      Map<String, ConformanceProfile> conformanceProfilesMap =
+          this.initializeConformanceProfilesMap(igDocument.getConformanceProfileRegistry());
+      SerializableIG serializableIG = new SerializableIG(igDocument, "1", datatypesMap,
+          valuesetsMap, segmentsMap, conformanceProfilesMap);
+      return serializableIG.serialize().toXML();
     } catch (Exception exception) {
-      throw new SerializationException(exception,Type.IGDOCUMENT,"id="+igDocument.getId().getId()+", version="+igDocument.getId().getVersion());
+      throw new SerializationException(exception, Type.IGDOCUMENT,
+          "id=" + igDocument.getId().getId() + ", version=" + igDocument.getId().getVersion());
     }
   }
 
   /**
    * @param conformanceProfileLibrary
    * @return conformanceProfilesMap
-   * @throws ConformanceProfileNotFoundException 
+   * @throws ConformanceProfileNotFoundException
    */
-  private Map<String, ConformanceProfile> initializeConformanceProfilesMap(Registry conformanceProfileLibrary) throws ConformanceProfileNotFoundException {
+  private Map<String, ConformanceProfile> initializeConformanceProfilesMap(
+      Registry conformanceProfileLibrary) throws ConformanceProfileNotFoundException {
     Map<String, ConformanceProfile> conformanceProfilesMap = new HashMap<>();
-    for(Link conformanceProfileLink : conformanceProfileLibrary.getChildren()) {
-      if(conformanceProfileLink != null && conformanceProfileLink.getId() != null && !conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
-        ConformanceProfile conformanceProfile = conformanceProfileService.findByKey(conformanceProfileLink.getId());
-        if(conformanceProfile != null) {
+    for (Link conformanceProfileLink : conformanceProfileLibrary.getChildren()) {
+      if (conformanceProfileLink != null && conformanceProfileLink.getId() != null
+          && !conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
+        ConformanceProfile conformanceProfile =
+            conformanceProfileService.findByKey(conformanceProfileLink.getId());
+        if (conformanceProfile != null) {
           conformanceProfilesMap.put(conformanceProfileLink.getId().getId(), conformanceProfile);
         } else {
           throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId().getId());
@@ -98,14 +111,16 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   /**
    * @param segmentLibrary
    * @return segmentsMap
-   * @throws SegmentNotFoundException 
+   * @throws SegmentNotFoundException
    */
-  private Map<String, Segment> initializeSegmentsMap(Registry segmentLibrary) throws SegmentNotFoundException {
+  private Map<String, Segment> initializeSegmentsMap(Registry segmentLibrary)
+      throws SegmentNotFoundException {
     Map<String, Segment> segmentsMap = new HashMap<>();
-    for(Link segmentLink : segmentLibrary.getChildren()) {
-      if(segmentLink != null && segmentLink.getId() != null && !segmentsMap.containsKey(segmentLink.getId().getId())) {
+    for (Link segmentLink : segmentLibrary.getChildren()) {
+      if (segmentLink != null && segmentLink.getId() != null
+          && !segmentsMap.containsKey(segmentLink.getId().getId())) {
         Segment segment = segmentService.findByKey(segmentLink.getId());
-        if(segment != null) {
+        if (segment != null) {
           segmentsMap.put(segmentLink.getId().getId(), segment);
         } else {
           throw new SegmentNotFoundException(segmentLink.getId().getId());
@@ -118,14 +133,16 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   /**
    * @param valuesetLibrary
    * @return valuesetsMap
-   * @throws ValuesetNotFoundException 
+   * @throws ValuesetNotFoundException
    */
-  private Map<String, Valueset> initializeValuesetsMap(Registry valuesetLibrary) throws ValuesetNotFoundException {
+  private Map<String, Valueset> initializeValuesetsMap(Registry valuesetLibrary)
+      throws ValuesetNotFoundException {
     Map<String, Valueset> valuesetsMap = new HashMap<>();
-    for(Link valuesetLink : valuesetLibrary.getChildren()) {
-      if(valuesetLink != null && valuesetLink.getId() != null && !valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+    for (Link valuesetLink : valuesetLibrary.getChildren()) {
+      if (valuesetLink != null && valuesetLink.getId() != null
+          && !valuesetsMap.containsKey(valuesetLink.getId().getId())) {
         Valueset valueset = valuesetService.findById(valuesetLink.getId());
-        if(valueset != null) {
+        if (valueset != null) {
           valuesetsMap.put(valuesetLink.getId().getId(), valueset);
         } else {
           throw new ValuesetNotFoundException(valuesetLink.getId().getId());
@@ -138,14 +155,16 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   /**
    * @param datatypeLibrary
    * @return datatypesMap
-   * @throws DatatypeNotFoundException 
+   * @throws DatatypeNotFoundException
    */
-  private Map<String, Datatype> initializeDatatypesMap(Registry datatypeLibrary) throws DatatypeNotFoundException {
+  private Map<String, Datatype> initializeDatatypesMap(Registry datatypeLibrary)
+      throws DatatypeNotFoundException {
     Map<String, Datatype> datatypesMap = new HashMap<>();
-    for(Link datatypeLink : datatypeLibrary.getChildren()) {
-      if(datatypeLink != null && datatypeLink.getId() != null && !datatypesMap.containsKey(datatypeLink.getId().getId())) {
+    for (Link datatypeLink : datatypeLibrary.getChildren()) {
+      if (datatypeLink != null && datatypeLink.getId() != null
+          && !datatypesMap.containsKey(datatypeLink.getId().getId())) {
         Datatype datatype = datatypeService.findByKey(datatypeLink.getId());
-        if(datatype != null) {
+        if (datatype != null) {
           datatypesMap.put(datatypeLink.getId().getId(), datatype);
         } else {
           throw new DatatypeNotFoundException(datatypeLink.getId().getId());

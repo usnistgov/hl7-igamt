@@ -47,10 +47,10 @@ public class SerializableIG extends SerializableAbstractDomain {
    * @param abstractDomain
    * @param position
    */
-  public SerializableIG(AbstractDomain abstractDomain, String position,
-      Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap,
-      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
-    super(abstractDomain, position);
+  public SerializableIG(Ig ig, String position, Map<String, Datatype> datatypesMap,
+      Map<String, Valueset> valueSetsMap, Map<String, Segment> segmentsMap,
+      Map<String, ConformanceProfile> conformanceProfilesMap) {
+    super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
     this.segmentsMap = segmentsMap;
@@ -74,7 +74,10 @@ public class SerializableIG extends SerializableAbstractDomain {
 
     for (Section section : igDocument.getContent()) {
       Element sectionElement = SectionSerializationUtil.serializeSection(section, datatypesMap,
-          datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
+          datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
+          igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
+          igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
+          igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry());
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }

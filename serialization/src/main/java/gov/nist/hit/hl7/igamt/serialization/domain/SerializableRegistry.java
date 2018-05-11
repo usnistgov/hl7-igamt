@@ -11,29 +11,31 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.exception;
+package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 
 /**
  *
- * @author Maxence Lefort on Apr 6, 2018.
+ * @author Maxence Lefort on May 11, 2018.
  */
-public class RegistrySerializationException extends SerializationException {
+public abstract class SerializableRegistry extends SerializableSection {
 
+  private Registry registry;
+  
   /**
-   * 
+   * @param id
+   * @param position
+   * @param title
    */
-  private static final long serialVersionUID = 8518854801349174831L;
+  public SerializableRegistry(Section section, Registry registry) {
+    super(section);
+    this.registry = registry;
+  }
 
-  /**
-   * @param originException
-   * @param type
-   * @param location
-   */
-  public RegistrySerializationException(Exception originException, Section section, Registry registry) {
-    super(originException, registry.getType(), section.getLabel());
+  public Registry getRegistry() {
+    return registry;
   }
 
 }

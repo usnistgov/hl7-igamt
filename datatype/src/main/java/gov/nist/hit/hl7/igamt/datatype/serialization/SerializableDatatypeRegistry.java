@@ -16,11 +16,13 @@ package gov.nist.hit.hl7.igamt.datatype.serialization;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import nu.xom.Element;
 
@@ -28,17 +30,19 @@ import nu.xom.Element;
  *
  * @author Maxence Lefort on Apr 6, 2018.
  */
-public class SerializableDatatypeRegistry extends SerializableSection {
+public class SerializableDatatypeRegistry extends SerializableRegistry {
 
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
-  
+
   /**
    * @param section
    */
-  public SerializableDatatypeRegistry(Registry registry, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
-    super(registry);
+  public SerializableDatatypeRegistry(Section section, DatatypeRegistry datatypeRegistry,
+      Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
+      Map<String, String> valuesetNamesMap) {
+    super(section, datatypeRegistry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -46,17 +50,18 @@ public class SerializableDatatypeRegistry extends SerializableSection {
 
   @Override
   public Element serialize() throws SerializationException {
-    Registry datatypeRegistry = (Registry) super.getSection();
+    Registry datatypeRegistry = super.getRegistry();
     try {
       Element datatypeRegistryElement = super.getElement();
-      if(datatypeRegistry != null) {
-        if(!datatypeRegistry.getChildren().isEmpty()) {
-          for(Link datatypeLink : datatypeRegistry.getChildren()) {
-            if(datatypesMap.containsKey(datatypeLink.getId().getId())) {
+      if (datatypeRegistry != null) {
+        if (!datatypeRegistry.getChildren().isEmpty()) {
+          for (Link datatypeLink : datatypeRegistry.getChildren()) {
+            if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
               Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
-              SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),datatypeNamesMap, valuesetNamesMap);
+              SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,
+                  String.valueOf(datatypeLink.getPosition()), datatypeNamesMap, valuesetNamesMap);
               Element datatypeElement = serializableDatatype.serialize();
-              if(datatypeElement!=null) {
+              if (datatypeElement != null) {
                 datatypeRegistryElement.appendChild(datatypeElement);
               }
             } else {
@@ -67,11 +72,10 @@ public class SerializableDatatypeRegistry extends SerializableSection {
       }
       return datatypeRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, datatypeRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), datatypeRegistry);
     }
   }
-  
-  
-  
+
+
 
 }

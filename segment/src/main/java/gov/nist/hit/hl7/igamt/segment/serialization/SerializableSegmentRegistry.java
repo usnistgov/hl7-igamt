@@ -16,20 +16,21 @@ package gov.nist.hit.hl7.igamt.segment.serialization;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
+import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
 import nu.xom.Element;
 
 /**
  *
  * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SerializableSegmentRegistry extends SerializableSection {
+public class SerializableSegmentRegistry extends SerializableRegistry {
 
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
@@ -38,9 +39,10 @@ public class SerializableSegmentRegistry extends SerializableSection {
   /**
    * @param section
    */
-  public SerializableSegmentRegistry(Section section, Map<String, Segment> segmentsMap,
-      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
-    super(section);
+  public SerializableSegmentRegistry(Section section, SegmentRegistry segmentRegistry,
+      Map<String, Segment> segmentsMap, Map<String, String> datatypeNamesMap,
+      Map<String, String> valuesetNamesMap) {
+    super(section, segmentRegistry);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -53,7 +55,7 @@ public class SerializableSegmentRegistry extends SerializableSection {
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry segmentRegistry = (Registry) super.getSection();
+    Registry segmentRegistry = super.getRegistry();
     try {
       Element segmentRegistryElement = super.getElement();
       if (segmentRegistry != null) {
@@ -77,7 +79,7 @@ public class SerializableSegmentRegistry extends SerializableSection {
       }
       return segmentRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, segmentRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), segmentRegistry);
     }
   }
 

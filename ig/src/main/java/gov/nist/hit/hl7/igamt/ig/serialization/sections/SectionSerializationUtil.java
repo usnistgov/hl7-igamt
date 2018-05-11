@@ -22,6 +22,12 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
@@ -32,14 +38,19 @@ import nu.xom.Element;
 public class SectionSerializationUtil {
 
   public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap, Map<String, String> valuesetNamesMap, 
-      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
-      throws SerializationException {
+      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
+      Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
+      DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
+      ConformanceProfileRegistry conformanceProfileRegistry,
+      ProfileComponentRegistry profileComponentRegistry,
+      CompositeProfileRegistry compositeProfileRegistry) throws SerializationException {
     if (section != null) {
       try {
-        SerializableSection serializableSection =
-            SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
-                valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
+        SerializableSection serializableSection = SerializableSectionFactory.getSerializableSection(
+            section, datatypesMap, datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
+            conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
+            conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
         if (serializableSection != null) {
           return serializableSection.serialize();
         }
@@ -51,7 +62,7 @@ public class SectionSerializationUtil {
   }
 
   public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null, null, null, null, null, null);
+    return serializeSection(section, null, null, null, null, null, null, null, null,null, null, null, null);
   }
 
 }
