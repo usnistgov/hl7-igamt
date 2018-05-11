@@ -13,8 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.InputStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
@@ -45,7 +48,8 @@ public class IgExportServiceImpl implements IgExportService {
     if(igDocument != null) {
       try {
         String xmlContent = igSerializationService.serializeIgDocument(igDocument);
-        return exportService.exportSerializedElementToHtml(xmlContent);
+        InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent);
+        return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), ExportFormat.HTML);
       } catch (SerializationException | ExportException e) {
         throw new ExportException(e,"Error while exporting IG Document with ID " + igDocument.getId().toString());
       }

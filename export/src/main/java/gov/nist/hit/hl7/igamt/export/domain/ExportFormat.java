@@ -11,31 +11,29 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.exception;
-
-import gov.nist.hit.hl7.igamt.shared.domain.SubStructElement;
+package gov.nist.hit.hl7.igamt.export.domain;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on May 11, 2018.
  */
-public class SubStructElementSerializationException extends SerializationException {
-  
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1706078133141397824L;
+public enum ExportFormat {
 
-  public SubStructElementSerializationException(Exception originException,
-      SubStructElement subStructElement, String message) {
-    super(originException, subStructElement.getType(), "id="+subStructElement.getId()+",position="+subStructElement.getPosition(), message);
+  HTML("html"), WORD("docx"), XML("xml");
+
+  private final String value;
+
+  private ExportFormat(String value) {
+    this.value = value;
   }
 
-  public SubStructElementSerializationException(Exception originException, SubStructElement subStructElement) {
-    this(originException, subStructElement, null);
+  public String getValue() {
+    return value;
   }
 
-  
+  @Override
+  public String toString() {
+    return this.value;
+  }
 
-  
 }

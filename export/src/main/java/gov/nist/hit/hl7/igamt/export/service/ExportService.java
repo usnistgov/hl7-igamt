@@ -13,7 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.export.service;
 
-import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
+import java.io.InputStream;
+
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 
 /**
@@ -22,6 +23,6 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
  */
 public interface ExportService {
 
-  public ExportedFile exportSerializedElementToHtml(String serializedElement) throws ExportException;
+  public InputStream exportSerializedElementToHtml(String serializedElement) throws ExportException;
   
 }

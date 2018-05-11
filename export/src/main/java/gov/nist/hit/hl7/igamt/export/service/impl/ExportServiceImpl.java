@@ -29,10 +29,10 @@ import gov.nist.hit.hl7.igamt.export.util.TransformationUtil;
  */
 public class ExportServiceImpl implements ExportService {
 
-  private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";
-  private static String DOCUMENT_TITLE_DATATYPE_LIBRARY = "Datatype Library";
-  private static String EXPORT_FORMAT_HTML = "html";
-  private static String EXPORT_FORMAT_WORD = "word";
+//  private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";
+//  private static String DOCUMENT_TITLE_DATATYPE_LIBRARY = "Datatype Library";
+//  private static String EXPORT_FORMAT_HTML = "html";
+//  private static String EXPORT_FORMAT_WORD = "word";
   private static String GLOBAL_STYLESHEET = "/rendering/generalExport.xsl";
 
   @Override
