@@ -40,15 +40,12 @@ export class ConformanceProfilesTocService {
     }
   }
 
-  public bulkAdd(conformanceProfiles: Array<TocNode>) {
+  public bulkAdd(conformanceProfiles: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.conformanceProfiles, async () => {
-        this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
+      // this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.conformanceProfiles, async () => {
+      //   return this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
+      // });
     }
   }
 }
