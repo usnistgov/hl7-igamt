@@ -17,6 +17,7 @@ import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 import nu.xom.Attribute;
@@ -39,11 +40,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
     Element element = super.getElement(elementName);
     if (this.abstractDomain != null) {
       element.addAttribute(new Attribute("comment",
-          this.abstractDomain.getComment() != null ? this.abstractDomain.getComment() : ""));
+          this.abstractDomain.getComment() != null ? FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getComment()) : ""));
       element.addAttribute(new Attribute("createdFrom",
           this.abstractDomain.getCreatedFrom() != null ? this.abstractDomain.getCreatedFrom() : ""));
       element.addAttribute(new Attribute("description",
-          this.abstractDomain.getDescription() != null ? this.abstractDomain.getDescription() : ""));
+          this.abstractDomain.getDescription() != null ? FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getDescription()) : ""));
       element.addAttribute(
           new Attribute("name", this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
       element.addAttribute(new Attribute("domainVersion",

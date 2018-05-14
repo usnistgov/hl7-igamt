@@ -55,7 +55,9 @@ public class SerializableSectionFactory {
       serializableSection = new SerializableTextSection((TextSection) section);
     } else if (Type.PROFILE.equals(section.getType())) {
       serializableSection = new SerializableProfile((TextSection) section, datatypesMap,
-          datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
+          datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
+          valueSetRegistry, datatypeRegistry, segmentRegistry, conformanceProfileRegistry,
+          profileComponentRegistry, compositeProfileRegistry);
     } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableDatatypeRegistry(section, datatypeRegistry,
           datatypesMap, datatypeNamesMap, valuesetNamesMap);

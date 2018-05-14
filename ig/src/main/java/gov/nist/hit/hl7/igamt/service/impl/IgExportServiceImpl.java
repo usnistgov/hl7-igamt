@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import java.io.InputStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
@@ -31,6 +32,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("IgExportService")
 public class IgExportServiceImpl implements IgExportService {
 
   @Autowired 

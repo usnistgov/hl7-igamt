@@ -15,12 +15,15 @@ package gov.nist.hit.hl7.igamt.export.service;
 
 import java.io.InputStream;
 
+import org.springframework.stereotype.Service;
+
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("ExportService")
 public interface ExportService {
 
   public InputStream exportSerializedElementToHtml(String serializedElement) throws ExportException;

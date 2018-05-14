@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -32,9 +33,9 @@ public abstract class SerializableResource extends SerializableAbstractDomain {
     Resource resource = (Resource) super.getAbstractDomain();
     if(resource != null && element != null) {
       element.addAttribute(new Attribute("postDef",
-          resource.getPostDef() != null ? resource.getPostDef() : ""));
+          resource.getPostDef() != null ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef()) : ""));
       element.addAttribute(new Attribute("preDef",
-          resource.getPreDef() != null ? resource.getPreDef() : ""));
+          resource.getPreDef() != null ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef()) : ""));
     }
     return element;
   }

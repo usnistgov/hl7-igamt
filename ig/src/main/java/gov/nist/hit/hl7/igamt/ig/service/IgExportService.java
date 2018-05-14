@@ -13,16 +13,16 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
+import org.springframework.stereotype.Service;
+
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("igExportService")
 public interface IgExportService {
-
   public ExportedFile exportIgDocumentToHtml(String igDocumentId) throws ExportException;
-
 }

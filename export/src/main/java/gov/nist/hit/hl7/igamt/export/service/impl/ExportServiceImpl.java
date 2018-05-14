@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.InputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
@@ -27,6 +28,7 @@ import gov.nist.hit.hl7.igamt.export.util.TransformationUtil;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("ExportService")
 public class ExportServiceImpl implements ExportService {
 
 //  private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";
