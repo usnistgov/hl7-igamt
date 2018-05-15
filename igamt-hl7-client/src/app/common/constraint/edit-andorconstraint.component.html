@@ -1,0 +1,40 @@
+
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-2">
+        <label>Select operation: </label>
+    </div>
+    <div class="ui-g-12 ui-md-10">
+        <p-dropdown [options]="andorOptions" [(ngModel)]="constraint.operator" (onChange)="changeOperator()" placeholder="Select an Operation type"></p-dropdown>
+    </div>
+</div>
+
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-2">
+        <label>Need more Assertion </label>
+    </div>
+    <div class="ui-g-12 ui-md-10">
+        <button pButton type="button" label="Add Child Constraint" class="blue-btn" icon="fa-plus" (click)="addConstraint()"></button>
+    </div>
+</div>
+
+
+<div *ngFor="let child of constraint.assertions; let idx = index">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label>[#{{idx + 1}}] Assertion Type:</label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="assertionModes" [(ngModel)]="child.mode" (onChange)="makeConstraintMode(child)"></p-dropdown>
+        </div>
+    </div>
+
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label>[#{{idx + 1}}] Assertion: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <edit-simple-constraint *ngIf="child.mode === 'SIMPLE'" [constraint]="child" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb"></edit-simple-constraint>
+            <edit-complex-constraint *ngIf="child.mode === 'COMPLEX'" [constraint]="child" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="ifVerb"></edit-complex-constraint>
+        </div>
+    </div>
+</div>

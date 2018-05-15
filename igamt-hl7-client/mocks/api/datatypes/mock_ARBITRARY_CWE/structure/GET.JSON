@@ -3,6 +3,7 @@
     "id": "mock_ARBITRARY_CWE",
     "version": 1
   },
+  "name": "CWE",
   "label": "CWETXT",
   "scope": "ARCHIVED",
   "version": "2.6",

@@ -15,20 +15,6 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint;
  * @author jungyubw
  *
  */
-public class FreeTextConformanceStatement extends ConformanceStatement {
-
-  private String freeText;
-
-  public FreeTextConformanceStatement() {
-    super();
-    this.setType(ConstraintType.FREE);
-  }
-
-  public String getFreeText() {
-    return freeText;
-  }
-
-  public void setFreeText(String freeText) {
-    this.freeText = freeText;
-  }
+public enum ConstraintType {
+  PREDEFINED, PREDEFINEDPATTERNS,ASSERTION,FREE  
 }

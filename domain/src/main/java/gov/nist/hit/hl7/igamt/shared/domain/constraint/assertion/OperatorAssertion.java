@@ -26,6 +26,13 @@ public class OperatorAssertion extends MultipleAssertion {
 
   private Operator operator;
   private Set<Assertion> assertions = new HashSet<Assertion>();
+  
+  
+
+  public OperatorAssertion() {
+    super();
+    this.setMode(AssertionMode.COMPLEX);
+  }
 
   public Set<Assertion> getAssertions() {
     return assertions;

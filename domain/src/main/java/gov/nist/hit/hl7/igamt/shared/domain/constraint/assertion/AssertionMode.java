@@ -9,26 +9,12 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.shared.domain.constraint;
+package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class FreeTextConformanceStatement extends ConformanceStatement {
-
-  private String freeText;
-
-  public FreeTextConformanceStatement() {
-    super();
-    this.setType(ConstraintType.FREE);
-  }
-
-  public String getFreeText() {
-    return freeText;
-  }
-
-  public void setFreeText(String freeText) {
-    this.freeText = freeText;
-  }
+public enum AssertionMode {
+  SIMPLE,COMPLEX
 }

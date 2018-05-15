@@ -1,0 +1,68 @@
+<div *ngIf="segmentConformanceStatements">
+    <p-accordion>
+        <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
+            <p-table [value]="segmentConformanceStatements.conformanceStatements">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>ID</th>
+                        <th>mode</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-cs>
+                    <tr>
+                        <td>{{cs.identifier}}</td>
+                        <td>{{cs.mode}}</td>
+                        <td></td>
+                        <td>
+                            <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa-times" label="Delete" (click)="deleteCS(cs.identifier)"></button>
+                            <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa-pencil" label="Select" (click)="selectCS(cs)"></button>
+                        </td>
+                    </tr>
+                </ng-template>
+            </p-table>
+
+        </p-accordionTab>
+        <p-accordionTab header="Conformance Statement Editor" [(selected)]="editorTab">
+
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12 ui-md-2">
+                    <label>Editor Type: </label>
+                </div>
+                <div class="ui-g-12 ui-md-10">
+                    <p-selectButton [options]="constraintType" [(ngModel)]="selectedConformanceStatement.type" (onChange)="changeType()"></p-selectButton>
+                </div>
+            </div>
+
+            <div *ngIf="selectedConformanceStatement.type">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-md-2">
+                        <label>ID: </label>
+                    </div>
+                    <div class="ui-g-12 ui-md-10">
+                        <input [(ngModel)]="selectedConformanceStatement.identifier" type="text" style="width:50%;border-width:0px 0px 1px 0px"/>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-md-2">
+                        <label>Assertion Type: </label>
+                    </div>
+                    <div class="ui-g-12 ui-md-10">
+                        <p-dropdown [options]="assertionModes" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
+                    </div>
+                </div>
+            </div>
+
+            <edit-free-constraint *ngIf="selectedConformanceStatement.type === 'FREE'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
+            <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData"></edit-simple-constraint>
+            <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData"></edit-complex-constraint>
+
+            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="ADD" (click)="addCS()" [disabled]="!checkNewConformanceStatement()"></button>
+            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="printCS(selectedConformanceStatement)"></button>
+        </p-accordionTab>
+    </p-accordion>
+</div>

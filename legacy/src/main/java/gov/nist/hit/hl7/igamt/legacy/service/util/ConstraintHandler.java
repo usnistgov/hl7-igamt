@@ -327,7 +327,7 @@ public class ConstraintHandler {
     String operatorStr = ((Element) pathValueNode).getAttribute("Operator");
 
     CompareNodeComplement compareNodeComplement = new CompareNodeComplement();
-    compareNodeComplement.setComparatorPath(this.constructSubject(path2, obj).getPath());
+    compareNodeComplement.setPath(this.constructSubject(path2, obj).getPath());
 
     if (operatorStr.equals("EQ")) {
       compareNodeComplement.setOperator(CompareOperator.equal);

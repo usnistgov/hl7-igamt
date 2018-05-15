@@ -1,0 +1,17 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-2">
+        <label>NOT Assertion Type: </label>
+    </div>
+    <div class="ui-g-12 ui-md-10">
+        <p-dropdown [options]="assertionModes" [(ngModel)]="constraint.child.mode" (onChange)="makeConstraintMode(constraint.child)"></p-dropdown>
+    </div>
+</div>
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-2">
+        <label>NOT Assertion: </label>
+    </div>
+    <div class="ui-g-12 ui-md-10">
+        <edit-simple-constraint *ngIf="constraint.child.mode === 'SIMPLE'" [constraint]="constraint.child" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb"></edit-simple-constraint>
+        <edit-complex-constraint *ngIf="constraint.child.mode === 'COMPLEX'" [constraint]="constraint.child" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="ifVerb"></edit-complex-constraint>
+    </div>
+</div>

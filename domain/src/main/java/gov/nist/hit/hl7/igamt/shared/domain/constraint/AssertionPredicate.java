@@ -22,6 +22,7 @@ public class AssertionPredicate extends Predicate {
 
   public AssertionPredicate() {
     super();
+    this.setType(ConstraintType.ASSERTION);
   }
 
   public Assertion getAssertion() {
@@ -31,5 +32,4 @@ public class AssertionPredicate extends Predicate {
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
   }
-
 }
