@@ -109,7 +109,12 @@ import { TreeModule } from 'angular-tree-component';
 import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
 import {BreadcrumbService} from "./breadcrumb.service";
 import {ConformanceProfilesTocService} from "./service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import {WithSave} from "./with.save.interface";
+import {TocDbService} from "./service/indexed-db/toc-db.service";
+import {CompositeProfilesTocService} from "./service/indexed-db/composite-profiles/composite-profiles-toc.service";
+import {DatatypesTocService} from "./service/indexed-db/datatypes/datatypes-toc.service";
+import {SegmentsTocService} from "./service/indexed-db/segments/segments-toc.service";
+import {ValuesetsTocService} from "./service/indexed-db/valuesets/valuesets-toc.service";
+import {ProfileComponentsTocService} from "./service/indexed-db/profile-components/profile-components-toc.service";
 
 
 @NgModule({
@@ -230,8 +235,15 @@ import {WithSave} from "./with.save.interface";
      SegmentsIndexedDbService,
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
+    ProfileComponentsTocService,
+    TocDbService,
+    DatatypesTocService,
+    SegmentsTocService,
+    ValuesetsTocService,
+
     DatatypesService,
     ConformanceProfilesTocService,
+    CompositeProfilesTocService,
     // ValueSetsService,
      SegmentsService,
      // ProfileComponentsService,

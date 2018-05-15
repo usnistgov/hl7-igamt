@@ -10,6 +10,10 @@ import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "
 import {MenuItem} from 'primeng/api';
 import {ContextMenuComponent} from "ngx-contextmenu";
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
+import { BsModalService } from 'ngx-bootstrap/modal';
+import { BsModalRef } from 'ngx-bootstrap';
+import {AddConformanceProfileComponent} from "../add-conformance-profile/add-conformance-profile.component";
+
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
@@ -17,17 +21,22 @@ import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 })
 export class IgDocumentEditComponent {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
+
+  @ViewChild(AddConformanceProfileComponent) addCps: AddConformanceProfileComponent;
+
   igId:any;
+  bsModalRef: BsModalRef;
 
   ig:any;
   currentUrl:any;
+  displayMessageAdding: boolean = false;
 
   hideToc:boolean=false;
 
   activeNode:any;
 
   searchFilter:string="";
-
+  blockUI:false;
 
   types: SelectItem[]=[
 
@@ -108,13 +117,14 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,private modalService: BsModalService){
 
     router.events.subscribe(event => {
-
+      console.log(event);
 
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
+        this.parseUrl();
       }
     });
   }
@@ -140,6 +150,7 @@ export class IgDocumentEditComponent {
 
 
   ngOnInit() {
+    console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
@@ -167,38 +178,39 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
-
-    var index = this.currentUrl.indexOf("/ig/");
-    var fromIg=  this.currentUrl.substring(this.currentUrl.indexOf("/ig/")+4);
-
-    var paramIndex= fromIg.indexOf('?');
-    console.log(paramIndex);
-    if(paramIndex>-1){
-      fromIg=fromIg.substring(0,paramIndex);
-    }
-    var slashIndex= fromIg.indexOf("/");
-
-    if(slashIndex<0){
-      console.log("OPENING IG")
-      this.expandAll();
-    }else{
-        var fromChild = fromIg.substring(slashIndex+1,fromIg.length);
+      this.parseUrl();
 
 
-       var childId= fromChild.substring(fromChild.indexOf("/")+1,fromChild.length);
-        console.log(childId);
-        let node=this.tree.treeModel.getNodeById(childId);
-        if(node){
+  }
+  parseUrl(){
+    if(this.tree) {
 
-            node.setIsActive(true);
-            this.activateNode(node);
+
+      var index = this.currentUrl.indexOf("/ig/");
+      var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
+
+      var paramIndex = fromIg.indexOf('?');
+      console.log(paramIndex);
+      if (paramIndex > -1) {
+        fromIg = fromIg.substring(0, paramIndex);
+      }
+      var slashIndex = fromIg.indexOf("/");
+
+      if (slashIndex > 0) {
+        var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
+        var childId = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
+        let node = this.tree.treeModel.getNodeById(childId);
+        if (node) {
+          this.tocService.setActiveNode(node);
+          node.setIsActive(true);
+          this.activateNode(node);
         }
 
-
-
+      }
     }
 
   }
+
 
 
 
@@ -279,7 +291,6 @@ export class IgDocumentEditComponent {
   };
 
   path(node){
-    console.log(node);
     return node.path;
   }
 
@@ -307,6 +318,7 @@ export class IgDocumentEditComponent {
 
   goToSection(id) {
 
+
     this.sp.queryParams
       .subscribe(params => {
         console.log(params);
@@ -318,14 +330,44 @@ export class IgDocumentEditComponent {
 
 
   }
-goToMetaData(){
+  goToMetaData(){
   this.sp.queryParams
     .subscribe(params => {
 
       this.router.navigate(["./metadata/"],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
 
     });
-}
+  }
+
+  addMessage(node){
+    this.displayMessageAdding=true;
+
+    this.addCps.open({
+      id : this.igId
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+          console.log(result);
+        }
+      )
+
+  }
+
+
+  distributeResult(object:any){
+
+    this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+    this.tocService.addNodesByType(object.datatypes,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
+
+    this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+
+    this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
+    this.tree.treeModel.update();
+
+
+  }
 
 
 

@@ -1,5 +1,7 @@
 <div>
-<div>
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+    <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
+  <div>
 
       <span class="ig-title">{{ig.metadata.title}}</span>
               <span class="ig-title">{{ig.metadata.title}}</span>
@@ -87,7 +89,7 @@
             <!--<display-label [elm]="node.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>-->
 
 
-            <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)"> {{getPath(node)}}{{node.data.data.label}}</span>
+            <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
             <context-menu #textcontextmenu>
               <ng-template contextMenuItem (execute)="addSection(node)">
                 <i class="fa fa-plus"></i> Add Section
@@ -115,7 +117,13 @@
 
 
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <span  [contextMenu]="conformanceProfileContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+
+            <context-menu  #conformanceProfileContextMenu>
+              <ng-template contextMenuItem (execute)="addMessage(node)">
+                <i class="fa fa-plus"></i>Add Conformance Profile
+              </ng-template>
+            </context-menu>
           </ng-container>
 
 
@@ -185,10 +193,11 @@
 
   <!--ROUTE-->
   <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;">
-    <form #igForm="ngForm" novalidate>
+
       <router-outlet></router-outlet>
 
-    </form>
   </div>
 </div>
 </div>
+
+<p-blockUI [blocked]="blockUI"></p-blockUI>

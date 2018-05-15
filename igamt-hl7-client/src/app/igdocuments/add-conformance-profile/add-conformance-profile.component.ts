@@ -1,22 +1,22 @@
-/**
- * Created by ena3 on 12/29/17.
- */
-import {Component, ViewChild} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-// import {MatStepper} from "@angular/material";
-import {IgDocumentCreateService} from "./igdocument-create.service";
-import {TreeNode} from "primeng/components/common/treenode";
+import { Component, OnInit ,Input} from '@angular/core';
+import {IgDocumentCreateService} from "../igdocument-create/igdocument-create.service";
 import {WorkspaceService} from "../../service/workspace/workspace.service";
-import {Router, ActivatedRoute} from "@angular/router";
-import {MenuItem} from 'primeng/api';
-import {BreadcrumbService} from "../../breadcrumb.service";
-
+import {ActivatedRoute, Router} from "@angular/router";
+import {TreeNode} from "primeng/components/common/treenode";
+import {BsModalRef} from "ngx-bootstrap";
+import {IgDocumentAddingService} from "../igdocument-edit/adding.service";
+import {PrimeDialogAdapter} from "../../common/prime-ng-adapters/prime-dialog-adapter";
 
 @Component({
-  templateUrl: './igdocument-create.component.html'
+  selector: 'app-add-conformance-profile',
+  templateUrl: './add-conformance-profile.component.html',
+  styleUrls: ['./add-conformance-profile.component.css']
 })
-export class IgDocumentCreateComponent {
-  isLinear = true;
+export class AddConformanceProfileComponent extends PrimeDialogAdapter{
+
+  @Input()
+  id:any;
+
   tableValue :any;
   tableValueMap={};
   loading=false;
@@ -26,61 +26,40 @@ export class IgDocumentCreateComponent {
   blockUI=false;
 
   metaData: any= {};
-  items: MenuItem[];
-  breadCurmp:MenuItem[];
-  path: MenuItem[];
+
 
   selectdNodeMap={};
-  selectedNodes: TreeNode[];
-  firstFormGroup: FormGroup;
   msgEvts=[];
-  messageEventMap={};
-  secondFormGroup: FormGroup;
   hl7Versions: any[];
   selcetedVersion: any =null;
 
-  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService,
-              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
+  constructor( private  addingService :IgDocumentAddingService,
+              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService
   ) {
-    this.path=[{label:"Igdocuments"},{label:"create new IG document"}];
-    this.breadCrump.setItems(this.path);
+    super();
     this.hl7Versions=ws.getAppConstant().hl7Versions;
   }
 
-  ngOnInit() {
-
-    this.items = [
-      {
-      label: 'Meta Data ',
-
-      },
-      {
-        label: 'Conformane Profiles'
-      }
-
-      ];
 
 
 
 
-    this.breadCurmp = [
-      {
-        label: 'IG Documents ',
-
-      },
-      {
-        label: 'Create New IG Document'
-      }
-
-    ];
-
-
-
+  ngOnInit(){
+    // Mandatory
+    super.hook(this);
   }
 
+  onDialogOpen(){
+    // Init code
+  }
 
-  totalStepsCount: number;
+  close(){
+    this.dismissWithNoData();
+  }
 
+  closeWithData(data : any){
+    this.dismissWithData(data);
+  }
 
   getMessages(v){
     this.tableValue=[];
@@ -96,7 +75,7 @@ export class IgDocumentCreateComponent {
       }
 
     }else{
-      this.createService.getMessagesByVersion(v).subscribe(x=>{
+      this.addingService.getMessagesByVersion(v).subscribe(x=>{
 
         console.log(this.selectedVerion);
         this.tableValue=x;
@@ -132,54 +111,12 @@ export class IgDocumentCreateComponent {
 
   };
 
-  submitEvent(){
-    for(let i=0 ;i<this.selectdNodeMap[this. selcetedVersion].length; i++){
-      if(this.selectdNodeMap[this. selcetedVersion][i].data.parentStructId){
-        if(this.selectdNodeMap[this. selcetedVersion][i].parent.data.id){
-          if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]){
-            if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children) {
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
 
-
-              });
-            }else{
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
-
-
-              })
-            }
-          }else{
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]={};
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-              name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-              parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
-
-            })
-
-
-          }
-        }
-
-      }
-    }
-   this.msgEvts=Object.keys(this.messageEventMap).map((key)=>{ return {id:key, children:this.messageEventMap[key].children}});
-
-    console.log(this.msgEvts);
-
-  }
-
-
-  create(){
+  addMessages(){
     let wrapper:any ={};
+    this.blockUI=true;
 
-
-  let versions= Object.keys(this.selectdNodeMap);
+    let versions= Object.keys(this.selectdNodeMap);
 
 
     for(let i = 0 ; i<versions.length; i++){
@@ -189,29 +126,23 @@ export class IgDocumentCreateComponent {
         this.selectNode(this.selectdNodeMap[version][j]);
       }
 
-  };
+    };
 
-  wrapper.msgEvts=this.msgEvts;
-  wrapper.metaData=this.metaData;
-  this.blockUI=true;
+    wrapper.msgEvts=this.msgEvts;
+    wrapper.id=this.id;
+    this.blockUI=true;
 
 
-    this.createService.createIntegrationProfile(wrapper).subscribe(
+    this.addingService.addMessages(wrapper).subscribe(
       res => {
-         console.log(res);
-         this.goTo(res);
-         this.blockUI=false;
+        console.log(res);
+        this.closeWithData(res);
+        this.blockUI=false;
       }
     )
 
 
   };
-
-  convertNodeToData(){
-
-
-
-  }
 
   goTo(res:any) {
 
@@ -222,9 +153,6 @@ export class IgDocumentCreateComponent {
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
-
-
-
   }
 
   print(obj){
@@ -329,7 +257,7 @@ export class IgDocumentCreateComponent {
 
             }
           }
-      }
+        }
       };
     }
 
@@ -340,16 +268,12 @@ export class IgDocumentCreateComponent {
 
   upload(event) {
     this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
-
     for(let file of event.files) {
       this.uploadedFiles.push(file);
-
     }
 
 
   }
-
-
 
 
 }

@@ -9,19 +9,20 @@ import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/rou
 import {Observable} from "rxjs";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {ConformanceProfilesTocService} from "../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
+import {TocDbService} from "../../service/indexed-db/toc-db.service";
 
 @Injectable()
 export  class IgdocumentEditResolver implements Resolve<any>{
   ig: any;
-  segments:any[];
-  datatypes:any[];
-  profileComponents:any[];
+  segments:any[]=[];
+  datatypes:any[]=[];
+  profileComponents:any[]=[];
 
-  conformanceProfiles:any[];
-  compositeProfiles: any[];
-  valueSets: any[];
+  conformanceProfiles:any[]=[];
+  compositeProfiles: any[]=[];
+  valueSets: any[]=[];
 
-  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public cps:ConformanceProfilesTocService) {
+  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public saveService:TocDbService) {
 
   }
 
@@ -35,7 +36,14 @@ export  class IgdocumentEditResolver implements Resolve<any>{
           this.indexedDbService.initializeDatabase(igId).then( ()=>{
 
             this.parseToc(x.toc);
-            resolve(x);
+
+            console.log(this.valueSets);
+            console.log(this.datatypes);
+            this.saveService.bulkAddToc(this.valueSets, this.datatypes, this.segments, this.conformanceProfiles, this.profileComponents, this.compositeProfiles).then(
+              ()=>{
+                resolve(x);
+              }
+            );
           });
 
 
@@ -66,25 +74,27 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   parseProfile(profile:any) {
     for (let i = 0; i < profile.children.length; i++) {
       let node = profile.children[i];
+      let converted= this.convertList(node.children);
       if (node.data.type == 'CONFORMANCEPROFILEREGISTRY'){
-        this.conformanceProfiles =this.convertList(node.children);
-        console.log(this.cps.bulkAdd(this.conformanceProfiles));
+        this.conformanceProfiles =converted
 
       }
       else if (node.data.type == 'PROFILECOMPONENTSREGISTRY'){
-        this.profileComponents = node.children;
+        this.profileComponents =converted;
       }
       else if (node.data.type == 'COMPOSITEPROFILEREGISTRY'){
-        this.compositeProfiles = node.children;
+        this.compositeProfiles = converted;
       }
       else if (node.data.type == 'SEGMENTREGISTRY'){
-        this.segments = node.children;
+        this.segments = converted;
       }
       else if (node.data.type == 'DATATYPEREGISTRY'){
-        this.datatypes = node.children;
+        this.datatypes = converted;
+
+        console.log(this.datatypes);
       }
       else if (node.data.type == 'VALUESETREGISTRY'){
-        this.valueSets = node.children;
+        this.valueSets =converted;
       }
 
     }
@@ -94,12 +104,9 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
   convertList(list : any[]){
     let ret : any[]=[];
-    for (let i=0; i<list.length;i++ ){
-      ret.push({id:list[i].id,treeNode:list[i].data});
-    }
-    console.log("Object to push ");
-
-    console.log(ret);
+      for (let i=0; i<list.length;i++ ){
+        ret.push({id:list[i].id,treeNode:list[i].data});
+      }
     return ret;
   }
 

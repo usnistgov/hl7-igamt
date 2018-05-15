@@ -6,7 +6,7 @@ import {SectionComponent} from './section/section.component';
 import {IgdocumentEditResolver} from './igdocument-edit.resolver';
 import {SectionResolver} from './section/sectionResolver.resolver';
 import {IgMetaDataResolver} from './igdocument-metadata/IgMetaDataResolver.resolver';
-import {SaveFormsGuard} from "./section/save.guard";
+import {SaveFormsGuard} from "../../guards/save.guard";
 
 @NgModule({
 	imports: [

@@ -100,3 +100,7 @@ body .ui-breadcrumb {
   font-size: 11px;
   line-height: 1;
 }
+.modal-dialog {
+  max-width: fit-content;
+  margin: 30px auto;
+}

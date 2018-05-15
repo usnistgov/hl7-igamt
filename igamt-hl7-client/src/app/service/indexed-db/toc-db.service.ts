@@ -17,13 +17,16 @@ export class TocDbService {
               public valuesetsTocService: ValuesetsTocService) {}
 
   public bulkAddToc(valuesets, datatypes, segments, conformanceProfiles, profileComponents, compositeProfiles): Promise<{}> {
+
     const promises = [];
-    promises.push(this.valuesetsTocService.bulkAdd(valuesets));
     promises.push(this.datatypesTocService.bulkAdd(datatypes));
     promises.push(this.segmentsTocService.bulkAdd(segments));
     promises.push(this.conformanceProfilesTocService.bulkAdd(conformanceProfiles));
     promises.push(this.profileComponentsTocService.bulkAdd(profileComponents));
     promises.push(this.compositeProfilesTocService.bulkAdd(compositeProfiles));
+    promises.push(this.valuesetsTocService.bulkAdd(valuesets));
+
+    console.log(promises);
     return Promise.all(promises);
   }
 

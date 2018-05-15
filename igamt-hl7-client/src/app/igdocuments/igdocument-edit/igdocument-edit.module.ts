@@ -35,7 +35,20 @@ import {StepsModule} from "primeng/components/steps/steps";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
 import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
-import {SaveFormsGuard} from "./section/save.guard";
+import {ConfirmationService} from "primeng/components/common/confirmationservice";
+import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialog";
+import {MessageModule} from "primeng/components/message/message";
+import {SaveFormsGuard} from "../../guards/save.guard";
+
+import {DialogModule} from 'primeng/dialog';
+import {TreeTableModule} from "primeng/components/treetable/treetable";
+import {SharedModule} from "primeng/components/common/shared";
+import {AddConformanceProfileComponent} from "../add-conformance-profile/add-conformance-profile.component";
+import {ModalModule} from "ngx-bootstrap";
+import {IgDocumentCreateService} from "../igdocument-create/igdocument-create.service";
+import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
+import {BlockUIModule} from "primeng/components/blockui/blockui";
+import {IgDocumentAddingService} from "./adding.service";
 
 
 @NgModule({
@@ -65,13 +78,26 @@ import {SaveFormsGuard} from "./section/save.guard";
     ToolbarModule,
     FileUploadModule,
     SegmentEditModule,
-    DatatypeEditModule
+    DatatypeEditModule,
+    ConfirmDialogModule,
+    MessageModule,
+    DialogModule,
+    TreeTableModule
+    ,SharedModule,
+    RadioButtonModule,
+    ButtonModule,
+    BlockUIModule,
+    ModalModule.forRoot()
+
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent
-	],
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent
+  ],
+  entryComponents: [
+
+  ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
