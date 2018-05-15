@@ -17,6 +17,7 @@ import java.io.InputStream;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 
 /**
@@ -26,6 +27,7 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 @Service("ExportService")
 public interface ExportService {
 
-  public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath) throws ExportException;
-  
+  public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,
+      ExportParameters exportParameters) throws ExportException;
+
 }

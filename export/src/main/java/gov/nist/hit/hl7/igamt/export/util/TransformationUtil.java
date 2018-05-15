@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.export.util;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.xml.transform.Source;
@@ -27,6 +28,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.domain.XSLTIncludeUriResolver;
 
 /**
@@ -35,7 +37,7 @@ import gov.nist.hit.hl7.igamt.export.domain.XSLTIncludeUriResolver;
  */
 public class TransformationUtil {
 
-  public static File doTransformToTempHtml(String xmlContent, String xsltPath) throws IOException, TransformerException {
+  public static File doTransformToTempHtml(String xmlContent, String xsltPath, ExportParameters exportParameters) throws IOException, TransformerException {
     File tmpHtmlFile = File.createTempFile("temp" + UUID.randomUUID().toString(), ".html");
     // File tmpHtmlFile = new File("temp_" + UUID.randomUUID().toString() +
     // ".html");
@@ -51,11 +53,11 @@ public class TransformationUtil {
     // Apply XSL transformation on xml file to generate html
     transformer = factoryTf.newTransformer(xslt);
     // Set the parameters
-//    for (Map.Entry<String, String> param : exportParameters.toMap().entrySet()) {
-//      if (param != null && param.getKey() != null && param.getValue() != null) {
-//        transformer.setParameter(param.getKey(), param.getValue());
-//      }
-//    }
+    for (Map.Entry<String, String> param : exportParameters.toMap().entrySet()) {
+      if (param != null && param.getKey() != null && param.getValue() != null) {
+        transformer.setParameter(param.getKey(), param.getValue());
+      }
+    }
     transformer.transform(new StreamSource(tmpXmlFile), new StreamResult(tmpHtmlFile));
     return tmpHtmlFile;
   }

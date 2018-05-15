@@ -19,6 +19,7 @@ import java.io.InputStream;
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
 import gov.nist.hit.hl7.igamt.export.util.HtmlUtil;
@@ -31,23 +32,25 @@ import gov.nist.hit.hl7.igamt.export.util.TransformationUtil;
 @Service("ExportService")
 public class ExportServiceImpl implements ExportService {
 
-//  private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";
-//  private static String DOCUMENT_TITLE_DATATYPE_LIBRARY = "Datatype Library";
-//  private static String EXPORT_FORMAT_HTML = "html";
-//  private static String EXPORT_FORMAT_WORD = "word";
+  // private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";
+  // private static String DOCUMENT_TITLE_DATATYPE_LIBRARY = "Datatype Library";
+  // private static String EXPORT_FORMAT_HTML = "html";
+  // private static String EXPORT_FORMAT_WORD = "word";
   private static String GLOBAL_STYLESHEET = "/generalExport.xsl";
 
   @Override
-  public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath) throws ExportException {
+  public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,
+      ExportParameters exportParameters) throws ExportException {
     try {
-      File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,xsltPath != null ? xsltPath : GLOBAL_STYLESHEET);
+      File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,
+          xsltPath != null ? xsltPath : GLOBAL_STYLESHEET, exportParameters);
       InputStream htmlInputStream = FileUtils.openInputStream(htmlFile);
       return HtmlUtil.cleanHtml(htmlInputStream);
     } catch (Exception exception) {
       throw new ExportException(exception);
     }
   }
-  
-  
+
+
 
 }
