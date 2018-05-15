@@ -69,7 +69,7 @@ public class SerializableSectionFactory {
           datatypeNamesMap, valuesetNamesMap);
     } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableConformanceProfileRegistry(section,
-          conformanceProfileRegistry, conformanceProfilesMap, datatypeNamesMap, valuesetNamesMap);
+          conformanceProfileRegistry, conformanceProfilesMap, valuesetNamesMap);
     } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
 
     } else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {

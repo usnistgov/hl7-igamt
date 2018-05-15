@@ -24,24 +24,12 @@ public class ExportException extends Exception {
    */
   private static final long serialVersionUID = 2531849434075776303L;
   
-  private Exception source;
-
-  public ExportException(Exception source) {
-    super();
-    this.source = source;
+  public ExportException(Throwable cause) {
+    super(cause);
   }
   
-  public ExportException(Exception source, String message) {
-    super(message);
-    this.source = source;
-  }
-
-  public Exception getSource() {
-    return source;
-  }
-
-  public void setSource(Exception source) {
-    this.source = source;
+  public ExportException(Throwable cause, String message) {
+    super(message, cause);
   }
 
 }

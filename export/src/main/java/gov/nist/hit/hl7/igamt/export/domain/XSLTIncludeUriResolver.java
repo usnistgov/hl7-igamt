@@ -26,26 +26,24 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class XSLTIncludeUriResolver implements URIResolver {
 
-  @Override public Source resolve(String href, String base) throws TransformerException {
+  @Override
+  public Source resolve(String href, String base) throws TransformerException {
     try {
-        StringBuilder classpathHref = new StringBuilder();
-        //classpathHref.append("/");
-        if (href.startsWith("/")) {
-            href = href.substring("/".length());
-        }
-        if (!href.startsWith("rendering")) {
-            classpathHref.append("rendering/");
-            if (!href.startsWith("templates")) {
-                classpathHref.append("templates/");
-            }
-        }
-        classpathHref.append(href);
-        InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(classpathHref.toString());
-        return new StreamSource(inputStream);
+      StringBuilder classpathHref = new StringBuilder();
+      classpathHref.append("/");
+      if (href.startsWith("/")) {
+        href = href.substring("/".length());
+      }
+      if (!href.startsWith("templates")) {
+        classpathHref.append("templates/");
+      }
+      classpathHref.append(href);
+      InputStream inputStream = this.getClass().getResourceAsStream(classpathHref.toString());
+      return new StreamSource(inputStream);
     } catch (Exception ex) {
-        ex.printStackTrace();
-        return null;
+      ex.printStackTrace();
+      return null;
     }
-}
+  }
 
 }

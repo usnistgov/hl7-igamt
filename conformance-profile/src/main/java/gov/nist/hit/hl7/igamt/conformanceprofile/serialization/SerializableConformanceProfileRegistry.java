@@ -33,16 +33,14 @@ import nu.xom.Element;
 public class SerializableConformanceProfileRegistry extends SerializableRegistry {
 
   private Map<String, ConformanceProfile> conformanceProfilesMap;
-  private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
   
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Section section, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
+  public SerializableConformanceProfileRegistry(Section section, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> valuesetNamesMap) {
     super(section, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
-    this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
   }
 
@@ -59,7 +57,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap, this.valuesetNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.valuesetNamesMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);

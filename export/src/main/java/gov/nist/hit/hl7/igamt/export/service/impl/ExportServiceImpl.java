@@ -35,12 +35,12 @@ public class ExportServiceImpl implements ExportService {
 //  private static String DOCUMENT_TITLE_DATATYPE_LIBRARY = "Datatype Library";
 //  private static String EXPORT_FORMAT_HTML = "html";
 //  private static String EXPORT_FORMAT_WORD = "word";
-  private static String GLOBAL_STYLESHEET = "/rendering/generalExport.xsl";
+  private static String GLOBAL_STYLESHEET = "/generalExport.xsl";
 
   @Override
-  public InputStream exportSerializedElementToHtml(String serializedElement) throws ExportException {
+  public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath) throws ExportException {
     try {
-      File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,GLOBAL_STYLESHEET);
+      File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,xsltPath != null ? xsltPath : GLOBAL_STYLESHEET);
       InputStream htmlInputStream = FileUtils.openInputStream(htmlFile);
       return HtmlUtil.cleanHtml(htmlInputStream);
     } catch (Exception exception) {

@@ -25,7 +25,6 @@ import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -35,7 +34,6 @@ import nu.xom.Element;
  */
 public class SerializableConformanceProfile extends SerializableResource {
 
-  private Map<String, String> datatypeMap;
   private Map<String, String> valuesetNamesMap;
 
   /**
@@ -43,9 +41,8 @@ public class SerializableConformanceProfile extends SerializableResource {
    * @param position
    */
   public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
-      Map<String, String> datatypeMap, Map<String, String> valuesetNamesMap) {
+      Map<String, String> valuesetNamesMap) {
     super(conformanceProfile, position);
-    this.datatypeMap = datatypeMap;
     this.valuesetNamesMap = valuesetNamesMap;
   }
 
@@ -119,14 +116,6 @@ public class SerializableConformanceProfile extends SerializableResource {
       throws MsgStructElementSerializationException {
     Element segmentRefElement = new Element("SegmentRef");
     try {
-      if (segmentRef.getRef() != null && segmentRef.getRef().getId() != null) {
-        if (this.datatypeMap.containsKey(segmentRef.getRef().getId())) {
-          segmentRefElement.addAttribute(
-              new Attribute("datatype", this.datatypeMap.get(segmentRef.getRef().getId())));
-        } else {
-          throw new DatatypeNotFoundException(segmentRef.getRef().getId());
-        }
-      }
       segmentRefElement
           .addAttribute(new Attribute("id", segmentRef.getId() != null ? segmentRef.getId() : ""));
       segmentRefElement
