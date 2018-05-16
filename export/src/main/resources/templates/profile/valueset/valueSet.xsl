@@ -2,9 +2,9 @@
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="/templates/profile/resource/preDef.xsl" />
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
-	<xsl:import href="/templates/profile/valueset/InternalCode.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetMetadata.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetAttributes.xsl" />
+	<xsl:import href="/templates/profile/valueset/codeRef.xsl" />
 	<xsl:template match="Valueset" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">
