@@ -49,6 +49,7 @@ public class SerializableValueSet extends SerializableResource {
       Valueset valueSet = (Valueset) this.getAbstractDomain();
       valueSetElement.addAttribute(new Attribute("bindingIdentifier",valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
       valueSetElement.addAttribute(new Attribute("oid",valueSet.getOid() != null ? valueSet.getOid() : ""));
+      valueSetElement.addAttribute(new Attribute("sourceType",valueSet.getSourceType() != null ? valueSet.getSourceType().getValue() : ""));
       valueSetElement.addAttribute(new Attribute("intensionalComment",valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
       valueSetElement.addAttribute(new Attribute("url",valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));
       valueSetElement.addAttribute(new Attribute("managedBy",valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));

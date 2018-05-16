@@ -61,7 +61,7 @@ public class TableConversionServiceImpl implements ConversionService {
     v.setOid(table.getOid());
     v.setUsername(null);
     v.setIntensionalComment(table.getIntensionalComment());
-
+    v.setSourceType(table.getSourceType().value);
     if (table.getContentDefinition()
         .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
       v.setContentDefinition(ContentDefinition.Extensional);
