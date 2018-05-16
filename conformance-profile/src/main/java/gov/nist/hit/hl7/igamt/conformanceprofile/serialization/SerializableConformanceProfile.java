@@ -53,8 +53,7 @@ public class SerializableConformanceProfile extends SerializableResource {
     ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
     if (conformanceProfile != null) {
       try {
-        Element sectionElement = super.getElement(Type.CONFORMANCEPROFILE, this.level);
-        Element conformanceProfileElement = new Element("ConformanceProfile");
+        Element conformanceProfileElement = super.getElement(Type.CONFORMANCEPROFILE);
         conformanceProfileElement.addAttribute(new Attribute("identifier",
             conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
         conformanceProfileElement.addAttribute(new Attribute("messageType",
@@ -77,8 +76,7 @@ public class SerializableConformanceProfile extends SerializableResource {
           }
           conformanceProfileElement.appendChild(segmentsElement);
         }
-        sectionElement.appendChild(conformanceProfileElement);
-        return sectionElement;
+        return super.getSectionElement(conformanceProfileElement, this.level);
       } catch (Exception exception) {
         throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,
             (Resource) this.getAbstractDomain());

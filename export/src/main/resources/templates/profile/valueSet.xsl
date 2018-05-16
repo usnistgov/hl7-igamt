@@ -1,9 +1,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-
+    <xsl:import href="/templates/profile/resource/resource.xsl"/>
     <xsl:import href="/templates/profile/valueSetContent.xsl"/>
     <xsl:import href="/templates/profile/valueSetMetadata.xsl"/>
     <xsl:import href="/templates/profile/valueSetAttributes.xsl"/>
-    <xsl:template match="ValueSetDefinition" mode="toc">
+    <xsl:template match="Valueset" mode="toc">
         <xsl:element name="a">
             <xsl:attribute name="href">
                 <xsl:value-of select="concat('#{',@id,'}')"/>
@@ -19,7 +19,10 @@
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="ValueSetDefinition">
+    <xsl:template match="Valueset">
+        <xsl:call-template name="Resource">
+        </xsl:call-template>
+        
         <xsl:if test="count(./Text[@Type='DefPreText']) &gt; 0">
             <xsl:call-template name="definitionText">
                 <xsl:with-param name="type">

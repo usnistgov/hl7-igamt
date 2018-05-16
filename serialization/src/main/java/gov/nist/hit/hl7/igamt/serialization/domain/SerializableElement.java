@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -58,12 +59,46 @@ public abstract class SerializableElement {
     this.title = title;
   }
 
-  public Element getElement(String elementName) {
+  private Element getElement(String elementName) {
     Element element = new Element(elementName);
     element.addAttribute(new Attribute("id",this.id));
     element.addAttribute(new Attribute("position",this.position));
     element.addAttribute(new Attribute("title",this.title));
     return element;
+  }
+  
+  public Element getElement(Type type) {
+    String elementName = "";
+    switch (type) {
+      case SECTION:
+        elementName = "Section";
+        break;
+      case VALUESET:
+        elementName = "Valueset";
+        break;
+      case DATATYPE:
+        elementName = "Datatype";
+        break;
+      case SEGMENT:
+        elementName = "Segment";
+        break;
+      case CONFORMANCEPROFILE:
+        elementName = "ConformanceProfile";
+        break;
+      case COMPOSITEPROFILE:
+        elementName = "CompositeProfile";
+        break;
+      case PROFILECOMPONENT:
+        elementName = "ProfileComponent";
+        break;
+      case IGDOCUMENT:
+        elementName = "Document";
+        break;
+      default:
+        elementName = "Section";
+        break;
+    }
+    return this.getElement(elementName);
   }
 
 }

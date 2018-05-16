@@ -53,8 +53,7 @@ public class SerializableSegment extends SerializableResource {
 
   @Override
   public Element serialize() throws ResourceSerializationException {
-    Element sectionElement = super.getElement(Type.SEGMENT, this.level);
-    Element segmentElement = new Element("Segment");
+    Element segmentElement = super.getElement(Type.SEGMENT);
     Segment segment = (Segment) this.getAbstractDomain();
     try {
       segmentElement.addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
@@ -80,8 +79,7 @@ public class SerializableSegment extends SerializableResource {
           segmentElement.appendChild(fieldsElement);
         }
       }
-      sectionElement.appendChild(segmentElement);
-      return sectionElement;
+      return super.getSectionElement(segmentElement, level);
     } catch (SerializationException exception) {
       throw new ResourceSerializationException(exception, Type.SEGMENT, segment);
     }

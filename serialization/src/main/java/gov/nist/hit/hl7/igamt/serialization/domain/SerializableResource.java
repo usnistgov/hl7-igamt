@@ -29,17 +29,32 @@ public abstract class SerializableResource extends SerializableAbstractDomain {
     super(resource, position, resource.getLabel());
   }
 
-  public Element getElement(Type type, int level) {
-    Element element = super.getElement("Section");
-    element.addAttribute(new Attribute("type", type.getValue()));
+  public Element getElement(Type type) {
+    Element element = super.getElement(type);
+    Resource resource = (Resource) super.getAbstractDomain();
+    if (resource != null && element != null) {
+      element.addAttribute(new Attribute("postDef",
+          resource.getPostDef() != null
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef())
+              : ""));
+      element.addAttribute(new Attribute("preDef",
+          resource.getPreDef() != null
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef())
+              : ""));
+      element.addAttribute(new Attribute("type", type.getValue()));
+    }
+    return element;
+  }
+
+  public Element getSectionElement(Element resourceElement, int level) {
+    Element element = super.getElement(Type.SECTION);
     element.addAttribute(new Attribute("h", String.valueOf(level)));
     Resource resource = (Resource) super.getAbstractDomain();
-    if(resource != null && element != null) {
-      element.addAttribute(new Attribute("postDef",
-          resource.getPostDef() != null ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef()) : ""));
-      element.addAttribute(new Attribute("preDef",
-          resource.getPreDef() != null ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef()) : ""));
-    }
+    element.addAttribute(
+        new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
+    element.addAttribute(new Attribute("description",
+        resource.getDescription() != null ? resource.getDescription() : ""));
+    element.appendChild(resourceElement);
     return element;
   }
 

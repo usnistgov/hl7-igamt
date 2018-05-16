@@ -45,8 +45,7 @@ public class SerializableValueSet extends SerializableResource {
   @Override
   public Element serialize() throws SerializationException {
     try {
-      Element sectionElement = super.getElement(Type.VALUESET, this.level);
-      Element valueSetElement = new Element("Valueset");
+      Element valueSetElement = super.getElement(Type.VALUESET);
       Valueset valueSet = (Valueset) this.getAbstractDomain();
       valueSetElement.addAttribute(new Attribute("bindingIdentifier",valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
       valueSetElement.addAttribute(new Attribute("oid",valueSet.getOid() != null ? valueSet.getOid() : ""));
@@ -93,8 +92,7 @@ public class SerializableValueSet extends SerializableResource {
         }
         valueSetElement.appendChild(internalCodesElement);
       }
-      sectionElement.appendChild(valueSetElement);
-      return sectionElement;
+      return super.getSectionElement(valueSetElement, this.level);
     } catch (Exception exception) {
       throw new ResourceSerializationException(exception, Type.VALUESET, (Resource) this.getAbstractDomain());
     }

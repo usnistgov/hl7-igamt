@@ -10,13 +10,11 @@ import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 
@@ -131,6 +129,14 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 
   public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
     this.valueSetRegistry = valueSetRegistry;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getName();
   }
 	
 	

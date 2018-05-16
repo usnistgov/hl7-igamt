@@ -26,6 +26,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -69,7 +70,7 @@ public class SerializableIG extends SerializableAbstractDomain {
   @Override
   public Element serialize() throws SerializationException {
     Ig igDocument = (Ig) this.getAbstractDomain();
-    Element igDocumentElement = super.getElement("Document");
+    Element igDocumentElement = super.getElement(Type.IGDOCUMENT);
     Element igMetadata = serializeIgMetadata(igDocument.getMetaData());
     if (igMetadata != null) {
       igDocumentElement.appendChild(igMetadata);

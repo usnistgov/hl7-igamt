@@ -56,8 +56,7 @@ public class SerializableDatatype extends SerializableResource{
   @Override
   public Element serialize() throws ResourceSerializationException {
     try {
-      Element sectionElement = super.getElement(Type.DATATYPE, this.level);
-      Element datatypeElement = new Element("Datatype");
+      Element datatypeElement = super.getElement(Type.DATATYPE);
       Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -72,8 +71,7 @@ public class SerializableDatatype extends SerializableResource{
       } else if (datatype instanceof DateTimeDatatype) {
         datatypeElement = serializeDateTimeDatatype(datatypeElement);
       }
-      sectionElement.appendChild(datatypeElement);
-      return sectionElement;
+      return super.getSectionElement(datatypeElement, this.level);
     } catch (Exception exception) {
       throw new ResourceSerializationException(exception, Type.DATATYPE, (Datatype) this.getAbstractDomain());
     }

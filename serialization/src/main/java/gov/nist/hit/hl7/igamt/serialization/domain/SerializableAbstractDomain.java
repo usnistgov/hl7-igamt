@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -40,8 +41,8 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
     this.abstractDomain = abstractDomain;
   }
   
-  public Element getElement(String elementName) {
-    Element element = super.getElement(elementName);
+  public Element getElement(Type type) {
+    Element element = super.getElement(type);
     if (this.abstractDomain != null) {
       element.addAttribute(new Attribute("comment",
           this.abstractDomain.getComment() != null ? FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getComment()) : ""));
