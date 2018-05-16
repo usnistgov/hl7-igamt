@@ -25,7 +25,7 @@ public class ExportFontConfiguration {
 
   @Id
   private String id;
-  private Long accountId;
+  private String username;
   private ExportFont exportFont;
   private Integer fontSize;
   private Boolean defaultConfig;
@@ -33,8 +33,8 @@ public class ExportFontConfiguration {
 
   public ExportFontConfiguration() {}
 
-  public ExportFontConfiguration(Long accountId, ExportFont exportFont, Integer fontSize) {
-    this.accountId = accountId;
+  public ExportFontConfiguration(String username, ExportFont exportFont, Integer fontSize) {
+    this.username = username;
     this.exportFont = exportFont;
     this.fontSize = fontSize;
     this.defaultConfig = false;
@@ -46,7 +46,7 @@ public class ExportFontConfiguration {
     this.defaultConfig = defaultConfig;
   }
 
-  public static ExportFontConfiguration getDefaut() {
+  public static ExportFontConfiguration getDefault() {
     return new ExportFontConfiguration(ExportFont.getDefault(), DEFAULT_FONT_SIZE, true);
   }
 
@@ -58,12 +58,12 @@ public class ExportFontConfiguration {
     this.id = id;
   }
 
-  public Long getAccountId() {
-    return accountId;
+  public String getUsername() {
+    return username;
   }
 
-  public void setAccountId(Long accountId) {
-    this.accountId = accountId;
+  public void setUsername(String username) {
+    this.username = username;
   }
 
   public ExportFont getExportFont() {

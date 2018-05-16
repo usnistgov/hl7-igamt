@@ -18,13 +18,13 @@ import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.serialization.sections.SectionSerializationUtil;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Attribute;
@@ -42,6 +42,7 @@ public class SerializableIG extends SerializableAbstractDomain {
   private Map<String, String> datatypeNamesMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
+  private ExportConfiguration exportConfiguration;
 
   /**
    * @param abstractDomain
@@ -49,12 +50,13 @@ public class SerializableIG extends SerializableAbstractDomain {
    */
   public SerializableIG(Ig ig, String position, Map<String, Datatype> datatypesMap,
       Map<String, Valueset> valueSetsMap, Map<String, Segment> segmentsMap,
-      Map<String, ConformanceProfile> conformanceProfilesMap) {
+      Map<String, ConformanceProfile> conformanceProfilesMap, ExportConfiguration exportConfiguration) {
     super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
+    this.exportConfiguration = exportConfiguration;
     this.populateNamesMap();
   }
 
