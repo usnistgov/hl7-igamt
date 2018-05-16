@@ -78,4 +78,12 @@ public class ProfileComponent extends Resource {
       this.profileComponentItems = new HashSet<ProfileComponentItem>();
     this.profileComponentItems.add(item);
   }
+  
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getName();
+  }
 }

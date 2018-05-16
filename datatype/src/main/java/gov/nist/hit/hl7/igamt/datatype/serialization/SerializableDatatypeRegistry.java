@@ -59,7 +59,7 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
             if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
               Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
               SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,
-                  String.valueOf(datatypeLink.getPosition()), datatypeNamesMap, valuesetNamesMap);
+                  String.valueOf(datatypeLink.getPosition()), this.getChildLevel(), datatypeNamesMap, valuesetNamesMap);
               Element datatypeElement = serializableDatatype.serialize();
               if (datatypeElement != null) {
                 datatypeRegistryElement.appendChild(datatypeElement);

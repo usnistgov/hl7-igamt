@@ -35,15 +35,17 @@ import nu.xom.Element;
 public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String, String> valuesetNamesMap;
+  private int level;
 
   /**
    * @param resource
    * @param position
    */
-  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
+  public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position, int level,
       Map<String, String> valuesetNamesMap) {
     super(conformanceProfile, position);
     this.valuesetNamesMap = valuesetNamesMap;
+    this.level = level;
   }
 
   @Override
@@ -51,15 +53,16 @@ public class SerializableConformanceProfile extends SerializableResource {
     ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
     if (conformanceProfile != null) {
       try {
-        Element element = super.getElement("ConformanceProfile");
-        element.addAttribute(new Attribute("identifier",
+        Element sectionElement = super.getElement(Type.CONFORMANCEPROFILE, this.level);
+        Element conformanceProfileElement = new Element("ConformanceProfile");
+        conformanceProfileElement.addAttribute(new Attribute("identifier",
             conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
-        element.addAttribute(new Attribute("messageType",
+        conformanceProfileElement.addAttribute(new Attribute("messageType",
             conformanceProfile.getMessageType() != null ? conformanceProfile.getMessageType()
                 : ""));
-        element.addAttribute(new Attribute("event",
+        conformanceProfileElement.addAttribute(new Attribute("event",
             conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
-        element.addAttribute(new Attribute("structID",
+        conformanceProfileElement.addAttribute(new Attribute("structID",
             conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
         if (conformanceProfile.getChildren() != null
             && conformanceProfile.getChildren().size() > 0) {
@@ -72,9 +75,10 @@ public class SerializableConformanceProfile extends SerializableResource {
               }
             }
           }
-          element.appendChild(segmentsElement);
+          conformanceProfileElement.appendChild(segmentsElement);
         }
-        return element;
+        sectionElement.appendChild(conformanceProfileElement);
+        return sectionElement;
       } catch (Exception exception) {
         throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,
             (Resource) this.getAbstractDomain());

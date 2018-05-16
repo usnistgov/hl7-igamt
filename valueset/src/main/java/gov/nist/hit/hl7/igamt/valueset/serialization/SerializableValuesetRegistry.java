@@ -59,7 +59,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
             if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
               Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
               SerializableValueSet serializableValueSet =
-                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()));
+                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
               Element valuesetElement = serializableValueSet.serialize();
               if (valuesetElement != null) {
                 valuesetRegistryElement.appendChild(valuesetElement);

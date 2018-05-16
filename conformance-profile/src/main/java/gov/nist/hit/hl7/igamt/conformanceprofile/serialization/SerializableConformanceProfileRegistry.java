@@ -57,7 +57,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.valuesetNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(), this.valuesetNamesMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);

@@ -36,15 +36,17 @@ public class SerializableDatatype extends SerializableResource{
 
   private Map<String,String> datatypeNamesMap = null;
   private Map<String, String> valuesetNamesMap = null;
-  
+  private int level;
+
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
+  public SerializableDatatype(Datatype datatype, String position, int level, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(datatype, position);
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.level = level;
   }
   
   public SerializableDatatype(Datatype datatype, String position) {
@@ -54,7 +56,8 @@ public class SerializableDatatype extends SerializableResource{
   @Override
   public Element serialize() throws ResourceSerializationException {
     try {
-      Element datatypeElement = super.getElement("Datatype");
+      Element sectionElement = super.getElement(Type.DATATYPE, this.level);
+      Element datatypeElement = new Element("Datatype");
       Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -69,7 +72,8 @@ public class SerializableDatatype extends SerializableResource{
       } else if (datatype instanceof DateTimeDatatype) {
         datatypeElement = serializeDateTimeDatatype(datatypeElement);
       }
-      return datatypeElement;
+      sectionElement.appendChild(datatypeElement);
+      return sectionElement;
     } catch (Exception exception) {
       throw new ResourceSerializationException(exception, Type.DATATYPE, (Datatype) this.getAbstractDomain());
     }

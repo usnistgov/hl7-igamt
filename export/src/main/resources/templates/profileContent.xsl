@@ -26,8 +26,8 @@
                     <xsl:sort select="@position" data-type="number"></xsl:sort>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="count(Message) &gt; 0">
-                <xsl:apply-templates select="Message">
+            <xsl:when test="count(ConformanceProfile) &gt; 0">
+                <xsl:apply-templates select="ConformanceProfile">
                     <xsl:sort select="@position" data-type="number"></xsl:sort>
                 </xsl:apply-templates>
             </xsl:when>
@@ -41,8 +41,8 @@
                     <xsl:sort select="@position" data-type="number"></xsl:sort>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="count(ValueSetDefinition) &gt; 0">
-                <xsl:apply-templates select="ValueSetDefinition">
+            <xsl:when test="count(Valueset) &gt; 0">
+                <xsl:apply-templates select="Valueset">
                     <xsl:sort select="@position" data-type="number"></xsl:sort>
                 </xsl:apply-templates>
             </xsl:when>

@@ -71,5 +71,9 @@ public class CodeSystem extends Resource {
     this.codes.add(code);
   }
 
+  @Override
+  public String getLabel() {
+    return this.getName();
+  }
 
 }

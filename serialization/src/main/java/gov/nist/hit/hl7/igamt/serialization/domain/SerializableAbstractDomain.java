@@ -32,7 +32,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   private AbstractDomain abstractDomain;
   
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position) {
-    super(abstractDomain.getId().getId(), position, abstractDomain.getName());
+    this(abstractDomain, position, abstractDomain.getName());
+  }
+  
+  public SerializableAbstractDomain(AbstractDomain abstractDomain, String position, String title) {
+    super(abstractDomain.getId().getId(), position, title);
     this.abstractDomain = abstractDomain;
   }
   

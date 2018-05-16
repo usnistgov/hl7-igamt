@@ -118,4 +118,6 @@ public void setUpdateDate(Date updateDate) {
 	this.updateDate = updateDate;
 }
 
+public abstract String getLabel();
+
 }

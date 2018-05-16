@@ -52,4 +52,12 @@ public class CompositeProfileStructure extends Resource {
     this.orderedProfileComponents.add(o);
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getName();
+  }
+
 }

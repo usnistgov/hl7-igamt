@@ -194,4 +194,12 @@ public class Valueset extends Resource {
   public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
     this.internalCodeSystems = internalCodeSystems;
   }
+  
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getBindingIdentifier()+" - "+this.getName();
+  }
 }

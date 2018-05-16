@@ -120,5 +120,13 @@ public class ConformanceProfile extends Resource {
 	  
   };
   
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getName();
+  }
+  
 
 }

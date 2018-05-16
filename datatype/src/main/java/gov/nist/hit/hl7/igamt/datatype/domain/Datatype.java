@@ -59,5 +59,16 @@ public class Datatype extends Resource {
     this.purposeAndUse = purposeAndUse;
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    if(this.ext != null && !this.ext.isEmpty()) {
+      return this.getName() + "_" + this.ext;
+    }
+    return this.getName();
+  }
+
 
 }

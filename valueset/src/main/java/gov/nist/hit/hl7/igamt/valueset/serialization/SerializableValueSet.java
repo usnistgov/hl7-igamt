@@ -31,18 +31,22 @@ import nu.xom.Element;
  */
 public class SerializableValueSet extends SerializableResource {
 
+  private int level;
+  
   /**
    * @param valueSet
    * @param position
    */
-  public SerializableValueSet(Valueset valueSet, String position) {
+  public SerializableValueSet(Valueset valueSet, String position, int level) {
     super(valueSet, position);
+    this.level = level;
   }
 
   @Override
   public Element serialize() throws SerializationException {
     try {
-      Element valueSetElement = super.getElement("Valueset");
+      Element sectionElement = super.getElement(Type.VALUESET, this.level);
+      Element valueSetElement = new Element("Valueset");
       Valueset valueSet = (Valueset) this.getAbstractDomain();
       valueSetElement.addAttribute(new Attribute("bindingIdentifier",valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
       valueSetElement.addAttribute(new Attribute("oid",valueSet.getOid() != null ? valueSet.getOid() : ""));
@@ -89,7 +93,8 @@ public class SerializableValueSet extends SerializableResource {
         }
         valueSetElement.appendChild(internalCodesElement);
       }
-      return valueSetElement;
+      sectionElement.appendChild(valueSetElement);
+      return sectionElement;
     } catch (Exception exception) {
       throw new ResourceSerializationException(exception, Type.VALUESET, (Resource) this.getAbstractDomain());
     }
