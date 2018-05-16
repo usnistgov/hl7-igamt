@@ -20,11 +20,4 @@
 			</xsl:call-template>
 		</xsl:for-each>
 	</xsl:template>
-
-	<xsl:template match="Section">
-		<h1>
-			<xsl:value-of select="@title" />
-		</h1>
-		<xsl:apply-templates select="Section" />
-	</xsl:template>
 </xsl:stylesheet>

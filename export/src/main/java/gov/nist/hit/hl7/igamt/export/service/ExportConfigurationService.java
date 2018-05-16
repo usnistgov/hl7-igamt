@@ -13,12 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.export.service;
 
+import org.springframework.stereotype.Service;
+
 import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("exportConfigurationService")
 public interface ExportConfigurationService {
 
   public ExportConfiguration getExportConfiguration(String username);

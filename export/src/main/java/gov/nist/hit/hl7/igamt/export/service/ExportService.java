@@ -24,7 +24,7 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
-@Service("ExportService")
+@Service("exportService")
 public interface ExportService {
 
   public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,

@@ -12,7 +12,7 @@
                 <xsl:text>TABLE OF CONTENT</xsl:text>
             </xsl:element>
             <xsl:element name="br"/>
-            <xsl:for-each select="ConformanceProfile/Sections/Section">
+            <xsl:for-each select="Document/Section">
             	<xsl:call-template name="displayTableOfContentSection"/>
             </xsl:for-each>
         </xsl:element>
@@ -20,7 +20,7 @@
             <xsl:attribute name="id">
                 <xsl:text>main</xsl:text>
             </xsl:attribute>
-            <xsl:apply-templates select="ConformanceProfile/MetaData"/>
+            <xsl:apply-templates select="Document/Metadata"/>
             <xsl:element name="hr"/>
             <xsl:element name="a">
                 <xsl:attribute name="id">

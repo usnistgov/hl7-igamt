@@ -70,6 +70,11 @@ public class IgExportServiceImpl implements IgExportService {
       ExportFontConfiguration exportFontConfiguration = exportFontConfigurationService.getExportFontConfiguration(username);
       try {
         String xmlContent = igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
+        try {
+          FileUtils.writeStringToFile(new File("tmp_xml_"+SimpleDateFormat.getDateInstance().format(new Date())+".xml"), xmlContent);
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
         //TODO add appinfoservice to get app version
         ExportParameters exportParameters = new ExportParameters(false,true,"html",igDocument.getName(), igDocument.getMetaData().getCoverPicture(),exportConfiguration, exportFontConfiguration, "2.0_beta");
         InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);

@@ -29,7 +29,7 @@ import gov.nist.hit.hl7.igamt.export.util.TransformationUtil;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
-@Service("ExportService")
+@Service("exportService")
 public class ExportServiceImpl implements ExportService {
 
   // private static String DOCUMENT_TITLE_IMPLEMENTATION_GUIDE = "Implementation Guide";

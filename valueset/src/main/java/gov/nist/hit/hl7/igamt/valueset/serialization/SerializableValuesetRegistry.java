@@ -37,9 +37,9 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
   /**
    * @param section
    */
-  public SerializableValuesetRegistry(Section section, ValueSetRegistry valueSetRegistry,
+  public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
       Map<String, Valueset> valuesetsMap) {
-    super(section, valueSetRegistry);
+    super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
   }
 

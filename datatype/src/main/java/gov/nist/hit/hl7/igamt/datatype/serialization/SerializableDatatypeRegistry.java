@@ -39,10 +39,10 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
   /**
    * @param section
    */
-  public SerializableDatatypeRegistry(Section section, DatatypeRegistry datatypeRegistry,
+  public SerializableDatatypeRegistry(Section section, int level, DatatypeRegistry datatypeRegistry,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
       Map<String, String> valuesetNamesMap) {
-    super(section, datatypeRegistry);
+    super(section, level, datatypeRegistry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;

@@ -37,7 +37,7 @@ import nu.xom.Element;
  */
 public class SectionSerializationUtil {
 
-  public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
+  public static Element serializeSection(Section section, int level, Map<String, Datatype> datatypesMap,
       Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap,
       Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
       Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
@@ -48,7 +48,7 @@ public class SectionSerializationUtil {
     if (section != null) {
       try {
         SerializableSection serializableSection = SerializableSectionFactory.getSerializableSection(
-            section, datatypesMap, datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
+            section, level, datatypesMap, datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
             conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
             conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
         if (serializableSection != null) {
@@ -61,8 +61,8 @@ public class SectionSerializationUtil {
     return null;
   }
 
-  public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null, null, null, null, null, null, null, null,null, null, null, null);
+  public static Element serializeSection(Section section, int level) throws SerializationException {
+    return serializeSection(section, level, null, null, null, null, null, null, null, null,null, null, null, null);
   }
 
 }

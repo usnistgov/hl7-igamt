@@ -53,7 +53,7 @@ public class SerializableProfile extends SerializableSection {
   /**
    * @param section
    */
-  public SerializableProfile(Section section, Map<String, Datatype> datatypesMap,
+  public SerializableProfile(Section section, int level, Map<String, Datatype> datatypesMap,
       Map<String, String> datatypeNamesMap, Map<String, Valueset> valuesetsMap,
       Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
       Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
@@ -61,7 +61,7 @@ public class SerializableProfile extends SerializableSection {
       ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry) {
-    super(section);
+    super(section, level);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetsMap = valuesetsMap;
@@ -87,7 +87,7 @@ public class SerializableProfile extends SerializableSection {
     if (((TextSection) super.getSection()).getChildren() != null) {
       for (Section section : ((TextSection) super.getSection()).getChildren()) {
         SerializableSection childSection = SerializableSectionFactory.getSerializableSection(
-            section, datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
+            section, this.getChildLevel(), datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
             conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
             conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
         if (childSection != null) {

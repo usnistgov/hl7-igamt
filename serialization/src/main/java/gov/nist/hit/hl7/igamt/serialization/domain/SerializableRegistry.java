@@ -29,8 +29,8 @@ public abstract class SerializableRegistry extends SerializableSection {
    * @param position
    * @param title
    */
-  public SerializableRegistry(Section section, Registry registry) {
-    super(section);
+  public SerializableRegistry(Section section, int level, Registry registry) {
+    super(section, level);
     this.registry = registry;
   }
 

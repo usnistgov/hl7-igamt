@@ -72,10 +72,10 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   private Set<String> bindedDatatypes = new HashSet<>();
   private Set<String> bindedValueSets = new HashSet<>();
   
-  private Map<String, ConformanceProfile> conformanceProfilesMap;
-  private Map<String, Datatype> datatypesMap;
-  private Map<String, Valueset> valuesetsMap;
-  private Map<String, Segment> segmentsMap;
+  private Map<String, ConformanceProfile> conformanceProfilesMap = new HashMap<>();
+  private Map<String, Datatype> datatypesMap = new HashMap<>();
+  private Map<String, Valueset> valuesetsMap = new HashMap<>();
+  private Map<String, Segment> segmentsMap = new HashMap<>();
   
   
   /*
@@ -108,7 +108,6 @@ public class IgSerializationServiceImpl implements IgSerializationService {
    */
   private void initializeConformanceProfilesMap(
       Registry conformanceProfileLibrary, UsageConfiguration usageConfiguration) throws ConformanceProfileNotFoundException {
-    Map<String, ConformanceProfile> conformanceProfilesMap = new HashMap<>();
     for (Link conformanceProfileLink : conformanceProfileLibrary.getChildren()) {
       if (conformanceProfileLink != null && conformanceProfileLink.getId() != null
           && !conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
@@ -153,7 +152,6 @@ public class IgSerializationServiceImpl implements IgSerializationService {
    */
   private void initializeSegmentsMap(Registry segmentLibrary, UsageConfiguration usageConfiguration, UsageConfiguration datatapeUsageConfiguration, UsageConfiguration valuesetUsageConfiguration)
       throws SegmentNotFoundException {
-    Map<String, Segment> segmentsMap = new HashMap<>();
     for (Link segmentLink : segmentLibrary.getChildren()) {
       if (segmentLink != null && segmentLink.getId() != null
           && !segmentsMap.containsKey(segmentLink.getId().getId())) {
@@ -191,7 +189,6 @@ public class IgSerializationServiceImpl implements IgSerializationService {
    */
   private void initializeValuesetsMap(Registry valuesetLibrary, UsageConfiguration usageConfiguration)
       throws ValuesetNotFoundException {
-    Map<String, Valueset> valuesetsMap = new HashMap<>();
     for (Link valuesetLink : valuesetLibrary.getChildren()) {
       if (valuesetLink != null && valuesetLink.getId() != null
           && !valuesetsMap.containsKey(valuesetLink.getId().getId())) {
@@ -212,7 +209,6 @@ public class IgSerializationServiceImpl implements IgSerializationService {
    */
   private void initializeDatatypesMap(Registry datatypeLibrary, UsageConfiguration usageConfiguration)
       throws DatatypeNotFoundException {
-    Map<String, Datatype> datatypesMap = new HashMap<>();
     for (Link datatypeLink : datatypeLibrary.getChildren()) {
       if (datatypeLink != null && datatypeLink.getId() != null
           && !datatypesMap.containsKey(datatypeLink.getId().getId())) {

@@ -50,7 +50,8 @@ public class SerializableIG extends SerializableAbstractDomain {
    */
   public SerializableIG(Ig ig, String position, Map<String, Datatype> datatypesMap,
       Map<String, Valueset> valueSetsMap, Map<String, Segment> segmentsMap,
-      Map<String, ConformanceProfile> conformanceProfilesMap, ExportConfiguration exportConfiguration) {
+      Map<String, ConformanceProfile> conformanceProfilesMap,
+      ExportConfiguration exportConfiguration) {
     super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
@@ -75,7 +76,9 @@ public class SerializableIG extends SerializableAbstractDomain {
     }
 
     for (Section section : igDocument.getContent()) {
-      Element sectionElement = SectionSerializationUtil.serializeSection(section, datatypesMap,
+      //startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
+      int startLevel = 1;
+      Element sectionElement = SectionSerializationUtil.serializeSection(section, startLevel, datatypesMap,
           datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
           igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
           igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
@@ -113,7 +116,7 @@ public class SerializableIG extends SerializableAbstractDomain {
    * @return
    */
   private Element serializeIgMetadata(IgMetaData metaData) {
-    Element igMetadataElement = new Element("IgMetadata");
+    Element igMetadataElement = new Element("Metadata");
     igMetadataElement.addAttribute(
         new Attribute("topics", metaData.getTopics() != null ? metaData.getTopics() : ""));
     igMetadataElement.addAttribute(new Attribute("specificationName",

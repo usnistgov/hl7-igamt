@@ -70,13 +70,20 @@ public class IGDocumentController {
   @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
   public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
       HttpServletResponse response) throws ExportException {
-    ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(id);
-    response.setContentType("text/html");
-    response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
-    try {
-      FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-    } catch (IOException e) {
-      throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+      response.setContentType("text/html");
+      response.setHeader("Content-disposition",
+          "attachment;filename=" + exportedFile.getFileName());
+      try {
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+      } catch (IOException e) {
+        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+      }
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
     }
   }
 

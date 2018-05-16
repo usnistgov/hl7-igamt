@@ -28,8 +28,8 @@ public class SerializableTextSection extends SerializableSection {
   /**
    * @param section
    */
-  public SerializableTextSection(TextSection textSection) {
-    super(textSection);
+  public SerializableTextSection(TextSection textSection, int level) {
+    super(textSection, level);
   }
 
   /*
@@ -42,7 +42,7 @@ public class SerializableTextSection extends SerializableSection {
     Element textSectionElement = super.getElement();
     if(((TextSection) super.getSection()).getChildren() != null) {
       for (Section child : ((TextSection) super.getSection()).getChildren()) {
-        Element childElement = SectionSerializationUtil.serializeSection(child);
+        Element childElement = SectionSerializationUtil.serializeSection(child, this.getChildLevel());
         if (child != null) {
           textSectionElement.appendChild(childElement);
         }

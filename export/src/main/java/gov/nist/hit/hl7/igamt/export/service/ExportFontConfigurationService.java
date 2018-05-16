@@ -13,12 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.export.service;
 
+import org.springframework.stereotype.Service;
+
 import gov.nist.hit.hl7.igamt.export.configuration.ExportFontConfiguration;
 
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("exportFontConfigurationService")
 public interface ExportFontConfigurationService {
 
   public ExportFontConfiguration getExportFontConfiguration(String username);

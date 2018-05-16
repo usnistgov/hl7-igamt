@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.export.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.repository.ExportConfigurationRepository;
@@ -23,6 +24,7 @@ import gov.nist.hit.hl7.igamt.export.service.ExportConfigurationService;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service("exportConfigurationService")
 public class ExportConfigurationServiceImpl implements ExportConfigurationService {
 
   @Autowired

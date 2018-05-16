@@ -38,8 +38,8 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Section section, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> valuesetNamesMap) {
-    super(section, conformanceProfileRegistry);
+  public SerializableConformanceProfileRegistry(Section section, int level, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> valuesetNamesMap) {
+    super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
   }
