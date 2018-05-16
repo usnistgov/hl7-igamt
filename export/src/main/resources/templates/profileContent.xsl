@@ -6,7 +6,7 @@
     <xsl:import href="/templates/profile/compositeProfile.xsl"/>
     <xsl:import href="/templates/profile/datatype.xsl"/>
     <xsl:import href="/templates/profile/segment.xsl"/>
-    <xsl:import href="/templates/profile/valueSet.xsl"/>
+    <xsl:import href="/templates/profile/valueset/valueSet.xsl"/>
     <xsl:import href="/templates/profile/constraints.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>
     <xsl:import href="/templates/profile/datatypeLibrarySummary.xsl"/>

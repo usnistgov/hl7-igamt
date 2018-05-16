@@ -3,7 +3,7 @@
     <xsl:import href="/templates/profile/constraint.xsl"/>
     <xsl:import href="/templates/profile/definitionText.xsl"/>
     <xsl:import href="/templates/profile/DateTimeDatatype.xsl"/>
-    <xsl:import href="/templates/profile/valueSetBindingList.xsl"/>
+    <xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:import href="/templates/profile/commentList.xsl"/>
     <xsl:import href="/templates/profile/metadata.xsl"/>
     <xsl:template match="Datatype">

@@ -3,7 +3,7 @@
     <xsl:include href="/templates/profile/messageSegment.xsl"/>
     <xsl:include href="/templates/profile/messageConstraint.xsl"/>
     <xsl:include href="/templates/profile/compositeProfileSegmentsOrGroups.xsl"/>
-    <xsl:include href="/templates/profile/valueSetBindingList.xsl"/>
+    <xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:include href="/templates/profile/commentList.xsl"/>
     <xsl:include href="/templates/profile/definitionText.xsl"/>
     <xsl:include href="/templates/profile/metadata.xsl"/>

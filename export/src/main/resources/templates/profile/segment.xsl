@@ -1,7 +1,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:import href="/templates/profile/constraint.xsl"/>
     <xsl:import href="/templates/profile/segmentField.xsl"/>
-    <xsl:import href="/templates/profile/valueSetBindingList.xsl"/>
+    <xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:import href="/templates/profile/commentList.xsl"/>
     <xsl:import href="/templates/profile/dynamicMapping.xsl"/>
     <xsl:import href="/templates/profile/metadata.xsl"/>

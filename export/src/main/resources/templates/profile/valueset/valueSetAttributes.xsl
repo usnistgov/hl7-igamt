@@ -43,17 +43,17 @@
                     </xsl:attribute>
                     <xsl:if test="$valueSetMetadata.stability = 'true'">
                         <xsl:element name="th">
-                            <xsl:value-of select="@Stability"/>
+                            <xsl:value-of select="@stability"/>
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$valueSetMetadata.extensibility = 'true'">
                         <xsl:element name="th">
-                            <xsl:value-of select="@Extensibility"/>
+                            <xsl:value-of select="@extensibility"/>
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$valueSetMetadata.contentDefinition = 'true'">
                         <xsl:element name="th">
-                            <xsl:value-of select="@ContentDefinition"/>
+                            <xsl:value-of select="@contentDefinition"/>
                         </xsl:element>
                     </xsl:if>
                 </xsl:element>
