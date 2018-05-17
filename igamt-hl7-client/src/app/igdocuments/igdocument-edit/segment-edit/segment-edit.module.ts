@@ -13,7 +13,7 @@ import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
-
+import {ButtonModule} from 'primeng/button';
 import {UtilsModule} from "../../../utils/utils.module";
 
 
@@ -26,7 +26,8 @@ import {UtilsModule} from "../../../utils/utils.module";
     DropdownModule,
     SegmentEditRoutingModule,
     UtilsModule,
-    TreeTableModule
+    TreeTableModule,
+    ButtonModule
   ],
   providers : [],
   declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent],

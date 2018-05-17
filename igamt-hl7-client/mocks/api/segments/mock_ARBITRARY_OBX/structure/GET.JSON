@@ -6,60 +6,6 @@
   "label": "OBXTXT",
   "scope": "ARCHIVED",
   "version": null,
-  "binding": {
-    "elementId": "59ccfa0e84aeb3275ab0be2c",
-    "children": [
-      {
-        "elementId": "59bbdea0a9acdef2ee04f39f",
-        "children": [
-          {
-            "elementId": "59bbe249a9acdef2ee04f3bb",
-            "children": [
-              {
-                "elementId": "59bbe249a9acdef2ee04f3ba",
-                "children": null,
-                "comments": null,
-                "valuesetBindings": [{
-                  "valuesetId": "CCCCC",
-                  "strength": "R",
-                  "valuesetLocations": [1]
-                }],
-                "internalSingleCode": null,
-                "externalSingleCode": null,
-                "constantValue": null,
-                "predicate": null,
-                "predicateCrossRefs": null
-              }
-            ],
-            "comments": null,
-            "valuesetBindings": [{
-              "valuesetId": "BBBBB",
-              "strength": "R",
-              "valuesetLocations": [1]
-            }],
-            "internalSingleCode": null,
-            "externalSingleCode": null,
-            "constantValue": null,
-            "predicate": null,
-            "predicateCrossRefs": null
-          }
-        ],
-        "comments": null,
-        "valuesetBindings": [{
-          "valuesetId": "AAAAA",
-          "strength": "R",
-          "valuesetLocations": [1]
-        }],
-        "internalSingleCode": null,
-        "externalSingleCode": null,
-        "constantValue": null,
-        "predicate": null,
-        "predicateCrossRefs": null
-      }
-    ],
-    "conformanceStatements": null,
-    "conformanceStatementCrossRefs": null
-  },
   "children": [
     {"data": {
       "id": "59bbdea0a9acdef2ee04f39c",

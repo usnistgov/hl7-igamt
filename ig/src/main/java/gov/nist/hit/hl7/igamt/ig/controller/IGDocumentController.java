@@ -18,13 +18,17 @@ import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-
+import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 
 @RestController
 public class IGDocumentController {
 
+
   @Autowired
   IgService igService;
+
+  @Autowired
+  SaveService saveService;
 
   public IGDocumentController() {
     // TODO Auto-generated constructor stub
@@ -76,7 +80,7 @@ public class IGDocumentController {
 
   @RequestMapping(value = "api/igdocuments/{id}/save", method = RequestMethod.POST)
   public void save(@RequestBody ChangedObjects changedObjects) {
-    System.out.println(changedObjects.toString());
+    saveService.saveChangedObjects(changedObjects);
   }
 
 
@@ -87,6 +91,16 @@ public class IGDocumentController {
 
   public void setIgService(IgService igService) {
     this.igService = igService;
+  }
+
+
+  public SaveService getSaveService() {
+    return saveService;
+  }
+
+
+  public void setSaveService(SaveService saveService) {
+    this.saveService = saveService;
   }
 
 
