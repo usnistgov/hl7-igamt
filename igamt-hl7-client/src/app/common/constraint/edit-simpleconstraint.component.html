@@ -1,12 +1,19 @@
-<p-panel class="border" header="Simple Assetion" [toggleable]="true">
+<p-panel class="border" header="Simple Assetion" [toggleable]="true" [ngModelGroup]="groupName">
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
             <label>Description Type: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <p-dropdown [options]="simpleAssertionTypes" [(ngModel)]="constraint.complement.complementKey" placeholder="Select a type" [group]="true"></p-dropdown>
+            <p-dropdown id="simpleAssertionType" name="simpleAssertionType" required #simpleAssertionType="ngModel" [options]="simpleAssertionTypes" [(ngModel)]="constraint.complement.complementKey" placeholder="Select a type" [group]="true"></p-dropdown>
+            <div *ngIf="simpleAssertionType.invalid && (simpleAssertionType.dirty || simpleAssertionType.touched)" class="alert alert-danger">
+                <div *ngIf="simpleAssertionType.errors.required">
+                    SimpleAssertion Type is required.
+                </div>
+            </div>
         </div>
     </div>
+
+
     <div *ngIf="constraint.complement.complementKey">
         <div *ngIf="constraint.complement.complementKey === 'SAMEVALUE'">
             <div class="ui-g ui-fluid">
@@ -14,18 +21,17 @@
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be '<input [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'  <p-checkbox [(ngModel)]="constraint.complement.casesensitive" binary="true"></p-checkbox> Case Sensitive
+                    <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> contain the constant value '<input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;"/>'  <p-checkbox id="casesensitive" name="casesensitive" [(ngModel)]="constraint.complement.casesensitive" binary="true"></p-checkbox> Case Sensitive
                 </div>
             </div>
         </div>
-
         <div *ngIf="constraint.complement.complementKey === 'LISTVALUE'">
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-md-2">
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>
+                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input id="listValue_{{idx}}" name="listValue_{{idx}}" required [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>
                 </div>
             </div>
         </div>
@@ -36,7 +42,7 @@
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData"></display-path>
+                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData"></display-path>
                 </div>
             </div>
         </div>
@@ -47,7 +53,7 @@
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <input [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
+                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
                 </div>
             </div>
         </div>
@@ -57,7 +63,7 @@
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown [options]="formatTypes" [(ngModel)]="constraint.complement.type" placeholder="Select a format type"></p-dropdown>
+                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="formatType" name="formatType" required #formatType="ngModel" [options]="formatTypes" [(ngModel)]="constraint.complement.type" placeholder="Select a format type"></p-dropdown>
                 </div>
             </div>
         </div>
@@ -67,9 +73,11 @@
                     <label>Description: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be presence
+                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be presence
                 </div>
             </div>
         </div>
     </div>
+
+
 </p-panel>

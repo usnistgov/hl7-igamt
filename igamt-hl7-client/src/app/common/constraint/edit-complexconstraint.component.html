@@ -1,16 +1,16 @@
-<p-panel class="border" header="Complex Assertion" [toggleable]="true">
+<p-panel class="border" header="Complex Assertion" [toggleable]="true" [ngModelGroup]="groupName">
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
             <label>Description Type: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <p-dropdown [options]="complexAssertionTypes" [(ngModel)]="constraint.complexAssertionType" (onChange)="changeComplexAssertionType()" placeholder="Select a complex type"></p-dropdown>
+            <p-dropdown id="complexAssertionType" name="complexAssertionType" required #complexAssertionType="ngModel" [options]="complexAssertionTypes" [(ngModel)]="constraint.complexAssertionType" (onChange)="changeComplexAssertionType()" placeholder="Select a complex type"></p-dropdown>
         </div>
     </div>
 
     <div *ngIf="constraint.complexAssertionType">
-        <edit-ifthen-constraint *ngIf="constraint.complexAssertionType === 'IFTHEN'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData"></edit-ifthen-constraint>
-        <edit-andor-constraint *ngIf="constraint.complexAssertionType === 'ANDOR'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb"></edit-andor-constraint>
-        <edit-not-constraint *ngIf="constraint.complexAssertionType === 'NOT'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb"></edit-not-constraint>
+        <edit-ifthen-constraint *ngIf="constraint.complexAssertionType === 'IFTHEN'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-IFTHEN'"></edit-ifthen-constraint>
+        <edit-andor-constraint *ngIf="constraint.complexAssertionType === 'ANDOR'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-ANDOR'"></edit-andor-constraint>
+        <edit-not-constraint *ngIf="constraint.complexAssertionType === 'NOT'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-NOT'"></edit-not-constraint>
     </div>
 </p-panel>

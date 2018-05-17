@@ -10,6 +10,7 @@ import {HttpClient} from "@angular/common/http";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
+import {ConstraintsService} from "../../../../service/constraints/constraints.service"
 
 
 @Component({
@@ -18,6 +19,7 @@ import {GeneralConfigurationService} from "../../../../service/general-configura
     styleUrls : ['./segment-edit-conformancestatements.component.css']
 })
 export class SegmentEditConformanceStatementsComponent {
+    cols:any;
     currentUrl:any;
     segmentId:any;
     segmentConformanceStatements:any;
@@ -31,7 +33,15 @@ export class SegmentEditConformanceStatementsComponent {
     listTab: boolean = true;
     editorTab: boolean = false;
 
-    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private datatypesService : DatatypesService, private http:HttpClient, private configService : GeneralConfigurationService){
+    constructor(
+        public indexedDbService: IndexedDbService,
+        private route: ActivatedRoute,
+        private router : Router,
+        private segmentsService : SegmentsService,
+        private datatypesService : DatatypesService,
+        private configService : GeneralConfigurationService,
+        private constraintsService : ConstraintsService,
+    ){
         this.constraintType = [
             {label: 'Predefined', value: 'PREDEFINED', icon: 'fa fa-fw fa-spinner', disabled: true},
             {label: 'Predefined Patterns', value: 'PREDEFINEDPATTERNS', icon: 'fa fa-fw fa-spinner', disabled: true},
@@ -46,6 +56,11 @@ export class SegmentEditConformanceStatementsComponent {
                 this.currentUrl=event.url;
             }
         });
+
+        this.cols = [
+            { field: 'identifier', header: 'ID', colStyle: {width: '20em'}, sort:'identifier'},
+            { field: 'description', header: 'Description' }
+        ];
     }
 
     ngOnInit() {
@@ -151,34 +166,10 @@ export class SegmentEditConformanceStatementsComponent {
         }
     }
 
-    checkNewConformanceStatement(){
-        if(!this.selectedConformanceStatement) return false;
-        if(!this.selectedConformanceStatement.identifier || this.selectedConformanceStatement.identifier === '') return false;
-        if(!this.selectedConformanceStatement.type) return false;
-        if(this.selectedConformanceStatement.type === 'FREE'){
-            if(!this.selectedConformanceStatement.freeText || this.selectedConformanceStatement.freeText === ''){
-                return false;
-            }
-        }else if(this.selectedConformanceStatement.type === 'ASSERTION'){
-            if(this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
-                if(!this.selectedConformanceStatement.assertion.subject) return false;
-                if(!this.selectedConformanceStatement.assertion.verbKey) return false;
-                if(!this.selectedConformanceStatement.assertion.complement) return false;
-                if(!this.selectedConformanceStatement.assertion.complement.complementKey) return false;
-                if(this.selectedConformanceStatement.assertion.complement.complementKey === 'SAMEVALUE'){
-                    if(!this.selectedConformanceStatement.assertion.complement.value) return false;
-                }else if(this.selectedConformanceStatement.assertion.complement.complementKey === 'LISTVALUE'){
-                    if(!this.selectedConformanceStatement.assertion.complement.values) return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
     changeType(){
         if(this.selectedConformanceStatement.type == 'ASSERTION'){
             this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
         }else if(this.selectedConformanceStatement.type == 'FREE'){
             this.selectedConformanceStatement.assertion = undefined;
         }
@@ -192,7 +183,8 @@ export class SegmentEditConformanceStatementsComponent {
         }
     }
 
-    addCS(){
+    submitCS(){
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.idMap);
         this.deleteCS(this.selectedConformanceStatement.identifier);
         this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
@@ -212,6 +204,10 @@ export class SegmentEditConformanceStatementsComponent {
 
     printCS(cs){
         console.log(cs);
+    }
+
+    onTabOpen(e) {
+        if(e.index === 0) this.selectedConformanceStatement = {};
     }
 
 }

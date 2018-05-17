@@ -64,7 +64,7 @@ export class GeneralConfigurationService {
     ];
 
     this._assertionModes = [
-      {label: 'Select Assertion Type', value: null},
+      // {label: 'Select Assertion Type', value: null},
       {label: 'Simple Assertion', value: 'SIMPLE'},
       {label: 'Complex Assertion', value: 'COMPLEX'}
     ];
@@ -205,6 +205,23 @@ export class GeneralConfigurationService {
       if(['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] },{ label : '1 or 4 or 10', value : [1,4,10] }];
     }
     return null;
+  }
 
+  getOperatorLable(operator){
+    if(operator){
+      for (let entry of this._operators) {
+        if(entry.value === operator) return entry.label;
+      }
+    }
+    return null;
+  }
+
+  getFormattedType(type){
+    if(type){
+      for (let entry of this._formatTypes) {
+        if(entry.value === type) return entry.label;
+      }
+    }
+    return null;
   }
 }

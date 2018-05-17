@@ -2,18 +2,22 @@
  * Created by Jungyub on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
+import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
 @Component({
   selector : 'edit-andor-constraint',
   templateUrl : './edit-andorconstraint.component.html',
-  styleUrls : ['./edit-andorconstraint.component.css']
+  styleUrls : ['./edit-andorconstraint.component.css'],
+  viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class EditAndOrConstraintComponent {
   @Input() constraint : any;
   @Input() idMap : any;
   @Input() treeData : any[];
   @Input() ifVerb: boolean;
+  @Input() groupName: string;
+
   partialComplexAssertionTypes: any[];
   simpleAssertionTypes: any[];
   verbs: any[];
@@ -38,8 +42,13 @@ export class EditAndOrConstraintComponent {
   }
 
   changeOperator(){
-    console.log("ANDOR Operator changed!");
-    if(!this.constraint.assertions) this.constraint.assertions = [];
+    if(!this.constraint.assertions) {
+      this.constraint.assertions = [];
+      this.constraint.operator = 'AND';
+    }
+
+    if(this.constraint.operator === 'AND') this.constraint.operator = 'OR';
+    else if(this.constraint.operator === 'OR') this.constraint.operator = 'AND';
   }
 
   addConstraint() {

@@ -1,6 +1,5 @@
-<span *ngIf="path">{{getDisplayName()}}<span *ngIf="needInstanceParameter()">[<input [(ngModel)]="path.instanceParameter" type="text" style="width:10px;border-width:0px 0px 1px 0px"/>]</span><span *ngIf="path.child">.</span><span *ngIf="!path.child">({{label()}})<i class="fa fa-pencil" (click)="displayPicker = true"></i></span><display-path *ngIf="path.child" [path]="path.child" [parentPath]="getIdPath()" [idMap]="idMap" [treeData]="treeData" [pathHolder]="pathHolder"></display-path></span>
+<span *ngIf="path">{{getDisplayName()}}<span *ngIf="needInstanceParameter()">[<input id="instanceParameter" name="instanceParameter" required [(ngModel)]="path.instanceParameter" type="text" style="width:20px;"/>]</span><span *ngIf="path.child">.</span><span *ngIf="!path.child">({{label()}})<i class="fa fa-pencil" (click)="displayPicker = true"></i></span><display-path *ngIf="path.child" [path]="path.child" [parentPath]="getIdPath()" [idMap]="idMap" [treeData]="treeData" [pathHolder]="pathHolder"></display-path></span>
 <span *ngIf="!path">(Unselected Node)<i class="fa fa-pencil" (click)="displayPicker = true"></i></span>
-
 
 <p-dialog header="Select Node" [(visible)]="displayPicker">
     <p-tree [value]="treeData" selectionMode="single" (onNodeSelect)="nodeSelect($event)"></p-tree>

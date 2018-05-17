@@ -107,6 +107,7 @@ import {LoginComponent} from "./login/login.component";
 import {RegisterComponent} from "./register/register.component";
 import { TreeModule } from 'angular-tree-component';
 
+import {ConstraintsService} from './service/constraints/constraints.service';
 
 @NgModule({
     imports: [
@@ -214,20 +215,21 @@ import { TreeModule } from 'angular-tree-component';
       useClass: TokenInterceptor,
       multi: true
     },
-    // WorkspaceService,
-    GeneralConfigurationService,
-    IgDocumentService,
-    IndexedDbService,
-     SegmentsIndexedDbService,
-    DatatypesIndexedDbService,
-    ValuesetsIndexedDbService,
-    DatatypesService,
-    // ValueSetsService,
-     SegmentsService,
-     // ProfileComponentsService,
-    AuthService,
-    AuthGuard,
-    UserService
+        // WorkspaceService,
+        GeneralConfigurationService,
+        IgDocumentService,
+        IndexedDbService,
+        SegmentsIndexedDbService,
+        DatatypesIndexedDbService,
+        ValuesetsIndexedDbService,
+        DatatypesService,
+        // ValueSetsService,
+        SegmentsService,
+        // ProfileComponentsService,
+        AuthService,
+        AuthGuard,
+        UserService,
+        ConstraintsService
   ],
     bootstrap: [AppComponent]
 })

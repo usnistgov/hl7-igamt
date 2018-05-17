@@ -2,17 +2,20 @@
  * Created by Jungyub on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
+import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
 @Component({
   selector : 'edit-ifthen-constraint',
   templateUrl : './edit-ifthenconstraint.component.html',
-  styleUrls : ['./edit-ifthenconstraint.component.css']
+  styleUrls : ['./edit-ifthenconstraint.component.css'],
+  viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class EditIfThenConstraintComponent {
   @Input() constraint : any;
   @Input() idMap : any;
   @Input() treeData : any[];
+  @Input() groupName: string;
   partialComplexAssertionTypes: any[];
   simpleAssertionTypes: any[];
   verbs: any[];

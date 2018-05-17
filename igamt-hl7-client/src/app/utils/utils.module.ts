@@ -2,7 +2,8 @@
  * Created by hnt5 on 10/30/17.
  */
 import {NgModule}     from '@angular/core';
-import { FormsModule } from '@angular/forms';
+
+import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
 import {EditFreeConstraintComponent} from "../common/constraint/edit-freeconstraint.component";
 import {EditSimpleConstraintComponent} from "../common/constraint/edit-simpleconstraint.component";

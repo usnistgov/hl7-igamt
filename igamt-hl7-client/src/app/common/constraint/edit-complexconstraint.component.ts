@@ -2,12 +2,14 @@
  * Created by Jungyub on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
+import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
 @Component({
   selector : 'edit-complex-constraint',
   templateUrl : './edit-complexconstraint.component.html',
-  styleUrls : ['./edit-complexconstraint.component.css']
+  styleUrls : ['./edit-complexconstraint.component.css'],
+  viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class EditComplexConstraintComponent {
   @Input() constraint : any;
@@ -15,6 +17,8 @@ export class EditComplexConstraintComponent {
   @Input() treeData : any[];
   @Input() limited : boolean;
   @Input() ifVerb: boolean;
+  @Input() groupName: string;
+
   complexAssertionTypes: any[];
   simpleAssertionTypes: any[];
   verbs: any[];
@@ -41,6 +45,7 @@ export class EditComplexConstraintComponent {
       this.constraint.child = undefined;
       this.constraint.ifAssertion = undefined;
       this.constraint.thenAssertion = undefined;
+      this.constraint.operator = 'AND';
       this.constraint.assertions = [];
       this.constraint.assertions.push({
         "mode": "SIMPLE"

@@ -2,18 +2,22 @@
  * Created by Jungyub on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
+import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
 @Component({
   selector : 'edit-simple-constraint',
   templateUrl : './edit-simpleconstraint.component.html',
-  styleUrls : ['./edit-simpleconstraint.component.css']
+  styleUrls : ['./edit-simpleconstraint.component.css'],
+  viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
 export class EditSimpleConstraintComponent {
   @Input() constraint : any;
   @Input() idMap : any;
   @Input() treeData : any[];
   @Input() ifVerb: boolean;
+  @Input() groupName: string;
+
   simpleAssertionTypes: any[];
   verbs: any[];
   operators: any[];
