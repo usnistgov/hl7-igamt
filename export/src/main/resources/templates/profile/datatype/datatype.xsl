@@ -1,20 +1,14 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    	<xsl:import href="/templates/profile/resource/preDef.xsl" />
+	<xsl:import href="/templates/profile/resource/postDef.xsl" />
     <xsl:import href="/templates/profile/datatype/component.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>
-    <xsl:import href="/templates/profile/definitionText.xsl"/>
     <xsl:import href="/templates/profile/datatype/DateTimeDatatype.xsl"/>
     <xsl:import href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:import href="/templates/profile/commentList.xsl"/>
     <xsl:import href="/templates/profile/metadata.xsl"/>
     <xsl:template match="Datatype">
-        <xsl:if test="count(./Text[@Type='DefPreText']) &gt; 0">
-            <xsl:call-template name="definitionText">
-                <xsl:with-param name="type">
-                    <xsl:text>pre</xsl:text>
-                </xsl:with-param>
-            </xsl:call-template>
-            <xsl:element name="br"/>
-        </xsl:if>
+        <xsl:call-template name="PreDef" />
         <xsl:if test="$datatypeMetadata.display = 'true'">
         	<xsl:apply-templates select="Metadata">
         		<xsl:with-param name="hl7Version">
@@ -188,15 +182,7 @@
                     </xsl:call-template>
                 </xsl:if>
             </xsl:if>
-            <xsl:apply-templates select="./ValueSetBindingList"/>
-            <xsl:if test="count(./Text[@Type='DefPostText']) &gt; 0">
-                <xsl:element name="br"/>
-                <xsl:call-template name="definitionText">
-                    <xsl:with-param name="type">
-                        <xsl:text>post</xsl:text>
-                    </xsl:with-param>
-                </xsl:call-template>
-            </xsl:if>
+            <xsl:call-template name="PostDef" />
             <xsl:if test="$columnDisplay.dataType.comment = 'true'">
                 <xsl:apply-templates select="./CommentList"/>
             </xsl:if>
