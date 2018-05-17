@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -37,6 +38,7 @@ public class SerializableDatatype extends SerializableResource{
   private Map<String,String> datatypeNamesMap = null;
   private Map<String, String> valuesetNamesMap = null;
   private int level;
+  private Map<String, String> componentValuesetMap = new HashMap<>();
 
   /**
    * @param abstractDomain
@@ -65,6 +67,20 @@ public class SerializableDatatype extends SerializableResource{
         if(bindingElement != null) {
           datatypeElement.appendChild(bindingElement);
         }
+        for(int i = 0 ; i < bindingElement.getChildElements().size() ; i++) {
+          Element structureElementBindings = bindingElement.getChildElements().get(i);
+          for(int j = 0 ; j < structureElementBindings.getChildElements().size() ; j++) {
+            Element structureElementBinding = structureElementBindings.getChildElements().get(j);
+            if(structureElementBinding.getLocalName().equals("StructureElementBinding")) {
+              for(int k = 0 ; k < structureElementBinding.getChildElements().size() ; k++) {
+                Element valuesetBinding = structureElementBinding.getChildElements().get(k);
+                if(valuesetBinding.getLocalName().equals("ValuesetBinding")) {
+                  this.componentValuesetMap.put(structureElementBinding.getAttributeValue("elementId"), valuesetBinding.getAttributeValue("name"));
+                }
+              }
+            }
+          }
+        }
       }
       if(datatype instanceof ComplexDatatype) {
         datatypeElement = serializeComplexDatatype(datatypeElement);
@@ -89,6 +105,9 @@ public class SerializableDatatype extends SerializableResource{
         componentElement.addAttribute(new Attribute("minLength",component.getMinLength() != null ? component.getMinLength() : ""));
         componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
+        if(componentValuesetMap.containsKey(component.getId())){
+          componentElement.addAttribute(new Attribute("valueset",componentValuesetMap.get(component.getId())));
+        }
         if(component.getRef() != null){
           if(datatypeNamesMap != null && datatypeNamesMap.containsKey(component.getRef().getId())) {
             componentElement.addAttribute(new Attribute("datatype",datatypeNamesMap.get(component.getRef().getId())));

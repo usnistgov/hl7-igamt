@@ -106,7 +106,7 @@ public class SerializableIG extends SerializableAbstractDomain {
       for (String valuesetId : valueSetsMap.keySet()) {
         Valueset valueset = valueSetsMap.get(valuesetId);
         if (valueset != null) {
-          valuesetNamesMap.put(valuesetId, valueset.getName());
+          valuesetNamesMap.put(valuesetId, valueset.getBindingIdentifier());
         }
       }
     }

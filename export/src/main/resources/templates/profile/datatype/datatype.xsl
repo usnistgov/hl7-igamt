@@ -26,10 +26,10 @@
         	</xsl:apply-templates>
         	<xsl:element name="br"/>
         </xsl:if>
-        <xsl:if test="@Name = 'DTM'">
+        <xsl:if test="@name = 'DTM'">
             <xsl:apply-templates select="DateTimeDatatype"/>
         </xsl:if>
-        <xsl:if test="@Name != 'DTM'">
+        <xsl:if test="@name != 'DTM'">
             <xsl:element name="span">
                 <xsl:element name="span">
                     <xsl:element name="b">
@@ -41,7 +41,7 @@
                         <xsl:text>contentTable</xsl:text>
                     </xsl:attribute>
                     <xsl:attribute name="summary">
-                        <xsl:value-of select="@Description"></xsl:value-of>
+                        <xsl:value-of select="@description"></xsl:value-of>
                     </xsl:attribute>
                     <xsl:element name="col">
                         <xsl:attribute name="width">
@@ -136,7 +136,7 @@
                     </xsl:element>
                     <xsl:element name="tbody">
                         <xsl:for-each select="Component">
-                            <xsl:sort select="@Position" data-type="number"></xsl:sort>
+                            <xsl:sort select="@position" data-type="number"></xsl:sort>
                             <xsl:call-template name="component">
                                 <xsl:with-param name="style"
                                                 select="'background-color:white;text-decoration:normal'"/>
