@@ -18,6 +18,8 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 
 /**
@@ -33,8 +35,8 @@ public class ChangedObjects implements Serializable {
   private static final long serialVersionUID = 6170223697898010975L;
   private String igDocumentId;
   private List<ChangedSegment> segments;
-//  private List<ChangedObject> datatypes;
-//  private List<ChangedObject> valuesets;
+  private List<ChangedDatatype> datatypes;
+  private List<ChangedConformanceProfile> conformanceProfiles;
 
   public ChangedObjects() {}
 
@@ -53,10 +55,21 @@ public class ChangedObjects implements Serializable {
   public void setSegments(List<ChangedSegment> segments) {
     this.segments = segments;
   }
+  
+  public List<ChangedDatatype> getDatatypes() {
+    return datatypes;
+  }
 
-  @Override
-  public String toString() {
-    return "{igDocumentId="+this.getIgDocumentId()+", segments count="+this.getSegments().size()+"}";
+  public void setDatatypes(List<ChangedDatatype> datatypes) {
+    this.datatypes = datatypes;
+  }
+
+  public List<ChangedConformanceProfile> getConformanceProfiles() {
+    return conformanceProfiles;
+  }
+
+  public void setConformanceProfiles(List<ChangedConformanceProfile> conformanceProfiles) {
+    this.conformanceProfiles = conformanceProfiles;
   }
 
 }

@@ -11,10 +11,7 @@ import 'rxjs/add/operator/switchMap';
 })
 export class DisplayRefComponent {
   _elm : any;
-  _ig : any;
-
-  @Input()
-  igId : any;
+  _from : string;
 
   constructor(
     private route: ActivatedRoute,
@@ -31,6 +28,14 @@ export class DisplayRefComponent {
 
   get elm(){
     return this._elm;
+  }
+
+  @Input() set from(obj){
+    this._from = obj;
+  }
+
+  get from(){
+    return this._from;
   }
 
   getScopeLabel() {

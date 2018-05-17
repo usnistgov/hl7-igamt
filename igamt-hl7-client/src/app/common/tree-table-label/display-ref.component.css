@@ -1,6 +1,7 @@
 .label-USE {
   background-color: green;
   font-weight: 400;
+  color: white;
 }
 
 .label-HL7 {
@@ -29,4 +30,22 @@
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff7400',
   endColorstr='#ff7400', GradientType=0); /* IE6-9 */
   font-weight: 400;
+}
+
+.version {
+  background: #f6f6f6;
+  font-weight: 400;
+  color: #00037a;
+}
+
+.label-segment {
+  color: #0f44f2;
+}
+
+.label-field {
+  color: #f24a08;
+}
+
+.label-component {
+  color: #f2c60d;
 }

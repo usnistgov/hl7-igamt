@@ -17,8 +17,7 @@ import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resol
           { path: "section/:sectionId", component: SectionComponent,resolve:{currentSection : SectionResolver} },
           { path: '', component: IgDocumentMetadataComponent },
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
-          { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
-          { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
+          { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' }
         ]
 			},
       // {
