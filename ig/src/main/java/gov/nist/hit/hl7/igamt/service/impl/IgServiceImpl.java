@@ -28,7 +28,7 @@ import gov.nist.hit.hl7.igamt.ig.model.DefinitionTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgToc;
-import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.model.TextSectionData;
 import gov.nist.hit.hl7.igamt.ig.model.TreeData;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
@@ -604,12 +604,12 @@ public class IgServiceImpl implements IgService{
 	}
 
 	@Override
-	public List<ListElement> convertListToDisplayList(List<Ig> igdouments) {
+	public List<IgSummary> convertListToDisplayList(List<Ig> igdouments) {
 		// TODO Auto-generated method stub
 		
-		List<ListElement> igs=new ArrayList<ListElement>();
+		List<IgSummary> igs=new ArrayList<IgSummary>();
 		for(Ig ig : igdouments) {
-			ListElement element = new ListElement();
+			IgSummary element = new IgSummary();
 			
 			element.setCoverpage(ig.getMetaData().getCoverPicture());
 			element.setDateUpdated(ig.getUpdateDate());
