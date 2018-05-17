@@ -4,6 +4,8 @@
     <xsl:import href="/templates/metadata.xsl"/>
     <xsl:template name="sidebar">
         <xsl:param name="target"/>
+        <xsl:param name="includeTOC" select="'true'" />
+		<xsl:param name="inlineConstraint" select="'true'" />
         <xsl:element name="div">
             <xsl:attribute name="id">
                 <xsl:text>sidebar</xsl:text>
@@ -29,6 +31,8 @@
             </xsl:element>
             <xsl:call-template name="displaySection">
                 <xsl:with-param name="target" select="$target"/>
+				<xsl:with-param name="includeTOC" select="$includeTOC" />
+				<xsl:with-param name="inlineConstraint" select="$inlineConstraint" />
             </xsl:call-template>
         </xsl:element>
 
