@@ -39,22 +39,22 @@
     			<xsl:element name="tr">
     				<xsl:if test="$hl7Version = 'true'">
 	    				<xsl:element name="td">
-	    					<xsl:value-of select="@HL7Version"></xsl:value-of>
+	    					<xsl:value-of select="@hl7Version"></xsl:value-of>
 	    				</xsl:element>
     				</xsl:if>
     				<xsl:if test="$publicationDate = 'true'">
 	    				<xsl:element name="td">
-	    					<xsl:value-of select="@PublicationDate"></xsl:value-of>
+	    					<xsl:value-of select="@publicationDate"></xsl:value-of>
 	    				</xsl:element>
     				</xsl:if>
     				<xsl:if test="$publicationVersion = 'true'">
 	    				<xsl:element name="td">
-	    					<xsl:value-of select="@PublicationVersion"></xsl:value-of>
+	    					<xsl:value-of select="@publicationVersion"></xsl:value-of>
 	    				</xsl:element>
     				</xsl:if>
     				<xsl:if test="$scope = 'true'">
 	    				<xsl:element name="td">
-	    					<xsl:value-of select="@Scope"></xsl:value-of>
+	    					<xsl:value-of select="@scope"></xsl:value-of>
 	    				</xsl:element>
     				</xsl:if>
     			</xsl:element>

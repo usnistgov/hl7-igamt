@@ -2,11 +2,11 @@
     <xsl:include href="/templates/profile/messageSegment.xsl"/>
 
     <xsl:template name="displayMessageSegmentsOrGroups">
-        <xsl:for-each select="MessageSegment|MessageGroup">
-            <xsl:if test="name(.)='MessageSegment'">
+        <xsl:for-each select="SegmentRef|Group">
+            <xsl:if test="name(.)='SegmentRef'">
                 <xsl:apply-templates select="."/>
             </xsl:if>
-            <xsl:if test="name(.)='MessageGroup'">
+            <xsl:if test="name(.)='Group'">
                 <xsl:call-template name="displayMessageSegmentsOrGroups"/>
             </xsl:if>
 

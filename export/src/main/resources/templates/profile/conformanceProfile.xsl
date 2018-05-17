@@ -6,15 +6,7 @@
     <xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:include href="/templates/profile/commentList.xsl"/>
     <xsl:include href="/templates/profile/metadata.xsl"/>
-    <xsl:template match="Message">
-        <xsl:if test="count(./Text[@Type='DefPreText']) &gt; 0">
-            <xsl:call-template name="definitionText">
-                <xsl:with-param name="type">
-                    <xsl:text>pre</xsl:text>
-                </xsl:with-param>
-            </xsl:call-template>
-            <xsl:element name="br"/>
-        </xsl:if>
+    <xsl:template match="ConformanceProfile">
         <xsl:if test="$messageMetadata.display = 'true'">
         	<xsl:apply-templates select="Metadata">
         		<xsl:with-param name="hl7Version">
@@ -42,7 +34,7 @@
                 <xsl:text>contentTable</xsl:text>
             </xsl:attribute>
             <xsl:attribute name="summary">
-                <xsl:value-of select="@Description"></xsl:value-of>
+                <xsl:value-of select="@description"></xsl:value-of>
             </xsl:attribute>
             <xsl:element name="col">
                 <xsl:attribute name="width">

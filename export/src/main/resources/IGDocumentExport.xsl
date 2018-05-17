@@ -267,10 +267,15 @@
 				<xsl:choose>
 					<xsl:when test="$targetFormat='html'">
 						<xsl:call-template name="displayHtmlContent">
+							<xsl:with-param name="includeTOC" select="$includeTOC" />
+							<xsl:with-param name="inlineConstraint" select="$inlineConstraints" />
 						</xsl:call-template>
 					</xsl:when>
 					<xsl:when test="$targetFormat='word'">
-						<!-- <xsl:call-template name="displayWordContent"> </xsl:call-template> -->
+						<!-- <xsl:call-template name="displayWordContent">
+							<xsl:with-param name="includeTOC" select="$includeTOC" />
+							<xsl:with-param name="inlineConstraint" select="$inlineConstraint" />
+						</xsl:call-template> -->
 					</xsl:when>
 				</xsl:choose>
 				<!-- End of the body tag -->

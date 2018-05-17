@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -34,14 +35,16 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
 
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, Segment> segmentsMap;
   
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Section section, int level, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> valuesetNamesMap) {
+  public SerializableConformanceProfileRegistry(Section section, int level, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap, Map<String, String> valuesetNamesMap) {
     super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.segmentsMap = segmentsMap;
   }
 
   /* (non-Javadoc)
@@ -57,7 +60,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(), this.valuesetNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(), this.valuesetNamesMap, this.segmentsMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
