@@ -25,7 +25,7 @@ export class SegmentEditConformanceStatementsComponent {
     segmentConformanceStatements:any;
     idMap: any;
     treeData: any[];
-    constraintType: any = [];
+    constraintTypes: any = [];
     assertionModes: any = [];
 
     selectedConformanceStatement: any = {};
@@ -42,15 +42,6 @@ export class SegmentEditConformanceStatementsComponent {
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
     ){
-        this.constraintType = [
-            {label: 'Predefined', value: 'PREDEFINED', icon: 'fa fa-fw fa-spinner', disabled: true},
-            {label: 'Predefined Patterns', value: 'PREDEFINEDPATTERNS', icon: 'fa fa-fw fa-spinner', disabled: true},
-            {label: 'Assertion Builder', value: 'ASSERTION', icon: 'fa fa-fw fa-file-code-o'},
-            {label: 'Free Text', value: 'FREE', icon: 'fa fa-fw fa-file-text-o'}
-        ];
-
-        this.assertionModes = this.configService._assertionModes;
-
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -64,6 +55,8 @@ export class SegmentEditConformanceStatementsComponent {
     }
 
     ngOnInit() {
+        this.constraintTypes = this.configService._constraintTypes;
+        this.assertionModes = this.configService._assertionModes;
         this.idMap = {};
         this.treeData = [];
         //TODO temp

@@ -36,7 +36,16 @@ export class GeneralConfigurationService {
 
   _assertionModes:any[];
 
+  _constraintTypes:any[];
+
   constructor(){
+
+    this._constraintTypes = [
+      {label: 'Predefined', value: 'PREDEFINED', icon: 'fa fa-fw fa-spinner', disabled: true},
+      {label: 'Predefined Patterns', value: 'PREDEFINEDPATTERNS', icon: 'fa fa-fw fa-spinner', disabled: true},
+      {label: 'Assertion Builder', value: 'ASSERTION', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'Free Text', value: 'FREE', icon: 'fa fa-fw fa-file-text-o'}
+    ];
 
     this._complexAssertionTypes = [
       {label: 'IFTHEN', value: 'IFTHEN'},

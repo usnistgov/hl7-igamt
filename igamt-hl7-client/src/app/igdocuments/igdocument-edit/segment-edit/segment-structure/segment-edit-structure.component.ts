@@ -29,6 +29,14 @@ export class SegmentEditStructureComponent {
     selectedNode:any;
     valuesetStrengthOptions:any = [];
 
+    preciateEditorOpen:boolean = false;
+
+    selectedPredicate: any = {};
+    constraintTypes: any = [];
+    assertionModes: any = [];
+    idMap: any;
+    treeData: any[];
+
     valuesetsLinks :any = [
         {
             id:'AAAAA',
@@ -165,6 +173,9 @@ export class SegmentEditStructureComponent {
             var vsOption = {label: vs.label, value : vs.id};
             this.valuesetOptions.push(vsOption);
         }
+
+        this.constraintTypes = this.configService._constraintTypes;
+        this.assertionModes = this.configService._assertionModes;
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
@@ -466,5 +477,125 @@ export class SegmentEditStructureComponent {
     truncate(txt){
         if(txt.length < 10) return txt;
         else return txt.substring(0,10) + "...";
+    }
+
+    print(data){
+        console.log(data);
+    }
+
+    editPredicate(node){
+        this.selectedNode = JSON.parse(JSON.stringify(node));
+        if(!this.selectedNode.data.displayData.segmentBinding) this.selectedNode.data.displayData.segmentBinding = {};
+        this.selectedPredicate = this.selectedNode.data.displayData.segmentBinding.predicate;
+        if(!this.selectedPredicate) this.selectedPredicate = {};
+
+        this.idMap = {};
+        this.treeData = [];
+
+        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
+            this.idMap[this.segmentId] = {name:segStructure.name};
+
+            var rootData = {elementId:this.segmentId};
+
+            for (let child of segStructure.children) {
+                var childData =  JSON.parse(JSON.stringify(rootData));
+                childData.child = {
+                    elementId: child.data.id,
+                };
+
+                if(child.data.max === '1'){
+                    childData.child.instanceParameter = '1';
+                }else{
+                    childData.child.instanceParameter = '*';
+                }
+
+                var treeNode = {
+                    label: child.data.name,
+                    data : childData,
+                    expandedIcon: "fa-folder-open",
+                    collapsedIcon: "fa-folder",
+                };
+
+                var data = {
+                    id: child.data.id,
+                    name: child.data.name,
+                    max: child.data.max,
+                    position: child.data.position,
+                    usage: child.data.usage,
+                    dtId: child.data.ref.id
+                };
+
+                this.idMap[this.segmentId + '-' + data.id] = data;
+                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
+                this.treeData.push(treeNode);
+            }
+        });
+
+        this.preciateEditorOpen = true;
+    }
+
+    changeType(){
+        if(this.selectedPredicate.type == 'ASSERTION'){
+            this.selectedPredicate.assertion = {};
+            this.selectedPredicate.assertion = {mode:"SIMPLE"};
+        }else if(this.selectedPredicate.type == 'FREE'){
+            this.selectedPredicate.assertion = undefined;
+        }else if(this.selectedPredicate.type == 'PREDEFINEDPATTERNS'){
+            this.selectedPredicate.assertion = undefined;
+        }else if(this.selectedPredicate.type == 'PREDEFINED'){
+            this.selectedPredicate.assertion = undefined;
+        }
+    }
+
+    changeAssertionMode(){
+        if(this.selectedPredicate.assertion.mode == 'SIMPLE'){
+            this.selectedPredicate.assertion = {mode:"SIMPLE"};
+        }else if(this.selectedPredicate.assertion.mode == 'COMPLEX'){
+            this.selectedPredicate.assertion = {mode:"COMPLEX"};
+        }
+    }
+
+    popChild(id, dtId, parentTreeNode){
+        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+            this.idMap[id].dtName = dtStructure.name;
+            if(dtStructure.children){
+                for (let child of dtStructure.children) {
+                    var childData =  JSON.parse(JSON.stringify(parentTreeNode.data));
+
+                    this.makeChild(childData, child.data.id, '1');
+
+                    var treeNode = {
+                        label: child.data.name,
+                        data:childData,
+                        expandedIcon: "fa-folder-open",
+                        collapsedIcon: "fa-folder",
+                    };
+
+                    var data = {
+                        id: child.data.id,
+                        name: child.data.name,
+                        max: "1",
+                        position: child.data.position,
+                        usage: child.data.usage,
+                        dtId: child.data.ref.id
+                    };
+                    this.idMap[id + '-' + data.id] = data;
+
+                    this.popChild(id + '-' + data.id, data.dtId, treeNode);
+
+                    if(!parentTreeNode.children) parentTreeNode.children = [];
+                    parentTreeNode.children.push(treeNode);
+
+                }
+            }
+        });
+    }
+
+    makeChild(data, id, para){
+        if(data.child) this.makeChild(data.child, id, para);
+        else data.child = {
+            elementId: id,
+            instanceParameter: para
+        }
     }
 }
