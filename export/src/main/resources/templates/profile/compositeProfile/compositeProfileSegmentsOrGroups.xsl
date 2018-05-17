@@ -1,5 +1,5 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:include href="/templates/profile/compositeProfileSegment.xsl"/>
+    <xsl:include href="/templates/profile/compositeProfile/compositeProfileSegment.xsl"/>
 
     <xsl:template name="displayCompositeProfileSegmentsOrGroups">
         <xsl:for-each select="CompositeProfileMessageSegment|CompositeProfileMessageGroup">

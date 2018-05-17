@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="1.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:import href="/templates/profile/conformanceProfile.xsl"/>
-    <xsl:import href="/templates/profile/profileComponent.xsl"/>
-    <xsl:import href="/templates/profile/compositeProfile.xsl"/>
-    <xsl:import href="/templates/profile/datatype.xsl"/>
-    <xsl:import href="/templates/profile/segment.xsl"/>
+    <xsl:import href="/templates/profile/conformanceProfile/conformanceProfile.xsl"/>
+    <xsl:import href="/templates/profile/profileComponent/profileComponent.xsl"/>
+    <xsl:import href="/templates/profile/compositeProfile/compositeProfile.xsl"/>
+    <xsl:import href="/templates/profile/datatype/datatype.xsl"/>
+    <xsl:import href="/templates/profile/segment/segment.xsl"/>
     <xsl:import href="/templates/profile/valueset/valueSet.xsl"/>
     <xsl:import href="/templates/profile/constraints.xsl"/>
     <xsl:import href="/templates/profile/constraint.xsl"/>

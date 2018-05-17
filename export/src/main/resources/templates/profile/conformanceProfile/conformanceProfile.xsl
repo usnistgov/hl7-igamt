@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:include href="/templates/profile/messageSegment.xsl"/>
+    <xsl:include href="/templates/profile/conformanceProfile/messageSegment.xsl"/>
     <xsl:include href="/templates/profile/messageConstraint.xsl"/>
-    <xsl:include href="/templates/profile/messageSegmentsOrGroups.xsl"/>
+    <xsl:include href="/templates/profile/conformanceProfile/messageSegmentsOrGroups.xsl"/>
     <xsl:include href="/templates/profile/valueset/valueSetBindingList.xsl"/>
     <xsl:include href="/templates/profile/commentList.xsl"/>
     <xsl:include href="/templates/profile/metadata.xsl"/>
