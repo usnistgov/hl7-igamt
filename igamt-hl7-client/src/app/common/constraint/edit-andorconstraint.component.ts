@@ -66,4 +66,5 @@ export class EditAndOrConstraintComponent {
     constraint.operator = undefined;
     constraint.verbKey = undefined;
   }
+
 }

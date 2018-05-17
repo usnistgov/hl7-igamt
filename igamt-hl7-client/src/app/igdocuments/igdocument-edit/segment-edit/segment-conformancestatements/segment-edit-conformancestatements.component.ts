@@ -172,6 +172,10 @@ export class SegmentEditConformanceStatementsComponent {
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
         }else if(this.selectedConformanceStatement.type == 'FREE'){
             this.selectedConformanceStatement.assertion = undefined;
+        }else if(this.selectedConformanceStatement.type == 'PREDEFINEDPATTERNS'){
+            this.selectedConformanceStatement.assertion = undefined;
+        }else if(this.selectedConformanceStatement.type == 'PREDEFINED'){
+            this.selectedConformanceStatement.assertion = undefined;
         }
     }
 

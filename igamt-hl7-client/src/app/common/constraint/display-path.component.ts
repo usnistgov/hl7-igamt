@@ -16,6 +16,7 @@ export class DisplayPathComponent {
   @Input() idMap : any;
   @Input() treeData:any[];
   @Input() pathHolder:any;
+  @Input() groupName: string;
 
   selectedNode:any;
   displayPicker: boolean = false;
@@ -59,7 +60,7 @@ export class DisplayPathComponent {
 
   nodeSelect(event) {
 
-    this.pathHolder.path = event.node.data;
+    this.pathHolder.path = JSON.parse(JSON.stringify(event.node.data));
 
     this.displayPicker = false;
   }
