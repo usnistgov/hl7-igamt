@@ -8,6 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
@@ -21,7 +22,7 @@ import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 @Document
 public class Ig extends AbstractDomain {
 
-  private IgMetaData metaData;
+  private DocumentMetadata metadata;
   private Set<TextSection> content= new HashSet<TextSection>();
   private gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry=new gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry() ;
   private SegmentRegistry segmentRegistry = new SegmentRegistry();
@@ -30,20 +31,15 @@ public class Ig extends AbstractDomain {
   private ConformanceProfileRegistry conformanceProfileRegistry= new ConformanceProfileRegistry(); 
   
   private ValueSetRegistry valueSetRegistry=new ValueSetRegistry(); 
-
   
-  
-
-
-  public IgMetaData getMetaData() {
-    return metaData;
+  public DocumentMetadata getMetadata() {
+    return metadata;
   }
 
-  public void setMetaData(IgMetaData metaData) {
-    this.metaData = metaData;
+  public void setMetadata(DocumentMetadata metadata) {
+    this.metadata = metadata;
   }
-  
-  
+
   public Set<TextSection> getContent() {
     return content;
   }

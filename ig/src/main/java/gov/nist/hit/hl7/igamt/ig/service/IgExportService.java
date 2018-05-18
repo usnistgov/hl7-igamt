@@ -25,4 +25,5 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 @Service("igExportService")
 public interface IgExportService {
   public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId) throws ExportException;
+  public ExportedFile exportIgDocumentToWord(String username, String igDocumentId) throws ExportException;
 }

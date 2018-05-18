@@ -29,5 +29,15 @@
 			<artifactId>jtidy</artifactId>
 			<version>r938</version>
 		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j-ImportXHTML</artifactId>
+			<version>3.3.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.docx4j</groupId>
+			<artifactId>docx4j</artifactId>
+			<version>3.3.1</version>
+		</dependency>
 	</dependencies>
 </project>

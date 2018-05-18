@@ -323,7 +323,7 @@ private List<TreeNode> createCpsNodes(Set<Link> children) {
 public IGDisplay convertDomainToModel(Ig ig) {
   // TODO Auto-generated method stub
   IGDisplay igDisplay= new IGDisplay();
-  igDisplay.setMetadata(ig.getMetaData());
+  igDisplay.setMetadata(ig.getMetadata());
   igDisplay.setAuthor(ig.getUsername());
   igDisplay.setDateUpdated(ig.getUpdateDate());
   List<TreeNode> firstLevel= new ArrayList<TreeNode>();

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 
 public class IGDisplay {
 	
-	private IgMetaData metadata;
+	private DocumentMetadata metadata;
     private List<TreeNode> toc =new ArrayList<TreeNode>();
 	private Date dateUpdated;
 	private String author;
@@ -17,11 +17,11 @@ public class IGDisplay {
 		// TODO Auto-generated constructor stub
 	}
 
-	public IgMetaData getMetadata() {
+	public DocumentMetadata getMetadata() {
 		return metadata;
 	}
 
-	public void setMetadata(IgMetaData metadata) {
+	public void setMetadata(DocumentMetadata metadata) {
 		this.metadata = metadata;
 	}
 	public Date getDateUpdated() {

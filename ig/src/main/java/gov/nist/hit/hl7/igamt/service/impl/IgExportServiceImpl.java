@@ -13,13 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-import org.apache.commons.io.FileUtils;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +28,7 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.export.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
+import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgSerializationService;
@@ -45,45 +42,84 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 @Service("IgExportService")
 public class IgExportServiceImpl implements IgExportService {
 
-  @Autowired 
+  @Autowired
   IgService igService;
-  
+
   @Autowired
   IgSerializationService igSerializationService;
-  
+
   @Autowired
   ExportService exportService;
-  
+
   @Autowired
   ExportConfigurationService exportConfigurationService;
-  
+
   @Autowired
   ExportFontConfigurationService exportFontConfigurationService;
-  
+
   private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
-  
+
+
+
   @Override
-  public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId) throws ExportException {
+  public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId)
+      throws ExportException {
     Ig igDocument = igService.findLatestById(igDocumentId);
-    if(igDocument != null) {
-      ExportConfiguration exportConfiguration = exportConfigurationService.getExportConfiguration(username);
-      ExportFontConfiguration exportFontConfiguration = exportFontConfigurationService.getExportFontConfiguration(username);
-      try {
-        String xmlContent = igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
-        try {
-          FileUtils.writeStringToFile(new File("tmp_xml_"+SimpleDateFormat.getDateInstance().format(new Date())+".xml"), xmlContent);
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-        //TODO add appinfoservice to get app version
-        ExportParameters exportParameters = new ExportParameters(false,true,"html",igDocument.getName(), igDocument.getMetaData().getCoverPicture(),exportConfiguration, exportFontConfiguration, "2.0_beta");
-        InputStream htmlContent = exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
-        return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), ExportFormat.HTML);
-      } catch (SerializationException | ExportException e) {
-        throw new ExportException(e,"Error while exporting IG Document with ID " + igDocument.getId().toString());
-      }
+    if (igDocument != null) {
+      ExportedFile htmlFile =
+          this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML);
+      return htmlFile;
     }
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgExportService#exportIgDocumentToWord(java.lang.String,
+   * java.lang.String)
+   */
+  @Override
+  public ExportedFile exportIgDocumentToWord(String username, String igDocumentId)
+      throws ExportException {
+    Ig igDocument = igService.findLatestById(igDocumentId);
+    if (igDocument != null) {
+      ExportedFile htmlFile =
+          this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD);
+      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo().getVersion());
+      return wordFile;
+    }
+    return null;
+  }
+
+  /**
+   * @param username
+   * @param igDocumentId
+   * @param exportFormat
+   * @return
+   * @throws SerializationException
+   * @throws ExportException
+   */
+  private ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
+      ExportFormat exportFormat) throws ExportException {
+    try {
+      ExportConfiguration exportConfiguration =
+          exportConfigurationService.getExportConfiguration(username);
+      ExportFontConfiguration exportFontConfiguration =
+          exportFontConfigurationService.getExportFontConfiguration(username);
+      String xmlContent =
+          igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
+      // TODO add appinfoservice to get app version
+      ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
+          igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
+          exportFontConfiguration, "2.0_beta");
+      InputStream htmlContent =
+          exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
+      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+    } catch (SerializationException serializationException) {
+      throw new ExportException(serializationException,
+          "Unable to serialize IG Document with ID " + igDocument.getId().getId());
+    }
   }
 
 }

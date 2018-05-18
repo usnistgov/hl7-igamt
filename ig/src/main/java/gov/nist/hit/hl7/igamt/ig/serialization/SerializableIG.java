@@ -20,15 +20,14 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.serialization.sections.SectionSerializationUtil;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableDocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import nu.xom.Attribute;
 import nu.xom.Element;
 
 /**
@@ -71,11 +70,13 @@ public class SerializableIG extends SerializableAbstractDomain {
   public Element serialize() throws SerializationException {
     Ig igDocument = (Ig) this.getAbstractDomain();
     Element igDocumentElement = super.getElement(Type.IGDOCUMENT);
-    Element igMetadata = serializeIgMetadata(igDocument.getMetaData());
-    if (igMetadata != null) {
-      igDocumentElement.appendChild(igMetadata);
+    SerializableDocumentMetadata serializableDocumentMetadata = new SerializableDocumentMetadata(igDocument.getMetadata());
+    if(serializableDocumentMetadata != null) {
+      Element metadataElement = serializableDocumentMetadata.serialize();
+      if (metadataElement != null) {
+        igDocumentElement.appendChild(metadataElement);
+      }
     }
-
     for (Section section : igDocument.getContent()) {
       //startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
       int startLevel = 1;
@@ -110,29 +111,6 @@ public class SerializableIG extends SerializableAbstractDomain {
         }
       }
     }
-  }
-
-  /**
-   * @param metaData
-   * @return
-   */
-  private Element serializeIgMetadata(IgMetaData metaData) {
-    Element igMetadataElement = new Element("Metadata");
-    igMetadataElement.addAttribute(
-        new Attribute("topics", metaData.getTopics() != null ? metaData.getTopics() : ""));
-    igMetadataElement.addAttribute(new Attribute("specificationName",
-        metaData.getSpecificationName() != null ? metaData.getSpecificationName() : ""));
-    igMetadataElement.addAttribute(new Attribute("identifier",
-        metaData.getIdentifier() != null ? metaData.getIdentifier() : ""));
-    igMetadataElement.addAttribute(new Attribute("implementationNotes",
-        metaData.getImplementationNotes() != null ? metaData.getImplementationNotes() : ""));
-    igMetadataElement.addAttribute(
-        new Attribute("orgName", metaData.getOrgName() != null ? metaData.getOrgName() : ""));
-    igMetadataElement.addAttribute(new Attribute("coverPicture",
-        metaData.getCoverPicture() != null ? metaData.getCoverPicture() : ""));
-    igMetadataElement.addAttribute(
-        new Attribute("subTitle", metaData.getSubTitle() != null ? metaData.getSubTitle() : ""));
-    return igMetadataElement;
   }
 
 }

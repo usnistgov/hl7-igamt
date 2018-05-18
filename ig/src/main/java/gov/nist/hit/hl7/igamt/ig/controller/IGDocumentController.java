@@ -67,14 +67,34 @@ public class IGDocumentController {
     // TODO Auto-generated constructor stub
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
       HttpServletResponse response) throws ExportException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       String username = authentication.getPrincipal().toString();
       ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
       response.setContentType("text/html");
+      response.setHeader("Content-disposition",
+          "attachment;filename=" + exportedFile.getFileName());
+      try {
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+      } catch (IOException e) {
+        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+      }
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+    }
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+      HttpServletResponse response) throws ExportException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
+      response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
       response.setHeader("Content-disposition",
           "attachment;filename=" + exportedFile.getFileName());
       try {
@@ -176,7 +196,7 @@ public class IGDocumentController {
     Date date = new Date();
     empty.setCreationDate(date);
     empty.setUpdateDate(date);
-    empty.setMetaData(wrapper.getMetaData());
+    empty.setMetadata(wrapper.getMetadata());
     crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
     igService.save(empty);
     return empty.getId();
