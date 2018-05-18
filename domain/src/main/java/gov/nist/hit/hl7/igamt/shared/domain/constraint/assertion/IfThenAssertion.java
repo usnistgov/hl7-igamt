@@ -17,6 +17,16 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
  *
  */
 public class IfThenAssertion extends MultipleAssertion {
+  
+  
+  private String complexAssertionType;
+
+  public IfThenAssertion() {
+    super();
+    this.setMode(AssertionMode.COMPLEX);
+    this.setComplexAssertionType("IFTHEN");
+  }
+
   /*
    * This is if_assertion statement.
    */
@@ -46,6 +56,14 @@ public class IfThenAssertion extends MultipleAssertion {
   @Override
   public String toString() {
     return "IfThenAssertion [ifAssertion=" + ifAssertion + ", thenAssertion=" + thenAssertion + "]";
+  }
+
+  public String getComplexAssertionType() {
+    return complexAssertionType;
+  }
+
+  public void setComplexAssertionType(String complexAssertionType) {
+    this.complexAssertionType = complexAssertionType;
   }
 
 

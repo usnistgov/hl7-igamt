@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -314,5 +315,24 @@ public class SegmentServiceImpl implements SegmentService {
 
 
     return segments;
+  }
+
+  @Override
+  public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment) {
+    if (segment != null) {
+      SegmentConformanceStatement result = new SegmentConformanceStatement();
+      result.setId(segment.getId());
+      result.setScope(segment.getDomainInfo().getScope());
+      result.setVersion(segment.getDomainInfo().getVersion());
+      if (segment.getExt() != null) {
+        result.setLabel(segment.getName() + segment.getExt());
+      } else {
+        result.setLabel(segment.getName());
+      }
+
+      result.setConformanceStatements(segment.getBinding().getConformanceStatements());
+      return result;
+    }
+    return null;
   }
 }

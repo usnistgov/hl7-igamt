@@ -3,6 +3,7 @@
     "id": "mock_ARBITRARY_SI",
     "version": 1
   },
+  "name": "SI",
   "label": "SI",
   "scope": "HL7STANDARD",
   "version": "2.6",

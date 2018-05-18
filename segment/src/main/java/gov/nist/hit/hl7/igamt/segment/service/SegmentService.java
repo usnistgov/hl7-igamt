@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
@@ -72,8 +73,8 @@ public interface SegmentService {
 
   public Segment saveSegment(ChangedSegment changedSegment);
 
-
-
   public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
+
+  public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
 
 }

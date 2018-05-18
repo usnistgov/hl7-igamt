@@ -25,6 +25,7 @@ public class SingleAssertion extends Assertion {
 
   public SingleAssertion() {
     super();
+    this.setMode(AssertionMode.SIMPLE);
   }
 
   public Subject getSubject() {
