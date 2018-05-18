@@ -47,6 +47,11 @@
 				</xsl:when>
 				<xsl:when test="@h &lt; 7 and normalize-space($includeTOC) = 'true'">
 					<xsl:element name="{concat('h', @h)}">
+						<xsl:if test="$target = 'docx'">
+							<xsl:attribute name="class">
+								<xsl:value-of select="concat('Heading', @h)"/>
+							</xsl:attribute>
+						</xsl:if>
 						<xsl:element name="u">
 							<xsl:attribute name="id">
                                     <xsl:value-of select="@id" />

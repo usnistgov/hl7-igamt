@@ -252,7 +252,7 @@
 							<!-- Add html specific style -->
 							<xsl:call-template name="htmlStyle" />
 						</xsl:when>
-						<xsl:when test="$targetFormat='word'">
+						<xsl:when test="$targetFormat='docx'">
 							<!-- Add Word specific style -->
 							<xsl:call-template name="wordStyle" />
 						</xsl:when>
@@ -284,10 +284,3 @@
 		</xsl:element>
 	</xsl:template>
 </xsl:stylesheet>
-
-
-
-
-
-<!--xsl:choose> <xsl:when test="$targetFormat='html'"> </xsl:when> <xsl:when 
-	test="$targetFormat='word'"> </xsl:when> </xsl:choose -->

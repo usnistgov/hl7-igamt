@@ -12,7 +12,7 @@
             </xsl:element>
         </xsl:element>
         <xsl:if test="$valueSetMetadata.oid = 'true' and @Oid != '' and @Oid != 'UNSPECIFIED'">
-            <xsl:if test="$documentTargetFormat='word'">
+            <xsl:if test="$documentTargetFormat='docx'">
    				<xsl:element name="br"/>
    			</xsl:if>
             <xsl:element name="p">
@@ -23,7 +23,7 @@
             </xsl:element>
         </xsl:if>
         <xsl:if test="$valueSetMetadata.type = 'true' and @SourceType != '' and @SourceType != 'UNSPECIFIED'">
-            <xsl:if test="$documentTargetFormat='word'">
+            <xsl:if test="$documentTargetFormat='docx'">
      			<xsl:element name="br"/>
       		</xsl:if>
             <xsl:element name="p">

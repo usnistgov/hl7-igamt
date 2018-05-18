@@ -26,7 +26,7 @@
 		<xsl:call-template name="valueSetMetadata" />
 		<xsl:call-template name="valueSetAttributes" />
 		<xsl:if test="normalize-space(@url)!=''">
-			<xsl:if test="$documentTargetFormat='word'">
+			<xsl:if test="$documentTargetFormat='docx'">
 				<xsl:element name="br" />
 			</xsl:if>
 			<xsl:element name="p">
@@ -46,7 +46,7 @@
 		</xsl:if>
 		<xsl:if
 			test="@contentDefinition='Intensional' and normalize-space(@InfoForExternal)!=''">
-			<xsl:if test="$documentTargetFormat='word'">
+			<xsl:if test="$documentTargetFormat='docx'">
 				<xsl:element name="br" />
 			</xsl:if>
 			<xsl:element name="p">
