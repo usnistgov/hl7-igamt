@@ -35,8 +35,6 @@ export class SegmentEditMetadataComponent {
   }
 
   ngOnInit() {
-      //TODO temp
-      this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
       this.segmentId = this.route.snapshot.params["segmentId"];
       this.segmentsService.getSegmentMetadata(this.segmentId, metadata  => {
 

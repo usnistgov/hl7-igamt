@@ -59,8 +59,6 @@ export class SegmentEditConformanceStatementsComponent {
         this.assertionModes = this.configService._assertionModes;
         this.idMap = {};
         this.treeData = [];
-        //TODO temp
-        this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
             this.segmentConformanceStatements = conformanceStatementData;
