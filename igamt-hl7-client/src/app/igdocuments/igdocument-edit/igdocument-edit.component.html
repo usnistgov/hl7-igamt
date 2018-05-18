@@ -1,6 +1,7 @@
 <div>
   <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
     <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
+  <app-add-segment [id]="igId" ></app-add-segment>
   <div>
 
       <span class="ig-title">{{ig.metadata.title}}</span>
@@ -145,7 +146,12 @@
 
           <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
 
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+            <context-menu  #segmentContextMenu>
+              <ng-template contextMenuItem (execute)="addSegments()">
+                <i class="fa fa-plus"></i> Add Segments
+              </ng-template>
+            </context-menu>
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPE'">

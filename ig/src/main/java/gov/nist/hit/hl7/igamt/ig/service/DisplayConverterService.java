@@ -22,6 +22,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -54,5 +56,12 @@ public interface DisplayConverterService {
 
   public AddMessageResponseDisplay convertMessageAddResponseToDisplay(
       AddMessageResponseObject addMessageResponse);
+
+  /**
+   * @param objects
+   * @return
+   */
+  public AddSegmentResponseDisplay convertSegmentResponseToDisplay(
+      AddSegmentResponseObject objects);
 
 }

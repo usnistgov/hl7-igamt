@@ -49,6 +49,26 @@ export  class TocService{
 
 
 
+  getNameUnicityIndicators(nodes,type){
+
+
+    if(type=='SEGMENTREGISTRY'){
+      return this.getNameUnicityIndicatorsForSegment(nodes, type);
+    }
+   }
+
+  getNameUnicityIndicatorsForSegment(nodes, type){
+    var profile= this.findDirectChildByType(nodes,"PROFILE");
+    var registry = this.findDirectChildByType(profile.children,type);
+    return _.map(registry.children, function (obj) {
+      return obj.data.label+obj.data.ext+obj.data.domainInfo.version;
+
+    });
+
+  }
+
+
+
 
 
 

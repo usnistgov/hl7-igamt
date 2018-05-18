@@ -20,7 +20,6 @@ import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 import { TreeModule } from 'angular-tree-component';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
 import {ContextMenuModule} from "ngx-contextmenu";
-import {ActivatedRouteSnapshot} from "@angular/router";
 import {PanelModule} from 'primeng/panel';
 import {MultiSelectModule} from 'primeng/multiselect';
 
@@ -31,7 +30,6 @@ import {PanelMenuModule} from 'primeng/panelmenu';
 import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
-import {StepsModule} from "primeng/components/steps/steps";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
 import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
@@ -49,6 +47,8 @@ import {IgDocumentCreateService} from "../igdocument-create/igdocument-create.se
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {BlockUIModule} from "primeng/components/blockui/blockui";
 import {IgDocumentAddingService} from "./adding.service";
+import { AddSegmentComponent } from './add-segment/add-segment.component';
+import {TableModule} from "primeng/components/table/table";
 
 
 @NgModule({
@@ -84,6 +84,7 @@ import {IgDocumentAddingService} from "./adding.service";
     DialogModule,
     TreeTableModule
     ,SharedModule,
+    TableModule,
     RadioButtonModule,
     ButtonModule,
     BlockUIModule,
@@ -91,7 +92,7 @@ import {IgDocumentAddingService} from "./adding.service";
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent
   ],
   entryComponents: [
 

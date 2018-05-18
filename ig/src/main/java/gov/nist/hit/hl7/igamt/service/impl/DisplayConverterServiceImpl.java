@@ -29,6 +29,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TextSectionData;
@@ -557,6 +559,34 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> conformancePrfiles =
         this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
     addedNodes.setConformanceProfiles(conformancePrfiles);
+    addedNodes.setDatatypes(datatypes);
+    addedNodes.setSegments(segments);
+    addedNodes.setValueSets(valueSets);
+
+    return addedNodes;
+  }
+
+
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertSegmentResponseToDisplay(gov.
+   * nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject)
+   */
+  @Override
+  public AddSegmentResponseDisplay convertSegmentResponseToDisplay(
+      AddSegmentResponseObject objects) {
+    // TODO Auto-generated method stub
+    AddSegmentResponseDisplay addedNodes = new AddSegmentResponseDisplay();
+    // TODO Auto-generated method stub
+
+    List<TreeNode> segments = this.getSegmentNodes(objects.getSegments());
+    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypesMap());
+
+    List<TreeNode> valueSets = this.getValueSetNodes(objects.getValueSets());
+
     addedNodes.setDatatypes(datatypes);
     addedNodes.setSegments(segments);
     addedNodes.setValueSets(valueSets);

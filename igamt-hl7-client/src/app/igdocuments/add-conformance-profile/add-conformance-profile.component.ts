@@ -1,9 +1,6 @@
 import { Component, OnInit ,Input} from '@angular/core';
-import {IgDocumentCreateService} from "../igdocument-create/igdocument-create.service";
 import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {TreeNode} from "primeng/components/common/treenode";
-import {BsModalRef} from "ngx-bootstrap";
 import {IgDocumentAddingService} from "../igdocument-edit/adding.service";
 import {PrimeDialogAdapter} from "../../common/prime-ng-adapters/prime-dialog-adapter";
 
@@ -266,14 +263,7 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
 
   }
 
-  upload(event) {
-    this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
-    for(let file of event.files) {
-      this.uploadedFiles.push(file);
-    }
 
-
-  }
 
 
 }

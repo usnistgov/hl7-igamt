@@ -13,6 +13,7 @@ import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap';
 import {AddConformanceProfileComponent} from "../add-conformance-profile/add-conformance-profile.component";
+import {AddSegmentComponent} from "./add-segment/add-segment.component";
 
 
 @Component({
@@ -23,6 +24,9 @@ export class IgDocumentEditComponent {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
 
   @ViewChild(AddConformanceProfileComponent) addCps: AddConformanceProfileComponent;
+  @ViewChild(AddSegmentComponent) addSegs: AddSegmentComponent;
+
+
 
   igId:any;
   bsModalRef: BsModalRef;
@@ -340,7 +344,6 @@ export class IgDocumentEditComponent {
   }
 
   addMessage(node){
-    this.displayMessageAdding=true;
 
     this.addCps.open({
       id : this.igId
@@ -357,15 +360,41 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
+    if(object.conformanceProfiles){
+      this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
 
-    this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
-    this.tocService.addNodesByType(object.datatypes,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
+    }
+    if(object.segments){
+      this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
+    }
 
-    this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+    if(object.datatypes){
+      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+    }
+    if(object.valueSets){
+      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
+    }
 
-    this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
     this.tree.treeModel.update();
 
+
+  }
+
+  addSegments(){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"SEGMENTREGISTRY");
+
+    console.log(existing);
+    this.addSegs.open({
+      id : this.igId,
+      namingIndicators:existing
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+          console.log(result);
+        }
+      )
 
   }
 
