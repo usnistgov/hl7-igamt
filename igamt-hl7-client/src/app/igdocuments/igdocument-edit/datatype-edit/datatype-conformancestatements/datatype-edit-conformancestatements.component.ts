@@ -4,7 +4,6 @@
 import {Component, Input} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {SegmentsService} from "../../../../service/segments/segments.service";
 import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
@@ -12,14 +11,15 @@ import {ConstraintsService} from "../../../../service/constraints/constraints.se
 
 
 @Component({
-    templateUrl : './segment-edit-conformancestatements.component.html',
-    styleUrls : ['./segment-edit-conformancestatements.component.css']
+    templateUrl : './datatype-edit-conformancestatements.component.html',
+    styleUrls : ['./datatype-edit-conformancestatements.component.css']
 })
-export class SegmentEditConformanceStatementsComponent {
+
+export class DatatypeEditConformanceStatementsComponent {
     cols:any;
     currentUrl:any;
-    segmentId:any;
-    segmentConformanceStatements:any;
+    datatypeId:any;
+    datatypeConformanceStatements:any;
     idMap: any;
     treeData: any[];
     constraintTypes: any = [];
@@ -33,7 +33,6 @@ export class SegmentEditConformanceStatementsComponent {
     constructor(
         private route: ActivatedRoute,
         private router : Router,
-        private segmentsService : SegmentsService,
         private datatypesService : DatatypesService,
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
@@ -55,22 +54,17 @@ export class SegmentEditConformanceStatementsComponent {
         this.assertionModes = this.configService._assertionModes;
         this.idMap = {};
         this.treeData = [];
-        //TODO temp
-        this.segmentId = this.route.snapshot.params["segmentId"];
-        this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
-            this.segmentConformanceStatements = conformanceStatementData;
+        this.datatypeId = this.route.snapshot.params["datatypeId"];
+        this.datatypesService.getDatatypeConformanceStatements(this.datatypeId, conformanceStatementData => {
+            this.datatypeConformanceStatements = conformanceStatementData;
         });
 
-        // indexedDbService.get
+        this.datatypesService.getDatatypeStructure(this.datatypeId, dtStructure  => {
+            this.idMap[this.datatypeId] = {name:dtStructure.name};
 
-        console.log("SegmentId:" + this.segmentId);
+            var rootData = {elementId:this.datatypeId};
 
-        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
-            this.idMap[this.segmentId] = {name:segStructure.name};
-
-            var rootData = {elementId:this.segmentId};
-
-            for (let child of segStructure.children) {
+            for (let child of dtStructure.children) {
                 var childData =  JSON.parse(JSON.stringify(rootData));
                 childData.child = {
                     elementId: child.data.id,
@@ -78,8 +72,10 @@ export class SegmentEditConformanceStatementsComponent {
 
                 if(child.data.max === '1'){
                     childData.child.instanceParameter = '1';
-                }else{
+                }else if (child.data.max){
                     childData.child.instanceParameter = '*';
+                }else {
+                    childData.child.instanceParameter = '1';
                 }
 
                 var treeNode = {
@@ -98,17 +94,14 @@ export class SegmentEditConformanceStatementsComponent {
                     dtId: child.data.ref.id
                 };
 
-                this.idMap[this.segmentId + '-' + data.id] = data;
-                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
+                this.idMap[this.datatypeId + '-' + data.id] = data;
+                this.popChild(this.datatypeId + '-' + data.id, data.dtId, treeNode);
                 this.treeData.push(treeNode);
-
-
             }
         });
     }
 
     popChild(id, dtId, parentTreeNode){
-
         this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
             this.idMap[id].dtName = dtStructure.name;
             if(dtStructure.children){
@@ -141,11 +134,7 @@ export class SegmentEditConformanceStatementsComponent {
 
                 }
             }
-
-
         });
-
-
     }
 
     makeChild(data, id, para){
@@ -180,7 +169,7 @@ export class SegmentEditConformanceStatementsComponent {
     submitCS(){
         if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.idMap);
         this.deleteCS(this.selectedConformanceStatement.identifier);
-        this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
+        this.datatypeConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
         this.editorTab = false;
         this.listTab = true;
@@ -193,7 +182,7 @@ export class SegmentEditConformanceStatementsComponent {
     }
 
     deleteCS(identifier){
-        this.segmentConformanceStatements.conformanceStatements = _.without(this.segmentConformanceStatements.conformanceStatements, _.findWhere(this.segmentConformanceStatements.conformanceStatements, {identifier: identifier}));
+        this.datatypeConformanceStatements.conformanceStatements = _.without(this.datatypeConformanceStatements.conformanceStatements, _.findWhere(this.datatypeConformanceStatements.conformanceStatements, {identifier: identifier}));
     }
 
     printCS(cs){

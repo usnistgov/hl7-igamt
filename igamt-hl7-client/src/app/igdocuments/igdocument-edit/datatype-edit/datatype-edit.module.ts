@@ -12,7 +12,12 @@ import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 
 import {UtilsModule} from "../../../utils/utils.module";
+import {ButtonModule} from 'primeng/button';
+import {AccordionModule} from 'primeng/accordion';
+import {SelectButtonModule} from 'primeng/selectbutton';
+import {TableModule} from 'primeng/table';
 
+import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformancestatements/datatype-edit-conformancestatements.component";
 
 @NgModule({
   imports: [
@@ -23,10 +28,14 @@ import {UtilsModule} from "../../../utils/utils.module";
     DropdownModule,
     DatatypeEditRoutingModule,
     UtilsModule,
-    TreeTableModule
+    TreeTableModule,
+    ButtonModule,
+    AccordionModule,
+    SelectButtonModule,
+    TableModule
   ],
   providers : [],
-  declarations: [DatatypeEditStructureComponent],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

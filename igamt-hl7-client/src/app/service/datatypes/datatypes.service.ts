@@ -19,4 +19,25 @@ export class DatatypesService {
 
         });
     }
+
+    public getDatatypeConformanceStatements(id, callback) {
+        const http = this.http;
+        const datatypesIndexedDbService = this.datatypesIndexedDbService;
+
+        http.get('api/datatypes/' + id + '/conformanceStatements').subscribe(conformanceStatements => {
+            callback(conformanceStatements);
+        });
+
+        /*
+         this.segmentsIndexedDbService.getSegmentStructure(id, function(clientSegmentStructure){
+         if (clientSegmentStructure == null) {
+         http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
+         callback(serverSegmentStructure);
+         });
+         } else {
+         callback(clientSegmentStructure);
+         }
+         });
+         */
+    }
 }

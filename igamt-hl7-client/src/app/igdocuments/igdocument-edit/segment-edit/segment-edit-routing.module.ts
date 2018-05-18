@@ -28,7 +28,7 @@ import {SegmentEditConformanceStatementsComponent} from "./segment-conformancest
             path: ':segmentId/postDef', component: SegmentEditPostdefComponent,
         },
         {
-            path: ':segmentId/conformanceStatements', component: SegmentEditConformanceStatementsComponent,
+            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,
         }
     ])
   ],
