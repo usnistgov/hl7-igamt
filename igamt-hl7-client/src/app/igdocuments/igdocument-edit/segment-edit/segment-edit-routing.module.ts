@@ -8,6 +8,7 @@ import {SegmentEditPredefComponent} from "./segment-predef/segment-edit-predef.c
 import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postdef.component";
 import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
 import {SegmentEditConformanceStatementsComponent} from "./segment-conformancestatements/segment-edit-conformancestatements.component";
+import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
 
 @NgModule({
   imports: [
@@ -16,7 +17,7 @@ import {SegmentEditConformanceStatementsComponent} from "./segment-conformancest
             path: ':segmentId', component: SegmentEditStructureComponent,
         },
         {
-            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,
+            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  resolve: { segmentMetadata : SegmentEditMetadatResolver}
         },
         {
             path: ':segmentId/preDef', component: SegmentEditPredefComponent,

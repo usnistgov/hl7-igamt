@@ -29,6 +29,8 @@ export class SegmentsIndexedDbService {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
           callback(segment.metadata);
+        }else {
+          callback(null);
         }
       });
     } else {

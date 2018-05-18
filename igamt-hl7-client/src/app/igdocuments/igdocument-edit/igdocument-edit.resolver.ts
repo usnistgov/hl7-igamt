@@ -27,7 +27,6 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    console.log("Calling resolver");
     return new Promise(
       (resolve , reject) =>{
         let igId= route.params["igId"];

@@ -22,24 +22,21 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
   styleUrls : ['./segment-edit-metadata.component.css']
 })
 export class SegmentEditMetadataComponent {
-  currentUrl:any;
   segmentId:any;
   segmentMetadata:any;
 
   constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient){
-    router.events.subscribe(event => {
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-      }
-    });
+
   }
 
   ngOnInit() {
-      this.segmentId = this.route.snapshot.params["segmentId"];
-      this.segmentsService.getSegmentMetadata(this.segmentId, metadata  => {
+    this.segmentId = this.route.snapshot.params["segmentId"];
 
-        this.segmentMetadata = metadata;
+    this.route.data.map(data =>data.segmentMetadata).subscribe(x=>{
+      this.segmentMetadata= x;
 
-      });
+
+    });
+
   }
 }
