@@ -34,6 +34,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.docx4j.XmlUtils;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.dml.CTPositiveSize2D;
@@ -96,7 +97,7 @@ public class WordUtil {
       String formattedDateUpdated = simpleDateFormat.format(dateUpdated);
       createCoverPageForDocx4j(wordMLPackage, factory, metadata, formattedDateUpdated,
           metadata.getCoverPicture(), hl7Version);
-      // createTableOfContentForDocx4j(wordMLPackage, factory);
+      createTableOfContentForDocx4j(wordMLPackage, factory);
       FieldUpdater updater = new FieldUpdater(wordMLPackage);
       updater.update(true);
       // TODO add appInfo version
@@ -297,7 +298,7 @@ public class WordUtil {
 
   }
 
-  public void createTableOfContentForDocx4j(WordprocessingMLPackage wordMLPackage,
+  public static void createTableOfContentForDocx4j(WordprocessingMLPackage wordMLPackage,
       ObjectFactory factory) {
     P paragraphForTOC = factory.createP();
     R r = factory.createR();

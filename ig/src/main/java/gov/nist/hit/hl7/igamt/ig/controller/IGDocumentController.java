@@ -67,8 +67,8 @@ public class IGDocumentController {
     // TODO Auto-generated constructor stub
   }
 
-  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
-  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
+  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
       HttpServletResponse response) throws ExportException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
@@ -87,8 +87,8 @@ public class IGDocumentController {
     }
   }
   
-  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
       HttpServletResponse response) throws ExportException {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
