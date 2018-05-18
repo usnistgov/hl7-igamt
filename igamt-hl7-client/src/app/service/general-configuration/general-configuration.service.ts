@@ -8,6 +8,8 @@ export class GeneralConfigurationService {
   //TODO ADDING OTHER CONFIG DATA
   _usages : any;
 
+  _cUsages : any;
+
   _valueSetAllowedDTs : any;
 
   _valueSetAllowedComponents : any;
@@ -87,6 +89,7 @@ export class GeneralConfigurationService {
     this._formatTypes = [ { label : 'be ISO format', value : 'iso' },{ label : 'be positive', value : 'positive' },{ label : 'be negative', value : 'negative' },{ label : 'be numeric', value : 'numeric' },{ label : 'be alphanumeric', value : 'alphanumeric' },{ label : 'be regrex', value : 'regrex' }];
     this._operators = [ { label : 'be identical to the content of', value : 'equal' },{ label : 'be greater to the value of', value : 'greater' },{ label : 'be less to the value of', value : 'less' },{ label : 'be same or greater to the value of', value : 'equalorgreater' },{ label : 'be same or less to the value of', value : 'equalorless' },{ label : 'be different to the value of', value : 'notequal' }];
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
+    this._cUsages = [ {label : '', value : null}, { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' }, { label : 'X', value : 'O' }];
     this._valuesetStrengthOptions = [ { label : 'Select Strength', value : null},{ label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
     this._codedElementDTs = ["CE", "CF", "CWE", "CNE", "CSU"];

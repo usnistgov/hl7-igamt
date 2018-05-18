@@ -10,7 +10,7 @@ import {HttpClient} from "@angular/common/http";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service"
+import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 
 @Component({

@@ -9,13 +9,18 @@
             </ng-template>
         </p-column>
 
-        <p-column header="Usage" [style]="{'width':'100px'}" >
+        <p-column header="Usage" [style]="{'width':'190px'}" >
             <ng-template let-col let-node="rowData" pTemplate="body" >
                 <div *ngIf="node.data.displayData.type === 'FIELD'">
-                    <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
+                    <p-dropdown *ngIf="node.data.usage !== 'C'" [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '100%'}"></p-dropdown>
+                    <div *ngIf="node.data.usage === 'C'">
+                        <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '30%'}"></p-dropdown>
+                        (<p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.segmentBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
+                        <p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.segmentBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
+                    </div>
                 </div>
                 <div *ngIf="node.data.displayData.type !== 'FIELD'">
-                    {{node.data.usage}}
+                    <div *ngIf="node.data.usage !== 'C'">{{node.data.usage}}</div>
                 </div>
             </ng-template>
 
@@ -305,7 +310,7 @@
                 {{cpForm.value | json}}
             </p>
 
-            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="cpForm.invalid"></button>
+            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCP()" [disabled]="cpForm.invalid"></button>
             <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="print(selectedConformanceStatement)"></button>
         </form>
     </p-dialog>
