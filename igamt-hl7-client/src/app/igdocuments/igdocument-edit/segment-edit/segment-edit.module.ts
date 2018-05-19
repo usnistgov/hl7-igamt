@@ -19,25 +19,29 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 import {UtilsModule} from "../../../utils/utils.module";
-
+import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
+import {MessageModule} from 'primeng/message';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    TabMenuModule,
-    DialogModule,
-    DropdownModule,
-    SegmentEditRoutingModule,
-    UtilsModule,
-    TreeTableModule,
-    ButtonModule,
-    AccordionModule,
-    SelectButtonModule,
-    TableModule
-  ],
-  providers : [],
-  declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
-  schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
+    imports: [
+        CommonModule,
+        FormsModule,
+        TabMenuModule,
+        DialogModule,
+        DropdownModule,
+        SegmentEditRoutingModule,
+        UtilsModule,
+        TreeTableModule,
+        ButtonModule,
+        AccordionModule,
+        SelectButtonModule,
+        TableModule,
+        FroalaEditorModule.forRoot(),
+        FroalaViewModule.forRoot(),
+        MessageModule
+    ],
+    providers : [],
+    declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
+    schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

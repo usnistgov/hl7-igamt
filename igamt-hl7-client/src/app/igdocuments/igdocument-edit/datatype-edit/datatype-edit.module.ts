@@ -3,7 +3,6 @@
  */
 import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {DatatypeEditStructureComponent} from "./datatype-structure/datatype-edit-structure.component";
 import {DatatypeEditRoutingModule} from "./datatype-edit-routing.module";
 import {TabMenuModule} from "primeng/components/tabmenu/tabmenu";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
@@ -17,7 +16,13 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 
+import {DatatypeEditStructureComponent} from "./datatype-structure/datatype-edit-structure.component";
 import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformancestatements/datatype-edit-conformancestatements.component";
+import {DatatypeEditMetadataComponent} from "./datatype-metadata/datatype-edit-metadata.component";
+import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-postdef.component";
+import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-predef.component";
+
+import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 
 @NgModule({
   imports: [
@@ -32,10 +37,12 @@ import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformance
     ButtonModule,
     AccordionModule,
     SelectButtonModule,
-    TableModule
+    TableModule,
+      FroalaEditorModule.forRoot(),
+      FroalaViewModule.forRoot()
   ],
   providers : [],
-  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

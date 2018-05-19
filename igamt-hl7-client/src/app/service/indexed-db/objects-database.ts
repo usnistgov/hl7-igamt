@@ -7,6 +7,7 @@ export class IObject {
   preDef?: object;
   postDef?: object;
   crossReference?: object;
+  conformanceStatements?: object;
 }
 
 interface ISection {
