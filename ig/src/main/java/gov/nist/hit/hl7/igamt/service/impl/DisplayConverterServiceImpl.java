@@ -334,7 +334,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
   public IGDisplay convertDomainToModel(Ig ig) {
     // TODO Auto-generated method stub
     IGDisplay igDisplay = new IGDisplay();
-    igDisplay.setMetadata(ig.getMetaData());
+//    igDisplay.setMetadata(ig.getMetaData());
     igDisplay.setAuthor(ig.getUsername());
     igDisplay.setDateUpdated(ig.getUpdateDate());
     List<TreeNode> firstLevel = new ArrayList<TreeNode>();
@@ -347,7 +347,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     igDisplay.setToc(firstLevel);
     return igDisplay;
   }
-
 
 
   /*
@@ -551,7 +550,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       AddMessageResponseObject addMessageResponse) {
     AddMessageResponseDisplay addedNodes = new AddMessageResponseDisplay();
     // TODO Auto-generated method stub
-
     List<TreeNode> segments = this.getSegmentNodes(addMessageResponse.getSegments());
     List<TreeNode> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypesMap());
 
@@ -565,8 +563,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
     return addedNodes;
   }
-
-
 
   /*
    * (non-Javadoc)

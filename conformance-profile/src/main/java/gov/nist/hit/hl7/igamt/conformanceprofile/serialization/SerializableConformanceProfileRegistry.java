@@ -16,11 +16,14 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.ConformanceProfileNotFoundException;
+import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import nu.xom.Element;
 
@@ -28,20 +31,20 @@ import nu.xom.Element;
  *
  * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SerializableConformanceProfileRegistry extends SerializableSection {
+public class SerializableConformanceProfileRegistry extends SerializableRegistry {
 
   private Map<String, ConformanceProfile> conformanceProfilesMap;
-  private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, Segment> segmentsMap;
   
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Registry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
-    super(conformanceProfileRegistry);
+  public SerializableConformanceProfileRegistry(Section section, int level, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap, Map<String, String> valuesetNamesMap) {
+    super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
-    this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.segmentsMap = segmentsMap;
   }
 
   /* (non-Javadoc)
@@ -49,7 +52,7 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry conformanceProfileRegistry = (Registry) super.getSection();
+    Registry conformanceProfileRegistry = (Registry) super.getRegistry();
     try {
       Element conformanceProfileRegistryElement = super.getElement();
       if(conformanceProfileRegistry != null) {
@@ -57,7 +60,7 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
           for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
             if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
               ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()),datatypeNamesMap, this.valuesetNamesMap);
+              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(), this.valuesetNamesMap, this.segmentsMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if(conformanceProfileElement!=null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
@@ -70,7 +73,7 @@ public class SerializableConformanceProfileRegistry extends SerializableSection 
       }
       return conformanceProfileRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, conformanceProfileRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), conformanceProfileRegistry);
     }
   }
 

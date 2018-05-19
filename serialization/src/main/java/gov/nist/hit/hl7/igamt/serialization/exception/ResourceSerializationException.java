@@ -28,7 +28,7 @@ public class ResourceSerializationException extends SerializationException {
   private static final long serialVersionUID = -3476863921150657947L;
   
   public ResourceSerializationException(Exception originException, Type type, Resource resource, String message) {
-    super(originException,type,"id="+resource.getId()+",name="+resource.getName());
+    super(originException,type,"id="+resource.getId().getId()+",version="+resource.getId().getVersion()+",name="+resource.getName());
     this.message = message;
   }
   

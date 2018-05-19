@@ -65,7 +65,7 @@ public class SerializableBinding extends SerializableElement {
       Element bindingElement = new Element("Binding");
       bindingElement.addAttribute(
           new Attribute("elementId", binding.getElementId() != null ? binding.getElementId() : ""));
-      if (binding.getChildren().size() > 0) {
+      if (binding.getChildren() != null && binding.getChildren().size() > 0) {
         Element structureElementBindingsElement =
             this.serializeStructureElementBindings(binding.getChildren(), valuesetNamesMap);
         if (structureElementBindingsElement != null) {
@@ -73,12 +73,14 @@ public class SerializableBinding extends SerializableElement {
         }
       }
       if (binding instanceof ResourceBinding) {
-        for (ConformanceStatement conformanceStatement : ((ResourceBinding) binding)
-            .getConformanceStatements()) {
-          Element conformanceStatementElement =
-              this.serializeConformanceStatement(conformanceStatement);
-          if (conformanceStatementElement != null) {
-            bindingElement.appendChild(conformanceStatementElement);
+        if (((ResourceBinding) binding).getConformanceStatements() != null) {
+          for (ConformanceStatement conformanceStatement : ((ResourceBinding) binding)
+              .getConformanceStatements()) {
+            Element conformanceStatementElement =
+                this.serializeConformanceStatement(conformanceStatement);
+            if (conformanceStatementElement != null) {
+              bindingElement.appendChild(conformanceStatementElement);
+            }
           }
         }
       }
@@ -96,17 +98,20 @@ public class SerializableBinding extends SerializableElement {
   private Element serializeStructureElementBindings(
       Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap)
       throws ValuesetNotFoundException {
-    Element structureElementBindingsElement = new Element("StructureElementBindings");
-    for (StructureElementBinding structureElementBinding : structureElementBindings) {
-      if (structureElementBinding != null) {
-        Element structureElementBindingElement =
-            this.serializeStructureElementBinding(structureElementBinding, valuesetNamesMap);
-        if (structureElementBindingElement != null) {
-          structureElementBindingsElement.appendChild(structureElementBindingElement);
+    if (structureElementBindings != null) {
+      Element structureElementBindingsElement = new Element("StructureElementBindings");
+      for (StructureElementBinding structureElementBinding : structureElementBindings) {
+        if (structureElementBinding != null) {
+          Element structureElementBindingElement =
+              this.serializeStructureElementBinding(structureElementBinding, valuesetNamesMap);
+          if (structureElementBindingElement != null) {
+            structureElementBindingsElement.appendChild(structureElementBindingElement);
+          }
         }
       }
+      return structureElementBindingsElement;
     }
-    return structureElementBindingsElement;
+    return null;
   }
 
   /**
@@ -116,53 +121,66 @@ public class SerializableBinding extends SerializableElement {
    */
   private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding,
       Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    Element structureElementBindingElement = new Element("StructureElementBinding");
-    structureElementBindingElement.addAttribute(new Attribute("elementId",
-        structureElementBinding.getElementId() != null ? structureElementBinding.getElementId()
-            : ""));
-    if (structureElementBinding != null && structureElementBinding.getChildren() != null
-        && structureElementBinding.getChildren().size() > 0) {
-      Element structureElementBindingsElement = this.serializeStructureElementBindings(
-          structureElementBinding.getChildren(), valuesetNamesMap);
-      if (structureElementBindingsElement != null) {
-        structureElementBindingElement.appendChild(structureElementBindingsElement);
+    if (structureElementBinding != null) {
+      Element structureElementBindingElement = new Element("StructureElementBinding");
+      structureElementBindingElement.addAttribute(new Attribute("elementId",
+          structureElementBinding.getElementId() != null ? structureElementBinding.getElementId()
+              : ""));
+
+      if (structureElementBinding.getChildren() != null
+          && structureElementBinding.getChildren().size() > 0) {
+        Element structureElementBindingsElement = this.serializeStructureElementBindings(
+            structureElementBinding.getChildren(), valuesetNamesMap);
+        if (structureElementBindingsElement != null) {
+          structureElementBindingElement.appendChild(structureElementBindingsElement);
+        }
       }
-    }
-    for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
-      Element valuesetBindingElement =
-          this.serializeValuesetBinding(valuesetBinding, valuesetNamesMap);
-      if (valuesetBindingElement != null) {
-        structureElementBindingElement.appendChild(valuesetBindingElement);
+      if (structureElementBinding.getValuesetBindings() != null) {
+        for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
+          Element valuesetBindingElement =
+              this.serializeValuesetBinding(valuesetBinding, valuesetNamesMap);
+          if (valuesetBindingElement != null) {
+            structureElementBindingElement.appendChild(valuesetBindingElement);
+          }
+        }
       }
-    }
-    for (Comment comment : structureElementBinding.getComments()) {
-      Element commentElement = this.serializeComment(comment);
-      if (commentElement != null) {
-        structureElementBindingElement.appendChild(commentElement);
+      if (structureElementBinding.getComments() != null) {
+        for (Comment comment : structureElementBinding.getComments()) {
+          Element commentElement = this.serializeComment(comment);
+          if (commentElement != null) {
+            structureElementBindingElement.appendChild(commentElement);
+          }
+        }
       }
-    }
-    if (structureElementBinding.getInternalSingleCode() != null) {
-      structureElementBindingElement
-          .addAttribute(new Attribute("singleCodeId", structureElementBinding.getInternalSingleCode().getCodeId()));
-    }
-    if (structureElementBinding.getConstantValue() != null) {
-      structureElementBindingElement
-          .addAttribute(new Attribute("constantValue", structureElementBinding.getConstantValue()));
-    }
-    if (structureElementBinding.getPredicate() != null) {
-      Element predicateElement = this.serializePredicate(structureElementBinding.getPredicate());
-      if (predicateElement != null) {
-        structureElementBindingElement.appendChild(predicateElement);
+      if (structureElementBinding.getInternalSingleCode() != null) {
+        structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
+            structureElementBinding.getInternalSingleCode().getCodeId()));
       }
-    }
-    if (structureElementBinding.getExternalSingleCode() != null) {
-      Element externalSingleCodeElement =
-          this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
-      if (externalSingleCodeElement != null) {
-        structureElementBindingElement.appendChild(externalSingleCodeElement);
+      if (structureElementBinding.getConstantValue() != null) {
+        structureElementBindingElement.addAttribute(
+            new Attribute("constantValue", structureElementBinding.getConstantValue()));
       }
+
+      if (structureElementBinding.getConstantValue() != null) {
+        structureElementBindingElement.addAttribute(
+            new Attribute("constantValue", structureElementBinding.getConstantValue()));
+      }
+      if (structureElementBinding.getPredicate() != null) {
+        Element predicateElement = this.serializePredicate(structureElementBinding.getPredicate());
+        if (predicateElement != null) {
+          structureElementBindingElement.appendChild(predicateElement);
+        }
+      }
+      if (structureElementBinding.getExternalSingleCode() != null) {
+        Element externalSingleCodeElement =
+            this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
+        if (externalSingleCodeElement != null) {
+          structureElementBindingElement.appendChild(externalSingleCodeElement);
+        }
+      }
+      return structureElementBindingElement;
     }
-    return structureElementBindingElement;
+    return null;
   }
 
   /**

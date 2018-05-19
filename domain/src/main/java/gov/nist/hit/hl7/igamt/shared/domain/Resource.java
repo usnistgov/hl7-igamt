@@ -1,6 +1,6 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
-public class Resource extends AbstractDomain {
+public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;

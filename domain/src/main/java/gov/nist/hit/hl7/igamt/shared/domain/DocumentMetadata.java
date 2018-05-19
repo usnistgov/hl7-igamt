@@ -10,13 +10,14 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.domain;
+package gov.nist.hit.hl7.igamt.shared.domain;
 
 /**
  * @author ena3
  *
  */
-public class IgMetaData {
+public class DocumentMetadata {
+  
 	  private String title;
 
 	  private String topics;
@@ -27,7 +28,7 @@ public class IgMetaData {
 	  private String coverPicture;
 	  private String subTitle;
 	  
-	public IgMetaData() {
+	public DocumentMetadata() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

@@ -102,9 +102,12 @@ public class Constant {
   
   public enum SourceType {
     INTERNAL("Internally managed"), EXTERNAL("Externally managed");
-    public final String value;
+    private final String value;
     SourceType(String v){
 	  value = v;
+    }
+    public String getValue() {
+      return this.value;
     }
   }
 }

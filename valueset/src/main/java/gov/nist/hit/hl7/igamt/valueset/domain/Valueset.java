@@ -18,6 +18,7 @@ import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
@@ -39,6 +40,8 @@ public class Valueset extends Resource {
   private Extensibility extensibility = Extensibility.Undefined;
   private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 
+  private SourceType sourceType = SourceType.INTERNAL;
+  
   protected int numberOfCodes;
   private Set<String> codeSystemIds = new HashSet<String>();
   private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
@@ -193,5 +196,25 @@ public class Valueset extends Resource {
 
   public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
     this.internalCodeSystems = internalCodeSystems;
+  }
+  
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getBindingIdentifier()+" - "+this.getName();
+  }
+
+  public SourceType getSourceType() {
+    return sourceType;
+  }
+
+  public void setSourceType(SourceType sourceType) {
+    this.sourceType = sourceType;
+  }
+  
+  public void setSourceType(String sourceType) {
+    this.sourceType = SourceType.valueOf(sourceType);
   }
 }

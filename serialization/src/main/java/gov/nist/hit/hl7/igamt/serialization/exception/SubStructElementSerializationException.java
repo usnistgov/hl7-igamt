@@ -21,6 +21,11 @@ import gov.nist.hit.hl7.igamt.shared.domain.SubStructElement;
  */
 public class SubStructElementSerializationException extends SerializationException {
   
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1706078133141397824L;
+
   public SubStructElementSerializationException(Exception originException,
       SubStructElement subStructElement, String message) {
     super(originException, subStructElement.getType(), "id="+subStructElement.getId()+",position="+subStructElement.getPosition(), message);

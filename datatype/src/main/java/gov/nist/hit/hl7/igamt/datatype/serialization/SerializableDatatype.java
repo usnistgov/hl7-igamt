@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -36,15 +37,18 @@ public class SerializableDatatype extends SerializableResource{
 
   private Map<String,String> datatypeNamesMap = null;
   private Map<String, String> valuesetNamesMap = null;
-  
+  private int level;
+  private Map<String, String> componentValuesetMap = new HashMap<>();
+
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
+  public SerializableDatatype(Datatype datatype, String position, int level, Map<String,String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
     super(datatype, position);
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.level = level;
   }
   
   public SerializableDatatype(Datatype datatype, String position) {
@@ -54,7 +58,7 @@ public class SerializableDatatype extends SerializableResource{
   @Override
   public Element serialize() throws ResourceSerializationException {
     try {
-      Element datatypeElement = super.getElement("Datatype");
+      Element datatypeElement = super.getElement(Type.DATATYPE);
       Datatype datatype = (Datatype) this.getAbstractDomain();
       datatypeElement.addAttribute(new Attribute("ext",datatype.getExt() != null ? datatype.getExt() : ""));
       datatypeElement.addAttribute(new Attribute("purposeAndUse",datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
@@ -63,13 +67,27 @@ public class SerializableDatatype extends SerializableResource{
         if(bindingElement != null) {
           datatypeElement.appendChild(bindingElement);
         }
+        for(int i = 0 ; i < bindingElement.getChildElements().size() ; i++) {
+          Element structureElementBindings = bindingElement.getChildElements().get(i);
+          for(int j = 0 ; j < structureElementBindings.getChildElements().size() ; j++) {
+            Element structureElementBinding = structureElementBindings.getChildElements().get(j);
+            if(structureElementBinding.getLocalName().equals("StructureElementBinding")) {
+              for(int k = 0 ; k < structureElementBinding.getChildElements().size() ; k++) {
+                Element valuesetBinding = structureElementBinding.getChildElements().get(k);
+                if(valuesetBinding.getLocalName().equals("ValuesetBinding")) {
+                  this.componentValuesetMap.put(structureElementBinding.getAttributeValue("elementId"), valuesetBinding.getAttributeValue("name"));
+                }
+              }
+            }
+          }
+        }
       }
       if(datatype instanceof ComplexDatatype) {
         datatypeElement = serializeComplexDatatype(datatypeElement);
       } else if (datatype instanceof DateTimeDatatype) {
         datatypeElement = serializeDateTimeDatatype(datatypeElement);
       }
-      return datatypeElement;
+      return super.getSectionElement(datatypeElement, this.level);
     } catch (Exception exception) {
       throw new ResourceSerializationException(exception, Type.DATATYPE, (Datatype) this.getAbstractDomain());
     }
@@ -87,6 +105,9 @@ public class SerializableDatatype extends SerializableResource{
         componentElement.addAttribute(new Attribute("minLength",component.getMinLength() != null ? component.getMinLength() : ""));
         componentElement.addAttribute(new Attribute("text",component.getText() != null ? component.getText() : ""));
         componentElement.addAttribute(new Attribute("position",String.valueOf(component.getPosition())));
+        if(componentValuesetMap.containsKey(component.getId())){
+          componentElement.addAttribute(new Attribute("valueset",componentValuesetMap.get(component.getId())));
+        }
         if(component.getRef() != null){
           if(datatypeNamesMap != null && datatypeNamesMap.containsKey(component.getRef().getId())) {
             componentElement.addAttribute(new Attribute("datatype",datatypeNamesMap.get(component.getRef().getId())));

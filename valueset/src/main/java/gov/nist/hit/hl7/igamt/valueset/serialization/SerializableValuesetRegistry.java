@@ -15,12 +15,14 @@ package gov.nist.hit.hl7.igamt.valueset.serialization;
 
 import java.util.Map;
 
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
+import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
@@ -28,15 +30,16 @@ import nu.xom.Element;
  *
  * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SerializableValuesetRegistry extends SerializableSection {
+public class SerializableValuesetRegistry extends SerializableRegistry {
 
   private Map<String, Valueset> valuesetsMap;
 
   /**
    * @param section
    */
-  public SerializableValuesetRegistry(Registry valuesetRegistry, Map<String, Valueset> valuesetsMap) {
-    super(valuesetRegistry);
+  public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
+      Map<String, Valueset> valuesetsMap) {
+    super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
   }
 
@@ -47,7 +50,7 @@ public class SerializableValuesetRegistry extends SerializableSection {
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry valuesetRegistry = (Registry) super.getSection();
+    Registry valuesetRegistry = super.getRegistry();
     try {
       Element valuesetRegistryElement = super.getElement();
       if (valuesetRegistry != null) {
@@ -56,7 +59,7 @@ public class SerializableValuesetRegistry extends SerializableSection {
             if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
               Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
               SerializableValueSet serializableValueSet =
-                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()));
+                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
               Element valuesetElement = serializableValueSet.serialize();
               if (valuesetElement != null) {
                 valuesetRegistryElement.appendChild(valuesetElement);
@@ -69,7 +72,7 @@ public class SerializableValuesetRegistry extends SerializableSection {
       }
       return valuesetRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, valuesetRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), valuesetRegistry);
     }
   }
 

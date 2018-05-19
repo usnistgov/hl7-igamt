@@ -2,12 +2,12 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
 
 public class CreationWrapper {
 private List<Event> msgEvts;
-private IgMetaData metaData;
+private DocumentMetadata metadata;
 public CreationWrapper() {
 	super();
 	// TODO Auto-generated constructor stub
@@ -18,16 +18,16 @@ public List<Event> getMsgEvts() {
 public void setMsgEvts(List<Event> msgEvts) {
 	this.msgEvts = msgEvts;
 }
-public IgMetaData getMetaData() {
-	return metaData;
+public DocumentMetadata getMetadata() {
+	return metadata;
 }
-public void setMetaData(IgMetaData metaData) {
-	this.metaData = metaData;
+public void setMetaData(DocumentMetadata metadata) {
+	this.metadata = metadata;
 }
-public CreationWrapper(List<Event> msgEvts, IgMetaData metaData) {
+public CreationWrapper(List<Event> msgEvts, DocumentMetadata metadata) {
 	super();
 	this.msgEvts = msgEvts;
-	this.metaData = metaData;
+	this.metadata = metadata;
 } 
 
 

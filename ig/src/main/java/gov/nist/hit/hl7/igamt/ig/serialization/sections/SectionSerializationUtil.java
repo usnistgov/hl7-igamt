@@ -17,10 +17,17 @@ import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
+import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
@@ -30,23 +37,32 @@ import nu.xom.Element;
  */
 public class SectionSerializationUtil {
 
-  public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap, Map<String, String> valuesetNamesMap, 
-      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
-      throws SerializationException {
+  public static Element serializeSection(Section section, int level, Map<String, Datatype> datatypesMap,
+      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
+      Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
+      DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
+      ConformanceProfileRegistry conformanceProfileRegistry,
+      ProfileComponentRegistry profileComponentRegistry,
+      CompositeProfileRegistry compositeProfileRegistry) throws SerializationException {
     if (section != null) {
-      SerializableSection serializableSection =
-          SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
-              valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
-      if (serializableSection != null) {
-        return serializableSection.serialize();
+      try {
+        SerializableSection serializableSection = SerializableSectionFactory.getSerializableSection(
+            section, level, datatypesMap, datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
+            conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
+            conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
+        if (serializableSection != null) {
+          return serializableSection.serialize();
+        }
+      } catch (Exception exception) {
+        throw new SectionSerializationException(exception, section);
       }
     }
     return null;
   }
 
-  public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null, null, null, null, null, null);
+  public static Element serializeSection(Section section, int level) throws SerializationException {
+    return serializeSection(section, level, null, null, null, null, null, null, null, null,null, null, null, null);
   }
 
 }
