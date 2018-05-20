@@ -1,21 +1,19 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import java.util.TreeSet;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement;
 
-public class ConformanceProfileStructure {
+public class ConformanceProfileConformanceStatement {
   private CompositeKey id;
   private DomainInfo domainInfo;
   private String name;
   private String identifier;
   private String messageType;
   private String structId;
-  private ResourceBinding binding;
-
-  private TreeSet<MsgStructElementDisplay> structure;
+  private Set<ConformanceStatement> conformanceStatements;
 
   public CompositeKey getId() {
     return id;
@@ -23,20 +21,6 @@ public class ConformanceProfileStructure {
 
   public void setId(CompositeKey id) {
     this.id = id;
-  }
-  
-  public TreeSet<MsgStructElementDisplay> getStructure() {
-    return structure;
-  }
-
-  public void setStructure(TreeSet<MsgStructElementDisplay> structure) {
-    this.structure = structure;
-  }
-  
-  public void addStructure(MsgStructElementDisplay msgStructElementDisplay) {
-    if (this.structure == null)
-      this.structure = new TreeSet<MsgStructElementDisplay>(new PositionCompForMsgStructElementDisplay());
-    this.structure.add(msgStructElementDisplay);
   }
 
   public DomainInfo getDomainInfo() {
@@ -79,11 +63,12 @@ public class ConformanceProfileStructure {
     this.structId = structId;
   }
 
-  public ResourceBinding getBinding() {
-    return binding;
+  public Set<ConformanceStatement> getConformanceStatements() {
+    return conformanceStatements;
   }
 
-  public void setBinding(ResourceBinding binding) {
-    this.binding = binding;
+  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+    this.conformanceStatements = conformanceStatements;
   }
 }
+

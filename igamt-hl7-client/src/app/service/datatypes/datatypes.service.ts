@@ -37,7 +37,7 @@ export class DatatypesService {
         const http = this.http;
         this.datatypesIndexedDbService.getDatatypeConformanceStatements(id, function(clientDatatypeConformanceStatements){
             if (clientDatatypeConformanceStatements == null) {
-                http.get('api/datatypes/' + id + '/conformanceStatements').subscribe(serverDatatypeConformanceStatements => {
+                http.get('api/datatypes/' + id + '/conformancestatement').subscribe(serverDatatypeConformanceStatements => {
                     callback(serverDatatypeConformanceStatements);
                 });
             } else {

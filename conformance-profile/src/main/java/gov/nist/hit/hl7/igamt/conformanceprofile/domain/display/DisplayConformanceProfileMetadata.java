@@ -1,21 +1,22 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import java.util.TreeSet;
-
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
-public class ConformanceProfileStructure {
+public class DisplayConformanceProfileMetadata {
   private CompositeKey id;
   private DomainInfo domainInfo;
   private String name;
   private String identifier;
+  private String description;
   private String messageType;
   private String structId;
-  private ResourceBinding binding;
+  private String authorNotes;
+  private String usageNote;
 
-  private TreeSet<MsgStructElementDisplay> structure;
+  public DisplayConformanceProfileMetadata() {
+    super();
+  }
 
   public CompositeKey getId() {
     return id;
@@ -23,20 +24,6 @@ public class ConformanceProfileStructure {
 
   public void setId(CompositeKey id) {
     this.id = id;
-  }
-  
-  public TreeSet<MsgStructElementDisplay> getStructure() {
-    return structure;
-  }
-
-  public void setStructure(TreeSet<MsgStructElementDisplay> structure) {
-    this.structure = structure;
-  }
-  
-  public void addStructure(MsgStructElementDisplay msgStructElementDisplay) {
-    if (this.structure == null)
-      this.structure = new TreeSet<MsgStructElementDisplay>(new PositionCompForMsgStructElementDisplay());
-    this.structure.add(msgStructElementDisplay);
   }
 
   public DomainInfo getDomainInfo() {
@@ -63,6 +50,14 @@ public class ConformanceProfileStructure {
     this.identifier = identifier;
   }
 
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
   public String getMessageType() {
     return messageType;
   }
@@ -79,11 +74,21 @@ public class ConformanceProfileStructure {
     this.structId = structId;
   }
 
-  public ResourceBinding getBinding() {
-    return binding;
+  public String getAuthorNotes() {
+    return authorNotes;
   }
 
-  public void setBinding(ResourceBinding binding) {
-    this.binding = binding;
+  public void setAuthorNotes(String authorNotes) {
+    this.authorNotes = authorNotes;
   }
+
+  public String getUsageNote() {
+    return usageNote;
+  }
+
+  public void setUsageNote(String usageNote) {
+    this.usageNote = usageNote;
+  }
+
+
 }

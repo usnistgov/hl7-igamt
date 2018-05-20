@@ -38,7 +38,7 @@ export class SegmentsService {
         const segmentsIndexedDbService = this.segmentsIndexedDbService;
         this.segmentsIndexedDbService.getSegmentConformanceStatements(id, function(clientSegmentConformanceStatements){
             if (clientSegmentConformanceStatements == null) {
-                http.get('api/segments/' + id + '/conformanceStatements').subscribe(serverSegmentConformanceStatements => {
+                http.get('api/segments/' + id + '/conformancestatement').subscribe(serverSegmentConformanceStatements => {
                     callback(serverSegmentConformanceStatements);
                 });
             } else {
