@@ -27,10 +27,14 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TextSectionData;
@@ -589,6 +593,57 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
     addedNodes.setDatatypes(datatypes);
     addedNodes.setSegments(segments);
+    addedNodes.setValueSets(valueSets);
+
+    return addedNodes;
+  }
+
+
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDatatypeResponseToDisplay(gov.
+   * nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject)
+   */
+  @Override
+  public AddDatatypeResponseDisplay convertDatatypeResponseToDisplay(
+      AddDatatypeResponseObject objects) {
+    // TODO Auto-generated method stub
+    AddDatatypeResponseDisplay addedNodes = new AddDatatypeResponseDisplay();
+    // TODO Auto-generated method stub
+
+    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypes());
+
+    List<TreeNode> valueSets = this.getValueSetNodes(objects.getValueSets());
+
+    addedNodes.setDatatypes(datatypes);
+    addedNodes.setValueSets(valueSets);
+
+    return addedNodes;
+  }
+
+
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDatatypeResponseToDisplay(gov.
+   * nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject)
+   */
+  @Override
+  public AddValueSetsResponseDisplay convertDatatypeResponseToDisplay(
+      AddValueSetResponseObject objects) {
+    // TODO Auto-generated method stub
+    // TODO Auto-generated method stub
+    AddValueSetsResponseDisplay addedNodes = new AddValueSetsResponseDisplay();
+    // TODO Auto-generated method stub
+
+
+    List<TreeNode> valueSets = this.getValueSetNodes(objects.getValueSets());
+
     addedNodes.setValueSets(valueSets);
 
     return addedNodes;

@@ -1,7 +1,8 @@
 <div>
   <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
-    <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
+  <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
   <app-add-segment [id]="igId" ></app-add-segment>
+  <app-add-datatype></app-add-datatype>
   <div>
 
       <span class="ig-title">{{ig.metadata.title}}</span>
@@ -75,21 +76,9 @@
 
       <ng-template #treeNodeTemplate let-node let-index="index">
         <ng-container [ngSwitch]="node.data.data.type">
-          <!--<ng-container *ngSwitchCase="'IGDOCUMENT'">-->
-            <!--<span [contextMenu]="igcontextmenu">{{node.data.data.label}}</span>-->
 
-            <!--<context-menu #igcontextmenu>-->
-              <!--<ng-template contextMenuItem (execute)="addSection(node)">-->
-                <!--<i class="fa fa-plus"></i> Add Section-->
-              <!--</ng-template>-->
-            <!--</context-menu>-->
-          <!--</ng-container>-->
 
           <ng-container *ngSwitchCase="'TEXT'">
-
-            <!--<display-label [elm]="node.data" [igId]="igId" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>-->
-
-
             <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
             <context-menu #textcontextmenu>
               <ng-template contextMenuItem (execute)="addSection(node)">
@@ -134,7 +123,13 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+
+            <context-menu  #addDatatypeContextMenu>
+              <ng-template contextMenuItem (execute)="addDatatypes()">
+                <i class="fa fa-plus"></i> Add HL7 Data Types
+              </ng-template>
+            </context-menu>
           </ng-container>
 
 

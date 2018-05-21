@@ -14,6 +14,8 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap';
 import {AddConformanceProfileComponent} from "../add-conformance-profile/add-conformance-profile.component";
 import {AddSegmentComponent} from "./add-segment/add-segment.component";
+import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
+import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 
 
 @Component({
@@ -25,6 +27,11 @@ export class IgDocumentEditComponent {
 
   @ViewChild(AddConformanceProfileComponent) addCps: AddConformanceProfileComponent;
   @ViewChild(AddSegmentComponent) addSegs: AddSegmentComponent;
+  @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;
+  @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
+
+
+
 
 
 
@@ -202,7 +209,19 @@ export class IgDocumentEditComponent {
 
       if (slashIndex > 0) {
         var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
-        var childId = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
+        var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
+        let childId="";
+        console.log(child);
+        if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
+          console.log(childId);
+          childId=child.substring( 0,child.indexOf("/"));
+
+        }else{
+          console.log("wdwd");
+
+          childId=child;
+
+        }
         let node = this.tree.treeModel.getNodeById(childId);
         if (node) {
           this.tocService.setActiveNode(node);
@@ -395,6 +414,40 @@ export class IgDocumentEditComponent {
           console.log(result);
         }
       )
+  }
+
+
+  addDatatypes(){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"DATATYPEREGISTRY");
+
+    console.log(existing);
+    this.addDts.open({
+      id : this.igId,
+      namingIndicators:existing
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
+
+  }
+
+  addValueSets(){
+    // let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"VALUESETREGISTRY");
+    //
+    // console.log(existing);
+    // this.addVs.open({
+    //   id : this.igId,
+    //   namingIndicators:existing
+    // })
+    //   .subscribe(
+    //     result => {
+    //
+    //       this.distributeResult(result);
+    //     }
+    //   )
 
   }
 

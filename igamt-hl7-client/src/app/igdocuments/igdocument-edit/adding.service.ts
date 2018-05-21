@@ -21,6 +21,10 @@ export  class IgDocumentAddingService {
     return this.http.post('/api/ig/addSegments', wrapper);
 
   }
+  addDatatypes(wrapper){
+    return this.http.post('/api/ig/addDatatypes', wrapper);
+
+  }
   getMessagesByVersion(hl7Version :string){
     return  this.http.get('api/igdocuments/findMessageEvents/'+hl7Version);
 
@@ -29,6 +33,16 @@ export  class IgDocumentAddingService {
   getHl7SegmentByVersion(hl7Version){
     return  this.http.get('api/ig/findHl7Segments/'+hl7Version);
 
+
+  }
+
+  getHl7DatatypesByVersion(hl7Version){
+    return  this.http.get('api/ig/findHl7Datatypes/'+hl7Version);
+
+
+  }
+  getHl7ValueSetsByVersion(hl7Version){
+    return  this.http.get('api/ig/findHl7ValueSets/'+hl7Version);
 
   }
 

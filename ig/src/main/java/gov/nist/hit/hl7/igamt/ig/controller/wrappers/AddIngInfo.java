@@ -18,13 +18,13 @@ import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
  * @author ena3
  *
  */
-public class AddSegmentInfo {
-  public AddSegmentInfo() {
+public class AddIngInfo {
+  public AddIngInfo() {
     super();
     // TODO Auto-generated constructor stub
   }
 
-  public AddSegmentInfo(DomainInfo domainInfo, String name, String ext, String description,
+  public AddIngInfo(DomainInfo domainInfo, String name, String ext, String description,
       boolean flavor, CompositeKey id) {
     super();
     this.domainInfo = domainInfo;

@@ -3,6 +3,7 @@ import {ScrollPanel} from 'primeng/primeng';
 import { TreeModule } from 'angular-tree-component';
 import {HttpClient} from "@angular/common/http";
 import {WorkspaceService} from "./service/workspace/workspace.service";
+import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router} from "@angular/router";
 
 @Component({
     selector: 'app-root',
@@ -11,6 +12,8 @@ import {WorkspaceService} from "./service/workspace/workspace.service";
 })
 export class AppComponent implements AfterViewInit {
   options = {};
+  loading: boolean = true;
+
 
   nodes = [
     {
@@ -185,7 +188,7 @@ export class AppComponent implements AfterViewInit {
     }
 
 
-    constructor(private http : HttpClient, private ws :  WorkspaceService ){
+    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router ){
 
       http.get("api/sharedConstant").subscribe(data=>{
 
@@ -193,9 +196,24 @@ export class AppComponent implements AfterViewInit {
         this.ws.setAppConstant(data);
       })
 
+      router.events.subscribe(event => {
+        this.checkRouterEvent(event);
+      });
+
 
     }
 
+  checkRouterEvent(event): void {
+    if (event instanceof NavigationStart) {
+      this.loading = true;
+    }
+
+    if (event instanceof NavigationEnd ||
+      event instanceof NavigationCancel ||
+      event instanceof NavigationError) {
+      this.loading = false;
+    }
+  }
 
 
 

@@ -12,12 +12,15 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.net.URL;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
@@ -42,7 +45,7 @@ public class Valueset extends Resource {
   protected int numberOfCodes;
   private Set<String> codeSystemIds = new HashSet<String>();
   private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
-  
+
   private Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
   private Set<InternalCode> codes = new HashSet<InternalCode>();
 
@@ -151,30 +154,31 @@ public class Valueset extends Resource {
     this.codes = codes;
     this.updateNumberOfCodes();
   }
-  
+
   public void addCode(InternalCode code) {
-    if(code.getCodeSystemId() != null) {
+    if (code.getCodeSystemId() != null) {
       InternalCodeSystem found = findInternalCodeSystem(code.getCodeSystemId());
-      if(found == null) {
+      if (found == null) {
         InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
         internalCodeSystem.setIdentifier(code.getCodeSystemId());
         this.internalCodeSystems.add(internalCodeSystem);
-      }      
-    }else {
+      }
+    } else {
       InternalCodeSystem found = findInternalCodeSystem("NULL");
-      if(found == null) {
+      if (found == null) {
         InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
         internalCodeSystem.setIdentifier("NULL");
-        this.internalCodeSystems.add(internalCodeSystem);        
+        this.internalCodeSystems.add(internalCodeSystem);
       }
       code.setCodeSystemId("NULL");
     }
     this.codes.add(code);
   }
-  
+
   private InternalCodeSystem findInternalCodeSystem(String codeSystemId) {
-    for(InternalCodeSystem cs: this.internalCodeSystems) {
-      if(cs.getIdentifier().equals(codeSystemId)) return cs;
+    for (InternalCodeSystem cs : this.internalCodeSystems) {
+      if (cs.getIdentifier().equals(codeSystemId))
+        return cs;
     }
     return null;
   }
@@ -182,7 +186,7 @@ public class Valueset extends Resource {
   public void addCodeRef(CodeRef codeRef) {
     this.codeRefs.add(codeRef);
   }
-  
+
   public void addCodeSystemId(String codeSystemId) {
     this.codeSystemIds.add(codeSystemId);
   }
@@ -194,4 +198,40 @@ public class Valueset extends Resource {
   public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
     this.internalCodeSystems = internalCodeSystems;
   }
+
+  @Override
+  public Valueset clone() {
+
+
+    Valueset clone = new Valueset();
+
+    clone.setOid(oid);
+    clone.setManagedBy(managedBy);
+    clone.setStability(stability);
+    clone.setIntensionalComment(intensionalComment);
+    clone.setExtensibility(extensibility);
+    clone.setContentDefinition(contentDefinition);
+    clone.setNumberOfCodes(numberOfCodes);
+    clone.setInternalCodeSystems(internalCodeSystems);
+    clone.setCodeRefs(codeRefs);
+    clone.setCodeSystemIds(codeSystemIds);
+    clone.setCodes(codes);
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setId(null);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    clone.setName(this.getName());
+
+    return clone;
+
+  };
+
 }
