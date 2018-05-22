@@ -17,6 +17,7 @@ import {AddSegmentComponent} from "./add-segment/add-segment.component";
 import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
 import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 import {CopyElementComponent} from "./copy-element/copy-element.component";
+import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 
 
 @Component({
@@ -125,7 +126,7 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,private modalService: BsModalService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public indexedDbService: IndexedDbService){
 
     router.events.subscribe(event => {
       console.log(event);
@@ -385,7 +386,18 @@ export class IgDocumentEditComponent {
     }
 
     if(object.datatypes){
-      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+
+
+      let toPush =this.convertList(object.datatypes);
+      this.indexedDbService.bulkAddNewDatatypes(toPush).then( res=>{
+
+        this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+
+      }, error=>{
+
+        }
+      );
+
     }
     if(object.valueSets){
       this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
@@ -463,6 +475,16 @@ export class IgDocumentEditComponent {
           this.distributeResult(result);
         }
       )
+  }
+
+
+
+  convertList(list : any[]){
+    let ret : any[]=[];
+    for (let i=0; i<list.length;i++ ){
+      ret.push({id:list[i].id,treeNode:list[i].data});
+    }
+    return ret;
   }
 
 
