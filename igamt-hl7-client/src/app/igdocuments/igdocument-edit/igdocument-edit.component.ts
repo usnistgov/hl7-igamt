@@ -31,10 +31,6 @@ export class IgDocumentEditComponent {
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
 
 
-
-
-
-
   igId:any;
   bsModalRef: BsModalRef;
 
@@ -435,19 +431,19 @@ export class IgDocumentEditComponent {
   }
 
   addValueSets(){
-    // let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"VALUESETREGISTRY");
-    //
-    // console.log(existing);
-    // this.addVs.open({
-    //   id : this.igId,
-    //   namingIndicators:existing
-    // })
-    //   .subscribe(
-    //     result => {
-    //
-    //       this.distributeResult(result);
-    //     }
-    //   )
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"VALUESETREGISTRY");
+
+    console.log(existing);
+    this.addVs.open({
+      id : this.igId,
+      namingIndicators:existing
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
 
   }
 

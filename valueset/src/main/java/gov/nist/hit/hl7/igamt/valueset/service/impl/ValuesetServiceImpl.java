@@ -13,15 +13,19 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+
 import java.util.List;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -40,10 +44,10 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Autowired
   private ValuesetRepository valuesetRepository;
-  
+
   @Autowired
   private MongoTemplate mongoTemplate;
-  
+
 
   @Override
   public Valueset findById(CompositeKey id) {
@@ -146,15 +150,50 @@ public class ValuesetServiceImpl implements ValuesetService {
   }
 
 
-@Override
-public Valueset getLatestById(String id) {
-	// TODO Auto-generated method stub  Query query = new Query();
-	  Query query = new Query();
+  @Override
+  public Valueset getLatestById(String id) {
+    // TODO Auto-generated method stub Query query = new Query();
+    Query query = new Query();
 
-	  query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-	  query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-	  query.limit(1);
-	  Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
-	  return valueset;
-}
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
+    return valueset;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#findDisplayFormatByScopeAndVersion(java
+   * .lang.String, java.lang.String)
+   */
+  @Override
+  public List<Valueset> findDisplayFormatByScopeAndVersion(String scope, String version) {
+    // TODO Auto-generated method stub
+
+
+
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    where.andOperator(Criteria.where("domainInfo.version").is(version));
+
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Valueset.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("name");
+    qry.fields().include("bindingIdentifier");
+    List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
+
+
+
+    return valueSets;
+  }
 }

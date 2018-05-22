@@ -16,6 +16,7 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -55,6 +56,19 @@ public interface DisplayConverterService {
 
   public List<TreeNode> getProfileCompoenents(Set<ProfileComponent> profileComponents);
 
+  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile);
+
+  public TreeNode createConformanceProfileNode(ConformanceProfile elm);
+
+  public TreeNode createPcNode(ProfileComponent profileComponent);
+
+  public TreeNode createSegmentNode(Segment elm);
+
+  public TreeNode createDatatypeNode(Datatype elm);
+
+  public TreeNode createValueSetsNode(Valueset vs);
+
+  public TreeNode createCpNode(ConformanceProfile confromanceProfile);
 
   public List<TreeNode> getConformaneProfile(Set<ConformanceProfile> conformanceProfiles);
 

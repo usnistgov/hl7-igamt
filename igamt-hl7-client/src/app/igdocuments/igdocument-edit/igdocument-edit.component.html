@@ -3,6 +3,7 @@
   <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
   <app-add-segment [id]="igId" ></app-add-segment>
   <app-add-datatype></app-add-datatype>
+  <app-add-value-set></app-add-value-set>
   <div>
 
       <span class="ig-title">{{ig.metadata.title}}</span>
@@ -135,7 +136,12 @@
 
 
           <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <span [contextMenu]="valueSetContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+            <context-menu  #valueSetContextMenu>
+              <ng-template contextMenuItem (execute)="addValueSets()">
+                <i class="fa fa-plus"></i> Add Hl7 Value Sets
+              </ng-template>
+            </context-menu>
           </ng-container>
 
 

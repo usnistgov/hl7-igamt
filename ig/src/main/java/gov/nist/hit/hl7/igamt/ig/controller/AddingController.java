@@ -11,8 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,9 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -54,6 +49,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
  * @author ena3
@@ -84,12 +81,14 @@ public class AddingController {
   @Autowired
   CrudService crudService;
 
+  @Autowired
+  ValuesetService valuesetService;
+
   @RequestMapping(value = "/api/ig/addConforanceProfile", method = RequestMethod.POST,
       produces = {"application/json"})
 
   public @ResponseBody AddMessageResponseDisplay addConforanceProfile(
-      @RequestBody AddingMessagesWrapper wrapper, Authentication authentication)
-      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+      @RequestBody AddingMessagesWrapper wrapper, Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
@@ -135,13 +134,22 @@ public class AddingController {
 
   }
 
+  @RequestMapping(value = "/api/ig/findHl7ValueSets/{version:.+}", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody List<Valueset> findHl7ValueSets(@PathVariable String version,
+      Authentication authentication) {
+
+    return valuesetService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(),
+        version);
+
+  }
 
   @RequestMapping(value = "/api/ig/addSegments", method = RequestMethod.POST,
       produces = {"application/json"})
 
   public @ResponseBody AddSegmentResponseDisplay addSegments(@RequestBody AddingWrapper wrapper,
-      Authentication authentication)
-      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+      Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
@@ -173,7 +181,7 @@ public class AddingController {
       produces = {"application/json"})
 
   public @ResponseBody AddDatatypeResponseDisplay addDatatypes(@RequestBody AddingWrapper wrapper,
-      Authentication authentication) throws IOException {
+      Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
@@ -204,21 +212,20 @@ public class AddingController {
       produces = {"application/json"})
 
   public @ResponseBody AddValueSetsResponseDisplay addValueSets(@RequestBody AddingWrapper wrapper,
-      Authentication authentication) throws IOException {
+      Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
     Set<String> savedIds = new HashSet<String>();
     for (AddIngInfo elm : wrapper.getToAdd()) {
       if (elm.isFlavor()) {
-        Datatype datatype = datatypeService.findByKey(elm.getId());
-        if (datatype != null) {
-          Datatype clone = datatype.clone();
+        Valueset valueset = valuesetService.findById(elm.getId());
+        if (valueset != null) {
+          Valueset clone = valueset.clone();
           clone.setUsername(username);
           clone.setId(new CompositeKey());
-          clone.setName(datatype.getName());
-          clone.setExt(elm.getExt());
-          clone = datatypeService.save(clone);
+          clone.setBindingIdentifier(elm.getName());
+          clone = valuesetService.save(clone);
           savedIds.add(clone.getId().getId());
         }
       } else {

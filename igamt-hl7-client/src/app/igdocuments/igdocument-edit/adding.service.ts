@@ -25,6 +25,10 @@ export  class IgDocumentAddingService {
     return this.http.post('/api/ig/addDatatypes', wrapper);
 
   }
+  addValueSets(wrapper){
+    return this.http.post('/api/ig/addValueSets', wrapper);
+
+  }
   getMessagesByVersion(hl7Version :string){
     return  this.http.get('api/igdocuments/findMessageEvents/'+hl7Version);
 
