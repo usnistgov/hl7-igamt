@@ -16,6 +16,7 @@ import {AddConformanceProfileComponent} from "../add-conformance-profile/add-con
 import {AddSegmentComponent} from "./add-segment/add-segment.component";
 import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
 import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
+import {CopyElementComponent} from "./copy-element/copy-element.component";
 
 
 @Component({
@@ -29,7 +30,7 @@ export class IgDocumentEditComponent {
   @ViewChild(AddSegmentComponent) addSegs: AddSegmentComponent;
   @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
-
+  @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
 
   igId:any;
   bsModalRef: BsModalRef;
@@ -416,7 +417,6 @@ export class IgDocumentEditComponent {
   addDatatypes(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"DATATYPEREGISTRY");
 
-    console.log(existing);
     this.addDts.open({
       id : this.igId,
       namingIndicators:existing
@@ -433,7 +433,6 @@ export class IgDocumentEditComponent {
   addValueSets(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"VALUESETREGISTRY");
 
-    console.log(existing);
     this.addVs.open({
       id : this.igId,
       namingIndicators:existing
@@ -445,6 +444,25 @@ export class IgDocumentEditComponent {
         }
       )
 
+  }
+
+  copyDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"DATATYPEREGISTRY");
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
   }
 
 

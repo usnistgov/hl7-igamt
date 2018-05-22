@@ -51,6 +51,7 @@ import { AddSegmentComponent } from './add-segment/add-segment.component';
 import {TableModule} from "primeng/components/table/table";
 import { AddDatatypeComponent } from './add-datatype/add-datatype.component';
 import { AddValueSetComponent } from './add-value-set/add-value-set.component';
+import { CopyElementComponent } from './copy-element/copy-element.component';
 
 
 @NgModule({
@@ -94,7 +95,7 @@ import { AddValueSetComponent } from './add-value-set/add-value-set.component';
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent
   ],
   entryComponents: [
 

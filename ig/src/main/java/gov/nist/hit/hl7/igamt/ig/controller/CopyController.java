@@ -21,14 +21,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -69,10 +73,84 @@ public class CopyController {
   public @ResponseBody TreeNode copyConformanceProfile(@RequestBody CopyWrapper wrapper,
       Authentication authentication) {
     String username = authentication.getPrincipal().toString();
-    ConformanceProfile cp = conformanceProfileService.findDisplayFormat(wrapper.getId());
-    return displayConverter.createConformanceProfileNode(cp);
+    ConformanceProfile profile = conformanceProfileService.findDisplayFormat(wrapper.getId());
+
+    if (profile != null) {
+      ConformanceProfile clone = profile.clone();
+      clone.setUsername(username);
+      clone.setId(new CompositeKey());
+      clone.setName(wrapper.getName());
+      clone = conformanceProfileService.save(clone);
+      return displayConverter.createConformanceProfileNode(clone);
+    } else {
+      return null;
+
+    }
 
   }
 
+  @RequestMapping(value = "/api/ig/copySegment", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody TreeNode copySegment(@RequestBody CopyWrapper wrapper,
+      Authentication authentication) {
+    String username = authentication.getPrincipal().toString();
+
+    Segment segment = segmentService.findByKey(wrapper.getId());
+    if (segment != null) {
+      Segment clone = segment.clone();
+      clone.setUsername(username);
+      clone.setId(new CompositeKey());
+      clone.setName(segment.getName());
+      clone.setExt(wrapper.getExt());
+      clone = segmentService.save(clone);
+      return displayConverter.createSegmentNode(clone);
+    } else {
+      return null;
+
+    }
+
+
+  }
+
+
+  @RequestMapping(value = "/api/ig/copyDatatype", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody TreeNode copyDatatype(@RequestBody CopyWrapper wrapper,
+      Authentication authentication) {
+    String username = authentication.getPrincipal().toString();
+
+    Datatype datatype = datatypeService.findByKey(wrapper.getId());
+    if (datatype != null) {
+      Datatype clone = datatype.clone();
+      clone.setUsername(username);
+      clone.setId(new CompositeKey());
+      clone.setName(datatype.getName());
+      clone.setExt(wrapper.getExt());
+      clone = datatypeService.save(clone);
+      return displayConverter.createDatatypeNode(clone);
+    } else {
+      return null;
+    }
+  }
+
+  @RequestMapping(value = "/api/ig/copyValueSet", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody TreeNode copyValueSet(@RequestBody CopyWrapper wrapper,
+      Authentication authentication) {
+    String username = authentication.getPrincipal().toString();
+    Valueset valueset = valuesetService.findById(wrapper.getId());
+    if (valueset != null) {
+      Valueset clone = valueset.clone();
+      clone.setUsername(username);
+      clone.setId(new CompositeKey());
+      clone.setBindingIdentifier(wrapper.getName());
+      return displayConverter.createValueSetsNode(clone);
+    } else {
+      return null;
+    }
+  }
 
 }

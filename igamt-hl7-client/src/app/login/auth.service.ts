@@ -54,7 +54,11 @@ export class AuthService {
   getcurrentUser() {
     var token = localStorage.getItem('currentUser');
     var tokenInfo=  this.getDecodedAccessToken(token);
-    return tokenInfo.sub;
+    if(tokenInfo){
+      return tokenInfo.sub;
+    }else{
+      return "Guest";
+    }
 
   }
 

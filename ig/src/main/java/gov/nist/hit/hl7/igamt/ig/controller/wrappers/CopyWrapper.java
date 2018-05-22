@@ -21,6 +21,8 @@ public class CopyWrapper {
 
   private String igDocumentId;
   private CompositeKey id;
+  private String ext;
+  private String name;
 
   public String getIgDocumentId() {
     return igDocumentId;
@@ -36,6 +38,22 @@ public class CopyWrapper {
 
   public void setId(CompositeKey id) {
     this.id = id;
+  }
+
+  public String getExt() {
+    return ext;
+  }
+
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 
