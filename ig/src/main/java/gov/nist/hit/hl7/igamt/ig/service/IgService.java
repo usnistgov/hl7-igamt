@@ -10,28 +10,36 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
-import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 @Service("igService")
 public interface IgService {
-	
-	
-	
-	  public Ig findById(CompositeKey id);
-	  public List<Ig> findAll();
-	  public void delete(CompositeKey id);
-	  public Ig save(Ig ig);
-	  public List<Ig> findByUsername(String username);
 
-	  public List<Ig> findLatestByUsername(String username);
-	  public Ig findLatestById(String id);
-	  public List<ListElement> convertListToDisplayList(List<Ig> igdouments);
-	  public List<Ig> finByScope(String string);
-	  public Ig CreateEmptyIg() throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
-      List<Ig> findIgIdsForUser(String username);
 
-		
+
+  public Ig findById(CompositeKey id);
+
+  public List<Ig> findAll();
+
+  public void delete(CompositeKey id);
+
+  public Ig save(Ig ig);
+
+  public List<Ig> findByUsername(String username);
+
+  public List<Ig> findLatestByUsername(String username);
+
+  public Ig findLatestById(String id);
+
+  public List<Ig> finByScope(String string);
+
+  public Ig CreateEmptyIg()
+      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
+
+  List<Ig> findIgIdsForUser(String username);
+
+  public List<IgSummary> convertListToDisplayList(List<Ig> igdouments);
+
 }
 

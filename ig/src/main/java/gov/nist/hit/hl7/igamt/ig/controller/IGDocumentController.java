@@ -27,19 +27,18 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
-import gov.nist.hit.hl7.igamt.ig.model.ListElement;
+import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
 
-
 @RestController
 public class IGDocumentController {
-
   @Autowired
   IgService igService;
 
@@ -57,6 +56,9 @@ public class IGDocumentController {
   CrudService crudService;
 
 
+  @Autowired
+  SaveService saveService;
+
   public IGDocumentController() {
     // TODO Auto-generated constructor stub
   }
@@ -65,7 +67,8 @@ public class IGDocumentController {
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody List<ListElement> getUserIG() {
+
+  public @ResponseBody List<IgSummary> getUserIG() {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
@@ -75,9 +78,15 @@ public class IGDocumentController {
 
       return igService.convertListToDisplayList(igdouments);
     } else {
+
+
+
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 
     }
+
+
+
   }
 
 
@@ -86,7 +95,6 @@ public class IGDocumentController {
 
   public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id,
       Authentication authentication) {
-
     if (authentication != null) {
 
 
@@ -97,6 +105,7 @@ public class IGDocumentController {
     } else {
       // redirect
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+
     }
 
   }
@@ -155,7 +164,26 @@ public class IGDocumentController {
     crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
     igService.save(empty);
     return empty.getId();
+  }
 
+
+  public IgService getIgService() {
+    return igService;
+  }
+
+
+  public void setIgService(IgService igService) {
+    this.igService = igService;
+  }
+
+
+  public SaveService getSaveService() {
+    return saveService;
+  }
+
+
+  public void setSaveService(SaveService saveService) {
+    this.saveService = saveService;
   }
 
 
