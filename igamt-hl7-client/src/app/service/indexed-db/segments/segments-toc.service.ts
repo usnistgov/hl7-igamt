@@ -45,4 +45,10 @@ export class SegmentsTocService {
       return this.indexeddbService.tocDataBase.segments.bulkPut(segments);
     }
   }
+
+  public bulkAddNewSegments(segments: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.segments.bulkPut(segments);
+    }
+  }
 }
