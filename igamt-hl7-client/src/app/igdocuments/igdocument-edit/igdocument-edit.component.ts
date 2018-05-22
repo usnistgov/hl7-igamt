@@ -19,6 +19,7 @@ import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 import {CopyElementComponent} from "./copy-element/copy-element.component";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
+import {TocDbService} from "../../service/indexed-db/toc-db.service";
 
 
 @Component({
@@ -127,7 +128,7 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService){
 
     router.events.subscribe(event => {
       console.log(event);
@@ -378,43 +379,56 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
+    var conformanceProfiles=[];
+    var segments=[];
+    var datatypes=[];
+    var valueSets=[];
+    var compositeProfiles=[];
+    var profileComponents=[];
+
     if(object.conformanceProfiles){
-      this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+      conformanceProfiles= this.convertList(object.conformanceProfiles);
+    }if(object.segments){
+
+      segments=this.convertList(object.segments);
 
     }
-    if(object.segments){
-      this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
-    }
-
     if(object.datatypes){
+      datatypes=this.convertList(object.datatypes);
+    }
+    if(object.valueSets){
+      valueSets=this.convertList(object.valueSets);
+    }
 
-      console.log(object.datatypes);
+    this.tocDbService.bulkAddTocNewElements(valueSets,datatypes,segments,conformanceProfiles,profileComponents,compositeProfiles).then(()=>{
 
-      let toPush =this.convertList(object.datatypes);
-      console.log(toPush);
-
-
-      this.dtsToCService.bulkAddNewDatatypes(toPush).then(()=>{
+      if(object.conformanceProfiles){
+        this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+      }
+      if(object.segments){
+        this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
+      }
+      if(object.datatypes){
 
         this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
-        this.tree.treeModel.update();
+      }
+      if(object.valueSets){
+        this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
+      }
+      this.tree.treeModel.update();
 
-      }).catch((error)=>{
+    }).catch((error)=>{
 
         }
       );
 
-    }
-    if(object.valueSets){
-      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
-    }
 
 
-
-    this.tree.treeModel.update();
 
 
   }
+
+
 
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"SEGMENTREGISTRY");
@@ -456,8 +470,7 @@ export class IgDocumentEditComponent {
     this.addVs.open({
       id : this.igId,
       namingIndicators:existing
-    })
-      .subscribe(
+    }).subscribe(
         result => {
 
           this.distributeResult(result);
