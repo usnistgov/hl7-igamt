@@ -18,6 +18,7 @@ import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
 import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 import {CopyElementComponent} from "./copy-element/copy-element.component";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
 
 
 @Component({
@@ -126,7 +127,7 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public indexedDbService: IndexedDbService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService){
 
     router.events.subscribe(event => {
       console.log(event);
@@ -389,7 +390,7 @@ export class IgDocumentEditComponent {
 
 
       let toPush =this.convertList(object.datatypes);
-      this.indexedDbService.bulkAddNewDatatypes(toPush).then( res=>{
+      this.dtsToCService.bulkAddNewDatatypes(toPush).then( ()=>{
 
         this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
 
