@@ -6,6 +6,7 @@ import Dexie from 'dexie';
 import {IgDocumentService} from '../ig-document/ig-document.service';
 import {NodeDatabase} from './node-database';
 import {TocDatabase} from './toc-database';
+import {IgDocumentInfo, IgDocumentInfoDatabase} from "./ig-document-info-database";
 
 @Injectable()
 export class IndexedDbService {
@@ -15,14 +16,30 @@ export class IndexedDbService {
   addedObjectsDatabase;
   nodeDatabase;
   tocDataBase;
+  igDocumentInfoDataBase;
 
   igDocumentId?: string;
   constructor(public igDocumentService: IgDocumentService) {
   }
 
   public initializeDatabase(igDocumentId): Promise<{}> {
-    this.igDocumentId = igDocumentId;
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
     const promises = [];
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('IgDocumentInfoDatabase').then(() => {
+        console.log('IgDocumentInfoDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete IgDocumentInfoDatabase');
+        reject();
+      }).finally(() => {
+        this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+        this.igDocumentInfoDataBase.transaction('w', this.igDocumentInfoDataBase.igDocument, async () => {
+          this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
+            resolve();
+          });
+        });
+      });
+    }));
     promises.push(new Promise((resolve, reject) => {
       Dexie.delete('ChangedObjectsDatabase').then(() => {
         console.log('ChangedObjectsDatabase successfully deleted');
@@ -39,7 +56,7 @@ export class IndexedDbService {
       }).catch((err) => {
         console.error('Could not delete RemovedObjectsDatabase');
       }).finally(() => {
-        this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
+        this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
         resolve();
       });
     }));
@@ -49,7 +66,7 @@ export class IndexedDbService {
       }).catch((err) => {
         console.error('Could not delete CreatedObjectsDatabase');
       }).finally(() => {
-        this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
+        this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
         resolve();
       });
     }));
@@ -59,7 +76,7 @@ export class IndexedDbService {
       }).catch((err) => {
         console.error('Could not delete AddedObjectsDatabase');
       }).finally(() => {
-        this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
+        this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
         resolve();
       });
     }));
@@ -79,11 +96,30 @@ export class IndexedDbService {
       }).catch((err) => {
         console.error('Could not delete NodeDatabase');
       }).finally(() => {
-        this.tocDataBase = new TocDatabase();
+        this.tocDataBase = new TocDatabase('TocDataBase');
         resolve();
       });
     }));
     return Promise.all(promises);
+  }
+
+  // this is to be used when reloading the page, it does not erase the content of the dbs, just initialize the objects
+  public reInitializeDatabase() {
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+    this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+    this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
+    this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
+    this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
+    this.nodeDatabase = new NodeDatabase('NodeDatabase');
+    this.tocDataBase = new TocDatabase('TocDataBase');
+  }
+
+  public getIgDocumentInfo() {
+    this.igDocumentInfoDataBase.transaction('r', this.igDocumentInfoDataBase.igDocument, async () => {
+      const collection = this.igDocumentInfoDataBase.igDocument.toArray();
+      console.log(JSON.stringify(collection));
+      return collection[0];
+    });
   }
 
   public persistChanges() {
