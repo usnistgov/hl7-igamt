@@ -37,13 +37,10 @@ export class IndexedDbService {
         console.log('IgDocumentInfoDatabase successfully deleted');
       }).catch((err) => {
         console.error('Could not delete IgDocumentInfoDatabase');
-        reject();
       }).finally(() => {
         this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
-        this.igDocumentInfoDataBase.transaction('w', this.igDocumentInfoDataBase.igDocument, async () => {
-          this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
-            resolve();
-          });
+        this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
+          resolve();
         });
       });
     }));
