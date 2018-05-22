@@ -20,6 +20,13 @@ export class IndexedDbService {
 
   igDocumentId?: string;
   constructor(public igDocumentService: IgDocumentService) {
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+    this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+    this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
+    this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
+    this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
+    this.nodeDatabase = new NodeDatabase('NodeDatabase');
+    this.tocDataBase = new TocDatabase('TocDataBase');
   }
 
   public initializeDatabase(igDocumentId): Promise<{}> {
@@ -101,17 +108,6 @@ export class IndexedDbService {
       });
     }));
     return Promise.all(promises);
-  }
-
-  // this is to be used when reloading the page, it does not erase the content of the dbs, just initialize the objects
-  public reInitializeDatabase() {
-    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
-    this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
-    this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
-    this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
-    this.nodeDatabase = new NodeDatabase('NodeDatabase');
-    this.tocDataBase = new TocDatabase('TocDataBase');
   }
 
   public getIgDocumentInfo() {
