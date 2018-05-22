@@ -388,13 +388,18 @@ export class IgDocumentEditComponent {
 
     if(object.datatypes){
 
+      console.log(object.datatypes);
 
       let toPush =this.convertList(object.datatypes);
-      this.dtsToCService.bulkAddNewDatatypes(toPush).then( ()=>{
+      console.log(toPush);
+
+
+      this.dtsToCService.bulkAddNewDatatypes(toPush).then(()=>{
 
         this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+        this.tree.treeModel.update();
 
-      }, error=>{
+      }).catch((error)=>{
 
         }
       );
@@ -403,6 +408,8 @@ export class IgDocumentEditComponent {
     if(object.valueSets){
       this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
     }
+
+
 
     this.tree.treeModel.update();
 
