@@ -64,10 +64,47 @@ export class DatatypesTocService {
     });
   }
 
+  public bulkAddNewDatatypes(datatypes: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.datatypes.bulkPut(datatypes);
+    }
+  }
+
   public getAll(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      const promises = [];
+      promises.push(this.getAllFromToc());
+      promises.push(this.getAllFromAdded());
+      Promise.all(promises).then( (results: Array<any>) => {
+        const allNodes = new Array<TocNode>();
+        const tocNodes = results[0];
+        const addedNodes = results[1];
+        if (tocNodes != null) {
+          allNodes.push(tocNodes);
+        }
+        if (addedNodes != null) {
+          allNodes.push(addedNodes);
+        }
+        resolve(allNodes);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromToc(): Promise<Array<TocNode>> {
     const promise = new Promise<Array<TocNode>>((resolve, reject) => {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.datatypes, async () => {
         const datatypes = await this.indexeddbService.tocDataBase.datatypes.toArray();
+        resolve(datatypes);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromAdded(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      this.indexeddbService.addedObjectsDatabase.transaction('rw', this.indexeddbService.addedObjectsDatabase.datatypes, async () => {
+        const datatypes = await this.indexeddbService.addedObjectsDatabase.datatypes.toArray();
         resolve(datatypes);
       });
     });
