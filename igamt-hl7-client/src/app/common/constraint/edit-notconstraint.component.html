@@ -1,10 +1,16 @@
 <div [ngModelGroup]="groupName">
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
-            <label>NOT Assertion Type: </label>
+            <label>NOT Assertion Level: </label>
         </div>
-        <div class="ui-g-12 ui-md-10">
+        <div class="ui-g-12 ui-md-4">
             <p-dropdown id="notChildMode" name="notChildMode" required #notChildMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.child.mode" (onChange)="makeConstraintMode(constraint.child)"></p-dropdown>
+        </div>
+        <div *ngIf="constraint.child.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
+            <label>Complex Type: </label>
+        </div>
+        <div *ngIf="constraint.child.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
+            <p-dropdown id="notComplextAssertionType" name="notComplextAssertionType" required [options]="partialComplexAssertionTypes" [(ngModel)]="constraint.child.complexAssertionType" (onChange)="changeComplexAssertionType(constraint.child)" placeholder="Select a complex type"></p-dropdown>
         </div>
     </div>
     <div class="ui-g ui-fluid">

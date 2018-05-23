@@ -78,7 +78,7 @@
                 <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-md-2">
-                            <label>Assertion Type: </label>
+                            <label>Assertion Level: </label>
                         </div>
                         <div class="ui-g-12 ui-md-10">
                             <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>

@@ -1,10 +1,21 @@
 <div [ngModelGroup]="groupName">
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
-            <label>IF Assertion Type: </label>
+            <label>IF Assertion Level: </label>
         </div>
-        <div class="ui-g-12 ui-md-10">
+        <div class="ui-g-12 ui-md-4">
             <p-dropdown id="ifAssertionMode" name="ifAssertionMode" required #ifAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.ifAssertion.mode" (onChange)="makeConstraintMode(constraint.ifAssertion)"></p-dropdown>
+        </div>
+        <div *ngIf="constraint.ifAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
+            <label>Complex Type: </label>
+        </div>
+        <div *ngIf="constraint.ifAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
+            <p-dropdown id="ifComplextAssertionType" name="ifComplextAssertionType" required #ifComplextAssertionType="ngModel" [options]="limitedComplexAssertionTypes" [(ngModel)]="constraint.ifAssertion.complexAssertionType" (onChange)="changeComplexAssertionType(constraint.ifAssertion)" placeholder="Select a complex type"></p-dropdown>
+            <div *ngIf="ifComplextAssertionType.invalid && (ifComplextAssertionType.dirty || ifComplextAssertionType.touched)" class="alert alert-danger">
+                <div *ngIf="ifComplextAssertionType.errors.required">
+                    Complex Type is required.
+                </div>
+            </div>
         </div>
     </div>
     <div class="ui-g ui-fluid">
@@ -17,14 +28,23 @@
         </div>
     </div>
 
-
-
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
-            <label>THEN Assertion Type: </label>
+            <label>THEN Assertion Level: </label>
         </div>
-        <div class="ui-g-12 ui-md-10">
+        <div class="ui-g-12 ui-md-4">
             <p-dropdown id="thenAssertionMode" name="thenAssertionMode" required #thenAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.thenAssertion.mode" (onChange)="makeConstraintMode(constraint.thenAssertion)"></p-dropdown>
+        </div>
+        <div *ngIf="constraint.thenAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
+            <label>Complex Type: </label>
+        </div>
+        <div *ngIf="constraint.thenAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
+            <p-dropdown id="thenComplextAssertionType" name="thenComplextAssertionType" required #thenComplextAssertionType="ngModel" [options]="limitedComplexAssertionTypes" [(ngModel)]="constraint.thenAssertion.complexAssertionType" (onChange)="changeComplexAssertionType(constraint.thenAssertion)" placeholder="Select a complex type"></p-dropdown>
+            <div *ngIf="thenComplextAssertionType.invalid && (thenComplextAssertionType.dirty || thenComplextAssertionType.touched)" class="alert alert-danger">
+                <div *ngIf="thenComplextAssertionType.errors.required">
+                    Complex Type is required.
+                </div>
+            </div>
         </div>
     </div>
 
