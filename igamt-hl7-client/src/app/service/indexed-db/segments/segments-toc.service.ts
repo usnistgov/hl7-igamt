@@ -21,7 +21,7 @@ export class SegmentsTocService {
     }
   }
 
-  public addSegment(segment) {
+  public saveSegment(segment) {
     console.log(segment);
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.segments, async () => {
@@ -50,5 +50,64 @@ export class SegmentsTocService {
     if (this.indexeddbService.addedObjectsDatabase != null) {
       return this.indexeddbService.addedObjectsDatabase.segments.bulkPut(segments);
     }
+  }
+
+  public removeSegment(segmentNode: TocNode) {
+    this.indexeddbService.removedObjectsDatabase.segments.put(segmentNode).then(() => {
+      this.removeFromToc(segmentNode);
+    }, () => {
+      console.log('Unable to remove node from TOC');
+    });
+  }
+
+  private removeFromToc(segmentNode: TocNode) {
+    this.indexeddbService.tocDataBase.segments.where('id').equals(segmentNode.id).delete();
+  }
+
+  public addSegment(segmentNode: TocNode) {
+    this.indexeddbService.addedObjectsDatabase.segments.put(segmentNode).then(() => {}, () => {
+      console.log('Unable to add node from TOC');
+    });
+  }
+
+  public getAll(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      const promises = [];
+      promises.push(this.getAllFromToc());
+      promises.push(this.getAllFromAdded());
+      Promise.all(promises).then( (results: Array<any>) => {
+        const allNodes = new Array<TocNode>();
+        const tocNodes = results[0];
+        const addedNodes = results[1];
+        if (tocNodes != null) {
+          allNodes.push(tocNodes);
+        }
+        if (addedNodes != null) {
+          allNodes.push(addedNodes);
+        }
+        resolve(allNodes);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromToc(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.segments, async () => {
+        const segments = await this.indexeddbService.tocDataBase.segments.toArray();
+        resolve(segments);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromAdded(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      this.indexeddbService.addedObjectsDatabase.transaction('rw', this.indexeddbService.addedObjectsDatabase.segments, async () => {
+        const segments = await this.indexeddbService.addedObjectsDatabase.segments.toArray();
+        resolve(segments);
+      });
+    });
+    return promise;
   }
 }
