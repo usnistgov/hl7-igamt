@@ -4,13 +4,13 @@ import {WorkspaceService} from "../../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IgDocumentAddingService} from "../../igdocument-edit/adding.service";
 import * as _ from 'lodash';
-
 @Component({
-  selector: 'app-add-segment',
-  templateUrl: './add-segment.component.html',
-  styleUrls: ['./add-segment.component.css']
+  selector: 'app-add-datatype',
+  templateUrl: './add-datatype.component.html',
+  styleUrls: ['./add-datatype.component.css']
 })
-export class AddSegmentComponent extends PrimeDialogAdapter {
+export class AddDatatypeComponent extends PrimeDialogAdapter {
+
 
   hl7Versions: any[];
   id="";
@@ -49,7 +49,7 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
   getSource(version) {
     console.log(this.namingIndicators);
 
-    this.addingService.getHl7SegmentByVersion(version).subscribe(x => {
+    this.addingService.getHl7DatatypesByVersion(version).subscribe(x => {
       this.sources = x;
 
     });
@@ -92,20 +92,20 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
   getScopeLabel(elm) {
 
-      let scope =elm.domainInfo.scope;
-      if (scope === 'HL7STANDARD') {
-        return 'HL7';
-      } else if (scope === 'USER') {
-        return 'USR';
-      } else if (scope === 'MASTER') {
-        return 'MAS';
-      } else if (scope=== 'PRELOADED') {
-        return 'PRL';
-      } else if (scope === 'PHINVADS') {
-        return 'PVS';
-      } else {
-        return null ;
-      }
+    let scope =elm.domainInfo.scope;
+    if (scope === 'HL7STANDARD') {
+      return 'HL7';
+    } else if (scope === 'USER') {
+      return 'USR';
+    } else if (scope === 'MASTER') {
+      return 'MAS';
+    } else if (scope=== 'PRELOADED') {
+      return 'PRL';
+    } else if (scope === 'PHINVADS') {
+      return 'PVS';
+    } else {
+      return null ;
+    }
 
   }
   submit(){
@@ -114,7 +114,7 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
     let wrapper:any ={};
     wrapper.toAdd=this.dest;
     wrapper.id=this.id;
-    this.addingService.addSegment(wrapper).subscribe(
+    this.addingService.addDatatypes(wrapper).subscribe(
       res => {
         console.log(res);
         this.closeWithData(res);
@@ -123,7 +123,6 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
 
   }
-
 
 
 

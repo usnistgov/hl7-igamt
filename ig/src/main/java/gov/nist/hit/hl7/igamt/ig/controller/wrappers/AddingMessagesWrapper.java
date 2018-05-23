@@ -13,33 +13,27 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
+
 /**
  * @author ena3
  *
  */
-public class AddSegmentWrapper {
-
-  private List<AddSegmentInfo> toAdd;
+public class AddingMessagesWrapper {
+  private List<Event> msgEvts;
   private String id;
 
-
-  public List<AddSegmentInfo> getToAdd() {
-    return toAdd;
-  }
-
-  public AddSegmentWrapper() {
+  public AddingMessagesWrapper() {
     super();
     // TODO Auto-generated constructor stub
   }
 
-  public AddSegmentWrapper(List<AddSegmentInfo> toAdd, String id) {
-    super();
-    this.toAdd = toAdd;
-    this.id = id;
+  public List<Event> getMsgEvts() {
+    return msgEvts;
   }
 
-  public void setToAdd(List<AddSegmentInfo> toAdd) {
-    this.toAdd = toAdd;
+  public void setMsgEvts(List<Event> msgEvts) {
+    this.msgEvts = msgEvts;
   }
 
   public String getId() {
@@ -49,6 +43,13 @@ public class AddSegmentWrapper {
   public void setId(String id) {
     this.id = id;
   }
+
+  public AddingMessagesWrapper(List<Event> msgEvts, String id) {
+    super();
+    this.msgEvts = msgEvts;
+    this.id = id;
+  }
+
 
 
 }

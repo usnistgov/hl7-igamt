@@ -9,46 +9,35 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
+package gov.nist.hit.hl7.igamt.ig.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author ena3
  *
  */
-public class AddingWrapper {
+public class AddDatatypeResponseDisplay {
+  List<TreeNode> datatypes = new ArrayList<TreeNode>();
 
-  private List<AddIngInfo> toAdd;
-  private String id;
+  List<TreeNode> valueSets = new ArrayList<TreeNode>();
 
 
-  public List<AddIngInfo> getToAdd() {
-    return toAdd;
+  public List<TreeNode> getDatatypes() {
+    return datatypes;
   }
 
-  public AddingWrapper() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
-  public AddingWrapper(List<AddIngInfo> toAdd, String id) {
-    super();
-    this.toAdd = toAdd;
-    this.id = id;
-  }
-
-  public void setToAdd(List<AddIngInfo> toAdd) {
-    this.toAdd = toAdd;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
+  public void setDatatypes(List<TreeNode> datatypes) {
+    this.datatypes = datatypes;
   }
 
 
+  public List<TreeNode> getValueSets() {
+    return valueSets;
+  }
+
+  public void setValueSets(List<TreeNode> valueSets) {
+    this.valueSets = valueSets;
+  }
 }

@@ -27,24 +27,35 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    console.log("Calling resolver");
     return new Promise(
       (resolve , reject) =>{
         let igId= route.params["igId"];
 
         this.http.get<any>("/api/igdocuments/"+igId+"/display").subscribe(x=>{
+          this.parseToc(x.toc);
+          console.log(x.toc);
+          console.log(this.valueSets);
+          console.log(this.datatypes);
           this.indexedDbService.initializeDatabase(igId).then( ()=>{
 
-            this.parseToc(x.toc);
 
-            console.log(this.valueSets);
-            console.log(this.datatypes);
+
             this.saveService.bulkAddToc(this.valueSets, this.datatypes, this.segments, this.conformanceProfiles, this.profileComponents, this.compositeProfiles).then(
               ()=>{
                 resolve(x);
+              },(error)=>{
+                console.log("Could not add elements to client db");
+                reject();
+
               }
             );
-          });
+          },
+
+            (error)=>{
+            console.log("Could not load Ig : "+error);
+            reject();
+            }
+          );
 
 
         });
@@ -66,7 +77,6 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         this.parseProfile(node);
 
       }
-
 
     }
   }

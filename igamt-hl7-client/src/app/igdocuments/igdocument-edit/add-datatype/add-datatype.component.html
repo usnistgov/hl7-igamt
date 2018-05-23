@@ -1,20 +1,20 @@
 <p-dialog [(visible)]="_visible">
   <p-header>
-    Add Segments
+    Add Data Types
   </p-header>
-<div class="ui-g">
+  <div class="ui-g">
 
-  <label class="metadata-label"> Select Hl7 Version</label>
-
-
-  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getSource(v)">
-
-  </p-radioButton>
+    <label class="metadata-label"> Select Hl7 Version</label>
 
 
+    <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getSource(v)">
+
+    </p-radioButton>
 
 
-</div>
+
+
+  </div>
 
   <div class="ui-g">
     <div class="ui-g-6">
@@ -28,7 +28,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th pResizableColumn width="250px">
-              Segment
+              Data Type
             </th>
             <th pResizableColumn width="75px">
               As Is
@@ -68,7 +68,7 @@
         <ng-template pTemplate="header">
           <tr>
             <th pResizableColumn width="250px">
-              Segment
+              Data Type
             </th>
             <th pResizableColumn width="75px">
               Extension
@@ -103,8 +103,9 @@
   </div>
 
 
-    <p-footer>
-      <p-button    styleClass="green-btn" (onClick)="submit()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
-    </p-footer>
+  <p-footer>
+    <p-button    styleClass="green-btn" (onClick)="submit()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
 
 </p-dialog>
+

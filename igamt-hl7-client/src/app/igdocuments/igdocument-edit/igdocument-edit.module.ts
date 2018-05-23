@@ -49,6 +49,9 @@ import {BlockUIModule} from "primeng/components/blockui/blockui";
 import {IgDocumentAddingService} from "./adding.service";
 import { AddSegmentComponent } from './add-segment/add-segment.component';
 import {TableModule} from "primeng/components/table/table";
+import { AddDatatypeComponent } from './add-datatype/add-datatype.component';
+import { AddValueSetComponent } from './add-value-set/add-value-set.component';
+import { CopyElementComponent } from './copy-element/copy-element.component';
 
 
 @NgModule({
@@ -92,7 +95,7 @@ import {TableModule} from "primeng/components/table/table";
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent
   ],
   entryComponents: [
 

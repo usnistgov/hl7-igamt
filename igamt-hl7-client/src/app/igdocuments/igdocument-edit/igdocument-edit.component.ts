@@ -14,6 +14,12 @@ import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap';
 import {AddConformanceProfileComponent} from "../add-conformance-profile/add-conformance-profile.component";
 import {AddSegmentComponent} from "./add-segment/add-segment.component";
+import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
+import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
+import {CopyElementComponent} from "./copy-element/copy-element.component";
+import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
+import {TocDbService} from "../../service/indexed-db/toc-db.service";
 
 
 @Component({
@@ -25,8 +31,9 @@ export class IgDocumentEditComponent {
 
   @ViewChild(AddConformanceProfileComponent) addCps: AddConformanceProfileComponent;
   @ViewChild(AddSegmentComponent) addSegs: AddSegmentComponent;
-
-
+  @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;
+  @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
+  @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
 
   igId:any;
   bsModalRef: BsModalRef;
@@ -121,7 +128,7 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,private modalService: BsModalService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService){
 
     router.events.subscribe(event => {
       console.log(event);
@@ -202,7 +209,19 @@ export class IgDocumentEditComponent {
 
       if (slashIndex > 0) {
         var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
-        var childId = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
+        var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
+        let childId="";
+        console.log(child);
+        if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
+          console.log(childId);
+          childId=child.substring( 0,child.indexOf("/"));
+
+        }else{
+          console.log("wdwd");
+
+          childId=child;
+
+        }
         let node = this.tree.treeModel.getNodeById(childId);
         if (node) {
           this.tocService.setActiveNode(node);
@@ -360,25 +379,56 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
+    var conformanceProfiles=[];
+    var segments=[];
+    var datatypes=[];
+    var valueSets=[];
+    var compositeProfiles=[];
+    var profileComponents=[];
+
     if(object.conformanceProfiles){
-      this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+      conformanceProfiles= this.convertList(object.conformanceProfiles);
+    }if(object.segments){
+
+      segments=this.convertList(object.segments);
 
     }
-    if(object.segments){
-      this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
-    }
-
     if(object.datatypes){
-      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+      datatypes=this.convertList(object.datatypes);
     }
     if(object.valueSets){
-      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
+      valueSets=this.convertList(object.valueSets);
     }
 
-    this.tree.treeModel.update();
+    this.tocDbService.bulkAddTocNewElements(valueSets,datatypes,segments,conformanceProfiles,profileComponents,compositeProfiles).then(()=>{
+
+      if(object.conformanceProfiles){
+        this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+      }
+      if(object.segments){
+        this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  "SEGMENTREGISTRY");
+      }
+      if(object.datatypes){
+
+        this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+      }
+      if(object.valueSets){
+        this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, "VALUESETREGISTRY");
+      }
+      this.tree.treeModel.update();
+
+    }).catch((error)=>{
+
+        }
+      );
+
+
+
 
 
   }
+
+
 
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"SEGMENTREGISTRY");
@@ -395,7 +445,67 @@ export class IgDocumentEditComponent {
           console.log(result);
         }
       )
+  }
 
+
+  addDatatypes(){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"DATATYPEREGISTRY");
+
+    this.addDts.open({
+      id : this.igId,
+      namingIndicators:existing
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
+
+  }
+
+  addValueSets(){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"VALUESETREGISTRY");
+
+    this.addVs.open({
+      id : this.igId,
+      namingIndicators:existing
+    }).subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
+
+  }
+
+  copyDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,"DATATYPEREGISTRY");
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
+  }
+
+
+
+  convertList(list : any[]){
+    let ret : any[]=[];
+    for (let i=0; i<list.length;i++ ){
+      ret.push({id:list[i].id,treeNode:list[i].data});
+    }
+    return ret;
   }
 
 

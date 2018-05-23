@@ -57,13 +57,10 @@ export class SegmentEditConformanceStatementsComponent {
         this.complexAssertionTypes = this.configService._complexAssertionTypes;
         this.idMap = {};
         this.treeData = [];
-        //TODO temp
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
             this.segmentConformanceStatements = conformanceStatementData;
         });
-
-        // indexedDbService.get
 
         console.log("SegmentId:" + this.segmentId);
 

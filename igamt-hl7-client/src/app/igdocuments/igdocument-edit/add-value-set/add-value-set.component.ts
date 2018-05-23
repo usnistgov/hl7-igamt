@@ -4,13 +4,12 @@ import {WorkspaceService} from "../../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IgDocumentAddingService} from "../../igdocument-edit/adding.service";
 import * as _ from 'lodash';
-
 @Component({
-  selector: 'app-add-segment',
-  templateUrl: './add-segment.component.html',
-  styleUrls: ['./add-segment.component.css']
+  selector: 'app-add-value-set',
+  templateUrl: './add-value-set.component.html',
+  styleUrls: ['./add-value-set.component.css']
 })
-export class AddSegmentComponent extends PrimeDialogAdapter {
+export class AddValueSetComponent extends PrimeDialogAdapter {
 
   hl7Versions: any[];
   id="";
@@ -49,7 +48,7 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
   getSource(version) {
     console.log(this.namingIndicators);
 
-    this.addingService.getHl7SegmentByVersion(version).subscribe(x => {
+    this.addingService.getHl7ValueSetsByVersion(version).subscribe(x => {
       this.sources = x;
 
     });
@@ -60,9 +59,9 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
     var copy =_.cloneDeep(elm);
     let x: any = {};
     x.domainInfo = copy.domainInfo;
-    x.name = copy.name;
+    x.name = copy.bindingIdentifier;
     x.flavor = false;
-    x.description = copy.description;
+    x.description = copy.name;
     x.id=copy.id;
     this.dest.push(x);
 
@@ -75,10 +74,10 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
     x.domainInfo =copy.domainInfo;
     x.domainInfo.scope = "USER";
-    x.name = copy.name;
+    x.name = copy.bindingIdentifier;
     x.ext = "";
     x.flavor = true;
-    x.description = copy.description;
+    x.description = copy.name;
     x.id=copy.id;
     this.dest.push(x);
   }
@@ -92,20 +91,20 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
   getScopeLabel(elm) {
 
-      let scope =elm.domainInfo.scope;
-      if (scope === 'HL7STANDARD') {
-        return 'HL7';
-      } else if (scope === 'USER') {
-        return 'USR';
-      } else if (scope === 'MASTER') {
-        return 'MAS';
-      } else if (scope=== 'PRELOADED') {
-        return 'PRL';
-      } else if (scope === 'PHINVADS') {
-        return 'PVS';
-      } else {
-        return null ;
-      }
+    let scope =elm.domainInfo.scope;
+    if (scope === 'HL7STANDARD') {
+      return 'HL7';
+    } else if (scope === 'USER') {
+      return 'USR';
+    } else if (scope === 'MASTER') {
+      return 'MAS';
+    } else if (scope=== 'PRELOADED') {
+      return 'PRL';
+    } else if (scope === 'PHINVADS') {
+      return 'PVS';
+    } else {
+      return null ;
+    }
 
   }
   submit(){
@@ -114,7 +113,7 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
     let wrapper:any ={};
     wrapper.toAdd=this.dest;
     wrapper.id=this.id;
-    this.addingService.addSegment(wrapper).subscribe(
+    this.addingService.addValueSets(wrapper).subscribe(
       res => {
         console.log(res);
         this.closeWithData(res);
@@ -123,8 +122,5 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
 
   }
-
-
-
 
 }

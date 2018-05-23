@@ -19,6 +19,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 import {UtilsModule} from "../../../utils/utils.module";
+import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from 'primeng/message';
 
@@ -40,7 +41,7 @@ import {MessageModule} from 'primeng/message';
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [],
+    providers : [SegmentEditMetadatResolver],
     declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

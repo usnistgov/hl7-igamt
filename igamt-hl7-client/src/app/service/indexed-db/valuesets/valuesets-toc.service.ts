@@ -45,4 +45,10 @@ export class ValuesetsTocService {
       return this.indexeddbService.tocDataBase.valuesets.bulkPut(valuesets);
     }
   }
+
+  public bulkAddNewValuesets(valuesets: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.valuesets.bulkPut(valuesets);
+    }
+  }
 }

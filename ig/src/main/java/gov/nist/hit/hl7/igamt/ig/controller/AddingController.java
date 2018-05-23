@@ -11,8 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -26,19 +24,22 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddSegmentInfo;
-import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddSegmentWrapper;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddIngInfo;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingMessagesWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -48,6 +49,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
 import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
  * @author ena3
@@ -73,14 +76,19 @@ public class AddingController {
   SegmentService segmentService;
 
   @Autowired
+  DatatypeService datatypeService;
+
+  @Autowired
   CrudService crudService;
+
+  @Autowired
+  ValuesetService valuesetService;
 
   @RequestMapping(value = "/api/ig/addConforanceProfile", method = RequestMethod.POST,
       produces = {"application/json"})
 
   public @ResponseBody AddMessageResponseDisplay addConforanceProfile(
-      @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+      @RequestBody AddingMessagesWrapper wrapper, Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
@@ -115,17 +123,38 @@ public class AddingController {
   }
 
 
+  @RequestMapping(value = "/api/ig/findHl7Datatypes/{version:.+}", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody List<Datatype> findHl7Datatypes(@PathVariable String version,
+      Authentication authentication) {
+
+    return datatypeService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(),
+        version);
+
+  }
+
+  @RequestMapping(value = "/api/ig/findHl7ValueSets/{version:.+}", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody List<Valueset> findHl7ValueSets(@PathVariable String version,
+      Authentication authentication) {
+
+    return valuesetService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(),
+        version);
+
+  }
+
   @RequestMapping(value = "/api/ig/addSegments", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody AddSegmentResponseDisplay addSegments(@RequestBody AddSegmentWrapper wrapper,
-      Authentication authentication)
-      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+  public @ResponseBody AddSegmentResponseDisplay addSegments(@RequestBody AddingWrapper wrapper,
+      Authentication authentication) {
 
     String username = authentication.getPrincipal().toString();
     Ig currentIg = igService.findLatestById(wrapper.getId());
     Set<String> savedIds = new HashSet<String>();
-    for (AddSegmentInfo elm : wrapper.getToAdd()) {
+    for (AddIngInfo elm : wrapper.getToAdd()) {
       if (elm.isFlavor()) {
         Segment segment = segmentService.findByKey(elm.getId());
         if (segment != null) {
@@ -147,5 +176,66 @@ public class AddingController {
 
   }
 
+
+  @RequestMapping(value = "/api/ig/addDatatypes", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody AddDatatypeResponseDisplay addDatatypes(@RequestBody AddingWrapper wrapper,
+      Authentication authentication) {
+
+    String username = authentication.getPrincipal().toString();
+    Ig currentIg = igService.findLatestById(wrapper.getId());
+    Set<String> savedIds = new HashSet<String>();
+    for (AddIngInfo elm : wrapper.getToAdd()) {
+      if (elm.isFlavor()) {
+        Datatype datatype = datatypeService.findByKey(elm.getId());
+        if (datatype != null) {
+          Datatype clone = datatype.clone();
+          clone.setUsername(username);
+          clone.setId(new CompositeKey());
+          clone.setName(datatype.getName());
+          clone.setExt(elm.getExt());
+          clone = datatypeService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
+      } else {
+        savedIds.add(elm.getId().getId());
+
+      }
+    }
+    AddDatatypeResponseObject objects = crudService.addDatatypes(savedIds, currentIg);
+    return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
+
+  @RequestMapping(value = "/api/ig/addValueSets", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody AddValueSetsResponseDisplay addValueSets(@RequestBody AddingWrapper wrapper,
+      Authentication authentication) {
+
+    String username = authentication.getPrincipal().toString();
+    Ig currentIg = igService.findLatestById(wrapper.getId());
+    Set<String> savedIds = new HashSet<String>();
+    for (AddIngInfo elm : wrapper.getToAdd()) {
+      if (elm.isFlavor()) {
+        Valueset valueset = valuesetService.findById(elm.getId());
+        if (valueset != null) {
+          Valueset clone = valueset.clone();
+          clone.setUsername(username);
+          clone.setId(new CompositeKey());
+          clone.setBindingIdentifier(elm.getName());
+          clone = valuesetService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
+      } else {
+        savedIds.add(elm.getId().getId());
+
+      }
+    }
+    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, currentIg);
+    return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
 
 }

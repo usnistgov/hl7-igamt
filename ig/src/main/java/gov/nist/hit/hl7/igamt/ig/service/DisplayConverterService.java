@@ -16,14 +16,19 @@ import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
@@ -51,6 +56,19 @@ public interface DisplayConverterService {
 
   public List<TreeNode> getProfileCompoenents(Set<ProfileComponent> profileComponents);
 
+  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile);
+
+  public TreeNode createConformanceProfileNode(ConformanceProfile elm);
+
+  public TreeNode createPcNode(ProfileComponent profileComponent);
+
+  public TreeNode createSegmentNode(Segment elm);
+
+  public TreeNode createDatatypeNode(Datatype elm);
+
+  public TreeNode createValueSetsNode(Valueset vs);
+
+  public TreeNode createCpNode(ConformanceProfile confromanceProfile);
 
   public List<TreeNode> getConformaneProfile(Set<ConformanceProfile> conformanceProfiles);
 
@@ -63,5 +81,19 @@ public interface DisplayConverterService {
    */
   public AddSegmentResponseDisplay convertSegmentResponseToDisplay(
       AddSegmentResponseObject objects);
+
+  /**
+   * @param objects
+   * @return
+   */
+  public AddDatatypeResponseDisplay convertDatatypeResponseToDisplay(
+      AddDatatypeResponseObject objects);
+
+  /**
+   * @param objects
+   * @return
+   */
+  public AddValueSetsResponseDisplay convertDatatypeResponseToDisplay(
+      AddValueSetResponseObject objects);
 
 }

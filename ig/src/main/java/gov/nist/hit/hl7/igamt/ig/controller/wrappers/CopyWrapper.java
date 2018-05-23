@@ -11,43 +11,49 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
-import java.util.List;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  * @author ena3
  *
  */
-public class AddingWrapper {
+public class CopyWrapper {
 
-  private List<AddIngInfo> toAdd;
-  private String id;
+  private String igDocumentId;
+  private CompositeKey id;
+  private String ext;
+  private String name;
 
-
-  public List<AddIngInfo> getToAdd() {
-    return toAdd;
+  public String getIgDocumentId() {
+    return igDocumentId;
   }
 
-  public AddingWrapper() {
-    super();
-    // TODO Auto-generated constructor stub
+  public void setIgDocumentId(String igDocumentId) {
+    this.igDocumentId = igDocumentId;
   }
 
-  public AddingWrapper(List<AddIngInfo> toAdd, String id) {
-    super();
-    this.toAdd = toAdd;
-    this.id = id;
-  }
-
-  public void setToAdd(List<AddIngInfo> toAdd) {
-    this.toAdd = toAdd;
-  }
-
-  public String getId() {
+  public CompositeKey getId() {
     return id;
   }
 
-  public void setId(String id) {
+  public void setId(CompositeKey id) {
     this.id = id;
+  }
+
+  public String getExt() {
+    return ext;
+  }
+
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 

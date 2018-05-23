@@ -35,6 +35,7 @@
     "hammerjs": "^2.0.8",
     "intl": "^1.2.5",
     "jquery": "^3.2.1",
+    "jwt-decode": "^2.2.0",
     "moment": "^2.17.1",
     "nanoscroller": "0.8.7",
     "ngx-bootstrap": "^1.9.3",

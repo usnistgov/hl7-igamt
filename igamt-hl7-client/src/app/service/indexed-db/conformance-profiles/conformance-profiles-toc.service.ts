@@ -45,4 +45,10 @@ export class ConformanceProfilesTocService {
       return this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
     }
   }
+
+  public bulkAddNewConformanceProfiles(conformanceProfiles: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.conformanceProfiles.bulkPut(conformanceProfiles);
+    }
+  }
 }
