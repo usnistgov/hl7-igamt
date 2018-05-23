@@ -20,9 +20,63 @@ export class GeneralConfigurationService {
 
   _codedElementDTs:any;
 
+  _simpleConstraintVerbs:any[];
+
+  _ifConstraintVerbs:any[];
+
+  _operators: any[];
+
+  _formatTypes: any[];
+
+  _simpleAssertionTypes: any[];
+
+  _complexAssertionTypes: any[];
+
+  _partialComplexAssertionTypes: any[];
+
+  _assertionModes:any[];
+
   constructor(){
 
-    //TODO GETTING USAGES FROM API
+    this._complexAssertionTypes = [
+      {label: 'IFTHEN', value: 'IFTHEN'},
+      {label: 'AND/OR', value: 'ANDOR'},
+      {label: 'NOT', value: 'NOT'}
+    ];
+
+    this._simpleAssertionTypes = [
+      {
+        label: 'Value',
+        items: [
+          {label: 'Simple Value', value: 'SAMEVALUE'},
+          {label: 'List of Value', value: 'LISTVALUE'},
+          {label: 'Formatted Value', value: 'FORMATTED'},
+          {label: 'Presence', value: 'PRESENCE'}
+        ]
+      },
+      {
+        label: 'Comparison',
+        items: [
+          {label: 'Compare with other Node', value: 'COMPARENODE'},
+          {label: 'Compare with value', value: 'COMPAREVALUE'}
+        ]
+      }
+    ];
+
+    this._assertionModes = [
+      // {label: 'Select Assertion Type', value: null},
+      {label: 'Simple Assertion', value: 'SIMPLE'},
+      {label: 'Complex Assertion', value: 'COMPLEX'}
+    ];
+
+    this._partialComplexAssertionTypes = [
+      {label: 'AND/OR', value: 'ANDOR'},
+      {label: 'NOT', value: 'NOT'}
+    ];
+    this._simpleConstraintVerbs = [ { label : 'SHALL', value : 'SHALL' },{ label : 'SHALL NOT', value : 'SHALL NOT' }];
+    this._ifConstraintVerbs = [ { label : 'is', value : 'IS' },{ label : 'is NOT', value : 'is NOT' }];
+    this._formatTypes = [ { label : 'be ISO format', value : 'iso' },{ label : 'be positive', value : 'positive' },{ label : 'be negative', value : 'negative' },{ label : 'be numeric', value : 'numeric' },{ label : 'be alphanumeric', value : 'alphanumeric' },{ label : 'be regrex', value : 'regrex' }];
+    this._operators = [ { label : 'be identical to the content of', value : 'equal' },{ label : 'be greater to the value of', value : 'greater' },{ label : 'be less to the value of', value : 'less' },{ label : 'be same or greater to the value of', value : 'equalorgreater' },{ label : 'be same or less to the value of', value : 'equalorless' },{ label : 'be different to the value of', value : 'notequal' }];
     this._usages = [ { label : 'R', value : 'R' },{ label : 'RE', value : 'RE' },{ label : 'C', value : 'C' }, { label : 'X', value : 'O' }];
     this._valuesetStrengthOptions = [ { label : 'Select Strength', value : null},{ label : 'R', value : 'R' },{ label : 'S', value : 'S' },{ label : 'U', value : 'U' }];
     this._valueSetAllowedDTs = ["ID", "IS", "CE", "CF", "CWE", "CNE", "CSU","HD"];
@@ -151,6 +205,23 @@ export class GeneralConfigurationService {
       if(['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] },{ label : '1 or 4 or 10', value : [1,4,10] }];
     }
     return null;
+  }
 
+  getOperatorLable(operator){
+    if(operator){
+      for (let entry of this._operators) {
+        if(entry.value === operator) return entry.label;
+      }
+    }
+    return null;
+  }
+
+  getFormattedType(type){
+    if(type){
+      for (let entry of this._formatTypes) {
+        if(entry.value === type) return entry.label;
+      }
+    }
+    return null;
   }
 }

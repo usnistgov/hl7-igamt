@@ -13,6 +13,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
@@ -35,6 +36,19 @@ public class SegmentController {
     if (authentication != null) {
       Segment segment = segmentService.findLatestById(id);
       return segmentService.convertDomainToStructure(segment);
+    } else {
+      return null;
+    }
+  }
+  
+  @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody SegmentConformanceStatement getSegmentConformanceStatement(@PathVariable("id") String id) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      Segment segment = segmentService.findLatestById(id);
+      return segmentService.convertDomainToConformanceStatement(segment);
     } else {
       return null;
     }

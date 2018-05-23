@@ -3,6 +3,7 @@
     "id": "mock_ARBITRARY_XCN",
     "version": 1
   },
+  "name": "XCN",
   "label": "XCN",
   "scope": "ARCHIVED",
   "version": "2.6",

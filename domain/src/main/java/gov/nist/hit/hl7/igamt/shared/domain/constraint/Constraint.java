@@ -12,4 +12,15 @@
 package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 
 public class Constraint {
+  private ConstraintType type;
+
+  public ConstraintType getType() {
+    return type;
+  }
+
+  public void setType(ConstraintType type) {
+    this.type = type;
+  }
+
+  
 }

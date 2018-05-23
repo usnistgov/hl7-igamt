@@ -19,7 +19,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
  */
 public class CompareNodeComplement extends Complement {
   private CompareOperator operator;
-  private Path comparatorPath;
+  private Path path;
 
   public CompareNodeComplement() {
     this.complementKey = ComplementKey.COMPARENODE;
@@ -33,17 +33,12 @@ public class CompareNodeComplement extends Complement {
     this.operator = operator;
   }
 
-  public Path getComparatorPath() {
-    return comparatorPath;
+  public Path getPath() {
+    return path;
   }
 
-  public void setComparatorPath(Path comparatorPath) {
-    this.comparatorPath = comparatorPath;
+  public void setPath(Path path) {
+    this.path = path;
   }
 
-  @Override
-  public String toString() {
-    return "CompareNodeComplement [operator=" + operator + ", comparatorPath=" + comparatorPath
-        + ", complementKey=" + complementKey + "]";
-  }
 }
