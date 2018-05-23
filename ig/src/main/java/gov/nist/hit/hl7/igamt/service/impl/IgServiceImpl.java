@@ -30,7 +30,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -38,6 +37,7 @@ import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
@@ -112,12 +112,12 @@ public class IgServiceImpl implements IgService {
     for (Ig ig : igdouments) {
       IgSummary element = new IgSummary();
 
-      element.setCoverpage(ig.getMetaData().getCoverPicture());
+      element.setCoverpage(ig.getMetadata().getCoverPicture());
       element.setDateUpdated(ig.getUpdateDate());
-      element.setTitle(ig.getMetaData().getTitle());
-      element.setSubtitle(ig.getMetaData().getSubTitle());
+      element.setTitle(ig.getMetadata().getTitle());
+      element.setSubtitle(ig.getMetadata().getSubTitle());
       // element.setConfrmanceProfiles(confrmanceProfiles);
-      element.setCoverpage(ig.getMetaData().getCoverPicture());
+      element.setCoverpage(ig.getMetadata().getCoverPicture());
       element.setId(ig.getId());
       element.setUsername(ig.getUsername());
       List<String> conformanceProfileNames = new ArrayList<String>();
@@ -156,7 +156,7 @@ public class IgServiceImpl implements IgService {
     List<SectionTemplate> igTemplates =
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     Ig emptyIg = new Ig();
-    emptyIg.setMetaData(new IgMetaData());
+    emptyIg.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : igTemplates) {
       content.add(createSectionContent(template));
