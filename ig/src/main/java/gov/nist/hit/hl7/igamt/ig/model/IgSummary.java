@@ -5,7 +5,7 @@ import java.util.List;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
-public class ListElement {
+public class IgSummary {
 
 	private String title;
 	private int position;
@@ -65,7 +65,7 @@ public class ListElement {
 		this.username = username;
 	}
 
-	public ListElement() {
+	public IgSummary() {
 		// TODO Auto-generated constructor stub
 	}
 

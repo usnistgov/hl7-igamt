@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -30,42 +31,46 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  *
  * @author Maxence Lefort on May 8, 2018.
  */
+@Service
 public class SaveServiceImpl implements SaveService {
 
   @Autowired
   SegmentService segmentService;
-  
+
   @Autowired
   DatatypeService datatypeService;
-  
+
   @Autowired
   ConformanceProfileService conformanceProfileService;
-  
+
   Logger logger = LoggerFactory.getLogger(SaveServiceImpl.class);
-  
+
   @Override
   public void saveChangedObjects(ChangedObjects changedObjects) {
-    if(changedObjects != null) {
-      //Save value sets
-      //TODO Add value sets save
-      //Save datatypes
-      if(changedObjects.getDatatypes() != null && !changedObjects.getDatatypes().isEmpty()) {
-        logger.debug("Saving "+changedObjects.getDatatypes().size()+" datatypes");
-        for(ChangedDatatype changedDatatype : changedObjects.getDatatypes()) {
+    if (changedObjects != null) {
+      // Save value sets
+      // TODO Add value sets save
+      // Save datatypes
+      if (changedObjects.getDatatypes() != null && !changedObjects.getDatatypes().isEmpty()) {
+        logger.debug("Saving " + changedObjects.getDatatypes().size() + " datatypes");
+        for (ChangedDatatype changedDatatype : changedObjects.getDatatypes()) {
           datatypeService.saveDatatype(changedDatatype);
         }
       }
-      //Save segments
-      if(changedObjects.getSegments() != null && !changedObjects.getSegments().isEmpty()) {
-        logger.debug("Saving "+changedObjects.getSegments().size()+" segments");
-        for(ChangedSegment changedSegment : changedObjects.getSegments()) {
+      // Save segments
+      if (changedObjects.getSegments() != null && !changedObjects.getSegments().isEmpty()) {
+        logger.debug("Saving " + changedObjects.getSegments().size() + " segments");
+        for (ChangedSegment changedSegment : changedObjects.getSegments()) {
           segmentService.saveSegment(changedSegment);
         }
       }
-      //Save conformance profiles
-      if(changedObjects.getConformanceProfiles() != null && !changedObjects.getConformanceProfiles().isEmpty()) {
-        logger.debug("Saving "+changedObjects.getConformanceProfiles().size()+" conformance profiles");
-        for(ChangedConformanceProfile changedConformanceProfile : changedObjects.getConformanceProfiles()) {
+      // Save conformance profiles
+      if (changedObjects.getConformanceProfiles() != null
+          && !changedObjects.getConformanceProfiles().isEmpty()) {
+        logger.debug(
+            "Saving " + changedObjects.getConformanceProfiles().size() + " conformance profiles");
+        for (ChangedConformanceProfile changedConformanceProfile : changedObjects
+            .getConformanceProfiles()) {
           conformanceProfileService.saveConformanceProfile(changedConformanceProfile);
         }
       }
