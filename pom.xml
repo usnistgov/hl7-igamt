@@ -84,5 +84,6 @@
 		<module>export</module>
 		<module>serialization</module>
 		<module>segment</module>
+  		<module>datatype-library</module>
 	</modules>
 </project>

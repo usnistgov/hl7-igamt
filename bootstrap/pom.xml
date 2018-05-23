@@ -80,6 +80,14 @@
 		</dependency>
 		
 		<dependency>
+		  <groupId>gov.nist.hit.hl7</groupId>
+  		  <artifactId>datatype-library</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+		
+		</dependency>
+		
+		
+		<dependency>
             <groupId>de.flapdoodle.embed</groupId>
             <artifactId>de.flapdoodle.embed.mongo</artifactId>
              <scope>test</scope>
