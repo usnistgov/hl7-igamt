@@ -9,6 +9,8 @@ import {GeneralConfigurationService} from "../../../../service/general-configura
 import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
+import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
+import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
 
 @Component({
   selector : 'datatype-edit',
@@ -22,8 +24,6 @@ export class DatatypeEditStructureComponent {
     datatypeStructure:any;
     usages:any;
     cUsages:any;
-    datatypeOptions:any = [];
-    valuesetOptions:any = [{label:'Select ValueSet', value:null}];
     textDefinitionDialogOpen:boolean = false;
     selectedNode:any;
     valuesetStrengthOptions:any = [];
@@ -36,111 +36,12 @@ export class DatatypeEditStructureComponent {
     idMap: any;
     treeData: any[];
 
-    valuesetsLinks :any = [
-        {
-            id:'AAAAA',
-            bindingIdentifier: 'HL70001_IZ',
-            label:'HL70001',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            }
-        },
-        {
-            id:'BBBBB',
-            bindingIdentifier: 'HL70002_IZ',
-            label:'HL70002',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            }
-        },
-        {
-            id:'CCCCC',
-            bindingIdentifier: 'HL70003_IZ',
-            label:'HL70003',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            }
-        },
-        {
-            id:'DDDDD',
-            bindingIdentifier: 'HL70004_IZ',
-            label:'HL70004',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            }
-        }
+    valuesetsLinks :any = [];
+    datatypesLinks :any = [];
+    datatypeOptions:any = [];
+    valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    ];
-    datatypesLinks :any = [
-        {
-            id:'mock_ARBITRARY_CWE',
-            name: 'CWE',
-            exe: 'TXT',
-            label:'CWE_TXT',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            },
-            leaf:false
-        },
-        {
-            id:'mock_ARBITRARY_CWE2',
-            name: 'CWE',
-            exe: 'TXT2',
-            label:'CWE_TXT2',
-            domainInfo:{
-                scope:'USER',
-                version:'2.4'
-            },
-            leaf:false
-        },
-        {
-            id:'mock_ARBITRARY_ID',
-            name: 'ID',
-            label:'ID',
-            domainInfo:{
-                scope:'HL7STANDARD',
-                version:'2.4'
-            },
-            leaf:true
-        },
-        {
-            id:'mock_ARBITRARY_SI',
-            name: 'SI',
-            label:'SI',
-            domainInfo:{
-                scope:'HL7STANDARD',
-                version:'2.4'
-            },
-            leaf:true
-        },
-        {
-            id:'mock_ARBITRARY_ST',
-            name: 'ST',
-            label:'ST',
-            domainInfo:{
-                scope:'HL7STANDARD',
-                version:'2.4'
-            },
-            leaf:true
-        },
-        {
-            id:'mock_ARBITRARY_XCN',
-            name: 'XCN',
-            label:'XCN',
-            domainInfo:{
-                scope:'HL7STANDARD',
-                version:'2.4'
-            },
-            leaf:false
-        }
-    ];
-
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService){
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -150,29 +51,64 @@ export class DatatypeEditStructureComponent {
 
     ngOnInit() {
         this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.datatypesService.getDatatypeStructure(this.datatypeId, structure  => {
-            this.datatypeStructure = {};
-            this.datatypeStructure.name = structure.name;
-            this.datatypeStructure.ext = structure.ext;
-            this.datatypeStructure.scope = structure.scope;
-
-            this.updateDatatype(this.datatypeStructure, structure.children, structure.binding, null, null, null, null);
-        });
-
         this.usages = this.configService._usages;
         this.cUsages = this.configService._cUsages;
         this.valuesetStrengthOptions = this.configService._valuesetStrengthOptions;
-        for (let dt of this.datatypesLinks) {
-            var dtOption = {label: dt.label, value : dt.id};
-            this.datatypeOptions.push(dtOption);
-        }
-        for (let vs of this.valuesetsLinks) {
-            var vsOption = {label: vs.label, value : vs.id};
-            this.valuesetOptions.push(vsOption);
-        }
-
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
+
+        this.datatypesTocService.getAll().then((dtTOCdata) => {
+            let listTocDTs:any = dtTOCdata[0];
+            for(let entry of listTocDTs){
+                var treeObj = entry.treeNode;
+
+                var dtLink:any = {};
+                dtLink.id = treeObj.key.id;
+                dtLink.label = treeObj.label;
+                dtLink.domainInfo = treeObj.domainInfo;
+                var index = treeObj.label.indexOf("_");
+                if(index > -1){
+                    dtLink.name = treeObj.label.substring(0,index);
+                    dtLink.ext = treeObj.label.substring(index);;
+                }else {
+                    dtLink.name = treeObj.label;
+                    dtLink.ext = null;
+                }
+
+                if(treeObj.lazyLoading) dtLink.leaf = false;
+                else dtLink.leaf = true;
+                this.datatypesLinks.push(dtLink);
+
+                var dtOption = {label: dtLink.label, value : dtLink.id};
+                this.datatypeOptions.push(dtOption);
+            }
+
+
+            this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
+                let listTocVSs:any = valuesetTOCdata[0];
+
+                for(let entry of listTocVSs){
+                    var treeObj = entry.treeNode;
+                    var valuesetLink:any = {};
+                    valuesetLink.id = treeObj.key.id;
+                    valuesetLink.label = treeObj.label;
+                    valuesetLink.domainInfo = treeObj.domainInfo;
+                    this.valuesetsLinks.push(valuesetLink);
+
+                    var vsOption = {label: valuesetLink.label, value : valuesetLink.id};
+                    this.valuesetOptions.push(vsOption);
+                }
+
+                this.datatypesService.getDatatypeStructure(this.datatypeId, structure  => {
+                    this.datatypeStructure = {};
+                    this.datatypeStructure.name = structure.name;
+                    this.datatypeStructure.ext = structure.ext;
+                    this.datatypeStructure.scope = structure.scope;
+
+                    this.updateDatatype(this.datatypeStructure, structure.children, structure.binding, null, null, null, null);
+                });
+            });
+        });
     }
 
     updateDatatype(node, children, currentBinding, parentComponentId, datatypeBinding, parentDTId, parentDTName){

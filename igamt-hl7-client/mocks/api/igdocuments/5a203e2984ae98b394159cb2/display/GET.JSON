@@ -1275,7 +1275,7 @@
                 },
                 "ext": null,
                 "description": "Extended Telecommunication Number",
-                "lazyLoading": true
+                "lazyLoading": false
               },
               "children": [],
               "id": "mock_ARBITRARY_ST",
@@ -1298,7 +1298,7 @@
                 },
                 "ext": null,
                 "description": "Extended Telecommunication Number",
-                "lazyLoading": true
+                "lazyLoading": false
               },
               "children": [],
               "id": "mock_ARBITRARY_SI",
@@ -1321,7 +1321,7 @@
                 },
                 "ext": null,
                 "description": "Extended Telecommunication Number",
-                "lazyLoading": true
+                "lazyLoading": false
               },
               "children": [],
               "id": "mock_ARBITRARY_ID",
@@ -2766,9 +2766,101 @@
               "children": [],
               "id": "5a43b8f284ae939e4e8f9456",
               "isExpanded": true
+            },
+            {
+              "data": {
+                "type": "VALUESET",
+                "label": "HL70001_IZ",
+                "dateUpdated": null,
+                "position": 61,
+                "key": {
+                  "id": "AAAAA",
+                  "version": 1
+                },
+                "domainInfo": {
+                  "version": null,
+                  "compatibilityVersion": [],
+                  "scope": "USER"
+                },
+                "ext": null,
+                "description": "AAAAA",
+                "lazyLoading": true
+              },
+              "children": [],
+              "id": "AAAAA",
+              "isExpanded": true
+            },
+            {
+              "data": {
+                "type": "VALUESET",
+                "label": "HL70002_IZ",
+                "dateUpdated": null,
+                "position": 62,
+                "key": {
+                  "id": "BBBBB",
+                  "version": 1
+                },
+                "domainInfo": {
+                  "version": null,
+                  "compatibilityVersion": [],
+                  "scope": "USER"
+                },
+                "ext": null,
+                "description": "BBBBB",
+                "lazyLoading": true
+              },
+              "children": [],
+              "id": "BBBBB",
+              "isExpanded": true
+            },
+            {
+              "data": {
+                "type": "VALUESET",
+                "label": "HL70003_IZ",
+                "dateUpdated": null,
+                "position": 63,
+                "key": {
+                  "id": "CCCCC",
+                  "version": 1
+                },
+                "domainInfo": {
+                  "version": null,
+                  "compatibilityVersion": [],
+                  "scope": "USER"
+                },
+                "ext": null,
+                "description": "CCCCC",
+                "lazyLoading": true
+              },
+              "children": [],
+              "id": "CCCCC",
+              "isExpanded": true
+            },
+            {
+              "data": {
+                "type": "VALUESET",
+                "label": "HL70004_IZ",
+                "dateUpdated": null,
+                "position": 64,
+                "key": {
+                  "id": "DDDDD",
+                  "version": 1
+                },
+                "domainInfo": {
+                  "version": null,
+                  "compatibilityVersion": [],
+                  "scope": "USER"
+                },
+                "ext": null,
+                "description": "www",
+                "lazyLoading": true
+              },
+              "children": [],
+              "id": "DDDDD",
+              "isExpanded": true
             }
           ],
-          "id": "5a203e2784ae98b394157d9e",
+          "id": "DDDDD",
           "isExpanded": true
         }
       ],
