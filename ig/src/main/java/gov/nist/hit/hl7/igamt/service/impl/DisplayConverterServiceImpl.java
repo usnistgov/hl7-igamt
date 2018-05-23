@@ -350,32 +350,25 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
   }
 
-
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDomainToModel(gov.nist.hit.hl7
-   * .igamt.ig.domain.Ig)
-   */
-  @Override
-  public IGDisplay convertDomainToModel(Ig ig) {
+/* (non-Javadoc)
+ * @see gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDomainToModel(gov.nist.hit.hl7.igamt.ig.domain.Ig)
+ */
+@Override
+public IGDisplay convertDomainToModel(Ig ig) {
     // TODO Auto-generated method stub
-    IGDisplay igDisplay = new IGDisplay();
-//    igDisplay.setMetadata(ig.getMetaData());
+    IGDisplay igDisplay= new IGDisplay();
+    igDisplay.setMetadata(ig.getMetadata());
     igDisplay.setAuthor(ig.getUsername());
     igDisplay.setDateUpdated(ig.getUpdateDate());
-    List<TreeNode> firstLevel = new ArrayList<TreeNode>();
-    for (TextSection s : ig.getContent()) {
-      firstLevel.add(createTextSectionNode(s, ig));
+    List<TreeNode> firstLevel= new ArrayList<TreeNode>();
+    for(TextSection s: ig.getContent()) {
+      firstLevel.add( createTextSectionNode( s, ig));
     }
-
     firstLevel.sort((h1, h2) -> h1.compareTo(h2));
-
     igDisplay.setToc(firstLevel);
     return igDisplay;
   }
+
 
 
   /*
@@ -638,6 +631,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       AddMessageResponseObject addMessageResponse) {
     AddMessageResponseDisplay addedNodes = new AddMessageResponseDisplay();
     // TODO Auto-generated method stub
+
     List<TreeNode> segments = this.getSegmentNodes(addMessageResponse.getSegments());
     List<TreeNode> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypesMap());
 
@@ -651,6 +645,8 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
     return addedNodes;
   }
+
+
 
   /*
    * (non-Javadoc)

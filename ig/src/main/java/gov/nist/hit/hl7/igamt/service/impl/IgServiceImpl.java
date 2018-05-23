@@ -81,7 +81,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public List findAll() {
+  public List<Ig> findAll() {
     // TODO Auto-generated method stub
     return igRepository.findAll();
   }
@@ -190,7 +190,7 @@ public class IgServiceImpl implements IgService {
    * 
    * @see
    * gov.nist.hit.hl7.igamt.ig.service.IgService#convertDomainToModel(gov.nist.hit.hl7.igamt.ig.
-   * domain.Ig)
+   * domain.Ig) >>>>>>> b6d5591cb74490526e1a1758d67d772b946cea99
    */
   @Override
   public List<Ig> findLatestByUsername(String username) {

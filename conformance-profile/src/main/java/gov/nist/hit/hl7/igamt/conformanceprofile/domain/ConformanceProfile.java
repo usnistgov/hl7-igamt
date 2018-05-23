@@ -35,9 +35,6 @@ public class ConformanceProfile extends Resource {
   private String event; // Message/@Event
 
   private String structID; // Message/@StructID private String identifier;
-  
-  private String authorNotes;
-  private String usageNotes;
 
   public String getMessageType() {
     return messageType;
@@ -131,20 +128,5 @@ public class ConformanceProfile extends Resource {
   public String getLabel() {
     return this.getName();
   }
-
-  public String getAuthorNotes() {
-    return authorNotes;
-  }
-
-  public void setAuthorNotes(String authorNotes) {
-    this.authorNotes = authorNotes;
-  }
-
-  public String getUsageNotes() {
-    return usageNotes;
-  }
-
-  public void setUsageNotes(String usageNotes) {
-    this.usageNotes = usageNotes;
-  }
+  
 }

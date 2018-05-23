@@ -202,6 +202,10 @@ public class Valueset extends Resource {
     this.internalCodeSystems = internalCodeSystems;
   }
 
+  
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
   @Override
   public String getLabel() {
     return this.getBindingIdentifier()+" - "+this.getName();
@@ -218,7 +222,7 @@ public class Valueset extends Resource {
   public void setSourceType(String sourceType) {
     this.sourceType = SourceType.valueOf(sourceType);
   }
-  
+
   @Override
   public Valueset clone() {
 
@@ -253,4 +257,5 @@ public class Valueset extends Resource {
     return clone;
 
   };
+
 }
