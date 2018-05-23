@@ -7,10 +7,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
+import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
@@ -30,6 +35,7 @@ import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
+import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
@@ -42,6 +48,8 @@ public class IGDocumentController {
   @Autowired
   IgService igService;
 
+  @Autowired
+  IgExportService igExportService;
 
   @Autowired
   DisplayConverterService displayConverter;
@@ -63,6 +71,45 @@ public class IGDocumentController {
     // TODO Auto-generated constructor stub
   }
 
+  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+      HttpServletResponse response) throws ExportException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+      response.setContentType("text/html");
+      response.setHeader("Content-disposition",
+          "attachment;filename=" + exportedFile.getFileName());
+      try {
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+      } catch (IOException e) {
+        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+      }
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+    }
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
+  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
+      HttpServletResponse response) throws ExportException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
+      response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      response.setHeader("Content-disposition",
+          "attachment;filename=" + exportedFile.getFileName());
+      try {
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+      } catch (IOException e) {
+        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+      }
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+    }
+  }
 
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -160,7 +207,7 @@ public class IGDocumentController {
     Date date = new Date();
     empty.setCreationDate(date);
     empty.setUpdateDate(date);
-    empty.setMetaData(wrapper.getMetaData());
+    empty.setMetadata(wrapper.getMetadata());
     crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
     igService.save(empty);
     return empty.getId();
@@ -185,7 +232,5 @@ public class IGDocumentController {
   public void setSaveService(SaveService saveService) {
     this.saveService = saveService;
   }
-
-
 
 }

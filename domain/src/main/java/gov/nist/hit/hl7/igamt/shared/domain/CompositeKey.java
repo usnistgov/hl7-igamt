@@ -62,5 +62,9 @@ public void setVersion(int version) {
   this.version = version;
 }
   
+@Override
+public String toString() {
+  return "{id:"+this.id+",version:"+this.version+"}";
+}
 
 }

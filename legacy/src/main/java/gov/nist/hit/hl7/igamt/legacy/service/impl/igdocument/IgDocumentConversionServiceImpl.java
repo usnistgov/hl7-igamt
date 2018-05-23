@@ -39,6 +39,7 @@ import gov.nist.hit.hl7.igamt.legacy.repository.TableRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
@@ -114,7 +115,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 				}
 				
 		}
-		IgMetaData newMetaData= new IgMetaData();
+		DocumentMetadata newMetaData= new DocumentMetadata();
 		newMetaData.setIdentifier(ig.getMetaData().getIdentifier());
 		newMetaData.setCoverPicture(ig.getMetaData().getCoverPicture());
 		newMetaData.setImplementationNotes(ig.getMetaData().getImplementationNotes());
@@ -123,7 +124,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService{
 		newMetaData.setSpecificationName(ig.getMetaData().getSpecificationName());
 		newMetaData.setSubTitle(ig.getMetaData().getSubTitle());
 		newMetaData.setTitle(ig.getMetaData().getTitle());
-		newIg.setMetaData(newMetaData);		
+		newIg.setMetadata(newMetaData);		
 		newIg.setComment(ig.getComment());
 		newIg.setCreatedFrom(ig.getCreatedFrom());
 		newIg.setDescription(ig.getMetaData().getDescription());

@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.shared.domain;
 
 public enum Type {
+
 IGDOCUMENT("IGDOCUMENT"),
 DATATYPEREGISTRY("DATATYPEREGISTRY"),
 SEGMENTREGISTRY("SEGMENTREGISTRY"),
@@ -21,7 +22,9 @@ TEXT("TEXT"),
 PROFILE("PROFILE"), CONFORMANCEPROFILEREGISTRY("CONFORMANCEPROFILEREGISTRY"),
 DISPLAY("DISPLAY"),
 EVENT("EVENT"),EVENTS("EVENTS"),
-BINDING("BINDING");
+BINDING("BINDING"),
+SECTION("SECTION"),
+DYNAMICMAPPING("DYNAMICMAPPING");
 
 Type(String value) {
 	this.value=value;
@@ -46,7 +49,5 @@ public static Type fromString(String text) {
     }
     return null;
   }
-
-
 
 }

@@ -17,7 +17,9 @@ import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -31,22 +33,30 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   private AbstractDomain abstractDomain;
   
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position) {
-    super(abstractDomain.getId().getId(), position, abstractDomain.getName());
+    this(abstractDomain, position, abstractDomain.getName());
+  }
+  
+  public SerializableAbstractDomain(AbstractDomain abstractDomain, String position, String title) {
+    super(abstractDomain.getId().getId(), position, title);
     this.abstractDomain = abstractDomain;
   }
   
-  public Element getElement(String elementName) {
-    Element element = super.getElement(elementName);
+  public Element getElement(Type type) {
+    Element element = super.getElement(type);
     if (this.abstractDomain != null) {
-      element.addAttribute(new Attribute("comment",
-          this.abstractDomain.getComment() != null ? this.abstractDomain.getComment() : ""));
+      if(this.abstractDomain.getComment() != null && !this.abstractDomain.getComment().isEmpty()) {
+        Element commentElement = new Element("Comment");
+        commentElement.appendChild(FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getComment()));
+        element.appendChild(commentElement);
+      }
       element.addAttribute(new Attribute("createdFrom",
           this.abstractDomain.getCreatedFrom() != null ? this.abstractDomain.getCreatedFrom() : ""));
       element.addAttribute(new Attribute("description",
-          this.abstractDomain.getDescription() != null ? this.abstractDomain.getDescription() : ""));
+          this.abstractDomain.getDescription() != null ? FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getDescription()) : ""));      
       element.addAttribute(
           new Attribute("name", this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
-      element.addAttribute(new Attribute("domainVersion",
+      Element metadataElement = new Element("Metadata");
+      metadataElement.addAttribute(new Attribute("hl7Version",
           this.abstractDomain.getDomainInfo() != null
               && this.abstractDomain.getDomainInfo().getVersion() != null
                   ? this.abstractDomain.getDomainInfo().getVersion()
@@ -56,14 +66,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
           && this.abstractDomain.getDomainInfo().getCompatibilityVersion() != null) {
         domainCompatibilityVersions = String.join(",", this.abstractDomain.getDomainInfo().getCompatibilityVersion());
       }
-      element
-          .addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
-      element.addAttribute(new Attribute("domainScope",
+      metadataElement.addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
+      metadataElement.addAttribute(new Attribute("scope",
           this.abstractDomain.getDomainInfo() != null && this.abstractDomain.getDomainInfo().getScope() != null ? this.abstractDomain.getDomainInfo().getScope().name()
               : ""));
-      element.addAttribute(new Attribute("id",
-          this.abstractDomain.getId() != null && this.abstractDomain.getId().getId() != null ? this.abstractDomain.getId().getId() : ""));
-      element.addAttribute(new Attribute("publicationVersion",
+      metadataElement.addAttribute(new Attribute("publicationVersion",
           this.abstractDomain.getPublicationInfo() != null && this.abstractDomain.getPublicationInfo().getPublicationVersion() != null
               ? this.abstractDomain.getPublicationInfo().getPublicationVersion()
               : ""));
@@ -73,7 +80,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
         publicationDate = DateSerializationUtil
             .serializeDate(this.abstractDomain.getPublicationInfo().getPublicationDate());
       }
-      element.addAttribute(new Attribute("publicationDate", publicationDate));
+      metadataElement.addAttribute(new Attribute("publicationDate", publicationDate));
+      element.appendChild(metadataElement);
+      element.addAttribute(new Attribute("id",
+          this.abstractDomain.getId() != null && this.abstractDomain.getId().getId() != null ? this.abstractDomain.getId().getId() : ""));
+      
       element.addAttribute(new Attribute("username", this.abstractDomain.getUsername() != null ? this.abstractDomain.getUsername() : ""));
     }
     return element;

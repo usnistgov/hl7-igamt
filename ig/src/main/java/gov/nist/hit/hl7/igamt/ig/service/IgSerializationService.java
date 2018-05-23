@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 
@@ -25,6 +26,6 @@ import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 @Service("igSerializationService")
 public interface IgSerializationService {
 
-  public String serializeIgDocument(Ig igDocument) throws SerializationException;
+  public String serializeIgDocument(Ig igDocument, ExportConfiguration exportConfiguration) throws SerializationException;
 
 }

@@ -27,21 +27,19 @@ public class SerializationException extends Exception {
    * 
    */
   private static final long serialVersionUID = 8382595266411607L;
-  protected Exception originException;
   protected Type type;
   protected String location;
   protected String message;
   
-  public SerializationException(Exception originException, Type type, String location, String message) {
-    super();
-    this.originException = originException;
+  public SerializationException(Throwable cause, Type type, String location, String message) {
+    super(cause);
     this.type = type;
     this.location = location;
     this.message = message;
   }
   
-  public SerializationException(Exception originException, Type type, String location) {
-    this(originException,type,location,null);
+  public SerializationException(Throwable cause, Type type, String location) {
+    this(cause,type,location,null);
   }
 
   public String printError() {
@@ -55,12 +53,12 @@ public class SerializationException extends Exception {
       errorBuilder.append(this.message);
     }
     errorBuilder.append(" => ");
-    if(originException instanceof SerializationException) {
-      errorBuilder.append(((SerializationException)originException).printError());
+    if(super.getCause() instanceof SerializationException) {
+      errorBuilder.append(((SerializationException)super.getCause()).printError());
     } else {
-      errorBuilder.append(originException.getClass().getName());
+      errorBuilder.append(super.getCause().getClass().getName());
       errorBuilder.append(" -> ");
-      errorBuilder.append(originException.getLocalizedMessage());
+      errorBuilder.append(super.getCause().getLocalizedMessage());
     }
     return errorBuilder.toString();
   }
@@ -76,14 +74,6 @@ public class SerializationException extends Exception {
     //removing the last comma
     stringBuilder.deleteCharAt(stringBuilder.length());
     return stringBuilder.toString();
-  }
-
-  public Exception getOriginException() {
-    return originException;
-  }
-
-  public void setOriginException(Exception originException) {
-    this.originException = originException;
   }
 
   public Type getType() {

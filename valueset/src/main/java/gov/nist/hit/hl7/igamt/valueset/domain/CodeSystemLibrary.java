@@ -36,5 +36,10 @@ public class CodeSystemLibrary extends Resource {
   public void setRefs(Set<CodeSystemLink> refs) {
     this.refs = refs;
   }
+  
+  @Override
+  public String getLabel() {
+    return this.getName();
+  }
 
 }

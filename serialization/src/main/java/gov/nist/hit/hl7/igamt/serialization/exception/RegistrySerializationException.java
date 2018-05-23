@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
+import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 
 /**
@@ -31,8 +32,8 @@ public class RegistrySerializationException extends SerializationException {
    * @param type
    * @param location
    */
-  public RegistrySerializationException(Exception originException, Registry registry) {
-    super(originException, registry.getType(), registry.getLabel());
+  public RegistrySerializationException(Exception originException, Section section, Registry registry) {
+    super(originException, registry.getType(), section.getLabel());
   }
 
 }

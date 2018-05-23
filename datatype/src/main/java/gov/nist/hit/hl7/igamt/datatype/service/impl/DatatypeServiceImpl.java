@@ -44,7 +44,6 @@ import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
-
 /**
  *
  * @author Maxence Lefort on Mar 1, 2018.
