@@ -58,7 +58,7 @@ export class DatatypesTocService {
     this.indexeddbService.tocDataBase.datatypes.where('id').equals(datatypeNode.id).delete();
   }
 
-  private addDatatype(datatypeNode: TocNode) {
+  public addDatatype(datatypeNode: TocNode) {
     this.indexeddbService.addedObjectsDatabase.datatypes.put(datatypeNode).then(() => {}, () => {
       console.log('Unable to add node from TOC');
     });

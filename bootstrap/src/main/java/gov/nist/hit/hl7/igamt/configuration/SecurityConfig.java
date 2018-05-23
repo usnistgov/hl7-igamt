@@ -30,7 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 //		sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 		.authorizeRequests().antMatchers("/login").permitAll()
 		.antMatchers("/register").permitAll()
-		.antMatchers("/api/**").fullyAuthenticated()
+//		.antMatchers("/api/**").fullyAuthenticated()
 		.and().addFilterBefore(authFilter,UsernamePasswordAuthenticationFilter.class);  
 		
 		

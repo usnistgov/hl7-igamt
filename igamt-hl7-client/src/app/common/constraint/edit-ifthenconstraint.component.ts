@@ -18,6 +18,7 @@ export class EditIfThenConstraintComponent {
   @Input() groupName: string;
   partialComplexAssertionTypes: any[];
   simpleAssertionTypes: any[];
+  limitedComplexAssertionTypes: any[];
   verbs: any[];
   operators: any[];
   formatTypes:any[];
@@ -38,6 +39,7 @@ export class EditIfThenConstraintComponent {
     this.formatTypes = this.configService._formatTypes;
     this.simpleAssertionTypes = this.configService._simpleAssertionTypes;
     this.partialComplexAssertionTypes = this.configService._partialComplexAssertionTypes;
+    this.limitedComplexAssertionTypes = this.configService._partialComplexAssertionTypes;
   }
 
   makeConstraintMode(constraint) {
@@ -50,5 +52,38 @@ export class EditIfThenConstraintComponent {
     constraint.thenAssertion = undefined;
     constraint.operator = undefined;
     constraint.verbKey = undefined;
+  }
+
+  changeComplexAssertionType(constraint){
+    if(constraint.complexAssertionType === 'ANDOR'){
+      constraint.child = undefined;
+      constraint.ifAssertion = undefined;
+      constraint.thenAssertion = undefined;
+      constraint.operator = 'AND';
+      constraint.assertions = [];
+      constraint.assertions.push({
+        "mode": "SIMPLE"
+      });
+
+      constraint.assertions.push({
+        "mode": "SIMPLE"
+      });
+    }else if(constraint.complexAssertionType === 'NOT'){
+      constraint.assertions = undefined;
+      constraint.ifAssertion = undefined;
+      constraint.thenAssertion = undefined;
+      constraint.child = {
+        "mode": "SIMPLE"
+      };
+    }else if(constraint.complexAssertionType === 'IFTHEN'){
+      constraint.assertions = undefined;
+      constraint.child = undefined;
+      constraint.ifAssertion = {
+        "mode": "SIMPLE"
+      };
+      constraint.thenAssertion = {
+        "mode": "SIMPLE"
+      };
+    }
   }
 }

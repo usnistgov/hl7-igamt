@@ -19,11 +19,15 @@
                         <p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.segmentBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
                     </div>
                 </div>
-                <div *ngIf="node.data.displayData.type !== 'FIELD'">
+                <div *ngIf="node.data.displayData.type === 'COMPONENT'">
                     <div *ngIf="node.data.usage !== 'C'">{{node.data.usage}}</div>
+                    <div *ngIf="node.data.usage === 'C'">C({{node.data.displayData.fieldDTbinding.predicate.trueUsage}}/{{node.data.displayData.fieldDTbinding.predicate.falseUsage}})</div>
+                </div>
+                <div *ngIf="node.data.displayData.type === 'SUBCOMPONENT'">
+                    <div *ngIf="node.data.usage !== 'C'">{{node.data.usage}}</div>
+                    <div *ngIf="node.data.usage === 'C'">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>
                 </div>
             </ng-template>
-
         </p-column>
 
         <p-column header="Cardinality" [style]="{'width':'100px'}">
@@ -128,7 +132,6 @@
                 </div>
             </ng-template>
         </p-column>
-
 
         <p-column header="Single Code" [style]="{'width':'200px'}">
             <ng-template let-col let-node="rowData" pTemplate="body">
@@ -304,11 +307,6 @@
             <edit-free-constraint *ngIf="selectedPredicate.type === 'FREE'" [constraint]="selectedPredicate"></edit-free-constraint>
             <edit-simple-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
             <edit-complex-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'COMPLEX'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
-
-            <p>
-                Parent Form Values:
-                {{cpForm.value | json}}
-            </p>
 
             <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCP()" [disabled]="cpForm.invalid"></button>
             <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="print(selectedConformanceStatement)"></button>

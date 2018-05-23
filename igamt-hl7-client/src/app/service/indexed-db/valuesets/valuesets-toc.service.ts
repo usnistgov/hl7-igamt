@@ -21,7 +21,7 @@ export class ValuesetsTocService {
     }
   }
 
-  public addValueset(valueset) {
+  public saveValueset(valueset) {
     console.log(valueset);
     if (this.indexeddbService.tocDataBase != null) {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.valuesets, async () => {
@@ -50,5 +50,64 @@ export class ValuesetsTocService {
     if (this.indexeddbService.addedObjectsDatabase != null) {
       return this.indexeddbService.addedObjectsDatabase.valuesets.bulkPut(valuesets);
     }
+  }
+
+  public removeValueset(valuesetNode: TocNode) {
+    this.indexeddbService.removedObjectsDatabase.valuesets.put(valuesetNode).then(() => {
+      this.removeFromToc(valuesetNode);
+    }, () => {
+      console.log('Unable to remove node from TOC');
+    });
+  }
+
+  private removeFromToc(valuesetNode: TocNode) {
+    this.indexeddbService.tocDataBase.valuesets.where('id').equals(valuesetNode.id).delete();
+  }
+
+  public addValueset(valuesetNode: TocNode) {
+    this.indexeddbService.addedObjectsDatabase.valuesets.put(valuesetNode).then(() => {}, () => {
+      console.log('Unable to add node from TOC');
+    });
+  }
+
+  public getAll(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      const promises = [];
+      promises.push(this.getAllFromToc());
+      promises.push(this.getAllFromAdded());
+      Promise.all(promises).then( (results: Array<any>) => {
+        const allNodes = new Array<TocNode>();
+        const tocNodes = results[0];
+        const addedNodes = results[1];
+        if (tocNodes != null) {
+          allNodes.push(tocNodes);
+        }
+        if (addedNodes != null) {
+          allNodes.push(addedNodes);
+        }
+        resolve(allNodes);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromToc(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.valuesets, async () => {
+        const valuesets = await this.indexeddbService.tocDataBase.valuesets.toArray();
+        resolve(valuesets);
+      });
+    });
+    return promise;
+  }
+
+  private getAllFromAdded(): Promise<Array<TocNode>> {
+    const promise = new Promise<Array<TocNode>>((resolve, reject) => {
+      this.indexeddbService.addedObjectsDatabase.transaction('rw', this.indexeddbService.addedObjectsDatabase.valuesets, async () => {
+        const valuesets = await this.indexeddbService.addedObjectsDatabase.valuesets.toArray();
+        resolve(valuesets);
+      });
+    });
+    return promise;
   }
 }

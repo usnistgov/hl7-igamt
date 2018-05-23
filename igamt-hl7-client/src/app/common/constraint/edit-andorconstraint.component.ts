@@ -67,4 +67,37 @@ export class EditAndOrConstraintComponent {
     constraint.verbKey = undefined;
   }
 
+  changeComplexAssertionType(constraint){
+    if(constraint.complexAssertionType === 'ANDOR'){
+      constraint.child = undefined;
+      constraint.ifAssertion = undefined;
+      constraint.thenAssertion = undefined;
+      constraint.operator = 'AND';
+      constraint.assertions = [];
+      constraint.assertions.push({
+        "mode": "SIMPLE"
+      });
+
+      constraint.assertions.push({
+        "mode": "SIMPLE"
+      });
+    }else if(constraint.complexAssertionType === 'NOT'){
+      constraint.assertions = undefined;
+      constraint.ifAssertion = undefined;
+      constraint.thenAssertion = undefined;
+      constraint.child = {
+        "mode": "SIMPLE"
+      };
+    }else if(constraint.complexAssertionType === 'IFTHEN'){
+      constraint.assertions = undefined;
+      constraint.child = undefined;
+      constraint.ifAssertion = {
+        "mode": "SIMPLE"
+      };
+      constraint.thenAssertion = {
+        "mode": "SIMPLE"
+      };
+    }
+  }
+
 }

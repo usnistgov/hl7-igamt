@@ -1,17 +1,21 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
+import java.util.TreeSet;
+
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 public class ConformanceProfileStructure {
   private CompositeKey id;
-  private String label;
-  private Scope scope;
-  private String version;
+  private DomainInfo domainInfo;
+  private String name;
+  private String identifier;
+  private String messageType;
+  private String structId;
   private ResourceBinding binding;
 
-//  private TreeSet<ComponentDisplay> structure;
+  private TreeSet<MsgStructElementDisplay> structure;
 
   public CompositeKey getId() {
     return id;
@@ -20,43 +24,59 @@ public class ConformanceProfileStructure {
   public void setId(CompositeKey id) {
     this.id = id;
   }
-
-//  public TreeSet<ComponentDisplay> getChildren() {
-//    return structure;
-//  }
-//
-//  public void setChildren(TreeSet<ComponentDisplay> structure) {
-//    this.structure = structure;
-//  }
-//
-//  public void addChild(ComponentDisplay componentDisplay) {
-//    if (this.structure == null)
-//      this.structure = new TreeSet<ComponentDisplay>(new PositionCompForComponentDisplay());
-//    this.structure.add(componentDisplay);
-//  }
-
-  public String getLabel() {
-    return label;
+  
+  public TreeSet<MsgStructElementDisplay> getStructure() {
+    return structure;
   }
 
-  public void setLabel(String label) {
-    this.label = label;
+  public void setStructure(TreeSet<MsgStructElementDisplay> structure) {
+    this.structure = structure;
+  }
+  
+  public void addStructure(MsgStructElementDisplay msgStructElementDisplay) {
+    if (this.structure == null)
+      this.structure = new TreeSet<MsgStructElementDisplay>(new PositionCompForMsgStructElementDisplay());
+    this.structure.add(msgStructElementDisplay);
   }
 
-  public Scope getScope() {
-    return scope;
+  public DomainInfo getDomainInfo() {
+    return domainInfo;
   }
 
-  public void setScope(Scope scope) {
-    this.scope = scope;
+  public void setDomainInfo(DomainInfo domainInfo) {
+    this.domainInfo = domainInfo;
   }
 
-  public String getVersion() {
-    return version;
+  public String getName() {
+    return name;
   }
 
-  public void setVersion(String version) {
-    this.version = version;
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  public String getMessageType() {
+    return messageType;
+  }
+
+  public void setMessageType(String messageType) {
+    this.messageType = messageType;
+  }
+
+  public String getStructId() {
+    return structId;
+  }
+
+  public void setStructId(String structId) {
+    this.structId = structId;
   }
 
   public ResourceBinding getBinding() {
@@ -66,18 +86,4 @@ public class ConformanceProfileStructure {
   public void setBinding(ResourceBinding binding) {
     this.binding = binding;
   }
-
-
 }
-
-
-//class PositionCompForComponentDisplay implements Comparator<ComponentDisplay> {
-//  @Override
-//  public int compare(ComponentDisplay e1, ComponentDisplay e2) {
-//    if (e1.getData().getPosition() > e2.getData().getPosition()) {
-//      return 1;
-//    } else {
-//      return -1;
-//    }
-//  }
-//}

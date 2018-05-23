@@ -10,11 +10,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 
 
 @RestController
@@ -43,7 +44,7 @@ public class ConformanceProfileController {
   @RequestMapping(value = "/api/conformanceprofiles/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody DisplayMetadata getConformanceProfileMetadata(@PathVariable("id") String id) {
+  public @ResponseBody DisplayConformanceProfileMetadata getConformanceProfileMetadata(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
@@ -56,7 +57,7 @@ public class ConformanceProfileController {
   @RequestMapping(value = "/api/conformanceprofiles/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody PreDef getConformanceProfilePredef(@PathVariable("id") String id) {
+  public @ResponseBody DisplayConformanceProfilePreDef getConformanceProfilePredef(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
@@ -69,11 +70,24 @@ public class ConformanceProfileController {
   @RequestMapping(value = "/api/conformanceprofiles/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody PostDef getConformanceProfilePostdef(@PathVariable("id") String id) {
+  public @ResponseBody DisplayConformanceProfilePostDef getConformanceProfilePostdef(@PathVariable("id") String id) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
       return conformanceProfileService.convertDomainToPostdef(conformanceProfile);
+    } else {
+      return null;
+    }
+  }
+  
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody ConformanceProfileConformanceStatement getConformanceProfileConformanceStatement(@PathVariable("id") String id) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
+      return conformanceProfileService.convertDomainToConformanceStatement(conformanceProfile);
     } else {
       return null;
     }
