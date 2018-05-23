@@ -50,8 +50,8 @@ public interface ConformanceProfileRepository extends MongoRepository<Conformanc
 	public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
 
 	public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
-	
-	@Query(value = "{ '_id' : ?0 }", fields= "{name : 1,messageType:1,identifier:1, structID:1, event:1}")
+	 
+	@Query(value = "{ '_id' : ?0 }", fields= "{name : 1,messageType:1,identifier:1, structID:1, event:1, description:1,_id:1,domainInfo:1}")
 	public List<ConformanceProfile> findDisplayFormat(CompositeKey id);
 	
 	@Query(value = "{ '_id._id' : ?0 }")

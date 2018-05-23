@@ -29,6 +29,8 @@ export class SegmentsIndexedDbService {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
           callback(segment.metadata);
+        }else {
+          callback(null);
         }
       });
     } else {
@@ -105,14 +107,13 @@ export class SegmentsIndexedDbService {
     }
   }
 
-  public saveSegment(segment) {
+  public saveSegment(segment): Promise<{}> {
     console.log(segment);
     if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const savedSegment = await this.indexeddbService.changedObjectsDatabase.segments.get(segment.id);
-        this.doSave(segment, savedSegment);
-      });
+        const savedSegment = this.indexeddbService.changedObjectsDatabase.segments.get(segment.id)
+        return this.doSave(segment, savedSegment);
     }
+    return Promise.reject(new Error('Database not instantiated'));
   }
 
   public saveSegmentStructureToNodeDatabase(id, segmentStructure) {
@@ -126,12 +127,10 @@ export class SegmentsIndexedDbService {
     }
   }
 
-  private doSave(segment, savedSegment) {
+  private doSave(segment, savedSegment): Promise<{}> {
     savedSegment = IndexedDbUtils.populateIObject(segment, savedSegment);
     if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        await this.indexeddbService.changedObjectsDatabase.segments.put(savedSegment);
-      });
+      return this.indexeddbService.changedObjectsDatabase.segments.put(savedSegment);
     }
   }
 }

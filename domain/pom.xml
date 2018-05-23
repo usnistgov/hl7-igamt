@@ -22,6 +22,11 @@
 			<scope>test</scope>
 		</dependency>
 		
+		<dependency>
+      <groupId>commons-fileupload</groupId>
+	  <artifactId>commons-fileupload</artifactId>
+      <version>1.2.1</version>
+    </dependency>
 				<dependency>
 		  	<groupId>gov.nist.hit.hl7</groupId>
   			<artifactId>auth-utils</artifactId>

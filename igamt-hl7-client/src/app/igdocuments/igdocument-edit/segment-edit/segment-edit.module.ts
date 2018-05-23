@@ -19,6 +19,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 import {UtilsModule} from "../../../utils/utils.module";
+import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
 
 
 @NgModule({
@@ -36,7 +37,7 @@ import {UtilsModule} from "../../../utils/utils.module";
     SelectButtonModule,
     TableModule
   ],
-  providers : [],
+  providers : [SegmentEditMetadatResolver],
   declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

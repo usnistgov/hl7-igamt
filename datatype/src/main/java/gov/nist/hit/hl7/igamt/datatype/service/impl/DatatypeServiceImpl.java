@@ -13,6 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.service.impl;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,6 +24,10 @@ import java.util.Set;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -36,6 +44,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.Component;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 
+
 /**
  *
  * @author Maxence Lefort on Mar 1, 2018.
@@ -46,6 +55,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
+  @Autowired
+  private MongoTemplate mongoTemplate;
+
+
 
   @Override
   public Datatype findByKey(CompositeKey key) {
@@ -143,6 +156,19 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
+  public Datatype getLatestById(String id) {
+
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Datatype datatype = mongoTemplate.findOne(query, Datatype.class);
+    return datatype;
+  }
+
+
+
+  @Override
   public DatatypeStructure convertDomainToStructure(Datatype datatype) {
     if (datatype != null) {
       DatatypeStructure result = new DatatypeStructure();
@@ -171,8 +197,12 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToMetadata(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToMetadata(gov.nist.hit.
+   * hl7.igamt.datatype.domain.Datatype)
    */
   @Override
   public DisplayMetadata convertDomainToMetadata(Datatype datatype) {
@@ -190,8 +220,12 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPredef(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPredef(gov.nist.hit.hl7.
+   * igamt.datatype.domain.Datatype)
    */
   @Override
   public PreDef convertDomainToPredef(Datatype datatype) {
@@ -211,8 +245,12 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPostdef(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToPostdef(gov.nist.hit.hl7
+   * .igamt.datatype.domain.Datatype)
    */
   @Override
   public PostDef convertDomainToPostdef(Datatype datatype) {
@@ -232,16 +270,20 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveDatatype(gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveDatatype(gov.nist.hit.hl7.igamt.
+   * datatype.domain.display.ChangedDatatype)
    */
   @Override
   public Datatype saveDatatype(ChangedDatatype changedDatatype) {
-    if(changedDatatype != null && changedDatatype.getId() != null){
+    if (changedDatatype != null && changedDatatype.getId() != null) {
       Datatype datatype = this.findLatestById(changedDatatype.getId());
-      
-      if(datatype != null){
-        if(changedDatatype.getMetadata() != null){
+
+      if (datatype != null) {
+        if (changedDatatype.getMetadata() != null) {
           datatype.setDescription(changedDatatype.getMetadata().getDescription());
           datatype.setExt(changedDatatype.getMetadata().getExt());
           datatype.setName(changedDatatype.getMetadata().getName());
@@ -249,30 +291,58 @@ public class DatatypeServiceImpl implements DatatypeService {
           datatype.getDomainInfo().setScope(changedDatatype.getMetadata().getScope());
           datatype.getDomainInfo().setVersion(changedDatatype.getMetadata().getVersion());
         }
-        
-        if(changedDatatype.getPostDef() != null){
+
+        if (changedDatatype.getPostDef() != null) {
           datatype.setPostDef(changedDatatype.getPostDef().getPostDef());
         }
-        
-        if(changedDatatype.getPreDef() != null){
+
+        if (changedDatatype.getPreDef() != null) {
           datatype.setPreDef(changedDatatype.getPreDef().getPreDef());
         }
-        
-        if(changedDatatype.getStructure() != null){
+
+        if (changedDatatype.getStructure() != null) {
           datatype.setBinding(changedDatatype.getStructure().getBinding());
           Set<Component> components = new HashSet<Component>();
-          for(ComponentDisplay cd : changedDatatype.getStructure().getChildren()){
+          for (ComponentDisplay cd : changedDatatype.getStructure().getChildren()) {
             components.add(cd.getData());
           }
-          if(components.size() > 0){
-            ComplexDatatype cDatatype = (ComplexDatatype)datatype;
-            cDatatype.setComponents(components);  
+          if (components.size() > 0) {
+            ComplexDatatype cDatatype = (ComplexDatatype) datatype;
+            cDatatype.setComponents(components);
           }
         }
       }
-      return this.save(datatype);   
+      return this.save(datatype);
     }
-   
+
     return null;
+  }
+
+  @Override
+  public List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version) {
+    // TODO Auto-generated method stub
+
+
+
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    where.andOperator(Criteria.where("domainInfo.version").is(version));
+
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Datatype.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("name");
+    qry.fields().include("description");
+    List<Datatype> Datatypes = mongoTemplate.find(qry, Datatype.class);
+
+
+
+    return Datatypes;
   }
 }

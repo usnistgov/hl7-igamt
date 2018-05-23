@@ -10,17 +10,30 @@ import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.shared.domain.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.Registry;
+import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 
 @Document
 public class Ig extends AbstractDomain {
 
   private IgMetaData metaData;
-  private Set<TextSection> content= new HashSet<TextSection>() ;
+  private Set<TextSection> content= new HashSet<TextSection>();
+  private gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry=new gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry() ;
+  private SegmentRegistry segmentRegistry = new SegmentRegistry();
+  private ProfileComponentRegistry profileComponentRegistry=new ProfileComponentRegistry() ;
+  private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
+  private ConformanceProfileRegistry conformanceProfileRegistry= new ConformanceProfileRegistry(); 
+  
+  private ValueSetRegistry valueSetRegistry=new ValueSetRegistry(); 
+
+  
   
 
 
@@ -71,162 +84,56 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
 		return null;
 		
 	}
-	
-	
-	@SuppressWarnings("unused")
-	public Registry getDatatypeLibrary() {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.DATATYPEREGISTRY)) {
-					return (Registry)s;
-				}
-			}
-		}
-		return null;
-		
-	}
-	
-	@SuppressWarnings("unused")
-	public Registry getSegmentLibrary() {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.SEGMENTRGISTRY)) {
-					return (Registry)s;
-				}
-			}
-		}
-		return null;
-		
-	}
-	
-	
-	@SuppressWarnings("unused")
-	public Registry getConformanceProfileLibrary() {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.CONFORMANCEPROFILEREGISTRY)) {
-					return (Registry)s;
-				}
-			}
-		}
-		return null;
-		
-	}
 
-	@SuppressWarnings("unused")
-	public Registry getCompositeProfileLibrary() {
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.CONFORMANCEPROFILEREGISTRY)) {
-					return (Registry)s;
-				}
-			}
-		}
-		return null;
-		
-	}
-	
-	@SuppressWarnings("unused")
-	public Registry getProfileComponentLibrary() {	
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
-					return (Registry)s;
-				}
-			}
-		}
-		return null;
-		
-	}
-	@SuppressWarnings("unused")
-	public Registry getValueSetLibrary() {
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof ValueSetRegistry) {
-					return (ValueSetRegistry)s;
-				}
-			}
-		return null;
-	}
-	
-	@SuppressWarnings("unused")
-	public void setValueSetLibrary( ValueSetRegistry valueSetRegistry) {
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof ValueSetRegistry) {
-				s= valueSetRegistry;
-				}
-			}
-	}
-	@SuppressWarnings("unused")
-	public void setProfileComponentLibrary(Registry profileComponentRegistry ) {	
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
-					s= profileComponentRegistry;
-				}
-			}
-		}		
-	}
-	@SuppressWarnings("unused")
-	public void setCompositeProfileLibrary(Registry compositeProfileRegistry ) {	
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.PROFILECOMPONENTREGISTRY)) {
-					s= compositeProfileRegistry;
-				}
-			}
-		}		
-	}
+  public gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry getDatatypeRegistry() {
+    return datatypeRegistry;
+  }
+
+  public void setDatatypeRegistry(gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry) {
+    this.datatypeRegistry = datatypeRegistry;
+  }
+
+  public SegmentRegistry getSegmentRegistry() {
+    return segmentRegistry;
+  }
+
+  public void setSegmentRegistry(SegmentRegistry segmentRegistry) {
+    this.segmentRegistry = segmentRegistry;
+  }
+
+  public ProfileComponentRegistry getProfileComponentRegistry() {
+    return profileComponentRegistry;
+  }
+
+  public void setProfileComponentRegistry(ProfileComponentRegistry profileComponentRegistry) {
+    this.profileComponentRegistry = profileComponentRegistry;
+  }
+
+  public CompositeProfileRegistry getCompositeProfileRegistry() {
+    return compositeProfileRegistry;
+  }
+
+  public void setCompositeProfileRegistry(CompositeProfileRegistry compositeProfileRegistry) {
+    this.compositeProfileRegistry = compositeProfileRegistry;
+  }
+
+  public ConformanceProfileRegistry getConformanceProfileRegistry() {
+    return conformanceProfileRegistry;
+  }
+
+  public void setConformanceProfileRegistry(ConformanceProfileRegistry conformanceProfileRegistry) {
+    this.conformanceProfileRegistry = conformanceProfileRegistry;
+  }
+
+  public ValueSetRegistry getValueSetRegistry() {
+    return valueSetRegistry;
+  }
+
+  public void setValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+    this.valueSetRegistry = valueSetRegistry;
+  }
 	
 	
-	@SuppressWarnings("unused")
-	public void  setSegmentLibrary(Registry segmentRegistry) {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.SEGMENTRGISTRY)) {
-					s=segmentRegistry;
-				}
-			}
-		}		
-	}
-	
-	@SuppressWarnings("unused")
-	public void setDatatypeLibrary(Registry datatypeRegistry ) {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.DATATYPEREGISTRY)) {
-					 s= datatypeRegistry;
-				}
-			}
-		}
-	}
-	
-	@SuppressWarnings("unused")
-	public void setConformanceProfileLibrary(Registry segmentRegistry) {
-		
-		for(Section s : this.getProfile().getChildren()) {
-			if(s instanceof Registry) {
-				if(s.getType().equals(Type.CONFORMANCEPROFILEREGISTRY)) {
-					s= segmentRegistry;
-				}
-			}
-		}
-	}
-	
-	@SuppressWarnings({ "unused" })
-	public void setProfile(TextSection s){
-		for( TextSection  t : this.content) {
-		if(t instanceof TextSection) {
-			if(t.getType().equals(Type.PROFILE)) {
-				t=s;
-			}
-		  }
-		}
-	}
 	
 	
 	

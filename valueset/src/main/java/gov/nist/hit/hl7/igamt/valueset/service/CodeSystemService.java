@@ -40,4 +40,6 @@ public interface CodeSystemService {
 
   public void removeCollection();
 
+  List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier( String scope, String hl7version,String identifier);
+
 }

@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
+import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 
 /**
  *

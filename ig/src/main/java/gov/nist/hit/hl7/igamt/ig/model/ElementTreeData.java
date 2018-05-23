@@ -10,6 +10,8 @@ public class ElementTreeData  extends TreeData{
 	private DomainInfo domainInfo;
 	private String ext; 
 	private String description;
+	public boolean lazyLoading =true;
+	
 	
 	public ElementTreeData() {
 		super();

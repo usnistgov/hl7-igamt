@@ -1,0 +1,70 @@
+[
+{
+"label": "Introduction",
+"type":"TEXT",
+"position": 1,
+"children":[	{
+			"label" :"Purpose",
+			"position":1,
+			"type":"TEXT"
+			},
+			{
+			"label" :"Audience",
+			"type":"TEXT",
+			"position":2
+			},
+			{
+			"label" :"Organization of this guide",
+			"type":"TEXT",
+			
+			"position":3
+			},
+			{
+			"label" :"Referenced profiles - antecedents",
+			"type":"TEXT",
+			
+			"position":4
+			},
+			{
+			"label" :"Scope",
+			"type":"TEXT",
+			
+			"position":5,	
+			"children":[{ "label" :"In Scope",
+			"type":"TEXT",
+			
+						"position":1
+									},
+									{ "label" :"Out of Scope",
+									"type":"TEXT",
+									
+						"position":3
+									}
+			]
+			},
+			{"label": "Out of Scope",
+			"type":"TEXT",
+			
+			"position":6}
+	]
+},{
+	"label": "Data Types",
+	"position": 3,
+	"type":"PROFILE",
+	
+	"children" : [
+	{
+	"label" : "Library Flavors",
+	"type": "DATATYPEREGISTRY",
+	"position":1
+	}, 
+	{
+	"label" : "Derived Data Types",
+	"type": "DATATYPEREGISTRY",
+	"position":2
+	}
+	]
+
+}
+
+]

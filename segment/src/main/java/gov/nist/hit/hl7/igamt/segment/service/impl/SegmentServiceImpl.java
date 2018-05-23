@@ -13,6 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service.impl;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +25,9 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -38,6 +45,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Field;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
+
 /**
  *
  * @author Jungyub Woo on Mar 15, 2018.
@@ -48,9 +56,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
-  
+
   @Autowired
-  MongoTemplate mongoTemplate;
+  private MongoTemplate mongoTemplate;
 
   @Autowired
   DatatypeService datatypeService;
@@ -130,6 +138,17 @@ public class SegmentServiceImpl implements SegmentService {
   @Override
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name) {
     return segmentRepository.findByDomainInfoScopeAndName(scope, name);
+  }
+
+  @Override
+  public Segment getLatestById(String id) {
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Segment segment = mongoTemplate.findOne(query, Segment.class);
+    return segment;
+
   }
 
   @Override
@@ -219,16 +238,19 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveMetadata(gov.nist.hit.hl7.igamt.segment.domain.display.SegmentMetadata)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveMetadata(gov.nist.hit.hl7.igamt.
+   * segment.domain.display.SegmentMetadata)
    */
   @Override
   public Segment saveSegment(ChangedSegment changedSegment) {
-    if(changedSegment != null && changedSegment.getId() != null){
+    if (changedSegment != null && changedSegment.getId() != null) {
       Segment segment = this.findLatestById(changedSegment.getId());
-      
-      if(segment != null){
-        if(changedSegment.getMetadata() != null){
+
+      if (segment != null) {
+        if (changedSegment.getMetadata() != null) {
           segment.setDescription(changedSegment.getMetadata().getDescription());
           segment.setExt(changedSegment.getMetadata().getExt());
           segment.setName(changedSegment.getMetadata().getName());
@@ -236,28 +258,63 @@ public class SegmentServiceImpl implements SegmentService {
           segment.getDomainInfo().setScope(changedSegment.getMetadata().getScope());
           segment.getDomainInfo().setVersion(changedSegment.getMetadata().getVersion());
         }
-        
-        if(changedSegment.getPostDef() != null){
+
+        if (changedSegment.getPostDef() != null) {
           segment.setPostDef(changedSegment.getPostDef().getPostDef());
         }
-        
-        if(changedSegment.getPreDef() != null){
+
+        if (changedSegment.getPreDef() != null) {
           segment.setPreDef(changedSegment.getPreDef().getPreDef());
         }
-        
-        if(changedSegment.getStructure() != null){
+
+        if (changedSegment.getStructure() != null) {
           segment.setBinding(changedSegment.getStructure().getBinding());
           Set<Field> fields = new HashSet<Field>();
-          for(FieldDisplay fd : changedSegment.getStructure().getChildren()){
+          for (FieldDisplay fd : changedSegment.getStructure().getChildren()) {
             fields.add(fd.getData());
           }
           segment.setChildren(fields);
         }
       }
-      return this.save(segment);   
+      return this.save(segment);
     }
-   
+
     return null;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#findDisplayFormatByScopeAndVersion(java.
+   * lang.String, java.lang.String)
+   */
+  @Override
+  public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version) {
+    // TODO Auto-generated method stub
+
+
+
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    where.andOperator(Criteria.where("domainInfo.version").is(version));
+
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Segment.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("name");
+    qry.fields().include("description");
+    List<Segment> segments = mongoTemplate.find(qry, Segment.class);
+
+
+
+    return segments;
   }
 
   @Override
@@ -272,7 +329,7 @@ public class SegmentServiceImpl implements SegmentService {
       } else {
         result.setLabel(segment.getName());
       }
-      
+
       result.setConformanceStatements(segment.getBinding().getConformanceStatements());
       return result;
     }

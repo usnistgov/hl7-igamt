@@ -1,74 +1,112 @@
 [
 {
 "label": "Introduction",
+"type":"TEXT",
 "position": 1,
 "children":[	{
 			"label" :"Purpose",
-			"position":1
+			"position":1,
+			"type":"TEXT"
 			},
 			{
 			"label" :"Audience",
+			"type":"TEXT",
 			"position":2
 			},
 			{
 			"label" :"Organization of this guide",
+			"type":"TEXT",
+			
 			"position":3
 			},
 			{
 			"label" :"Referenced profiles - antecedents",
+			"type":"TEXT",
+			
 			"position":4
 			},
 			{
 			"label" :"Scope",
+			"type":"TEXT",
+			
 			"position":5,	
 			"children":[{ "label" :"In Scope",
+			"type":"TEXT",
+			
 						"position":1
 									},
 									{ "label" :"Out of Scope",
+									"type":"TEXT",
+									
 						"position":3
 									}
 			]
 			},
 			{"label": "Out of Scope",
+			"type":"TEXT",
+			
 			"position":6}
 	]
 },
 {
 "label" : "Use Cases",
+"type":"TEXT",
+
 "position":2,
 "children": [{
  "label" : "Actors",
+ "type":"TEXT",
+ 
  "position":1
  },{
  "label":"General Assumptions",
+ "type":"TEXT",
  "position":2,
  "children" : [
- 	{"label" :"Assumptions", "position":1 }
- 	,{"label": "Pre-conditions", "position" :2}
-	 ,{"label" : "Post-conditions", "position" :3}
+ 	{"label" :"Assumptions","type":"TEXT",
+ 	 "position":1 }
+ 	,{"label": "Pre-conditions",
+ 	"type":"TEXT",
+ 	 "position" :2}
+	 ,{"label" : "Post-conditions",
+	 "type":"TEXT",
+	  "position" :3}
  	]	
  },
  
- {"label": "Use Case", "position":3,
+ {"label": "Use Case",
+ "type":"TEXT",
+  "position":3,
  "children":[
- 		{"label" : "User Story", "position" : 1},
- 		{"label": "Specific Assumptions", "position": 2,
- 		"children": [{"label": "Assumptions", "position" :1}, {"label" :"Pre-conditions", "position": 2 },{"label":"Post-conditions", "position":3}]
+ 		{"label" : "User Story",
+ 		"type":"TEXT",
+ 		 "position" : 1},
+ 		{"label": "Specific Assumptions",
+ 		"type":"TEXT",
+ 		 "position": 2,
+ 		"children": [{"label": "Assumptions",
+ 		"type":"TEXT",
+ 		 "position" :1}, {"label" :"Pre-conditions",
+ 		 "type":"TEXT",
+ 		  "position": 2 },{"label":"Post-conditions", 
+ 		  "type":"TEXT",
+ 		  "position":3}]
  		
  		},
- 		{"label" : "Scenario", "position":3},
- 		{"label":"Context", "position" :4}, 
- 		{"label":"Interaction Model", "position" : 5},
- 		{"label":"Functional Requirements", "position" : 6}
- 		
- 
+ 		{"label" : "Scenario",
+ 		"type":"TEXT",
+ 		 "position":3},
+ 		{"label":"Context",
+ 		"type":"TEXT",
+ 		 "position" :4}, 
+ 		{"label":"Interaction Model",
+ 		"type":"TEXT",
+ 		 "position" : 5},
+ 		{"label":"Functional Requirements",
+ 		"type":"TEXT",
+ 		 "position" : 6}
+ 	
  ]
- 
- 
- 
- 
- 
- 
  
  }
 ]
@@ -76,12 +114,12 @@
 },{
 	"label": "Message Infrastructure",
 	"position": 3,
-	"type":"PRFOILE",
+	"type":"PROFILE",
 	
 	"children" : [
 	{
 	"label" : "Profile Components",
-	"type": "PROFILECOMPONENTSREGISTRY",
+	"type": "PROFILECOMPONENTREGISTRY",
 	"position":1
 	}, 
 	{
@@ -96,25 +134,20 @@
 	},
 	{
 	"label" : "Segments And Field Description",
-	"type": "SEGMENTRGISTRY",
-	"position":4
-	
+	"type": "SEGMENTREGISTRY",
+	"position":4	
 	}, 
 	{
 	"label" : "Data Types",
 	"type": "DATATYPEREGISTRY",
 	"position":5
-	
 	}, {
-	
 	"label": "Value Sets",
 	"type":"VALUESETREGISTRY",
 	"position":6
 	
 	}	
 	]
-
-
 
 }
 

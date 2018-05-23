@@ -50,6 +50,10 @@ public interface ValuesetService {
 
   public List<Valueset> findByBindingIdentifier(String bindingIdentifier);
 
+
+  public Valueset getLatestById(String id);
+
+
   public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope,
       String version, String bindingIdentifier);
 
@@ -58,5 +62,12 @@ public interface ValuesetService {
 
   public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope,
       String bindingIdentifier);
+
+  /**
+   * @param string
+   * @param version
+   * @return
+   */
+  public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
 }

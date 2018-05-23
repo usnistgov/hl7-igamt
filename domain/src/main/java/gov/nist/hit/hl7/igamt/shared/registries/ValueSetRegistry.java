@@ -1,6 +1,9 @@
-package gov.nist.hit.hl7.igamt.shared.domain;
+package gov.nist.hit.hl7.igamt.shared.registries;
 
 import java.util.HashMap;
+
+import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.shared.domain.ValueSetConfigForExport;
 
 public class ValueSetRegistry extends Registry {
   private ValueSetConfigForExport exportConfig;
@@ -8,10 +11,11 @@ public class ValueSetRegistry extends Registry {
   
   public ValueSetRegistry() {
     super();
-    this.setType(Type.VALUESET);
+    this.type=Type.VALUESETREGISTRY;
   }
 
-  public HashMap<String, Boolean> getCodesPresence() {
+
+public HashMap<String, Boolean> getCodesPresence() {
     return codesPresence;
   }
   public void setCodesPresence(HashMap<String, Boolean> codesPresence) {

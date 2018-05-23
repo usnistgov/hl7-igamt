@@ -66,6 +66,8 @@ public interface ConformanceProfileService {
       String version, String name);
 
   public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
+	
+  ConformanceProfile getLatestById(String id);
 
   public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
 

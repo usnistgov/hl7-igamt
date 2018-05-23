@@ -14,7 +14,7 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint;
 import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 
 /**
- * @author jungyubw
+ * @author jungyubw  
  *
  */
 public class Predicate extends Constraint {

@@ -63,6 +63,8 @@ public interface DatatypeService {
 
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
 
+  public Datatype getLatestById(String id);
+
   public DatatypeStructure convertDomainToStructure(Datatype datatype);
 
   public DisplayMetadata convertDomainToMetadata(Datatype datatype);
@@ -72,4 +74,6 @@ public interface DatatypeService {
   public PostDef convertDomainToPostdef(Datatype datatype);
 
   public Datatype saveDatatype(ChangedDatatype changedDatatype);
+
+  List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 }

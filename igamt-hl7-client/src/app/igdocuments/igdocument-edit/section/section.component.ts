@@ -1,30 +1,73 @@
-import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from '@angular/core';
+import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
+import * as _ from 'lodash';
+import {setUpControl} from "@angular/forms/src/directives/shared";
+
+import {TocService} from "../toc/toc.service";
+import {NgForm} from "@angular/forms";
+import {WithSave} from "../../../guards/with.save.interface";
 
 @Component({
-  templateUrl: './section.component.html'
+  templateUrl: './section.component.html',
+
+
 })
 
-export class SectionComponent implements OnInit {
-  constructor( private sp: ActivatedRoute, private  router : Router) {
+export class SectionComponent implements OnInit, WithSave {
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService) {
+    this.tocService.getActiveNode().subscribe(x=>{
+      console.log(x);
+      this.currentNode=x;
+    });
 
   }
   section:any;
+  backup:any;
+  currentNode:any;
+
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
   ngOnInit() {
 
     this.sp.data.map(data =>data.currentSection).subscribe(x=>{
-      this.section= x;
       console.log(this.section);
-
-
-
+      this.backup=x;
+      this.section=_.cloneDeep(this.backup);
     });
+
 
   }
 
+  save(){
+   this.tocService.getActiveNode().subscribe(x=>{
+
+       console.log("saving");
+       let node= x;
+       if(this.section.id===node.data.id){
+         node.data.data= _.cloneDeep(this.section.data);
+
+       }
+      }
+
+    );
 
 
 
+  }
+  reset(){
+    this.section=_.cloneDeep(this.backup);
+  }
+
+  getCurrent(){
+    return this.section;
+  }
+  getBackup(){
+    return this.backup;
+  }
+
+  isValid(){
+    return !this.editForm.invalid;
+  }
 
 }

@@ -19,8 +19,8 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
 import gov.nist.hit.hl7.igamt.shared.domain.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 

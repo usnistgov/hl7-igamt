@@ -10,7 +10,7 @@ import {HttpClient} from "@angular/common/http";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service"
+import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 
 @Component({
@@ -25,7 +25,7 @@ export class SegmentEditConformanceStatementsComponent {
     segmentConformanceStatements:any;
     idMap: any;
     treeData: any[];
-    constraintType: any = [];
+    constraintTypes: any = [];
     assertionModes: any = [];
 
     selectedConformanceStatement: any = {};
@@ -42,15 +42,6 @@ export class SegmentEditConformanceStatementsComponent {
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
     ){
-        this.constraintType = [
-            {label: 'Predefined', value: 'PREDEFINED', icon: 'fa fa-fw fa-spinner', disabled: true},
-            {label: 'Predefined Patterns', value: 'PREDEFINEDPATTERNS', icon: 'fa fa-fw fa-spinner', disabled: true},
-            {label: 'Assertion Builder', value: 'ASSERTION', icon: 'fa fa-fw fa-file-code-o'},
-            {label: 'Free Text', value: 'FREE', icon: 'fa fa-fw fa-file-text-o'}
-        ];
-
-        this.assertionModes = this.configService._assertionModes;
-
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -64,10 +55,10 @@ export class SegmentEditConformanceStatementsComponent {
     }
 
     ngOnInit() {
+        this.constraintTypes = this.configService._constraintTypes;
+        this.assertionModes = this.configService._assertionModes;
         this.idMap = {};
         this.treeData = [];
-        //TODO temp
-        this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
             this.segmentConformanceStatements = conformanceStatementData;

@@ -1,6 +1,11 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -13,19 +18,43 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
+import gov.nist.hit.hl7.igamt.ig.service.CrudService;
+import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SaveService;
+import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
 
 @RestController
 public class IGDocumentController {
+  @Autowired
+  IgService igService;
 
 
   @Autowired
-  IgService igService;
+  DisplayConverterService displayConverter;
+
+  @Autowired
+  MessageEventService messageEventService;
+
+  @Autowired
+  ConformanceProfileService conformanceProfileService;
+
+  @Autowired
+  CrudService crudService;
+
 
   @Autowired
   SaveService saveService;
@@ -38,6 +67,7 @@ public class IGDocumentController {
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
 
+
   public @ResponseBody List<IgSummary> getUserIG() {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -48,6 +78,7 @@ public class IGDocumentController {
 
       return igService.convertListToDisplayList(igdouments);
     } else {
+
 
 
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
@@ -62,25 +93,77 @@ public class IGDocumentController {
   @RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id) {
-
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id,
+      Authentication authentication) {
     if (authentication != null) {
 
 
       Ig igdoument = igService.findLatestById(id);
-      IGDisplay ret = igService.convertDomainToModel(igdoument);
+      IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
       return ret;
 
     } else {
-      return null;
+      // redirect
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+
     }
 
   }
 
   @RequestMapping(value = "api/igdocuments/{id}/save", method = RequestMethod.POST)
   public void save(@RequestBody ChangedObjects changedObjects) {
-    saveService.saveChangedObjects(changedObjects);
+    System.out.println(changedObjects.toString());
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}",
+      method = RequestMethod.GET, produces = {"application/json"})
+
+  public @ResponseBody List<MessageEventTreeNode> getMessageEvents(
+      @PathVariable("version") String version) {
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      return messageEventService.findByHl7Version(version);
+
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+    }
+
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/create", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody CompositeKey create(@RequestBody CreationWrapper wrapper,
+      Authentication authentication)
+      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+
+    String username = authentication.getPrincipal().toString();
+    Ig empty = igService.CreateEmptyIg();
+    Set<String> savedIds = new HashSet<String>();
+    for (Event ev : wrapper.getMsgEvts()) {
+      ConformanceProfile profile = conformanceProfileService.findByKey(ev.getId());
+      if (profile != null) {
+        ConformanceProfile clone = profile.clone();
+        clone.setUsername(username);
+        clone.setEvent(ev.getName());
+        clone.setId(new CompositeKey());
+        clone.setName(profile.getName());
+        clone = conformanceProfileService.save(clone);
+        savedIds.add(clone.getId().getId());
+      }
+    }
+    empty.setId(new CompositeKey());
+    empty.setUsername(username);
+    Date date = new Date();
+    empty.setCreationDate(date);
+    empty.setUpdateDate(date);
+    empty.setMetaData(wrapper.getMetaData());
+    crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
+    igService.save(empty);
+    return empty.getId();
   }
 
 

@@ -1,0 +1,105 @@
+<p-dialog [(visible)]="_visible">
+  <p-header>
+    Add HL7 Value Sets
+  </p-header>
+  <div class="ui-g">
+
+    <label class="metadata-label"> Select Hl7 Version</label>
+
+    <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getSource(v)">
+
+    </p-radioButton>
+
+  </div>
+
+  <div class="ui-g">
+    <div class="ui-g-6">
+      <p-table #tt *ngIf="sources"  [value]="sources" sortField="name" sortMode="single" [scrollable]="true" scrollHeight="200px" [resizableColumns]="true"  [globalFilterFields]="['name','description']" >
+        <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Global Filter" (input)="tt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pResizableColumn width="250px">
+              Value Sets
+            </th>
+            <th pResizableColumn width="75px">
+              As Is
+            </th>
+            <th pResizableColumn width="75px">
+              As Flavor
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData>
+          <tr>
+            <td class="ui-resizable-column" width="250px">
+
+       <span class="badge label-HL7" >
+
+        HL7 {{rowData.domainInfo.version}}</span> {{rowData.bindingIdentifier}}-{{rowData.name}}
+            </td>
+            <td class="ui-resizable-column" width="75px">
+              <button type="button" icon="fa-plus" pButton (click)="addAsIs(rowData)"></button>
+            </td>
+            <td class="ui-resizable-column" width="75px">
+              <button type="button" icon="fa-plus" pButton (click)="addAsFlavor(rowData)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </div>
+    <div class="ui-g-6">
+
+      <p-table #dst  [value]="dest" sortField="name" sortMode="single" [scrollable]="true" scrollHeight="200px" [resizableColumns]="true"  [globalFilterFields]="['name','description']" >
+
+        <ng-template pTemplate="caption">
+          <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+          <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dst.filterGlobal($event.target.value, 'contains')" style="width:auto">
+        </ng-template>
+        <ng-template pTemplate="header">
+          <tr>
+            <th pResizableColumn width="250px">
+              Value Set
+            </th>
+            <th pResizableColumn width="75px">
+              Binding Indentifier
+            </th>
+            <th pResizableColumn width="75px">
+              Actions
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-rowData>
+          <tr>
+            <td class="ui-resizable-column" width="250px">
+
+       <span class="badge"  [ngClass]="{'label-HL7' : getScopeLabel(rowData)==='HL7', 'label-USE': getScopeLabel(rowData)==='USR','label-MASTER':getScopeLabel(rowData)==='MAS','label-PRL':getScopeLabel(rowData)==='PRL','label-PVS':getScopeLabel(rowData)==='PVS'}">
+
+       {{getScopeLabel(rowData)}} {{rowData.domainInfo.version}}</span>
+              {{rowData.name}}-{{rowData.description}}
+            </td>
+            <td class="ui-resizable-column" width="75px">
+              <input *ngIf="rowData.flavor" type="text" style="width: 100%" pInputText [(ngModel)]="rowData.name"/>
+
+            </td>
+            <td class="ui-resizable-column" width="75px">
+              <button type="button" icon="fa-remove" (click)="remove(rowData)" pButton class="ui-button-danger"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </div>
+
+
+  </div>
+
+
+  <p-footer>
+    <p-button  styleClass="green-btn" (onClick)="submit()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+</p-dialog>
+

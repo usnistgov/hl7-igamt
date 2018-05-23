@@ -2,6 +2,7 @@
     <span style="font-weight: 700; font-size: 16px">
   {{section.data.label}}
 
+<button style="float:right" (click)="reset()">Rest</button>
 
   </span>
 </div>
@@ -14,16 +15,19 @@
 
 </span>
   </div>
-
-
-
-
+<form  #editForm="ngForm" novalidate>
 <div class="ui-g">
   <label class="ui-g-1">
    <strong> Title </strong>
   </label>
-  <input  class="ui-g-11" type="text" [(ngModel)]="section.data.label" pInputText placeholder="Section Title"  id="filter" #filter (keyup)="filterFn()" pTooltip="section Title"  tooltipPosition="top" >
+  <!--<input  class="ui-g-11" type="text" id="title" [(ngModel)]="section.data.label" pInputText placeholder="Section Title"  id="filter" pTooltip="section Title"  tooltipPosition="top"  required>-->
+  <input name="title" id="title" pInputText placeholder="title"
+         [(ngModel)]="section.data.label" class="ui-g-11" #title="ngModel"  pTooltip="section Title" required>
 
+  <div class="ui-g-offset-1" *ngIf="title.invalid&&  (title.dirty || title.touched)">
+    <p-message severity="error" text="Title is required"></p-message>
+
+  </div>
 </div>
 
 <div class="ui-g">
@@ -34,5 +38,6 @@
   <div class="ui-g-11" [froalaEditor]>{{section.description}}</div>
 
 </div>
+</form>
 
 

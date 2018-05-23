@@ -13,11 +13,14 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
 
 /**
@@ -91,5 +94,32 @@ public class ConformanceProfile extends Resource {
   public void addChild(MsgStructElement mse) {
     this.children.add(mse);
   }
+
+  @Override
+  public ConformanceProfile clone() {
+
+    ConformanceProfile clone = new ConformanceProfile();
+    clone.setBinding(this.binding);
+    clone.setChildren(children);
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setEvent(this.getEvent());
+    clone.setId(null);
+    clone.setMessageType(messageType);
+    clone.setIdentifier(identifier);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setStructID(structID);
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
+  };
+
 
 }

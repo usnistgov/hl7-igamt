@@ -8,7 +8,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Before;
@@ -34,7 +33,6 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 
 // @RunWith(SpringRunner.class)
@@ -69,8 +67,8 @@ public class IGDocumentControllerTest {
     IgMetaData metaData = new IgMetaData();
     ig.setMetaData(metaData);
     TextSection p = new TextSection();
-    p.setChildren(new HashSet<Section>());
-    ig.setProfile(p);
+    // p.setChildren(new HashSet<Section>());
+    // ig.setProfile(p);
     ig.setName("Ig1 name");
     ig.setDescription("Ig1 desc");
     ig.setCreationDate(new Date());
@@ -84,8 +82,8 @@ public class IGDocumentControllerTest {
     metaData = new IgMetaData();
     ig.setMetaData(metaData);
     p = new TextSection();
-    p.setChildren(new HashSet<Section>());
-    ig.setProfile(p);
+    // p.setChildren(new HashSet<Section>());
+    // ig.setProfile(p);
     ig.setName("Ig2 name");
     ig.setDescription("Ig2 desc");
     ig.setCreationDate(new Date());

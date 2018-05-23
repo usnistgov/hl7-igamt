@@ -1,1 +1,64 @@
-<span class="feature-title">EDIT IG Document Metadata</span>
+
+
+
+
+
+  <div class="ui-g input-box">
+    <label class="metadata-label ui-g-2">
+      Cover Picture <p-fileUpload mode="basic" name="file" url="./uploaded_files/upload" auto="auto"   maxFileSize="1000000" (onUpload)="upload($event)">
+    </p-fileUpload>
+    </label>
+    <div class="ui-g-offset-3">
+      <img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} width="80" height="80">
+      <span *ngIf="!metaData.coverPicture" > No Image Selected </span>
+    </div>
+
+  </div>
+
+
+  <!--<img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} >-->
+  <!--<img *ngIf="!metaData.coverPicture"  src="../../../assets/layout/images/404.png">-->
+
+  <div class="ui-g input-box">
+    <label class="metadata-label ui-g-2">
+      Title
+    </label>
+
+    <input name="title" id="title" pInputText placeholder="title"
+           [(ngModel)]="metaData.title" class="ui-g-10" #title="ngModel" required>
+
+    <div class="ui-g-offset-1" *ngIf="title.invalid&&  (title.dirty || title.touched)">
+      <p-message severity="error" text="Title is required"></p-message>
+
+    </div>
+
+  </div>
+
+  <div class="ui-g input-box">
+    <label class="metadata-label ui-g-2">
+      Sub-Title
+    </label>
+
+    <input name="subTitle" id="subTitle" pInputText placeholder="Sub Title "
+           [(ngModel)]="metaData.subTitle" class="ui-g-10" #subTitle="ngModel">
+
+  </div>
+
+  <div class="ui-g input-box">
+    <label class="metadata-label ui-g-2">
+      Organization
+    </label>
+
+    <input name="orgName" id="orgName" pInputText placeholder="Organization"
+           [(ngModel)]="metaData.orgName" class="ui-g-10" #orgName="ngModel">
+
+
+  </div>
+
+  <div class="ui-g input-box">
+    <label class="metadata-label ui-g-2">
+      Author Notes
+    </label>
+    <div  class="ui-g-10" [froalaEditor] [(froalaModel)]="metaData.implementationNotes"></div>
+  </div>
+

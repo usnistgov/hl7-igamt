@@ -9,6 +9,7 @@ import {GeneralConfigurationService} from "../../../../service/general-configura
 import {SegmentsService} from "../../../../service/segments/segments.service";
 import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
+import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 import { _ } from 'underscore';
 
@@ -23,11 +24,20 @@ export class SegmentEditStructureComponent {
     segmentId:any;
     segmentStructure:any;
     usages:any;
+    cUsages:any;
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
     textDefinitionDialogOpen:boolean = false;
     selectedNode:any;
     valuesetStrengthOptions:any = [];
+
+    preciateEditorOpen:boolean = false;
+
+    selectedPredicate: any = {};
+    constraintTypes: any = [];
+    assertionModes: any = [];
+    idMap: any;
+    treeData: any[];
 
     valuesetsLinks :any = [
         {
@@ -133,7 +143,8 @@ export class SegmentEditStructureComponent {
         }
     ];
 
-    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService){
+    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
+                private constraintsService : ConstraintsService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -142,9 +153,6 @@ export class SegmentEditStructureComponent {
     }
 
     ngOnInit() {
-        //TODO temp
-        this.indexedDbService.initializeDatabase('5a203e2984ae98b394159cb2');
-
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.segmentsService.getSegmentStructure(this.segmentId, structure  => {
             this.segmentStructure = {};
@@ -156,6 +164,7 @@ export class SegmentEditStructureComponent {
         });
 
         this.usages = this.configService._usages;
+        this.cUsages = this.configService._cUsages;
         this.valuesetStrengthOptions = this.configService._valuesetStrengthOptions;
         for (let dt of this.datatypesLinks) {
             var dtOption = {label: dt.label, value : dt.id};
@@ -165,6 +174,9 @@ export class SegmentEditStructureComponent {
             var vsOption = {label: vs.label, value : vs.id};
             this.valuesetOptions.push(vsOption);
         }
+
+        this.constraintTypes = this.configService._constraintTypes;
+        this.assertionModes = this.configService._assertionModes;
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
@@ -186,11 +198,20 @@ export class SegmentEditStructureComponent {
             if(entry.data.displayData.idPath.split("-").length === 1){
                 entry.data.displayData.type = 'FIELD';
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
+
+                if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding) {
+                    entry.data.displayData.segmentBinding = {};
+                    entry.data.displayData.segmentBinding.predicate = {};
+                }
             }else if(entry.data.displayData.idPath.split("-").length === 2){
                 entry.data.displayData.type = 'COMPONENT';
                 entry.data.displayData.fieldDT = parentDTId;
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
+                if(entry.data.usage === 'C' && !entry.data.displayData.fieldDTbinding) {
+                    entry.data.displayData.fieldDTbinding = {};
+                    entry.data.displayData.segmentBinding.fieldDTbinding = {};
+                }
             }else if(entry.data.displayData.idPath.split("-").length === 3){
                 entry.data.displayData.type = "SUBCOMPONENT";
                 entry.data.displayData.fieldDT = fieldDT;
@@ -198,6 +219,10 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
                 entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
+                if(entry.data.usage === 'C' && !entry.data.displayData.componentDTbinding) {
+                    entry.data.displayData.componentDTbinding = {};
+                    entry.data.displayData.segmentBinding.componentDTbinding = {};
+                }
             }
 
             this.setHasSingleCode(entry.data.displayData);
@@ -466,5 +491,151 @@ export class SegmentEditStructureComponent {
     truncate(txt){
         if(txt.length < 10) return txt;
         else return txt.substring(0,10) + "...";
+    }
+
+    print(data){
+        console.log(data);
+    }
+
+    editPredicate(node){
+        this.selectedNode = node;
+        if(this.selectedNode.data.displayData.segmentBinding) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
+        if(!this.selectedPredicate) this.selectedPredicate = {};
+
+        this.idMap = {};
+        this.treeData = [];
+
+        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
+            this.idMap[this.segmentId] = {name:segStructure.name};
+
+            var rootData = {elementId:this.segmentId};
+
+            for (let child of segStructure.children) {
+                var childData =  JSON.parse(JSON.stringify(rootData));
+                childData.child = {
+                    elementId: child.data.id,
+                };
+
+                if(child.data.max === '1'){
+                    childData.child.instanceParameter = '1';
+                }else{
+                    childData.child.instanceParameter = '*';
+                }
+
+                var treeNode = {
+                    label: child.data.name,
+                    data : childData,
+                    expandedIcon: "fa-folder-open",
+                    collapsedIcon: "fa-folder",
+                };
+
+                var data = {
+                    id: child.data.id,
+                    name: child.data.name,
+                    max: child.data.max,
+                    position: child.data.position,
+                    usage: child.data.usage,
+                    dtId: child.data.ref.id
+                };
+
+                this.idMap[this.segmentId + '-' + data.id] = data;
+                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
+                this.treeData.push(treeNode);
+            }
+        });
+        this.preciateEditorOpen = true;
+    }
+
+    submitCP(){
+        if(this.selectedPredicate.type === 'ASSERTION') {
+            this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedPredicate.assertion, this.idMap);
+            this.selectedPredicate.assertion.description = 'If ' + this.selectedPredicate.assertion.description;
+            this.selectedPredicate.freeText = undefined;
+        }
+        if(!this.selectedNode.data.displayData.segmentBinding) this.selectedNode.data.displayData.segmentBinding = {};
+        this.selectedNode.data.displayData.segmentBinding.predicate = this.selectedPredicate;
+        this.preciateEditorOpen = false;
+        this.selectedPredicate = {};
+        this.selectedNode = null;
+    }
+
+    changeType(){
+        if(this.selectedPredicate.type == 'ASSERTION'){
+            this.selectedPredicate.assertion = {};
+            this.selectedPredicate.assertion = {mode:"SIMPLE"};
+        }else if(this.selectedPredicate.type == 'FREE'){
+            this.selectedPredicate.assertion = undefined;
+        }else if(this.selectedPredicate.type == 'PREDEFINEDPATTERNS'){
+            this.selectedPredicate.assertion = undefined;
+        }else if(this.selectedPredicate.type == 'PREDEFINED'){
+            this.selectedPredicate.assertion = undefined;
+        }
+    }
+
+    changeAssertionMode(){
+        if(this.selectedPredicate.assertion.mode == 'SIMPLE'){
+            this.selectedPredicate.assertion = {mode:"SIMPLE"};
+        }else if(this.selectedPredicate.assertion.mode == 'COMPLEX'){
+            this.selectedPredicate.assertion = {mode:"COMPLEX"};
+        }
+    }
+
+    popChild(id, dtId, parentTreeNode){
+        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+            this.idMap[id].dtName = dtStructure.name;
+            if(dtStructure.children){
+                for (let child of dtStructure.children) {
+                    var childData =  JSON.parse(JSON.stringify(parentTreeNode.data));
+
+                    this.makeChild(childData, child.data.id, '1');
+
+                    var treeNode = {
+                        label: child.data.name,
+                        data:childData,
+                        expandedIcon: "fa-folder-open",
+                        collapsedIcon: "fa-folder",
+                    };
+
+                    var data = {
+                        id: child.data.id,
+                        name: child.data.name,
+                        max: "1",
+                        position: child.data.position,
+                        usage: child.data.usage,
+                        dtId: child.data.ref.id
+                    };
+                    this.idMap[id + '-' + data.id] = data;
+
+                    this.popChild(id + '-' + data.id, data.dtId, treeNode);
+
+                    if(!parentTreeNode.children) parentTreeNode.children = [];
+                    parentTreeNode.children.push(treeNode);
+
+                }
+            }
+        });
+    }
+
+    makeChild(data, id, para){
+        if(data.child) this.makeChild(data.child, id, para);
+        else data.child = {
+            elementId: id,
+            instanceParameter: para
+        }
+    }
+
+    onUsageChange(node){
+        if(node.data.usage === 'C') {
+            if(!node.data.displayData.segmentBinding) {
+                node.data.displayData.segmentBinding = {};
+            }
+            if(!node.data.displayData.segmentBinding.predicate){
+                node.data.displayData.segmentBinding.predicate = {};
+            }
+        }else if(node.data.usage !== 'C') {
+            if(node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate) {
+                node.data.displayData.segmentBinding.predicate = undefined;
+            }
+        }
     }
 }

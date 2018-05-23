@@ -5,6 +5,8 @@ import { ObjectsReferenceDatabase } from './objects-reference-database';
 import Dexie from 'dexie';
 import {IgDocumentService} from '../ig-document/ig-document.service';
 import {NodeDatabase} from './node-database';
+import {TocDatabase} from './toc-database';
+import {IgDocumentInfo, IgDocumentInfoDatabase} from "./ig-document-info-database";
 
 @Injectable()
 export class IndexedDbService {
@@ -13,47 +15,104 @@ export class IndexedDbService {
   createdObjectsDatabase;
   addedObjectsDatabase;
   nodeDatabase;
+  tocDataBase;
+  igDocumentInfoDataBase;
+
   igDocumentId?: string;
   constructor(public igDocumentService: IgDocumentService) {
-    Dexie.delete('ChangedObjectsDatabase').then(() => {
-      console.log('ChangedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete ChangedObjectsDatabase');
-    }).finally(() => {
-      this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    });
-    Dexie.delete('RemovedObjectsDatabase').then(() => {
-      console.log('RemovedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete RemovedObjectsDatabase');
-    }).finally(() => {
-      this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
-    });
-    Dexie.delete('CreatedObjectsDatabase').then(() => {
-      console.log('CreatedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete CreatedObjectsDatabase');
-    }).finally(() => {
-      this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
-    });
-    Dexie.delete('AddedObjectsDatabase').then(() => {
-      console.log('AddedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete AddedObjectsDatabase');
-    }).finally(() => {
-      this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
-    });
-    Dexie.delete('NodeDatabase').then(() => {
-      console.log('NodeDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete NodeDatabase');
-    }).finally(() => {
-      this.nodeDatabase = new NodeDatabase('NodeDatabase');
-    });
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+    this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+    this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
+    this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
+    this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
+    this.nodeDatabase = new NodeDatabase('NodeDatabase');
+    this.tocDataBase = new TocDatabase('TocDataBase');
   }
 
-  public initializeDatabase (igDocumentId) {
-    this.igDocumentId = igDocumentId;
+  public initializeDatabase(igDocumentId): Promise<{}> {
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+    const promises = [];
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('IgDocumentInfoDatabase').then(() => {
+        console.log('IgDocumentInfoDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete IgDocumentInfoDatabase');
+      }).finally(() => {
+        this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+        this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
+          resolve();
+        });
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('ChangedObjectsDatabase').then(() => {
+        console.log('ChangedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete ChangedObjectsDatabase');
+      }).finally(() => {
+        this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('RemovedObjectsDatabase').then(() => {
+        console.log('RemovedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete RemovedObjectsDatabase');
+      }).finally(() => {
+        this.removedObjectsDatabase = new TocDatabase('RemovedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('CreatedObjectsDatabase').then(() => {
+        console.log('CreatedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete CreatedObjectsDatabase');
+      }).finally(() => {
+        this.createdObjectsDatabase = new TocDatabase('CreatedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('AddedObjectsDatabase').then(() => {
+        console.log('AddedObjectsDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete AddedObjectsDatabase');
+      }).finally(() => {
+        this.addedObjectsDatabase = new TocDatabase('AddedObjectsDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('NodeDatabase').then(() => {
+        console.log('NodeDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
+        this.nodeDatabase = new NodeDatabase('NodeDatabase');
+        resolve();
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('tocDataBase').then(() => {
+        console.log('tocDataBase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
+        this.tocDataBase = new TocDatabase('TocDataBase');
+        resolve();
+      });
+    }));
+    return Promise.all(promises);
+  }
+
+  public getIgDocumentInfo() {
+    this.igDocumentInfoDataBase.transaction('r', this.igDocumentInfoDataBase.igDocument, async () => {
+      const collection = this.igDocumentInfoDataBase.igDocument.toArray();
+      console.log(JSON.stringify(collection));
+      return collection[0];
+    });
   }
 
   public persistChanges() {
@@ -96,6 +155,7 @@ export class IndexedDbService {
     console.log(JSON.stringify(changedObjects));
     igDocumentService.save(changedObjects);
   }
+
 }
 
 class ChangedObjects {

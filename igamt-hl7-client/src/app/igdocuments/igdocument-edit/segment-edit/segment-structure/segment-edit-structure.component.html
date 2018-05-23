@@ -9,13 +9,18 @@
             </ng-template>
         </p-column>
 
-        <p-column header="Usage" [style]="{'width':'100px'}" >
+        <p-column header="Usage" [style]="{'width':'190px'}" >
             <ng-template let-col let-node="rowData" pTemplate="body" >
                 <div *ngIf="node.data.displayData.type === 'FIELD'">
-                    <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
+                    <p-dropdown *ngIf="node.data.usage !== 'C'" [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '100%'}"></p-dropdown>
+                    <div *ngIf="node.data.usage === 'C'">
+                        <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '30%'}"></p-dropdown>
+                        (<p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.segmentBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
+                        <p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.segmentBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
+                    </div>
                 </div>
                 <div *ngIf="node.data.displayData.type !== 'FIELD'">
-                    {{node.data.usage}}
+                    <div *ngIf="node.data.usage !== 'C'">{{node.data.usage}}</div>
                 </div>
             </ng-template>
 
@@ -192,6 +197,33 @@
 
         <p-column header="Predicate" [style]="{'width':'150px'}">
             <ng-template let-col let-node="rowData" pTemplate="body">
+                <div *ngIf="node.data.usage === 'C'">
+                    <div *ngIf="node.data.displayData.type === 'FIELD'">
+                        <div *ngIf="node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.freeText">
+                            {{node.data.displayData.segmentBinding.predicate.freeText}}
+                        </div>
+                        <div *ngIf="node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.assertion && node.data.displayData.segmentBinding.predicate.assertion.description">
+                            {{node.data.displayData.segmentBinding.predicate.assertion.description}}
+                        </div>
+                        <i class="fa fa-pencil" (click)="editPredicate(node)" style="width:20%;"></i>
+                    </div>
+                    <div *ngIf="node.data.displayData.type === 'COMPONENT'">
+                        <div *ngIf="node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.freeText">
+                            {{node.data.displayData.fieldDTbinding.predicate.freeText}}
+                        </div>
+                        <div *ngIf="node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.assertion && node.data.displayData.fieldDTbinding.predicate.assertion.description">
+                            {{node.data.displayData.fieldDTbinding.predicate.assertion.description}}
+                        </div>
+                    </div>
+                    <div *ngIf="node.data.displayData.type === 'SUBCOMPONENT'">
+                        <div *ngIf="node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.freeText">
+                            {{node.data.displayData.componentDTbinding.predicate.freeText}}
+                        </div>
+                        <div *ngIf="node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.assertion && node.data.displayData.componentDTbinding.predicate.assertion.description">
+                            {{node.data.displayData.componentDTbinding.predicate.assertion.description}}
+                        </div>
+                    </div>
+                </div>
             </ng-template>
         </p-column>
 
@@ -240,5 +272,46 @@
 
     <p-dialog *ngIf="selectedNode" header="Edit Text Definition of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
         <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
+    </p-dialog>
+
+    <p-dialog *ngIf="selectedNode" header="Edit Predicate of {{selectedNode.data.name}}" [(visible)]="preciateEditorOpen" [modal]="true" [responsive]="true" [width]="1200" [minWidth]="800" [minY]="70">
+        <form #cpForm="ngForm">
+            <div class="ui-g ui-fluid">
+                <div class="ui-g-12 ui-md-2">
+                    <label>Editor Type: </label>
+                </div>
+                <div class="ui-g-12 ui-md-10">
+                    <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedPredicate.type" (onChange)="changeType()"></p-selectButton>
+                </div>
+            </div>
+
+            <div *ngIf="selectedPredicate.type && selectedPredicate.type ==='ASSERTION'">
+                <div class="ui-g ui-fluid">
+                    <div class="ui-g-12 ui-md-2">
+                        <label>Assertion Type: </label>
+                    </div>
+                    <div class="ui-g-12 ui-md-10">
+                        <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [(ngModel)]="selectedPredicate.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
+                        <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
+                            <div *ngIf="assertionMode.errors.required">
+                                Assertion Type is required.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <edit-free-constraint *ngIf="selectedPredicate.type === 'FREE'" [constraint]="selectedPredicate"></edit-free-constraint>
+            <edit-simple-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
+            <edit-complex-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'COMPLEX'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
+
+            <p>
+                Parent Form Values:
+                {{cpForm.value | json}}
+            </p>
+
+            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCP()" [disabled]="cpForm.invalid"></button>
+            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="print(selectedConformanceStatement)"></button>
+        </form>
     </p-dialog>
 </div>
