@@ -40,15 +40,15 @@ export class ValuesetsTocService {
     }
   }
 
-  public bulkAdd(valuesets: Array<TocNode>) {
+  public bulkAdd(valuesets: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.valuesets, async () => {
-        this.indexeddbService.tocDataBase.valuesets.bulkPut(valuesets).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.valuesets.bulkPut(valuesets);
+    }
+  }
+
+  public bulkAddNewValuesets(valuesets: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.valuesets.bulkPut(valuesets);
     }
   }
 }

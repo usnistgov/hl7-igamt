@@ -40,15 +40,15 @@ export class CompositeProfilesTocService {
     }
   }
 
-  public bulkAdd(compositeProfiles: Array<TocNode>) {
+  public bulkAdd(compositeProfiles: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.compositeProfiles, async () => {
-        this.indexeddbService.tocDataBase.compositeProfiles.bulkPut(compositeProfiles).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.compositeProfiles.bulkPut(compositeProfiles);
+    }
+  }
+
+  public bulkAddNewCompositeProfiles(compositeProfiles: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.compositeProfiles.bulkPut(compositeProfiles);
     }
   }
 }

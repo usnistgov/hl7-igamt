@@ -3,6 +3,7 @@
     "id": "mock_ARBITRARY_ST",
     "version": 1
   },
+  "name": "ST",
   "label": "ST",
   "scope": "HL7STANDARD",
   "version": "2.6",

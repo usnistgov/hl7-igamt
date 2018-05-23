@@ -1,9 +1,11 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
+import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from '@angular/core';
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import * as _ from 'lodash';
 import {setUpControl} from "@angular/forms/src/directives/shared";
 
-import {WithSave} from "../../../with.save.interface";
+import {TocService} from "../toc/toc.service";
+import {NgForm} from "@angular/forms";
+import {WithSave} from "../../../guards/with.save.interface";
 
 @Component({
   templateUrl: './section.component.html',
@@ -12,34 +14,49 @@ import {WithSave} from "../../../with.save.interface";
 })
 
 export class SectionComponent implements OnInit, WithSave {
-  constructor( private sp: ActivatedRoute, private  router : Router) {
-
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService) {
+    this.tocService.getActiveNode().subscribe(x=>{
+      console.log(x);
+      this.currentNode=x;
+    });
 
   }
   section:any;
   backup:any;
+  currentNode:any;
+
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
   ngOnInit() {
 
     this.sp.data.map(data =>data.currentSection).subscribe(x=>{
       console.log(this.section);
-
       this.backup=x;
       this.section=_.cloneDeep(this.backup);
-
-
-
     });
+
 
   }
 
   save(){
-  this.backup=this.section;
-  this.section=_.cloneDeep(this.backup);
+   this.tocService.getActiveNode().subscribe(x=>{
+
+       console.log("saving");
+       let node= x;
+       if(this.section.id===node.data.id){
+         node.data.data= _.cloneDeep(this.section.data);
+
+       }
+      }
+
+    );
+
+
 
   }
   reset(){
-
+    this.section=_.cloneDeep(this.backup);
   }
 
   getCurrent(){
@@ -50,6 +67,7 @@ export class SectionComponent implements OnInit, WithSave {
   }
 
   isValid(){
-
+    return !this.editForm.invalid;
   }
+
 }

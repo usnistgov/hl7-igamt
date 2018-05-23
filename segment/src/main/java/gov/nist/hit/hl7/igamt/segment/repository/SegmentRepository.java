@@ -36,7 +36,8 @@ public interface SegmentRepository extends MongoRepository<Segment, CompositeKey
 
   List<Segment> findByName(String name);
 
-  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
+      String name);
 
   List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
@@ -44,4 +45,6 @@ public interface SegmentRepository extends MongoRepository<Segment, CompositeKey
 
   @Query(value = "{ '_id._id' : ?0 }")
   List<Segment> findLatestById(ObjectId id, Sort sort);
+
+
 }

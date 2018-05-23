@@ -21,6 +21,7 @@ public class FreeTextConformanceStatement extends ConformanceStatement {
 
   public FreeTextConformanceStatement() {
     super();
+    this.setType(ConstraintType.FREE);
   }
 
   public String getFreeText() {

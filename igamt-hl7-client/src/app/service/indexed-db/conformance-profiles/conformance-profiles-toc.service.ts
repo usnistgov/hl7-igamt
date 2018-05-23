@@ -43,9 +43,12 @@ export class ConformanceProfilesTocService {
   public bulkAdd(conformanceProfiles: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
       return this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
-      // this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.conformanceProfiles, async () => {
-      //   return this.indexeddbService.tocDataBase.conformanceProfiles.bulkPut(conformanceProfiles);
-      // });
+    }
+  }
+
+  public bulkAddNewConformanceProfiles(conformanceProfiles: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.conformanceProfiles.bulkPut(conformanceProfiles);
     }
   }
 }

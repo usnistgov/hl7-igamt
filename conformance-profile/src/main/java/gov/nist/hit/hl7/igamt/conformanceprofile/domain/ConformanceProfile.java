@@ -94,30 +94,31 @@ public class ConformanceProfile extends Resource {
   public void addChild(MsgStructElement mse) {
     this.children.add(mse);
   }
-  
+
+  @Override
   public ConformanceProfile clone() {
-	  
-	  ConformanceProfile clone = new ConformanceProfile();
-	  clone.setBinding(this.binding);
-	  clone.setChildren(children);
-	  clone.setComment(this.getComment());
-	  clone.setCreatedFrom(this.getId().getId());
-	  clone.setDescription(this.getDescription());
-	  DomainInfo domainInfo= this.getDomainInfo();
-	  domainInfo.setScope(Scope.USER);
-	  this.setEvent(this.getEvent());
-	  this.setId(null);
-	  this.setMessageType(messageType);
-	  this.setIdentifier(identifier);
-	  this.setPostDef(this.getPostDef());
-	  this.setPreDef(this.getPreDef());
-	  this.setStructID(structID);
-	  this.setName(this.getName());
-	  this.setDomainInfo(domainInfo);
-	  this.setCreationDate(new Date());
-	  this.setUpdateDate(new Date());
-	  return clone;
-	  
+
+    ConformanceProfile clone = new ConformanceProfile();
+    clone.setBinding(this.binding);
+    clone.setChildren(children);
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setEvent(this.getEvent());
+    clone.setId(null);
+    clone.setMessageType(messageType);
+    clone.setIdentifier(identifier);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setStructID(structID);
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
   };
   
   /* (non-Javadoc)
@@ -128,5 +129,4 @@ public class ConformanceProfile extends Resource {
     return this.getName();
   }
   
-
 }

@@ -17,6 +17,7 @@ package gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion;
  */
 public class Assertion {
 
+  private AssertionMode mode;
   private String description;
 
   public Assertion() {
@@ -29,5 +30,13 @@ public class Assertion {
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public AssertionMode getMode() {
+    return mode;
+  }
+
+  public void setMode(AssertionMode mode) {
+    this.mode = mode;
   }
 }

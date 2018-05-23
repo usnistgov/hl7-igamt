@@ -40,15 +40,15 @@ export class ProfileComponentsTocService {
     }
   }
 
-  public bulkAdd(profileComponents: Array<TocNode>) {
+  public bulkAdd(profileComponents: Array<TocNode>): Promise<any> {
     if (this.indexeddbService.tocDataBase != null) {
-      this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.profileComponents, async () => {
-        this.indexeddbService.tocDataBase.profileComponents.bulkPut(profileComponents).subscribe(success => {
-          return true;
-        }, error => {
-          return false;
-        });
-      });
+      return this.indexeddbService.tocDataBase.profileComponents.bulkPut(profileComponents);
+    }
+  }
+
+  public bulkAddNewProfileComponents(profileComponents: Array<TocNode>): Promise<any> {
+    if (this.indexeddbService.addedObjectsDatabase != null) {
+      return this.indexeddbService.addedObjectsDatabase.profileComponents.bulkPut(profileComponents);
     }
   }
 }

@@ -22,6 +22,7 @@ public class AssertionConformanceStatement extends ConformanceStatement {
 
   public AssertionConformanceStatement() {
     super();
+    this.setType(ConstraintType.ASSERTION);
   }
 
   public Assertion getAssertion() {

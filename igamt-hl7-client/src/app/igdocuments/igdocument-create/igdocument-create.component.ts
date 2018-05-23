@@ -36,7 +36,6 @@ export class IgDocumentCreateComponent {
   msgEvts=[];
   messageEventMap={};
   secondFormGroup: FormGroup;
-  // @ViewChild('stepper') private myStepper: MatStepper;
   hl7Versions: any[];
   selcetedVersion: any =null;
 

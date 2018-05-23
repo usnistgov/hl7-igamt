@@ -8,6 +8,8 @@ import {MessageModule} from 'primeng/message';
 
 import {StepsModule} from 'primeng/steps';
 import {MessagesModule} from "primeng/components/messages/messages";
+import { AddConformanceProfileComponent } from './add-conformance-profile/add-conformance-profile.component';
+import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 
 @NgModule({
 	imports: [
@@ -18,6 +20,7 @@ import {MessagesModule} from "primeng/components/messages/messages";
     StepsModule,
     MessageModule,
     MessagesModule,
+    RadioButtonModule,
 
 
 

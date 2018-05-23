@@ -5,6 +5,7 @@ import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {SegmentEditMetadataComponent} from "./segment-metadata/segment-edit-metadata.component";
 import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
+import {SegmentEditConformanceStatementsComponent} from "./segment-conformancestatements/segment-edit-conformancestatements.component";
 import {SegmentEditPredefComponent} from "./segment-predef/segment-edit-predef.component";
 import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postdef.component";
 import {SegmentEditRoutingModule} from "./segment-edit-routing.module";
@@ -13,8 +14,12 @@ import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
-
+import {ButtonModule} from 'primeng/button';
+import {AccordionModule} from 'primeng/accordion';
+import {SelectButtonModule} from 'primeng/selectbutton';
+import {TableModule} from 'primeng/table';
 import {UtilsModule} from "../../../utils/utils.module";
+import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
 
 
 @NgModule({
@@ -26,10 +31,14 @@ import {UtilsModule} from "../../../utils/utils.module";
     DropdownModule,
     SegmentEditRoutingModule,
     UtilsModule,
-    TreeTableModule
+    TreeTableModule,
+    ButtonModule,
+    AccordionModule,
+    SelectButtonModule,
+    TableModule
   ],
-  providers : [],
-  declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent],
+  providers : [SegmentEditMetadatResolver],
+  declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

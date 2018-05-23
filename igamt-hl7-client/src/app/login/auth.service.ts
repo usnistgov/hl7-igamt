@@ -2,6 +2,7 @@
  * Created by ena3 on 12/20/17.
  */
 import { Injectable } from '@angular/core';
+import * as jwt_decode from "jwt-decode";
 
 import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/do';
@@ -13,7 +14,7 @@ import {BehaviorSubject} from "rxjs";
 @Injectable()
 export class AuthService {
   //isLoggedIn = false;
- isLoggedIn:BehaviorSubject<boolean> =new BehaviorSubject<boolean>(false);
+  isLoggedIn:BehaviorSubject<boolean> =new BehaviorSubject<boolean>(false);
 
   // store the URL so we can redirect after logging in
   redirectUrl: string;
@@ -49,5 +50,35 @@ export class AuthService {
 
     this.isLoggedIn.next(false);
   }
+
+  getcurrentUser() {
+    var token = localStorage.getItem('currentUser');
+    var tokenInfo=  this.getDecodedAccessToken(token);
+    if(tokenInfo){
+      return tokenInfo.sub;
+    }else{
+      return "Guest";
+    }
+
+  }
+
+  getDecodedAccessToken(token: string): any {
+    try{
+      return jwt_decode(token);
+    }
+    catch(Error){
+      return null;
+    }
+
+  }
+
+  isAdmin(){
+    var token = localStorage.getItem('currentUser');
+    var tokenInfo=  this.getDecodedAccessToken(token);
+
+
+
+  }
+
 }
 

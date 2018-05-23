@@ -34,6 +34,27 @@ export class SegmentsService {
     });
   }
 
+  public getSegmentConformanceStatements(id, callback) {
+    const http = this.http;
+    const segmentsIndexedDbService = this.segmentsIndexedDbService;
+
+    http.get('api/segments/' + id + '/conformanceStatements').subscribe(conformanceStatements => {
+      callback(conformanceStatements);
+    });
+
+    /*
+    this.segmentsIndexedDbService.getSegmentStructure(id, function(clientSegmentStructure){
+      if (clientSegmentStructure == null) {
+        http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
+          callback(serverSegmentStructure);
+        });
+      } else {
+        callback(clientSegmentStructure);
+      }
+    });
+    */
+  }
+
   public getSegmentPreDef(id, callback) {
     const http = this.http;
     this.segmentsIndexedDbService.getSegmentPreDef(id, function(clientSegmentPreDef){
@@ -71,4 +92,5 @@ export class SegmentsService {
       }
     });
   }
+
 }

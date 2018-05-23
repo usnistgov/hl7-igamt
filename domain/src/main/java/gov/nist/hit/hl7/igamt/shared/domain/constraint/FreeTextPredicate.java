@@ -21,6 +21,7 @@ public class FreeTextPredicate extends Predicate {
 
   public FreeTextPredicate() {
     super();
+    this.setType(ConstraintType.FREE);
   }
 
   public String getFreeText() {

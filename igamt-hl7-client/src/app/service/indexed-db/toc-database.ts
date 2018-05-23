@@ -10,8 +10,8 @@ export class TocNode {
 
 export class TocDatabase extends Dexie {
 
-  constructor() {
-    super('tocDataBase');
+  constructor(name) {
+    super(name);
     this.version(1).stores({
       datatypes: '&id',
       segments: '&id',

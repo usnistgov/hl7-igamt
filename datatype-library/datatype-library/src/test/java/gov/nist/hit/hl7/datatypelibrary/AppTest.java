@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7;
+package gov.nist.hit.hl7.datatypelibrary;
 
 import junit.framework.Test;
 import junit.framework.TestCase;
