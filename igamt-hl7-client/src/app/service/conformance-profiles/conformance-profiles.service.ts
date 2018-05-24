@@ -1,73 +1,143 @@
 import {Injectable} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient} from '@angular/common/http';
 import {ConformanceProfilesIndexedDbService} from '../indexed-db/conformance-profiles/conformance-profiles-indexed-db.service';
+import {IObject} from '../indexed-db/objects-database';
 
 @Injectable()
 export class ConformanceProfilesService {
-  constructor(private http: HttpClient, private conformanceProfilesIndexedDbService: ConformanceProfilesIndexedDbService) {}
-  public getConformanceProfileMetadata(id, callback) {
-    const http = this.http;
-    this.conformanceProfilesIndexedDbService.getConformanceProfileMetadata(id, function(clientConformanceProfileMetadata){
-      if (clientConformanceProfileMetadata == null) {
-        http.get('api/conformanceProfiles/' + id + '/metadata').subscribe(serverConformanceProfileMetadata => {
-          callback(serverConformanceProfileMetadata);
-        });
-      } else {
-        callback(clientConformanceProfileMetadata);
-      }
-    });
+  constructor(private http: HttpClient, private conformanceProfilesIndexedDbService: ConformanceProfilesIndexedDbService) {
   }
 
-  public getConformanceProfileStructure(id, callback) {
-    const http = this.http;
-    const conformanceProfilesIndexedDbService = this.conformanceProfilesIndexedDbService;
-    this.conformanceProfilesIndexedDbService.getConformanceProfileStructure(id, function(clientConformanceProfileStructure){
-      console.log(clientConformanceProfileStructure);
-      if (clientConformanceProfileStructure == null) {
-        http.get('api/conformanceProfiles/' + id + '/structure').subscribe(serverConformanceProfileStructure => {
-          callback(serverConformanceProfileStructure);
+  public getConformanceProfileMetadata(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfileMetadata(id).then((metadata) => {
+        resolve(metadata);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/metadata').subscribe(serverConformanceProfileMetadata => {
+          resolve(serverConformanceProfileMetadata);
+        }, error => {
+          reject(error);
         });
-      } else {
-        callback(clientConformanceProfileStructure);
-      }
+      });
     });
+    return promise;
   }
 
-  public getConformanceProfilePreDef(id, callback) {
-    const http = this.http;
-    this.conformanceProfilesIndexedDbService.getConformanceProfilePreDef(id, function(clientConformanceProfilePreDef){
-      if (clientConformanceProfilePreDef == null) {
-        http.get('api/conformanceProfiles/' + id + '/preDef').subscribe(serverConformanceProfilePreDef => {
-          callback(serverConformanceProfilePreDef);
+  public getConformanceProfileStructure(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfileStructure(id).then((structure) => {
+        resolve(structure);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/structure').subscribe(serverConformanceProfileStructure => {
+          resolve(serverConformanceProfileStructure);
+        }, error => {
+          reject(error);
         });
-      } else {
-        callback(clientConformanceProfilePreDef);
-      }
+      });
     });
+    return promise;
   }
 
-  public getConformanceProfilePostDef(id, callback) {
-    const http = this.http;
-    this.conformanceProfilesIndexedDbService.getConformanceProfilePostDef(id, function(clientConformanceProfilePostDef){
-      if (clientConformanceProfilePostDef == null) {
-        http.get('api/conformanceProfiles/' + id + '/postDef').subscribe(serverConformanceProfilePostDef => {
-          callback(serverConformanceProfilePostDef);
+  public getConformanceProfileCrossReference(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfileCrossReference(id).then((crossReference) => {
+        resolve(crossReference);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/crossReference').subscribe(serverConformanceProfileCrossReference => {
+          resolve(serverConformanceProfileCrossReference);
+        }, error => {
+          reject(error);
         });
-      } else {
-        callback(clientConformanceProfilePostDef);
-      }
+      });
     });
+    return promise;
   }
 
-  public getConformanceProfileCrossReferences(id, callback) {
-    this.conformanceProfilesIndexedDbService.getConformanceProfileCrossReference(id, function(clientConformanceProfileMetadata){
-      if (clientConformanceProfileMetadata == null) {
-        this.http.get('api/conformanceProfiles/' + id + '/crossReferences').then(function(serverConformanceProfileMetadata){
-          callback(serverConformanceProfileMetadata);
+  public getConformanceProfilePostDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfilePostDef(id).then((postDef) => {
+        resolve(postDef);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/postDef').subscribe(serverConformanceProfilePostDef => {
+          resolve(serverConformanceProfilePostDef);
+        }, error => {
+          reject(error);
         });
-      } else {
-        callback(clientConformanceProfileMetadata);
-      }
+      });
     });
+    return promise;
   }
+
+  public getConformanceProfilePreDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfilePreDef(id).then((preDef) => {
+        resolve(preDef);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/preDef').subscribe(serverConformanceProfilePreDef => {
+          resolve(serverConformanceProfilePreDef);
+        }, error => {
+          reject(error);
+        });
+      });
+    });
+    return promise;
+  }
+
+  public getConformanceProfileConformanceStatements(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.conformanceProfilesIndexedDbService.getConformanceProfileConformanceStatements(id).then((conformanceStatement) => {
+        resolve(conformanceStatement);
+      }).catch(() => {
+        this.http.get('api/conformanceProfiles/' + id + '/conformanceStatement').subscribe(serverConformanceProfileConformanceStatement => {
+          resolve(serverConformanceProfileConformanceStatement);
+        }, error => {
+          reject(error);
+        });
+      });
+    });
+    return promise;
+  }
+
+  public saveConformanceProfileMetadata(id, metadata): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.metadata = metadata;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
+  public saveConformanceProfileStructure(id, structure): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.structure = structure;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
+  public saveConformanceProfilePreDef(id, preDef): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.preDef = preDef;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
+  public saveConformanceProfilePostDef(id, postDef): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.postDef = postDef;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
+  public saveConformanceProfileCrossReferences(id, crossReference): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.crossReference = crossReference;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
+  public saveConformanceProfileConformanceStatements(id, conformanceStatements): Promise<any> {
+    const conformanceProfile = new IObject();
+    conformanceProfile.id = id;
+    conformanceProfile.conformanceStatements = conformanceStatements;
+    return this.conformanceProfilesIndexedDbService.saveConformanceProfile(conformanceProfile);
+  }
+
 }

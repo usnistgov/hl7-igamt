@@ -2,138 +2,102 @@ import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
 import IndexedDbUtils from '../indexed-db-utils';
 import {Node} from '../node-database';
+import {IObject} from '../objects-database';
 
 @Injectable()
 export class SegmentsIndexedDbService {
 
   constructor(private indexeddbService: IndexedDbService) {
-
   }
 
-
-  public getSegment(id, callback) {
+  public getSegment(id): Promise<IObject> {
     let segment;
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        callback(segment);
-      });
-    } else {
-      callback(null);
-    }
+    const promise = new Promise<IObject>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
+          segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
+          resolve(segment);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
 
-  public getSegmentMetadata(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null) {
-          callback(segment.metadata);
-        }else {
-          callback(null);
-        }
+  public getSegmentMetadata(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.metadata);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-    public getSegmentConformanceStatements(id, callback) {
-        if (this.indexeddbService.changedObjectsDatabase != null) {
-            this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-                const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-                if (segment != null) {
-                    callback(segment.conformanceStatements);
-                } else {
-                    callback(null);
-                }
-            });
-        } else {
-            callback(null);
-        }
-    }
-
-  public getSegmentStructure(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null && segment.structure != null) {
-          callback(segment.structure);
-        } else {
-          this.getSegmentStructureFromNodeDatabase(id, callback);
-        }
+  public getSegmentStructure(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.structure);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-  private getSegmentStructureFromNodeDatabase(id, callback) {
-    if (this.indexeddbService.nodeDatabase != null) {
-      this.indexeddbService.nodeDatabase.transaction('r', this.indexeddbService.nodeDatabase.segments, async () => {
-        const segmentStructure = await this.indexeddbService.nodeDatabase.segments.get(id);
-        if (segmentStructure != null) {
-          callback(segmentStructure.structure);
-        }else {
-            callback(null);
-        }
+  public getSegmentCrossReference(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.crossReference);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-  public getSegmentPreDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null) {
-          callback(segment.preDef);
-        }else {
-            callback(null);
-        }
+  public getSegmentPostDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.postDef);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-  public getSegmentPostDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null) {
-          callback(segment.postDef);
-        }else {
-            callback(null);
-        }
+  public getSegmentPreDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.preDef);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-  public getSegmentCrossReference(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
-        const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
-        if (segment != null) {
-          callback(segment.crossReference);
-        }
+  public getSegmentConformanceStatements(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getSegment(id).then((segment) => {
+        resolve(segment.conformanceStatements);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
-    }
+    });
+    return promise;
   }
 
-  public saveSegment(segment): Promise<{}> {
-    console.log(segment);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-        const savedSegment = this.indexeddbService.changedObjectsDatabase.segments.get(segment.id)
-        return this.doSave(segment, savedSegment);
-    }
-    return Promise.reject(new Error('Database not instantiated'));
+  public saveSegment(segment): Promise<any> {
+    const promise = new Promise<IObject>((resolve, reject) => {
+      this.getSegment(segment.id).then(existingSegment => {
+        this.doSave(segment, existingSegment);
+      });
+    });
+    return promise;
   }
 
   public saveSegmentStructureToNodeDatabase(id, segmentStructure) {
@@ -147,10 +111,19 @@ export class SegmentsIndexedDbService {
     }
   }
 
-  private doSave(segment, savedSegment): Promise<{}> {
-    savedSegment = IndexedDbUtils.populateIObject(segment, savedSegment);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      return this.indexeddbService.changedObjectsDatabase.segments.put(savedSegment);
-    }
+  private doSave(segment, savedSegment): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      savedSegment = IndexedDbUtils.populateIObject(segment, savedSegment);
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.segments.put(savedSegment).then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
 }

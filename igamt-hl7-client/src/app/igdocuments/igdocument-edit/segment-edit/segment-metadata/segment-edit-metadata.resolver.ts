@@ -14,25 +14,16 @@ import {SegmentsService} from "../../../../service/segments/segments.service";
 
 
 @Injectable()
-export  class SegmentEditMetadatResolver implements Resolve<any>{
+export  class SegmentEditMetadatResolver implements Resolve<any> {
 
 
-  constructor(private http: HttpClient,private segmentService: SegmentsService) {
+  constructor(private http: HttpClient, private segmentService: SegmentsService) {
 
   }
 
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    return new Promise(
-      (resolve , reject) =>{
-        let segmentId= route.params["segmentId"];
-        this.segmentService.getSegmentMetadata(segmentId, metadata  => {
-
-          resolve(metadata);
-
-        });
-      }
-    )
-
+  resolve(route: ActivatedRouteSnapshot, rstate: RouterStateSnapshot): Promise<any> {
+    const segmentId = route.params['segmentId'];
+    return this.segmentService.getSegmentMetadata(segmentId);
   }
 
 

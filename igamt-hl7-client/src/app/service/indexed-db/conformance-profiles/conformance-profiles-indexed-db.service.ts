@@ -1,119 +1,129 @@
 import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
 import IndexedDbUtils from '../indexed-db-utils';
+import {Node} from '../node-database';
+import {IObject} from '../objects-database';
 
 @Injectable()
 export class ConformanceProfilesIndexedDbService {
 
   constructor(private indexeddbService: IndexedDbService) {
-
   }
 
-
-  public getConformanceProfile(id, callback) {
+  public getConformanceProfile(id): Promise<IObject> {
     let conformanceProfile;
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        callback(conformanceProfile);
+    const promise = new Promise<IObject>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
+          conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
+          resolve(conformanceProfile);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
+  }
+
+  public getConformanceProfileMetadata(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.metadata);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
+    });
+    return promise;
+  }
+
+  public getConformanceProfileStructure(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.structure);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getConformanceProfileCrossReference(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.crossReference);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getConformanceProfilePostDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.postDef);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getConformanceProfilePreDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.preDef);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getConformanceProfileConformanceStatements(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getConformanceProfile(id).then((conformanceProfile) => {
+        resolve(conformanceProfile.conformanceStatements);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public saveConformanceProfile(conformanceProfile): Promise<any> {
+    const promise = new Promise<IObject>((resolve, reject) => {
+      this.getConformanceProfile(conformanceProfile.id).then(existingConformanceProfile => {
+        this.doSave(conformanceProfile, existingConformanceProfile);
+      });
+    });
+    return promise;
+  }
+
+  public saveConformanceProfileStructureToNodeDatabase(id, conformanceProfileStructure) {
+    if (this.indexeddbService.nodeDatabase != null) {
+      this.indexeddbService.nodeDatabase.transaction('rw', this.indexeddbService.nodeDatabase.conformanceProfiles, async () => {
+        const conformanceProfileNode = new Node();
+        conformanceProfileNode.id = id;
+        conformanceProfileNode.structure = conformanceProfileStructure;
+        await this.indexeddbService.nodeDatabase.conformanceProfiles.put(conformanceProfileNode);
+      });
     }
   }
 
-  public getConformanceProfileMetadata(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        if (conformanceProfile != null) {
-          callback(conformanceProfile.metadata);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getConformanceProfileStructure(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        if (conformanceProfile != null && conformanceProfile.structure != null) {
-          callback(conformanceProfile.structure);
-        } else {
-          callback(null);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getConformanceProfilePreDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        if (conformanceProfile != null) {
-          callback(conformanceProfile.preDef);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-  public getConformanceProfilePostDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        if (conformanceProfile != null) {
-          callback(conformanceProfile.postDef);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getConformanceProfileCrossReference(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-
-      this.indexeddbService.changedObjectsDatabase.transaction('r',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const conformanceProfile = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.get(id);
-        if (conformanceProfile != null) {
-          callback(conformanceProfile.crossReference);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public saveConformanceProfile(conformanceProfile) {
-    console.log(conformanceProfile);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        const savedConformanceProfile = await this.indexeddbService.changedObjectsDatabase.
-          conformanceProfiles.get(conformanceProfile.id);
-        this.doSave(conformanceProfile, savedConformanceProfile);
-      });
-    }
-  }
-
-  private doSave(conformanceProfile, savedConformanceProfile) {
-    savedConformanceProfile = IndexedDbUtils.populateIObject(conformanceProfile, savedConformanceProfile);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw',
-        this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
-        await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.put(savedConformanceProfile);
-      });
-    }
+  private doSave(conformanceProfile, savedConformanceProfile): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      savedConformanceProfile = IndexedDbUtils.populateIObject(conformanceProfile, savedConformanceProfile);
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.conformanceProfiles.put(savedConformanceProfile).then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
 }
