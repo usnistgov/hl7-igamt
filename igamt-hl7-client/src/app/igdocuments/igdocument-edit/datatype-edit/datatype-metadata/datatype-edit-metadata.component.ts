@@ -29,7 +29,7 @@ export class DatatypeEditMetadataComponent {
 
   ngOnInit() {
       this.datatypeId = this.route.snapshot.params["datatypeId"];
-      this.datatypesService.getDatatypeMetadata(this.datatypeId, metadata  => {
+      this.datatypesService.getDatatypeMetadata(this.datatypeId).then( metadata  => {
         this.datatypeMetadata = metadata;
       });
   }

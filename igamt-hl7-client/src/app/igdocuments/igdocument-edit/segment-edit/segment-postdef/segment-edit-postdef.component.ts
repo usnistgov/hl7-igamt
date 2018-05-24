@@ -29,7 +29,7 @@ export class SegmentEditPostdefComponent {
 
     ngOnInit() {
         this.segmentId = this.route.snapshot.params["segmentId"];
-        this.segmentsService.getSegmentPostDef(this.segmentId, data  => {
+        this.segmentsService.getSegmentPostDef(this.segmentId).then(data  => {
 
             this.segmentPostdef = data;
 

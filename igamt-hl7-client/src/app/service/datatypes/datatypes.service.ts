@@ -8,8 +8,8 @@ export class DatatypesService {
   constructor(private http: HttpClient, private datatypesIndexedDbService: DatatypesIndexedDbService) {
   }
 
-  public getDatatypeMetadata(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypeMetadata(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypeMetadata(id).then((metadata) => {
         resolve(metadata);
       }).catch(() => {
@@ -23,8 +23,8 @@ export class DatatypesService {
     return promise;
   }
 
-  public getDatatypeStructure(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypeStructure(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypeStructure(id).then((structure) => {
         resolve(structure);
       }).catch(() => {
@@ -38,8 +38,8 @@ export class DatatypesService {
     return promise;
   }
 
-  public getDatatypeCrossReference(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypeCrossReference(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypeCrossReference(id).then((crossReference) => {
         resolve(crossReference);
       }).catch(() => {
@@ -53,8 +53,8 @@ export class DatatypesService {
     return promise;
   }
 
-  public getDatatypePostDef(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypePostDef(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypePostDef(id).then((postDef) => {
         resolve(postDef);
       }).catch(() => {
@@ -68,8 +68,8 @@ export class DatatypesService {
     return promise;
   }
 
-  public getDatatypePreDef(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypePreDef(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypePreDef(id).then((preDef) => {
         resolve(preDef);
       }).catch(() => {
@@ -83,8 +83,8 @@ export class DatatypesService {
     return promise;
   }
 
-  public getDatatypeConformanceStatements(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getDatatypeConformanceStatements(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.datatypesIndexedDbService.getDatatypeConformanceStatements(id).then((conformanceStatement) => {
         resolve(conformanceStatement);
       }).catch(() => {

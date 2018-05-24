@@ -8,8 +8,8 @@ export class SegmentsService {
   constructor(private http: HttpClient, private segmentsIndexedDbService: SegmentsIndexedDbService) {
   }
 
-  public getSegmentMetadata(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentMetadata(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentMetadata(id).then((metadata) => {
         resolve(metadata);
       }).catch(() => {
@@ -23,8 +23,8 @@ export class SegmentsService {
     return promise;
   }
 
-  public getSegmentStructure(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentStructure(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentStructure(id).then((structure) => {
         resolve(structure);
       }).catch(() => {
@@ -38,8 +38,8 @@ export class SegmentsService {
     return promise;
   }
 
-  public getSegmentCrossReference(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentCrossReference(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentCrossReference(id).then((crossReference) => {
         resolve(crossReference);
       }).catch(() => {
@@ -53,8 +53,8 @@ export class SegmentsService {
     return promise;
   }
 
-  public getSegmentPostDef(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentPostDef(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentPostDef(id).then((postDef) => {
         resolve(postDef);
       }).catch(() => {
@@ -68,8 +68,8 @@ export class SegmentsService {
     return promise;
   }
 
-  public getSegmentPreDef(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentPreDef(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentPreDef(id).then((preDef) => {
         resolve(preDef);
       }).catch(() => {
@@ -83,8 +83,8 @@ export class SegmentsService {
     return promise;
   }
 
-  public getSegmentConformanceStatements(id): Promise<object> {
-    const promise = new Promise<object>((resolve, reject) => {
+  public getSegmentConformanceStatements(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
       this.segmentsIndexedDbService.getSegmentConformanceStatements(id).then((conformanceStatement) => {
         resolve(conformanceStatement);
       }).catch(() => {

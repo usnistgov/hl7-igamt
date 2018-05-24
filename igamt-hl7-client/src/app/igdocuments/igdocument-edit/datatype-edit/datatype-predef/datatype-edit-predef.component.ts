@@ -27,7 +27,7 @@ export class DatatypeEditPredefComponent {
 
     ngOnInit() {
         this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.datatypesService.getDatatypePreDef(this.datatypeId, data  => {
+        this.datatypesService.getDatatypePreDef(this.datatypeId).then(data  => {
             this.datatypePredef = data;
         });
     }
