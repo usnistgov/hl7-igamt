@@ -29,10 +29,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import gov.nist.hit.hl7.TestApplication;
 import gov.nist.hit.hl7.config.TestMongoConfig;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 
 // @RunWith(SpringRunner.class)
@@ -64,8 +64,8 @@ public class IGDocumentControllerTest {
     List<Ig> igs = new ArrayList<Ig>();
     Ig ig = new Ig();
     igs.add(ig);
-    IgMetaData metaData = new IgMetaData();
-    ig.setMetaData(metaData);
+    DocumentMetadata metaData = new DocumentMetadata();
+    ig.setMetadata(metaData);
     TextSection p = new TextSection();
     // p.setChildren(new HashSet<Section>());
     // ig.setProfile(p);
@@ -79,8 +79,8 @@ public class IGDocumentControllerTest {
 
     ig = new Ig();
     igs.add(ig);
-    metaData = new IgMetaData();
-    ig.setMetaData(metaData);
+    metaData = new DocumentMetadata();
+    ig.setMetadata(metaData);
     p = new TextSection();
     // p.setChildren(new HashSet<Section>());
     // ig.setProfile(p);
@@ -100,11 +100,11 @@ public class IGDocumentControllerTest {
     List<IgSummary> igs = new ArrayList<IgSummary>();
     for (Ig ig : igdocuments) {
       IgSummary element = new IgSummary();
-      element.setCoverpage(ig.getMetaData().getCoverPicture());
+      element.setCoverpage(ig.getMetadata().getCoverPicture());
       element.setDateUpdated(ig.getUpdateDate());
-      element.setTitle(ig.getMetaData().getTitle());
-      element.setSubtitle(ig.getMetaData().getSubTitle());
-      element.setCoverpage(ig.getMetaData().getCoverPicture());
+      element.setTitle(ig.getMetadata().getTitle());
+      element.setSubtitle(ig.getMetadata().getSubTitle());
+      element.setCoverpage(ig.getMetadata().getCoverPicture());
       element.setId(ig.getId());
       element.setUsername(ig.getUsername());
       List<String> conformanceProfileNames = new ArrayList<String>();

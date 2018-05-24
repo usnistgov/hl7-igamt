@@ -22,16 +22,17 @@ import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 @Document
 public class Ig extends AbstractDomain {
 
-  private DocumentMetadata metadata;
-  private Set<TextSection> content= new HashSet<TextSection>();
-  private gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry=new gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry() ;
+  private DocumentMetadata metadata = new DocumentMetadata();
+  private Set<TextSection> content = new HashSet<TextSection>();
+  private gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry =
+      new gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry();
   private SegmentRegistry segmentRegistry = new SegmentRegistry();
-  private ProfileComponentRegistry profileComponentRegistry=new ProfileComponentRegistry() ;
+  private ProfileComponentRegistry profileComponentRegistry = new ProfileComponentRegistry();
   private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
-  private ConformanceProfileRegistry conformanceProfileRegistry= new ConformanceProfileRegistry(); 
-  
-  private ValueSetRegistry valueSetRegistry=new ValueSetRegistry(); 
-  
+  private ConformanceProfileRegistry conformanceProfileRegistry = new ConformanceProfileRegistry();
+
+  private ValueSetRegistry valueSetRegistry = new ValueSetRegistry();
+
   public DocumentMetadata getMetadata() {
     return metadata;
   }
@@ -43,47 +44,48 @@ public class Ig extends AbstractDomain {
   public Set<TextSection> getContent() {
     return content;
   }
-  
-  
+
+
   public void setContent(Set<TextSection> content) {
     this.content = content;
   }
 
- 
+
   @Override
   public int hashCode() {
     return Objects.hash(this.getId());
   }
 
-public Ig() {
-	super();
-	// TODO Auto-generated constructor stub
-}
+  public Ig() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
 
-public Ig(CompositeKey id, String version, String name, PublicationInfo publicationInfo, DomainInfo domainInfo,
-		String username, String comment, String description) {
-	super(id, version, name, publicationInfo, domainInfo, username, comment, description);
-	// TODO Auto-generated constructor stub
-}
+  public Ig(CompositeKey id, String version, String name, PublicationInfo publicationInfo,
+      DomainInfo domainInfo, String username, String comment, String description) {
+    super(id, version, name, publicationInfo, domainInfo, username, comment, description);
+    // TODO Auto-generated constructor stub
+  }
 
-	@SuppressWarnings({ "unused" })
-	public TextSection getProfile(){
-		for( TextSection  t : this.content) {
-		if(t instanceof TextSection) {
-			if(t.getType().equals(Type.PROFILE)) {
-				return (TextSection)t;
-			}
-		}
-		}
-		return null;
-		
-	}
+  @SuppressWarnings({"unused"})
+  public TextSection getProfile() {
+    for (TextSection t : this.content) {
+      if (t instanceof TextSection) {
+        if (t.getType().equals(Type.PROFILE)) {
+          return t;
+        }
+      }
+    }
+    return null;
+
+  }
 
   public gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry getDatatypeRegistry() {
     return datatypeRegistry;
   }
 
-  public void setDatatypeRegistry(gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry) {
+  public void setDatatypeRegistry(
+      gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry) {
     this.datatypeRegistry = datatypeRegistry;
   }
 
@@ -127,19 +129,16 @@ public Ig(CompositeKey id, String version, String name, PublicationInfo publicat
     this.valueSetRegistry = valueSetRegistry;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override
   public String getLabel() {
     return this.getName();
   }
-	
-	
-	
-	
-	
-	
 
-  
+
+
 }

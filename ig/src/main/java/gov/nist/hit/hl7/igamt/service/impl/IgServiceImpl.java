@@ -1,13 +1,15 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -15,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -194,35 +197,32 @@ public class IgServiceImpl implements IgService {
    */
   @Override
   public List<Ig> findLatestByUsername(String username) {
-    // TODO Auto-generated method stub
-    List<Ig> allUsersIgs = this.findIgIdsForUser(username);
 
-    Map<String, Integer> map = new HashMap<String, Integer>();
 
-    for (Ig ig : allUsersIgs) {
-      String id = ig.getId().getId();
 
-      if (id != null) {
-        if (!map.containsKey(id)) {
-          map.put(id, ig.getId().getVersion());
-        } else {
-          int current = map.get(id);
-          if (current < ig.getId().getVersion()) {
-            map.put(id, ig.getId().getVersion());
-          }
-        }
-      }
+    Criteria where = Criteria.where("username").is(username);
 
-    }
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
-    List<Ig> allIgs = new ArrayList<Ig>();
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Ig.class, CompositeKey.class).getMappedResults();
 
-    for (String id : map.keySet()) {
-      Ig ig = this.findById(new CompositeKey(id, map.get(id)));
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("metadata");
+    qry.fields().include("username");
+    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("creationDate");
+    qry.fields().include("updateDate");
 
-      allIgs.add(ig);
-    }
-    return allIgs;
+    List<Ig> igs = mongoTemplate.find(qry, Ig.class);
+
+
+
+    return igs;
   }
 
   @Override
