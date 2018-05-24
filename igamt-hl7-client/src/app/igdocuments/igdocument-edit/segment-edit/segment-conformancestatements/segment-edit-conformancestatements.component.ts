@@ -58,51 +58,51 @@ export class SegmentEditConformanceStatementsComponent {
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
-        this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
-            this.segmentConformanceStatements = conformanceStatementData;
-        });
 
-        console.log("SegmentId:" + this.segmentId);
+        this.route.data.map(data =>data.segmentConformanceStatements).subscribe(x=>{
+            this.segmentConformanceStatements= x;
 
-        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
-            this.idMap[this.segmentId] = {name:segStructure.name};
 
-            var rootData = {elementId:this.segmentId};
+            this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
+                this.idMap[this.segmentId] = {name:segStructure.name};
 
-            for (let child of segStructure.children) {
-                var childData =  JSON.parse(JSON.stringify(rootData));
-                childData.child = {
-                    elementId: child.data.id,
-                };
+                var rootData = {elementId:this.segmentId};
 
-                if(child.data.max === '1'){
-                    childData.child.instanceParameter = '1';
-                }else{
-                    childData.child.instanceParameter = '*';
+                for (let child of segStructure.children) {
+                    var childData =  JSON.parse(JSON.stringify(rootData));
+                    childData.child = {
+                        elementId: child.data.id,
+                    };
+
+                    if(child.data.max === '1'){
+                        childData.child.instanceParameter = '1';
+                    }else{
+                        childData.child.instanceParameter = '*';
+                    }
+
+                    var treeNode = {
+                        label: child.data.name,
+                        data : childData,
+                        expandedIcon: "fa-folder-open",
+                        collapsedIcon: "fa-folder",
+                    };
+
+                    var data = {
+                        id: child.data.id,
+                        name: child.data.name,
+                        max: child.data.max,
+                        position: child.data.position,
+                        usage: child.data.usage,
+                        dtId: child.data.ref.id
+                    };
+
+                    this.idMap[this.segmentId + '-' + data.id] = data;
+                    this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
+                    this.treeData.push(treeNode);
+
+
                 }
-
-                var treeNode = {
-                    label: child.data.name,
-                    data : childData,
-                    expandedIcon: "fa-folder-open",
-                    collapsedIcon: "fa-folder",
-                };
-
-                var data = {
-                    id: child.data.id,
-                    name: child.data.name,
-                    max: child.data.max,
-                    position: child.data.position,
-                    usage: child.data.usage,
-                    dtId: child.data.ref.id
-                };
-
-                this.idMap[this.segmentId + '-' + data.id] = data;
-                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
-                this.treeData.push(treeNode);
-
-
-            }
+            });
         });
     }
 

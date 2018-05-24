@@ -33,8 +33,6 @@ export class SegmentEditMetadataComponent {
     this.segmentId = this.route.snapshot.params["segmentId"];
     this.route.data.map(data =>data.segmentMetadata).subscribe(x=>{
       this.segmentMetadata= x;
-
     });
-
   }
 }

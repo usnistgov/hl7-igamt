@@ -29,10 +29,8 @@ export class SegmentEditPredefComponent {
 
     ngOnInit() {
         this.segmentId = this.route.snapshot.params["segmentId"];
-        this.segmentsService.getSegmentPreDef(this.segmentId, data  => {
-
-            this.segmentPredef = data;
-
+        this.route.data.map(data =>data.segmentPredef).subscribe(x=>{
+            this.segmentPredef= x;
         });
     }
 }

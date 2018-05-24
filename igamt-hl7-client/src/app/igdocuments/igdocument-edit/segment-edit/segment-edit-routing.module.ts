@@ -9,27 +9,31 @@ import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postde
 import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
 import {SegmentEditConformanceStatementsComponent} from "./segment-conformancestatements/segment-edit-conformancestatements.component";
 import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
+import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-structure.resolver";
+import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
+import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
+import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
 
 @NgModule({
   imports: [
     RouterModule.forChild([
         {
-            path: ':segmentId', component: SegmentEditStructureComponent,
+            path: ':segmentId', component: SegmentEditStructureComponent,  resolve: { segmentStructure : SegmentEditStructureResolver}
         },
         {
             path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  resolve: { segmentMetadata : SegmentEditMetadatResolver}
         },
         {
-            path: ':segmentId/preDef', component: SegmentEditPredefComponent,
+            path: ':segmentId/preDef', component: SegmentEditPredefComponent,  resolve: { segmentPredef : SegmentEditPredefResolver}
         },
         {
-            path: ':segmentId/structure', component: SegmentEditStructureComponent,
+            path: ':segmentId/structure', component: SegmentEditStructureComponent,  resolve: { segmentStructure : SegmentEditStructureResolver}
         },
         {
-            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,
+            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,  resolve: { segmentPostdef : SegmentEditPostdefResolver}
         },
         {
-            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,
+            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,  resolve: { segmentConformanceStatements : SegmentEditConformanceStatementsResolver}
         }
     ])
   ],

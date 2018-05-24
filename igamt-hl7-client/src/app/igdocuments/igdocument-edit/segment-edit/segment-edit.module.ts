@@ -22,6 +22,10 @@ import {UtilsModule} from "../../../utils/utils.module";
 import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from 'primeng/message';
+import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-structure.resolver";
+import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
+import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
+import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
 
 @NgModule({
     imports: [
@@ -41,7 +45,7 @@ import {MessageModule} from 'primeng/message';
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [SegmentEditMetadatResolver],
+    providers : [SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
     declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
