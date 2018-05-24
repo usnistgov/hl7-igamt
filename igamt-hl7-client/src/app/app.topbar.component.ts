@@ -26,8 +26,6 @@ export class AppTopBarComponent {
     }
 
   getUsername(){
-      console.log(this.username);
-
     return this.username;
   }
 }

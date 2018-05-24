@@ -9,15 +9,16 @@ import {SegmentEditPostdefComponent} from "./segment-postdef/segment-edit-postde
 import {SegmentEditStructureComponent} from "./segment-structure/segment-edit-structure.component";
 import {SegmentEditConformanceStatementsComponent} from "./segment-conformancestatements/segment-edit-conformancestatements.component";
 import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metadata.resolver";
+import {SaveFormsGuard} from "../../../guards/save.guard";
 
 @NgModule({
   imports: [
     RouterModule.forChild([
         {
-            path: ':segmentId', component: SegmentEditStructureComponent,
+            path: ':segmentId'
         },
         {
-            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  resolve: { segmentMetadata : SegmentEditMetadatResolver}
+            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  canDeactivate: [SaveFormsGuard] ,resolve: { segmentMetadata : SegmentEditMetadatResolver}
         },
         {
             path: ':segmentId/preDef', component: SegmentEditPredefComponent,
@@ -30,7 +31,9 @@ import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metada
         },
         {
             path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,
-        }
+        },{
+        path:'',component: SegmentEditStructureComponent
+      }
     ])
   ],
   exports: [
