@@ -32,7 +32,7 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
@@ -69,8 +69,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       (DatatypeRepository) legacyContext.getBean("datatypeRepository");
 
   @Autowired
-  private ConformanceProfileService convertedConformanceProfileService =
-      (ConformanceProfileService) context.getBean("conformanceProfileService");
+  private ConformanceProfileRepository convertedConformanceProfileService =
+      (ConformanceProfileRepository) context.getBean(ConformanceProfileRepository.class);
   
   private AccountRepository accountRepository =
       userContext.getBean(AccountRepository.class);
@@ -249,7 +249,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
   }
 
   private void init() {
-    convertedConformanceProfileService.removeCollection();
+//    convertedConformanceProfileService.removeCollection();
   }
 
 }

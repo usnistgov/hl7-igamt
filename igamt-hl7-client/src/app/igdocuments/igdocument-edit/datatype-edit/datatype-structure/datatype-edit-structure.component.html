@@ -20,8 +20,8 @@
                     </div>
                 </div>
                 <div *ngIf="node.data.displayData.type === 'SUBCOMPONENT'">
-                    <div *ngIf="node.data.usage !== 'C'">{{node.data.usage}}</div>
-                    <div *ngIf="node.data.usage === 'C'">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>
+                    <div *ngIf="node.data.usage !== 'C' || !node.data.displayData.componentDTbinding || !node.data.displayData.componentDTbinding.predicate">{{node.data.usage}}</div>
+                    <div *ngIf="node.data.usage === 'C' && node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>
                 </div>
             </ng-template>
         </p-column>

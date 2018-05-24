@@ -19,18 +19,16 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
-import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
@@ -45,12 +43,12 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
  */
 public class SegmentConversionServiceImpl implements ConversionService {
   @Autowired
-  private SegmentService convertedSegmentService =
-      (SegmentService) context.getBean("segmentService");
+  private SegmentRepository convertedSegmentService =
+      (SegmentRepository) context.getBean(SegmentRepository.class);
 
   @Autowired
-  private SegmentRepository oldSegmentRepository =
-      (SegmentRepository) legacyContext.getBean("segmentRepository");
+  private gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository oldSegmentRepository =
+      (gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository) legacyContext.getBean("segmentRepository");
 
   @Autowired
   private DatatypeRepository oldDatatypeRepository =
@@ -135,7 +133,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
         newField.setId(field.getId());
         newField.setMax(field.getMax());
         newField.setMaxLength(field.getMaxLength());
-        newField.setMin(field.getMin());
+        if(field.getMin() != null) newField.setMin(field.getMin());
         newField.setMinLength(field.getMinLength());
         newField.setName(field.getName());
         newField.setPosition(field.getPosition());
@@ -155,7 +153,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
 
 
   private void init() {
-    convertedSegmentService.removeCollection();
+//    convertedSegmentService.removeCollection();
   }
 
 }

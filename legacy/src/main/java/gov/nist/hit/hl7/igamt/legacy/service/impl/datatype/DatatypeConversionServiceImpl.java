@@ -32,8 +32,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate.PredicateType;
+import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
@@ -50,12 +50,12 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 public class DatatypeConversionServiceImpl implements ConversionService {
 
   @Autowired
-  private DatatypeRepository oldDatatypeRepository =
-      (DatatypeRepository) legacyContext.getBean("datatypeRepository");
+  private gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository oldDatatypeRepository =
+      (gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository) legacyContext.getBean("datatypeRepository");
 
   @Autowired
-  private DatatypeService convertedDatatypeService =
-      (DatatypeService) context.getBean("datatypeService");
+  private DatatypeRepository convertedDatatypeService =
+      (DatatypeRepository) context.getBean(DatatypeRepository.class);
 
   private AccountRepository accountRepository =
       (AccountRepository) userContext.getBean(AccountRepository.class);
@@ -193,7 +193,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   }
 
   private void init() {
-    convertedDatatypeService.removeCollection();
+//    convertedDatatypeService.removeCollection();
   }
 
 }

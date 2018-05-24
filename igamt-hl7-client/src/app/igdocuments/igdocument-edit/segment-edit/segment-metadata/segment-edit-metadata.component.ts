@@ -44,6 +44,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   ngOnInit() {
     this.segmentId = this.route.snapshot.params["segmentId"];
     this.route.data.map(data =>data.segmentMetadata).subscribe(x=>{
+
       this.segmentsTocService.getAll().then(segments=>{
         console.log(segments);
         this.backup=x;
@@ -51,11 +52,7 @@ export class SegmentEditMetadataComponent implements WithSave {
 
       });
 
-
-
-
     });
-
   }
 
   reset(){
@@ -63,6 +60,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   }
 
   getCurrent(){
+
    return  this.segmentMetadata;
   }
   getBackup(){

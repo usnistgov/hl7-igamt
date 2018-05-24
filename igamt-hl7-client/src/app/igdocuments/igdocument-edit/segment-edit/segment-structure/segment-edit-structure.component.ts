@@ -65,61 +65,59 @@ export class SegmentEditStructureComponent {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
 
-        this.datatypesTocService.getAll().then((dtTOCdata) => {
-            let listTocDTs:any = dtTOCdata[0];
-            for(let entry of listTocDTs){
-                var treeObj = entry.treeNode;
-
-                var dtLink:any = {};
-                dtLink.id = treeObj.key.id;
-                dtLink.label = treeObj.label;
-                dtLink.domainInfo = treeObj.domainInfo;
-                var index = treeObj.label.indexOf("_");
-                if(index > -1){
-                    dtLink.name = treeObj.label.substring(0,index);
-                    dtLink.ext = treeObj.label.substring(index);;
-                }else {
-                    dtLink.name = treeObj.label;
-                    dtLink.ext = null;
-                }
-
-                if(treeObj.lazyLoading) dtLink.leaf = false;
-                else dtLink.leaf = true;
-                this.datatypesLinks.push(dtLink);
-
-                var dtOption = {label: dtLink.label, value : dtLink.id};
-                this.datatypeOptions.push(dtOption);
-            }
-
-
-            this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
-                let listTocVSs:any = valuesetTOCdata[0];
-
-                for(let entry of listTocVSs){
+        this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
+            console.log(x);
+            this.datatypesTocService.getAll().then((dtTOCdata) => {
+                let listTocDTs:any = dtTOCdata[0];
+                for(let entry of listTocDTs){
                     var treeObj = entry.treeNode;
-                    var valuesetLink:any = {};
-                    valuesetLink.id = treeObj.key.id;
-                    valuesetLink.label = treeObj.label;
-                    valuesetLink.domainInfo = treeObj.domainInfo;
-                    this.valuesetsLinks.push(valuesetLink);
 
-                    var vsOption = {label: valuesetLink.label, value : valuesetLink.id};
-                    this.valuesetOptions.push(vsOption);
+                    var dtLink:any = {};
+                    dtLink.id = treeObj.key.id;
+                    dtLink.label = treeObj.label;
+                    dtLink.domainInfo = treeObj.domainInfo;
+                    var index = treeObj.label.indexOf("_");
+                    if(index > -1){
+                        dtLink.name = treeObj.label.substring(0,index);
+                        dtLink.ext = treeObj.label.substring(index);;
+                    }else {
+                        dtLink.name = treeObj.label;
+                        dtLink.ext = null;
+                    }
+
+                    if(treeObj.lazyLoading) dtLink.leaf = false;
+                    else dtLink.leaf = true;
+                    this.datatypesLinks.push(dtLink);
+
+                    var dtOption = {label: dtLink.label, value : dtLink.id};
+                    this.datatypeOptions.push(dtOption);
                 }
 
-                this.segmentsService.getSegmentStructure(this.segmentId).then(structure  => {
-                    this.segmentStructure = {};
-                    this.segmentStructure.name = structure.name;
-                    this.segmentStructure.ext = structure.ext;
-                    this.segmentStructure.scope = structure.scope;
 
-                    this.updateDatatype(this.segmentStructure, structure.children, structure.binding, null, null, null, null, null, null);
+                this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
+                    let listTocVSs: any = valuesetTOCdata[0];
+
+                    for (let entry of listTocVSs) {
+                        var treeObj = entry.treeNode;
+                        var valuesetLink: any = {};
+                        valuesetLink.id = treeObj.key.id;
+                        valuesetLink.label = treeObj.label;
+                        valuesetLink.domainInfo = treeObj.domainInfo;
+                        this.valuesetsLinks.push(valuesetLink);
+                        var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
+                        this.valuesetOptions.push(vsOption);
+                    }
+
+                    this.segmentStructure = {};
+                    this.segmentStructure.name = x.name;
+                    this.segmentStructure.ext = x.ext;
+                    this.segmentStructure.scope = x.scope;
+
+                    this.updateDatatype(this.segmentStructure, x.children, x.binding, null, null, null, null, null, null);
                 });
             });
+
         });
-
-
-
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
@@ -151,10 +149,6 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.fieldDT = parentDTId;
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
-                if(entry.data.usage === 'C' && !entry.data.displayData.fieldDTbinding) {
-                    entry.data.displayData.fieldDTbinding = {};
-                    entry.data.displayData.segmentBinding.fieldDTbinding = {};
-                }
             }else if(entry.data.displayData.idPath.split("-").length === 3){
                 entry.data.displayData.type = "SUBCOMPONENT";
                 entry.data.displayData.fieldDT = fieldDT;
@@ -162,10 +156,6 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
                 entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
-                if(entry.data.usage === 'C' && !entry.data.displayData.componentDTbinding) {
-                    entry.data.displayData.componentDTbinding = {};
-                    entry.data.displayData.segmentBinding.componentDTbinding = {};
-                }
             }
 
             this.setHasSingleCode(entry.data.displayData);
