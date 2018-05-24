@@ -13,6 +13,7 @@ import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-str
 import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
 import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
 import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
+import {SaveFormsGuard} from "../../../guards/save.guard";
 
 @NgModule({
   imports: [
@@ -21,7 +22,7 @@ import {SegmentEditConformanceStatementsResolver} from "./segment-conformancesta
             path: ':segmentId', component: SegmentEditStructureComponent,  resolve: { segmentStructure : SegmentEditStructureResolver}
         },
         {
-            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  resolve: { segmentMetadata : SegmentEditMetadatResolver}
+            path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  canDeactivate: [SaveFormsGuard] ,resolve: { segmentMetadata : SegmentEditMetadatResolver}
         },
         {
             path: ':segmentId/preDef', component: SegmentEditPredefComponent,  resolve: { segmentPredef : SegmentEditPredefResolver}

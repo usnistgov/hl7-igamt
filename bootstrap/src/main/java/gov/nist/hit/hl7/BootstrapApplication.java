@@ -1,5 +1,10 @@
 package gov.nist.hit.hl7;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -18,6 +23,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import gov.nist.hit.hl7.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.shared.config.SharedConstant;
 import gov.nist.hit.hl7.igamt.shared.config.SharedConstantService;
 
 @SpringBootApplication
@@ -109,45 +115,45 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-  // @PostConstruct
-  // void createMessageEvent() {
-  // System.out.println("creating message Event");
-  // messageEventFactory.createMessageEvent();
-  // }
-  //
+//   @PostConstruct
+//   void createMessageEvent() {
+//   System.out.println("creating message Event");
+//   messageEventFactory.createMessageEvent();
+//   }
+  
 
-  // @PostConstruct
-  // void createSharedConstant() {
-  // SharedConstant constant= new SharedConstant();
-  // List<String> hl7Versions=new ArrayList<String>();
-  // hl7Versions.add("2.3.1");
-  // hl7Versions.add("2.4");
-  // hl7Versions.add("2.5");
-  // hl7Versions.add("2.5.1");
-  // hl7Versions.add("2.6");
-  // hl7Versions.add("2.7");
-  // hl7Versions.add("2.7.1");
-  // hl7Versions.add("2.8");
-  // hl7Versions.add("2.8.1");
-  // hl7Versions.add("2.8.2");
-  //
-  // List<String> usages=new ArrayList<String>();
-  //
-  // usages.add("R");
-  // usages.add("RE");
-  // usages.add("RC");
-  // usages.add("C");
-  // usages.add("X");
-  //
-  // constant.setHl7Versions(hl7Versions);
-  // constant.setUsages(usages);
-  //
-  //
-  // sharedConstantService.save(constant);
-  //
-  //
-  //
-  // }
+   @PostConstruct
+   void createSharedConstant() {
+   SharedConstant constant= new SharedConstant();
+   List<String> hl7Versions=new ArrayList<String>();
+   hl7Versions.add("2.3.1");
+   hl7Versions.add("2.4");
+   hl7Versions.add("2.5");
+   hl7Versions.add("2.5.1");
+   hl7Versions.add("2.6");
+   hl7Versions.add("2.7");
+   hl7Versions.add("2.7.1");
+   hl7Versions.add("2.8");
+   hl7Versions.add("2.8.1");
+   hl7Versions.add("2.8.2");
+  
+   List<String> usages=new ArrayList<String>();
+  
+   usages.add("R");
+   usages.add("RE");
+   usages.add("RC");
+   usages.add("C");
+   usages.add("X");
+  
+   constant.setHl7Versions(hl7Versions);
+   constant.setUsages(usages);
+  
+  
+   sharedConstantService.save(constant);
+  
+  
+  
+   }
   // @PostConstruct
   // void generateDatatypeLibrary()
   // throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {

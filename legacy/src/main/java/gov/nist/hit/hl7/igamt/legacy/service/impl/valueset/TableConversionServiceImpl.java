@@ -20,21 +20,22 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
-import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
-import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.valueset.repository.CodeSystemRepository;
+import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 
 public class TableConversionServiceImpl implements ConversionService {
 
   private static TableRepository legacyTableRepository =
       (TableRepository) legacyContext.getBean("tableRepository");
-  private static ValuesetService valuesetService =
-      (ValuesetService) context.getBean("valuesetService");
-  private static CodeSystemService codeSystemService =
-      (CodeSystemService) context.getBean("codeSystemService");
+  private static ValuesetRepository valuesetService =
+      (ValuesetRepository) context.getBean(ValuesetRepository.class);
+  private static CodeSystemRepository codeSystemService =
+      (CodeSystemRepository) context.getBean(CodeSystemRepository.class);
   
   private  AccountRepository accountRepository =
 	      (AccountRepository) userContext.getBean(AccountRepository.class);
@@ -61,7 +62,10 @@ public class TableConversionServiceImpl implements ConversionService {
     v.setOid(table.getOid());
     v.setUsername(null);
     v.setIntensionalComment(table.getIntensionalComment());
-    v.setSourceType(table.getSourceType().value);
+    if(table.getSourceType().equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.EXTERNAL)) v.setSourceType(SourceType.EXTERNAL);
+    else if(table.getSourceType().equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.INTERNAL)) v.setSourceType(SourceType.INTERNAL);
+    
+//    v.setSourceType(table.getSourceType().value);
     if (table.getContentDefinition()
         .equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ContentDefinition.Extensional)) {
       v.setContentDefinition(ContentDefinition.Extensional);
@@ -219,12 +223,13 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setNumberOfCodes(table.getCodes().size());
       }
     }
-    valuesetService.createFromLegacy(v, table.getId());
+    v.setId(new CompositeKey(table.getId()));
+    valuesetService.save(v);
   }
 
   private void init() {
-    valuesetService.removeCollection();
-    codeSystemService.removeCollection();
+//    valuesetService.removeCollection();
+//    codeSystemService.removeCollection();
   }
 
 }

@@ -149,10 +149,6 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.fieldDT = parentDTId;
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
-                // if(entry.data.usage === 'C' && !entry.data.displayData.fieldDTbinding) {
-                //     entry.data.displayData.fieldDTbinding = {};
-                //     entry.data.displayData.fieldDTbinding.predicate = {};
-                // }
             }else if(entry.data.displayData.idPath.split("-").length === 3){
                 entry.data.displayData.type = "SUBCOMPONENT";
                 entry.data.displayData.fieldDT = fieldDT;
@@ -160,10 +156,6 @@ export class SegmentEditStructureComponent {
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
                 entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
                 entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
-                // if(entry.data.usage === 'C' && !entry.data.displayData.componentDTbinding) {
-                //     entry.data.displayData.componentDTbinding = {};
-                //     entry.data.displayData.componentDTbinding.predicate = {};
-                // }
             }
 
             this.setHasSingleCode(entry.data.displayData);
