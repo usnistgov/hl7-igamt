@@ -1,108 +1,129 @@
 import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
 import IndexedDbUtils from '../indexed-db-utils';
+import {Node} from '../node-database';
+import {IObject} from '../objects-database';
 
 @Injectable()
 export class ValuesetsIndexedDbService {
 
   constructor(private indexeddbService: IndexedDbService) {
-
   }
 
-
-  public getValueset(id, callback) {
+  public getValueset(id): Promise<IObject> {
     let valueset;
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        callback(valueset);
+    const promise = new Promise<IObject>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
+          valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
+          resolve(valueset);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
+  }
+
+  public getValuesetMetadata(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.metadata);
+      }).catch(() => {
+        reject();
       });
-    } else {
-      callback(null);
+    });
+    return promise;
+  }
+
+  public getValuesetStructure(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.structure);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getValuesetCrossReference(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.crossReference);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getValuesetPostDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.postDef);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getValuesetPreDef(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.preDef);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public getValuesetConformanceStatements(id): Promise<object> {
+    const promise = new Promise<object>((resolve, reject) => {
+      this.getValueset(id).then((valueset) => {
+        resolve(valueset.conformanceStatements);
+      }).catch(() => {
+        reject();
+      });
+    });
+    return promise;
+  }
+
+  public saveValueset(valueset): Promise<any> {
+    const promise = new Promise<IObject>((resolve, reject) => {
+      this.getValueset(valueset.id).then(existingValueset => {
+        this.doSave(valueset, existingValueset);
+      });
+    });
+    return promise;
+  }
+
+  public saveValuesetStructureToNodeDatabase(id, valuesetStructure) {
+    if (this.indexeddbService.nodeDatabase != null) {
+      this.indexeddbService.nodeDatabase.transaction('rw', this.indexeddbService.nodeDatabase.valuesets, async () => {
+        const valuesetNode = new Node();
+        valuesetNode.id = id;
+        valuesetNode.structure = valuesetStructure;
+        await this.indexeddbService.nodeDatabase.valuesets.put(valuesetNode);
+      });
     }
   }
 
-  public getValuesetMetadata(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        if (valueset != null) {
-          callback(valueset.metadata);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getValuesetStructure(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        if (valueset != null) {
-          callback(valueset.structure);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getValuesetPreDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        if (valueset != null) {
-          callback(valueset.preDef);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-  public getValuesetPostDef(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        if (valueset != null) {
-          callback(valueset.postDef);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public getValuesetCrossReference(id, callback) {
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-
-      this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const valueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(id);
-        if (valueset != null) {
-          callback(valueset.crossReference);
-        }
-      });
-    } else {
-      callback(null);
-    }
-  }
-
-  public saveValueset(valueset) {
-    console.log(valueset);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        const savedValueset = await this.indexeddbService.changedObjectsDatabase.valuesets.get(valueset.id);
-        this.doSave(valueset, savedValueset);
-      });
-    }
-  }
-
-  private doSave(valueset, savedValueset) {
-    savedValueset = IndexedDbUtils.populateIObject(valueset, savedValueset);
-    if (this.indexeddbService.changedObjectsDatabase != null) {
-      this.indexeddbService.changedObjectsDatabase.transaction('rw', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
-        await this.indexeddbService.changedObjectsDatabase.valuesets.put(savedValueset);
-      });
-    }
+  private doSave(valueset, savedValueset): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      savedValueset = IndexedDbUtils.populateIObject(valueset, savedValueset);
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.valuesets.put(savedValueset).then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
 }

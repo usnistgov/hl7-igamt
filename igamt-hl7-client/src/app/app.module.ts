@@ -86,7 +86,7 @@ import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
 import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
 import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
-// import {ValueSetsService} from './service/valueSets/valueSets.service';
+import {ValuesetsService} from './service/valuesets/valuesets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';

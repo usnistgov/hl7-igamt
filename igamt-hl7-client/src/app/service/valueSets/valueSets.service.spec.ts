@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { ValueSetsService } from './valueSets.service';
+import { ValuesetsService } from './valuesets.service';
 
-describe('ValueSetsService', () => {
+describe('ValuesetsService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [ValueSetsService]
+      providers: [ValuesetsService]
     });
   });
 
-  it('should be created', inject([ValueSetsService], (service: ValueSetsService) => {
+  it('should be created', inject([ValuesetsService], (service: ValuesetsService) => {
     expect(service).toBeTruthy();
   }));
 });
