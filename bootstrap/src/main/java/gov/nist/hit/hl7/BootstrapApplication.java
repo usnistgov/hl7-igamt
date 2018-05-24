@@ -122,38 +122,38 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
   
 
-   @PostConstruct
-   void createSharedConstant() {
-   SharedConstant constant= new SharedConstant();
-   List<String> hl7Versions=new ArrayList<String>();
-   hl7Versions.add("2.3.1");
-   hl7Versions.add("2.4");
-   hl7Versions.add("2.5");
-   hl7Versions.add("2.5.1");
-   hl7Versions.add("2.6");
-   hl7Versions.add("2.7");
-   hl7Versions.add("2.7.1");
-   hl7Versions.add("2.8");
-   hl7Versions.add("2.8.1");
-   hl7Versions.add("2.8.2");
-  
-   List<String> usages=new ArrayList<String>();
-  
-   usages.add("R");
-   usages.add("RE");
-   usages.add("RC");
-   usages.add("C");
-   usages.add("X");
-  
-   constant.setHl7Versions(hl7Versions);
-   constant.setUsages(usages);
-  
-  
-   sharedConstantService.save(constant);
-  
-  
-  
-   }
+//   @PostConstruct
+//   void createSharedConstant() {
+//   SharedConstant constant= new SharedConstant();
+//   List<String> hl7Versions=new ArrayList<String>();
+//   hl7Versions.add("2.3.1");
+//   hl7Versions.add("2.4");
+//   hl7Versions.add("2.5");
+//   hl7Versions.add("2.5.1");
+//   hl7Versions.add("2.6");
+//   hl7Versions.add("2.7");
+//   hl7Versions.add("2.7.1");
+//   hl7Versions.add("2.8");
+//   hl7Versions.add("2.8.1");
+//   hl7Versions.add("2.8.2");
+//  
+//   List<String> usages=new ArrayList<String>();
+//  
+//   usages.add("R");
+//   usages.add("RE");
+//   usages.add("RC");
+//   usages.add("C");
+//   usages.add("X");
+//  
+//   constant.setHl7Versions(hl7Versions);
+//   constant.setUsages(usages);
+//  
+//  
+//   sharedConstantService.save(constant);
+//  
+//  
+//  
+//   }
   // @PostConstruct
   // void generateDatatypeLibrary()
   // throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {

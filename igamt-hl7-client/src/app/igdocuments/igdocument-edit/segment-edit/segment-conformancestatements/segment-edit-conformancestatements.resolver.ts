@@ -15,28 +15,12 @@ import {SegmentsService} from "../../../../service/segments/segments.service";
 
 @Injectable()
 export  class SegmentEditConformanceStatementsResolver implements Resolve<any>{
+    constructor(private http: HttpClient,private segmentService: SegmentsService) {}
 
-
-  constructor(private http: HttpClient,private segmentService: SegmentsService) {
-
-  }
-
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    return new Promise(
-      (resolve , reject) =>{
+    resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
         let segmentId= route.params["segmentId"];
-        this.segmentService.getSegmentConformanceStatements(segmentId, data  => {
-
-          resolve(data);
-
-        });
-      }
-    )
-
-  }
-
-
-
+        return this.segmentService.getSegmentConformanceStatements(segmentId);
+    }
 }
 
 

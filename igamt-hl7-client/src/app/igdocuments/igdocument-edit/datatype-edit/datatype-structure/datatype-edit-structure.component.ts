@@ -99,7 +99,7 @@ export class DatatypeEditStructureComponent {
                     this.valuesetOptions.push(vsOption);
                 }
 
-                this.datatypesService.getDatatypeStructure(this.datatypeId, structure  => {
+                this.datatypesService.getDatatypeStructure(this.datatypeId).then(structure  => {
                     this.datatypeStructure = {};
                     this.datatypeStructure.name = structure.name;
                     this.datatypeStructure.ext = structure.ext;
@@ -248,7 +248,7 @@ export class DatatypeEditStructureComponent {
     loadNode(event) {
         if(event.node && !event.node.children) {
             var datatypeId = event.node.data.ref.id;
-            this.datatypesService.getDatatypeStructure(datatypeId, structure  => {
+            this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, event.node.data.displayData.datatypeBinding, event.node.data.displayData.componentDT, event.node.data.displayData.datatype.name);
             });
         }
@@ -410,7 +410,7 @@ export class DatatypeEditStructureComponent {
         this.idMap = {};
         this.treeData = [];
 
-        this.datatypesService.getDatatypeStructure(this.datatypeId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(this.datatypeId).then(dtStructure  => {
             this.idMap[this.datatypeId] = {name:dtStructure.name};
 
             var rootData = {elementId:this.datatypeId};
@@ -488,7 +488,7 @@ export class DatatypeEditStructureComponent {
     }
 
     popChild(id, dtId, parentTreeNode){
-        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(dtId).then(dtStructure  => {
             this.idMap[id].dtName = dtStructure.name;
             if(dtStructure.children){
                 for (let child of dtStructure.children) {

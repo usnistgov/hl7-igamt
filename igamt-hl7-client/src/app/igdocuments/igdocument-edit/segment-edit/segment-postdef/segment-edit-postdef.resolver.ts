@@ -17,23 +17,15 @@ import {SegmentsService} from "../../../../service/segments/segments.service";
 export  class SegmentEditPostdefResolver implements Resolve<any>{
 
 
-  constructor(private http: HttpClient,private segmentService: SegmentsService) {
+    constructor(private http: HttpClient,private segmentService: SegmentsService) {
 
-  }
+    }
 
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    return new Promise(
-      (resolve , reject) =>{
+    resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
         let segmentId= route.params["segmentId"];
-        this.segmentService.getSegmentPostDef(segmentId, data  => {
+        return this.segmentService.getSegmentPostDef(segmentId);
 
-          resolve(data);
-
-        });
-      }
-    )
-
-  }
+    }
 
 
 

@@ -17,21 +17,14 @@ import {SegmentsService} from "../../../../service/segments/segments.service";
 export  class SegmentEditStructureResolver implements Resolve<any>{
 
 
-  constructor(private http: HttpClient,private segmentService: SegmentsService) {
+    constructor(private http: HttpClient,private segmentService: SegmentsService) {
 
-  }
+    }
 
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    return new Promise(
-      (resolve , reject) =>{
+    resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
         let segmentId= route.params["segmentId"];
-        this.segmentService.getSegmentStructure(segmentId, structure  => {
-            console.log(structure);
-          resolve(structure);
-        });
-      }
-    )
-  }
+        return this.segmentService.getSegmentStructure(segmentId);
+    }
 }
 
 

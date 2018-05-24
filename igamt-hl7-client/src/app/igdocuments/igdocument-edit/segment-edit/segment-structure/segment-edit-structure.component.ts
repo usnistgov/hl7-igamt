@@ -95,19 +95,19 @@ export class SegmentEditStructureComponent {
 
 
                 this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
-                    let listTocVSs:any = valuesetTOCdata[0];
+                    let listTocVSs: any = valuesetTOCdata[0];
 
-                    for(let entry of listTocVSs){
+                    for (let entry of listTocVSs) {
                         var treeObj = entry.treeNode;
-                        var valuesetLink:any = {};
+                        var valuesetLink: any = {};
                         valuesetLink.id = treeObj.key.id;
                         valuesetLink.label = treeObj.label;
                         valuesetLink.domainInfo = treeObj.domainInfo;
                         this.valuesetsLinks.push(valuesetLink);
-
-                        var vsOption = {label: valuesetLink.label, value : valuesetLink.id};
+                        var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
                         this.valuesetOptions.push(vsOption);
                     }
+
                     this.segmentStructure = {};
                     this.segmentStructure.name = x.name;
                     this.segmentStructure.ext = x.ext;
@@ -276,7 +276,7 @@ export class SegmentEditStructureComponent {
     loadNode(event) {
         if(event.node && !event.node.children) {
             var datatypeId = event.node.data.ref.id;
-            this.datatypesService.getDatatypeStructure(datatypeId, structure  => {
+            this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
@@ -438,7 +438,7 @@ export class SegmentEditStructureComponent {
         this.idMap = {};
         this.treeData = [];
 
-        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
+        this.segmentsService.getSegmentStructure(this.segmentId).then(segStructure  => {
             this.idMap[this.segmentId] = {name:segStructure.name};
 
             var rootData = {elementId:this.segmentId};
@@ -514,7 +514,7 @@ export class SegmentEditStructureComponent {
     }
 
     popChild(id, dtId, parentTreeNode){
-        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(dtId).then( dtStructure  => {
             this.idMap[id].dtName = dtStructure.name;
             if(dtStructure.children){
                 for (let child of dtStructure.children) {

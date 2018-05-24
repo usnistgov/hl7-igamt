@@ -22,16 +22,8 @@ export  class SegmentEditPredefResolver implements Resolve<any>{
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
-    return new Promise(
-      (resolve , reject) =>{
-        let segmentId= route.params["segmentId"];
-        this.segmentService.getSegmentPreDef(segmentId, data  => {
-
-          resolve(data);
-
-        });
-      }
-    )
+      let segmentId= route.params["segmentId"];
+      return this.segmentService.getSegmentPreDef(segmentId);
 
   }
 
