@@ -27,7 +27,7 @@ export class DatatypeEditPostdefComponent {
 
     ngOnInit() {
         this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.datatypesService.getDatatypePostDef(this.datatypeId, data  => {
+        this.datatypesService.getDatatypePostDef(this.datatypeId).then( data  => {
             this.datatypePostdef = data;
         });
     }

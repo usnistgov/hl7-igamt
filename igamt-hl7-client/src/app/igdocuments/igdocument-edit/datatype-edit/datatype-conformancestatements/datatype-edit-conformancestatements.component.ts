@@ -55,11 +55,11 @@ export class DatatypeEditConformanceStatementsComponent {
         this.idMap = {};
         this.treeData = [];
         this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.datatypesService.getDatatypeConformanceStatements(this.datatypeId, conformanceStatementData => {
+        this.datatypesService.getDatatypeConformanceStatements(this.datatypeId).then(conformanceStatementData => {
             this.datatypeConformanceStatements = conformanceStatementData;
         });
 
-        this.datatypesService.getDatatypeStructure(this.datatypeId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(this.datatypeId).then( dtStructure  => {
             this.idMap[this.datatypeId] = {name:dtStructure.name};
 
             var rootData = {elementId:this.datatypeId};
@@ -102,7 +102,7 @@ export class DatatypeEditConformanceStatementsComponent {
     }
 
     popChild(id, dtId, parentTreeNode){
-        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(dtId).then( dtStructure  => {
             this.idMap[id].dtName = dtStructure.name;
             if(dtStructure.children){
                 for (let child of dtStructure.children) {

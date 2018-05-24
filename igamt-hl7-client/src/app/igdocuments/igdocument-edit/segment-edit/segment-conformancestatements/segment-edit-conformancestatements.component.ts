@@ -58,13 +58,13 @@ export class SegmentEditConformanceStatementsComponent {
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
-        this.segmentsService.getSegmentConformanceStatements(this.segmentId, conformanceStatementData => {
+        this.segmentsService.getSegmentConformanceStatements(this.segmentId).then( conformanceStatementData => {
             this.segmentConformanceStatements = conformanceStatementData;
         });
 
         console.log("SegmentId:" + this.segmentId);
 
-        this.segmentsService.getSegmentStructure(this.segmentId, segStructure  => {
+        this.segmentsService.getSegmentStructure(this.segmentId).then(segStructure  => {
             this.idMap[this.segmentId] = {name:segStructure.name};
 
             var rootData = {elementId:this.segmentId};
@@ -108,7 +108,7 @@ export class SegmentEditConformanceStatementsComponent {
 
     popChild(id, dtId, parentTreeNode){
 
-        this.datatypesService.getDatatypeStructure(dtId, dtStructure  => {
+        this.datatypesService.getDatatypeStructure(dtId).then( dtStructure  => {
             this.idMap[id].dtName = dtStructure.name;
             if(dtStructure.children){
                 for (let child of dtStructure.children) {
