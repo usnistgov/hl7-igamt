@@ -139,9 +139,10 @@ export class SegmentEditStructureComponent {
             if(entry.data.displayData.idPath.split("-").length === 1){
                 entry.data.displayData.type = 'FIELD';
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
-
                 if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding) {
                     entry.data.displayData.segmentBinding = {};
+                }
+                if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding.predicate){
                     entry.data.displayData.segmentBinding.predicate = {};
                 }
             }else if(entry.data.displayData.idPath.split("-").length === 2){

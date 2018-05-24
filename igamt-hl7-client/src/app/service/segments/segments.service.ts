@@ -88,7 +88,7 @@ export class SegmentsService {
       this.segmentsIndexedDbService.getSegmentConformanceStatements(id).then((conformanceStatement) => {
         resolve(conformanceStatement);
       }).catch(() => {
-        this.http.get('api/segments/' + id + '/conformanceStatement').subscribe(serverSegmentConformanceStatement => {
+        this.http.get('api/segments/' + id + '/conformancestatement').subscribe(serverSegmentConformanceStatement => {
           resolve(serverSegmentConformanceStatement);
         }, error => {
           reject(error);
