@@ -1,0 +1,13 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_XCN",
+    "version": 1
+  },
+  "name": "XCN",
+  "label": "XCN_TEST",
+  "ext": "TEST",
+  "scope": "USER",
+  "version":null,
+  "description":"Participation Information",
+  "authorNote":""
+}

@@ -15,10 +15,6 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
-
 /**
  *
  * @author Maxence Lefort on May 4, 2018.
@@ -27,9 +23,9 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 public class ChangedConformanceProfile {
 
   private String id;
-  private DisplayMetadata metadata;
-  private PostDef postDef;
-  private PreDef preDef;
+  private DisplayConformanceProfileMetadata metadata;
+  private DisplayConformanceProfilePostDef postDef;
+  private DisplayConformanceProfilePreDef preDef;
   private ConformanceProfileStructure structure;
 
   public ChangedConformanceProfile() {}
@@ -42,36 +38,36 @@ public class ChangedConformanceProfile {
     this.id = id;
   }
 
-  public DisplayMetadata getMetadata() {
-    return metadata;
-  }
-
-  public void setMetadata(DisplayMetadata metadata) {
-    this.metadata = metadata;
-  }
-
-  public PostDef getPostDef() {
-    return postDef;
-  }
-
-  public void setPostDef(PostDef postDef) {
-    this.postDef = postDef;
-  }
-
-  public PreDef getPreDef() {
-    return preDef;
-  }
-
-  public void setPreDef(PreDef preDef) {
-    this.preDef = preDef;
-  }
-
   public ConformanceProfileStructure getStructure() {
     return structure;
   }
 
   public void setStructure(ConformanceProfileStructure structure) {
     this.structure = structure;
+  }
+
+  public DisplayConformanceProfileMetadata getMetadata() {
+    return metadata;
+  }
+
+  public void setMetadata(DisplayConformanceProfileMetadata metadata) {
+    this.metadata = metadata;
+  }
+
+  public DisplayConformanceProfilePostDef getPostDef() {
+    return postDef;
+  }
+
+  public void setPostDef(DisplayConformanceProfilePostDef postDef) {
+    this.postDef = postDef;
+  }
+
+  public DisplayConformanceProfilePreDef getPreDef() {
+    return preDef;
+  }
+
+  public void setPreDef(DisplayConformanceProfilePreDef preDef) {
+    this.preDef = preDef;
   }
 
 

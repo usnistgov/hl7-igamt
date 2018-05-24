@@ -29,7 +29,7 @@ import {SegmentEditMetadatResolver} from "./segment-metadata/segment-edit-metada
             path: ':segmentId/postDef', component: SegmentEditPostdefComponent,
         },
         {
-            path: ':segmentId/conformanceStatements', component: SegmentEditConformanceStatementsComponent,
+            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,
         }
     ])
   ],

@@ -22,7 +22,6 @@ export class SegmentsService {
     const http = this.http;
     const segmentsIndexedDbService = this.segmentsIndexedDbService;
     this.segmentsIndexedDbService.getSegmentStructure(id, function(clientSegmentStructure){
-      console.log(clientSegmentStructure);
       if (clientSegmentStructure == null) {
         http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
           segmentsIndexedDbService.saveSegmentStructureToNodeDatabase(id, serverSegmentStructure);
@@ -34,26 +33,19 @@ export class SegmentsService {
     });
   }
 
-  public getSegmentConformanceStatements(id, callback) {
-    const http = this.http;
-    const segmentsIndexedDbService = this.segmentsIndexedDbService;
-
-    http.get('api/segments/' + id + '/conformanceStatements').subscribe(conformanceStatements => {
-      callback(conformanceStatements);
-    });
-
-    /*
-    this.segmentsIndexedDbService.getSegmentStructure(id, function(clientSegmentStructure){
-      if (clientSegmentStructure == null) {
-        http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
-          callback(serverSegmentStructure);
+    public getSegmentConformanceStatements(id, callback) {
+        const http = this.http;
+        const segmentsIndexedDbService = this.segmentsIndexedDbService;
+        this.segmentsIndexedDbService.getSegmentConformanceStatements(id, function(clientSegmentConformanceStatements){
+            if (clientSegmentConformanceStatements == null) {
+                http.get('api/segments/' + id + '/conformancestatement').subscribe(serverSegmentConformanceStatements => {
+                    callback(serverSegmentConformanceStatements);
+                });
+            } else {
+                callback(clientSegmentConformanceStatements);
+            }
         });
-      } else {
-        callback(clientSegmentStructure);
-      }
-    });
-    */
-  }
+    }
 
   public getSegmentPreDef(id, callback) {
     const http = this.http;
@@ -68,18 +60,18 @@ export class SegmentsService {
     });
   }
 
-  public getSegmentPostDef(id, callback) {
-    const http = this.http;
-    this.segmentsIndexedDbService.getSegmentPostDef(id, function(clientSegmentPostDef){
-      if (clientSegmentPostDef == null) {
-        http.get('api/segments/' + id + '/postDef').subscribe(serverSegmentPostDef => {
-          callback(serverSegmentPostDef);
+    public getSegmentPostDef(id, callback) {
+        const http = this.http;
+        this.segmentsIndexedDbService.getSegmentPostDef(id, function(clientSegmentPostDef){
+            if (clientSegmentPostDef == null) {
+                http.get('api/segments/' + id + '/postDef').subscribe(serverSegmentPostDef => {
+                    callback(serverSegmentPostDef);
+                });
+            } else {
+                callback(clientSegmentPostDef);
+            }
         });
-      } else {
-        callback(clientSegmentPostDef);
-      }
-    });
-  }
+    }
 
   public getSegmentCrossReferences(id, callback) {
     this.segmentsIndexedDbService.getSegmentCrossReference(id, function(clientSegmentMetadata){

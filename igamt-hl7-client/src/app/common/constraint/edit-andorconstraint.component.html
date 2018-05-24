@@ -17,10 +17,17 @@
 
             <div class="ui-g ui-fluid">
                 <div class="ui-g-12 ui-md-2">
-                    <label>[#{{idx + 1}}] Child Assertion Type:</label>
+                    <label>[#{{idx + 1}}] Child Assertion Level:</label>
                 </div>
-                <div class="ui-g-12 ui-md-10">
+                <div class="ui-g-12 ui-md-4">
                     <p-dropdown id="{{groupName}}-Child{{idx}}-mode" name="{{groupName}}-Child{{idx}}-mode" required [options]="assertionModes" [(ngModel)]="child.mode" (onChange)="makeConstraintMode(child)"></p-dropdown>
+                </div>
+
+                <div *ngIf="child.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
+                    <label>Complex Type: </label>
+                </div>
+                <div *ngIf="child.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
+                    <p-dropdown id="{{groupName}}-Child{{idx}}-ComplextAssertionType" name="{{groupName}}-Child{{idx}}-ComplextAssertionType" required [options]="partialComplexAssertionTypes" [(ngModel)]="child.complexAssertionType" (onChange)="changeComplexAssertionType(child)" placeholder="Select a complex type"></p-dropdown>
                 </div>
             </div>
 

@@ -38,6 +38,21 @@ export class SegmentsIndexedDbService {
     }
   }
 
+    public getSegmentConformanceStatements(id, callback) {
+        if (this.indexeddbService.changedObjectsDatabase != null) {
+            this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
+                const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
+                if (segment != null) {
+                    callback(segment.conformanceStatements);
+                } else {
+                    callback(null);
+                }
+            });
+        } else {
+            callback(null);
+        }
+    }
+
   public getSegmentStructure(id, callback) {
     if (this.indexeddbService.changedObjectsDatabase != null) {
       this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
@@ -74,18 +89,23 @@ export class SegmentsIndexedDbService {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
           callback(segment.preDef);
+        }else {
+            callback(null);
         }
       });
     } else {
       callback(null);
     }
   }
+
   public getSegmentPostDef(id, callback) {
     if (this.indexeddbService.changedObjectsDatabase != null) {
       this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
         const segment = await this.indexeddbService.changedObjectsDatabase.segments.get(id);
         if (segment != null) {
           callback(segment.postDef);
+        }else {
+            callback(null);
         }
       });
     } else {

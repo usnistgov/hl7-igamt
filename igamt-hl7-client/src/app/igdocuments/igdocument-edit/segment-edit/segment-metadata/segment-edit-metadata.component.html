@@ -1,42 +1,38 @@
 <h2>SEGMENT Metadata</h2>
 <div *ngIf="segmentMetadata">
-    <div class="ui-g">
-        <div class="ui-g-12 ui-md-12">
-            <div class="ui-g-2">
-                <label for="name">Name (Base):</label>
-            </div>
-            <div class="ui-g-10">
-                <input id="name" pInputText type="text" disabled [(ngModel)]="segmentMetadata.name" />
-            </div>
-        </div>
-
-        <div class="ui-g-12 ui-md-12">
-            <div class="ui-g-2">
-                <label for="ext">Flavor Name (Ext):</label>
-            </div>
-            <div class="ui-g-10">
-                <input id="ext" pInputText type="text" [(ngModel)]="segmentMetadata.ext" />
+    <form #segmentMetadataForm="ngForm">
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Name
+            </label>
+            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="segmentMetadata.name" required />
+            <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                <p-message severity="error" text="Name is required"></p-message>
             </div>
         </div>
 
-        <div class="ui-g-12 ui-md-12">
-            <div class="ui-g-2">
-                <label for="desc">Description:</label>
-            </div>
-            <div class="ui-g-10">
-                <textarea id="desc" pInputTextarea [(ngModel)]="segmentMetadata.description"></textarea>
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Flavor Name (Ext)
+            </label>
+            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="segmentMetadata.ext" required />
+            <div class="ui-g-offset-1" *ngIf="ext.invalid && (ext.dirty || ext.touched)">
+                <p-message severity="error" text="Extension is required"></p-message>
             </div>
         </div>
 
-        <div class="ui-g-12 ui-md-12">
-            <div class="ui-g-2">
-                <label for="note">Author Note:</label>
-            </div>
-            <div class="ui-g-10">
-                <textarea id="note" pInputTextarea [(ngModel)]="segmentMetadata.authorNote"></textarea>
-            </div>
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Description
+            </label>
+            <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="segmentMetadata.description" />
         </div>
-    </div>
 
-    <pre>{{segmentMetadata | json}}</pre>
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Author Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="segmentMetadata.authorNote"></div>
+        </div>
+    </form>
 </div>

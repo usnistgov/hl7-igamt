@@ -25,16 +25,23 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.MsgStructElementDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.shared.domain.Group;
 import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
 
 /**
  *
@@ -162,35 +169,84 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public ConformanceProfileStructure convertDomainToStructure(
-      ConformanceProfile conformanceProfile) {
-    // TODO Auto-generated method stub
+  public ConformanceProfileStructure convertDomainToStructure(ConformanceProfile conformanceProfile) {
+    if (conformanceProfile != null) {
+      
+      ObjectMapper mapper = new ObjectMapper();
+      try {
+        String jsonInString = mapper.writeValueAsString(conformanceProfile);
+        System.out.println(jsonInString);
+      } catch (JsonProcessingException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+      
+      ConformanceProfileStructure result = new ConformanceProfileStructure();
+      result.setBinding(conformanceProfile.getBinding());
+      result.setDomainInfo(conformanceProfile.getDomainInfo());
+      result.setId(conformanceProfile.getId());
+      result.setIdentifier(conformanceProfile.getIdentifier());
+      result.setMessageType(conformanceProfile.getMessageType());
+      result.setName(conformanceProfile.getName());
+      result.setStructId(conformanceProfile.getStructID());
+      
+      for(MsgStructElement child:conformanceProfile.getChildren()) {
+        if(child instanceof Group) {
+//          System.out.println(child.getName());
+        }else if(child instanceof SegmentRef) {
+//          System.out.println(((SegmentRef) child).getRef().getId());
+        }
+        result.addStructure(this.convertMsgStructElement(child));
+      }
+      return result;
+    }
     return null;
   }
 
-  @Override
-  public DisplayMetadata convertDomainToMetadata(ConformanceProfile conformanceProfile) {
-    if (conformanceProfile != null) {
-      DisplayMetadata result = new DisplayMetadata();
-      result.setAuthorNote(conformanceProfile.getComment());
-      result.setDescription(conformanceProfile.getDescription());
-      result.setId(conformanceProfile.getId());
-      result.setName(conformanceProfile.getName());
-      result.setScope(conformanceProfile.getDomainInfo().getScope());
-      result.setVersion(conformanceProfile.getDomainInfo().getVersion());
+  private MsgStructElementDisplay convertMsgStructElement(MsgStructElement msgStructElement) {
+    if (msgStructElement != null) {
+      MsgStructElementDisplay result = new MsgStructElementDisplay();
+      result.setData(msgStructElement);
+      if(msgStructElement instanceof Group) {
+        Group g = (Group)msgStructElement;
+        for(MsgStructElement child:g.getChildren()) {
+          result.addChild(this.convertMsgStructElement(child));
+        }
+      }
       return result;
     }
     return null;
   }
 
   @Override
-  public PreDef convertDomainToPredef(ConformanceProfile conformanceProfile) {
+  public DisplayConformanceProfileMetadata convertDomainToMetadata(ConformanceProfile conformanceProfile) {
     if (conformanceProfile != null) {
-      PreDef result = new PreDef();
+      DisplayConformanceProfileMetadata result = new DisplayConformanceProfileMetadata();
+      result.setAuthorNotes(conformanceProfile.getAuthorNotes());
+      result.setDescription(conformanceProfile.getDescription());
+      result.setDomainInfo(conformanceProfile.getDomainInfo());
       result.setId(conformanceProfile.getId());
-      result.setScope(conformanceProfile.getDomainInfo().getScope());
-      result.setVersion(conformanceProfile.getDomainInfo().getVersion());
-      result.setLabel(conformanceProfile.getName());
+      result.setIdentifier(conformanceProfile.getIdentifier());
+      result.setMessageType(conformanceProfile.getMessageType());
+      result.setName(conformanceProfile.getName());
+      result.setStructId(conformanceProfile.getStructID());
+      result.setUsageNote(conformanceProfile.getUsageNotes());
+      
+      return result;
+    }
+    return null;
+  }
+
+  @Override
+  public DisplayConformanceProfilePreDef convertDomainToPredef(ConformanceProfile conformanceProfile) {
+    if (conformanceProfile != null) {
+      DisplayConformanceProfilePreDef result = new DisplayConformanceProfilePreDef();
+      result.setDomainInfo(conformanceProfile.getDomainInfo());
+      result.setId(conformanceProfile.getId());
+      result.setIdentifier(conformanceProfile.getIdentifier());
+      result.setMessageType(conformanceProfile.getMessageType());
+      result.setName(conformanceProfile.getName());
+      result.setStructId(conformanceProfile.getStructID());
       result.setPreDef(conformanceProfile.getPreDef());
       return result;
     }
@@ -198,13 +254,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public PostDef convertDomainToPostdef(ConformanceProfile conformanceProfile) {
+  public DisplayConformanceProfilePostDef convertDomainToPostdef(ConformanceProfile conformanceProfile) {
     if (conformanceProfile != null) {
-      PostDef result = new PostDef();
+      DisplayConformanceProfilePostDef result = new DisplayConformanceProfilePostDef();
+      result.setDomainInfo(conformanceProfile.getDomainInfo());
       result.setId(conformanceProfile.getId());
-      result.setScope(conformanceProfile.getDomainInfo().getScope());
-      result.setVersion(conformanceProfile.getDomainInfo().getVersion());
-      result.setLabel(conformanceProfile.getName());
+      result.setIdentifier(conformanceProfile.getIdentifier());
+      result.setMessageType(conformanceProfile.getMessageType());
+      result.setName(conformanceProfile.getName());
+      result.setStructId(conformanceProfile.getStructID());
       result.setPostDef(conformanceProfile.getPostDef());
       return result;
     }
@@ -220,14 +278,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
       if (conformanceProfile != null) {
         if (changedConformanceProfile.getMetadata() != null) {
-          conformanceProfile
-              .setDescription(changedConformanceProfile.getMetadata().getDescription());
+          conformanceProfile.setAuthorNotes(changedConformanceProfile.getMetadata().getAuthorNotes());
+          conformanceProfile.setDescription(changedConformanceProfile.getMetadata().getDescription());
+          conformanceProfile.setDomainInfo(changedConformanceProfile.getMetadata().getDomainInfo());
+          conformanceProfile.setIdentifier(changedConformanceProfile.getMetadata().getIdentifier());
+          conformanceProfile.setMessageType(changedConformanceProfile.getMetadata().getMessageType());
           conformanceProfile.setName(changedConformanceProfile.getMetadata().getName());
-          conformanceProfile.setComment(changedConformanceProfile.getMetadata().getAuthorNote());
-          conformanceProfile.getDomainInfo()
-              .setScope(changedConformanceProfile.getMetadata().getScope());
-          conformanceProfile.getDomainInfo()
-              .setVersion(changedConformanceProfile.getMetadata().getVersion());
+          conformanceProfile.setStructID(changedConformanceProfile.getMetadata().getStructId());
+          conformanceProfile.setUsageNotes(changedConformanceProfile.getMetadata().getUsageNote());
         }
 
         if (changedConformanceProfile.getPostDef() != null) {
@@ -270,6 +328,22 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   	  query.limit(1);
   	  ConformanceProfile conformanceProfile = mongoTemplate.findOne(query, ConformanceProfile.class);
   	  return conformanceProfile;
+  }
+
+  @Override
+  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(ConformanceProfile conformanceProfile) {
+    if (conformanceProfile != null) {
+      ConformanceProfileConformanceStatement result = new ConformanceProfileConformanceStatement();
+      result.setDomainInfo(conformanceProfile.getDomainInfo());
+      result.setId(conformanceProfile.getId());
+      result.setIdentifier(conformanceProfile.getIdentifier());
+      result.setMessageType(conformanceProfile.getMessageType());
+      result.setName(conformanceProfile.getName());
+      result.setStructId(conformanceProfile.getStructID());
+      result.setConformanceStatements(conformanceProfile.getBinding().getConformanceStatements());
+      return result;
+    }
+    return null;
   }
 
 }

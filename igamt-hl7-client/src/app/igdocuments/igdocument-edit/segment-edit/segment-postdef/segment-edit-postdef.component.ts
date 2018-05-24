@@ -4,6 +4,8 @@
 import {Component} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
+import {HttpClient} from "@angular/common/http";
+import {SegmentsService} from "../../../../service/segments/segments.service";
 
 
 
@@ -13,24 +15,24 @@ import 'rxjs/add/operator/filter';
   styleUrls : ['./segment-edit-postdef.component.css']
 })
 export class SegmentEditPostdefComponent {
-  currentUrl:any;
-  segmentId:any;
-  segmentPostdef:any;
+    currentUrl:any;
+    segmentId:any;
+    segmentPostdef:any;
 
-  constructor(private route: ActivatedRoute, private  router : Router){
-    router.events.subscribe(event => {
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-      }
-    });
-  }
+    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient){
+        router.events.subscribe(event => {
+            if (event instanceof NavigationEnd ) {
+                this.currentUrl=event.url;
+            }
+        });
+    }
 
-  ngOnInit() {
-    this.segmentId= this.route.snapshot.params["segmentId"];
-    this.route.data.map(data => data.currentSegmentPostdef).subscribe(x => {
-      console.log("SEGMENT Postdef LOADING");
-      console.log(x);
-      this.segmentPostdef = x;
-    });
-  }
+    ngOnInit() {
+        this.segmentId = this.route.snapshot.params["segmentId"];
+        this.segmentsService.getSegmentPostDef(this.segmentId, data  => {
+
+            this.segmentPostdef = data;
+
+        });
+    }
 }

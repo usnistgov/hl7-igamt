@@ -42,9 +42,11 @@ export class DisplayPathComponent {
       return false;
     }
     else{
-      if(this.idMap[this.getIdPath()].max !== "1"){
-        return true;
-      }else{
+      if(this.idMap[this.getIdPath()].max){
+        if(this.idMap[this.getIdPath()].max !== "1"){
+          return true;
+        }else return false;
+      }else {
         return false;
       }
     }

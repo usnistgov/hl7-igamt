@@ -6,15 +6,12 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {SegmentsService} from "../../../../service/segments/segments.service";
 import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
-import {HttpClient} from "@angular/common/http";
-import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 
 @Component({
-    selector : 'segment-edit',
     templateUrl : './segment-edit-conformancestatements.component.html',
     styleUrls : ['./segment-edit-conformancestatements.component.css']
 })
@@ -27,6 +24,7 @@ export class SegmentEditConformanceStatementsComponent {
     treeData: any[];
     constraintTypes: any = [];
     assertionModes: any = [];
+    complexAssertionTypes: any[];
 
     selectedConformanceStatement: any = {};
 
@@ -34,7 +32,6 @@ export class SegmentEditConformanceStatementsComponent {
     editorTab: boolean = false;
 
     constructor(
-        public indexedDbService: IndexedDbService,
         private route: ActivatedRoute,
         private router : Router,
         private segmentsService : SegmentsService,
@@ -57,6 +54,7 @@ export class SegmentEditConformanceStatementsComponent {
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
+        this.complexAssertionTypes = this.configService._complexAssertionTypes;
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
@@ -203,6 +201,39 @@ export class SegmentEditConformanceStatementsComponent {
 
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
+    }
+
+    changeComplexAssertionType(constraint){
+        if(constraint.complexAssertionType === 'ANDOR'){
+            constraint.child = undefined;
+            constraint.ifAssertion = undefined;
+            constraint.thenAssertion = undefined;
+            constraint.operator = 'AND';
+            constraint.assertions = [];
+            constraint.assertions.push({
+                "mode": "SIMPLE"
+            });
+
+            constraint.assertions.push({
+                "mode": "SIMPLE"
+            });
+        }else if(constraint.complexAssertionType === 'NOT'){
+            constraint.assertions = undefined;
+            constraint.ifAssertion = undefined;
+            constraint.thenAssertion = undefined;
+            constraint.child = {
+                "mode": "SIMPLE"
+            };
+        }else if(constraint.complexAssertionType === 'IFTHEN'){
+            constraint.assertions = undefined;
+            constraint.child = undefined;
+            constraint.ifAssertion = {
+                "mode": "SIMPLE"
+            };
+            constraint.thenAssertion = {
+                "mode": "SIMPLE"
+            };
+        }
     }
 
 }
