@@ -244,5 +244,36 @@ public class IgServiceImpl implements IgService {
   }
 
 
+  @Override
+  public Ig findIgContentById(String id) {
+    // TODO Auto-generated method stub
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.fields().include("id");
+    query.fields().include("content");
+    query.limit(1);
+
+    Ig ig = mongoTemplate.findOne(query, Ig.class);
+    return ig;
+
+  }
+
+
+  @Override
+  public Ig findIgMetadataById(String id) {
+    // TODO Auto-generated method stub
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.fields().include("id");
+    query.fields().include("metadata");
+    query.limit(1);
+
+    Ig ig = mongoTemplate.findOne(query, Ig.class);
+    return ig;
+  }
+
+
 
 }

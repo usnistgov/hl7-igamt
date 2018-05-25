@@ -41,5 +41,11 @@ public interface IgService {
 
   public List<IgSummary> convertListToDisplayList(List<Ig> igdouments);
 
+  public Ig findIgContentById(String id);
+
+  public Ig findIgMetadataById(String id);
+
+
+
 }
 
