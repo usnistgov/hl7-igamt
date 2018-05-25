@@ -10,9 +10,13 @@ export class IObject {
   conformanceStatements?: object;
 }
 
-interface ISection {
+export class Section {
   id?: string;
-  content?: object;
+  description?: object;
+  oldParent?: string;
+  newParent?: string;
+  position?: number;
+  changeType?: string;
 }
 
 export class ObjectsDatabase extends Dexie {
@@ -22,7 +26,7 @@ export class ObjectsDatabase extends Dexie {
     this.version(1).stores({
       datatypes: '&id',
       segments: '&id',
-      sections: '&id',
+      sections: '&id,changeType',
       profileComponents: '&id',
       conformanceProfiles: '&id',
       compositeProfiles: '&id',
