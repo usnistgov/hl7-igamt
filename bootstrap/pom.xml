@@ -3,7 +3,7 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>gov.nist.hit.hl7</groupId>
+	<groupId>gov.nist.hit.hl7.igamt</groupId>
 	<artifactId>bootstrap</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bootstrap</name>
@@ -85,6 +85,14 @@
           <version>0.0.1-SNAPSHOT</version>
 		
 		</dependency>
+		
+		<dependency>
+		  <groupId>gov.nist.hit.hl7</groupId>
+  		  <artifactId>igamt-auth</artifactId>
+          <version>0.0.1-SNAPSHOT</version>
+		
+		</dependency>
+		
 		
 		
 		<dependency>

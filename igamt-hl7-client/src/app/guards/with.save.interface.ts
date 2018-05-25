@@ -3,7 +3,7 @@
  */
 export interface WithSave{
 
-  save() :any;
+  save() :Promise<any>;
   reset(): any;
   getCurrent():any;
   getBackup():any;

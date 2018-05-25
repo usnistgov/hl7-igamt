@@ -6,6 +6,8 @@ import {setUpControl} from "@angular/forms/src/directives/shared";
 import {TocService} from "../toc/toc.service";
 import {NgForm} from "@angular/forms";
 import {WithSave} from "../../../guards/with.save.interface";
+import {SectionsService} from "../../../service/sections/sections.service";
+import {Section} from "../../../service/indexed-db/objects-database";
 
 @Component({
   templateUrl: './section.component.html',
@@ -14,7 +16,7 @@ import {WithSave} from "../../../guards/with.save.interface";
 })
 
 export class SectionComponent implements OnInit, WithSave {
-  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService) {
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private sectionsService:SectionsService) {
     this.tocService.getActiveNode().subscribe(x=>{
       console.log(x);
       this.currentNode=x;
@@ -39,18 +41,24 @@ export class SectionComponent implements OnInit, WithSave {
 
   }
 
-  save(){
+  save(): Promise<any>{
+
    this.tocService.getActiveNode().subscribe(x=>{
 
        console.log("saving");
        let node= x;
        if(this.section.id===node.data.id){
-         node.data.data= _.cloneDeep(this.section.data);
+         node.data.label= _.cloneDeep(this.section.label);
 
        }
-      }
 
+      }
     );
+    let s= new Section();
+    s.id=this.section.id;
+    s.changeType="EDITED";
+    s.description=this.section.description;
+    return this.sectionsService.saveSection(s);
 
 
 

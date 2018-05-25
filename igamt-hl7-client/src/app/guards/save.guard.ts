@@ -14,22 +14,18 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
   }
 
 
-  canDeactivate(component: WithSave)  {
-     if(!this.compareHash(component.getBackup(), component.getCurrent())){
-      if(!component.isValid()){
+  canDeactivate(component: WithSave) {
+    if (!this.compareHash(component.getBackup(), component.getCurrent())) {
+      if (!component.isValid()) {
 
         return this.getDialog(component);
-      }else{
-        component.save();
-        return true;
+      }
+      else {
+        return component.save();
 
       }
-     }else{
-       return true;
-
-     }
+    }
   }
-
   compareHash(obj1:any, obj2:any):boolean{
     return Md5.hashStr(JSON.stringify(obj1))==Md5.hashStr(JSON.stringify(obj2))
   }
