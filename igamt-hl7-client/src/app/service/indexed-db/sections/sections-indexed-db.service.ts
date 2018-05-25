@@ -13,7 +13,11 @@ export class SectionsIndexedDbService {
       if (this.indexeddbService.changedObjectsDatabase != null) {
         this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.sections, async () => {
           const section = await this.indexeddbService.changedObjectsDatabase.sections.get(id);
-          resolve(section);
+          if (section != null) {
+            resolve(section);
+          } else {
+            reject();
+          }
         });
       } else {
         reject();
