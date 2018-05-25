@@ -1,10 +1,18 @@
-package gov.nist.hit.hl7.igamt.shared.messageEvent;
+package gov.nist.hit.hl7.igamt.conformanceprofile.event.service;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.EventTreeData;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.EventTreeNode;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEvent;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeData;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventsRepository;
 
 @Service
 public class MessageEventService {

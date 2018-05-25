@@ -25,6 +25,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.Event;
+import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.display.MessageEventTreeNode;
+import gov.nist.hit.hl7.igamt.conformanceprofile.event.service.MessageEventService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
@@ -42,9 +45,6 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
 
 @RestController
 public class IGDocumentController {

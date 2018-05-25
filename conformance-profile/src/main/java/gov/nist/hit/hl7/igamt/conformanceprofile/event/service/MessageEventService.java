@@ -9,48 +9,22 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
+package gov.nist.hit.hl7.igamt.conformanceprofile.event.service;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.Event;
+import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.MessageEvent;
+import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.display.MessageEventTreeNode;
 
 
 /**
  * @author ena3
  *
  */
-public class AddingMessagesWrapper {
-  private List<Event> msgEvts;
-  private String id;
-
-  public AddingMessagesWrapper() {
-    super();
-    // TODO Auto-generated constructor stub
-  }
-
-  public List<Event> getMsgEvts() {
-    return msgEvts;
-  }
-
-  public void setMsgEvts(List<Event> msgEvts) {
-    this.msgEvts = msgEvts;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public AddingMessagesWrapper(List<Event> msgEvts, String id) {
-    super();
-    this.msgEvts = msgEvts;
-    this.id = id;
-  }
+public interface MessageEventService {
 
 
+  public MessageEvent save(MessageEvent ev);
 
+  public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
 }

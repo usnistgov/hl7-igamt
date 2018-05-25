@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.shared.messageEvent;
+package gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.display;
 
 import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
