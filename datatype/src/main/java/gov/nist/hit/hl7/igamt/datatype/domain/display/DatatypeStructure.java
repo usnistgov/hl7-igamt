@@ -5,7 +5,7 @@ import java.util.TreeSet;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 
 public class DatatypeStructure {

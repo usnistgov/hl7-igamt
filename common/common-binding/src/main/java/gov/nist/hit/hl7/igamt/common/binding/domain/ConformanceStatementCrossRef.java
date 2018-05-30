@@ -9,33 +9,30 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.domain.binding;
+package gov.nist.hit.hl7.igamt.common.binding.domain;
 
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
-
 
 /**
  * @author jungyubw
  *
  */
-public class PredicateCrossRef extends ConstraintCrossRef {
+public class ConformanceStatementCrossRef extends ConstraintCrossRef {
 
-  private Set<String> predicateIds;
+  private Set<String> conformanceStatementIds;
 
-  public PredicateCrossRef(Path path, Set<String> predicateIds) {
+  public ConformanceStatementCrossRef(
+      gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path path,
+      Set<String> conformanceStatementIds) {
     super(path);
-    this.predicateIds = predicateIds;
+    this.conformanceStatementIds = conformanceStatementIds;
   }
 
-  public Set<String> getPredicateIds() {
-    return predicateIds;
+  public Set<String> getConformanceStatementIds() {
+    return conformanceStatementIds;
   }
 
-  public void setPredicateIds(Set<String> predicateIds) {
-    this.predicateIds = predicateIds;
+  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
+    this.conformanceStatementIds = conformanceStatementIds;
   }
-
-
 }

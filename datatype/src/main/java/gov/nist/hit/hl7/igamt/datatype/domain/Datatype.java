@@ -21,7 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 
 /**

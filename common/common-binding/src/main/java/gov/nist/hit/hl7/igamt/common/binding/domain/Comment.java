@@ -9,29 +9,52 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.domain.binding;
+package gov.nist.hit.hl7.igamt.common.binding.domain;
 
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+import java.util.Date;
 
 /**
  * @author jungyubw
  *
  */
-public abstract class ConstraintCrossRef {
+public class Comment {
+  private String description;
+  private String username;
+  private Date dateupdated;
 
-  protected Path path;
-
-  public ConstraintCrossRef(Path path) {
+  public Comment(String description, String username, Date dateupdated) {
     super();
-    this.path = path;
+    this.description = description;
+    this.username = username;
+    this.dateupdated = dateupdated;
   }
 
-  public Path getPath() {
-    return path;
+  public Comment() {
+    super();
   }
 
-  public void setPath(Path path) {
-    this.path = path;
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
+  }
+
+  public Date getDateupdated() {
+    return dateupdated;
+  }
+
+  public void setDateupdated(Date dateupdated) {
+    this.dateupdated = dateupdated;
   }
 
 

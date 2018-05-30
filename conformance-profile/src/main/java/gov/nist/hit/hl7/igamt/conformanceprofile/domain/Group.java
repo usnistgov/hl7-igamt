@@ -6,7 +6,7 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 
 public class Group extends MsgStructElement {

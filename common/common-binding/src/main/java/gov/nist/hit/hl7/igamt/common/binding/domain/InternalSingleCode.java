@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.domain.binding;
+package gov.nist.hit.hl7.igamt.common.binding.domain;
 
 public class InternalSingleCode {
 

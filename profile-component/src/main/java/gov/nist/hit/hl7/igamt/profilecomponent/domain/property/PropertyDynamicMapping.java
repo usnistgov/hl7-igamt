@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 
 /**
  *
@@ -27,7 +27,7 @@ public class PropertyDynamicMapping extends ItemProperty {
     super(PropertyKey.DYNAMIC_MAPPING);
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
-  
+
   public PropertyDynamicMapping() {
     super(PropertyKey.DYNAMIC_MAPPING);
   }
@@ -39,5 +39,5 @@ public class PropertyDynamicMapping extends ItemProperty {
   public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
-  
+
 }

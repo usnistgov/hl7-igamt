@@ -9,30 +9,30 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.domain.binding;
+package gov.nist.hit.hl7.igamt.common.binding.domain;
 
-import java.util.Set;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceStatementCrossRef extends ConstraintCrossRef {
+public abstract class ConstraintCrossRef {
 
-  private Set<String> conformanceStatementIds;
+  protected Path path;
 
-  public ConformanceStatementCrossRef(
-      gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path path,
-      Set<String> conformanceStatementIds) {
-    super(path);
-    this.conformanceStatementIds = conformanceStatementIds;
+  public ConstraintCrossRef(Path path) {
+    super();
+    this.path = path;
   }
 
-  public Set<String> getConformanceStatementIds() {
-    return conformanceStatementIds;
+  public Path getPath() {
+    return path;
   }
 
-  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
-    this.conformanceStatementIds = conformanceStatementIds;
+  public void setPath(Path path) {
+    this.path = path;
   }
+
+
 }

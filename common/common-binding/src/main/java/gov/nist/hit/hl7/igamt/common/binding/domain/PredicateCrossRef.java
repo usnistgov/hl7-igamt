@@ -9,52 +9,32 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.domain.binding;
+package gov.nist.hit.hl7.igamt.common.binding.domain;
 
-import java.util.Date;
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+
 
 /**
  * @author jungyubw
  *
  */
-public class Comment {
-  private String description;
-  private String username;
-  private Date dateupdated;
+public class PredicateCrossRef extends ConstraintCrossRef {
 
-  public Comment(String description, String username, Date dateupdated) {
-    super();
-    this.description = description;
-    this.username = username;
-    this.dateupdated = dateupdated;
+  private Set<String> predicateIds;
+
+  public PredicateCrossRef(Path path, Set<String> predicateIds) {
+    super(path);
+    this.predicateIds = predicateIds;
   }
 
-  public Comment() {
-    super();
+  public Set<String> getPredicateIds() {
+    return predicateIds;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
-
-  public Date getDateupdated() {
-    return dateupdated;
-  }
-
-  public void setDateupdated(Date dateupdated) {
-    this.dateupdated = dateupdated;
+  public void setPredicateIds(Set<String> predicateIds) {
+    this.predicateIds = predicateIds;
   }
 
 

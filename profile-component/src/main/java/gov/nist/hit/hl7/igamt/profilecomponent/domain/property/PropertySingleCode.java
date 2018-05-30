@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.common.domain.binding.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 
 /**
  *

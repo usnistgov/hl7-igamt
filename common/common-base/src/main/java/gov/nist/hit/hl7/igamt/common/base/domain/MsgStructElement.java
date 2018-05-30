@@ -5,8 +5,10 @@ public abstract class MsgStructElement extends StructureElement {
 
   private int min;
   private String max;
+
   public MsgStructElement() {
-    
+    super();
+
   }
 
   public MsgStructElement(String id, String name, int position, Usage usage, Type type, String text,
@@ -19,14 +21,17 @@ public abstract class MsgStructElement extends StructureElement {
   public int getMin() {
     return min;
   }
+
   public void setMin(int min) {
     this.min = min;
   }
+
   public String getMax() {
     return max;
   }
+
   public void setMax(String max) {
     this.max = max;
   }
-  
+
 }
