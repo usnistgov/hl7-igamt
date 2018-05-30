@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
@@ -22,7 +23,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
@@ -58,30 +58,38 @@ public interface ConformanceProfileService {
 
   public List<ConformanceProfile> findByDomainInfoScope(String scope);
 
-  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope,
+      String verion);
 
   public List<ConformanceProfile> findByName(String name);
 
-  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
 
   public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
-	
+
   ConformanceProfile getLatestById(String id);
 
   public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
 
   ConformanceProfile findDisplayFormat(CompositeKey id);
 
-  public ConformanceProfileStructure convertDomainToStructure(ConformanceProfile conformanceProfile);
+  public ConformanceProfileStructure convertDomainToStructure(
+      ConformanceProfile conformanceProfile);
 
-  public DisplayConformanceProfileMetadata convertDomainToMetadata(ConformanceProfile conformanceProfile);
+  public DisplayConformanceProfileMetadata convertDomainToMetadata(
+      ConformanceProfile conformanceProfile);
 
-  public DisplayConformanceProfilePreDef convertDomainToPredef(ConformanceProfile conformanceProfile);
+  public DisplayConformanceProfilePreDef convertDomainToPredef(
+      ConformanceProfile conformanceProfile);
 
-  public DisplayConformanceProfilePostDef convertDomainToPostdef(ConformanceProfile conformanceProfile);
+  public DisplayConformanceProfilePostDef convertDomainToPostdef(
+      ConformanceProfile conformanceProfile);
 
-  public ConformanceProfile saveConformanceProfile(ChangedConformanceProfile changedConformanceProfile);
+  public ConformanceProfile saveConformanceProfile(
+      ChangedConformanceProfile changedConformanceProfile);
 
-  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(ConformanceProfile conformanceProfile);
+  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
+      ConformanceProfile conformanceProfile);
 
 }

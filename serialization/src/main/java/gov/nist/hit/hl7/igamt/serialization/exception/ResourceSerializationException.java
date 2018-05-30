@@ -13,8 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
  *
@@ -26,14 +26,16 @@ public class ResourceSerializationException extends SerializationException {
    * 
    */
   private static final long serialVersionUID = -3476863921150657947L;
-  
-  public ResourceSerializationException(Exception originException, Type type, Resource resource, String message) {
-    super(originException,type,"id="+resource.getId().getId()+",version="+resource.getId().getVersion()+",name="+resource.getName());
+
+  public ResourceSerializationException(Exception originException, Type type, Resource resource,
+      String message) {
+    super(originException, type, "id=" + resource.getId().getId() + ",version="
+        + resource.getId().getVersion() + ",name=" + resource.getName());
     this.message = message;
   }
-  
+
   public ResourceSerializationException(Exception originException, Type type, Resource resource) {
-    this(originException,type,resource,null);
+    this(originException, type, resource, null);
   }
-  
+
 }

@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>shared-domain</artifactId>
+			<artifactId>common</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 		<dependency>

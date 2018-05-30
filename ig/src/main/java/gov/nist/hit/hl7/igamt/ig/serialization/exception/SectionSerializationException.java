@@ -13,9 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.ig.serialization.exception;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 
 /**
  *
@@ -24,9 +24,10 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
 public class SectionSerializationException extends SerializationException {
 
   public SectionSerializationException(Exception originException, Section section) {
-    super(originException, Type.SECTION, "id="+section.getId()+", title= " + section.getLabel());
+    super(originException, Type.SECTION,
+        "id=" + section.getId() + ", title= " + section.getLabel());
   }
 
-  
+
 
 }

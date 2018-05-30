@@ -17,7 +17,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+
 
 /**
  *
@@ -29,7 +30,8 @@ public class ExportedFile {
 
   private String fileName;
 
-  public ExportedFile(InputStream content, String documentTitle, CompositeKey documentKey, ExportFormat exportFormat) {
+  public ExportedFile(InputStream content, String documentTitle, CompositeKey documentKey,
+      ExportFormat exportFormat) {
     super();
     this.content = content;
     this.setFileName(documentTitle, documentKey, exportFormat);
@@ -47,17 +49,19 @@ public class ExportedFile {
     return fileName;
   }
 
-  public void setFileName(String documentTitle, CompositeKey documentKey, ExportFormat exportFormat) {
+  public void setFileName(String documentTitle, CompositeKey documentKey,
+      ExportFormat exportFormat) {
     documentTitle = this.cleanDocumentTitle(documentTitle);
-    this.fileName = documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion()) + "_"
-    + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "." + exportFormat.getValue();
+    this.fileName =
+        documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion())
+            + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
+            + exportFormat.getValue();
   }
 
   private String cleanDocumentTitle(String documentTitle) {
     return documentTitle.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-")
         .replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
   }
-
 
 
 

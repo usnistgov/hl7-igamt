@@ -15,14 +15,15 @@ package gov.nist.hit.hl7.igamt.profilecomponent.repository;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
  * @author Maxence Lefort on Feb 27, 2018.
  */
-public interface ProfileComponentRepository extends MongoRepository<ProfileComponent, CompositeKey> {
+public interface ProfileComponentRepository
+    extends MongoRepository<ProfileComponent, CompositeKey> {
 
-  
+
 }

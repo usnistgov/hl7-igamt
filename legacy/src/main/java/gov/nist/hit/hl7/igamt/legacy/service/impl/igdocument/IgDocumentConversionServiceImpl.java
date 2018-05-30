@@ -46,13 +46,13 @@ import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.shared.domain.ValueSetConfigForExport;
-import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
-import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.Registry;
+import gov.nist.hit.hl7.igamt.shared.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.shared.registry.ValueSetRegistry;
 
 
 

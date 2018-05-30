@@ -17,18 +17,18 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Group;
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.SegmentNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -181,7 +181,8 @@ public class SerializableConformanceProfile extends SerializableResource {
     Element elementGroupBegin = new Element("SegmentRef");
     elementGroupBegin.addAttribute(new Attribute("idGpe", group.getId()));
     elementGroupBegin.addAttribute(new Attribute("name", group.getName()));
-    elementGroupBegin.addAttribute(new Attribute("description", "BEGIN " + group.getName() + " GROUP"));
+    elementGroupBegin
+        .addAttribute(new Attribute("description", "BEGIN " + group.getName() + " GROUP"));
     elementGroupBegin.addAttribute(new Attribute("usage", String.valueOf(group.getUsage())));
     elementGroupBegin.addAttribute(new Attribute("min", group.getMin() + ""));
     elementGroupBegin.addAttribute(new Attribute("max", group.getMax()));

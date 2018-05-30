@@ -2,9 +2,9 @@ package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 public class SegmentConformanceStatement {
   private CompositeKey id;

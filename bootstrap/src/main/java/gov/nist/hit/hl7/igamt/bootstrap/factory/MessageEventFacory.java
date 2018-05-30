@@ -9,14 +9,14 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.event.domain.MessageEvent;
-import gov.nist.hit.hl7.igamt.conformanceprofile.event.service.MessageEventService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
@@ -30,8 +30,8 @@ public class MessageEventFacory {
   ConformanceProfileService conformanceProfileService;
 
   @Autowired
-
   MessageEventService messageEventService;
+
   @Autowired
   CodeSystemService codeSystemService;
 

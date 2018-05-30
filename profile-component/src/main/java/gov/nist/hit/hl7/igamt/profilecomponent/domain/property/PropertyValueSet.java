@@ -14,9 +14,8 @@
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
 import java.util.HashSet;
-import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 
 /**
  *
@@ -43,9 +42,10 @@ public class PropertyValueSet extends ItemProperty {
     this.valuesetBindings = valuesetBindings;
   }
 
-  public void addValuesetBinding(ValuesetBinding vb){
-    if(this.valuesetBindings == null) this.valuesetBindings = new HashSet<ValuesetBinding>();
-    this.valuesetBindings.add(vb); 
+  public void addValuesetBinding(ValuesetBinding vb) {
+    if (this.valuesetBindings == null)
+      this.valuesetBindings = new HashSet<ValuesetBinding>();
+    this.valuesetBindings.add(vb);
   }
 
 }

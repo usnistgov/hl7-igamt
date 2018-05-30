@@ -22,13 +22,14 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
-import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+
 import nu.xom.Element;
 
 /**
@@ -57,7 +58,14 @@ public class SerializableAbstractDomainTest {
   private static final String RESOURCE_NAME_TEST = "AbstractDomain";
 
   public static SerializableAbstractDomain getSerializableAbstractDomainTest() {
-    AbstractDomain abstractDomain = new AbstractDomain() {};
+    AbstractDomain abstractDomain = new AbstractDomain() {
+      
+      @Override
+      public String getLabel() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    };() {};
     abstractDomain.setComment(COMMENT_TEST);
     abstractDomain.setCreatedFrom(CREATED_FROM_TEST);
     abstractDomain.setDescription(DESCRIPTION_TEST);

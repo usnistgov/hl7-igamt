@@ -11,7 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.model;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 /**
  * 
@@ -19,7 +19,9 @@ import gov.nist.hit.hl7.igamt.shared.domain.Resource;
  */
 public class CompositeProfile extends Resource {
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override

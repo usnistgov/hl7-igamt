@@ -6,26 +6,28 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+
+
 
 @Document
 public class Ig extends AbstractDomain {
 
   private DocumentMetadata metadata = new DocumentMetadata();
   private Set<TextSection> content = new HashSet<TextSection>();
-  private gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry =
-      new gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry();
+  private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
   private SegmentRegistry segmentRegistry = new SegmentRegistry();
   private ProfileComponentRegistry profileComponentRegistry = new ProfileComponentRegistry();
   private CompositeProfileRegistry compositeProfileRegistry = new CompositeProfileRegistry();
@@ -80,12 +82,11 @@ public class Ig extends AbstractDomain {
 
   }
 
-  public gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry getDatatypeRegistry() {
+  public DatatypeRegistry getDatatypeRegistry() {
     return datatypeRegistry;
   }
 
-  public void setDatatypeRegistry(
-      gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry datatypeRegistry) {
+  public void setDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
     this.datatypeRegistry = datatypeRegistry;
   }
 

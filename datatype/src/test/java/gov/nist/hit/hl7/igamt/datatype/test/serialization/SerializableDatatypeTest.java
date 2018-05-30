@@ -23,17 +23,17 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatype;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Element;
 import nu.xom.Elements;
 
@@ -48,7 +48,7 @@ public class SerializableDatatypeTest {
   private static final String TEST_POSTION = "123";
   private static final String TEST_NAME = "test_name";
   private static final String TEST_ID = "test_id";
-  
+
   private static final String TEST_COMPONENT1_NAME = "test_component1_name";
   private static final String TEST_COMPONENT1_CONF_LENGTH = "test_component1_conf_length";
   private static final String TEST_COMPONENT1_ID = "test_component1_id";
@@ -61,10 +61,8 @@ public class SerializableDatatypeTest {
   private static final String TEST_COMPONENT1_REF_LABEL = "test_component1_ref_label";
   private static final Ref REF_COMPONENT1 = new Ref(TEST_COMPONENT1_REF_ID);
 
-  
-  
-  
-  
+
+
   @Test
   public void testSerializeDatatype() throws ResourceSerializationException {
     Datatype datatype = new Datatype();
@@ -72,13 +70,13 @@ public class SerializableDatatypeTest {
     datatype.setId(new CompositeKey(TEST_ID));
     datatype.setExt(TEST_EXT);
     datatype.setPurposeAndUse(TEST_PURPOSE_AND_USE);
-    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION);
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION);
     Element testElement = serializableDatatype.serialize();
     assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
     assertEquals(TEST_PURPOSE_AND_USE, testElement.getAttribute("purposeAndUse").getValue());
     assertEquals(TEST_POSTION, testElement.getAttribute("position").getValue());
   }
-  
+
   private ComplexDatatype getComplexDatatype() {
     ComplexDatatype datatype = new ComplexDatatype();
     datatype.setName(TEST_NAME);
@@ -104,7 +102,8 @@ public class SerializableDatatypeTest {
     Datatype datatype = getComplexDatatype();
     Map<String, String> refDatatypeLabel = new HashMap<>();
     refDatatypeLabel.put(REF_COMPONENT1.getId(), TEST_COMPONENT1_REF_LABEL);
-    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION,refDatatypeLabel,new HashMap<String, String>());
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION,
+        refDatatypeLabel, new HashMap<String, String>());
     Element testElement = serializableDatatype.serialize();
     Elements componentElements = testElement.getChildElements("Component");
     assertEquals(1, componentElements.size());
@@ -114,22 +113,24 @@ public class SerializableDatatypeTest {
     assertEquals(TEST_COMPONENT1_ID, testComponent.getAttribute("id").getValue());
     assertEquals(TEST_COMPONENT1_MAX_LENGTH, testComponent.getAttribute("maxLength").getValue());
     assertEquals(TEST_COMPONENT1_MIN_LENGTH, testComponent.getAttribute("minLength").getValue());
-    assertEquals(String.valueOf(TEST_COMPONENT1_POSTION), testComponent.getAttribute("position").getValue());
+    assertEquals(String.valueOf(TEST_COMPONENT1_POSTION),
+        testComponent.getAttribute("position").getValue());
     assertEquals(TEST_COMPONENT1_REF_LABEL, testComponent.getAttribute("datatype").getValue());
     assertEquals(TEST_COMPONENT1_TEXT, testComponent.getAttribute("text").getValue());
     assertEquals(TEST_COMPONENT1_USAGE.name(), testComponent.getAttribute("usage").getValue());
   }
-  
+
   @Test(expected = ResourceSerializationException.class)
   public void testSerializeComplexDatatypeMissingRef() throws ResourceSerializationException {
     ComplexDatatype datatype = getComplexDatatype();
-    //Call serialization with no ref/datatype map to make it fail with a DatatypeNotFoundException
-    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION);
+    // Call serialization with no ref/datatype map to make it fail with a DatatypeNotFoundException
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION);
     try {
       serializableDatatype.serialize();
     } catch (ResourceSerializationException e) {
       assertTrue(e.getOriginException() instanceof SubStructElementSerializationException);
-      assertTrue(((SubStructElementSerializationException)e.getOriginException()).getOriginException() instanceof DatatypeNotFoundException);
+      assertTrue(((SubStructElementSerializationException) e.getOriginException())
+          .getOriginException() instanceof DatatypeNotFoundException);
       throw e;
     }
   }
@@ -139,9 +140,9 @@ public class SerializableDatatypeTest {
     DateTimeDatatype datatype = new DateTimeDatatype();
     datatype.setName(TEST_NAME);
     datatype.setId(new CompositeKey(TEST_ID));
-    //TODO add DT test
-    //SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION);
-    //Element testElement = serializableDatatype.serialize();
+    // TODO add DT test
+    // SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,TEST_POSTION);
+    // Element testElement = serializableDatatype.serialize();
   }
 
 }

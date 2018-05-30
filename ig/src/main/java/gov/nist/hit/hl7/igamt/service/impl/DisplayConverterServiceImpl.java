@@ -18,6 +18,9 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -45,9 +48,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -350,19 +350,23 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
   }
 
-/* (non-Javadoc)
- * @see gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDomainToModel(gov.nist.hit.hl7.igamt.ig.domain.Ig)
- */
-@Override
-public IGDisplay convertDomainToModel(Ig ig) {
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDomainToModel(gov.nist.hit.hl7
+   * .igamt.ig.domain.Ig)
+   */
+  @Override
+  public IGDisplay convertDomainToModel(Ig ig) {
     // TODO Auto-generated method stub
-    IGDisplay igDisplay= new IGDisplay();
+    IGDisplay igDisplay = new IGDisplay();
     igDisplay.setMetadata(ig.getMetadata());
     igDisplay.setAuthor(ig.getUsername());
     igDisplay.setDateUpdated(ig.getUpdateDate());
-    List<TreeNode> firstLevel= new ArrayList<TreeNode>();
-    for(TextSection s: ig.getContent()) {
-      firstLevel.add( createTextSectionNode( s, ig));
+    List<TreeNode> firstLevel = new ArrayList<TreeNode>();
+    for (TextSection s : ig.getContent()) {
+      firstLevel.add(createTextSectionNode(s, ig));
     }
     firstLevel.sort((h1, h2) -> h1.compareTo(h2));
     igDisplay.setToc(firstLevel);

@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 @Service("igService")
 public interface IgService {

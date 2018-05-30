@@ -18,10 +18,10 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
@@ -44,7 +44,7 @@ public class Valueset extends Resource {
   private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 
   private SourceType sourceType = SourceType.INTERNAL;
-  
+
   protected int numberOfCodes;
   private Set<String> codeSystemIds = new HashSet<String>();
   private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
@@ -202,13 +202,15 @@ public class Valueset extends Resource {
     this.internalCodeSystems = internalCodeSystems;
   }
 
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override
   public String getLabel() {
-    return this.getBindingIdentifier()+" - "+this.getName();
+    return this.getBindingIdentifier() + " - " + this.getName();
   }
 
   public SourceType getSourceType() {
@@ -218,7 +220,7 @@ public class Valueset extends Resource {
   public void setSourceType(SourceType sourceType) {
     this.sourceType = sourceType;
   }
-  
+
   public void setSourceType(String sourceType) {
     this.sourceType = SourceType.valueOf(sourceType);
   }

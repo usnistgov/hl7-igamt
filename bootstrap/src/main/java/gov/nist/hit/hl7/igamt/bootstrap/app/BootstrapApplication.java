@@ -15,10 +15,9 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
-import gov.nist.hit.hl7.igamt.shared.config.SharedConstantService;
 
 @SpringBootApplication
 
@@ -35,10 +34,11 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
+  //
+  // @Autowired
+  // MessageEventFacory messageEventFactory;
   @Autowired
-  MessageEventFacory messageEventFactory;
-  @Autowired
-  SharedConstantService sharedConstantService;
+  ConfigService sharedConstantService;
 
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
@@ -116,7 +116,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
   // @PostConstruct
   // void createSharedConstant() {
-  // SharedConstant constant= new SharedConstant();
+  // Config constant= new Config();
   // List<String> hl7Versions=new ArrayList<String>();
   // hl7Versions.add("2.3.1");
   // hl7Versions.add("2.4");

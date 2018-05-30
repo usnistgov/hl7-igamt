@@ -190,7 +190,7 @@ export class AppComponent implements AfterViewInit {
 
     constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router ){
 
-      http.get("api/sharedConstant").subscribe(data=>{
+      http.get("api/config").subscribe(data=>{
 
 
         this.ws.setAppConstant(data);
