@@ -24,16 +24,14 @@ public class MongoConfig extends AbstractMongoConfiguration {
 
   @Override
   protected String getDatabaseName() {
-    // return env.getProperty(DB_NAME);
-    return "igamt-user";
+    return env.getProperty(DB_NAME);
   }
 
 
   @Override
   public Mongo mongo() throws Exception {
-    // return new MongoClient(
-    // new ServerAddress(env.getProperty(DB_HOST), Integer.parseInt(env.getProperty(DB_PORT))));
-    return new MongoClient(new ServerAddress(env.getProperty("localhost"), 27017));
+    return new MongoClient(
+        new ServerAddress(env.getProperty(DB_HOST), Integer.parseInt(env.getProperty(DB_PORT))));
   }
 
   @Override
