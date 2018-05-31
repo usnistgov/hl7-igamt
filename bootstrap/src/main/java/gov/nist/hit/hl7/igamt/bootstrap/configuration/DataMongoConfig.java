@@ -12,29 +12,36 @@ import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
 @Configuration
-@EnableMongoRepositories(basePackages={"gov.nist.hit.hl7.igamt"})
+@EnableMongoRepositories(basePackages = {"gov.nist.hit.hl7.igamt"})
 @ComponentScan("gov.nist.hit.hl7.igamt")
 
 public class DataMongoConfig extends AbstractMongoConfiguration {
 
-	
-	@Autowired
-	Environment env;
-	
 
-	@Override
-	protected String getDatabaseName() {
-		return env.getProperty("dbname");
-	}
+  @Autowired
+  Environment env;
 
-	@Override
-	public Mongo mongo() throws Exception {
-		return new MongoClient(new ServerAddress(env.getProperty("host"),27017));
-	}
-	
-	@Override
-	protected String getMappingBasePackage() {
-		return "gov.nist.hit.hl7.igamt";
-	}
+
+  private static final String DB_NAME = "db.name";
+  private static final String DB_HOST = "db.host";
+  private static final String DB_PORT = "db.port";
+
+  @Override
+  protected String getDatabaseName() {
+    return env.getProperty(DB_NAME);
+  }
+
+  @Override
+  public Mongo mongo() throws Exception {
+
+
+    return new MongoClient(
+        new ServerAddress(env.getProperty(DB_HOST), Integer.parseInt(env.getProperty(DB_PORT))));
+  }
+
+  @Override
+  protected String getMappingBasePackage() {
+    return "gov.nist.hit.hl7.igamt";
+  }
 
 }

@@ -43,7 +43,7 @@ public class TokenAuthenticationService {
 
     String jwt = request.getHeader("Authorization");
     if (jwt != null && !jwt.isEmpty()) {
-      Claims claims = Jwts.parser().setSigningKey(crypto.pub(env.getProperty("publicKey")))
+      Claims claims = Jwts.parser().setSigningKey(crypto.pub(env.getProperty("key.public")))
           .parseClaimsJws(jwt).getBody();
       String username = claims.getSubject();
       System.out.println(username);

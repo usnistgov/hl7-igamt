@@ -133,7 +133,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
     } else if (ig.getScope().equals(IGDocumentScope.ARCHIVED)) {
       domain.setScope(Scope.ARCHIVED);
-
     }
     newIg.setDomainInfo(domain);
     newIg.setName(ig.getMetaData().getTitle());
