@@ -13,16 +13,17 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import java.util.HashMap;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+
 
 /**
  * @author ena3
  *
  */
 public interface OrderService {
-  
-HashMap<CompositeKey, Integer>  distributePositionByName();
-  
-  
+
+  HashMap<CompositeKey, Integer> distributePositionByName();
+
+
 
 }

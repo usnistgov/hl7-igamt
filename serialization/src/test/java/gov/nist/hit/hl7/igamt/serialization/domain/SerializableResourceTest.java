@@ -17,9 +17,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
 import nu.xom.Element;
 
 /**
@@ -27,7 +27,7 @@ import nu.xom.Element;
  * @author Maxence Lefort on Mar 20, 2018.
  */
 public class SerializableResourceTest {
-  
+
   private static final String ID_TEST = "id_test";
   private static final int VERSION_TEST = 123;
   private static final CompositeKey COMPOSITE_KEY_TEST = new CompositeKey(ID_TEST, VERSION_TEST);
@@ -37,13 +37,20 @@ public class SerializableResourceTest {
   private static final String POSITION_TEST = "456";
 
   public static SerializableResource getSerializableResourceTest() {
-    Resource resource = new Resource();
+    Resource resource = new Resource() {
+      
+      @Override
+      public String getLabel() {
+        // TODO Auto-generated method stub
+        return null;
+      }
+    };();
     resource.setId(COMPOSITE_KEY_TEST);
     resource.setName(NAME_TEST);
     resource.setPostDef(POSTDEF_TEST);
     resource.setPreDef(PREDEF_TEST);
-    SerializableResource serializableResource = new SerializableResource(resource,POSITION_TEST) {
-      
+    SerializableResource serializableResource = new SerializableResource(resource, POSITION_TEST) {
+
       @Override
       public Element serialize() {
         return this.getElement("Resource");
@@ -51,7 +58,7 @@ public class SerializableResourceTest {
     };
     return serializableResource;
   }
-  
+
   @Test
   public void testSerialize() throws SerializationException {
     SerializableResource serializableResource = getSerializableResourceTest();
@@ -59,5 +66,5 @@ public class SerializableResourceTest {
     assertEquals(POSTDEF_TEST, testElement.getAttribute("postDef").getValue());
     assertEquals(PREDEF_TEST, testElement.getAttribute("preDef").getValue());
   }
-  
+
 }

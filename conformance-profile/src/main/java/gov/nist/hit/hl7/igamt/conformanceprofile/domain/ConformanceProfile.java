@@ -17,11 +17,11 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 /**
  *
@@ -120,13 +120,15 @@ public class ConformanceProfile extends Resource {
     return clone;
 
   };
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override
   public String getLabel() {
     return this.getName();
   }
-  
+
 }

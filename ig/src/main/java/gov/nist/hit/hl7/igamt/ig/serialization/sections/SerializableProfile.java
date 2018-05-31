@@ -15,20 +15,20 @@ package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
-import gov.nist.hit.hl7.igamt.shared.registries.CompositeProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ProfileComponentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import nu.xom.Element;
 
 /**
@@ -86,10 +86,11 @@ public class SerializableProfile extends SerializableSection {
     Element profileElement = super.getElement();
     if (((TextSection) super.getSection()).getChildren() != null) {
       for (Section section : ((TextSection) super.getSection()).getChildren()) {
-        SerializableSection childSection = SerializableSectionFactory.getSerializableSection(
-            section, this.getChildLevel(), datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
-            conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
-            conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
+        SerializableSection childSection =
+            SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(),
+                datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
+                conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
+                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
         if (childSection != null) {
           Element childSectionElement = childSection.serialize();
           if (childSectionElement != null) {

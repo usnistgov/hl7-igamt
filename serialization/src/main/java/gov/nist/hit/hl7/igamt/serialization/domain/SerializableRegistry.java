@@ -13,8 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 
 /**
  *
@@ -23,7 +23,7 @@ import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 public abstract class SerializableRegistry extends SerializableSection {
 
   private Registry registry;
-  
+
   /**
    * @param id
    * @param position

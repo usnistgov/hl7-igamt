@@ -15,10 +15,11 @@ package gov.nist.hit.hl7.igamt.datatype.domain;
 
 import java.util.Date;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 /**
  *

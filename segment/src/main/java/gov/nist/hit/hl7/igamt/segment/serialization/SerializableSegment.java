@@ -16,17 +16,17 @@ package gov.nist.hit.hl7.igamt.segment.serialization;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.DynamicMappingSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
-import gov.nist.hit.hl7.igamt.shared.domain.Field;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -44,7 +44,8 @@ public class SerializableSegment extends SerializableResource {
    * @param segment
    * @param position
    */
-  public SerializableSegment(Segment segment, String position, int level, Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap) {
+  public SerializableSegment(Segment segment, String position, int level,
+      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -56,26 +57,30 @@ public class SerializableSegment extends SerializableResource {
     Element segmentElement = super.getElement(Type.SEGMENT);
     Segment segment = (Segment) this.getAbstractDomain();
     try {
-      segmentElement.addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
-      if(segment.getDynamicMappingInfo() != null) {
+      segmentElement
+          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
+      if (segment.getDynamicMappingInfo() != null) {
         try {
-          Element dynamicMappingElement = this.serializeDynamicMapping(segment.getDynamicMappingInfo());
-          if(dynamicMappingElement != null) {
+          Element dynamicMappingElement =
+              this.serializeDynamicMapping(segment.getDynamicMappingInfo());
+          if (dynamicMappingElement != null) {
             segmentElement.appendChild(dynamicMappingElement);
           }
         } catch (DatatypeNotFoundException exception) {
-          throw new DynamicMappingSerializationException(exception, segment.getDynamicMappingInfo());
+          throw new DynamicMappingSerializationException(exception,
+              segment.getDynamicMappingInfo());
         }
       }
-      if(segment.getBinding() != null) {
-        Element bindingElement = super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
-        if(bindingElement != null) {
+      if (segment.getBinding() != null) {
+        Element bindingElement =
+            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
+        if (bindingElement != null) {
           segmentElement.appendChild(bindingElement);
         }
       }
-      if(segment.getChildren() != null) {
+      if (segment.getChildren() != null) {
         Element fieldsElement = this.serializeFields(segment.getChildren());
-        if(fieldsElement != null) {
+        if (fieldsElement != null) {
           segmentElement.appendChild(fieldsElement);
         }
       }
@@ -84,32 +89,41 @@ public class SerializableSegment extends SerializableResource {
       throw new ResourceSerializationException(exception, Type.SEGMENT, segment);
     }
   }
-  
+
   private Element serializeFields(Set<Field> fields) throws SubStructElementSerializationException {
-    if(fields.size()>0) {
+    if (fields.size() > 0) {
       Element fieldsElement = new Element("Fields");
-      for(Field field : fields) {
+      for (Field field : fields) {
         try {
-          if(field != null) {
+          if (field != null) {
             Element fieldElement = new Element("Field");
-            fieldElement.addAttribute(new Attribute("confLength",field.getConfLength() != null ? field.getConfLength() : ""));
-            fieldElement.addAttribute(new Attribute("name",field.getName() != null ? field.getName() : ""));
-            fieldElement.addAttribute(new Attribute("id",field.getId() != null ? field.getId() : ""));
-            fieldElement.addAttribute(new Attribute("maxLength",field.getMaxLength() != null ? field.getMaxLength() : ""));
-            fieldElement.addAttribute(new Attribute("minLength",field.getMinLength() != null ? field.getMinLength() : ""));
-            fieldElement.addAttribute(new Attribute("text",field.getText() != null ? field.getText() : ""));
-            fieldElement.addAttribute(new Attribute("custom",String.valueOf(field.isCustom())));
-            fieldElement.addAttribute(new Attribute("max",String.valueOf(field.getMax())));
-            fieldElement.addAttribute(new Attribute("min",String.valueOf(field.getMin())));
-            fieldElement.addAttribute(new Attribute("position",String.valueOf(field.getPosition())));
-            if(field.getRef() != null && field.getRef().getId() != null) {
-              if(this.datatypesMap.containsKey(field.getRef().getId())) {
-                fieldElement.addAttribute(new Attribute("datatype",this.datatypesMap.get(field.getRef().getId())));
+            fieldElement.addAttribute(new Attribute("confLength",
+                field.getConfLength() != null ? field.getConfLength() : ""));
+            fieldElement.addAttribute(
+                new Attribute("name", field.getName() != null ? field.getName() : ""));
+            fieldElement
+                .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
+            fieldElement.addAttribute(new Attribute("maxLength",
+                field.getMaxLength() != null ? field.getMaxLength() : ""));
+            fieldElement.addAttribute(new Attribute("minLength",
+                field.getMinLength() != null ? field.getMinLength() : ""));
+            fieldElement.addAttribute(
+                new Attribute("text", field.getText() != null ? field.getText() : ""));
+            fieldElement.addAttribute(new Attribute("custom", String.valueOf(field.isCustom())));
+            fieldElement.addAttribute(new Attribute("max", String.valueOf(field.getMax())));
+            fieldElement.addAttribute(new Attribute("min", String.valueOf(field.getMin())));
+            fieldElement
+                .addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
+            if (field.getRef() != null && field.getRef().getId() != null) {
+              if (this.datatypesMap.containsKey(field.getRef().getId())) {
+                fieldElement.addAttribute(
+                    new Attribute("datatype", this.datatypesMap.get(field.getRef().getId())));
               } else {
                 throw new DatatypeNotFoundException(field.getRef().getId());
               }
             }
-            fieldElement.addAttribute(new Attribute("usage",field.getUsage() != null ? field.getUsage().name() : ""));
+            fieldElement.addAttribute(
+                new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
             fieldsElement.appendChild(fieldElement);
           }
         } catch (DatatypeNotFoundException exception) {
@@ -121,21 +135,29 @@ public class SerializableSegment extends SerializableResource {
     return null;
   }
 
-  private Element serializeDynamicMapping(DynamicMappingInfo dynamicMappingInfo) throws DatatypeNotFoundException {
+  private Element serializeDynamicMapping(DynamicMappingInfo dynamicMappingInfo)
+      throws DatatypeNotFoundException {
     Element dynamicMappingElement = new Element("DynamicMapping");
-    dynamicMappingElement.addAttribute(new Attribute("referencePath", dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath() : ""));
-    dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath", dynamicMappingInfo.getVariesDatatypePath() != null ? dynamicMappingInfo.getVariesDatatypePath() : ""));
-    for(DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
-      if(dynamicMappingItem != null) {
+    dynamicMappingElement.addAttribute(new Attribute("referencePath",
+        dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
+            : ""));
+    dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
+        dynamicMappingInfo.getVariesDatatypePath() != null
+            ? dynamicMappingInfo.getVariesDatatypePath()
+            : ""));
+    for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
+      if (dynamicMappingItem != null) {
         Element dynamicMappingItemElement = new Element("DynamicMappingItem");
-        if(dynamicMappingItem.getDatatypeId() != null) {
-          if(this.datatypesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
-            dynamicMappingItemElement.addAttribute(new Attribute("datatype",this.datatypesMap.get((dynamicMappingItem.getDatatypeId()))));
+        if (dynamicMappingItem.getDatatypeId() != null) {
+          if (this.datatypesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
+            dynamicMappingItemElement.addAttribute(new Attribute("datatype",
+                this.datatypesMap.get((dynamicMappingItem.getDatatypeId()))));
           } else {
             throw new DatatypeNotFoundException(dynamicMappingItem.getDatatypeId());
           }
         }
-        dynamicMappingItemElement.addAttribute(new Attribute("value", dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
+        dynamicMappingItemElement.addAttribute(new Attribute("value",
+            dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
         dynamicMappingElement.appendChild(dynamicMappingItemElement);
       }
     }

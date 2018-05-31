@@ -5,12 +5,11 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Field;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 @Document(collection = "segment")
 
@@ -56,13 +55,15 @@ public class Segment extends Resource {
   public void setDynamicMappingInfo(DynamicMappingInfo dynamicMappingInfo) {
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override
   public String getLabel() {
-    if(this.ext != null && !this.ext.isEmpty()) {
+    if (this.ext != null && !this.ext.isEmpty()) {
       return this.getName() + "_" + this.ext;
     }
     return this.getName();

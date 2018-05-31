@@ -13,7 +13,8 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
+
 
 /**
  * @author ena3

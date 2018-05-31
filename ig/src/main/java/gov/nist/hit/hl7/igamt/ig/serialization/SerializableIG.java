@@ -16,6 +16,8 @@ package gov.nist.hit.hl7.igamt.ig.serialization;
 import java.util.HashMap;
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
@@ -25,8 +27,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableDocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import nu.xom.Element;
 
@@ -70,21 +70,23 @@ public class SerializableIG extends SerializableAbstractDomain {
   public Element serialize() throws SerializationException {
     Ig igDocument = (Ig) this.getAbstractDomain();
     Element igDocumentElement = super.getElement(Type.IGDOCUMENT);
-    SerializableDocumentMetadata serializableDocumentMetadata = new SerializableDocumentMetadata(igDocument.getMetadata());
-    if(serializableDocumentMetadata != null) {
+    SerializableDocumentMetadata serializableDocumentMetadata =
+        new SerializableDocumentMetadata(igDocument.getMetadata());
+    if (serializableDocumentMetadata != null) {
       Element metadataElement = serializableDocumentMetadata.serialize();
       if (metadataElement != null) {
         igDocumentElement.appendChild(metadataElement);
       }
     }
     for (Section section : igDocument.getContent()) {
-      //startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
+      // startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
       int startLevel = 1;
-      Element sectionElement = SectionSerializationUtil.serializeSection(section, startLevel, datatypesMap,
-          datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
-          igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
-          igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
-          igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry());
+      Element sectionElement =
+          SectionSerializationUtil.serializeSection(section, startLevel, datatypesMap,
+              datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
+              igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
+              igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
+              igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry());
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }

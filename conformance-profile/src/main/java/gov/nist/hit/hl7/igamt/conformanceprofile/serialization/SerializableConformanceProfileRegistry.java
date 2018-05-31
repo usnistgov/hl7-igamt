@@ -15,16 +15,16 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.ConformanceProfileNotFoundException;
-import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import nu.xom.Element;
 
 /**
@@ -36,33 +36,42 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
-  
+
   /**
    * @param section
    */
-  public SerializableConformanceProfileRegistry(Section section, int level, ConformanceProfileRegistry conformanceProfileRegistry, Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap, Map<String, String> valuesetNamesMap) {
+  public SerializableConformanceProfileRegistry(Section section, int level,
+      ConformanceProfileRegistry conformanceProfileRegistry,
+      Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap,
+      Map<String, String> valuesetNamesMap) {
     super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement#serialize()
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry conformanceProfileRegistry = (Registry) super.getRegistry();
+    Registry conformanceProfileRegistry = super.getRegistry();
     try {
       Element conformanceProfileRegistryElement = super.getElement();
-      if(conformanceProfileRegistry != null) {
-        if(!conformanceProfileRegistry.getChildren().isEmpty()) {
-          for(Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
-            if(conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
-              ConformanceProfile conformanceProfile = conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
-              SerializableConformanceProfile serializableConformanceProfile = new SerializableConformanceProfile(conformanceProfile, String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(), this.valuesetNamesMap, this.segmentsMap);
+      if (conformanceProfileRegistry != null) {
+        if (!conformanceProfileRegistry.getChildren().isEmpty()) {
+          for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
+            if (conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
+              ConformanceProfile conformanceProfile =
+                  conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
+              SerializableConformanceProfile serializableConformanceProfile =
+                  new SerializableConformanceProfile(conformanceProfile,
+                      String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
+                      this.valuesetNamesMap, this.segmentsMap);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
-              if(conformanceProfileElement!=null) {
+              if (conformanceProfileElement != null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
               }
             } else {
@@ -73,7 +82,8 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
       }
       return conformanceProfileRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, super.getSection(), conformanceProfileRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(),
+          conformanceProfileRegistry);
     }
   }
 

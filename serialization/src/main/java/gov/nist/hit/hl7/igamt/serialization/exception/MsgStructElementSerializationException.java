@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 
 /**
  *
@@ -30,7 +30,7 @@ public class MsgStructElementSerializationException extends SerializationExcepti
       MsgStructElement msgStructElement, String message) {
     super(originException, msgStructElement.getType(), msgStructElement.getId(), message);
   }
-  
+
   public MsgStructElementSerializationException(Exception originException,
       MsgStructElement msgStructElement) {
     this(originException, msgStructElement, null);

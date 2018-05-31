@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 public class DisplayConformanceProfileMetadata {
   private CompositeKey id;

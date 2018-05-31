@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  *
@@ -27,7 +27,7 @@ public class PropertyUsage extends ItemProperty {
     super(PropertyKey.USAGE);
     this.usage = usage;
   }
-  
+
   public PropertyUsage() {
     super(PropertyKey.USAGE);
   }

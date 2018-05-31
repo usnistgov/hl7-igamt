@@ -14,7 +14,7 @@ package gov.nist.hit.hl7.igamt.profilecomponent.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 
 
@@ -78,8 +78,10 @@ public class ProfileComponent extends Resource {
       this.profileComponentItems = new HashSet<ProfileComponentItem>();
     this.profileComponentItems.add(item);
   }
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override

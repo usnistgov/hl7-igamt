@@ -2,7 +2,6 @@ package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,52 +29,41 @@ public class DatatypeController {
   @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody DatatypeStructure getDatatypeStructure(@PathVariable("id") String id) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      Datatype datatype = datatypeService.findLatestById(id);
-      return datatypeService.convertDomainToStructure(datatype);
-    } else {
-      return null;
-    }
+  public @ResponseBody DatatypeStructure getDatatypeStructure(@PathVariable("id") String id,
+      Authentication authentication) {
+    Datatype datatype = datatypeService.findLatestById(id);
+    return datatypeService.convertDomainToStructure(datatype);
+
   }
-  
+
   @RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody DisplayMetadata getDatatypeMetadata(@PathVariable("id") String id) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      Datatype Datatype = datatypeService.findLatestById(id);
-      return datatypeService.convertDomainToMetadata(Datatype);
-    } else {
-      return null;
-    }
+  public @ResponseBody DisplayMetadata getDatatypeMetadata(@PathVariable("id") String id,
+      Authentication authentication) {
+    Datatype Datatype = datatypeService.findLatestById(id);
+    return datatypeService.convertDomainToMetadata(Datatype);
+
   }
-  
+
   @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody PreDef getDatatypePredef(@PathVariable("id") String id) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      Datatype Datatype = datatypeService.findLatestById(id);
-      return datatypeService.convertDomainToPredef(Datatype);
-    } else {
-      return null;
-    }
+  public @ResponseBody PreDef getDatatypePredef(@PathVariable("id") String id,
+      Authentication authentication) {
+    Datatype Datatype = datatypeService.findLatestById(id);
+    return datatypeService.convertDomainToPredef(Datatype);
+
   }
-  
+
   @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public @ResponseBody PostDef getDatatypePostdef(@PathVariable("id") String id) {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      Datatype Datatype = datatypeService.findLatestById(id);
-      return datatypeService.convertDomainToPostdef(Datatype);
-    } else {
-      return null;
-    }
+  public @ResponseBody PostDef getDatatypePostdef(@PathVariable("id") String id,
+      Authentication authentication) {
+
+    Datatype Datatype = datatypeService.findLatestById(id);
+    return datatypeService.convertDomainToPostdef(Datatype);
+
   }
 }

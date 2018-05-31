@@ -24,18 +24,19 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+
 
 /**
  *
@@ -43,19 +44,18 @@ import gov.nist.hit.hl7.igamt.shared.domain.Type;
  */
 public class SegmentConversionServiceImpl implements ConversionService {
   @Autowired
-  private SegmentRepository convertedSegmentService =
-      (SegmentRepository) context.getBean(SegmentRepository.class);
+  private SegmentRepository convertedSegmentService = context.getBean(SegmentRepository.class);
 
   @Autowired
   private gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository oldSegmentRepository =
-      (gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository) legacyContext.getBean("segmentRepository");
+      (gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository) legacyContext
+          .getBean("segmentRepository");
 
   @Autowired
   private DatatypeRepository oldDatatypeRepository =
       (DatatypeRepository) legacyContext.getBean("datatypeRepository");
 
-  private AccountRepository accountRepository =
-      (AccountRepository) userContext.getBean(AccountRepository.class);
+  private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
@@ -93,20 +93,23 @@ public class SegmentConversionServiceImpl implements ConversionService {
     publicationInfo.setPublicationVersion(oldSegment.getVersion());
     convertedSegment.setPublicationInfo(publicationInfo);
     convertedSegment.setComment(oldSegment.getComment());
-    
-    if(oldSegment.getName().equals("OBX") && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems() != null && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems().size() > 0){
+
+    if (oldSegment.getName().equals("OBX")
+        && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems() != null
+        && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems().size() > 0) {
       DynamicMappingInfo dynamicMappingInfo = new DynamicMappingInfo();
       dynamicMappingInfo.setReferencePath("2");
       dynamicMappingInfo.setVariesDatatypePath("5");
-      
-      for(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DynamicMappingItem oldDMItem : oldSegment.getDynamicMappingDefinition().getDynamicMappingItems()){
+
+      for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DynamicMappingItem oldDMItem : oldSegment
+          .getDynamicMappingDefinition().getDynamicMappingItems()) {
         DynamicMappingItem item = new DynamicMappingItem();
         item.setDatatypeId(oldDMItem.getDatatypeId());
         item.setValue(oldDMItem.getFirstReferenceValue());
         dynamicMappingInfo.addItem(item);
       }
       convertedSegment.setDynamicMappingInfo(dynamicMappingInfo);
-      
+
     }
 
     if (oldSegment.getAccountId() != null) {
@@ -117,23 +120,25 @@ public class SegmentConversionServiceImpl implements ConversionService {
         }
       }
     }
-    
 
-    if(oldSegment.getFields().size()>0) {
-      Set<gov.nist.hit.hl7.igamt.shared.domain.Field> fields = new HashSet<>();
-      for(Field field : oldSegment.getFields()) {
-        gov.nist.hit.hl7.igamt.shared.domain.Field newField = new gov.nist.hit.hl7.igamt.shared.domain.Field();
+
+    if (oldSegment.getFields().size() > 0) {
+      Set<gov.nist.hit.hl7.igamt.segment.domain.Field> fields = new HashSet<>();
+      for (Field field : oldSegment.getFields()) {
+        gov.nist.hit.hl7.igamt.segment.domain.Field newField =
+            new gov.nist.hit.hl7.igamt.segment.domain.Field();
         newField.setConfLength(field.getConfLength());
-       
+
         if (field.getAdded().equals(Constant.YES)) {
-        	 newField.setCustom(true);
+          newField.setCustom(true);
         } else {
-        	 newField.setCustom(false);
+          newField.setCustom(false);
         }
         newField.setId(field.getId());
         newField.setMax(field.getMax());
         newField.setMaxLength(field.getMaxLength());
-        if(field.getMin() != null) newField.setMin(field.getMin());
+        if (field.getMin() != null)
+          newField.setMin(field.getMin());
         newField.setMinLength(field.getMinLength());
         newField.setName(field.getName());
         newField.setPosition(field.getPosition());
@@ -145,7 +150,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
       }
       convertedSegment.setChildren(fields);
     }
-    
+
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
         .convertResourceBinding(oldSegment));
     return convertedSegment;
@@ -153,7 +158,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
 
 
   private void init() {
-//    convertedSegmentService.removeCollection();
+    // convertedSegmentService.removeCollection();
   }
 
 }

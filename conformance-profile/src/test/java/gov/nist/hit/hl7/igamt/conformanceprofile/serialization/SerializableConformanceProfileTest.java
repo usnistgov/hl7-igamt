@@ -24,14 +24,14 @@ import java.util.Set;
 
 import org.junit.Test;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Group;
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
-import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
 import nu.xom.Element;
 import nu.xom.Elements;
 
@@ -80,42 +80,49 @@ public class SerializableConformanceProfileTest {
     Map<String, String> datatypeMap = new HashMap<>();
     datatypeMap.put("test_segmentref1_ref", "test_segmentref1_datatype");
     datatypeMap.put("test_segmentref2_ref", "test_segmentref2_datatype");
-    //TODO need to check
+    // TODO need to check
     Map<String, String> valuesetMap = new HashMap<>();
     SerializableConformanceProfile serializableConformanceProfile =
         new SerializableConformanceProfile(conformanceProfile, "1", datatypeMap, valuesetMap);
     Element conformanceProfileElement = serializableConformanceProfile.serialize();
     assertEquals(TEST_IDENTIFIER, conformanceProfileElement.getAttribute("identifier").getValue());
-    assertEquals(TEST_MESSAGETYPE, conformanceProfileElement.getAttribute("messageType").getValue());
+    assertEquals(TEST_MESSAGETYPE,
+        conformanceProfileElement.getAttribute("messageType").getValue());
     assertEquals(TEST_EVENT, conformanceProfileElement.getAttribute("event").getValue());
     assertEquals(TEST_STRUCTID, conformanceProfileElement.getAttribute("structID").getValue());
     Elements children =
         conformanceProfileElement.getFirstChildElement("MsgStructElements").getChildElements();
     for (int i = 0; i < children.size(); i++) {
       Element child = children.get(i);
-      if(child != null) {
-        if(child.getAttribute("name").getValue().equals("test_group_name")) {
+      if (child != null) {
+        if (child.getAttribute("name").getValue().equals("test_group_name")) {
           assertEquals(2, child.getChildElements("SegmentRef").size());
           assertEquals(TEST_GROUP.getName(), child.getAttribute("name").getValue());
           assertEquals(String.valueOf(TEST_GROUP.getMin()), child.getAttribute("min").getValue());
           assertEquals(TEST_GROUP.getMax(), child.getAttribute("max").getValue());
-        } else if(child.getAttribute("id").getValue().equals("test_segmentref1_id")) {
+        } else if (child.getAttribute("id").getValue().equals("test_segmentref1_id")) {
           assertEquals(TEST_SEGMENT_REF1.getName(), child.getAttribute("name").getValue());
-          assertEquals(datatypeMap.get(TEST_SEGMENT_REF1.getRef().getId()), child.getAttribute("datatype").getValue());
-          assertEquals(String.valueOf(TEST_SEGMENT_REF1.getPosition()), child.getAttribute("position").getValue());
+          assertEquals(datatypeMap.get(TEST_SEGMENT_REF1.getRef().getId()),
+              child.getAttribute("datatype").getValue());
+          assertEquals(String.valueOf(TEST_SEGMENT_REF1.getPosition()),
+              child.getAttribute("position").getValue());
           assertEquals(TEST_SEGMENT_REF1.getText(), child.getAttribute("text").getValue());
           assertEquals(TEST_SEGMENT_REF1.getType().name(), child.getAttribute("type").getValue());
           assertEquals(TEST_SEGMENT_REF1.getUsage().name(), child.getAttribute("usage").getValue());
-          assertEquals(String.valueOf(TEST_SEGMENT_REF1.getMin()), child.getAttribute("min").getValue());
+          assertEquals(String.valueOf(TEST_SEGMENT_REF1.getMin()),
+              child.getAttribute("min").getValue());
           assertEquals(TEST_SEGMENT_REF1.getMax(), child.getAttribute("max").getValue());
-        } else if(child.getAttribute("id").getValue().equals("test_segmentref2_id")) {
+        } else if (child.getAttribute("id").getValue().equals("test_segmentref2_id")) {
           assertEquals(TEST_SEGMENT_REF2.getName(), child.getAttribute("name").getValue());
-          assertEquals(datatypeMap.get(TEST_SEGMENT_REF2.getRef().getId()), child.getAttribute("datatype").getValue());
-          assertEquals(String.valueOf(TEST_SEGMENT_REF2.getPosition()), child.getAttribute("position").getValue());
+          assertEquals(datatypeMap.get(TEST_SEGMENT_REF2.getRef().getId()),
+              child.getAttribute("datatype").getValue());
+          assertEquals(String.valueOf(TEST_SEGMENT_REF2.getPosition()),
+              child.getAttribute("position").getValue());
           assertEquals(TEST_SEGMENT_REF2.getText(), child.getAttribute("text").getValue());
           assertEquals(TEST_SEGMENT_REF2.getType().name(), child.getAttribute("type").getValue());
           assertEquals(TEST_SEGMENT_REF2.getUsage().name(), child.getAttribute("usage").getValue());
-          assertEquals(String.valueOf(TEST_SEGMENT_REF2.getMin()), child.getAttribute("min").getValue());
+          assertEquals(String.valueOf(TEST_SEGMENT_REF2.getMin()),
+              child.getAttribute("min").getValue());
           assertEquals(TEST_SEGMENT_REF2.getMax(), child.getAttribute("max").getValue());
         } else {
           fail();

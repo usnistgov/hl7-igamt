@@ -1,0 +1,39 @@
+spring:
+  application:
+    name: hl7-auth
+server: 
+    port: 8090
+    contextPath: /
+    error:
+      include-stacktrace: never
+    connection-timeout: 60000
+    max-http-header-size: 8192
+    tomcat:
+      accesslog:
+        directory: logs
+        enabled: false
+
+logging:
+  file: hl7-auth.log
+  path : /var/log/hl7-auth/
+  exception-conversion-word: '%wEx'
+  
+security:
+    headers:
+      frame: true
+      xss: true
+      hsts: all
+    enable-csrf: false 
+
+db:
+  name: igamt-user
+  port: 27017
+  host: localhost 
+key: 
+  public: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt
+  private: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/privateKey.txt
+  
+  
+  
+    
+  

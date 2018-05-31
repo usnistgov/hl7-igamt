@@ -13,8 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -27,7 +27,7 @@ public abstract class SerializableElement {
   protected String id, position, title;
 
   public abstract Element serialize() throws SerializationException;
-  
+
   public SerializableElement(String id, String position, String title) {
     super();
     this.id = id;
@@ -61,12 +61,12 @@ public abstract class SerializableElement {
 
   private Element getElement(String elementName) {
     Element element = new Element(elementName);
-    element.addAttribute(new Attribute("id",this.id));
-    element.addAttribute(new Attribute("position",this.position));
-    element.addAttribute(new Attribute("title",this.title));
+    element.addAttribute(new Attribute("id", this.id));
+    element.addAttribute(new Attribute("position", this.position));
+    element.addAttribute(new Attribute("title", this.title));
     return element;
   }
-  
+
   public Element getElement(Type type) {
     String elementName = "";
     switch (type) {

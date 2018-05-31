@@ -15,15 +15,15 @@ package gov.nist.hit.hl7.igamt.segment.serialization;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.SegmentNotFoundException;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
-import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
 import nu.xom.Element;
 
 /**
@@ -63,8 +63,9 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
           for (Link segmentLink : segmentRegistry.getChildren()) {
             if (segmentsMap.containsKey(segmentLink.getId().getId())) {
               Segment segment = segmentsMap.get(segmentLink.getId().getId());
-              SerializableSegment serializableSegment = new SerializableSegment(segment,
-                  super.position, this.getChildLevel(), this.datatypeNamesMap, this.valuesetNamesMap);
+              SerializableSegment serializableSegment =
+                  new SerializableSegment(segment, super.position, this.getChildLevel(),
+                      this.datatypeNamesMap, this.valuesetNamesMap);
               if (serializableSegment != null) {
                 Element segmentElement = serializableSegment.serialize();
                 if (segmentElement != null) {

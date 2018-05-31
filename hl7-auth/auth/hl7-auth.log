@@ -1,0 +1,306 @@
+2018-05-31 14:27:11.314  INFO 35755 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 35755 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 14:27:11.316  INFO 35755 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 14:27:11.381  INFO 35755 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 14:27:11 EDT 2018]; root of context hierarchy
+2018-05-31 14:27:11.730  INFO 35755 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 14:27:11.756  INFO 35755 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 14:27:12.105  INFO 35755 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 14:27:12.154  INFO 35755 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 14:27:12.340  INFO 35755 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 14:27:12.384  INFO 35755 --- [cluster-ClusterId{value='5b103e80e2813f8babd1f193', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:213}] to localhost:27017
+2018-05-31 14:27:12.386  INFO 35755 --- [cluster-ClusterId{value='5b103e80e2813f8babd1f193', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=526368}
+2018-05-31 14:27:12.463  WARN 35755 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 14:27:12.753  INFO 35755 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 14:27:12.760  INFO 35755 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 14:27:12.761  INFO 35755 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 14:27:12.842  INFO 35755 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 14:27:13.303 ERROR 35755 --- [localhost-startStop-1] o.s.b.c.embedded.tomcat.TomcatStarter    : Error starting Tomcat context. Exception: org.springframework.beans.factory.UnsatisfiedDependencyException. Message: Error creating bean with name 'loginFilter': Unsatisfied dependency expressed through field 'crypto'; nested exception is org.springframework.beans.factory.NoSuchBeanDefinitionException: No qualifying bean of type 'gov.nist.hit.hl7.auth.util.crypto.CryptoUtil' available: expected at least 1 bean which qualifies as autowire candidate. Dependency annotations: {@org.springframework.beans.factory.annotation.Autowired(required=true)}
+2018-05-31 14:27:13.317  WARN 35755 --- [main] ationConfigEmbeddedWebApplicationContext : Exception encountered during context initialization - cancelling refresh attempt: org.springframework.context.ApplicationContextException: Unable to start embedded container; nested exception is org.springframework.boot.context.embedded.EmbeddedServletContainerException: Unable to start embedded Tomcat
+2018-05-31 14:27:13.398 ERROR 35755 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Field crypto in gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter required a bean of type 'gov.nist.hit.hl7.auth.util.crypto.CryptoUtil' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'gov.nist.hit.hl7.auth.util.crypto.CryptoUtil' in your configuration.
+
+2018-05-31 15:13:29.842  INFO 38501 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 38501 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:13:29.843  INFO 38501 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:13:29.899  INFO 38501 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:13:29 EDT 2018]; root of context hierarchy
+2018-05-31 15:13:30.239  INFO 38501 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:13:30.262  INFO 38501 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:13:30.579  INFO 38501 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:13:30.624  INFO 38501 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:13:30.799  INFO 38501 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:13:30.840  INFO 38501 --- [cluster-ClusterId{value='5b10495ae2813f9665bf59dc', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:224}] to 127.0.0.1:27017
+2018-05-31 15:13:30.841  INFO 38501 --- [cluster-ClusterId{value='5b10495ae2813f9665bf59dc', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=398759}
+2018-05-31 15:13:30.904  WARN 38501 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:13:31.188  INFO 38501 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:13:31.195  INFO 38501 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:13:31.196  INFO 38501 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:13:31.262  INFO 38501 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:13:31.748  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:13:31.749  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:13:31.749  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:13:31.749  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:13:31.752  INFO 38501 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:13:31.752  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:13:31.752  INFO 38501 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:13:31.908  INFO 38501 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@65f58c6e, org.springframework.security.web.context.SecurityContextPersistenceFilter@540a903b, org.springframework.security.web.header.HeaderWriterFilter@8d7b252, org.springframework.security.web.authentication.logout.LogoutFilter@8bffb8b, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@77c8c876, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@73ad7e90, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@151db587, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7a7d1b47, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@4ba380c7, org.springframework.security.web.session.SessionManagementFilter@6d9fb2d1, org.springframework.security.web.access.ExceptionTranslationFilter@3f4b840d, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@50acf55d]
+2018-05-31 15:13:32.380  INFO 38501 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:13:32.427  INFO 38501 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:13:32.432  INFO 38501 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 2.797 seconds (JVM running for 3.279)
+2018-05-31 15:15:43.207  INFO 38752 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 38752 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:15:43.208  INFO 38752 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:15:43.269  INFO 38752 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:15:43 EDT 2018]; root of context hierarchy
+2018-05-31 15:15:43.608  INFO 38752 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:15:43.633  INFO 38752 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:15:43.961  INFO 38752 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:15:44.014  INFO 38752 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:15:44.205  INFO 38752 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:15:44.252  INFO 38752 --- [cluster-ClusterId{value='5b1049e0e2813f9760ae9d18', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:225}] to 127.0.0.1:27017
+2018-05-31 15:15:44.254  INFO 38752 --- [cluster-ClusterId{value='5b1049e0e2813f9760ae9d18', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=573112}
+2018-05-31 15:15:44.330  WARN 38752 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:15:44.614  INFO 38752 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:15:44.622  INFO 38752 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:15:44.622  INFO 38752 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:15:44.693  INFO 38752 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:15:45.200  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:15:45.200  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:15:45.200  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:15:45.201  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:15:45.202  INFO 38752 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:15:45.203  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:15:45.203  INFO 38752 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:15:45.362  INFO 38752 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@b965857, org.springframework.security.web.context.SecurityContextPersistenceFilter@15ac59c2, org.springframework.security.web.header.HeaderWriterFilter@7a5b769b, org.springframework.security.web.authentication.logout.LogoutFilter@26722665, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@28c71fb7, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@61f80d55, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6eb82908, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1f51431, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@27a7ef08, org.springframework.security.web.session.SessionManagementFilter@24361cfc, org.springframework.security.web.access.ExceptionTranslationFilter@58496dc, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3701e6e4]
+2018-05-31 15:15:45.827  INFO 38752 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:15:45.884 ERROR 38752 --- [main] o.a.coyote.http11.Http11NioProtocol      : Failed to start end point associated with ProtocolHandler [http-nio-8090]
+
+java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+	at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:210)
+	at org.apache.tomcat.util.net.AbstractEndpoint.start(AbstractEndpoint.java:980)
+	at org.apache.coyote.AbstractProtocol.start(AbstractProtocol.java:573)
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:993)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	at org.apache.catalina.core.StandardService.addConnector(StandardService.java:225)
+	at org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.addPreviouslyRemovedConnectors(TomcatEmbeddedServletContainer.java:241)
+	at org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:184)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.startEmbeddedServletContainer(EmbeddedWebApplicationContext.java:297)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.finishRefresh(EmbeddedWebApplicationContext.java:145)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:545)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:737)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1162)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1151)
+	at gov.nist.hit.hl7.auth.App.main(App.java:39)
+
+2018-05-31 15:15:45.885 ERROR 38752 --- [main] o.apache.catalina.core.StandardService   : Failed to start connector [Connector[HTTP/1.1-8090]]
+
+org.apache.catalina.LifecycleException: Failed to start component [Connector[HTTP/1.1-8090]]
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:167)
+	at org.apache.catalina.core.StandardService.addConnector(StandardService.java:225)
+	at org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.addPreviouslyRemovedConnectors(TomcatEmbeddedServletContainer.java:241)
+	at org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer.start(TomcatEmbeddedServletContainer.java:184)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.startEmbeddedServletContainer(EmbeddedWebApplicationContext.java:297)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.finishRefresh(EmbeddedWebApplicationContext.java:145)
+	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:545)
+	at org.springframework.boot.context.embedded.EmbeddedWebApplicationContext.refresh(EmbeddedWebApplicationContext.java:122)
+	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:737)
+	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:370)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:314)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1162)
+	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1151)
+	at gov.nist.hit.hl7.auth.App.main(App.java:39)
+Caused by: org.apache.catalina.LifecycleException: service.getName(): "Tomcat";  Protocol handler start failed
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:1000)
+	at org.apache.catalina.util.LifecycleBase.start(LifecycleBase.java:150)
+	... 13 common frames omitted
+Caused by: java.net.BindException: Address already in use
+	at sun.nio.ch.Net.bind0(Native Method)
+	at sun.nio.ch.Net.bind(Net.java:433)
+	at sun.nio.ch.Net.bind(Net.java:425)
+	at sun.nio.ch.ServerSocketChannelImpl.bind(ServerSocketChannelImpl.java:223)
+	at sun.nio.ch.ServerSocketAdaptor.bind(ServerSocketAdaptor.java:74)
+	at org.apache.tomcat.util.net.NioEndpoint.bind(NioEndpoint.java:210)
+	at org.apache.tomcat.util.net.AbstractEndpoint.start(AbstractEndpoint.java:980)
+	at org.apache.coyote.AbstractProtocol.start(AbstractProtocol.java:573)
+	at org.apache.catalina.connector.Connector.startInternal(Connector.java:993)
+	... 14 common frames omitted
+
+2018-05-31 15:15:45.890  INFO 38752 --- [main] o.apache.catalina.core.StandardService   : Stopping service Tomcat
+2018-05-31 15:15:45.900  INFO 38752 --- [main] utoConfigurationReportLoggingInitializer : 
+
+Error starting ApplicationContext. To display the auto-configuration report re-run your application with 'debug' enabled.
+2018-05-31 15:15:45.903 ERROR 38752 --- [main] o.s.b.d.LoggingFailureAnalysisReporter   : 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+The Tomcat connector configured to listen on port 8090 failed to start. The port may already be in use or the connector may be misconfigured.
+
+Action:
+
+Verify the connector's configuration, identify and stop any process that's listening on port 8090, or configure this application to listen on another port.
+
+2018-05-31 15:15:45.904  INFO 38752 --- [main] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:15:43 EDT 2018]; root of context hierarchy
+2018-05-31 15:15:45.906  INFO 38752 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-05-31 15:15:55.193  INFO 38501 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-05-31 15:15:55.193  INFO 38501 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:13:29 EDT 2018]; root of context hierarchy
+2018-05-31 15:15:55.194  INFO 38501 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-05-31 15:15:56.670  INFO 38797 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 38797 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:15:56.671  INFO 38797 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:15:56.732  INFO 38797 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:15:56 EDT 2018]; root of context hierarchy
+2018-05-31 15:15:57.062  INFO 38797 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:15:57.084  INFO 38797 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:15:57.402  INFO 38797 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:15:57.450  INFO 38797 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:15:57.625  INFO 38797 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:15:57.676  INFO 38797 --- [cluster-ClusterId{value='5b1049ede2813f978d26aa8b', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:226}] to 127.0.0.1:27017
+2018-05-31 15:15:57.678  INFO 38797 --- [cluster-ClusterId{value='5b1049ede2813f978d26aa8b', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=580458}
+2018-05-31 15:15:57.764  WARN 38797 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:15:58.039  INFO 38797 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:15:58.047  INFO 38797 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:15:58.048  INFO 38797 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:15:58.120  INFO 38797 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:15:58.608  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:15:58.609  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:15:58.609  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:15:58.609  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:15:58.611  INFO 38797 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:15:58.611  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:15:58.611  INFO 38797 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:15:58.770  INFO 38797 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@73ad7e90, org.springframework.security.web.context.SecurityContextPersistenceFilter@58496dc, org.springframework.security.web.header.HeaderWriterFilter@4682eba5, org.springframework.security.web.authentication.logout.LogoutFilter@21422231, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@53689635, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@4ba380c7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@238acd0b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6eb82908, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@784c5ef5, org.springframework.security.web.session.SessionManagementFilter@61fafb74, org.springframework.security.web.access.ExceptionTranslationFilter@31464a43, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3cae7b8b]
+2018-05-31 15:15:59.236  INFO 38797 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:15:59.284  INFO 38797 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:15:59.289  INFO 38797 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 2.827 seconds (JVM running for 3.307)
+2018-05-31 15:21:20.867  INFO 38797 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-05-31 15:21:20.868  INFO 38797 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:15:56 EDT 2018]; root of context hierarchy
+2018-05-31 15:21:20.869  INFO 38797 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-05-31 15:21:34.014  INFO 39097 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 39097 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:21:34.015  INFO 39097 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:21:34.078  INFO 39097 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3cdf2c61: startup date [Thu May 31 15:21:34 EDT 2018]; root of context hierarchy
+2018-05-31 15:21:34.466  INFO 39097 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:21:34.492  INFO 39097 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:21:34.878  INFO 39097 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:21:34.942  INFO 39097 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:21:35.155  INFO 39097 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:21:35.211  INFO 39097 --- [cluster-ClusterId{value='5b104b3fe2813f98b95eb137', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:227}] to 127.0.0.1:27017
+2018-05-31 15:21:35.213  INFO 39097 --- [cluster-ClusterId{value='5b104b3fe2813f98b95eb137', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=512770}
+2018-05-31 15:21:35.299  WARN 39097 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:21:35.621  INFO 39097 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:21:35.629  INFO 39097 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:21:35.630  INFO 39097 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:21:35.720  INFO 39097 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:21:36.355  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:21:36.355  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:21:36.355  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:21:36.356  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:21:36.357  INFO 39097 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:21:36.358  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:21:36.358  INFO 39097 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:21:36.603  INFO 39097 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@428bdd72, org.springframework.security.web.context.SecurityContextPersistenceFilter@7c37f145, org.springframework.security.web.header.HeaderWriterFilter@45adc393, org.springframework.security.web.authentication.logout.LogoutFilter@431e86b1, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@33dc041a, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@650c405c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@273a5a8a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@753fd7a1, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@20eaeaf8, org.springframework.security.web.session.SessionManagementFilter@479111ba, org.springframework.security.web.access.ExceptionTranslationFilter@55fee662, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@11d045b4]
+2018-05-31 15:21:37.347  INFO 39097 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:21:37.418  INFO 39097 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:21:37.423  INFO 39097 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 3.682 seconds (JVM running for 4.391)
+2018-05-31 15:26:55.367  INFO 39425 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 39425 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:26:55.368  INFO 39425 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:26:55.441  INFO 39425 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3cdf2c61: startup date [Thu May 31 15:26:55 EDT 2018]; root of context hierarchy
+2018-05-31 15:26:55.876  INFO 39425 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:26:55.904  INFO 39425 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:26:56.313  INFO 39425 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:26:56.385  INFO 39425 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:26:56.613  INFO 39425 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:26:56.674  INFO 39425 --- [cluster-ClusterId{value='5b104c80e2813f9a01d4e1cf', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:228}] to 127.0.0.1:27017
+2018-05-31 15:26:56.677  INFO 39425 --- [cluster-ClusterId{value='5b104c80e2813f9a01d4e1cf', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=671476}
+2018-05-31 15:26:56.767  WARN 39425 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:26:57.120  INFO 39425 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:26:57.129  INFO 39425 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:26:57.130  INFO 39425 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:26:57.225  INFO 39425 --- [localhost-startStop-1] o.a.c.c.C.[.[localhost].[/hl7-auth]      : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:26:57.889  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:26:57.890  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:26:57.890  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:26:57.891  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:26:57.893  INFO 39425 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:26:57.894  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:26:57.894  INFO 39425 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:26:58.147  INFO 39425 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@40113163, org.springframework.security.web.context.SecurityContextPersistenceFilter@22d322f5, org.springframework.security.web.header.HeaderWriterFilter@5e13f156, org.springframework.security.web.authentication.logout.LogoutFilter@57ddd45b, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@7cdfe693, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@71a3e05c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6723610b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@59939293, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@39c85c1a, org.springframework.security.web.session.SessionManagementFilter@640cc04b, org.springframework.security.web.access.ExceptionTranslationFilter@dab1f89, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@78fe204a]
+2018-05-31 15:26:58.956  INFO 39425 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:26:59.030  INFO 39425 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:26:59.036  INFO 39425 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 3.986 seconds (JVM running for 4.719)
+2018-05-31 15:29:34.221  INFO 39425 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-05-31 15:29:34.221  INFO 39425 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3cdf2c61: startup date [Thu May 31 15:26:55 EDT 2018]; root of context hierarchy
+2018-05-31 15:29:34.223  INFO 39425 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-05-31 15:33:30.673  INFO 39784 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 39784 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:33:30.674  INFO 39784 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:33:30.735  INFO 39784 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:33:30 EDT 2018]; root of context hierarchy
+2018-05-31 15:33:31.083  INFO 39784 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:33:31.108  INFO 39784 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:33:31.456  INFO 39784 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:33:31.507  INFO 39784 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:33:31.698  INFO 39784 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[127.0.0.1:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:33:31.742  INFO 39784 --- [cluster-ClusterId{value='5b104e0be2813f9b68a1845c', description='null'}-127.0.0.1:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:231}] to 127.0.0.1:27017
+2018-05-31 15:33:31.743  INFO 39784 --- [cluster-ClusterId{value='5b104e0be2813f9b68a1845c', description='null'}-127.0.0.1:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=127.0.0.1:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=435964}
+2018-05-31 15:33:31.813  WARN 39784 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:33:32.109  INFO 39784 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:33:32.117  INFO 39784 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:33:32.118  INFO 39784 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:33:32.192  INFO 39784 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:33:32.719  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:33:32.720  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:33:32.720  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:33:32.721  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:33:32.723  INFO 39784 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:33:32.723  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:33:32.723  INFO 39784 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:33:32.884  INFO 39784 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3cae7b8b, org.springframework.security.web.context.SecurityContextPersistenceFilter@74075134, org.springframework.security.web.header.HeaderWriterFilter@33f98231, org.springframework.security.web.authentication.logout.LogoutFilter@4a8df3e2, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@3ae9ca31, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@184dbacc, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@3f4b840d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@540a903b, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2aeefcc, org.springframework.security.web.session.SessionManagementFilter@557286ad, org.springframework.security.web.access.ExceptionTranslationFilter@7cf283e1, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@4f824872]
+2018-05-31 15:33:33.347  INFO 39784 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:33:33.399  INFO 39784 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:33:33.404  INFO 39784 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 2.96 seconds (JVM running for 3.483)
+2018-05-31 15:33:44.894  INFO 39784 --- [http-nio-8090-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-05-31 15:33:45.081  INFO 39784 --- [http-nio-8090-exec-1] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:232}] to 127.0.0.1:27017
+2018-05-31 15:42:06.708  INFO 39784 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-05-31 15:42:06.711  INFO 39784 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:33:30 EDT 2018]; root of context hierarchy
+2018-05-31 15:42:06.714  INFO 39784 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-05-31 15:42:19.612  INFO 40912 --- [main] gov.nist.hit.hl7.auth.App                : Starting App on PN108549.campus.nist.gov with PID 40912 (/Users/ena3/hl7-igamt/hl7-auth/auth/target/classes started by ena3 in /Users/ena3/hl7-igamt/hl7-auth/auth)
+2018-05-31 15:42:19.613  INFO 40912 --- [main] gov.nist.hit.hl7.auth.App                : No active profile set, falling back to default profiles: default
+2018-05-31 15:42:19.672  INFO 40912 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3c19aaa5: startup date [Thu May 31 15:42:19 EDT 2018]; root of context hierarchy
+2018-05-31 15:42:20.004  INFO 40912 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:42:20.028  INFO 40912 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-05-31 15:42:20.342  INFO 40912 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration' of type [class org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:42:20.386  INFO 40912 --- [main] trationDelegate$BeanPostProcessorChecker : Bean 'validator' of type [class org.springframework.validation.beanvalidation.LocalValidatorFactoryBean] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-05-31 15:42:20.562  INFO 40912 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-05-31 15:42:20.606  INFO 40912 --- [cluster-ClusterId{value='5b10501ce2813f9fd0f01cd7', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:234}] to localhost:27017
+2018-05-31 15:42:20.608  INFO 40912 --- [cluster-ClusterId{value='5b10501ce2813f9fd0f01cd7', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=494760}
+2018-05-31 15:42:20.676  WARN 40912 --- [main] o.s.d.m.c.m.BasicMongoPersistentProperty : Customizing field name for id property not allowed! Custom name will not be considered!
+2018-05-31 15:42:20.954  INFO 40912 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8090 (http)
+2018-05-31 15:42:20.961  INFO 40912 --- [main] o.apache.catalina.core.StandardService   : Starting service Tomcat
+2018-05-31 15:42:20.962  INFO 40912 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.11
+2018-05-31 15:42:21.034  INFO 40912 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-05-31 15:42:21.516  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-05-31 15:42:21.517  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-05-31 15:42:21.517  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-05-31 15:42:21.518  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-05-31 15:42:21.520  INFO 40912 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-05-31 15:42:21.520  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'loginFilter' to: [/*]
+2018-05-31 15:42:21.520  INFO 40912 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-05-31 15:42:21.683  INFO 40912 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@73ad7e90, org.springframework.security.web.context.SecurityContextPersistenceFilter@58496dc, org.springframework.security.web.header.HeaderWriterFilter@4682eba5, org.springframework.security.web.authentication.logout.LogoutFilter@21422231, gov.nist.hit.hl7.auth.filter.JWTAuthenticationFilter@1f52e95c, gov.nist.hit.hl7.auth.filter.JWTAuthorizationFilter@4ba380c7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@238acd0b, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@6eb82908, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@784c5ef5, org.springframework.security.web.session.SessionManagementFilter@61fafb74, org.springframework.security.web.access.ExceptionTranslationFilter@31464a43, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3cae7b8b]
+2018-05-31 15:42:22.151  INFO 40912 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-05-31 15:42:22.200  INFO 40912 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8090 (http)
+2018-05-31 15:42:22.204  INFO 40912 --- [main] gov.nist.hit.hl7.auth.App                : Started App in 2.829 seconds (JVM running for 3.302)

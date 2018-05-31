@@ -15,15 +15,15 @@ package gov.nist.hit.hl7.igamt.datatype.serialization;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
 import nu.xom.Element;
 
 /**
@@ -58,8 +58,9 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
           for (Link datatypeLink : datatypeRegistry.getChildren()) {
             if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
               Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
-              SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,
-                  String.valueOf(datatypeLink.getPosition()), this.getChildLevel(), datatypeNamesMap, valuesetNamesMap);
+              SerializableDatatype serializableDatatype =
+                  new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
+                      this.getChildLevel(), datatypeNamesMap, valuesetNamesMap);
               Element datatypeElement = serializableDatatype.serialize();
               if (datatypeElement != null) {
                 datatypeRegistryElement.appendChild(datatypeElement);

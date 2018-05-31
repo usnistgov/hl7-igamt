@@ -3,18 +3,15 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>gov.nist.hit.hl7</groupId>
-	<artifactId>auth</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>auth</name>
+ 	<artifactId>auth</artifactId>
+ 	<name>auth</name>
+	<packaging>jar</packaging>
 	<description>authentication</description>
-	<packaging>pom</packaging>
 	<parent>
 		<groupId>gov.nist.hit.hl7</groupId>
 		<artifactId>hl7-auth</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-
 	<properties>
 		<java.version>1.8</java.version>
 	</properties>
@@ -36,8 +33,7 @@
 				<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.8.0.RELEASE</version>
-		</dependency>
+ 		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
@@ -93,6 +89,64 @@
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 	</dependencies>
+	<build>
+		<finalName>hl7-auth</finalName>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
+					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<argLine>${surefireArgLine}</argLine>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<forkMode>once</forkMode>
+					<systemPropertyVariables>
+						<conf.path>${user.home}/spm</conf.path>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<argLine>${failsafeArgLine}</argLine>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+					<forkMode>once</forkMode>
+				</configuration>
+			</plugin>
+			</plugins>
+ 	</build>
+	
 	
 </project>
 

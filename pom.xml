@@ -73,7 +73,7 @@
 	</dependencyManagement>
 	
 	<modules>
-		<module>domain</module>
+		<module>common</module>
 		<module>profile-component</module>
 		<module>composite-profile</module>
 		<module>ig</module>
