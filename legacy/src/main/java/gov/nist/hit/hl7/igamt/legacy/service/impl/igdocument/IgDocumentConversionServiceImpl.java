@@ -131,6 +131,9 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
     } else if (ig.getScope().equals(IGDocumentScope.HL7STANDARD)) {
       domain.setScope(Scope.HL7STANDARD);
 
+    } else if (ig.getScope().equals(IGDocumentScope.ARCHIVED)) {
+      domain.setScope(Scope.ARCHIVED);
+
     }
     newIg.setDomainInfo(domain);
     newIg.setName(ig.getMetaData().getTitle());

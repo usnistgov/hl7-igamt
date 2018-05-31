@@ -201,6 +201,7 @@ public class IgServiceImpl implements IgService {
 
 
     Criteria where = Criteria.where("username").is(username);
+    where.andOperator(Criteria.where("domainInfo.scope").is("USER"));
 
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 

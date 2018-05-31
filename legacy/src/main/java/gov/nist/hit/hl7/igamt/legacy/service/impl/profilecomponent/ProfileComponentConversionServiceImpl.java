@@ -58,7 +58,6 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyPredicate
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertySingleCode;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyUsage;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
-import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 
 /**
@@ -72,8 +71,9 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       (ProfileComponentRepository) legacyContext.getBean("profileComponentRepository");
 
   @Autowired
-  private ProfileComponentService convertedProfileComponentService =
-      (ProfileComponentService) context.getBean("profileComponentService");
+  private gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository convertedProfileComponentService =
+      context.getBean(
+          gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository.class);
 
   @Autowired
   private SegmentRepository oldSegmentRepository =
@@ -371,6 +371,6 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
   }
 
   private void init() {
-    convertedProfileComponentService.removeCollection();
+    // convertedProfileComponentService.removeCollection();
   }
 }

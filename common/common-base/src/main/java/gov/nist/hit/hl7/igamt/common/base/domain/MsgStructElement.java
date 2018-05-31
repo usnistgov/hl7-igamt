@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 
-public abstract class MsgStructElement extends StructureElement {
+public class MsgStructElement extends StructureElement {
 
   private int min;
   private String max;

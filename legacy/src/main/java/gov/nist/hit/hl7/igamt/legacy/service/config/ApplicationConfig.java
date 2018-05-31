@@ -13,9 +13,9 @@ import com.mongodb.MongoClient;
 @EnableMongoRepositories({"gov.nist.hit.hl7.igamt.segment.repository",
     "gov.nist.hit.hl7.igamt.datatype.repository", "gov.nist.hit.hl7.igamt.valueset.repository",
     "gov.nist.hit.hl7.igamt.conformanceprofile.repository",
-    "gov.nist.hit.hl7.igamt.compositeprofile", "gov.nist.hit.hl7.igamt.profilecomponent",
-    "gov.nist.hit.hl7.igamt.ig.repository", "gov.nist.hit.hl7.auth",
-    "gov.nist.hit.hl7.igamt.common"})
+    "gov.nist.hit.hl7.igamt.compositeprofile.repository",
+    "gov.nist.hit.hl7.igamt.profilecomponent.repository", "gov.nist.hit.hl7.igamt.ig.repository",
+    "gov.nist.hit.hl7.auth", "gov.nist.hit.hl7.igamt.common"})
 public class ApplicationConfig {
 
   @Bean

@@ -31,9 +31,9 @@ export  class IgdocumentEditResolver implements Resolve<any>{
       (resolve , reject) =>{
         let igId= route.params["igId"];
         console.log("TEST");
-        this.indexedDbService.getIgDocumentId().then(id=>{
-          console.log(id);
-          if(id!==igId){
+        // this.indexedDbService.getIgDocumentId().then(id=>{
+        //   console.log(id);
+        //   if(id!==igId){
             this.http.get<any>("/api/igdocuments/"+igId+"/display").subscribe(x=>{
               this.parseToc(x.toc);
 
@@ -62,14 +62,14 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
 
             });
-          }else{
-
-
-
-
-
-          }
-        });
+        //   }else{
+        //
+        //
+        //
+        //
+        //
+        //   }
+        // });
 
 
 
