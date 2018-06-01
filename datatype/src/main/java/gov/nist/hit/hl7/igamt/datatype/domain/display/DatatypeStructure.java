@@ -3,9 +3,10 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 import java.util.Comparator;
 import java.util.TreeSet;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 public class DatatypeStructure {
   private CompositeKey id;

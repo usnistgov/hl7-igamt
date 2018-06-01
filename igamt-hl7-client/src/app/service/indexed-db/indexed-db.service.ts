@@ -41,6 +41,8 @@ export class IndexedDbService {
         this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
         this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
           resolve();
+        }).catch((error) => {
+          reject(error);
         });
       });
     }));
@@ -107,11 +109,17 @@ export class IndexedDbService {
     return Promise.all(promises);
   }
 
-  public getIgDocumentInfo() {
-    this.igDocumentInfoDataBase.transaction('r', this.igDocumentInfoDataBase.igDocument, async () => {
-      const collection = this.igDocumentInfoDataBase.igDocument.toArray();
-      console.log(JSON.stringify(collection));
-      return collection[0];
+  public getIgDocumentId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {
+        if (collection != null && collection.length >= 1) {
+          resolve(collection[0].id);
+        } else {
+          reject();
+        }
+      }).catch((error) => {
+        reject(error);
+      });
     });
   }
 
@@ -144,16 +152,22 @@ export class IndexedDbService {
     }));
     const doPersist = this.doPersist;
     const igDocumentService = this.igDocumentService;
-    Promise.all(promises).then(function(){
-      console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
-        + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
-      doPersist(changedObjects, igDocumentService);
+    return new Promise((resolve, reject) => {
+      Promise.all(promises).then(function(){
+        console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
+          + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
+        doPersist(changedObjects, igDocumentService).then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      });
     });
   }
 
-  private doPersist(changedObjects, igDocumentService) {
+  private doPersist(changedObjects, igDocumentService): Promise<any> {
     console.log(JSON.stringify(changedObjects));
-    igDocumentService.save(changedObjects);
+    return igDocumentService.save(changedObjects);
   }
 
 }

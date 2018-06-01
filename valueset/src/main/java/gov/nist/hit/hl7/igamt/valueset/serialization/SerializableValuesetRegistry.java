@@ -15,15 +15,15 @@ package gov.nist.hit.hl7.igamt.valueset.serialization;
 
 import java.util.Map;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
-import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import nu.xom.Element;
 
 /**
@@ -58,8 +58,8 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
             if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
               Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-              SerializableValueSet serializableValueSet =
-                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
+              SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
+                  String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
               Element valuesetElement = serializableValueSet.serialize();
               if (valuesetElement != null) {
                 valuesetRegistryElement.appendChild(valuesetElement);

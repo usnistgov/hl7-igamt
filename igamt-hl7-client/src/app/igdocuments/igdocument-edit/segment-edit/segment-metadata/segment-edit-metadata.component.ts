@@ -71,6 +71,5 @@ export class SegmentEditMetadataComponent implements WithSave {
       node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
       this.segmentsService.saveSegmentMetadata(this.segmentId, this.segmentMetadata).then(metadata => {});
     });
-
   }
 }

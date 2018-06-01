@@ -24,12 +24,19 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -38,10 +45,6 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SaveService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.Event;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventService;
-import gov.nist.hit.hl7.igamt.shared.messageEvent.MessageEventTreeNode;
 
 @RestController
 public class IGDocumentController {
@@ -90,15 +93,15 @@ public class IGDocumentController {
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
     }
   }
-  
+
   @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
   public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
-      HttpServletResponse response) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+      HttpServletResponse response, Authentication authentication) throws ExportException {
     if (authentication != null) {
       String username = authentication.getPrincipal().toString();
       ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
-      response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+      response.setContentType(
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
       response.setHeader("Content-disposition",
           "attachment;filename=" + exportedFile.getFileName());
       try {
@@ -115,9 +118,8 @@ public class IGDocumentController {
       produces = {"application/json"})
 
 
-  public @ResponseBody List<IgSummary> getUserIG() {
+  public @ResponseBody List<IgSummary> getUserIG(Authentication authentication) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {
       String username = authentication.getPrincipal().toString();
       List<Ig> igdouments = igService.findLatestByUsername(username);
@@ -142,18 +144,12 @@ public class IGDocumentController {
 
   public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id,
       Authentication authentication) {
-    if (authentication != null) {
 
 
-      Ig igdoument = igService.findLatestById(id);
-      IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
-      return ret;
+    Ig igdoument = igService.findLatestById(id);
+    IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
+    return ret;
 
-    } else {
-      // redirect
-      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-
-    }
 
   }
 
@@ -167,15 +163,9 @@ public class IGDocumentController {
       method = RequestMethod.GET, produces = {"application/json"})
 
   public @ResponseBody List<MessageEventTreeNode> getMessageEvents(
-      @PathVariable("version") String version) {
+      @PathVariable("version") String version, Authentication authentication) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      return messageEventService.findByHl7Version(version);
-
-    } else {
-      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-    }
+    return messageEventService.findByHl7Version(version);
 
   }
 
@@ -232,5 +222,70 @@ public class IGDocumentController {
   public void setSaveService(SaveService saveService) {
     this.saveService = saveService;
   }
+
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/section/{sectionId}", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public @ResponseBody TextSection findSectionById(@PathVariable("id") String id,
+      @PathVariable("sectionId") String sectionId, Authentication authentication)
+      throws IGNotFoundException, SectionNotFoundException {
+
+
+    Ig ig = igService.findIgContentById(id);
+
+    if (ig != null) {
+      TextSection s = findSectionById(ig.getContent(), sectionId);
+      if (s == null) {
+        throw new SectionNotFoundException("Section Not Foud");
+      } else {
+        return s;
+      }
+    } else {
+      throw new IGNotFoundException("Cannot found Id document");
+    }
+
+  }
+
+  /**
+   * @param content
+   * @param sectionId
+   * @return
+   */
+  private TextSection findSectionById(Set<TextSection> content, String sectionId) {
+    // TODO Auto-generated method stub
+    for (TextSection s : content) {
+      TextSection ret = findSectionInside(s, sectionId);
+      if (ret != null) {
+        return ret;
+      }
+    }
+    return null;
+
+  }
+
+  /**
+   * @param s
+   * @param sectionId
+   * @return
+   */
+  private TextSection findSectionInside(TextSection s, String sectionId) {
+    // TODO Auto-generated method stub
+    if (s.getId().equals(sectionId)) {
+      return s;
+    }
+    if (s.getChildren() != null && s.getChildren().size() > 0) {
+      for (TextSection ss : s.getChildren()) {
+        TextSection ret = findSectionInside(ss, sectionId);
+        if (ret != null) {
+          return ret;
+        }
+      }
+      return null;
+    }
+    return null;
+  }
+
 
 }

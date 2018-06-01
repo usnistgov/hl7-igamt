@@ -13,9 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import nu.xom.Attribute;
 import nu.xom.Element;
 

@@ -10,10 +10,23 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
@@ -21,25 +34,12 @@ import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Field;
-import gov.nist.hit.hl7.igamt.shared.domain.Group;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.shared.registries.ConformanceProfileRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.DatatypeRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.Registry;
-import gov.nist.hit.hl7.igamt.shared.registries.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.shared.registries.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @Service
@@ -363,12 +363,10 @@ public class CrudServiceImpl implements CrudService {
   public CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) {
     // TODO Auto-generated method stub
     AddMessageResponseObject ret = this.addConformanceProfiles(ids, ig);
-    System.out.println("SEE");
     List<AbstractDomain> ordredSegment = ret.getSegments().stream()
         .sorted((Segment t1, Segment t2) -> t1.getName().compareTo(t2.getName()))
         .collect(Collectors.toList());
     orderRegistry(ig.getSegmentRegistry(), ordredSegment);
-    System.out.println("LIBRARY");
     System.out.println(ig.getDatatypeRegistry().getChildren().size());
     List<AbstractDomain> ordredDatatypes = ret.getDatatypesMap().stream()
         .sorted((Datatype t1, Datatype t2) -> t1.getName().compareTo(t2.getName()))

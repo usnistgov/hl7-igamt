@@ -18,10 +18,11 @@ import java.util.Date;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 /**
  *
@@ -62,12 +63,14 @@ public class Datatype extends Resource {
     this.purposeAndUse = purposeAndUse;
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override
   public String getLabel() {
-    if(this.ext != null && !this.ext.isEmpty()) {
+    if (this.ext != null && !this.ext.isEmpty()) {
       return this.getName() + "_" + this.ext;
     }
     return this.getName();

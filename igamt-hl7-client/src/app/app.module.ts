@@ -117,6 +117,8 @@ import {ValuesetsTocService} from "./service/indexed-db/valuesets/valuesets-toc.
 import {ProfileComponentsTocService} from "./service/indexed-db/profile-components/profile-components-toc.service";
 
 import {ConstraintsService} from './service/constraints/constraints.service';
+import {SectionsService} from "./service/sections/sections.service";
+import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
 
 @NgModule({
     imports: [
@@ -232,6 +234,7 @@ import {ConstraintsService} from './service/constraints/constraints.service';
      SegmentsIndexedDbService,
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
+    SectionsIndexedDbService,
     ProfileComponentsTocService,
     TocDbService,
     DatatypesTocService,
@@ -241,6 +244,7 @@ import {ConstraintsService} from './service/constraints/constraints.service';
     ConformanceProfilesTocService,
     CompositeProfilesTocService,
     SegmentsService,
+    SectionsService,
     AuthService,
     AuthGuard,
     UserService,

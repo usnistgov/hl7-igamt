@@ -16,11 +16,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>shared-domain</artifactId>
-			<version>${parent.version}</version>
-		</dependency>
+	
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>export</artifactId>

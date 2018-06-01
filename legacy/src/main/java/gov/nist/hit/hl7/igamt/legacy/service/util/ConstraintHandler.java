@@ -36,30 +36,31 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Message;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.IfThenAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.InstancePath;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.NotAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.OperatorAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.OperatorAssertion.Operator;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.SingleAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Subject;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.CompareNodeComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.CompareOperator;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.CompareValueComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.FormattedComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.FormattedComplement.FormatType;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.GenericComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.ListValuesComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.Parameter;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.PresenceComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.SameValueComplement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.ValuesetComplement;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetStrength;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Assertion;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.IfThenAssertion;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.InstancePath;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.NotAssertion;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.OperatorAssertion;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.OperatorAssertion.Operator;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Path;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.SingleAssertion;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.Subject;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.CompareNodeComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.CompareOperator;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.CompareValueComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.FormattedComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.FormattedComplement.FormatType;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.GenericComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.ListValuesComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.Parameter;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.PresenceComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.SameValueComplement;
-import gov.nist.hit.hl7.igamt.shared.domain.constraint.assertion.complement.ValuesetComplement;
+
 
 /**
  * @author jungyubw
@@ -72,7 +73,7 @@ public class ConstraintHandler {
 
   @Autowired
   private SegmentRepository segmentRepository;
-  
+
   public ConstraintHandler(SegmentRepository segmentRepository,
       DatatypeRepository datatypeRepository) {
     this.segmentRepository = segmentRepository;
@@ -91,32 +92,62 @@ public class ConstraintHandler {
     if (!assertionStr.startsWith("<" + rootName + ">")) {
       assertionStr = "<" + rootName + ">" + assertionStr + "</" + rootName + ">";
     }
-    
-    //Segment Issues
+
+    // Segment Issues
     description = description.replace("'^~\\&#'", "'^~\\&amp;#'");
     assertionStr = assertionStr.replace("Text=\"~\\&#\"", "Text=\"~\\&amp;#\"");
-    if(assertionStr.equals("<Condition>PID-29 SHALL be valued</Condition>")) return null;
-    if(assertionStr.equals("<Condition>PID-30 SHALL be valued 'Y'</Condition>")) return null;  
-    if(assertionStr.equals("<Assertion><IMPLY><PlainText Path=\"3[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/><AND><Presence Path=\"21[1]\"/><NOT><PlainText Path=\"21[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></AND></IMPLY></Assertion>")) return null;  
-    if(assertionStr.equals("<Assertion><IMPLY><PlainText Path=\"21[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/><AND><Presence Path=\"3[1]\"/><NOT><PlainText Path=\"3[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></AND></IMPLY></Assertion>")) return null;  
-    if(assertionStr.equals("<Assertion><Format Path=\"MSH-7\" Regex=\"([0-9]{4})((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1]))(([0-1][0-9])|(2[0-3]))([0-5][0-9])([0-5][0-9])\\.[0-9][0-9][0-9][0-9]((\\+|\\-)[0-9]{4})\"/></Assertion>")) return null;
-    if(assertionStr.equals("<Assertion><SimpleValue Path=\"PID-1\" Operator=\"EQ\" Value=\"1\"/></Assertion>")) return null;
-    if(assertionStr.equals("<Assertion><SimpleValue Path=\"PID-30\" Operator=\"EQ\" Value=\"Y\"/></Assertion>")) return null;
-    
-    //Datatype issues
-    if(assertionStr.equals("<Condition><PlainText Path=\"1[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></Condition>")) return null;
-    if(assertionStr.equals("<Condition><NOT><Format Path=\"1[1]\" Regex=\"\\\"\\\"\"/></NOT></Condition>")) return null;
-    if(assertionStr.equals("<Condition><NOT><PlainText Path=\"1[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></Condition>")) return null;
-    if(assertionStr.equals("<Assertion><AND><Presence Path=\"1[1]\"/><StringList Path=\"1[1]\" CSV=\">, <, >=, <=, =, <>\"/></AND></Assertion>")) return null;
-    if(assertionStr.equals("<Condition><NOT><AND><Presence Path=\"2[1]\"/><PlainText Path=\"2[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></AND></NOT></Condition>")) return null;
-    assertionStr = assertionStr.replace("264384&MDC_DIM_HR&MDC,264352&MDC_DIM_MIN&MDC,264320&MDC_DIM_X_SEC&MDC", "264384&amp;MDC_DIM_HR&amp;MDC,264352&amp;MDC_DIM_MIN&amp;MDC,264320&amp;MDC_DIM_X_SEC&amp;MDC");
-    
-    //ConformanceProfile(Message) issues
-    assertionStr = assertionStr.replace("<Condition><NOT><SimpleValue Path=\"2[1].1[1]\" Operator=\"EQ\" Value=\"\"AA\"\"/></NOT></Condition>", "<Condition><NOT><SimpleValue Path=\"2[1].1[1]\" Operator=\"EQ\" Value=\"AA\"/></NOT></Condition>");
-    assertionStr = assertionStr.replace("<Assertion><AssertionainText Path=\"1[1].1[1]\" Text=\"1\" IgnoreCase=\"false\"/><Presence Path=\"1[1].8[1]\"/></IMPLY></Assertion></Assertion>","<Assertion><IMPLY><PlainText Path=\"1[1].1[1]\" Text=\"1\" IgnoreCase=\"false\"/><Presence Path=\"1[1].8[1]\"/></IMPLY></Assertion>");
-    if(assertionStr.equals("<Condition><AND><Presence Path=\".[1].3[1].7[1]\"/><SimpleValue Path=\".[1].3[1].7[1]\" Operator=\"GE\" Value=\"undefined\"/></AND></Condition>")) return null;
-    
-    
+    if (assertionStr.equals("<Condition>PID-29 SHALL be valued</Condition>"))
+      return null;
+    if (assertionStr.equals("<Condition>PID-30 SHALL be valued 'Y'</Condition>"))
+      return null;
+    if (assertionStr.equals(
+        "<Assertion><IMPLY><PlainText Path=\"3[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/><AND><Presence Path=\"21[1]\"/><NOT><PlainText Path=\"21[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></AND></IMPLY></Assertion>"))
+      return null;
+    if (assertionStr.equals(
+        "<Assertion><IMPLY><PlainText Path=\"21[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/><AND><Presence Path=\"3[1]\"/><NOT><PlainText Path=\"3[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></AND></IMPLY></Assertion>"))
+      return null;
+    if (assertionStr.equals(
+        "<Assertion><Format Path=\"MSH-7\" Regex=\"([0-9]{4})((0[1-9])|(1[0-2]))((0[1-9])|([1-2][0-9])|(3[0-1]))(([0-1][0-9])|(2[0-3]))([0-5][0-9])([0-5][0-9])\\.[0-9][0-9][0-9][0-9]((\\+|\\-)[0-9]{4})\"/></Assertion>"))
+      return null;
+    if (assertionStr
+        .equals("<Assertion><SimpleValue Path=\"PID-1\" Operator=\"EQ\" Value=\"1\"/></Assertion>"))
+      return null;
+    if (assertionStr.equals(
+        "<Assertion><SimpleValue Path=\"PID-30\" Operator=\"EQ\" Value=\"Y\"/></Assertion>"))
+      return null;
+
+    // Datatype issues
+    if (assertionStr.equals(
+        "<Condition><PlainText Path=\"1[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></Condition>"))
+      return null;
+    if (assertionStr
+        .equals("<Condition><NOT><Format Path=\"1[1]\" Regex=\"\\\"\\\"\"/></NOT></Condition>"))
+      return null;
+    if (assertionStr.equals(
+        "<Condition><NOT><PlainText Path=\"1[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></NOT></Condition>"))
+      return null;
+    if (assertionStr.equals(
+        "<Assertion><AND><Presence Path=\"1[1]\"/><StringList Path=\"1[1]\" CSV=\">, <, >=, <=, =, <>\"/></AND></Assertion>"))
+      return null;
+    if (assertionStr.equals(
+        "<Condition><NOT><AND><Presence Path=\"2[1]\"/><PlainText Path=\"2[1]\" Text=\"\"\"\" IgnoreCase=\"false\"/></AND></NOT></Condition>"))
+      return null;
+    assertionStr = assertionStr.replace(
+        "264384&MDC_DIM_HR&MDC,264352&MDC_DIM_MIN&MDC,264320&MDC_DIM_X_SEC&MDC",
+        "264384&amp;MDC_DIM_HR&amp;MDC,264352&amp;MDC_DIM_MIN&amp;MDC,264320&amp;MDC_DIM_X_SEC&amp;MDC");
+
+    // ConformanceProfile(Message) issues
+    assertionStr = assertionStr.replace(
+        "<Condition><NOT><SimpleValue Path=\"2[1].1[1]\" Operator=\"EQ\" Value=\"\"AA\"\"/></NOT></Condition>",
+        "<Condition><NOT><SimpleValue Path=\"2[1].1[1]\" Operator=\"EQ\" Value=\"AA\"/></NOT></Condition>");
+    assertionStr = assertionStr.replace(
+        "<Assertion><AssertionainText Path=\"1[1].1[1]\" Text=\"1\" IgnoreCase=\"false\"/><Presence Path=\"1[1].8[1]\"/></IMPLY></Assertion></Assertion>",
+        "<Assertion><IMPLY><PlainText Path=\"1[1].1[1]\" Text=\"1\" IgnoreCase=\"false\"/><Presence Path=\"1[1].8[1]\"/></IMPLY></Assertion>");
+    if (assertionStr.equals(
+        "<Condition><AND><Presence Path=\".[1].3[1].7[1]\"/><SimpleValue Path=\".[1].3[1].7[1]\" Operator=\"GE\" Value=\"undefined\"/></AND></Condition>"))
+      return null;
+
+
     System.out.println(assertionStr);
     Document doc = this.convertStringToDocument(assertionStr);
     Node assertionNode = doc.getElementsByTagName(rootName).item(0);
@@ -188,7 +219,7 @@ public class ConstraintHandler {
    */
   private SingleAssertion constructSingleAssertionObj(Object obj, Node childNode) {
     SingleAssertion singleAssertion = new SingleAssertion();
-//<Plugin QualifiedClassName=\"gov.nist.healthcare.hl7.v2.iz.plugins.IZ24Constraint\"/>
+    // <Plugin QualifiedClassName=\"gov.nist.healthcare.hl7.v2.iz.plugins.IZ24Constraint\"/>
     if (childNode != null) {
       if (childNode.getNodeName().equals("Presence")) {
         this.constructSimplePresenceAssertion(singleAssertion, childNode, obj);
@@ -210,13 +241,13 @@ public class ConstraintHandler {
         this.constructSimpleIZSetIDAssertion(singleAssertion, childNode, obj);
       } else if (childNode.getNodeName().equals("Plugin")) {
         this.constructSimplePluginAssertion(singleAssertion, childNode, obj);
-      }else{
+      } else {
         try {
           throw new Exception();
         } catch (Exception e) {
           System.out.println("Not Found for " + childNode.getNodeName());
           e.printStackTrace();
-        } 
+        }
       }
     }
     return singleAssertion;
@@ -398,7 +429,7 @@ public class ConstraintHandler {
     singleAssertion.setSubject(this.constructSubject(path, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   private void constructSimpleIZSetIDAssertion(SingleAssertion singleAssertion, Node setIdNode,
       Object obj) {
     String path1 = ((Element) setIdNode).getAttribute("Element");
@@ -416,7 +447,7 @@ public class ConstraintHandler {
     singleAssertion.setSubject(this.constructSubject(path1, obj));
     singleAssertion.setVerbKey("SHALL");
   }
-  
+
   private void constructSimplePluginAssertion(SingleAssertion singleAssertion, Node childNode,
       Object obj) {
     String qualifiedClassName = ((Element) childNode).getAttribute("QualifiedClassName");
@@ -430,9 +461,9 @@ public class ConstraintHandler {
 
     singleAssertion.setComplement(genericComplement);
     singleAssertion.setVerbKey("SHALL");
-    
+
   }
-  
+
 
   /**
    * @param bindingLocationStr

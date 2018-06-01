@@ -15,7 +15,8 @@ package gov.nist.hit.hl7.igamt.serialization.exception;
 
 import java.util.Map;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+
 
 /**
  *
@@ -30,16 +31,16 @@ public class SerializationException extends Exception {
   protected Type type;
   protected String location;
   protected String message;
-  
+
   public SerializationException(Throwable cause, Type type, String location, String message) {
     super(cause);
     this.type = type;
     this.location = location;
     this.message = message;
   }
-  
+
   public SerializationException(Throwable cause, Type type, String location) {
-    this(cause,type,location,null);
+    this(cause, type, location, null);
   }
 
   public String printError() {
@@ -48,13 +49,13 @@ public class SerializationException extends Exception {
     errorBuilder.append("[");
     errorBuilder.append(this.location);
     errorBuilder.append("]");
-    if(this.message != null) {
+    if (this.message != null) {
       errorBuilder.append(" -> ");
       errorBuilder.append(this.message);
     }
     errorBuilder.append(" => ");
-    if(super.getCause() instanceof SerializationException) {
-      errorBuilder.append(((SerializationException)super.getCause()).printError());
+    if (super.getCause() instanceof SerializationException) {
+      errorBuilder.append(((SerializationException) super.getCause()).printError());
     } else {
       errorBuilder.append(super.getCause().getClass().getName());
       errorBuilder.append(" -> ");
@@ -62,16 +63,16 @@ public class SerializationException extends Exception {
     }
     return errorBuilder.toString();
   }
-  
+
   protected static String generateLocation(Map<String, String> locationParameters) {
     StringBuilder stringBuilder = new StringBuilder();
-    for(String key : locationParameters.keySet()) {
+    for (String key : locationParameters.keySet()) {
       stringBuilder.append(key);
       stringBuilder.append(":");
       stringBuilder.append(locationParameters.get(key));
       stringBuilder.append(",");
     }
-    //removing the last comma
+    // removing the last comma
     stringBuilder.deleteCharAt(stringBuilder.length());
     return stringBuilder.toString();
   }
@@ -92,6 +93,7 @@ public class SerializationException extends Exception {
     this.location = location;
   }
 
+  @Override
   public String getMessage() {
     return message;
   }
@@ -99,5 +101,5 @@ public class SerializationException extends Exception {
   public void setMessage(String message) {
     this.message = message;
   }
-  
+
 }

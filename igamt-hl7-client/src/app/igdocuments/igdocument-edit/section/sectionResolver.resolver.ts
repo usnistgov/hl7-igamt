@@ -9,32 +9,36 @@ import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot, Router} from "@ang
 import {Observable} from "rxjs";
 import {observable} from "rxjs/symbol/observable";
 import {forEach} from "@angular/router/src/utils/collection";
+import {SectionsService} from "../../../service/sections/sections.service";
 
 @Injectable()
 export  class SectionResolver implements Resolve<any>{
-  constructor(private http: HttpClient,private router : Router ) {
+  constructor(private http: HttpClient,private router : Router,private sectionService: SectionsService ) {
   }
 
-  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
+  resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
 
-                let sectionId= route.params["sectionId"];
-                if(!route.parent.data["currentIg"]){
-                  this.router.navigate(["/404"]);
-                  return Observable.empty();
-                }
-                else{
-                  console.log(route.parent.data["currentIg"]);
-                  let sections=route.parent.data["currentIg"].toc;
+          let sectionId= route.params["sectionId"];
 
-                  let section= this.findSectionById(sections,sectionId);
+          return this.sectionService.getSection(sectionId);
 
-                  if(section !=null){
-                    console.log("Found");
-                    return Observable.of(section);
-                  }
-                  this.router.navigate(["/404"]);
-                  return Observable.empty();
-                }
+                // if(!route.parent.data["currentIg"]){
+                //   this.router.navigate(["/404"]);
+                //   return Observable.empty();
+                // }
+                // else{
+                //   console.log(route.parent.data["currentIg"]);
+                //   let sections=route.parent.data["currentIg"].toc;
+                //
+                //   let section= this.findSectionById(sections,sectionId);
+                //
+                //   if(section !=null){
+                //     console.log("Found");
+                //     return Observable.of(section);
+                //   }
+                //   this.router.navigate(["/404"]);
+                //   return Observable.empty();
+                // }
 
   }
 

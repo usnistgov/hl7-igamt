@@ -13,8 +13,10 @@ package gov.nist.hit.hl7.igamt.datatype.domain;
 
 import java.util.Date;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+
+
 
 /**
  * @author jungyubw
