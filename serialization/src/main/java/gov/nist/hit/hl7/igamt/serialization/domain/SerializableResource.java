@@ -90,13 +90,13 @@ public abstract class SerializableResource extends SerializableElement {
   public Element serializeResourceBinding(ResourceBinding binding) {
     Element bindingElement = new Element("Binding");
     // TODO implement unit test
-    bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
-    if(binding.getChildren().size() > 0) {
-      Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren());
-      if(structureElementBindingsElement != null) {
-        bindingElement.appendChild(structureElementBindingsElement);
-      }
-    }
+//    bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
+//    if(binding.getChildren().size() > 0) {
+//      Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren());
+//      if(structureElementBindingsElement != null) {
+//        bindingElement.appendChild(structureElementBindingsElement);
+//      }
+//    }
     //TODO add conformancestatements & crossrefs
     return bindingElement;
   }

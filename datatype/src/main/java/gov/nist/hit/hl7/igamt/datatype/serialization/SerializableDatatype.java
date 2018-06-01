@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -35,13 +36,13 @@ import nu.xom.Element;
  */
 public class SerializableDatatype extends SerializableResource{
 
-  private HashMap<Ref,String> refDatatypeLabelMap = null;
+  private Map<Ref,String> refDatatypeLabelMap = null;
   
   /**
    * @param abstractDomain
    * @param position
    */
-  public SerializableDatatype(Datatype datatype, String position, HashMap<Ref,String> refDatatypeLabelMap) {
+  public SerializableDatatype(Datatype datatype, String position, Map<Ref,String> refDatatypeLabelMap) {
     super(datatype, position);
     this.refDatatypeLabelMap = refDatatypeLabelMap;
   }

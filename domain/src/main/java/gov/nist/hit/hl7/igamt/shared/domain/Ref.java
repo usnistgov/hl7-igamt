@@ -20,5 +20,9 @@ public class Ref {
     this.id = id;
   }
   
+  @Override
+  public boolean equals(Object toCompare) {
+	  return (toCompare instanceof Ref && ((Ref)toCompare).getId().equals(this.getId()));
+  }
 
 }
