@@ -19,22 +19,22 @@ import {SaveFormsGuard} from "../../../guards/save.guard";
   imports: [
     RouterModule.forChild([
         {
-            path: ':segmentId', component: SegmentEditStructureComponent,  resolve: { segmentStructure : SegmentEditStructureResolver}
+            path: ':segmentId', component: SegmentEditStructureComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentStructure : SegmentEditStructureResolver}
         },
         {
             path: ':segmentId/metadata', component: SegmentEditMetadataComponent,  canDeactivate: [SaveFormsGuard] ,resolve: { segmentMetadata : SegmentEditMetadatResolver}
         },
         {
-            path: ':segmentId/preDef', component: SegmentEditPredefComponent,  resolve: { segmentPredef : SegmentEditPredefResolver}
+            path: ':segmentId/preDef', component: SegmentEditPredefComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentPredef : SegmentEditPredefResolver}
         },
         {
-            path: ':segmentId/structure', component: SegmentEditStructureComponent,  resolve: { segmentStructure : SegmentEditStructureResolver}
+            path: ':segmentId/structure', component: SegmentEditStructureComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentStructure : SegmentEditStructureResolver}
         },
         {
-            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,  resolve: { segmentPostdef : SegmentEditPostdefResolver}
+            path: ':segmentId/postDef', component: SegmentEditPostdefComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentPostdef : SegmentEditPostdefResolver}
         },
         {
-            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,  resolve: { segmentConformanceStatements : SegmentEditConformanceStatementsResolver}
+            path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentConformanceStatements : SegmentEditConformanceStatementsResolver}
         }
     ])
   ],

@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
@@ -15,13 +15,16 @@ import { _ } from 'underscore';
 import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
 import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
 
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import * as __ from 'lodash';
 
 @Component({
     selector : 'segment-edit',
     templateUrl : './segment-edit-structure.component.html',
     styleUrls : ['./segment-edit-structure.component.css']
 })
-export class SegmentEditStructureComponent {
+export class SegmentEditStructureComponent implements WithSave {
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
     segmentId:any;
@@ -44,6 +47,11 @@ export class SegmentEditStructureComponent {
     datatypesLinks :any = [];
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
+
+    backup:any;
+
+    @ViewChild('editForm')
+    private editForm: NgForm;
 
     constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
@@ -114,10 +122,33 @@ export class SegmentEditStructureComponent {
                     this.segmentStructure.scope = x.scope;
 
                     this.updateDatatype(this.segmentStructure, x.children, x.binding, null, null, null, null, null, null);
+
+                    this.backup=__.cloneDeep(this.segmentStructure);
                 });
             });
 
         });
+    }
+
+    reset(){
+        this.segmentStructure=__.cloneDeep(this.backup);
+    }
+
+    getCurrent(){
+        return  this.segmentStructure;
+    }
+
+    getBackup(){
+        return this.backup;
+    }
+
+    isValid(){
+        // return !this.editForm.invalid;
+        return true;
+    }
+
+    save(){
+        this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure).then(data => {});
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
