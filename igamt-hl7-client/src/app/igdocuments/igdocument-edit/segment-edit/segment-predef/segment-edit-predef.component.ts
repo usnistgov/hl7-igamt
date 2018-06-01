@@ -58,7 +58,7 @@ export class SegmentEditPredefComponent implements WithSave {
         return !this.editForm.invalid;
     }
 
-    save(){
-        this.segmentsService.saveSegmentPreDef(this.segmentId, this.segmentPredef).then(data => {});
+    save(): Promise<any>{
+        return this.segmentsService.saveSegmentPreDef(this.segmentId, this.segmentPredef);
     }
 }

@@ -147,8 +147,8 @@ export class SegmentEditStructureComponent implements WithSave {
         return true;
     }
 
-    save(){
-        this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure).then(data => {});
+    save(): Promise<any>{
+        return this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure);
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){

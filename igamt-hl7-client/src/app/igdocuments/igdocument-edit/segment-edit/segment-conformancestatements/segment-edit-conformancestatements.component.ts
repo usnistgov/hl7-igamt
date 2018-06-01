@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, Input} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {SegmentsService} from "../../../../service/segments/segments.service";
@@ -9,13 +9,15 @@ import {DatatypesService} from "../../../../service/datatypes/datatypes.service"
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
-
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import * as __ from 'lodash';
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
     styleUrls : ['./segment-edit-conformancestatements.component.css']
 })
-export class SegmentEditConformanceStatementsComponent {
+export class SegmentEditConformanceStatementsComponent  implements WithSave{
     cols:any;
     currentUrl:any;
     segmentId:any;
@@ -25,11 +27,15 @@ export class SegmentEditConformanceStatementsComponent {
     constraintTypes: any = [];
     assertionModes: any = [];
     complexAssertionTypes: any[];
+    backup:any;
 
     selectedConformanceStatement: any = {};
 
     listTab: boolean = true;
     editorTab: boolean = false;
+
+    @ViewChild('csForm')
+    private csForm: NgForm;
 
     constructor(
         private route: ActivatedRoute,
@@ -100,10 +106,30 @@ export class SegmentEditConformanceStatementsComponent {
                     this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
                     this.treeData.push(treeNode);
 
-
+                    this.backup=__.cloneDeep(this.segmentConformanceStatements);
                 }
             });
         });
+    }
+
+    reset(){
+        this.segmentConformanceStatements=__.cloneDeep(this.backup);
+    }
+
+    getCurrent(){
+        return  this.segmentConformanceStatements;
+    }
+
+    getBackup(){
+        return this.backup;
+    }
+
+    isValid(){
+        return !this.csForm.invalid;
+    }
+
+    save(): Promise<any>{
+        return this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements);
     }
 
     popChild(id, dtId, parentTreeNode){

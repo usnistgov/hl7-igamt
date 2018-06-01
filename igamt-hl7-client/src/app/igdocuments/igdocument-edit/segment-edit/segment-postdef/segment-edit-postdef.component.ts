@@ -57,8 +57,7 @@ export class SegmentEditPostdefComponent implements WithSave {
         return !this.editForm.invalid;
     }
 
-    save(){
-        console.log("SAVE???");
-        this.segmentsService.saveSegmentPostDef(this.segmentId, this.segmentPostdef).then(data => {});
+    save(): Promise<any>{
+        return this.segmentsService.saveSegmentPostDef(this.segmentId, this.segmentPostdef);
     }
 }
