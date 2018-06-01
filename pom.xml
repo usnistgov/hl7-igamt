@@ -85,5 +85,6 @@
 		<module>serialization</module>
 		<module>segment</module>
   		<module>datatype-library</module>
+  		<module>igamt-auth</module>
 	</modules>
 </project>

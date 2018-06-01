@@ -9,12 +9,10 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
-import org.springframework.boot.test.context.ConfigFileApplicationContextInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
-import org.springframework.test.context.ContextConfiguration;
 
 import gov.nist.hit.hl7.auth.repository.PrivilegeRepository;
 import gov.nist.hit.hl7.auth.service.AccountService;
@@ -23,7 +21,6 @@ import gov.nist.hit.hl7.auth.service.AccountService;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
-@ContextConfiguration(initializers = ConfigFileApplicationContextInitializer.class)
 @EnableMongoRepositories("gov.nist.hit.hl7")
 @ComponentScan({"gov.nist.hit.hl7"})
 public class App implements CommandLineRunner {

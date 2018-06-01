@@ -15,7 +15,7 @@ server:
 
 logging:
   file: hl7-igamt.log
-  path : /var/log/hl7-igamt/
+  path: /var/log/hl7-igamt/
   exception-conversion-word: '%wEx'
   
 security:
