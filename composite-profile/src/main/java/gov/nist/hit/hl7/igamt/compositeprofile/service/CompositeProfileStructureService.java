@@ -13,8 +13,8 @@ package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  * 
@@ -22,7 +22,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public interface CompositeProfileStructureService {
   public CompositeProfileStructure findByKey(CompositeKey key);
-  
+
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure);
@@ -32,6 +32,6 @@ public interface CompositeProfileStructureService {
   public void delete(CompositeProfileStructure compositeProfileStructure);
 
   public void delete(CompositeKey key);
-  
+
   public void removeCollection();
 }

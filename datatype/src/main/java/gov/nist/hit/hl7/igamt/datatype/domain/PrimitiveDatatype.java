@@ -13,18 +13,21 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import java.util.Date;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 /**
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
 public class PrimitiveDatatype extends Datatype {
-	
-	
-	
+
+
 
   public PrimitiveDatatype() {
     super();
@@ -34,10 +37,28 @@ public class PrimitiveDatatype extends Datatype {
   public PrimitiveDatatype(String id, String version, String name, PublicationInfo publicationInfo,
       DomainInfo domainInfo, String username, String comment, String description, String preDef,
       String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding) {
-//    super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-//        postDef, ext, purposeAndUse, resourceBinding);
+    // super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
+    // postDef, ext, purposeAndUse, resourceBinding);
     // TODO Auto-generated constructor stub
   }
 
-  
+  @Override
+  public PrimitiveDatatype clone() {
+
+    PrimitiveDatatype clone = new PrimitiveDatatype();
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setId(null);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
+  };
 }

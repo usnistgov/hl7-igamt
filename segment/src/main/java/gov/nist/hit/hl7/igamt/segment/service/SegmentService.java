@@ -15,8 +15,14 @@ package gov.nist.hit.hl7.igamt.segment.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 
 /**
  *
@@ -25,6 +31,8 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 public interface SegmentService {
 
   public Segment findByKey(CompositeKey key);
+
+  public Segment findLatestById(String id);
 
   public Segment create(Segment segment);
 
@@ -35,21 +43,38 @@ public interface SegmentService {
   public void delete(Segment segment);
 
   public void delete(CompositeKey key);
-  
+
   public void removeCollection();
-  
+
   public List<Segment> findByDomainInfoVersion(String version);
-  
+
   public List<Segment> findByDomainInfoScope(String scope);
-	
+
   public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-	
+
   public List<Segment> findByName(String name);
-	
-  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
-	
+
+  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
+
   public List<Segment> findByDomainInfoVersionAndName(String version, String name);
-	
+
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
-  
+
+  public Segment getLatestById(String id);
+
+  public SegmentStructure convertDomainToStructure(Segment segment);
+
+  public DisplayMetadata convertDomainToMetadata(Segment segment);
+
+  public PreDef convertDomainToPredef(Segment segment);
+
+  public PostDef convertDomainToPostdef(Segment segment);
+
+  public Segment saveSegment(ChangedSegment changedSegment);
+
+  public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
+
+  public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
+
 }

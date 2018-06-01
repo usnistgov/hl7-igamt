@@ -1,8 +1,7 @@
 <?xml version="1.0"?>
 <project
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
-		 xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>gov.nist.hit.hl7</groupId>
@@ -17,21 +16,30 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20180130</version>
-		</dependency>
-
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>shared-domain</artifactId>
-			<version>${parent.version}</version>
-		</dependency>
-		
-		<dependency>
 			<groupId>xom</groupId>
 			<artifactId>xom</artifactId>
-			<version>1.2.5</version>
 		</dependency>
+		<dependency>
+			<groupId>org.jsoup</groupId>
+			<artifactId>jsoup</artifactId>
+			<version>1.9.2</version>
+		</dependency>
+	<dependency>
+     	<groupId>gov.nist.hit.hl7</groupId>
+     	<artifactId>common-base</artifactId>
+   		<version>0.0.1-SNAPSHOT</version>
+   
+    </dependency>
+    	 <dependency>
+     	<groupId>gov.nist.hit.hl7</groupId>
+     	<artifactId>common-binding</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+     	<groupId>gov.nist.hit.hl7</groupId>
+     	<artifactId>common-exception</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+
+    </dependency>
 	</dependencies>
 </project>

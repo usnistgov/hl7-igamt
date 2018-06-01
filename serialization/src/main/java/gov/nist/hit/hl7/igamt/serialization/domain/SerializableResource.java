@@ -13,12 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -26,117 +23,39 @@ import nu.xom.Element;
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public abstract class SerializableResource extends SerializableElement {
-
-  protected Resource resource;
+public abstract class SerializableResource extends SerializableAbstractDomain {
 
   public SerializableResource(Resource resource, String position) {
-    super(resource.getId().getId(), position, resource.getName());
-    this.resource = resource;
+    super(resource, position, resource.getLabel());
   }
 
-  public Element getElement(String elementName) {
-    Element element = super.getElement(elementName);
-    if (this.resource != null) {
-      element.addAttribute(new Attribute("comment",
-          this.resource.getComment() != null ? this.resource.getComment() : ""));
-      element.addAttribute(new Attribute("createdFrom",
-          this.resource.getCreatedFrom() != null ? this.resource.getCreatedFrom() : ""));
-      element.addAttribute(new Attribute("description",
-          this.resource.getDescription() != null ? this.resource.getDescription() : ""));
-      element.addAttribute(
-          new Attribute("name", this.resource.getName() != null ? this.resource.getName() : ""));
+  public Element getElement(Type type) {
+    Element element = super.getElement(type);
+    Resource resource = (Resource) super.getAbstractDomain();
+    if (resource != null && element != null) {
       element.addAttribute(new Attribute("postDef",
-          this.resource.getPostDef() != null ? this.resource.getPostDef() : ""));
+          resource.getPostDef() != null
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef())
+              : ""));
       element.addAttribute(new Attribute("preDef",
-          this.resource.getPreDef() != null ? this.resource.getPreDef() : ""));
-      element.addAttribute(new Attribute("domainVersion",
-          this.resource.getDomainInfo() != null
-              && this.resource.getDomainInfo().getVersion() != null
-                  ? this.resource.getDomainInfo().getVersion()
-                  : ""));
-      String domainCompatibilityVersions = "";
-      if (this.resource.getDomainInfo() != null
-          && this.resource.getDomainInfo().getCompatibilityVersion() != null) {
-        domainCompatibilityVersions = String.join(",", this.resource.getDomainInfo().getCompatibilityVersion());
-      }
-      element
-          .addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
-      element.addAttribute(new Attribute("domainScope",
-          this.resource.getDomainInfo() != null && this.resource.getDomainInfo().getScope() != null ? this.resource.getDomainInfo().getScope().name()
+          resource.getPreDef() != null
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef())
               : ""));
-      element.addAttribute(new Attribute("id",
-          this.resource.getId() != null && this.resource.getId().getId() != null ? this.resource.getId().getId() : ""));
-      element.addAttribute(new Attribute("publicationVersion",
-          this.resource.getPublicationInfo() != null && this.resource.getPublicationInfo().getPublicationVersion() != null
-              ? this.resource.getPublicationInfo().getPublicationVersion()
-              : ""));
-      String publicationDate = "";
-      if (this.resource.getPublicationInfo() != null
-          && this.resource.getPublicationInfo().getPublicationDate() != null) {
-        publicationDate = DateSerializationUtil
-            .serializeDate(this.resource.getPublicationInfo().getPublicationDate());
-      }
-      element.addAttribute(new Attribute("publicationDate", publicationDate));
-      element.addAttribute(new Attribute("username", this.resource.getUsername() != null ? this.resource.getUsername() : ""));
+      element.addAttribute(new Attribute("type", type.getValue()));
     }
     return element;
   }
 
-  /**
-   * @param binding
-   * @return
-   */
-  public Element serializeResourceBinding(ResourceBinding binding) {
-    Element bindingElement = new Element("Binding");
-    // TODO implement unit test
-//    bindingElement.addAttribute(new Attribute("elementId",binding.getElementId() != null ? binding.getElementId() : ""));
-//    if(binding.getChildren().size() > 0) {
-//      Element structureElementBindingsElement = this.serializeStructureElementBindings(binding.getChildren());
-//      if(structureElementBindingsElement != null) {
-//        bindingElement.appendChild(structureElementBindingsElement);
-//      }
-//    }
-    //TODO add conformancestatements & crossrefs
-    return bindingElement;
-  }
-
-  /**
-   * @param children
-   * @return
-   */
-  private Element serializeStructureElementBindings(Set<StructureElementBinding> structureElementBindings) {
-    Element structureElementBindingsElement = new Element("StructureElementBindings");
-    for(StructureElementBinding structureElementBinding : structureElementBindings) {
-      if(structureElementBinding != null) {
-        Element structureElementBindingElement = this.serializeStructureElementBinding(structureElementBinding);
-        if(structureElementBindingElement != null) {
-          structureElementBindingsElement.appendChild(structureElementBindingElement);
-        }
-      }
-    }
-    return structureElementBindingsElement;
-  }
-
-  /**
-   * @param structureElementBinding
-   * @return
-   */
-  private Element serializeStructureElementBinding(
-      StructureElementBinding structureElementBinding) {
-    Element structureElementBindingElement = new Element("structureElementBinding");
-    if(structureElementBinding.getChildren().size()>0) {
-      Element structureElementBindingsElement = this.serializeStructureElementBindings(structureElementBinding.getChildren());
-      if(structureElementBindingsElement != null) {
-        structureElementBindingElement.appendChild(structureElementBindingsElement);
-      }
-    }
-    //TODO add all elements in binding
-    return structureElementBindingElement;
-  }
-
-  public Resource getResource() {
-    return resource;
+  public Element getSectionElement(Element resourceElement, int level) {
+    Element element = super.getElement(Type.SECTION);
+    element.addAttribute(new Attribute("h", String.valueOf(level)));
+    Resource resource = (Resource) super.getAbstractDomain();
+    element.addAttribute(
+        new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
+    element.addAttribute(new Attribute("description",
+        resource.getDescription() != null ? resource.getDescription() : ""));
+    element.appendChild(resourceElement);
+    return element;
   }
 
 }

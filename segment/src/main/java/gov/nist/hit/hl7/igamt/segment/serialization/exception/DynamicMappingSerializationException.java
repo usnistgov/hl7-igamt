@@ -13,14 +13,27 @@
  */
 package gov.nist.hit.hl7.igamt.segment.serialization.exception;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+
 /**
  *
  * @author Maxence Lefort on Mar 27, 2018.
  */
-public class DynamicMappingSerializationException extends Exception {
+public class DynamicMappingSerializationException extends SerializationException {
 
-  public DynamicMappingSerializationException() {
-    super("Unable to serialize Dynamic Mapping");
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6887787296077348003L;
+
+  public DynamicMappingSerializationException(Exception exception,
+      DynamicMappingInfo dynamicMappingInfo) {
+    super(exception, Type.DYNAMICMAPPING,
+        "referencePath="
+            + (dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
+                : ""));
   }
-  
+
 }

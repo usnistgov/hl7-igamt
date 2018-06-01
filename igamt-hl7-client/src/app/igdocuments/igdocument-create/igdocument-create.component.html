@@ -1,0 +1,126 @@
+<p-breadcrumb [model]="breadCurmp" [home]="{'icon': 'fa fa-home'}"></p-breadcrumb>
+
+
+<p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="true"></p-steps>
+<div *ngIf="activeIndex==1">
+  <div >
+    <label class="metadata-label"> Select Hl7 Version</label>  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
+  </div>
+
+  <div>
+      <ng-container *ngFor="let selected of getSelected()">
+
+        <label class="badge cp-badge" (click)="unselect(selected)" *ngIf="!selected.children">
+          <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.parent.data.hl7Version}}</span>    {{selected.data.name}}-{{selected.data.parentStructId}}
+          <i class="fa fa-remove cp-remove"></i>
+        </label>
+
+      </ng-container>
+  </div>
+
+
+  <div>
+    <p-treeTable *ngIf="selcetedVersion" [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectdNodeMap[selectedVerion]" [style]="{'margin-top':'10px', 'max-height':'400px', 'overflow':'scroll'}">
+      <p-column  header="Name">
+        <ng-template let-node="rowData" pTemplate="body">
+          <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
+
+        </ng-template>
+      </p-column>
+      <p-column  header="Event Types">
+        <ng-template let-node="rowData" pTemplate="body">
+          <span *ngIf="node.data.type=='EVENT' "> {{node.data.name}}</span>
+        </ng-template>
+      </p-column>
+      <p-column  header="Description">
+        <ng-template let-node="rowData" pTemplate="body">
+          {{node.data.description}}
+        </ng-template>
+      </p-column>
+    </p-treeTable>
+
+<div class="ui-g-offset-10">
+
+  <p-button   styleClass="indigo-btn" (onClick)="previous($event)" label="Previous" icon="fa fa-hand-o-left" iconPos="left"></p-button>
+
+  <p-button    styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+
+</div>
+  </div>
+</div>
+
+
+<div *ngIf="activeIndex==0" class="card">
+  <form  #f="ngForm" novalidate>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-2">
+       Cover Picture <p-fileUpload mode="basic" name="file" url="./uploaded_files/upload" auto="auto"   maxFileSize="1000000" (onUpload)="upload($event)">
+      </p-fileUpload>
+      </label>
+      <div class="ui-g-offset-3">
+        <img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} width="80" height="80">
+        <span *ngIf="!metaData.coverPicture" > No Image Selected </span>
+      </div>
+
+    </div>
+
+
+    <!--<img *ngIf="metaData.coverPicture" src={{metaData.coverPicture}} >-->
+    <!--<img *ngIf="!metaData.coverPicture"  src="../../../assets/layout/images/404.png">-->
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Title
+      </label>
+
+      <input name="title" id="title" pInputText placeholder="title"
+               [(ngModel)]="metaData.title" class="ui-g-10" #title="ngModel" required>
+
+      <div class="ui-g-offset-1" *ngIf="title.invalid&&  (title.dirty || title.touched)">
+        <p-message severity="error" text="Title is required"></p-message>
+
+      </div>
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Sub-Title
+      </label>
+
+      <input name="subTitle" id="subTitle" pInputText placeholder="Sub Title "
+             [(ngModel)]="metaData.subTitle" class="ui-g-10" #subTitle="ngModel">
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Organization
+      </label>
+
+      <input name="orgName" id="orgName" pInputText placeholder="title"
+             [(ngModel)]="metaData.orgName" class="ui-g-10" #orgName="ngModel">
+
+
+    </div>
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        Author Notes
+      </label>
+      <div  class="ui-g-10" [froalaEditor] [(froalaModel)]="metaData.implementationNotes"></div>
+    </div>
+
+  </form>
+  <p-button class="ui-g-offset-11" [disabled]= "f.invalid" styleClass="indigo-btn" (onClick)="next($event)" label="Next" icon="fa fa-hand-o-right" iconPos="left"></p-button>
+
+</div>
+
+
+
+<p-blockUI [blocked]="blockUI"></p-blockUI>
+
+
+
+

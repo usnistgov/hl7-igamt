@@ -13,48 +13,52 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 /**
  *
  * @author Maxence Lefort on Mar 9, 2018.
  */
 public class ConformanceProfile extends Resource {
-	
-	private String identifier;
-	private String messageType; // Message/@Type
 
-	private String event; // Message/@Event
+  private String identifier;
+  private String messageType; // Message/@Type
 
-	private String structID; // Message/@StructID  private String identifier;
-	public String getMessageType() {
-		return messageType;
-	}
+  private String event; // Message/@Event
 
-	public void setMessageType(String messageType) {
-		this.messageType = messageType;
-	}
+  private String structID; // Message/@StructID private String identifier;
 
-	public String getEvent() {
-		return event;
-	}
+  public String getMessageType() {
+    return messageType;
+  }
 
-	public void setEvent(String event) {
-		this.event = event;
-	}
+  public void setMessageType(String messageType) {
+    this.messageType = messageType;
+  }
 
-	public String getStructID() {
-		return structID;
-	}
+  public String getEvent() {
+    return event;
+  }
 
-	public void setStructID(String structID) {
-		this.structID = structID;
-	}
+  public void setEvent(String event) {
+    this.event = event;
+  }
+
+  public String getStructID() {
+    return structID;
+  }
+
+  public void setStructID(String structID) {
+    this.structID = structID;
+  }
 
   private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
   private ResourceBinding binding;
@@ -89,6 +93,42 @@ public class ConformanceProfile extends Resource {
 
   public void addChild(MsgStructElement mse) {
     this.children.add(mse);
+  }
+
+  @Override
+  public ConformanceProfile clone() {
+
+    ConformanceProfile clone = new ConformanceProfile();
+    clone.setBinding(this.binding);
+    clone.setChildren(children);
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setEvent(this.getEvent());
+    clone.setId(null);
+    clone.setMessageType(messageType);
+    clone.setIdentifier(identifier);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setStructID(structID);
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
+  };
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    return this.getName();
   }
 
 }

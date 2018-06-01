@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
@@ -24,7 +26,7 @@ public class UsageConfiguration {
   private boolean c = true;
   private boolean x = false;
   private boolean o = false;
-  
+
   public UsageConfiguration() {
     super();
   }
@@ -78,5 +80,21 @@ public class UsageConfiguration {
     this.o = o;
   }
 
+  public boolean isBinded(Usage usage) {
+    switch (usage) {
+      case R:
+        return this.isR();
+      case RE:
+        return this.isRe();
+      case C:
+        return this.isC();
+      case X:
+        return this.isX();
+      case O:
+        return this.isO();
+      default:
+        return false;
+    }
+  }
 
 }

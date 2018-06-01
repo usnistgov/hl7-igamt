@@ -15,11 +15,10 @@ package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
 import java.util.List;
 
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSystemRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
@@ -72,5 +71,26 @@ public class CodeSystemServiceImpl implements CodeSystemService {
   public void removeCollection() {
     codeSystemRepository.deleteAll();
   }
+
+
+  @Override
+  public List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(String scope,
+      String hl7version, String identifier) {
+    // TODO Auto-generated method stub
+    return codeSystemRepository.findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(scope,
+        hl7version, identifier);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService#findLatestById(java.lang.String)
+   */
+  @Override
+  public CodeSystem findLatestById(String id) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
 
 }

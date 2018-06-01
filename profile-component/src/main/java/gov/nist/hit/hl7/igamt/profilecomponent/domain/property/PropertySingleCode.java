@@ -13,7 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 
 /**
  *
@@ -24,7 +24,7 @@ public class PropertySingleCode extends ItemProperty {
   private String singleCodeId;
   private ExternalSingleCode externalSingleCode;
 
-  
+
   public PropertySingleCode() {
     super(PropertyKey.SINGLECODE);
   }

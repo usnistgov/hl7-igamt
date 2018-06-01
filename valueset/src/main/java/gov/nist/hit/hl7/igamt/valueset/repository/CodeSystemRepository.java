@@ -13,10 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
+import java.util.List;
+
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 
 /**
@@ -27,4 +32,17 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 @Repository
 public interface CodeSystemRepository extends MongoRepository<CodeSystem, CompositeKey> {
 
+  List<CodeSystem> findByIdentifier(String identifier);
+
+  List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(String scope,
+      String hl7version, String identifier);
+
+  List<CodeSystem> findByDomainInfoVersion(String version);
+
+  List<CodeSystem> findByDomainInfoScope(String scope);
+
+  List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+
+  @Query(value = "{ '_id._id' : ?0 }")
+  List<CodeSystem> findLatestById(ObjectId id, Sort sort);
 }
