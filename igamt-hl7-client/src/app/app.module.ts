@@ -222,7 +222,11 @@ import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-i
       AppBreadcrumbComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
-    { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
+    // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
+    // {
+    //   provide: APP_BASE_HREF,
+    //   useValue: '<%= APP_BASE %>'
+    // },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
