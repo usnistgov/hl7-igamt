@@ -11,10 +11,10 @@
 
     <!--<a [routerLink]="['',{outlets:{content:'export-fonts'}}]" routerLinkActive="active">Export fonts</a>-->
     <!--<a routerLink='export-fonts'>Export fonts</a>-->
-    <a [routerLink]="['/', 'configuration', 'export-fonts']">Export fonts</a>
+    <a [routerLink]="['./export-fonts']">Export fonts</a>
 
   </div>
   <div class="ui-g-9">
-    <router-outlet name="content"></router-outlet>
+    <router-outlet></router-outlet>
   </div>
   </div>

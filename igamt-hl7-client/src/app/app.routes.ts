@@ -6,7 +6,7 @@ import {DocumentationComponent} from './documentation/documentation.component';
 import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component"
 import {RegisterComponent} from "./register/register.component";
-import {ConfigurationComponent} from "./configuration/configuration.compronent";
+import {ConfigurationComponent} from "./configuration/configuration.component";
 
 
 export const routes: Routes = [
@@ -17,7 +17,7 @@ export const routes: Routes = [
   {path: 'datatype-libraries', loadChildren: './datatype-library/datatype-library.module#DatatypeLibraryModule'},
   {path: 'shared-data', loadChildren: './shared-elements/shared-elements.module#SharedElementsModule'},
   {path: 'comparator', loadChildren: './delta/delta.module#DeltaModule'},
-  {path: 'configuration', component: ConfigurationComponent},
+  {path: 'configuration',loadChildren:'./configuration/configuration.module#ConfigurationModule'},
   {path: 'search', loadChildren: './search/search.module#SearchModule'},
   {path: 'about', component: AboutComponent},
   {path: 'documentation', component: DocumentationComponent},

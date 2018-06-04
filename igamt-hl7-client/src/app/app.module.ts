@@ -71,7 +71,6 @@ import { TooltipModule } from 'primeng/primeng';
 import {KeyFilterModule} from 'primeng/keyfilter';
 import {MessageModule} from 'primeng/message';
 
-// import { TreeModule } from 'primeng/primeng';
 import { TreeTableModule } from 'primeng/primeng';
 import { AppComponent } from './app.component';
 import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
@@ -117,7 +116,6 @@ import {ValuesetsTocService} from "./service/indexed-db/valuesets/valuesets-toc.
 import {ProfileComponentsTocService} from "./service/indexed-db/profile-components/profile-components-toc.service";
 
 import {ConstraintsService} from './service/constraints/constraints.service';
-import {ConfigurationComponent} from "./configuration/configuration.compronent";
 import {SectionsService} from "./service/sections/sections.service";
 import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
 
@@ -220,8 +218,7 @@ import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-i
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent,
-      ConfigurationComponent
+      AppBreadcrumbComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
