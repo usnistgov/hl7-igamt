@@ -117,6 +117,7 @@ import {ValuesetsTocService} from "./service/indexed-db/valuesets/valuesets-toc.
 import {ProfileComponentsTocService} from "./service/indexed-db/profile-components/profile-components-toc.service";
 
 import {ConstraintsService} from './service/constraints/constraints.service';
+import {ConfigurationComponent} from "./configuration/configuration.compronent";
 
 @NgModule({
     imports: [
@@ -217,7 +218,8 @@ import {ConstraintsService} from './service/constraints/constraints.service';
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent
+      AppBreadcrumbComponent,
+      ConfigurationComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
