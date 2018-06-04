@@ -25,8 +25,16 @@
 		<dependency>
       <groupId>commons-fileupload</groupId>
 	  <artifactId>commons-fileupload</artifactId>
-      <version>1.2.1</version>
-    </dependency>
+     </dependency>
+    
+<dependency>
+    <groupId>org.apache.httpcomponents</groupId>
+    <artifactId>httpclient</artifactId>
+    <version>4.5.5</version>
+</dependency>
+
+    
+    
 				
 				
 	<dependency>

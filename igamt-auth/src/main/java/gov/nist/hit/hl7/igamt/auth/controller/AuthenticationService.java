@@ -1,5 +1,16 @@
 package gov.nist.hit.hl7.igamt.auth.controller;
 
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.annotation.PostConstruct;
+
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.TrustAllStrategy;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
@@ -7,12 +18,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+
 
 @Service
 public class AuthenticationService {
@@ -22,11 +35,33 @@ public class AuthenticationService {
 
   private static final String AUTH_URL = "auth.url";
 
+
+  RestTemplate restTemplate;
+
+  @PostConstruct
+  @SuppressWarnings("deprecation")
+  public void init() {
+    try {
+      SSLContextBuilder builder = new SSLContextBuilder();
+      builder.loadTrustMaterial(null, new TrustAllStrategy());
+      SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(),
+          SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+      CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory)
+          .setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
+      HttpComponentsClientHttpRequestFactory fct =
+          new HttpComponentsClientHttpRequestFactory(httpClient);
+      this.restTemplate = new RestTemplate(fct);
+    } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+  }
+
+
   public String connect(LoginRequest user) throws AuthenticationException {
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-type", "application/json");
-      RestTemplate restTemplate = new RestTemplate();
       HttpEntity<LoginRequest> request = new HttpEntity<>(user);
       System.out.println(env.getProperty(AUTH_URL));
       ResponseEntity<LoginRequest> response = restTemplate.exchange(

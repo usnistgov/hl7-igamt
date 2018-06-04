@@ -873,3 +873,364 @@ Using default security password: 297636f3-7eeb-40fc-a79d-3a01f3dc2f07
 2018-05-31 15:08:21.347  INFO 38213 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 6.331 seconds (JVM running for 7.122)
 2018-05-31 15:08:24.751  INFO 38213 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
 2018-05-31 15:34:26.152  INFO 38213 --- [http-nio-8091-exec-5] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:233}] to localhost:27017
+2018-06-04 14:23:45.989  INFO 34860 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN111281.campus.nist.gov with PID 34860 (/Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap/target/classes started by haffo in /Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap)
+2018-06-04 14:23:45.992  INFO 34860 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 14:23:46.051  INFO 34860 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:23:46 EDT 2018]; root of context hierarchy
+2018-06-04 14:23:46.803  INFO 34860 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:23:46.998  INFO 34860 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:23:47.943  INFO 34860 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 14:23:47.953  INFO 34860 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 14:23:47.954  INFO 34860 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 14:23:48.078  INFO 34860 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 14:23:48.328  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 14:23:48.329  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 14:23:48.330  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 14:23:48.330  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 14:23:48.331  INFO 34860 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 14:23:48.331  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 14:23:48.331  INFO 34860 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 14:23:48.568  INFO 34860 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 14:23:48.639  INFO 34860 --- [cluster-ClusterId{value='5b1583b4417f7f882cfd4af1', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:2}] to localhost:27017
+2018-06-04 14:23:48.641  INFO 34860 --- [cluster-ClusterId{value='5b1583b4417f7f882cfd4af1', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 4]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, roundTripTimeNanos=473897}
+2018-06-04 14:23:49.219  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:23:49.222  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:23:49.224  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.225  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.225  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.227  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.228  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.229  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:23:49.230  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.231  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:23:49.232  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.233  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.233  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.234  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:23:49.235  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.236  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.236  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:23:49.237  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.239  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.240  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.240  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.241  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.242  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.243  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:23:49.243  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.245  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.245  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.246  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.247  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.248  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.248  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:23:49.249  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.251  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.251  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.252  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.253  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.254  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:23:49.254  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:23:49.255  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:23:49.256  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:23:49.258  INFO 34860 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:23:50.008  INFO 34860 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@58a84a12, org.springframework.security.web.context.SecurityContextPersistenceFilter@8a6631b, org.springframework.security.web.header.HeaderWriterFilter@72906e, org.springframework.security.web.authentication.logout.LogoutFilter@4b862408, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@185be205, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4bc59b27, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3332c7a5, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@e700eba, org.springframework.security.web.session.SessionManagementFilter@4f486211, org.springframework.security.web.access.ExceptionTranslationFilter@5a1f778, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@ea04cab]
+2018-06-04 14:23:50.557  INFO 34860 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: 1f13ad56-25a1-4c1e-94f8-0502274ce945
+
+2018-06-04 14:23:50.652  INFO 34860 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 14:23:50.715  INFO 34860 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 14:23:50.720  INFO 34860 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 5.057 seconds (JVM running for 6.278)
+2018-06-04 14:27:59.430  INFO 34860 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 14:37:23.048  INFO 34860 --- [RMI TCP Connection(2)-129.6.251.209] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 14:37:23.048  INFO 34860 --- [RMI TCP Connection(2)-129.6.251.209] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:23:46 EDT 2018]; root of context hierarchy
+2018-06-04 14:37:23.050  INFO 34860 --- [RMI TCP Connection(2)-129.6.251.209] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 14:37:36.019  INFO 35602 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN111281.campus.nist.gov with PID 35602 (/Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap/target/classes started by haffo in /Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap)
+2018-06-04 14:37:36.020  INFO 35602 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 14:37:36.072  INFO 35602 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:37:36 EDT 2018]; root of context hierarchy
+2018-06-04 14:37:36.818  INFO 35602 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:37:37.021  INFO 35602 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:37:37.966  INFO 35602 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 14:37:37.976  INFO 35602 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 14:37:37.977  INFO 35602 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 14:37:38.102  INFO 35602 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 14:37:38.293  INFO 35602 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 14:37:38.295  INFO 35602 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 14:37:38.295  INFO 35602 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 14:37:38.296  INFO 35602 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 14:37:38.529  INFO 35602 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 14:37:38.594  INFO 35602 --- [cluster-ClusterId{value='5b1586f2417f7f8b12aebb72', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:3}] to localhost:27017
+2018-06-04 14:37:38.596  INFO 35602 --- [cluster-ClusterId{value='5b1586f2417f7f8b12aebb72', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 4]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, roundTripTimeNanos=524168}
+2018-06-04 14:37:39.241  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.242  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.243  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.244  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.245  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.246  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:37:39.247  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.251  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.252  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.252  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.253  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.254  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.254  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:37:39.255  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.257  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:37:39.258  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:37:39.259  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:37:39.260  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.260  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.261  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.261  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:37:39.262  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.263  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.264  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:37:39.265  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.266  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.266  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.267  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.268  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.268  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.269  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:37:39.269  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.270  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:37:39.272  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:37:39.274  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.275  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.275  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:39.277  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.278  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:37:39.279  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:37:39.279  INFO 35602 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:37:40.246  INFO 35602 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1c8f6c66, org.springframework.security.web.context.SecurityContextPersistenceFilter@13ed066e, org.springframework.security.web.header.HeaderWriterFilter@6518fdfd, org.springframework.security.web.authentication.logout.LogoutFilter@3e546734, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@f682a4b, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@590765c4, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@64b018f3, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@552cede7, org.springframework.security.web.session.SessionManagementFilter@47b33e07, org.springframework.security.web.access.ExceptionTranslationFilter@68ef01a5, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@2047981]
+2018-06-04 14:37:40.633  INFO 35602 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: fd8e0e19-4c59-46ed-bfd3-b81b7868c751
+
+2018-06-04 14:37:40.717  INFO 35602 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 14:37:40.778  INFO 35602 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 14:37:40.782  INFO 35602 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 5.05 seconds (JVM running for 5.634)
+2018-06-04 14:37:45.333  INFO 35602 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 14:40:58.575  INFO 35602 --- [RMI TCP Connection(2)-129.6.251.209] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 14:40:58.576  INFO 35602 --- [RMI TCP Connection(2)-129.6.251.209] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:37:36 EDT 2018]; root of context hierarchy
+2018-06-04 14:40:58.578  INFO 35602 --- [RMI TCP Connection(2)-129.6.251.209] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 14:41:11.117  INFO 35746 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN111281.campus.nist.gov with PID 35746 (/Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap/target/classes started by haffo in /Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap)
+2018-06-04 14:41:11.118  INFO 35746 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 14:41:11.165  INFO 35746 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:41:11 EDT 2018]; root of context hierarchy
+2018-06-04 14:41:11.834  INFO 35746 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:41:12.020  INFO 35746 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:41:12.890  INFO 35746 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 14:41:12.899  INFO 35746 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 14:41:12.900  INFO 35746 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 14:41:13.003  INFO 35746 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 14:41:13.198  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 14:41:13.198  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 14:41:13.199  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 14:41:13.199  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 14:41:13.200  INFO 35746 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 14:41:13.200  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 14:41:13.200  INFO 35746 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 14:41:13.401  INFO 35746 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 14:41:13.458  INFO 35746 --- [cluster-ClusterId{value='5b1587c9417f7f8ba27fdf89', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:4}] to localhost:27017
+2018-06-04 14:41:13.460  INFO 35746 --- [cluster-ClusterId{value='5b1587c9417f7f8ba27fdf89', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 4]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, roundTripTimeNanos=740545}
+2018-06-04 14:41:13.999  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:41:14.002  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:41:14.004  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:41:14.005  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.006  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.006  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.007  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:41:14.008  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.010  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.011  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:41:14.011  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.013  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.013  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.014  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.015  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.015  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.016  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:41:14.017  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.018  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:41:14.019  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:41:14.020  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.021  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.022  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.023  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.024  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.024  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:41:14.025  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.026  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.027  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.028  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.028  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.029  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.030  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:41:14.030  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.033  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.034  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.034  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.035  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.036  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:41:14.037  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:41:14.037  INFO 35746 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:41:14.682  INFO 35746 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@671d03bb, org.springframework.security.web.context.SecurityContextPersistenceFilter@6adc5b9c, org.springframework.security.web.header.HeaderWriterFilter@4d7a64ca, org.springframework.security.web.authentication.logout.LogoutFilter@61615b4a, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@65c046d6, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@40709f9, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4d09cade, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6babffb5, org.springframework.security.web.session.SessionManagementFilter@3e39baf0, org.springframework.security.web.access.ExceptionTranslationFilter@51e3d37e, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6436e181]
+2018-06-04 14:41:15.122  INFO 35746 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: class path resource [public/index.html]
+2018-06-04 14:41:15.212  INFO 35746 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: 973a0e87-9386-4c76-b313-27a2cce59ced
+
+2018-06-04 14:41:15.314  INFO 35746 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 14:41:15.367  INFO 35746 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 14:41:15.373  INFO 35746 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 4.534 seconds (JVM running for 5.105)
+2018-06-04 14:41:21.331  INFO 35746 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 14:43:53.165  INFO 35746 --- [RMI TCP Connection(2)-129.6.251.209] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 14:43:53.166  INFO 35746 --- [RMI TCP Connection(2)-129.6.251.209] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@47987356: startup date [Mon Jun 04 14:41:11 EDT 2018]; root of context hierarchy
+2018-06-04 14:43:53.168  INFO 35746 --- [RMI TCP Connection(2)-129.6.251.209] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 14:44:00.253  INFO 35868 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN111281.campus.nist.gov with PID 35868 (/Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap/target/classes started by haffo in /Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap)
+2018-06-04 14:44:00.254  INFO 35868 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 14:44:00.316  INFO 35868 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@285c08c8: startup date [Mon Jun 04 14:44:00 EDT 2018]; root of context hierarchy
+2018-06-04 14:44:01.044  INFO 35868 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:44:01.248  INFO 35868 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:44:02.255  INFO 35868 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 14:44:02.267  INFO 35868 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 14:44:02.269  INFO 35868 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 14:44:02.409  INFO 35868 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 14:44:02.666  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 14:44:02.667  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 14:44:02.668  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 14:44:02.668  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 14:44:02.669  INFO 35868 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 14:44:02.669  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 14:44:02.670  INFO 35868 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 14:44:02.944  INFO 35868 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 14:44:03.019  INFO 35868 --- [cluster-ClusterId{value='5b158872417f7f8c1c3d6258', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:5}] to localhost:27017
+2018-06-04 14:44:03.021  INFO 35868 --- [cluster-ClusterId{value='5b158872417f7f8c1c3d6258', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 4]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, roundTripTimeNanos=579212}
+2018-06-04 14:44:03.910  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:44:03.913  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:44:03.916  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.918  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.919  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.922  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.925  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.926  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:44:03.927  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.931  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.932  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.933  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.934  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.935  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.936  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:44:03.937  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.940  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.941  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.942  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.945  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.946  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.947  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:44:03.948  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.968  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:44:03.972  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:44:03.977  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.979  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.980  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.982  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.983  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.984  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:44:03.984  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.986  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:44:03.988  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.989  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.990  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:03.991  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:44:03.993  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.994  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:44:03.995  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:44:03.996  INFO 35868 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:44:05.075  INFO 35868 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@30eedaa4, org.springframework.security.web.context.SecurityContextPersistenceFilter@4beae1e3, org.springframework.security.web.header.HeaderWriterFilter@59baf2c7, org.springframework.security.web.authentication.logout.LogoutFilter@2cea921a, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@477d62f2, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@32e697ac, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@655621fd, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@52b30054, org.springframework.security.web.session.SessionManagementFilter@45796b2a, org.springframework.security.web.access.ExceptionTranslationFilter@138a85d3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@27bb74e1]
+2018-06-04 14:44:05.993  INFO 35868 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: class path resource [public/index.html]
+2018-06-04 14:44:06.155  INFO 35868 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: a87b4f8c-d443-4d5c-882d-6b125b67424b
+
+2018-06-04 14:44:06.465  INFO 35868 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 14:44:06.560  INFO 35868 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 14:44:06.567  INFO 35868 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 6.645 seconds (JVM running for 7.581)
+2018-06-04 14:44:33.091  INFO 35868 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 14:45:32.589  INFO 35868 --- [RMI TCP Connection(2)-129.6.251.209] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 14:45:32.590  INFO 35868 --- [RMI TCP Connection(2)-129.6.251.209] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@285c08c8: startup date [Mon Jun 04 14:44:00 EDT 2018]; root of context hierarchy
+2018-06-04 14:45:32.594  INFO 35868 --- [RMI TCP Connection(2)-129.6.251.209] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 14:45:42.277  INFO 35945 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN111281.campus.nist.gov with PID 35945 (/Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap/target/classes started by haffo in /Users/haffo/Documents/DEV/checkout/ssd/hl7-igamt/bootstrap)
+2018-06-04 14:45:42.278  INFO 35945 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 14:45:42.336  INFO 35945 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3b956878: startup date [Mon Jun 04 14:45:42 EDT 2018]; root of context hierarchy
+2018-06-04 14:45:43.043  INFO 35945 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:45:43.245  INFO 35945 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 14:45:44.294  INFO 35945 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 14:45:44.307  INFO 35945 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 14:45:44.308  INFO 35945 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 14:45:44.462  INFO 35945 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 14:45:44.743  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 14:45:44.744  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 14:45:44.744  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 14:45:44.745  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 14:45:44.746  INFO 35945 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 14:45:44.746  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 14:45:44.746  INFO 35945 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 14:45:45.045  INFO 35945 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 14:45:45.128  INFO 35945 --- [cluster-ClusterId{value='5b1588d9417f7f8c693545ce', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:6}] to localhost:27017
+2018-06-04 14:45:45.131  INFO 35945 --- [cluster-ClusterId{value='5b1588d9417f7f8c693545ce', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 6, 4]}, minWireVersion=0, maxWireVersion=6, maxDocumentSize=16777216, roundTripTimeNanos=707051}
+2018-06-04 14:45:46.191  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.195  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.197  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.202  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.208  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.210  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:45:46.211  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.215  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.216  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.217  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.220  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.222  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.223  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:45:46.224  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.226  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:45:46.230  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:45:46.242  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:45:46.244  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 14:45:46.260  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.262  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.263  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.267  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.268  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.268  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:45:46.269  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.277  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.278  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.279  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.282  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.284  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.284  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:45:46.285  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.287  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:45:46.289  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.290  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.291  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:46.293  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 14:45:46.296  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.297  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 14:45:46.299  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 14:45:46.300  INFO 35945 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 14:45:47.460  INFO 35945 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@d120d7c, org.springframework.security.web.context.SecurityContextPersistenceFilter@78128dd0, org.springframework.security.web.header.HeaderWriterFilter@eded048, org.springframework.security.web.authentication.logout.LogoutFilter@4948daec, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@4cd760e6, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@28dd81ad, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@65753724, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5ee77baf, org.springframework.security.web.session.SessionManagementFilter@6d420cdd, org.springframework.security.web.access.ExceptionTranslationFilter@5aab5b31, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@699d96bc]
+2018-06-04 14:45:48.355  INFO 35945 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: class path resource [public/index.html]
+2018-06-04 14:45:48.573  INFO 35945 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: 9553a1d9-ed52-49db-820b-a2d55d96a83c
+
+2018-06-04 14:45:49.005  INFO 35945 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 14:45:49.120  INFO 35945 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 14:45:49.129  INFO 35945 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 7.181 seconds (JVM running for 7.926)
+2018-06-04 14:47:52.195  INFO 35945 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 14:49:47.489  INFO 35945 --- [http-nio-8091-exec-2] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:8}] to localhost:27017
+2018-06-04 14:49:57.543  INFO 35945 --- [RMI TCP Connection(2)-129.6.251.209] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 14:49:57.544  INFO 35945 --- [RMI TCP Connection(2)-129.6.251.209] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@3b956878: startup date [Mon Jun 04 14:45:42 EDT 2018]; root of context hierarchy
+2018-06-04 14:49:57.545  INFO 35945 --- [RMI TCP Connection(2)-129.6.251.209] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
