@@ -28,6 +28,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   compositeProfiles: any[]=[];
   valueSets: any[]=[];
 
+
   constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public saveService:TocDbService,public valuesetsTocService:ValuesetsTocService,public segmentsTocService:SegmentsTocService,public datatypesTocService :DatatypesTocService,public conformanceProfilesTocService:ConformanceProfilesTocService,public compositeProfilesTocService:CompositeProfilesTocService,public profileComponentsTocService:ProfileComponentsTocService) {
 
   }
@@ -39,26 +40,18 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         console.log("TEST");
 
         this.indexedDbService.getIgDocumentId().then(id => {
-            this.http.get<any>("/api/igdocuments/" + igId + "/display").subscribe(x => {
-
 
               if(id!==igId) {
 
                 this.initToc(igId,resolve,reject);
 
               } else {
-                resolve(this.getMergedIg(x));
+                this.getMergedIg(igId, resolve,reject);
 
 
               }
 
-            }
 
-
-
-
-
-            );
 
 
           },error =>{
@@ -117,84 +110,104 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   convertList(list : any[]){
     let ret : any[]=[];
       for (let i=0; i<list.length;i++ ){
-        ret.push({id:list[i].id,treeNode:list[i]});
+        ret.push(list[i]);
       }
     return ret;
   }
 
 
-  getMergedIg(x:any){
-    console.log("Appliying the db changes");
-    console.log(x.toc);
-    this.segments=[];
-    this.datatypes=[];
-    this.profileComponents=[];
-    this.conformanceProfiles=[];
-    this.compositeProfiles=[];
-    this.valueSets=[];
+  getMergedIg(igId:any,resolve,reject){
+    this.http.get<any>("/api/igdocuments/" + igId + "/display").subscribe(x => {
+      this.ig=x;
+      console.log("Appliying the db changes");
+      console.log(this.ig.toc);
+      this.segments = [];
+      this.datatypes = [];
+      this.profileComponents = [];
+      this.conformanceProfiles = [];
+      this.compositeProfiles = [];
+      this.valueSets = [];
 
-    this.conformanceProfilesTocService.getAllFromAdded().then( cpsNodes =>{
-        this.conformanceProfiles=cpsNodes;
+      this.conformanceProfilesTocService.getAllFromAdded().then(cpsNodes => {
+        this.conformanceProfiles = cpsNodes;
         console.log(this.conformanceProfiles);
+        if (this.conformanceProfiles.length > 0) {
 
-        this.profileComponentsTocService.getAllFromAdded().then( pcsNodes=>{
-          this.profileComponents=pcsNodes;
+          this.addNodesByType(this.ig.toc, "CONFORMANCEPROFILEREGISTRY", this.conformanceProfiles)
+        }
+
+        this.profileComponentsTocService.getAllFromAdded().then(pcsNodes => {
+          this.profileComponents = pcsNodes;
           console.log(this.profileComponents);
+          if (this.profileComponents.length > 0) {
 
-          this.compositeProfilesTocService.getAllFromAdded().then(composites =>{
+            this.addNodesByType(this.ig.toc, "PROFILECOMPONENTREGISTRY", this.profileComponents)
+          }
 
-            this.compositeProfiles=composites;
-            console.log(this.compositeProfiles);
+          this.compositeProfilesTocService.getAllFromAdded().then(composites => {
 
-            this.segmentsTocService.getAllFromAdded().then(segments =>{
-              this.segments=segments;
-              console.log(this.segments);
+              this.compositeProfiles = composites;
+              console.log(this.compositeProfiles);
+              if (this.compositeProfiles.length > 0) {
 
-              this.datatypesTocService.getAllFromAdded().then(datatypes=>{
+                this.addNodesByType(this.ig.toc, "COMPOSITEPROFILEREGISTRY", this.compositeProfiles)
+              }
 
-                this.datatypes=datatypes;
-                console.log(this.datatypes);
+              this.segmentsTocService.getAllFromAdded().then(segments => {
+                this.segments = segments;
+                console.log(this.segments);
+                if (this.segments.length > 0) {
 
-                this.valuesetsTocService.getAllFromAdded().then(valueSets=>{
-                  this.valueSets=valueSets;
-                  console.log(this.valueSets);
+                  this.addNodesByType(this.ig.toc, "SEGMENTREGISTRY", this.segments)
+                }
+
+                this.datatypesTocService.getAllFromAdded().then(datatypes => {
+
+                  this.datatypes = datatypes;
+                  console.log(this.datatypes);
+                  if (this.datatypes.length > 0) {
+
+                    this.addNodesByType(this.ig.toc, "DATATYPEREGISTRY", this.datatypes)
+                  }
+
+                  this.valuesetsTocService.getAllFromAdded().then(valueSets => {
+
+                    this.valueSets = valueSets;
+                    if (this.valueSets.length > 0) {
+
+                      this.addNodesByType(this.ig.toc, "VALUESETREGISTRY", this.valueSets);
+                    }
+                    console.log("resolving ig");
+                    console.log(this.ig);
 
 
-                },error=>{
+                    resolve(this.ig);
+                  }, error => {
+                  })
+                }, error => {
                 })
-              },error => {
+              }, error => {
+
               })
-            },error=>{
 
-            })
-
-            },error=>{
+            }, error => {
             }
-
           )
-        },error=>{
+        }, error => {
 
         })
 
-    },error=>{
+      }, error => {
 
+      });
     });
 
-
-    return x;
   }
 
 
   initToc(igId:any,resolve,reject){
-    console.log(resolve);
-    console.log(reject);
-
-
-
     this.http.get<any>("/api/igdocuments/" + igId + "/display").subscribe(x => {
-
-
-                  this.parseToc(x.toc);
+              this.parseToc(x.toc);
                   this.indexedDbService.initializeDatabase(igId).then(() => {
                       this.saveService.bulkAddToc(this.valueSets, this.datatypes, this.segments, this.conformanceProfiles, this.profileComponents, this.compositeProfiles).then(
                         () => {
@@ -214,8 +227,6 @@ export  class IgdocumentEditResolver implements Resolve<any>{
               }
 
             );
-
-
   }
 
   findNodeByType(children, type){
@@ -223,21 +234,23 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
   }
 
-  addNodes(children:any[], add:any[]){
-    children = _.union(children,add);
-  }
+  addNodesByType(tocChildren, type,added){
+    let profile=this.findNodeByType(tocChildren, "PROFILE");
+    if(profile !=null){
+      if(profile.children&& profile.children.length>0){
+        let registry =this.findNodeByType(profile.children, type);
+        if(registry && registry.children && registry.children.length>0){
+          console.log("adding"+type);
+          registry.children = _.union(registry.children,added);
+          registry.children = _.sortBy(registry.children,[function (node) {
+            return node.data.label;
 
+          }]);
+        }
+      }
+    }
 
-
-
-
-
-
-
-
-
-
-
+  };
 
 
 

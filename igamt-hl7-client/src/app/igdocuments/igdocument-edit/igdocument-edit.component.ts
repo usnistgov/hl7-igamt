@@ -503,7 +503,7 @@ export class IgDocumentEditComponent {
   convertList(list : any[]){
     let ret : any[]=[];
     for (let i=0; i<list.length;i++ ){
-      ret.push({id:list[i].id,treeNode:list[i].data});
+      ret.push(list[i]);
     }
     return ret;
   }
