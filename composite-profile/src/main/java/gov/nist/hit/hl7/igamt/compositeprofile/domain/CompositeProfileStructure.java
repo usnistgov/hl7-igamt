@@ -14,7 +14,7 @@ package gov.nist.hit.hl7.igamt.compositeprofile.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 
 
@@ -43,16 +43,20 @@ public class CompositeProfileStructure extends Resource {
     return orderedProfileComponents;
   }
 
-  public void setOrderedProfileComponents(Set<OrderedProfileComponentLink> orderedProfileComponents) {
+  public void setOrderedProfileComponents(
+      Set<OrderedProfileComponentLink> orderedProfileComponents) {
     this.orderedProfileComponents = orderedProfileComponents;
   }
-  
-  public void addOrderedProfileComponents(OrderedProfileComponentLink o){
-    if(this.orderedProfileComponents == null) this.orderedProfileComponents = new HashSet<OrderedProfileComponentLink>();
+
+  public void addOrderedProfileComponents(OrderedProfileComponentLink o) {
+    if (this.orderedProfileComponents == null)
+      this.orderedProfileComponents = new HashSet<OrderedProfileComponentLink>();
     this.orderedProfileComponents.add(o);
   }
 
-  /* (non-Javadoc)
+  /*
+   * (non-Javadoc)
+   * 
    * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
    */
   @Override

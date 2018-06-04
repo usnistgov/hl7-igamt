@@ -13,10 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
 import nu.xom.Element;
 
 /**
@@ -40,9 +40,10 @@ public class SerializableTextSection extends SerializableSection {
   @Override
   public Element serialize() throws SerializationException {
     Element textSectionElement = super.getElement();
-    if(((TextSection) super.getSection()).getChildren() != null) {
+    if (((TextSection) super.getSection()).getChildren() != null) {
       for (Section child : ((TextSection) super.getSection()).getChildren()) {
-        Element childElement = SectionSerializationUtil.serializeSection(child, this.getChildLevel());
+        Element childElement =
+            SectionSerializationUtil.serializeSection(child, this.getChildLevel());
         if (child != null) {
           textSectionElement.appendChild(childElement);
         }

@@ -16,11 +16,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
+
 
 /**
  * 
@@ -45,8 +45,8 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure) {
-//    compositeProfileStructure
-//        .setId(CompositeKeyUtil.updateVersion(compositeProfileStructure.getId()));
+    // compositeProfileStructure
+    // .setId(CompositeKeyUtil.updateVersion(compositeProfileStructure.getId()));
     return compositeProfileStructureRepository.save(compositeProfileStructure);
   }
 

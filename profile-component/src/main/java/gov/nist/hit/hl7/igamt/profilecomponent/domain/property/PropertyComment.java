@@ -13,21 +13,21 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.domain.property;
 
-import gov.nist.hit.hl7.igamt.shared.domain.binding.Comment;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 
 /**
  *
  * @author Maxence Lefort on Feb 21, 2018.
  */
 public class PropertyComment extends ItemProperty {
-  
+
   private Comment comment;
 
   public PropertyComment(Comment comment) {
     super(PropertyKey.COMMENT);
     this.comment = comment;
   }
-  
+
   public PropertyComment() {
     super(PropertyKey.COMMENT);
   }

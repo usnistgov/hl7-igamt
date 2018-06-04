@@ -11,8 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 /**
  * @author ena3

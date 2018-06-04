@@ -31,6 +31,9 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ProfileComponentLink;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SubProfileComponent;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.legacy.repository.CompositeProfileStructureRepository;
@@ -39,9 +42,7 @@ import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentLibraryRepositor
 import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
+
 
 /**
  *
@@ -71,8 +72,7 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
   private CompositeProfileStructureService convertedCompositeProfileStructureService =
       (CompositeProfileStructureService) context.getBean("compositeProfileStructureService");
 
-  private AccountRepository accountRepository =
-      (AccountRepository) userContext.getBean(AccountRepository.class);
+  private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {

@@ -31,6 +31,12 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
@@ -43,12 +49,7 @@ import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
 import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.MsgStructElement;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+
 
 /**
  *
@@ -70,10 +71,9 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
 
   @Autowired
   private ConformanceProfileRepository convertedConformanceProfileService =
-      (ConformanceProfileRepository) context.getBean(ConformanceProfileRepository.class);
-  
-  private AccountRepository accountRepository =
-      userContext.getBean(AccountRepository.class);
+      context.getBean(ConformanceProfileRepository.class);
+
+  private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
 
   @Override
   public void convert() {
@@ -149,8 +149,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
    * @param seog
    */
   private void constructSegmentGroup(Set<MsgStructElement> children, Group g) {
-    gov.nist.hit.hl7.igamt.shared.domain.Group newGroup =
-        new gov.nist.hit.hl7.igamt.shared.domain.Group();
+    gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group newGroup =
+        new gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group();
 
     if (g.getAdded().equals(Constant.YES)) {
       newGroup.setCustom(true);
@@ -187,8 +187,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
    * @param seog
    */
   private void constructSegmentRef(Set<MsgStructElement> children, SegmentRef sr) {
-    gov.nist.hit.hl7.igamt.shared.domain.SegmentRef newSegmentRef =
-        new gov.nist.hit.hl7.igamt.shared.domain.SegmentRef();
+    gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef newSegmentRef =
+        new gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef();
 
     if (sr.getAdded().equals(Constant.YES)) {
       newSegmentRef.setCustom(true);
@@ -249,7 +249,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
   }
 
   private void init() {
-//    convertedConformanceProfileService.removeCollection();
+    // convertedConformanceProfileService.removeCollection();
   }
 
 }

@@ -20,9 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Scope;
+
 
 /**
  *
@@ -38,7 +39,8 @@ public interface DatatypeRepository extends MongoRepository<Datatype, CompositeK
 
   List<Datatype> findByName(String name);
 
-  List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+  List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
+      String name);
 
   List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 

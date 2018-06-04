@@ -9,7 +9,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import gov.nist.hit.hl7.igamt.configuration.DataMongoConfig;
+import gov.nist.hit.hl7.igamt.bootstrap.app.BootstrapApplication;
+import gov.nist.hit.hl7.igamt.bootstrap.configuration.DataMongoConfig;
 
 // @SpringBootApplication
 // @EnableAutoConfiguration(exclude = {BootstrapApplication.class,

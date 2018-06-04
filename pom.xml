@@ -73,7 +73,7 @@
 	</dependencyManagement>
 	
 	<modules>
-		<module>domain</module>
+		<module>common</module>
 		<module>profile-component</module>
 		<module>composite-profile</module>
 		<module>ig</module>
@@ -85,5 +85,6 @@
 		<module>serialization</module>
 		<module>segment</module>
   		<module>datatype-library</module>
+  		<module>igamt-auth</module>
 	</modules>
 </project>

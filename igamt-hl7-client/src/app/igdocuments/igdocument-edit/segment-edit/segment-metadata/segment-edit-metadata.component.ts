@@ -71,16 +71,17 @@ export class SegmentEditMetadataComponent implements WithSave {
     return !this.editForm.invalid;
   }
   save(){
-
     this.tocService.getActiveNode().subscribe(x=>{
 
         let node= x;
-          node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
+        node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
 
 
       }
-
     );
+    return this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata);
+
+
   }
 
 

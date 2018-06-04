@@ -34,7 +34,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.docx4j.XmlUtils;
 import org.docx4j.convert.in.xhtml.XHTMLImporterImpl;
 import org.docx4j.dml.CTPositiveSize2D;
@@ -74,9 +73,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.tidy.Tidy;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
-import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
+
 
 /**
  *
@@ -90,8 +90,8 @@ public class WordUtil {
   public static ExportedFile convertHtmlToWord(ExportedFile exportedFile, DocumentMetadata metadata,
       Date dateUpdated, String hl7Version) throws ExportException {
     try {
-      WordprocessingMLPackage wordMLPackage = WordprocessingMLPackage
-          .load(WordUtil.class.getResourceAsStream("/lri_template.dotx"));
+      WordprocessingMLPackage wordMLPackage =
+          WordprocessingMLPackage.load(WordUtil.class.getResourceAsStream("/lri_template.dotx"));
       ObjectFactory factory = Context.getWmlObjectFactory();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
       String formattedDateUpdated = simpleDateFormat.format(dateUpdated);
@@ -153,7 +153,7 @@ public class WordUtil {
         InputStream imgis;
         byte[] bytes = null;
         String filename = parseFileName(coverPicturePath);
-        //TODO add cover image
+        // TODO add cover image
         // GridFSDBFile dbFile = fileStorageService.findOneByFilename(filename);
         // if (dbFile != null) {
         // imgis = dbFile.getInputStream();

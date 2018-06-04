@@ -28,12 +28,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import gov.nist.hit.hl7.TestApplication;
 import gov.nist.hit.hl7.config.TestMongoConfig;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.shared.domain.TextSection;
+
 
 // @RunWith(SpringRunner.class)
 // @SpringBootTest

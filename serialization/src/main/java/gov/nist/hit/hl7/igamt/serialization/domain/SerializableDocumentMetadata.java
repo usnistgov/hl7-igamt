@@ -13,8 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.DocumentMetadata;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -23,7 +23,7 @@ import nu.xom.Element;
  * @author Maxence Lefort on May 17, 2018.
  */
 public class SerializableDocumentMetadata extends SerializableElement {
-  
+
   private DocumentMetadata metadata;
 
   /**

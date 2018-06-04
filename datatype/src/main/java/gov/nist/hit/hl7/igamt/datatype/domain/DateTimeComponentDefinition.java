@@ -11,7 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  * @author jungyubw

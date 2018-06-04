@@ -112,8 +112,7 @@ export class IndexedDbService {
   public getIgDocumentId(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {
-        console.log(JSON.stringify(collection));
-        if (collection != null && collection >= 1) {
+        if (collection != null && collection.length >= 1) {
           resolve(collection[0].id);
         } else {
           reject();
