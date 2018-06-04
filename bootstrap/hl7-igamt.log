@@ -873,3 +873,465 @@ Using default security password: 297636f3-7eeb-40fc-a79d-3a01f3dc2f07
 2018-05-31 15:08:21.347  INFO 38213 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 6.331 seconds (JVM running for 7.122)
 2018-05-31 15:08:24.751  INFO 38213 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
 2018-05-31 15:34:26.152  INFO 38213 --- [http-nio-8091-exec-5] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:233}] to localhost:27017
+2018-06-01 12:14:33.167 ERROR 38213 --- [http-nio-8091-exec-6] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+
+java.io.FileNotFoundException: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at gov.nist.hit.hl7.auth.util.crypto.CryptoUtilImpl.pub(CryptoUtilImpl.java:25)
+	at gov.nist.hit.hl7.igamt.auth.config.TokenAuthenticationService.getAuthentication(TokenAuthenticationService.java:46)
+	at gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter.doFilterInternal(JWTAuthenticationFilter.java:35)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:64)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:214)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:177)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:347)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:263)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:108)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2018-06-01 12:14:35.478 ERROR 38213 --- [http-nio-8091-exec-7] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+
+java.io.FileNotFoundException: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at gov.nist.hit.hl7.auth.util.crypto.CryptoUtilImpl.pub(CryptoUtilImpl.java:25)
+	at gov.nist.hit.hl7.igamt.auth.config.TokenAuthenticationService.getAuthentication(TokenAuthenticationService.java:46)
+	at gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter.doFilterInternal(JWTAuthenticationFilter.java:35)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:64)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:214)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:177)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:347)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:263)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:108)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2018-06-01 12:14:53.836 ERROR 38213 --- [http-nio-8091-exec-10] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+
+java.io.FileNotFoundException: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at gov.nist.hit.hl7.auth.util.crypto.CryptoUtilImpl.pub(CryptoUtilImpl.java:25)
+	at gov.nist.hit.hl7.igamt.auth.config.TokenAuthenticationService.getAuthentication(TokenAuthenticationService.java:46)
+	at gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter.doFilterInternal(JWTAuthenticationFilter.java:35)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:64)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:214)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:177)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:347)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:263)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:108)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2018-06-01 12:14:59.868 ERROR 38213 --- [http-nio-8091-exec-6] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception
+
+java.io.FileNotFoundException: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt (No such file or directory)
+	at java.io.FileInputStream.open0(Native Method)
+	at java.io.FileInputStream.open(FileInputStream.java:195)
+	at java.io.FileInputStream.<init>(FileInputStream.java:138)
+	at java.io.FileInputStream.<init>(FileInputStream.java:93)
+	at gov.nist.hit.hl7.auth.util.crypto.CryptoUtilImpl.pub(CryptoUtilImpl.java:25)
+	at gov.nist.hit.hl7.igamt.auth.config.TokenAuthenticationService.getAuthentication(TokenAuthenticationService.java:46)
+	at gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter.doFilterInternal(JWTAuthenticationFilter.java:35)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.authentication.logout.LogoutFilter.doFilter(LogoutFilter.java:116)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.header.HeaderWriterFilter.doFilterInternal(HeaderWriterFilter.java:64)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:331)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:214)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:177)
+	at org.springframework.web.filter.DelegatingFilterProxy.invokeDelegate(DelegatingFilterProxy.java:347)
+	at org.springframework.web.filter.DelegatingFilterProxy.doFilter(DelegatingFilterProxy.java:263)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.RequestContextFilter.doFilterInternal(RequestContextFilter.java:99)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HttpPutFormContentFilter.doFilterInternal(HttpPutFormContentFilter.java:108)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.HiddenHttpMethodFilter.doFilterInternal(HiddenHttpMethodFilter.java:81)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.springframework.web.filter.CharacterEncodingFilter.doFilterInternal(CharacterEncodingFilter.java:197)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.apache.catalina.core.ApplicationFilterChain.internalDoFilter(ApplicationFilterChain.java:193)
+	at org.apache.catalina.core.ApplicationFilterChain.doFilter(ApplicationFilterChain.java:166)
+	at org.apache.catalina.core.StandardWrapperValve.invoke(StandardWrapperValve.java:199)
+	at org.apache.catalina.core.StandardContextValve.invoke(StandardContextValve.java:96)
+	at org.apache.catalina.authenticator.AuthenticatorBase.invoke(AuthenticatorBase.java:504)
+	at org.apache.catalina.core.StandardHostValve.invoke(StandardHostValve.java:140)
+	at org.apache.catalina.valves.ErrorReportValve.invoke(ErrorReportValve.java:81)
+	at org.apache.catalina.core.StandardEngineValve.invoke(StandardEngineValve.java:87)
+	at org.apache.catalina.connector.CoyoteAdapter.service(CoyoteAdapter.java:342)
+	at org.apache.coyote.http11.Http11Processor.service(Http11Processor.java:803)
+	at org.apache.coyote.AbstractProcessorLight.process(AbstractProcessorLight.java:66)
+	at org.apache.coyote.AbstractProtocol$ConnectionHandler.process(AbstractProtocol.java:790)
+	at org.apache.tomcat.util.net.NioEndpoint$SocketProcessor.doRun(NioEndpoint.java:1459)
+	at org.apache.tomcat.util.net.SocketProcessorBase.run(SocketProcessorBase.java:49)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+	at org.apache.tomcat.util.threads.TaskThread$WrappingRunnable.run(TaskThread.java:61)
+	at java.lang.Thread.run(Thread.java:745)
+
+2018-06-01 14:04:26.888  INFO 87204 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN108549.campus.nist.gov with PID 87204 (/Users/ena3/hl7-igamt/bootstrap/target/classes started by ena3 in /Users/ena3/hl7-igamt/bootstrap)
+2018-06-01 14:04:26.889  INFO 87204 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-01 14:04:26.944  INFO 87204 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@23c30a20: startup date [Fri Jun 01 14:04:26 EDT 2018]; root of context hierarchy
+2018-06-01 14:04:27.771  INFO 87204 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-01 14:04:28.021  INFO 87204 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-01 14:04:29.190  INFO 87204 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-01 14:04:29.201  INFO 87204 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-01 14:04:29.202  INFO 87204 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-01 14:04:29.328  INFO 87204 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-01 14:04:29.564  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-01 14:04:29.565  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-01 14:04:29.565  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-01 14:04:29.565  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-01 14:04:29.566  INFO 87204 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-01 14:04:29.567  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-01 14:04:29.567  INFO 87204 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-01 14:04:29.897  INFO 87204 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-01 14:04:30.000  INFO 87204 --- [cluster-ClusterId{value='5b118aade2813f54a4546702', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:238}] to localhost:27017
+2018-06-01 14:04:30.003  INFO 87204 --- [cluster-ClusterId{value='5b118aade2813f54a4546702', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=532321}
+2018-06-01 14:04:30.595  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.596  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.597  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.598  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.600  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.601  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-01 14:04:30.601  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.603  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-01 14:04:30.604  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-01 14:04:30.605  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.606  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.606  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.607  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.608  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.609  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-01 14:04:30.610  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.611  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-01 14:04:30.613  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-01 14:04:30.615  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.616  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.616  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.617  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.618  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.619  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-01 14:04:30.619  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.621  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-01 14:04:30.621  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.622  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.622  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.623  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-01 14:04:30.624  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.625  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.625  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-01 14:04:30.626  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.628  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.629  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.629  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:30.631  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.632  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-01 14:04:30.632  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-01 14:04:30.633  INFO 87204 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-01 14:04:31.577  INFO 87204 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@68565bc7, org.springframework.security.web.context.SecurityContextPersistenceFilter@7b81616b, org.springframework.security.web.header.HeaderWriterFilter@7c112f5f, org.springframework.security.web.authentication.logout.LogoutFilter@123d7057, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@1e83042a, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@279dd959, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@29fd8e67, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@37baddde, org.springframework.security.web.session.SessionManagementFilter@7b32b129, org.springframework.security.web.access.ExceptionTranslationFilter@4693a9ef, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@43982337]
+2018-06-01 14:04:32.355  INFO 87204 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: ServletContext resource [/index.html]
+2018-06-01 14:04:32.529  INFO 87204 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: b8a1a945-7e7f-469b-9005-73c28d7bcdfb
+
+2018-06-01 14:04:32.663  INFO 87204 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-01 14:04:32.736  INFO 87204 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-01 14:04:32.741  INFO 87204 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 6.205 seconds (JVM running for 7.494)
+2018-06-01 14:05:24.837  INFO 87204 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-01 14:08:00.926  INFO 87204 --- [http-nio-8091-exec-10] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:240}] to localhost:27017
+2018-06-04 09:16:16.355  INFO 87204 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 09:16:16.362  INFO 87204 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@23c30a20: startup date [Fri Jun 01 14:04:26 EDT 2018]; root of context hierarchy
+2018-06-04 09:16:16.390  INFO 87204 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 09:16:24.375  INFO 7508 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN108549.campus.nist.gov with PID 7508 (/Users/ena3/hl7-igamt/bootstrap/target/classes started by ena3 in /Users/ena3/hl7-igamt/bootstrap)
+2018-06-04 09:16:24.376  INFO 7508 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 09:16:24.481  INFO 7508 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@23c30a20: startup date [Mon Jun 04 09:16:24 EDT 2018]; root of context hierarchy
+2018-06-04 09:16:25.195  INFO 7508 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 09:16:25.383  INFO 7508 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 09:16:26.297  INFO 7508 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 09:16:26.305  INFO 7508 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 09:16:26.306  INFO 7508 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 09:16:26.406  INFO 7508 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 09:16:26.588  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 09:16:26.588  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 09:16:26.588  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 09:16:26.589  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 09:16:26.589  INFO 7508 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 09:16:26.590  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 09:16:26.590  INFO 7508 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 09:16:26.848  INFO 7508 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 09:16:26.929  INFO 7508 --- [cluster-ClusterId{value='5b153baae2813f1d54c5c7dc', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:241}] to localhost:27017
+2018-06-04 09:16:26.931  INFO 7508 --- [cluster-ClusterId{value='5b153baae2813f1d54c5c7dc', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=411427}
+2018-06-04 09:16:27.387  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.389  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.389  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.391  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.392  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.393  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:16:27.393  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.395  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.395  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.396  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.397  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.398  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.398  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:16:27.398  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.400  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.400  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.401  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.401  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.402  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.403  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:16:27.403  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.404  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 09:16:27.405  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.405  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.406  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.406  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 09:16:27.407  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.408  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.408  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:16:27.409  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.410  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:16:27.412  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:16:27.414  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:16:27.415  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:16:27.416  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.417  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.417  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:27.418  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.419  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:16:27.419  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:16:27.420  INFO 7508 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:16:28.113  INFO 7508 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5a8816cc, org.springframework.security.web.context.SecurityContextPersistenceFilter@1c9fbb61, org.springframework.security.web.header.HeaderWriterFilter@1a8df0b3, org.springframework.security.web.authentication.logout.LogoutFilter@1a0c5e9, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@26593927, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@15d42ccb, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@554c4eaa, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@68565bc7, org.springframework.security.web.session.SessionManagementFilter@24386839, org.springframework.security.web.access.ExceptionTranslationFilter@38c9e0d6, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@3e5fd2b1]
+2018-06-04 09:16:28.686  INFO 7508 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: ServletContext resource [/index.html]
+2018-06-04 09:16:28.795  INFO 7508 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: a6339dd8-f28b-4dd2-9a27-536ec32cd61c
+
+2018-06-04 09:16:28.872  INFO 7508 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 09:16:28.923  INFO 7508 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 09:16:28.926  INFO 7508 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 4.84 seconds (JVM running for 5.659)
+2018-06-04 09:17:15.325  INFO 7508 --- [RMI TCP Connection(2)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2018-06-04 09:17:15.325  INFO 7508 --- [RMI TCP Connection(2)-127.0.0.1] ationConfigEmbeddedWebApplicationContext : Closing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@23c30a20: startup date [Mon Jun 04 09:16:24 EDT 2018]; root of context hierarchy
+2018-06-04 09:17:15.327  INFO 7508 --- [RMI TCP Connection(2)-127.0.0.1] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+2018-06-04 09:17:23.439  INFO 7570 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Starting BootstrapApplication on PN108549.campus.nist.gov with PID 7570 (/Users/ena3/hl7-igamt/bootstrap/target/classes started by ena3 in /Users/ena3/hl7-igamt/bootstrap)
+2018-06-04 09:17:23.440  INFO 7570 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : No active profile set, falling back to default profiles: default
+2018-06-04 09:17:23.492  INFO 7570 --- [main] ationConfigEmbeddedWebApplicationContext : Refreshing org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext@23c30a20: startup date [Mon Jun 04 09:17:23 EDT 2018]; root of context hierarchy
+2018-06-04 09:17:24.243  INFO 7570 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 09:17:24.472  INFO 7570 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode!
+2018-06-04 09:17:25.403  INFO 7570 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat initialized with port(s): 8091 (http)
+2018-06-04 09:17:25.411  INFO 7570 --- [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-06-04 09:17:25.411  INFO 7570 --- [main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.27
+2018-06-04 09:17:25.499  INFO 7570 --- [localhost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-06-04 09:17:25.720  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-06-04 09:17:25.720  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-06-04 09:17:25.721  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-06-04 09:17:25.721  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-06-04 09:17:25.722  INFO 7570 --- [localhost-startStop-1] .s.DelegatingFilterProxyRegistrationBean : Mapping filter: 'springSecurityFilterChain' to: [/*]
+2018-06-04 09:17:25.722  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'JWTAuthenticationFilter' to: [/*]
+2018-06-04 09:17:25.722  INFO 7570 --- [localhost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Mapping servlet: 'dispatcherServlet' to [/]
+2018-06-04 09:17:25.964  INFO 7570 --- [main] org.mongodb.driver.cluster               : Cluster created with settings {hosts=[localhost:27017], mode=SINGLE, requiredClusterType=UNKNOWN, serverSelectionTimeout='30000 ms', maxWaitQueueSize=500}
+2018-06-04 09:17:26.045  INFO 7570 --- [cluster-ClusterId{value='5b153be5e2813f1d922241a0', description='null'}-localhost:27017] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:1, serverValue:243}] to localhost:27017
+2018-06-04 09:17:26.047  INFO 7570 --- [cluster-ClusterId{value='5b153be5e2813f1d922241a0', description='null'}-localhost:27017] org.mongodb.driver.cluster               : Monitor thread successfully connected to server with description ServerDescription{address=localhost:27017, type=STANDALONE, state=CONNECTED, ok=true, version=ServerVersion{versionList=[3, 2, 7]}, minWireVersion=0, maxWireVersion=4, maxDocumentSize=16777216, roundTripTimeNanos=569116}
+2018-06-04 09:17:26.510  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.512  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.512  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.513  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.515  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.515  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:17:26.516  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.519  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.520  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.520  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.521  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.522  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.523  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:17:26.523  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.524  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'trueUsage' in type 'DateTimePredicate' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 09:17:26.525  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.526  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.526  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.527  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'dateTimePredicate' in type 'DateTimeComponentDefinition' for path 'dateTimePredicate -> target -> dateTimePredicate'
+2018-06-04 09:17:26.527  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.528  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.528  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:17:26.529  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.529  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:17:26.531  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:17:26.533  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.534  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.534  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.535  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.535  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.536  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:17:26.536  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.538  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:17:26.538  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'TextSection' for path 'children -> children'
+2018-06-04 09:17:26.539  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.540  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'instanceParameter' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.540  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'comments' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:26.541  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.541  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'child -> child'
+2018-06-04 09:17:26.542  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'child' in type 'InstancePath' for path 'children -> children'
+2018-06-04 09:17:26.542  INFO 7570 --- [main] m.c.i.MongoPersistentEntityIndexResolver : Found cycle for field 'children' in type 'StructureElementBinding' for path 'children -> children'
+2018-06-04 09:17:27.191  INFO 7570 --- [main] o.s.s.web.DefaultSecurityFilterChain     : Creating filter chain: org.springframework.security.web.util.matcher.AnyRequestMatcher@1, [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@11e355ca, org.springframework.security.web.context.SecurityContextPersistenceFilter@36c281ed, org.springframework.security.web.header.HeaderWriterFilter@4fb392c4, org.springframework.security.web.authentication.logout.LogoutFilter@4ba02375, gov.nist.hit.hl7.igamt.auth.config.JWTAuthenticationFilter@7b5804bf, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@4b5a078a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@39909d1a, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@70d63e05, org.springframework.security.web.session.SessionManagementFilter@15d42ccb, org.springframework.security.web.access.ExceptionTranslationFilter@1a8df0b3, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@6d074b14]
+2018-06-04 09:17:27.736  INFO 7570 --- [main] oConfiguration$WelcomePageHandlerMapping : Adding welcome page: ServletContext resource [/index.html]
+2018-06-04 09:17:27.848  INFO 7570 --- [main] b.a.s.AuthenticationManagerConfiguration : 
+
+Using default security password: c040db53-6e0b-4f36-aa95-54c27ff6b003
+
+2018-06-04 09:17:27.930  INFO 7570 --- [main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-06-04 09:17:27.977  INFO 7570 --- [main] s.b.c.e.t.TomcatEmbeddedServletContainer : Tomcat started on port(s): 8091 (http)
+2018-06-04 09:17:27.980  INFO 7570 --- [main] g.n.h.h.i.b.app.BootstrapApplication     : Started BootstrapApplication in 4.876 seconds (JVM running for 5.559)
+2018-06-04 09:17:48.563  INFO 7570 --- [http-nio-8091-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring FrameworkServlet 'dispatcherServlet'
+2018-06-04 09:17:51.596  INFO 7570 --- [http-nio-8091-exec-8] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:2, serverValue:244}] to localhost:27017
+2018-06-04 09:19:24.549  INFO 7570 --- [http-nio-8091-exec-2] org.mongodb.driver.connection            : Opened connection [connectionId{localValue:3, serverValue:245}] to localhost:27017

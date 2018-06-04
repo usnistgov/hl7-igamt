@@ -31,9 +31,7 @@ db:
   host: localhost
   
 key:
-  public: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/publicKey.txt
-  private: /Users/ena3/hl7-igamt/hl7-auth/auth-utils/KeyPair/privateKey.txt
-  
+  public: /Users/ena3/projects/hl7-auth/auth-utils/KeyPair/publicKey.txt  
 auth:
   url: http://localhost:8090
   

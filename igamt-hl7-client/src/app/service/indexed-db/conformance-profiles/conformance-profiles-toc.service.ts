@@ -91,7 +91,7 @@ export class ConformanceProfilesTocService {
     return promise;
   }
 
-  private getAllFromToc(): Promise<Array<TocNode>> {
+  public getAllFromToc(): Promise<Array<TocNode>> {
     const promise = new Promise<Array<TocNode>>((resolve, reject) => {
       this.indexeddbService.tocDataBase.transaction('rw', this.indexeddbService.tocDataBase.conformanceProfiles, async () => {
         const conformanceProfiles = await this.indexeddbService.tocDataBase.conformanceProfiles.toArray();
@@ -101,7 +101,7 @@ export class ConformanceProfilesTocService {
     return promise;
   }
 
-  private getAllFromAdded(): Promise<Array<TocNode>> {
+  public getAllFromAdded(): Promise<Array<TocNode>> {
     const promise = new Promise<Array<TocNode>>((resolve, reject) => {
       this.indexeddbService.addedObjectsDatabase.transaction('rw',
         this.indexeddbService.addedObjectsDatabase.conformanceProfiles, async () => {

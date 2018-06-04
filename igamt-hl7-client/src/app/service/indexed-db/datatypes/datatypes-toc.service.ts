@@ -101,7 +101,7 @@ export class DatatypesTocService {
     return promise;
   }
 
-  private getAllFromAdded(): Promise<Array<TocNode>> {
+  public getAllFromAdded(): Promise<Array<TocNode>> {
     const promise = new Promise<Array<TocNode>>((resolve, reject) => {
       this.indexeddbService.addedObjectsDatabase.transaction('rw', this.indexeddbService.addedObjectsDatabase.datatypes, async () => {
         const datatypes = await this.indexeddbService.addedObjectsDatabase.datatypes.toArray();

@@ -57,10 +57,8 @@ export class SectionComponent implements OnInit, WithSave {
     let s= new Section();
     s.id=this.section.id;
     s.changeType="EDITED";
-    s.description=this.section.description;
+    s.section=this.section;
     return this.sectionsService.saveSection(s);
-
-
 
   }
   reset(){
