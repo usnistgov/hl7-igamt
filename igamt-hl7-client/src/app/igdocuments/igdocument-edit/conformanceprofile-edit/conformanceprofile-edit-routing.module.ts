@@ -12,6 +12,8 @@ import {ConformanceprofileEditPredefComponent} from "./conformanceprofile-predef
 import {ConformanceprofileEditPredefResolver} from "./conformanceprofile-predef/conformanceprofile-edit-predef.resolver";
 import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-structure/conformanceprofile-edit-structure.component";
 import {ConformanceprofileEditStructureResolver} from "./conformanceprofile-structure/conformanceprofile-edit-structure.resolver";
+import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
+import {ConformanceprofileEditConformancestatementsResolver} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver";
 
 @NgModule({
   imports: [
@@ -30,10 +32,10 @@ import {ConformanceprofileEditStructureResolver} from "./conformanceprofile-stru
         },
         {
             path: ':conformanceprofileId/structure', component: ConformanceprofileEditStructureComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileStructure : ConformanceprofileEditStructureResolver}
+        },
+        {
+            path: ':segmentId/conformanceStatement', component: ConformanceprofileEditConformancestatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileConformanceStatements : ConformanceprofileEditConformancestatementsResolver}
         }
-        // {
-        //     path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentConformanceStatements : SegmentEditConformanceStatementsResolver}
-        // }
     ])
   ],
   exports: [

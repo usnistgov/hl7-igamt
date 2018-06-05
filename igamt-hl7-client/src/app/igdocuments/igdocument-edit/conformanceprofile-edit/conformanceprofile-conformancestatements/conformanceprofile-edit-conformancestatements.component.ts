@@ -14,10 +14,10 @@ import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 
 @Component({
-    templateUrl : './segment-edit-conformancestatements.component.html',
-    styleUrls : ['./segment-edit-conformancestatements.component.css']
+    templateUrl : './conformanceprofile-edit-conformancestatements.component.html',
+    styleUrls : ['./conformanceprofile-edit-conformancestatements.component.css']
 })
-export class SegmentEditConformanceStatementsComponent  implements WithSave{
+export class ConformanceprofileEditConformancestatementsComponent  implements WithSave{
     cols:any;
     currentUrl:any;
     segmentId:any;
@@ -65,7 +65,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
 
-        this.route.data.map(data =>data.segmentConformanceStatements).subscribe(x=>{
+        this.route.data.map(data =>data.conformanceprofileConformanceStatements).subscribe(x=>{
             this.segmentConformanceStatements= x;
 
 
