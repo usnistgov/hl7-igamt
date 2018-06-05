@@ -21,6 +21,8 @@ import {ConformanceprofileEditPredefResolver} from "./conformanceprofile-predef/
 import {ConformanceprofileEditPredefComponent} from "./conformanceprofile-predef/conformanceprofile-edit-predef.component";
 import {ConformanceprofileEditStructureResolver} from "./conformanceprofile-structure/conformanceprofile-edit-structure.resolver";
 import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-structure/conformanceprofile-edit-structure.component";
+import {ConformanceprofileEditConformancestatementsResolver} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver";
+import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
 
 @NgModule({
     imports: [
@@ -40,8 +42,8 @@ import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-str
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [ConformanceprofileEditMetadatResolver, ConformanceprofileEditPostdefResolver, ConformanceprofileEditPredefResolver, ConformanceprofileEditStructureResolver],
-    declarations: [ConformanceprofileEditMetadataComponent, ConformanceprofileEditPostdefComponent, ConformanceprofileEditPredefComponent, ConformanceprofileEditStructureComponent],
+    providers : [ConformanceprofileEditMetadatResolver, ConformanceprofileEditPostdefResolver, ConformanceprofileEditPredefResolver, ConformanceprofileEditStructureResolver, ConformanceprofileEditConformancestatementsResolver],
+    declarations: [ConformanceprofileEditMetadataComponent, ConformanceprofileEditPostdefComponent, ConformanceprofileEditPredefComponent, ConformanceprofileEditStructureComponent, ConformanceprofileEditConformancestatementsComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ConformanceprofileEditModule {}
