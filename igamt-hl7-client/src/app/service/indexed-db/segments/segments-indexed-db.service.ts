@@ -36,6 +36,17 @@ export class SegmentsIndexedDbService {
     return promise;
   }
 
+  public getMetadataByListOfIds(ids:any[]): Promise<object> {
+    const promises=[];
+    for(let i=0;i<ids.length;i++){
+      promises.push(this.getSegmentMetadata(ids[i]));
+
+    }
+
+    return Promise.all(promises);
+
+  }
+
   public getSegmentStructure(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
@@ -94,7 +105,14 @@ export class SegmentsIndexedDbService {
   public saveSegment(segment): Promise<any> {
     const promise = new Promise<IObject>((resolve, reject) => {
       this.getSegment(segment.id).then(existingSegment => {
-        this.doSave(segment, existingSegment);
+        console.log("existing segment");
+        this.doSave(segment, existingSegment).then(()=>{resolve()}).catch(error=>{reject("")});
+      }).catch(error => {
+        this.indexeddbService.changedObjectsDatabase.segments.put(segment).then(() => {
+          resolve();
+        }).catch(error=>{
+          reject("")
+        })
       });
     });
     return promise;

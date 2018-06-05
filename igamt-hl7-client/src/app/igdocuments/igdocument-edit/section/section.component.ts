@@ -44,14 +44,14 @@ export class SectionComponent implements OnInit, WithSave {
   save(): Promise<any>{
 
    this.tocService.getActiveNode().subscribe(x=>{
-
-       console.log("saving");
        let node= x;
        if(this.section.id===node.data.id){
-         node.data.label= _.cloneDeep(this.section.label);
+         console.log("found node");
 
+         node.data.data.label= this.section.label;
+
+         console.log("updating node");
        }
-
       }
     );
     let s= new Section();

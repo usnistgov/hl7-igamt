@@ -133,7 +133,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         console.log(this.conformanceProfiles);
         if (this.conformanceProfiles.length > 0) {
 
-          this.addNodesByType(this.ig.toc, "CONFORMANCEPROFILEREGISTRY", this.conformanceProfiles)
+          this.addNodesByType(this.ig.toc, "CONFORMANCEPROFILEREGISTRY", this.conformanceProfiles);
         }
 
         this.profileComponentsTocService.getAllFromAdded().then(pcsNodes => {
@@ -141,7 +141,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
           console.log(this.profileComponents);
           if (this.profileComponents.length > 0) {
 
-            this.addNodesByType(this.ig.toc, "PROFILECOMPONENTREGISTRY", this.profileComponents)
+            this.addNodesByType(this.ig.toc, "PROFILECOMPONENTREGISTRY", this.profileComponents);
           }
 
           this.compositeProfilesTocService.getAllFromAdded().then(composites => {
@@ -150,7 +150,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
               console.log(this.compositeProfiles);
               if (this.compositeProfiles.length > 0) {
 
-                this.addNodesByType(this.ig.toc, "COMPOSITEPROFILEREGISTRY", this.compositeProfiles)
+                this.addNodesByType(this.ig.toc, "COMPOSITEPROFILEREGISTRY", this.compositeProfiles);
               }
 
               this.segmentsTocService.getAllFromAdded().then(segments => {
@@ -158,7 +158,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                 console.log(this.segments);
                 if (this.segments.length > 0) {
 
-                  this.addNodesByType(this.ig.toc, "SEGMENTREGISTRY", this.segments)
+                  this.addNodesByType(this.ig.toc, "SEGMENTREGISTRY", this.segments);
                 }
 
                 this.datatypesTocService.getAllFromAdded().then(datatypes => {
@@ -167,7 +167,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                   console.log(this.datatypes);
                   if (this.datatypes.length > 0) {
 
-                    this.addNodesByType(this.ig.toc, "DATATYPEREGISTRY", this.datatypes)
+                    this.addNodesByType(this.ig.toc, "DATATYPEREGISTRY", this.datatypes);
                   }
 
                   this.valuesetsTocService.getAllFromAdded().then(valueSets => {
@@ -179,8 +179,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                     }
                     console.log("resolving ig");
                     console.log(this.ig);
-
-
+                    // this.updateNames(this.ig);
                     resolve(this.ig);
                   }, error => {
                   })

@@ -3,16 +3,12 @@
  */
 import {Component, Input, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
-import {WorkspaceService, Entity} from "../../../../service/workspace/workspace.service";
-import {Md5} from "ts-md5/dist/md5";
-import {Observable} from "rxjs";
+
 import * as _ from 'lodash';
 
 import 'rxjs/add/operator/filter';
 import {TocService} from "../../toc/toc.service";
 import {SegmentsService} from "../../../../service/segments/segments.service";
-// import {SegmentsIndexedDbService} from "../../../../service/indexed-db/segments/segments-indexed-db.service";
-import {HttpClient} from "@angular/common/http";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
@@ -79,6 +75,8 @@ export class SegmentEditMetadataComponent implements WithSave {
 
       }
     );
+    console.log("saving segment Meta Data");
+
     return this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata);
 
 

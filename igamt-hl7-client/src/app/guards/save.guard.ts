@@ -19,25 +19,22 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
       if (!component.isValid()) {
         console.log("invalid form");
 
-        this.getDialog(component, resolve, reject);
+        this.getDialog(component, resolve , reject);
       }
-      else if (!this.compareHash(component.getBackup(), component.getCurrent())) {
-        return component.save().then(()=>{
-          console.log("saved")
-          resolve(true);
-          }
-        ,error=>{
-          console.log("error saving");
-          reject();
+      else if (this.compareHash(component.getBackup(), component.getCurrent())) {
+        resolve(true);
 
-          });
       }else{
 
-        resolve(true);
+        component.save().then(x=>{
+          console.log("Segment saved");
+          resolve(true);
+        },error=>{
+          console.log("error saving");
+          reject(false);
+
+        })
       }
-
-
-
     });
 
   }
@@ -45,15 +42,15 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
     return Md5.hashStr(JSON.stringify(obj1))==Md5.hashStr(JSON.stringify(obj2))
   }
 
-  getDialog(component, resolve, reject){
+  getDialog(component,resolve,reject){
       this.confirmationService.confirm({
         message: "You have invalid Data. You cannot leave the page. Please fix you data ",
         accept: () => {
 
-          reject(true);
+          resolve(false);
         },
         reject: () => {
-          reject(false);
+          resolve(false);
         }
       });
   }
