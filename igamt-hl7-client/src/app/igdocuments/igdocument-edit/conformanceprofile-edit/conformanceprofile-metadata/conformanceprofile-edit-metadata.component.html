@@ -1,0 +1,63 @@
+<h2>Conformance Profile Metadata</h2>
+<div *ngIf="conformanceprofileMetadata">
+    <form #editForm="ngForm">
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Name
+            </label>
+            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="conformanceprofileMetadata.name" required />
+            <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                <p-message severity="error" text="Name is required"></p-message>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Identifier
+            </label>
+            <input name="identifier" id="identifier" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="conformanceprofileMetadata.identifier" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Description
+            </label>
+            <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="conformanceprofileMetadata.description" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Message Type
+            </label>
+            <input name="messageType" id="messageType" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="conformanceprofileMetadata.messageType" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Message Event
+            </label>
+            <input name="messageEvent" id="messageEvent" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="conformanceprofileMetadata.messageEvent" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Message Structure ID
+            </label>
+            <input name="structId" id="structId" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="conformanceprofileMetadata.structId" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Author Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="conformanceprofileMetadata.authorNote"></div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Usage Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="conformanceprofileMetadata.usageNote"></div>
+        </div>
+    </form>
+</div>
