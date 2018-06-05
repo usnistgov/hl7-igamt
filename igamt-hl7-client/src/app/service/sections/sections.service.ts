@@ -15,7 +15,7 @@ export class SectionsService {
         resolve(section);
       }).catch(() => {
         this.indexedDbService.getIgDocumentId().then((igDocumentId) => {
-          this.http.get('/api/igdocuments/' + igDocumentId + '/section/' + sectionId).subscribe(serverSection => {
+          this.http.get('api/igdocuments/' + igDocumentId + '/section/' + sectionId).subscribe(serverSection => {
             resolve(serverSection);
           }, error => {
             reject(error);

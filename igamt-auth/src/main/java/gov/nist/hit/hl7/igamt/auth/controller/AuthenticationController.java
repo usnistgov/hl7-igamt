@@ -19,7 +19,7 @@ public class AuthenticationController {
 	    @Autowired AuthenticationService authService;
 	
 
-		@RequestMapping(value = "/login", method = RequestMethod.POST)
+		@RequestMapping(value = "/api/login", method = RequestMethod.POST)
 		public ResponseEntity login(@RequestBody LoginRequest user)  throws AuthenticationException{
 			
 			
@@ -48,7 +48,7 @@ public class AuthenticationController {
 		
 		
 		
-		@RequestMapping(value = "/register", method = RequestMethod.POST)
+		@RequestMapping(value = "/api/register", method = RequestMethod.POST)
 		public ResponseEntity register(@RequestBody RegistrationRequest user)  throws AuthenticationException{			
 			try {
 				authService.register(user);

@@ -18,7 +18,7 @@ export  class IgListService {
 
   getMyIGs(){
 
-    return this.http.get("/api/igdocuments");
+    return this.http.get("api/igdocuments");
   }
 
 }

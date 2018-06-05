@@ -25,7 +25,7 @@ export class AuthService {
 
   login(username,password): BehaviorSubject<boolean> {
     console.log(username);
-    this.http.post('/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
+    this.http.post('api/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
       console.log(data);
       let token = data.headers.get('Authorization');
       console.log(token);
