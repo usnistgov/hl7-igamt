@@ -22,24 +22,6 @@ export  class SectionResolver implements Resolve<any>{
 
           return this.sectionService.getSection(sectionId);
 
-                // if(!route.parent.data["currentIg"]){
-                //   this.router.navigate(["/404"]);
-                //   return Observable.empty();
-                // }
-                // else{
-                //   console.log(route.parent.data["currentIg"]);
-                //   let sections=route.parent.data["currentIg"].toc;
-                //
-                //   let section= this.findSectionById(sections,sectionId);
-                //
-                //   if(section !=null){
-                //     console.log("Found");
-                //     return Observable.of(section);
-                //   }
-                //   this.router.navigate(["/404"]);
-                //   return Observable.empty();
-                // }
-
   }
 
 
@@ -63,7 +45,7 @@ export  class SectionResolver implements Resolve<any>{
       if(section.id&& section.id==id){
         return section;
       }
-        if(section.children && section.children.length>0){
+      if(section.children && section.children.length>0){
           for(let i=0;i<section.children.length;i++){
             let s= this.findInSideSection(section.children[i],id);
             if(s!=null){

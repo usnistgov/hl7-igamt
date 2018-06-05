@@ -90,7 +90,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
             this.segmentsTocService.getAll().then((segTOCdata) => {
                 let listTocSegs:any = segTOCdata[0];
                 for(let entry of listTocSegs){
-                    var treeObj = entry.treeNode;
+                    var treeObj = entry.data;
 
                     var segLink:any = {};
                     segLink.id = treeObj.key.id;
@@ -116,7 +116,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                 this.datatypesTocService.getAll().then((dtTOCdata) => {
                     let listTocDts: any = dtTOCdata[0];
                     for (let entry of listTocDts) {
-                        var treeObj = entry.treeNode;
+                        var treeObj = entry.data;
 
                         var dtLink: any = {};
                         dtLink.id = treeObj.key.id;
@@ -144,7 +144,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                             let listTocVSs: any = valuesetTOCdata[0];
 
                             for (let entry of listTocVSs) {
-                                var treeObj = entry.treeNode;
+                                var treeObj = entry.data;
                                 var valuesetLink: any = {};
                                 valuesetLink.id = treeObj.key.id;
                                 valuesetLink.label = treeObj.label;

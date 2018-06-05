@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
@@ -344,5 +345,31 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
     return Datatypes;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToConformanceStatement(gov
+   * .nist.hit.hl7.igamt.datatype.domain.Datatype)
+   */
+  @Override
+  public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype) {
+    if (datatype != null) {
+      DatatypeConformanceStatement result = new DatatypeConformanceStatement();
+      result.setId(datatype.getId());
+      result.setScope(datatype.getDomainInfo().getScope());
+      result.setVersion(datatype.getDomainInfo().getVersion());
+      if (datatype.getExt() != null) {
+        result.setLabel(datatype.getName() + datatype.getExt());
+      } else {
+        result.setLabel(datatype.getName());
+      }
+
+      result.setConformanceStatements(datatype.getBinding().getConformanceStatements());
+      return result;
+    }
+    return null;
   }
 }

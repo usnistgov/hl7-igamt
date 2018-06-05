@@ -1,8 +1,9 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, ViewChild} from "@angular/core";
-import {ActivatedRoute, Router} from "@angular/router";
+import {Component, Input, ViewChild} from "@angular/core";
+import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
+
 import * as _ from 'lodash';
 
 import 'rxjs/add/operator/filter';
@@ -65,12 +66,22 @@ export class SegmentEditMetadataComponent implements WithSave {
   isValid(){
     return !this.editForm.invalid;
   }
-  save(): Promise<any>{
+  save(){
     this.tocService.getActiveNode().subscribe(x=>{
-      let node= x;
-      node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
-    });
 
-    return this.segmentsService.saveSegmentMetadata(this.segmentId, this.segmentMetadata);
+        let node= x;
+        node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
+
+
+      }
+    );
+    console.log("saving segment Meta Data");
+
+    return this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata);
+
+
   }
+
+
+
 }

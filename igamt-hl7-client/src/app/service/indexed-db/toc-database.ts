@@ -5,7 +5,10 @@ import Dexie from 'dexie';
 
 export class TocNode {
   id?: string;
-  treeNode?: any;
+  data?:any;
+  isExpanded?:boolean;
+  children:TocNode[];
+
 }
 
 export class TocDatabase extends Dexie {

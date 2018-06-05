@@ -1,0 +1,52 @@
+@import '../variables';
+
+$textColor:#d8d8d8;
+$textSecondaryColor:#acacac;
+$dividerColor:#121213;
+
+/* Header */
+$headerPadding:.429em .857em;
+$headerBgColor:#1b3548;
+$headerBorderColor:#121213;
+$headerTextColor:#9fadb7;
+$headerHoverBgColor:#485d6c;
+$headerHoverTextColor:#ffffff;
+$headerIconColor:#9fadb7;
+$headerIconHoverColor:#ffffff;
+
+/* Contents */
+$contentPadding:.429em .857em;
+$contentBorderColor:#121213;
+$contentBgColor:#1c2937;
+
+/* Forms */
+$inputBgColor:#141e27;
+$inputPadding:.429em;
+$inputBorderColor:#121213;
+$inputHoverBorderColor:$primaryColor;
+$inputGroupAddonBgColor:#1b3548;
+
+/* Buttons */
+$toggleButtonBgColor:#323e4b;
+
+/* List Items */
+$listItemPadding:.429em .857em;
+
+/* Messages */
+$infoMessageBgColor:#60b5f6;
+$infoMessageTextColor:#ffffff;
+$warnMessageBgColor:#FFC800;
+$warnMessageTextColor:#141d26;
+$errorMessageBgColor:#EF5350;
+$errorMessageTextColor:#ffffff;
+$successMessageBgColor:#79ab58;
+$successMessageTextColor:#ffffff;
+
+/* Data */
+$datatableCellBorderColor:#121213;
+$datableEvenRowBgColor:#15222F;
+
+/* TabView */
+$tabHeaderPadding:.571em .857em;
+
+@import './_theme.scss';

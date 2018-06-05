@@ -58,7 +58,7 @@ export class SegmentsService {
       this.segmentsIndexedDbService.getSegmentPostDef(id).then((postDef) => {
         resolve(postDef);
       }).catch(() => {
-        this.http.get('api/segments/' + id + '/postDef').subscribe(serverSegmentPostDef => {
+        this.http.get('api/segments/' + id + '/postdef').subscribe(serverSegmentPostDef => {
           resolve(serverSegmentPostDef);
         }, error => {
           reject(error);
@@ -73,7 +73,7 @@ export class SegmentsService {
       this.segmentsIndexedDbService.getSegmentPreDef(id).then((preDef) => {
         resolve(preDef);
       }).catch(() => {
-        this.http.get('api/segments/' + id + '/preDef').subscribe(serverSegmentPreDef => {
+        this.http.get('api/segments/' + id + '/predef').subscribe(serverSegmentPreDef => {
           resolve(serverSegmentPreDef);
         }, error => {
           reject(error);

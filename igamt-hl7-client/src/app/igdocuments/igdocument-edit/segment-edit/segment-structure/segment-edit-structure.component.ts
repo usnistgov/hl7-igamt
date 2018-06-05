@@ -78,7 +78,7 @@ export class SegmentEditStructureComponent implements WithSave {
             this.datatypesTocService.getAll().then((dtTOCdata) => {
                 let listTocDTs:any = dtTOCdata[0];
                 for(let entry of listTocDTs){
-                    var treeObj = entry.treeNode;
+                    var treeObj = entry.data;
 
                     var dtLink:any = {};
                     dtLink.id = treeObj.key.id;
@@ -106,7 +106,7 @@ export class SegmentEditStructureComponent implements WithSave {
                     let listTocVSs: any = valuesetTOCdata[0];
 
                     for (let entry of listTocVSs) {
-                        var treeObj = entry.treeNode;
+                        var treeObj = entry.data;
                         var valuesetLink: any = {};
                         valuesetLink.id = treeObj.key.id;
                         valuesetLink.label = treeObj.label;
