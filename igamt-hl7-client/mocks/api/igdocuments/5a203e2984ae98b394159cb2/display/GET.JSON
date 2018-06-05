@@ -116,7 +116,7 @@
               "dateUpdated": null,
               "position": 1,
               "key": {
-                "id": "5a203e2784ae98b394157da5",
+                "id": "mock_TEST_VXU_V04",
                 "version": 1
               },
               "domainInfo": {
@@ -129,7 +129,7 @@
               "lazyLoading": true
             },
             "children": [],
-            "id": "5a203e2784ae98b394157da5",
+            "id": "mock_TEST_VXU_V04",
             "isExpanded": true
           }],
           "id": "5a203e2784ae98b394157d9b",
