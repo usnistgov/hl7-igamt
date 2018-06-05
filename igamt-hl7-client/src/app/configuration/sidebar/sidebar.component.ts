@@ -19,27 +19,30 @@ export class SidebarComponent implements OnInit {
         icon: 'fa-check',
         expanded: true,
         items: [
-
-            {
-              label: 'ConformanceProfile Table Options',
-              routerLink: ['conformance-profile-table-options', {outlets: {'content': ['conformance-profile-table-options']}}]
-            },
-            {
-              label: 'Segment Table Options'
-            },
-            {
-              label: 'Data Type Table Options'
-            },
-            {
-              label: 'Value Set Table Options'
-            },
-            {
-              label: 'Composite Profile Table Options'
-            },
-            {
-              label: 'Profile Component Table Options'
-            }
-
+          {
+            label: 'ConformanceProfile Table Options',
+            routerLink: 'conformance-profile-table-options'
+          },
+          {
+            label: 'Segment Table Options',
+            routerLink: 'segment-table-options'
+          },
+          {
+            label: 'Data Type Table Options',
+            routerLink: 'datatype-table-options'
+          },
+          {
+            label: 'Value Set Table Options',
+            routerLink: 'valueset-table-options'
+          },
+          {
+            label: 'Composite Profile Table Options',
+            routerLink: 'composite-profile-table-options'
+          },
+          {
+            label: 'Profile Component Table Options',
+            routerLink: 'profile-component-table-options'
+          }
         ]
       },
       {
@@ -47,7 +50,8 @@ export class SidebarComponent implements OnInit {
         routerLink: 'export-fonts'
       },
       {
-        label: 'Datatype Library', icon: 'fa-soccer-ball-o'
+        label: 'Datatype Library', icon: 'fa-soccer-ball-o',
+        routerLink: 'datatype-library'
       }
     ];
   }

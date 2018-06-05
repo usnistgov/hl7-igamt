@@ -118,6 +118,7 @@ import {ProfileComponentsTocService} from "./service/indexed-db/profile-componen
 import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from "./service/sections/sections.service";
 import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
+import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
 
 @NgModule({
     imports: [
@@ -248,8 +249,8 @@ import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-i
     AuthGuard,
     UserService,
     BreadcrumbService,
-
-        ConstraintsService
+    ConstraintsService,
+    TableOptionsService
   ],
     bootstrap: [AppComponent]
 })

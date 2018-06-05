@@ -1,4 +1,4 @@
-import {NgModule} from '@angular/core';
+import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ConfigurationRoutingModule} from './configuration-routing.module';
 import {AccordionModule, ButtonModule, TabViewModule, GrowlModule, Sidebar, PanelMenuModule} from 'primeng/primeng';
@@ -12,15 +12,21 @@ import { ConformanceProfileTableOptionsComponent } from './conformance-profile-t
 import { ProfileComponentTableOptionsComponent } from './profile-component-table-options/profile-component-table-options.component';
 import { DatatypeLibraryComponent } from './datatype-library/datatype-library.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { CardModule } from 'primeng/card';
+import { CheckboxModule } from 'primeng/checkbox';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CommonModule,
+    FormsModule,
     ConfigurationRoutingModule,
     AccordionModule,
     ButtonModule,
     GrowlModule,
-    PanelMenuModule
+    PanelMenuModule,
+    CardModule,
+    CheckboxModule
   ],
   declarations: [
     ConfigurationComponent,
@@ -33,6 +39,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
     ProfileComponentTableOptionsComponent,
     DatatypeLibraryComponent,
     SidebarComponent
-  ]
+  ],
+  schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ConfigurationModule {}
