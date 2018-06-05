@@ -117,7 +117,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
 
   getMergedIg(igId:any,resolve,reject){
-    this.http.get<any>("/api/igdocuments/" + igId + "/display").subscribe(x => {
+    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
       this.ig=x;
       console.log("Appliying the db changes");
       console.log(this.ig.toc);
@@ -205,7 +205,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
 
   initToc(igId:any,resolve,reject){
-    this.http.get<any>("/api/igdocuments/" + igId + "/display").subscribe(x => {
+    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
               this.parseToc(x.toc);
                   this.indexedDbService.initializeDatabase(igId).then(() => {
                       this.saveService.bulkAddToc(this.valueSets, this.datatypes, this.segments, this.conformanceProfiles, this.profileComponents, this.compositeProfiles).then(

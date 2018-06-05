@@ -17,7 +17,7 @@ export  class MyIGsresolver implements Resolve<any>{
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
-    return this.http.get("/api/igdocuments");
+    return this.http.get("api/igdocuments");
 
   }
 

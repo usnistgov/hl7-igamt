@@ -26,18 +26,27 @@
 
 
 <p-toolbar class="toc-filter-toolbar">
-  <div class="multiselect-adapter">
+
+
+    <div class="multiselect-adapter ui-toolbar-group-left">
+
     <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
     <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
 
     <p-multiSelect defaultLabel="Scopes"  [style]="{'vertical-align' : 'top' }"  [options]="scopes" [(ngModel)]="selectedScopes" (onChange)="filterFn()" pTooltip="Filter by Scope" tooltipPosition="top" ></p-multiSelect>
-    <button  (click)="print(igForm)" style="float: right" pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
-    <button style="float: right" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+    </div>
+  <div class="ui-toolbar-group-right">
 
-    <button style="float: right" pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
-    <button  style="float: right" pButton type="button" label="Export"  icon="fa-download"></button>
-    <button  style="float: right" pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
-    <button  style="float: right" pButton type="button" label="share"  icon="fa-share"></button>
+    <button   pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
+    <button   pButton type="button" label="share"  icon="fa-share"></button>
+
+    <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
+    <p-splitButton   label="Export"  icon="fa-download" [model]="exportModel"></p-splitButton>
+
+  <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button  pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+
+
   </div>
 
 
