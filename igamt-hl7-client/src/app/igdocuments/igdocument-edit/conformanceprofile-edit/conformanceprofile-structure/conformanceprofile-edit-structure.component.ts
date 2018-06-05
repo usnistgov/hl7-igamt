@@ -18,17 +18,19 @@ import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valu
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
+import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
+import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
+import {SegmentsTocService} from "../../../../service/indexed-db/segments/segments-toc.service";
 
 @Component({
-    selector : 'segment-edit',
-    templateUrl : './segment-edit-structure.component.html',
-    styleUrls : ['./segment-edit-structure.component.css']
+    templateUrl : './conformanceprofile-edit-structure.component.html',
+    styleUrls : ['./conformanceprofile-edit-structure.component.css']
 })
-export class SegmentEditStructureComponent implements WithSave {
+export class ConformanceprofileEditStructureComponent implements WithSave {
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
-    segmentId:any;
-    segmentStructure:any;
+    conformanceprofileId:any;
+    conformanceprofileStructure:any;
     usages:any;
     cUsages:any;
     textDefinitionDialogOpen:boolean = false;
@@ -43,9 +45,11 @@ export class SegmentEditStructureComponent implements WithSave {
     idMap: any;
     treeData: any[];
 
-    valuesetsLinks :any = [];
     datatypesLinks :any = [];
-    datatypeOptions:any = [];
+    datatypesOptions:any = [];
+    segmentsLinks :any = [];
+    segmentsOptions:any = [];
+    valuesetsLinks :any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
     backup:any;
@@ -53,10 +57,18 @@ export class SegmentEditStructureComponent implements WithSave {
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
+    constructor(public indexedDbService: IndexedDbService,
+                private route: ActivatedRoute,
+                private router : Router,
+                private configService : GeneralConfigurationService,
+                private conformanceProfilesService : ConformanceProfilesService,
+                private segmentsService : SegmentsService,
+                private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private datatypesTocService : DatatypesTocService,
-                private valuesetsTocService : ValuesetsTocService){
+                private segmentsTocService : SegmentsTocService,
+                private valuesetsTocService : ValuesetsTocService,
+                private conformanceProfilesTocService : ConformanceProfilesTocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -65,7 +77,7 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     ngOnInit() {
-        this.segmentId = this.route.snapshot.params["segmentId"];
+        this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
 
         this.usages = this.configService._usages;
         this.cUsages = this.configService._cUsages;
@@ -73,69 +85,96 @@ export class SegmentEditStructureComponent implements WithSave {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
 
-        this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
+        this.route.data.map(data =>data.conformanceprofileStructure).subscribe(x=>{
             console.log(x);
-            this.datatypesTocService.getAll().then((dtTOCdata) => {
-                let listTocDTs:any = dtTOCdata[0];
-                for(let entry of listTocDTs){
+            this.segmentsTocService.getAll().then((segTOCdata) => {
+                let listTocSegs:any = segTOCdata[0];
+                for(let entry of listTocSegs){
                     var treeObj = entry.treeNode;
 
-                    var dtLink:any = {};
-                    dtLink.id = treeObj.key.id;
-                    dtLink.label = treeObj.label;
-                    dtLink.domainInfo = treeObj.domainInfo;
+                    var segLink:any = {};
+                    segLink.id = treeObj.key.id;
+                    segLink.label = treeObj.label;
+                    segLink.domainInfo = treeObj.domainInfo;
                     var index = treeObj.label.indexOf("_");
                     if(index > -1){
-                        dtLink.name = treeObj.label.substring(0,index);
-                        dtLink.ext = treeObj.label.substring(index);;
+                        segLink.name = treeObj.label.substring(0,index);
+                        segLink.ext = treeObj.label.substring(index);;
                     }else {
-                        dtLink.name = treeObj.label;
-                        dtLink.ext = null;
+                        segLink.name = treeObj.label;
+                        segLink.ext = null;
                     }
 
-                    if(treeObj.lazyLoading) dtLink.leaf = false;
-                    else dtLink.leaf = true;
-                    this.datatypesLinks.push(dtLink);
+                    if(treeObj.lazyLoading) segLink.leaf = false;
+                    else segLink.leaf = true;
+                    this.segmentsLinks.push(segLink);
 
-                    var dtOption = {label: dtLink.label, value : dtLink.id};
-                    this.datatypeOptions.push(dtOption);
+                    var segOption = {label: segLink.label, value : segLink.id};
+                    this.segmentsOptions.push(segOption);
                 }
 
-
-                this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
-                    let listTocVSs: any = valuesetTOCdata[0];
-
-                    for (let entry of listTocVSs) {
+                this.datatypesTocService.getAll().then((dtTOCdata) => {
+                    let listTocDts: any = dtTOCdata[0];
+                    for (let entry of listTocDts) {
                         var treeObj = entry.treeNode;
-                        var valuesetLink: any = {};
-                        valuesetLink.id = treeObj.key.id;
-                        valuesetLink.label = treeObj.label;
-                        valuesetLink.domainInfo = treeObj.domainInfo;
-                        this.valuesetsLinks.push(valuesetLink);
-                        var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
-                        this.valuesetOptions.push(vsOption);
+
+                        var dtLink: any = {};
+                        dtLink.id = treeObj.key.id;
+                        dtLink.label = treeObj.label;
+                        dtLink.domainInfo = treeObj.domainInfo;
+                        var index = treeObj.label.indexOf("_");
+                        if (index > -1) {
+                            dtLink.name = treeObj.label.substring(0, index);
+                            dtLink.ext = treeObj.label.substring(index);
+                            ;
+                        } else {
+                            dtLink.name = treeObj.label;
+                            dtLink.ext = null;
+                        }
+
+                        if (treeObj.lazyLoading) dtLink.leaf = false;
+                        else dtLink.leaf = true;
+                        this.datatypesLinks.push(dtLink);
+
+                        var dtOption = {label: dtLink.label, value: dtLink.id};
+                        this.datatypesOptions.push(dtOption);
+
+
+                        this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
+                            let listTocVSs: any = valuesetTOCdata[0];
+
+                            for (let entry of listTocVSs) {
+                                var treeObj = entry.treeNode;
+                                var valuesetLink: any = {};
+                                valuesetLink.id = treeObj.key.id;
+                                valuesetLink.label = treeObj.label;
+                                valuesetLink.domainInfo = treeObj.domainInfo;
+                                this.valuesetsLinks.push(valuesetLink);
+                                var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
+                                this.valuesetOptions.push(vsOption);
+                            }
+
+                            this.conformanceprofileStructure = {};
+                            this.conformanceprofileStructure.name = x.name;
+
+                            this.updateMessage(x.children, x.binding, null);
+                            // this.updateDatatype(this.conformanceprofileStructure, x.children, x.binding, null, null, null, null, null, null);
+
+                            this.conformanceprofileStructure.children = x.children;
+                            this.backup=__.cloneDeep(this.conformanceprofileStructure);
+                        });
                     }
-
-                    this.segmentStructure = {};
-                    this.segmentStructure.name = x.name;
-                    this.segmentStructure.ext = x.ext;
-                    this.segmentStructure.scope = x.scope;
-
-                    this.updateDatatype(this.segmentStructure, x.children, x.binding, null, null, null, null, null, null);
-
-                    this.backup=__.cloneDeep(this.segmentStructure);
                 });
             });
-
         });
     }
 
     reset(){
-        this.segmentStructure=__.cloneDeep(this.backup);
+        this.conformanceprofileStructure=__.cloneDeep(this.backup);
     }
 
     getCurrent(){
-        return  this.segmentStructure;
+        return  this.conformanceprofileStructure;
     }
 
     getBackup(){
@@ -143,14 +182,33 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     isValid(){
-        // return !this.editForm.invalid;
         return true;
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure);
+        return this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, this.conformanceprofileStructure);
     }
 
+    updateMessage(children, currentBinding, parentFieldId){
+        for (let entry of children) {
+            if(!entry.data.displayData) entry.data.displayData = {};
+            entry.leaf = false;
+            if(parentFieldId === null){
+                entry.data.displayData.idPath = entry.data.id;
+            }else{
+                entry.data.displayData.idPath = parentFieldId + '-' + entry.data.id;
+            }
+
+            if(entry.data.type === 'GROUP'){
+                entry.data.displayData.type = 'GROUP';
+                this.updateMessage(entry.children, currentBinding, entry.data.displayData.idPath)
+            }else if (entry.data.type === 'SEGMENTREF'){
+                entry.data.displayData.type = 'SEGMENT';
+                entry.data.displayData.segment = this.getSegmentLink(entry.data.ref.id);
+            }
+        }
+    }
+/*
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
         for (let entry of children) {
             if(!entry.data.displayData) entry.data.displayData = {};
@@ -196,7 +254,7 @@ export class SegmentEditStructureComponent implements WithSave {
 
         node.children = children;
     }
-
+*/
     setHasSingleCode(displayData){
         if(displayData.segmentBinding || displayData.fieldDTbinding || displayData.componentDTbinding){
             if(displayData.segmentBinding && displayData.segmentBinding.internalSingleCode && displayData.segmentBinding.internalSingleCode !== ''){
@@ -305,14 +363,14 @@ export class SegmentEditStructureComponent implements WithSave {
         node.data.displayData.datatype.dtOptions.push({label: 'Change Datatype root', value : null});
     }
 
-    loadNode(event) {
-        if(event.node && !event.node.children) {
-            var datatypeId = event.node.data.ref.id;
-            this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
-                this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
-            });
-        }
-    }
+    // loadNode(event) {
+    //     if(event.node && !event.node.children) {
+    //         var datatypeId = event.node.data.ref.id;
+    //         this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
+    //             this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
+    //         });
+    //     }
+    // }
 
     onDatatypeChange(node){
         if(!node.data.displayData.datatype.id) {
@@ -440,6 +498,14 @@ export class SegmentEditStructureComponent implements WithSave {
         return null;
     }
 
+    getSegmentLink(id){
+        for (let dt of this.segmentsLinks) {
+            if(dt.id === id) return JSON.parse(JSON.stringify(dt));
+        }
+        console.log("Missing SEG:::" + id);
+        return null;
+    }
+
     getValueSetLink(id){
         for(let v of this.valuesetsLinks) {
             if(v.id === id) return JSON.parse(JSON.stringify(v));
@@ -460,55 +526,6 @@ export class SegmentEditStructureComponent implements WithSave {
 
     print(data){
         console.log(data);
-    }
-
-    editPredicate(node){
-        this.selectedNode = node;
-        if(this.selectedNode.data.displayData.segmentBinding) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
-        if(!this.selectedPredicate) this.selectedPredicate = {};
-
-        this.idMap = {};
-        this.treeData = [];
-
-        this.segmentsService.getSegmentStructure(this.segmentId).then(segStructure  => {
-            this.idMap[this.segmentId] = {name:segStructure.name};
-
-            var rootData = {elementId:this.segmentId};
-
-            for (let child of segStructure.children) {
-                var childData =  JSON.parse(JSON.stringify(rootData));
-                childData.child = {
-                    elementId: child.data.id,
-                };
-
-                if(child.data.max === '1'){
-                    childData.child.instanceParameter = '1';
-                }else{
-                    childData.child.instanceParameter = '*';
-                }
-
-                var treeNode = {
-                    label: child.data.name,
-                    data : childData,
-                    expandedIcon: "fa-folder-open",
-                    collapsedIcon: "fa-folder",
-                };
-
-                var data = {
-                    id: child.data.id,
-                    name: child.data.name,
-                    max: child.data.max,
-                    position: child.data.position,
-                    usage: child.data.usage,
-                    dtId: child.data.ref.id
-                };
-
-                this.idMap[this.segmentId + '-' + data.id] = data;
-                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
-                this.treeData.push(treeNode);
-            }
-        });
-        this.preciateEditorOpen = true;
     }
 
     submitCP(){

@@ -130,6 +130,12 @@ export class DatatypeEditStructureComponent {
             if(entry.data.displayData.idPath.split("-").length === 1){
                 entry.data.displayData.type = 'COMPONENT';
                 entry.data.displayData.datatypeBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
+                if(entry.data.usage === 'C' && !entry.data.displayData.datatypeBinding) {
+                    entry.data.displayData.datatypeBinding = {};
+                }
+                if(entry.data.usage === 'C' && !entry.data.displayData.datatypeBinding.predicate){
+                    entry.data.displayData.datatypeBinding.predicate = {};
+                }
             }else if(entry.data.displayData.idPath.split("-").length === 2){
                 entry.data.displayData.type = 'SUBCOMPONENT';
                 entry.data.displayData.componentDT = parentDTId;

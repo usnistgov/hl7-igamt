@@ -28,7 +28,8 @@ export class SegmentsIndexedDbService {
   public getSegmentMetadata(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.metadata);
+        if(segment.metadata) resolve(segment.metadata);
+        else reject();
       }).catch(() => {
         reject();
       });
@@ -39,7 +40,8 @@ export class SegmentsIndexedDbService {
   public getSegmentStructure(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.structure);
+        if(segment.structure) resolve(segment.structure);
+        else reject();
       }).catch(() => {
         reject();
       });
@@ -50,7 +52,8 @@ export class SegmentsIndexedDbService {
   public getSegmentCrossReference(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.crossReference);
+        if(segment.crossReference) resolve(segment.crossReference);
+        else reject();
       }).catch(() => {
         reject();
       });
@@ -61,7 +64,8 @@ export class SegmentsIndexedDbService {
   public getSegmentPostDef(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.postDef);
+        if(segment.postDef) resolve(segment.postDef);
+        else reject();
       }).catch(() => {
         reject();
       });
@@ -72,7 +76,8 @@ export class SegmentsIndexedDbService {
   public getSegmentPreDef(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.preDef);
+        if(segment.preDef) resolve(segment.preDef);
+        else reject();
       }).catch(() => {
         reject();
       });
@@ -83,7 +88,8 @@ export class SegmentsIndexedDbService {
   public getSegmentConformanceStatements(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        resolve(segment.conformanceStatements);
+        if(segment.conformanceStatements) resolve(segment.conformanceStatements);
+        else reject();
       }).catch(() => {
         reject();
       });
