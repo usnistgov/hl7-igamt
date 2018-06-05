@@ -1615,7 +1615,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfileMetadata(id).then(function (metadata) {
                 resolve(metadata);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/metadata').subscribe(function (serverConformanceProfileMetadata) {
+                _this.http.get('api/conformanceprofiles/' + id + '/metadata').subscribe(function (serverConformanceProfileMetadata) {
                     resolve(serverConformanceProfileMetadata);
                 }, function (error) {
                     reject(error);
@@ -1630,7 +1630,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfileStructure(id).then(function (structure) {
                 resolve(structure);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/structure').subscribe(function (serverConformanceProfileStructure) {
+                _this.http.get('api/conformanceprofiles/' + id + '/structure').subscribe(function (serverConformanceProfileStructure) {
                     resolve(serverConformanceProfileStructure);
                 }, function (error) {
                     reject(error);
@@ -1645,7 +1645,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfileCrossReference(id).then(function (crossReference) {
                 resolve(crossReference);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/crossReference').subscribe(function (serverConformanceProfileCrossReference) {
+                _this.http.get('api/conformanceprofiles/' + id + '/crossReference').subscribe(function (serverConformanceProfileCrossReference) {
                     resolve(serverConformanceProfileCrossReference);
                 }, function (error) {
                     reject(error);
@@ -1660,7 +1660,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfilePostDef(id).then(function (postDef) {
                 resolve(postDef);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/postDef').subscribe(function (serverConformanceProfilePostDef) {
+                _this.http.get('api/conformanceprofiles/' + id + '/postDef').subscribe(function (serverConformanceProfilePostDef) {
                     resolve(serverConformanceProfilePostDef);
                 }, function (error) {
                     reject(error);
@@ -1675,7 +1675,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfilePreDef(id).then(function (preDef) {
                 resolve(preDef);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/preDef').subscribe(function (serverConformanceProfilePreDef) {
+                _this.http.get('api/conformanceprofiles/' + id + '/preDef').subscribe(function (serverConformanceProfilePreDef) {
                     resolve(serverConformanceProfilePreDef);
                 }, function (error) {
                     reject(error);
@@ -1690,7 +1690,7 @@ var ConformanceProfilesService = (function () {
             _this.conformanceProfilesIndexedDbService.getConformanceProfileConformanceStatements(id).then(function (conformanceStatement) {
                 resolve(conformanceStatement);
             }).catch(function () {
-                _this.http.get('api/conformanceProfiles/' + id + '/conformanceStatement').subscribe(function (serverConformanceProfileConformanceStatement) {
+                _this.http.get('api/conformanceprofiles/' + id + '/conformanceStatement').subscribe(function (serverConformanceProfileConformanceStatement) {
                     resolve(serverConformanceProfileConformanceStatement);
                 }, function (error) {
                     reject(error);
@@ -2019,7 +2019,7 @@ var DatatypesService = (function () {
             _this.datatypesIndexedDbService.getDatatypePostDef(id).then(function (postDef) {
                 resolve(postDef);
             }).catch(function () {
-                _this.http.get('api/datatypes/' + id + '/postDef').subscribe(function (serverDatatypePostDef) {
+                _this.http.get('api/datatypes/' + id + '/postdef').subscribe(function (serverDatatypePostDef) {
                     resolve(serverDatatypePostDef);
                 }, function (error) {
                     reject(error);
@@ -2034,7 +2034,7 @@ var DatatypesService = (function () {
             _this.datatypesIndexedDbService.getDatatypePreDef(id).then(function (preDef) {
                 resolve(preDef);
             }).catch(function () {
-                _this.http.get('api/datatypes/' + id + '/preDef').subscribe(function (serverDatatypePreDef) {
+                _this.http.get('api/datatypes/' + id + '/predef').subscribe(function (serverDatatypePreDef) {
                     resolve(serverDatatypePreDef);
                 }, function (error) {
                     reject(error);
@@ -2049,7 +2049,7 @@ var DatatypesService = (function () {
             _this.datatypesIndexedDbService.getDatatypeConformanceStatements(id).then(function (conformanceStatement) {
                 resolve(conformanceStatement);
             }).catch(function () {
-                _this.http.get('api/datatypes/' + id + '/conformanceStatement').subscribe(function (serverDatatypeConformanceStatement) {
+                _this.http.get('api/datatypes/' + id + '/conformancestatement').subscribe(function (serverDatatypeConformanceStatement) {
                     resolve(serverDatatypeConformanceStatement);
                 }, function (error) {
                     reject(error);
@@ -5349,7 +5349,7 @@ var SegmentsService = (function () {
             _this.segmentsIndexedDbService.getSegmentPostDef(id).then(function (postDef) {
                 resolve(postDef);
             }).catch(function () {
-                _this.http.get('api/segments/' + id + '/postDef').subscribe(function (serverSegmentPostDef) {
+                _this.http.get('api/segments/' + id + '/postdef').subscribe(function (serverSegmentPostDef) {
                     resolve(serverSegmentPostDef);
                 }, function (error) {
                     reject(error);
@@ -5364,7 +5364,7 @@ var SegmentsService = (function () {
             _this.segmentsIndexedDbService.getSegmentPreDef(id).then(function (preDef) {
                 resolve(preDef);
             }).catch(function () {
-                _this.http.get('api/segments/' + id + '/preDef').subscribe(function (serverSegmentPreDef) {
+                _this.http.get('api/segments/' + id + '/predef').subscribe(function (serverSegmentPreDef) {
                     resolve(serverSegmentPreDef);
                 }, function (error) {
                     reject(error);

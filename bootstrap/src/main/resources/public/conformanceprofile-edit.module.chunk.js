@@ -1,5 +1,345 @@
 webpackJsonp(["conformanceprofile-edit.module"],{
 
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.css":
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__("../../../../css-loader/lib/css-base.js")(false);
+// imports
+
+
+// module
+exports.push([module.i, ".ng-valid[required], .ng-valid.required  {\n  /*border-left: 5px solid #42A948; !* green *!*/\n}\n\n.ng-invalid:not(form)  {\n  border-left: 5px solid #a94442 !important; /* red */\n}\n\ninput[type=text]{\n  border-width:0px 0px 1px 0px;\n}", ""]);
+
+// exports
+
+
+/*** EXPORTS FROM exports-loader ***/
+module.exports = module.exports.toString();
+
+/***/ }),
+
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.html":
+/***/ (function(module, exports) {
+
+module.exports = "<div *ngIf=\"segmentConformanceStatements\">\n    <h1>Conformance Statements</h1>\n    <form #csForm=\"ngForm\">\n        <p-accordion (onOpen)=\"onTabOpen($event)\">\n            <p-accordionTab header=\"List of Conformance Statements\" [(selected)]=\"listTab\">\n                <p-table [columns]=\"cols\" [value]=\"segmentConformanceStatements.conformanceStatements\" [reorderableColumns]=\"true\" [resizableColumns]=\"true\">\n                    <ng-template pTemplate=\"header\" let-columns>\n                        <tr>\n                            <th style=\"width:3em\"></th>\n\n\n                            <th *ngFor=\"let col of columns\" pReorderableColumn [pSortableColumn]=\"col.sort\" [ngStyle]=\"col.colStyle\" pResizableColumn>\n                                {{col.header}}\n                                <p-sortIcon *ngIf=\"col.colStyle\" [field]=\"col.field\"></p-sortIcon>\n                            </th>\n\n                            <th style=\"width:15em\" pReorderableColumn>Actions</th>\n                        </tr>\n                    </ng-template>\n                    <ng-template pTemplate=\"body\" let-rowData let-columns=\"columns\" let-index=\"rowIndex\">\n                        <tr [pReorderableRow]=\"index\">\n                            <td>\n                                <i class=\"fa fa-bars\" pReorderableRowHandle></i>\n                            </td>\n                            <td *ngFor=\"let col of columns\" class=\"ui-resizable-column\">\n                                <div *ngIf=\"col.field === 'identifier'\">\n                                    {{rowData[col.field]}}\n                                </div>\n                                <div *ngIf=\"col.field === 'description'\">\n                                    <div *ngIf=\"rowData['type'] === 'FREE'\">\n                                        {{rowData['freeText']}}\n                                    </div>\n                                    <div *ngIf=\"rowData['type'] === 'ASSERTION'\">\n                                        {{rowData['assertion'].description}}\n                                    </div>\n                                </div>\n                            </td>\n                            <td>\n                                <button pButton style=\"float: right\" type=\"button\"  class=\"ui-button-warning\" icon=\"fa-times\" label=\"Delete\" (click)=\"deleteCS(rowData['identifier'])\"></button>\n                                <button pButton style=\"float: right\" type=\"button\"  class=\"ui-button-info\" icon=\"fa-pencil\" label=\"Edit\" (click)=\"selectCS(rowData)\"></button>\n                            </td>\n                        </tr>\n                    </ng-template>\n                </p-table>\n\n\n            </p-accordionTab>\n            <p-accordionTab header=\"Conformance Statement Editor\" [(selected)]=\"editorTab\">\n                <div class=\"ui-g ui-fluid\">\n                    <div class=\"ui-g-12 ui-md-2\">\n                        <label>Editor Type: </label>\n                    </div>\n                    <div class=\"ui-g-12 ui-md-10\">\n                        <p-selectButton name=\"type\" [options]=\"constraintTypes\" [(ngModel)]=\"selectedConformanceStatement.type\" (onChange)=\"changeType()\"></p-selectButton>\n                    </div>\n                </div>\n\n                <div *ngIf=\"selectedConformanceStatement.type\">\n                    <div class=\"ui-g ui-fluid\">\n                        <div class=\"ui-g-12 ui-md-2\">\n                            <label for=\"id\">ID: </label>\n                        </div>\n                        <div class=\"ui-g-12 ui-md-10\">\n                            <input id=\"id\" name=\"id\" required minlength=\"2\" [(ngModel)]=\"selectedConformanceStatement.identifier\" type=\"text\" #id=\"ngModel\" style=\"width:50%;\"/>\n                            <div *ngIf=\"id.invalid && (id.dirty || id.touched)\" class=\"alert alert-danger\">\n                                <div *ngIf=\"id.errors.required\">\n                                    Constraint Id is required.\n                                </div>\n                                <div *ngIf=\"id.errors.minlength\">\n                                    Constraint Id must be at least 2 characters long.\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n\n                <div *ngIf=\"selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'\">\n                    <div class=\"ui-g ui-fluid\">\n                        <div class=\"ui-g-12 ui-md-2\">\n                            <label>Assertion Level: </label>\n                        </div>\n                        <div class=\"ui-g-12 ui-md-4\">\n                            <p-dropdown id=\"assertionMode\" name=\"assertionMode\" required #assertionMode=\"ngModel\" [options]=\"assertionModes\" [(ngModel)]=\"selectedConformanceStatement.assertion.mode\" (onChange)=\"changeAssertionMode()\"></p-dropdown>\n                            <div *ngIf=\"assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)\" class=\"alert alert-danger\">\n                                <div *ngIf=\"assertionMode.errors.required\">\n                                    Assertion Type is required.\n                                </div>\n                            </div>\n                        </div>\n                        <div *ngIf=\"selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'\" class=\"ui-g-12 ui-md-2\">\n                            <label>Complex Type: </label>\n                        </div>\n                        <div *ngIf=\"selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'\" class=\"ui-g-12 ui-md-4\">\n                            <p-dropdown id=\"complexAssertionType\" name=\"complexAssertionType\" required #complexAssertionType=\"ngModel\" [options]=\"complexAssertionTypes\" [(ngModel)]=\"selectedConformanceStatement.assertion.complexAssertionType\" (onChange)=\"changeComplexAssertionType(selectedConformanceStatement.assertion)\" placeholder=\"Select a complex type\"></p-dropdown>\n                            <div *ngIf=\"complexAssertionType.invalid && (complexAssertionType.dirty || complexAssertionType.touched)\" class=\"alert alert-danger\">\n                                <div *ngIf=\"complexAssertionType.errors.required\">\n                                    Complex Type is required.\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </div>\n\n                <edit-free-constraint *ngIf=\"selectedConformanceStatement.type === 'FREE'\" [constraint]=\"selectedConformanceStatement\"></edit-free-constraint>\n                <edit-simple-constraint *ngIf=\"selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'\" [constraint]=\"selectedConformanceStatement.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'rootSimple'\"></edit-simple-constraint>\n                <edit-complex-constraint *ngIf=\"selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'\" [constraint]=\"selectedConformanceStatement.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'root'\"></edit-complex-constraint>\n\n                <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-plus\" label=\"Submit\" (click)=\"submitCS()\" [disabled]=\"csForm.invalid\"></button>\n                <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-print\" label=\"Print\" (click)=\"printCS(selectedConformanceStatement)\"></button>\n            </p-accordionTab>\n        </p-accordion>\n    </form>\n</div>"
+
+/***/ }),
+
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConformanceprofileEditConformancestatementsComponent; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_rxjs_add_operator_filter__ = __webpack_require__("../../../../rxjs/_esm5/add/operator/filter.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__service_segments_segments_service__ = __webpack_require__("../../../../../src/app/service/segments/segments.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__service_datatypes_datatypes_service__ = __webpack_require__("../../../../../src/app/service/datatypes/datatypes.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_underscore__ = __webpack_require__("../../../../underscore/underscore.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_underscore___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_underscore__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_general_configuration_general_configuration_service__ = __webpack_require__("../../../../../src/app/service/general-configuration/general-configuration.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__service_constraints_constraints_service__ = __webpack_require__("../../../../../src/app/service/constraints/constraints.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_9_lodash__);
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+/**
+ * Created by Jungyub on 10/23/17.
+ */
+
+
+
+
+
+
+
+
+
+
+var ConformanceprofileEditConformancestatementsComponent = (function () {
+    function ConformanceprofileEditConformancestatementsComponent(route, router, segmentsService, datatypesService, configService, constraintsService) {
+        var _this = this;
+        this.route = route;
+        this.router = router;
+        this.segmentsService = segmentsService;
+        this.datatypesService = datatypesService;
+        this.configService = configService;
+        this.constraintsService = constraintsService;
+        this.constraintTypes = [];
+        this.assertionModes = [];
+        this.selectedConformanceStatement = {};
+        this.listTab = true;
+        this.editorTab = false;
+        router.events.subscribe(function (event) {
+            if (event instanceof __WEBPACK_IMPORTED_MODULE_1__angular_router__["NavigationEnd"]) {
+                _this.currentUrl = event.url;
+            }
+        });
+        this.cols = [
+            { field: 'identifier', header: 'ID', colStyle: { width: '20em' }, sort: 'identifier' },
+            { field: 'description', header: 'Description' }
+        ];
+    }
+    ConformanceprofileEditConformancestatementsComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        this.constraintTypes = this.configService._constraintTypes;
+        this.assertionModes = this.configService._assertionModes;
+        this.complexAssertionTypes = this.configService._complexAssertionTypes;
+        this.idMap = {};
+        this.treeData = [];
+        this.segmentId = this.route.snapshot.params["segmentId"];
+        this.route.data.map(function (data) { return data.conformanceprofileConformanceStatements; }).subscribe(function (x) {
+            _this.segmentConformanceStatements = x;
+            _this.segmentsService.getSegmentStructure(_this.segmentId).then(function (segStructure) {
+                _this.idMap[_this.segmentId] = { name: segStructure.name };
+                var rootData = { elementId: _this.segmentId };
+                for (var _i = 0, _a = segStructure.children; _i < _a.length; _i++) {
+                    var child = _a[_i];
+                    var childData = JSON.parse(JSON.stringify(rootData));
+                    childData.child = {
+                        elementId: child.data.id,
+                    };
+                    if (child.data.max === '1') {
+                        childData.child.instanceParameter = '1';
+                    }
+                    else {
+                        childData.child.instanceParameter = '*';
+                    }
+                    var treeNode = {
+                        label: child.data.name,
+                        data: childData,
+                        expandedIcon: "fa-folder-open",
+                        collapsedIcon: "fa-folder",
+                    };
+                    var data = {
+                        id: child.data.id,
+                        name: child.data.name,
+                        max: child.data.max,
+                        position: child.data.position,
+                        usage: child.data.usage,
+                        dtId: child.data.ref.id
+                    };
+                    _this.idMap[_this.segmentId + '-' + data.id] = data;
+                    _this.popChild(_this.segmentId + '-' + data.id, data.dtId, treeNode);
+                    _this.treeData.push(treeNode);
+                    _this.backup = __WEBPACK_IMPORTED_MODULE_9_lodash__["cloneDeep"](_this.segmentConformanceStatements);
+                }
+            });
+        });
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.reset = function () {
+        this.segmentConformanceStatements = __WEBPACK_IMPORTED_MODULE_9_lodash__["cloneDeep"](this.backup);
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.getCurrent = function () {
+        return this.segmentConformanceStatements;
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.getBackup = function () {
+        return this.backup;
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.isValid = function () {
+        return !this.csForm.invalid;
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.save = function () {
+        return this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements);
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.popChild = function (id, dtId, parentTreeNode) {
+        var _this = this;
+        this.datatypesService.getDatatypeStructure(dtId).then(function (dtStructure) {
+            _this.idMap[id].dtName = dtStructure.name;
+            if (dtStructure.children) {
+                for (var _i = 0, _a = dtStructure.children; _i < _a.length; _i++) {
+                    var child = _a[_i];
+                    var childData = JSON.parse(JSON.stringify(parentTreeNode.data));
+                    _this.makeChild(childData, child.data.id, '1');
+                    var treeNode = {
+                        label: child.data.name,
+                        data: childData,
+                        expandedIcon: "fa-folder-open",
+                        collapsedIcon: "fa-folder",
+                    };
+                    var data = {
+                        id: child.data.id,
+                        name: child.data.name,
+                        max: "1",
+                        position: child.data.position,
+                        usage: child.data.usage,
+                        dtId: child.data.ref.id
+                    };
+                    _this.idMap[id + '-' + data.id] = data;
+                    _this.popChild(id + '-' + data.id, data.dtId, treeNode);
+                    if (!parentTreeNode.children)
+                        parentTreeNode.children = [];
+                    parentTreeNode.children.push(treeNode);
+                }
+            }
+        });
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.makeChild = function (data, id, para) {
+        if (data.child)
+            this.makeChild(data.child, id, para);
+        else
+            data.child = {
+                elementId: id,
+                instanceParameter: para
+            };
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.changeType = function () {
+        if (this.selectedConformanceStatement.type == 'ASSERTION') {
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.assertion = { mode: "SIMPLE" };
+        }
+        else if (this.selectedConformanceStatement.type == 'FREE') {
+            this.selectedConformanceStatement.assertion = undefined;
+        }
+        else if (this.selectedConformanceStatement.type == 'PREDEFINEDPATTERNS') {
+            this.selectedConformanceStatement.assertion = undefined;
+        }
+        else if (this.selectedConformanceStatement.type == 'PREDEFINED') {
+            this.selectedConformanceStatement.assertion = undefined;
+        }
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.changeAssertionMode = function () {
+        if (this.selectedConformanceStatement.assertion.mode == 'SIMPLE') {
+            this.selectedConformanceStatement.assertion = { mode: "SIMPLE" };
+        }
+        else if (this.selectedConformanceStatement.assertion.mode == 'COMPLEX') {
+            this.selectedConformanceStatement.assertion = { mode: "COMPLEX" };
+        }
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.submitCS = function () {
+        if (this.selectedConformanceStatement.type === 'ASSERTION')
+            this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.idMap);
+        this.deleteCS(this.selectedConformanceStatement.identifier);
+        this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
+        this.selectedConformanceStatement = {};
+        this.editorTab = false;
+        this.listTab = true;
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.selectCS = function (cs) {
+        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        this.editorTab = true;
+        this.listTab = false;
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.deleteCS = function (identifier) {
+        this.segmentConformanceStatements.conformanceStatements = __WEBPACK_IMPORTED_MODULE_5_underscore__["_"].without(this.segmentConformanceStatements.conformanceStatements, __WEBPACK_IMPORTED_MODULE_5_underscore__["_"].findWhere(this.segmentConformanceStatements.conformanceStatements, { identifier: identifier }));
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.printCS = function (cs) {
+        console.log(cs);
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.onTabOpen = function (e) {
+        if (e.index === 0)
+            this.selectedConformanceStatement = {};
+    };
+    ConformanceprofileEditConformancestatementsComponent.prototype.changeComplexAssertionType = function (constraint) {
+        if (constraint.complexAssertionType === 'ANDOR') {
+            constraint.child = undefined;
+            constraint.ifAssertion = undefined;
+            constraint.thenAssertion = undefined;
+            constraint.operator = 'AND';
+            constraint.assertions = [];
+            constraint.assertions.push({
+                "mode": "SIMPLE"
+            });
+            constraint.assertions.push({
+                "mode": "SIMPLE"
+            });
+        }
+        else if (constraint.complexAssertionType === 'NOT') {
+            constraint.assertions = undefined;
+            constraint.ifAssertion = undefined;
+            constraint.thenAssertion = undefined;
+            constraint.child = {
+                "mode": "SIMPLE"
+            };
+        }
+        else if (constraint.complexAssertionType === 'IFTHEN') {
+            constraint.assertions = undefined;
+            constraint.child = undefined;
+            constraint.ifAssertion = {
+                "mode": "SIMPLE"
+            };
+            constraint.thenAssertion = {
+                "mode": "SIMPLE"
+            };
+        }
+    };
+    __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["ViewChild"])('csForm'),
+        __metadata("design:type", __WEBPACK_IMPORTED_MODULE_8__angular_forms__["NgForm"])
+    ], ConformanceprofileEditConformancestatementsComponent.prototype, "csForm", void 0);
+    ConformanceprofileEditConformancestatementsComponent = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
+            template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.html"),
+            styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.css")]
+        }),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"],
+            __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"],
+            __WEBPACK_IMPORTED_MODULE_3__service_segments_segments_service__["a" /* SegmentsService */],
+            __WEBPACK_IMPORTED_MODULE_4__service_datatypes_datatypes_service__["a" /* DatatypesService */],
+            __WEBPACK_IMPORTED_MODULE_6__service_general_configuration_general_configuration_service__["a" /* GeneralConfigurationService */],
+            __WEBPACK_IMPORTED_MODULE_7__service_constraints_constraints_service__["a" /* ConstraintsService */]])
+    ], ConformanceprofileEditConformancestatementsComponent);
+    return ConformanceprofileEditConformancestatementsComponent;
+}());
+
+
+
+/***/ }),
+
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ConformanceprofileEditConformancestatementsResolver; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_conformance_profiles_conformance_profiles_service__ = __webpack_require__("../../../../../src/app/service/conformance-profiles/conformance-profiles.service.ts");
+/**
+ * Created by ena3 on 5/18/18.
+ */
+/**
+ * Created by ena3 on 4/16/18.
+ */
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+
+
+
+var ConformanceprofileEditConformancestatementsResolver = (function () {
+    function ConformanceprofileEditConformancestatementsResolver(http, conformanceProfilesService) {
+        this.http = http;
+        this.conformanceProfilesService = conformanceProfilesService;
+    }
+    ConformanceprofileEditConformancestatementsResolver.prototype.resolve = function (route, rstate) {
+        var conformanceprofileId = route.params["conformanceprofileId"];
+        return this.conformanceProfilesService.getConformanceProfileConformanceStatements(conformanceprofileId);
+    };
+    ConformanceprofileEditConformancestatementsResolver = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_2__service_conformance_profiles_conformance_profiles_service__["a" /* ConformanceProfilesService */]])
+    ], ConformanceprofileEditConformancestatementsResolver);
+    return ConformanceprofileEditConformancestatementsResolver;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-edit-routing.module.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -16,6 +356,8 @@ webpackJsonp(["conformanceprofile-edit.module"],{
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__conformanceprofile_predef_conformanceprofile_edit_predef_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-predef/conformanceprofile-edit-predef.resolver.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__conformanceprofile_structure_conformanceprofile_edit_structure_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-structure/conformanceprofile-edit-structure.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__conformanceprofile_structure_conformanceprofile_edit_structure_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-structure/conformanceprofile-edit-structure.resolver.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -25,6 +367,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 /**
  * Created by hnt5 on 10/23/17.
  */
+
+
 
 
 
@@ -57,10 +401,10 @@ var ConformanceprofileEditRoutingModule = (function () {
                     },
                     {
                         path: ':conformanceprofileId/structure', component: __WEBPACK_IMPORTED_MODULE_9__conformanceprofile_structure_conformanceprofile_edit_structure_component__["a" /* ConformanceprofileEditStructureComponent */], canDeactivate: [__WEBPACK_IMPORTED_MODULE_4__guards_save_guard__["a" /* SaveFormsGuard */]], resolve: { conformanceprofileStructure: __WEBPACK_IMPORTED_MODULE_10__conformanceprofile_structure_conformanceprofile_edit_structure_resolver__["a" /* ConformanceprofileEditStructureResolver */] }
+                    },
+                    {
+                        path: ':segmentId/conformanceStatement', component: __WEBPACK_IMPORTED_MODULE_11__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_component__["a" /* ConformanceprofileEditConformancestatementsComponent */], canDeactivate: [__WEBPACK_IMPORTED_MODULE_4__guards_save_guard__["a" /* SaveFormsGuard */]], resolve: { conformanceprofileConformanceStatements: __WEBPACK_IMPORTED_MODULE_12__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_resolver__["a" /* ConformanceprofileEditConformancestatementsResolver */] }
                     }
-                    // {
-                    //     path: ':segmentId/conformanceStatement', component: SegmentEditConformanceStatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { segmentConformanceStatements : SegmentEditConformanceStatementsResolver}
-                    // }
                 ])
             ],
             exports: [
@@ -113,12 +457,16 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_20__conformanceprofile_predef_conformanceprofile_edit_predef_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-predef/conformanceprofile-edit-predef.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_21__conformanceprofile_structure_conformanceprofile_edit_structure_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-structure/conformanceprofile-edit-structure.resolver.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_22__conformanceprofile_structure_conformanceprofile_edit_structure_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-structure/conformanceprofile-edit-structure.component.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_23__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_resolver__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_24__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
+
+
 
 
 
@@ -164,8 +512,8 @@ var ConformanceprofileEditModule = (function () {
                 __WEBPACK_IMPORTED_MODULE_15_angular_froala_wysiwyg__["b" /* FroalaViewModule */].forRoot(),
                 __WEBPACK_IMPORTED_MODULE_16_primeng_message__["MessageModule"]
             ],
-            providers: [__WEBPACK_IMPORTED_MODULE_14__conformanceprofile_metadata_conformanceprofile_edit_metadata_resolver__["a" /* ConformanceprofileEditMetadatResolver */], __WEBPACK_IMPORTED_MODULE_17__conformanceprofile_postdef_conformanceprofile_edit_postdef_resolver__["a" /* ConformanceprofileEditPostdefResolver */], __WEBPACK_IMPORTED_MODULE_19__conformanceprofile_predef_conformanceprofile_edit_predef_resolver__["a" /* ConformanceprofileEditPredefResolver */], __WEBPACK_IMPORTED_MODULE_21__conformanceprofile_structure_conformanceprofile_edit_structure_resolver__["a" /* ConformanceprofileEditStructureResolver */]],
-            declarations: [__WEBPACK_IMPORTED_MODULE_2__conformanceprofile_metadata_conformanceprofile_edit_metadata_component__["a" /* ConformanceprofileEditMetadataComponent */], __WEBPACK_IMPORTED_MODULE_18__conformanceprofile_postdef_conformanceprofile_edit_postdef_component__["a" /* ConformanceprofileEditPostdefComponent */], __WEBPACK_IMPORTED_MODULE_20__conformanceprofile_predef_conformanceprofile_edit_predef_component__["a" /* ConformanceprofileEditPredefComponent */], __WEBPACK_IMPORTED_MODULE_22__conformanceprofile_structure_conformanceprofile_edit_structure_component__["a" /* ConformanceprofileEditStructureComponent */]],
+            providers: [__WEBPACK_IMPORTED_MODULE_14__conformanceprofile_metadata_conformanceprofile_edit_metadata_resolver__["a" /* ConformanceprofileEditMetadatResolver */], __WEBPACK_IMPORTED_MODULE_17__conformanceprofile_postdef_conformanceprofile_edit_postdef_resolver__["a" /* ConformanceprofileEditPostdefResolver */], __WEBPACK_IMPORTED_MODULE_19__conformanceprofile_predef_conformanceprofile_edit_predef_resolver__["a" /* ConformanceprofileEditPredefResolver */], __WEBPACK_IMPORTED_MODULE_21__conformanceprofile_structure_conformanceprofile_edit_structure_resolver__["a" /* ConformanceprofileEditStructureResolver */], __WEBPACK_IMPORTED_MODULE_23__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_resolver__["a" /* ConformanceprofileEditConformancestatementsResolver */]],
+            declarations: [__WEBPACK_IMPORTED_MODULE_2__conformanceprofile_metadata_conformanceprofile_edit_metadata_component__["a" /* ConformanceprofileEditMetadataComponent */], __WEBPACK_IMPORTED_MODULE_18__conformanceprofile_postdef_conformanceprofile_edit_postdef_component__["a" /* ConformanceprofileEditPostdefComponent */], __WEBPACK_IMPORTED_MODULE_20__conformanceprofile_predef_conformanceprofile_edit_predef_component__["a" /* ConformanceprofileEditPredefComponent */], __WEBPACK_IMPORTED_MODULE_22__conformanceprofile_structure_conformanceprofile_edit_structure_component__["a" /* ConformanceprofileEditStructureComponent */], __WEBPACK_IMPORTED_MODULE_24__conformanceprofile_conformancestatements_conformanceprofile_edit_conformancestatements_component__["a" /* ConformanceprofileEditConformancestatementsComponent */]],
             schemas: [__WEBPACK_IMPORTED_MODULE_0__angular_core__["CUSTOM_ELEMENTS_SCHEMA"]]
         })
     ], ConformanceprofileEditModule);
@@ -669,7 +1017,7 @@ module.exports = module.exports.toString();
 /***/ "../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-structure/conformanceprofile-edit-structure.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h2>Conformance Profile Structure</h2>\n\n<div *ngIf=\"conformanceprofileStructure\">\n    <p-treeTable [value]=\"conformanceprofileStructure.children\" tableStyleClass=\"table-condensed table-stripped table-bordered\" (onNodeExpand)=\"loadNode($event)\">\n\n        <p-column header=\"Name\" [style]=\"{'width':'350px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'SEGMENT'\">\n                    <display-badge [type]=\"node.data.displayData.type\"></display-badge>{{node.data.position}}. {{node.data.displayData.segment.label}}\n                </div>\n                <div *ngIf=\"node.data.displayData.type !== 'SEGMENT'\">\n                    <display-badge [type]=\"node.data.displayData.type\"></display-badge>{{node.data.position}}. {{node.data.name}}\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Usage\" [style]=\"{'width':'190px'}\" >\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\" >\n                <div *ngIf=\"node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'\">\n                    <p-dropdown *ngIf=\"node.data.usage !== 'C'\" [options]=\"usages\" [(ngModel)]=\"node.data.usage\" appendTo=\"body\" (onChange)=\"onUsageChange(node)\" [style]=\"{'width' : '100%'}\"></p-dropdown>\n                    <div *ngIf=\"node.data.usage === 'C'\">\n                        <p-dropdown [options]=\"usages\" [(ngModel)]=\"node.data.usage\" appendTo=\"body\" (onChange)=\"onUsageChange(node)\" [style]=\"{'width' : '30%'}\"></p-dropdown>\n                        (<p-dropdown [options]=\"cUsages\" [(ngModel)]=\"node.data.displayData.messageBinding.predicate.trueUsage\" appendTo=\"body\" [style]=\"{'width' : '30%'}\"></p-dropdown>/\n                        <p-dropdown [options]=\"cUsages\" [(ngModel)]=\"node.data.displayData.messageBinding.predicate.falseUsage\" appendTo=\"body\" [style]=\"{'width' : '30%'}\"></p-dropdown>)\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'FIELD'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.segmentBinding|| !node.data.displayData.segmentBinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate\">C({{node.data.displayData.segmentBinding.predicate.trueUsage}}/{{node.data.displayData.segmentBinding.predicate.falseUsage}})</div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'COMPONENT'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.fieldDTbinding|| !node.data.displayData.fieldDTbinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate\">C({{node.data.displayData.fieldDTbinding.predicate.trueUsage}}/{{node.data.displayData.fieldDTbinding.predicate.falseUsage}})</div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'SUBCOMPONENT'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.componentDTbinding || !node.data.displayData.componentDTbinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate\">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Cardinality\" [style]=\"{'width':'100px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type !== 'COMPONENT' && node.data.displayData.type !== 'SUBCOMPONENT'\">\n                    <input required id=\"min\" [(ngModel)]=\"node.data.min\" type=\"number\" #min=\"ngModel\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                    <input required id=\"max\" [(ngModel)]=\"node.data.max\" type=\"text\" #max=\"ngModel\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Length\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    [{{node.data.minLength}}..{{node.data.maxLength}}]\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Conf. Length\" [style]=\"{'width':'120px'}\" >\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    {{node.data.confLength}}\n                </div>\n            </ng-template>\n        </p-column>\n\n\n        <p-column header=\"Datatype\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    <display-ref [elm]=\"node.data.displayData.datatype\"></display-ref>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"ValueSet\" [style]=\"{'width':valuesetColumnWidth}\">\n            <ng-template let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.valuesetAllowed && !node.data.displayData.hasSingleCode\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.messageBinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'MESSAGE'\"></display-ref>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForValueSet(vs)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"delValueSetBinding(node.data.displayData.messageBinding, vs, node.data.displayData)\" style=\"width:20%;\"></i>\n                            </div>\n                            <div *ngIf=\"vs.edit\">\n                                <p-dropdown [options]=\"valuesetOptions\" [(ngModel)]=\"vs.newvalue.valuesetId\" appendTo=\"body\" [style]=\"{'width':'150px'}\" filter=\"true\">\n                                    <ng-template let-option pTemplate=\"body\">\n                                        <div class=\"ui-helper-clearfix\" style=\"position: relative;height: 25px;\">\n                                            <display-ref *ngIf=\"option.value\" [elm]=\"getValueSetElm(option.value)\"></display-ref>\n                                            <span *ngIf=\"!option.value\">{{option.label}}</span>\n                                        </div>\n                                    </ng-template>\n                                </p-dropdown>\n                                <p-dropdown [options]=\"valuesetStrengthOptions\" [(ngModel)]=\"vs.newvalue.strength\" appendTo=\"body\" [style]=\"{'width':'150px'}\">\n                                </p-dropdown>\n                                <p-dropdown *ngIf=\"node.data.displayData.valueSetLocationOptions\" [options]=\"node.data.displayData.valueSetLocationOptions\" [(ngModel)]=\"vs.newvalue.valuesetLocations\" appendTo=\"body\" [style]=\"{'width':'150px'}\">\n                                </p-dropdown>\n                                <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewValueSet(vs); node.data.displayData.hasValueSet = true;\" [disabled]=\"!vs.newvalue.valuesetId\"></button>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && node.data.displayData.segmentBinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.segmentBinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'SEGMENT'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && node.data.displayData.fieldDTbinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.fieldDTbinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'FIELD'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.valuesetBindings || node.data.displayData.fieldDTbinding.valuesetBindings.length === 0) && node.data.displayData.componentDTbinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.componentDTbinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'COMPONENT'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n                    <i class=\"fa fa-plus\" *ngIf=\"node.data.displayData.multipleValuesetAllowed || !node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length == 0\" (click)=\"addNewValueSet(node)\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Single Code\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.valuesetAllowed && node.data.displayData.datatype.leaf && !node.data.displayData.hasValueSet\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngIf=\"node.data.displayData.messageBinding.externalSingleCode\">\n                            <div *ngIf=\"!node.data.displayData.messageBinding.externalSingleCode.edit\">\n                                <display-singlecode [elm]=\"node.data.displayData.messageBinding.externalSingleCode\" [from]=\"'MESSAGE'\"></display-singlecode>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForSingleCode(node)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"deleteSingleCode(node)\" style=\"width:20%;\"></i>\n                            </div>\n                            <div *ngIf=\"node.data.displayData.messageBinding.externalSingleCode.edit\">\n                                <input [(ngModel)]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCode\" type=\"text\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                                <input [(ngModel)]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem\" type=\"text\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                                <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewSingleCode(node); node.data.displayData.hasSingleCode = true;\" [disabled]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCode === '' || node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem === ''\"></button>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && node.data.displayData.segmentBinding\">\n                        <div *ngIf=\"node.data.displayData.segmentBinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.segmentBinding.externalSingleCode\" [from]=\"'SEGMENT'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && node.data.displayData.fieldDTbinding\">\n                        <div *ngIf=\"node.data.displayData.fieldDTbinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.fieldDTbinding.externalSingleCode\" [from]=\"'FIELD'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.externalSingleCode) && node.data.displayData.componentDTbinding\">\n                        <div *ngIf=\"node.data.displayData.componentDTbinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.componentDTbinding.externalSingleCode\" [from]=\"'COMPONENT'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <i class=\"fa fa-plus\" *ngIf=\"!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode\" (click)=\"addNewSingleCode(node)\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Constant Value\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.datatype && node.data.displayData.datatype.leaf && !node.data.displayData.valuesetAllowed\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngIf=\"!node.data.displayData.messageBinding.editConstantValue\">\n                            <div *ngIf=\"node.data.displayData.messageBinding.constantValue\">\n                                <display-constantvalue [elm]=\"node.data.displayData.messageBinding.constantValue\" [from]=\"'MESSAGE'\"></display-constantvalue>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForConstantValue(node)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"deleteConstantValue(node)\" style=\"width:20%;\"></i>\n                            </div>\n                        </div>\n                        <div *ngIf=\"node.data.displayData.messageBinding.editConstantValue\">\n                            <input [(ngModel)]=\"node.data.displayData.messageBinding.newConstantValue\" type=\"text\" style=\"width:90%;border-width:0px 0px 1px 0px\"/>\n                            <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewConstantValue(node)\" [disabled]=\"node.data.displayData.messageBinding.newConstantValue === ''\"></button>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && node.data.displayData.segmentBinding\">\n                        <div *ngIf=\"node.data.displayData.segmentBinding.constantValue !== undefined  && node.data.displayData.segmentBinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.segmentBinding.constantValue\" [from]=\"'SEGMENT'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && node.data.displayData.fieldDTbinding\">\n                        <div *ngIf=\"node.data.displayData.fieldDTbinding.constantValue !== undefined  && node.data.displayData.fieldDTbinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.fieldDTbinding.constantValue\" [from]=\"'FIELD'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.constantValue) && node.data.displayData.componentDTbinding\">\n                        <div *ngIf=\"node.data.displayData.componentDTbinding.constantValue  !== undefined && node.data.displayData.componentDTbinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.componentDTbinding.constantValue\" [from]=\"'COMPONENT'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.editConstantValue\">\n                        <i class=\"fa fa-plus\" *ngIf=\"!node.data.displayData.messageBinding || (node.data.displayData.messageBinding && !node.data.displayData.messageBinding.constantValue)\" (click)=\"addNewConstantValue(node)\"></i>\n                    </div>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Predicate\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.usage === 'C'\">\n                    <!--<div *ngIf=\"node.data.displayData.type === 'GROUP'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.messageBinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.assertion && node.data.displayData.messageBinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.messageBinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'FIELD'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.segmentBinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.assertion && node.data.displayData.segmentBinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.segmentBinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'COMPONENT'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.fieldDTbinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.assertion && node.data.displayData.fieldDTbinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.fieldDTbinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'SUBCOMPONENT'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.componentDTbinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.assertion && node.data.displayData.componentDTbinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.componentDTbinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <i class=\"fa fa-pencil\" (click)=\"editPredicate(node)\" style=\"width:20%;\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Text Definition\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'\">\n                    <ng-container *ngIf=\"node.data.text\">\n                        <span (click)=\"editTextDefinition(node)\">{{truncate(node.data.text)}}</span>\n                        <i class=\"fa fa-times\" (click)=\"delTextDefinition(node)\" style=\"width:20%;\"></i>\n                    </ng-container>\n                    <ng-container *ngIf=\"!node.data.text\">\n                        <i class=\"fa fa-pencil\" (click)=\"editTextDefinition(node)\"></i>\n                    </ng-container>\n                </div>\n            </ng-template>\n        </p-column>\n        <p-column header=\"Comment\" [style]=\"{'width':'400px'}\">\n            <ng-template let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.messageBinding\">\n                    <div *ngFor=\"let c of node.data.displayData.messageBinding.comments\">\n                        <div *ngIf=\"!c.edit\">\n                            <display-comment [elm]=\"c\" [from]=\"'MESSAGE'\"></display-comment>\n                            <i class=\"fa fa-pencil\" (click)=\"makeEditModeForComment(c)\" style=\"width:20%;\"></i>\n                            <i class=\"fa fa-times\" (click)=\"delCommentBinding(node.data.displayData.messageBinding, c)\" style=\"width:20%;\"></i>\n                        </div>\n                        <div *ngIf=\"c.edit\">\n                            <textarea pInputTextarea [(ngModel)]=\"c.newComment.description\"></textarea>\n                            <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewComment(c);\" [disabled]=\"c.newComment.description === ''\"></button>\n                        </div>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.segmentBinding\">\n                    <div *ngFor=\"let c of node.data.displayData.segmentBinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'SEGMENT'\"></display-comment>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.fieldDTbinding\">\n                    <div *ngFor=\"let c of node.data.displayData.fieldDTbinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'FIELD'\"></display-comment>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.componentDTbinding\">\n                    <div *ngFor=\"let c of node.data.displayData.componentDTbinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'COMPONENT'\"></display-comment>\n                    </div>\n                </div>\n                <i class=\"fa fa-plus\" (click)=\"addNewComment(node)\"></i>\n            </ng-template>\n        </p-column>\n    </p-treeTable>\n\n    {{conformanceprofileStructure|json}}\n    <p-dialog *ngIf=\"selectedNode\" header=\"Edit Text Definition of {{selectedNode.data.name}}\" [(visible)]=\"textDefinitionDialogOpen\" [modal]=\"true\" [responsive]=\"true\" [width]=\"350\" [minWidth]=\"200\" [minY]=\"70\">\n        <textarea pInputTextarea [(ngModel)]=\"selectedNode.data.text\"></textarea>\n    </p-dialog>\n\n    <p-dialog *ngIf=\"selectedNode\" header=\"Edit Predicate of {{selectedNode.data.name}}\" [(visible)]=\"preciateEditorOpen\" [modal]=\"true\" [responsive]=\"true\" [width]=\"1200\" [minWidth]=\"800\" [minY]=\"70\">\n        <form #cpForm=\"ngForm\">\n            <div class=\"ui-g ui-fluid\">\n                <div class=\"ui-g-12 ui-md-2\">\n                    <label>Editor Type: </label>\n                </div>\n                <div class=\"ui-g-12 ui-md-10\">\n                    <p-selectButton name=\"type\" [options]=\"constraintTypes\" [(ngModel)]=\"selectedPredicate.type\" (onChange)=\"changeType()\"></p-selectButton>\n                </div>\n            </div>\n\n            <div *ngIf=\"selectedPredicate.type && selectedPredicate.type ==='ASSERTION'\">\n                <div class=\"ui-g ui-fluid\">\n                    <div class=\"ui-g-12 ui-md-2\">\n                        <label>Assertion Type: </label>\n                    </div>\n                    <div class=\"ui-g-12 ui-md-10\">\n                        <p-dropdown id=\"assertionMode\" name=\"assertionMode\" required #assertionMode=\"ngModel\" [options]=\"assertionModes\" [(ngModel)]=\"selectedPredicate.assertion.mode\" (onChange)=\"changeAssertionMode()\"></p-dropdown>\n                        <div *ngIf=\"assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)\" class=\"alert alert-danger\">\n                            <div *ngIf=\"assertionMode.errors.required\">\n                                Assertion Type is required.\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <edit-free-constraint *ngIf=\"selectedPredicate.type === 'FREE'\" [constraint]=\"selectedPredicate\"></edit-free-constraint>\n            <edit-simple-constraint *ngIf=\"selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'\" [constraint]=\"selectedPredicate.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'rootSimple'\"></edit-simple-constraint>\n            <edit-complex-constraint *ngIf=\"selectedPredicate.assertion && selectedPredicate.assertion.mode === 'COMPLEX'\" [constraint]=\"selectedPredicate.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'root'\"></edit-complex-constraint>\n\n            <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-plus\" label=\"Submit\" (click)=\"submitCP()\" [disabled]=\"cpForm.invalid\"></button>\n            <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-print\" label=\"Print\" (click)=\"print(selectedConformanceStatement)\"></button>\n        </form>\n    </p-dialog>\n</div>\n"
+module.exports = "<h2>Conformance Profile Structure</h2>\n\n<div *ngIf=\"conformanceprofileStructure\">\n    <p-treeTable [value]=\"conformanceprofileStructure.children\" tableStyleClass=\"table-condensed table-stripped table-bordered\" (onNodeExpand)=\"loadNode($event)\">\n\n        <p-column header=\"Name\" [style]=\"{'width':'350px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'SEGMENT'\">\n                    <display-badge [type]=\"node.data.displayData.type\"></display-badge>{{node.data.position}}. {{node.data.displayData.segment.label}}\n                </div>\n                <div *ngIf=\"node.data.displayData.type !== 'SEGMENT'\">\n                    <display-badge [type]=\"node.data.displayData.type\"></display-badge>{{node.data.position}}. {{node.data.name}}\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Usage\" [style]=\"{'width':'190px'}\" >\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\" >\n                <div *ngIf=\"node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'\">\n                    <p-dropdown *ngIf=\"node.data.usage !== 'C'\" [options]=\"usages\" [(ngModel)]=\"node.data.usage\" appendTo=\"body\" (onChange)=\"onUsageChange(node)\" [style]=\"{'width' : '100%'}\"></p-dropdown>\n                    <div *ngIf=\"node.data.usage === 'C'\">\n                        <p-dropdown [options]=\"usages\" [(ngModel)]=\"node.data.usage\" appendTo=\"body\" (onChange)=\"onUsageChange(node)\" [style]=\"{'width' : '30%'}\"></p-dropdown>\n                        (<p-dropdown [options]=\"cUsages\" [(ngModel)]=\"node.data.displayData.messageBinding.predicate.trueUsage\" appendTo=\"body\" [style]=\"{'width' : '30%'}\"></p-dropdown>/\n                        <p-dropdown [options]=\"cUsages\" [(ngModel)]=\"node.data.displayData.messageBinding.predicate.falseUsage\" appendTo=\"body\" [style]=\"{'width' : '30%'}\"></p-dropdown>)\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'FIELD'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.segmentBinding|| !node.data.displayData.segmentBinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate\">C({{node.data.displayData.segmentBinding.predicate.trueUsage}}/{{node.data.displayData.segmentBinding.predicate.falseUsage}})</div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'COMPONENT'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.fieldDTbinding|| !node.data.displayData.fieldDTbinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate\">C({{node.data.displayData.fieldDTbinding.predicate.trueUsage}}/{{node.data.displayData.fieldDTbinding.predicate.falseUsage}})</div>\n                </div>\n                <div *ngIf=\"node.data.displayData.type === 'SUBCOMPONENT'\">\n                    <div *ngIf=\"node.data.usage !== 'C' || !node.data.displayData.componentDTbinding || !node.data.displayData.componentDTbinding.predicate\">{{node.data.usage}}</div>\n                    <div *ngIf=\"node.data.usage === 'C' && node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate\">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Cardinality\" [style]=\"{'width':'100px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type !== 'COMPONENT' && node.data.displayData.type !== 'SUBCOMPONENT'\">\n                    <input required id=\"min\" [(ngModel)]=\"node.data.min\" type=\"number\" #min=\"ngModel\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                    <input required id=\"max\" [(ngModel)]=\"node.data.max\" type=\"text\" #max=\"ngModel\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Length\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    [{{node.data.minLength}}..{{node.data.maxLength}}]\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Conf. Length\" [style]=\"{'width':'120px'}\" >\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    {{node.data.confLength}}\n                </div>\n            </ng-template>\n        </p-column>\n\n\n        <p-column header=\"Datatype\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'\">\n                    <display-ref [elm]=\"node.data.displayData.datatype\"></display-ref>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"ValueSet\" [style]=\"{'width':valuesetColumnWidth}\">\n            <ng-template let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.valuesetAllowed && !node.data.displayData.hasSingleCode\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.messageBinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'MESSAGE'\"></display-ref>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForValueSet(vs)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"delValueSetBinding(node.data.displayData.messageBinding, vs, node.data.displayData)\" style=\"width:20%;\"></i>\n                            </div>\n                            <div *ngIf=\"vs.edit\">\n                                <p-dropdown [options]=\"valuesetOptions\" [(ngModel)]=\"vs.newvalue.valuesetId\" appendTo=\"body\" [style]=\"{'width':'150px'}\" filter=\"true\">\n                                    <ng-template let-option pTemplate=\"body\">\n                                        <div class=\"ui-helper-clearfix\" style=\"position: relative;height: 25px;\">\n                                            <display-ref *ngIf=\"option.value\" [elm]=\"getValueSetElm(option.value)\"></display-ref>\n                                            <span *ngIf=\"!option.value\">{{option.label}}</span>\n                                        </div>\n                                    </ng-template>\n                                </p-dropdown>\n                                <p-dropdown [options]=\"valuesetStrengthOptions\" [(ngModel)]=\"vs.newvalue.strength\" appendTo=\"body\" [style]=\"{'width':'150px'}\">\n                                </p-dropdown>\n                                <p-dropdown *ngIf=\"node.data.displayData.valueSetLocationOptions\" [options]=\"node.data.displayData.valueSetLocationOptions\" [(ngModel)]=\"vs.newvalue.valuesetLocations\" appendTo=\"body\" [style]=\"{'width':'150px'}\">\n                                </p-dropdown>\n                                <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewValueSet(vs); node.data.displayData.hasValueSet = true;\" [disabled]=\"!vs.newvalue.valuesetId\"></button>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && node.data.displayData.segmentBinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.segmentBinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'SEGMENT'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && node.data.displayData.fieldDTbinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.fieldDTbinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'FIELD'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.valuesetBindings || node.data.displayData.fieldDTbinding.valuesetBindings.length === 0) && node.data.displayData.componentDTbinding\">\n                        <div *ngFor=\"let vs of node.data.displayData.componentDTbinding.valuesetBindings\">\n                            <div *ngIf=\"!vs.edit\">\n                                <display-ref [elm]=\"vs\" [from]=\"'COMPONENT'\"></display-ref>\n                            </div>\n                        </div>\n                    </div>\n                    <i class=\"fa fa-plus\" *ngIf=\"node.data.displayData.multipleValuesetAllowed || !node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length == 0\" (click)=\"addNewValueSet(node)\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Single Code\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.valuesetAllowed && node.data.displayData.datatype.leaf && !node.data.displayData.hasValueSet\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngIf=\"node.data.displayData.messageBinding.externalSingleCode\">\n                            <div *ngIf=\"!node.data.displayData.messageBinding.externalSingleCode.edit\">\n                                <display-singlecode [elm]=\"node.data.displayData.messageBinding.externalSingleCode\" [from]=\"'MESSAGE'\"></display-singlecode>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForSingleCode(node)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"deleteSingleCode(node)\" style=\"width:20%;\"></i>\n                            </div>\n                            <div *ngIf=\"node.data.displayData.messageBinding.externalSingleCode.edit\">\n                                <input [(ngModel)]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCode\" type=\"text\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                                <input [(ngModel)]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem\" type=\"text\" style=\"width:45%;border-width:0px 0px 1px 0px\"/>\n                                <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewSingleCode(node); node.data.displayData.hasSingleCode = true;\" [disabled]=\"node.data.displayData.messageBinding.externalSingleCode.newSingleCode === '' || node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem === ''\"></button>\n                            </div>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && node.data.displayData.segmentBinding\">\n                        <div *ngIf=\"node.data.displayData.segmentBinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.segmentBinding.externalSingleCode\" [from]=\"'SEGMENT'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && node.data.displayData.fieldDTbinding\">\n                        <div *ngIf=\"node.data.displayData.fieldDTbinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.fieldDTbinding.externalSingleCode\" [from]=\"'FIELD'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.externalSingleCode) && node.data.displayData.componentDTbinding\">\n                        <div *ngIf=\"node.data.displayData.componentDTbinding.externalSingleCode\">\n                            <display-singlecode [elm]=\"node.data.displayData.componentDTbinding.externalSingleCode\" [from]=\"'COMPONENT'\"></display-singlecode>\n                        </div>\n                    </div>\n                    <i class=\"fa fa-plus\" *ngIf=\"!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode\" (click)=\"addNewSingleCode(node)\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Constant Value\" [style]=\"{'width':'200px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.datatype && node.data.displayData.datatype.leaf && !node.data.displayData.valuesetAllowed\">\n                    <div *ngIf=\"node.data.displayData.messageBinding\">\n                        <div *ngIf=\"!node.data.displayData.messageBinding.editConstantValue\">\n                            <div *ngIf=\"node.data.displayData.messageBinding.constantValue\">\n                                <display-constantvalue [elm]=\"node.data.displayData.messageBinding.constantValue\" [from]=\"'MESSAGE'\"></display-constantvalue>\n                                <i class=\"fa fa-pencil\" (click)=\"makeEditModeForConstantValue(node)\" style=\"width:20%;\"></i>\n                                <i class=\"fa fa-times\" (click)=\"deleteConstantValue(node)\" style=\"width:20%;\"></i>\n                            </div>\n                        </div>\n                        <div *ngIf=\"node.data.displayData.messageBinding.editConstantValue\">\n                            <input [(ngModel)]=\"node.data.displayData.messageBinding.newConstantValue\" type=\"text\" style=\"width:90%;border-width:0px 0px 1px 0px\"/>\n                            <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewConstantValue(node)\" [disabled]=\"node.data.displayData.messageBinding.newConstantValue === ''\"></button>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && node.data.displayData.segmentBinding\">\n                        <div *ngIf=\"node.data.displayData.segmentBinding.constantValue !== undefined  && node.data.displayData.segmentBinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.segmentBinding.constantValue\" [from]=\"'SEGMENT'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && node.data.displayData.fieldDTbinding\">\n                        <div *ngIf=\"node.data.displayData.fieldDTbinding.constantValue !== undefined  && node.data.displayData.fieldDTbinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.fieldDTbinding.constantValue\" [from]=\"'FIELD'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.constantValue) && node.data.displayData.componentDTbinding\">\n                        <div *ngIf=\"node.data.displayData.componentDTbinding.constantValue  !== undefined && node.data.displayData.componentDTbinding.constantValue !== ''\">\n                            <display-constantvalue [elm]=\"node.data.displayData.componentDTbinding.constantValue\" [from]=\"'COMPONENT'\"></display-constantvalue>\n                        </div>\n                    </div>\n                    <div *ngIf=\"!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.editConstantValue\">\n                        <i class=\"fa fa-plus\" *ngIf=\"!node.data.displayData.messageBinding || (node.data.displayData.messageBinding && !node.data.displayData.messageBinding.constantValue)\" (click)=\"addNewConstantValue(node)\"></i>\n                    </div>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Predicate\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.usage === 'C'\">\n                    <!--<div *ngIf=\"node.data.displayData.type === 'GROUP'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.messageBinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.assertion && node.data.displayData.messageBinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.messageBinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'FIELD'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.segmentBinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.assertion && node.data.displayData.segmentBinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.segmentBinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'COMPONENT'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.fieldDTbinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.assertion && node.data.displayData.fieldDTbinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.fieldDTbinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <!--<div *ngIf=\"node.data.displayData.type === 'SUBCOMPONENT'\">-->\n                        <!--<div *ngIf=\"node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.freeText\">-->\n                            <!--{{node.data.displayData.componentDTbinding.predicate.freeText}}-->\n                        <!--</div>-->\n                        <!--<div *ngIf=\"node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.assertion && node.data.displayData.componentDTbinding.predicate.assertion.description\">-->\n                            <!--{{node.data.displayData.componentDTbinding.predicate.assertion.description}}-->\n                        <!--</div>-->\n                    <!--</div>-->\n                    <i class=\"fa fa-pencil\" (click)=\"editPredicate(node)\" style=\"width:20%;\"></i>\n                </div>\n            </ng-template>\n        </p-column>\n\n        <p-column header=\"Text Definition\" [style]=\"{'width':'150px'}\">\n            <ng-template let-col let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'\">\n                    <ng-container *ngIf=\"node.data.text\">\n                        <span (click)=\"editTextDefinition(node)\">{{truncate(node.data.text)}}</span>\n                        <i class=\"fa fa-times\" (click)=\"delTextDefinition(node)\" style=\"width:20%;\"></i>\n                    </ng-container>\n                    <ng-container *ngIf=\"!node.data.text\">\n                        <i class=\"fa fa-pencil\" (click)=\"editTextDefinition(node)\"></i>\n                    </ng-container>\n                </div>\n            </ng-template>\n        </p-column>\n        <p-column header=\"Comment\" [style]=\"{'width':'400px'}\">\n            <ng-template let-node=\"rowData\" pTemplate=\"body\">\n                <div *ngIf=\"node.data.displayData.messageBinding\">\n                    <div *ngFor=\"let c of node.data.displayData.messageBinding.comments\">\n                        <div *ngIf=\"!c.edit\">\n                            <display-comment [elm]=\"c\" [from]=\"'MESSAGE'\"></display-comment>\n                            <i class=\"fa fa-pencil\" (click)=\"makeEditModeForComment(c)\" style=\"width:20%;\"></i>\n                            <i class=\"fa fa-times\" (click)=\"delCommentBinding(node.data.displayData.messageBinding, c)\" style=\"width:20%;\"></i>\n                        </div>\n                        <div *ngIf=\"c.edit\">\n                            <textarea pInputTextarea [(ngModel)]=\"c.newComment.description\"></textarea>\n                            <button pButton type=\"button\" class=\"blue-btn\" icon=\"fa-check\" (click)=\"submitNewComment(c);\" [disabled]=\"c.newComment.description === ''\"></button>\n                        </div>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.segmentBinding\">\n                    <div *ngFor=\"let c of node.data.displayData.segmentBinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'SEGMENT'\"></display-comment>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.fieldDTbinding\">\n                    <div *ngFor=\"let c of node.data.displayData.fieldDTbinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'FIELD'\"></display-comment>\n                    </div>\n                </div>\n                <div *ngIf=\"node.data.displayData.componentDTbinding\">\n                    <div *ngFor=\"let c of node.data.displayData.componentDTbinding.comments\">\n                        <display-comment [elm]=\"c\" [from]=\"'COMPONENT'\"></display-comment>\n                    </div>\n                </div>\n                <i class=\"fa fa-plus\" (click)=\"addNewComment(node)\"></i>\n            </ng-template>\n        </p-column>\n    </p-treeTable>\n    <p-dialog *ngIf=\"selectedNode\" header=\"Edit Text Definition of {{selectedNode.data.name}}\" [(visible)]=\"textDefinitionDialogOpen\" [modal]=\"true\" [responsive]=\"true\" [width]=\"350\" [minWidth]=\"200\" [minY]=\"70\">\n        <textarea pInputTextarea [(ngModel)]=\"selectedNode.data.text\"></textarea>\n    </p-dialog>\n\n    <p-dialog *ngIf=\"selectedNode\" header=\"Edit Predicate of {{selectedNode.data.name}}\" [(visible)]=\"preciateEditorOpen\" [modal]=\"true\" [responsive]=\"true\" [width]=\"1200\" [minWidth]=\"800\" [minY]=\"70\">\n        <form #cpForm=\"ngForm\">\n            <div class=\"ui-g ui-fluid\">\n                <div class=\"ui-g-12 ui-md-2\">\n                    <label>Editor Type: </label>\n                </div>\n                <div class=\"ui-g-12 ui-md-10\">\n                    <p-selectButton name=\"type\" [options]=\"constraintTypes\" [(ngModel)]=\"selectedPredicate.type\" (onChange)=\"changeType()\"></p-selectButton>\n                </div>\n            </div>\n\n            <div *ngIf=\"selectedPredicate.type && selectedPredicate.type ==='ASSERTION'\">\n                <div class=\"ui-g ui-fluid\">\n                    <div class=\"ui-g-12 ui-md-2\">\n                        <label>Assertion Type: </label>\n                    </div>\n                    <div class=\"ui-g-12 ui-md-10\">\n                        <p-dropdown id=\"assertionMode\" name=\"assertionMode\" required #assertionMode=\"ngModel\" [options]=\"assertionModes\" [(ngModel)]=\"selectedPredicate.assertion.mode\" (onChange)=\"changeAssertionMode()\"></p-dropdown>\n                        <div *ngIf=\"assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)\" class=\"alert alert-danger\">\n                            <div *ngIf=\"assertionMode.errors.required\">\n                                Assertion Type is required.\n                            </div>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <edit-free-constraint *ngIf=\"selectedPredicate.type === 'FREE'\" [constraint]=\"selectedPredicate\"></edit-free-constraint>\n            <edit-simple-constraint *ngIf=\"selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'\" [constraint]=\"selectedPredicate.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'rootSimple'\"></edit-simple-constraint>\n            <edit-complex-constraint *ngIf=\"selectedPredicate.assertion && selectedPredicate.assertion.mode === 'COMPLEX'\" [constraint]=\"selectedPredicate.assertion\" [idMap]=\"idMap\" [treeData]=\"treeData\" [groupName]=\"'root'\"></edit-complex-constraint>\n\n            <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-plus\" label=\"Submit\" (click)=\"submitCP()\" [disabled]=\"cpForm.invalid\"></button>\n            <button pButton style=\"float: right\" type=\"button\"  class=\"blue-btn\" icon=\"fa-print\" label=\"Print\" (click)=\"print(selectedConformanceStatement)\"></button>\n        </form>\n    </p-dialog>\n</div>\n"
 
 /***/ }),
 
@@ -883,53 +1231,55 @@ var ConformanceprofileEditStructureComponent = (function () {
             }
         }
     };
-    /*
-        updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
-            for (let entry of children) {
-                if(!entry.data.displayData) entry.data.displayData = {};
-                entry.data.displayData.datatype = this.getDatatypeLink(entry.data.ref.id);
-                entry.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(entry.data.displayData.datatype.name,entry.data.position, parentDTName, this.segmentStructure.name, entry.data.displayData.type);
-                entry.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(entry.data.displayData.datatype.name, entry.data.displayData.datatype.domainInfo.version);
-                if(entry.data.displayData.valuesetAllowed) entry.data.displayData.multipleValuesetAllowed =  this.configService.isMultipleValuseSetAllowed(entry.data.displayData.datatype.name);
-                if(entry.data.displayData.datatype.leaf) entry.leaf = true;
-                else entry.leaf = false;
-    
-                if(parentFieldId === null){
-                    entry.data.displayData.idPath = entry.data.id;
-                }else{
-                    entry.data.displayData.idPath = parentFieldId + '-' + entry.data.id;
-                }
-    
-                if(entry.data.displayData.idPath.split("-").length === 1){
-                    entry.data.displayData.type = 'FIELD';
-                    entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
-                    if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding) {
-                        entry.data.displayData.segmentBinding = {};
-                    }
-                    if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding.predicate){
-                        entry.data.displayData.segmentBinding.predicate = {};
-                    }
-                }else if(entry.data.displayData.idPath.split("-").length === 2){
-                    entry.data.displayData.type = 'COMPONENT';
-                    entry.data.displayData.fieldDT = parentDTId;
-                    entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
-                    entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
-                }else if(entry.data.displayData.idPath.split("-").length === 3){
-                    entry.data.displayData.type = "SUBCOMPONENT";
-                    entry.data.displayData.fieldDT = fieldDT;
-                    entry.data.displayData.componentDT = parentDTId;
-                    entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
-                    entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
-                    entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
-                }
-    
-                this.setHasSingleCode(entry.data.displayData);
-                this.setHasValueSet(entry.data.displayData);
+    ConformanceprofileEditStructureComponent.prototype.updateDatatype = function (node, children, currentBinding, parentFieldId, fieldDT, messageBinding, segmentBinding, fieldDTbinding, parentDTId, parentDTName, segmentName, type) {
+        for (var _i = 0, children_2 = children; _i < children_2.length; _i++) {
+            var entry = children_2[_i];
+            if (!entry.data.displayData)
+                entry.data.displayData = {};
+            entry.data.displayData.datatype = this.getDatatypeLink(entry.data.ref.id);
+            entry.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(entry.data.displayData.datatype.name, entry.data.position, parentDTName, segmentName, entry.data.displayData.type);
+            entry.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(entry.data.displayData.datatype.name, entry.data.displayData.datatype.domainInfo.version);
+            if (entry.data.displayData.valuesetAllowed)
+                entry.data.displayData.multipleValuesetAllowed = this.configService.isMultipleValuseSetAllowed(entry.data.displayData.datatype.name);
+            if (entry.data.displayData.datatype.leaf)
+                entry.leaf = true;
+            else
+                entry.leaf = false;
+            if (parentFieldId === null) {
+                entry.data.displayData.idPath = entry.data.id;
             }
-    
-            node.children = children;
+            else {
+                entry.data.displayData.idPath = parentFieldId + '-' + entry.data.id;
+            }
+            if (type === 'FIELD') {
+                entry.data.displayData.type = 'FIELD';
+                // entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
+                // if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding) {
+                //     entry.data.displayData.segmentBinding = {};
+                // }
+                // if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding.predicate){
+                //     entry.data.displayData.segmentBinding.predicate = {};
+                // }
+            }
+            else if (type === 'COMPONENT') {
+                entry.data.displayData.type = 'COMPONENT';
+                entry.data.displayData.fieldDT = parentDTId;
+                //     entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], segmentBinding);
+                //     entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[1], currentBinding);
+            }
+            else if (type === 'SUBCOMPONENT') {
+                entry.data.displayData.type = "SUBCOMPONENT";
+                entry.data.displayData.fieldDT = fieldDT;
+                entry.data.displayData.componentDT = parentDTId;
+                // entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], segmentBinding);
+                // entry.data.displayData.fieldDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], fieldDTbinding);
+                // entry.data.displayData.componentDTbinding = this.findBinding(entry.data.displayData.idPath.split("-")[2], currentBinding);
+            }
+            this.setHasSingleCode(entry.data.displayData);
+            this.setHasValueSet(entry.data.displayData);
         }
-    */
+        node.children = children;
+    };
     ConformanceprofileEditStructureComponent.prototype.setHasSingleCode = function (displayData) {
         if (displayData.segmentBinding || displayData.fieldDTbinding || displayData.componentDTbinding) {
             if (displayData.segmentBinding && displayData.segmentBinding.internalSingleCode && displayData.segmentBinding.internalSingleCode !== '') {
@@ -1046,14 +1396,23 @@ var ConformanceprofileEditStructureComponent = (function () {
         }
         node.data.displayData.datatype.dtOptions.push({ label: 'Change Datatype root', value: null });
     };
-    // loadNode(event) {
-    //     if(event.node && !event.node.children) {
-    //         var datatypeId = event.node.data.ref.id;
-    //         this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
-    //             this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
-    //         });
-    //     }
-    // }
+    ConformanceprofileEditStructureComponent.prototype.loadNode = function (event) {
+        var _this = this;
+        if (event.node && !event.node.children) {
+            if (event.node.data.type === 'SEGMENTREF') {
+                var segmentId = event.node.data.ref.id;
+                this.segmentsService.getSegmentStructure(segmentId).then(function (structure) {
+                    _this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, null, event.node.data.displayData.messageBinding, null, null, null, null, structure.name, 'FIELD');
+                });
+            }
+            else {
+                var datatypeId = event.node.data.ref.id;
+                this.datatypesService.getDatatypeStructure(datatypeId).then(function (structure) {
+                    _this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.messageBinding, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name, null, event.node.data.displayData.type);
+                });
+            }
+        }
+    };
     ConformanceprofileEditStructureComponent.prototype.onDatatypeChange = function (node) {
         if (!node.data.displayData.datatype.id) {
             node.data.displayData.datatype.id = node.data.ref.id;
