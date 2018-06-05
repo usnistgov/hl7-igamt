@@ -17,7 +17,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
  *

@@ -11,19 +11,52 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service;
-
-import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
+package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on Mar 13, 2018.
  */
-@Service("exportConfigurationService")
-public interface ExportConfigurationService {
+public class CodeUsageConfiguration {
 
-  public ExportConfiguration getExportConfiguration(String username);
+  private boolean r;
+  private boolean p;
+  private boolean e;
+
+
+  public CodeUsageConfiguration() {
+    super();
+  }
+
+  public CodeUsageConfiguration(boolean r, boolean p, boolean e) {
+    super();
+    this.r = r;
+    this.p = p;
+    this.e = e;
+  }
+
+  public boolean isR() {
+    return r;
+  }
+
+  public void setR(boolean r) {
+    this.r = r;
+  }
+
+  public boolean isP() {
+    return p;
+  }
+
+  public void setP(boolean p) {
+    this.p = p;
+  }
+
+  public boolean isE() {
+    return e;
+  }
+
+  public void setE(boolean e) {
+    this.e = e;
+  }
 
 }

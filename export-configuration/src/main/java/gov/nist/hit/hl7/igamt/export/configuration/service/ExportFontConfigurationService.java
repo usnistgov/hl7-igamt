@@ -11,21 +11,19 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.service;
+package gov.nist.hit.hl7.igamt.export.configuration.service;
 
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 
 /**
  *
- * @author Maxence Lefort on Apr 9, 2018.
+ * @author Maxence Lefort on May 8, 2018.
  */
-@Service("igSerializationService")
-public interface IgSerializationService {
+@Service("exportFontConfigurationService")
+public interface ExportFontConfigurationService {
 
-  public String serializeIgDocument(Ig igDocument, ExportConfiguration exportConfiguration) throws SerializationException;
+  public ExportFontConfiguration getExportFontConfiguration(String username);
 
 }

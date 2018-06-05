@@ -11,14 +11,14 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service.impl;
+package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportFontConfiguration;
-import gov.nist.hit.hl7.igamt.export.repository.ExportFontConfigurationRepository;
-import gov.nist.hit.hl7.igamt.export.service.ExportFontConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontConfigurationRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 
 /**
  *

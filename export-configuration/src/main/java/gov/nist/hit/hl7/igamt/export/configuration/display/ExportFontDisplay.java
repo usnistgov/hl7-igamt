@@ -11,16 +11,19 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.repository;
-
-import org.springframework.data.mongodb.repository.MongoRepository;
-
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
+package gov.nist.hit.hl7.igamt.export.configuration.display;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on Jun 5, 2018.
  */
-public interface ExportConfigurationRepository extends MongoRepository<ExportConfiguration, String> {
-  public ExportConfiguration findOneByUsername(String username);
+public class ExportFontDisplay {
+
+  /**
+   * 
+   */
+  public ExportFontDisplay() {
+    // TODO Auto-generated constructor stub
+  }
+
 }

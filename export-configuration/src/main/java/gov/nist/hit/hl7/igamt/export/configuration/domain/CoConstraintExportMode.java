@@ -11,34 +11,20 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration;
-
-import java.util.ArrayList;
-import java.util.List;
+package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public class ColumnsConfiguration {
+public enum CoConstraintExportMode {
 
-  private List<NameAndPositionAndPresence> columns = new ArrayList<NameAndPositionAndPresence>();
+  COMPACT("Compact"), VERBOSE("Verbose");
+  
+  public final String value;
 
-  public ColumnsConfiguration() {
-    super();
-  }
-
-  public ColumnsConfiguration(List<NameAndPositionAndPresence> columns) {
-    super();
-    this.columns = columns;
-  }
-
-  public List<NameAndPositionAndPresence> getColumns() {
-    return columns;
-  }
-
-  public void setColumns(List<NameAndPositionAndPresence> columns) {
-    this.columns = columns;
+  CoConstraintExportMode(String v) {
+    value = v;
   }
 
 }

@@ -11,19 +11,17 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service;
+package gov.nist.hit.hl7.igamt.export.configuration.repository;
 
-import org.springframework.stereotype.Service;
+import org.springframework.data.mongodb.repository.MongoRepository;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on May 15, 2018.
  */
-@Service("exportFontConfigurationService")
-public interface ExportFontConfigurationService {
-
-  public ExportFontConfiguration getExportFontConfiguration(String username);
-
+public interface ExportFontConfigurationRepository
+    extends MongoRepository<ExportFontConfiguration, String> {
+  public ExportFontConfiguration findOneByUsername(String username);
 }

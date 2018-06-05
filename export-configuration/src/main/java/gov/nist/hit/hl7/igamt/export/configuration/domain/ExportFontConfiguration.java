@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration;
+package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

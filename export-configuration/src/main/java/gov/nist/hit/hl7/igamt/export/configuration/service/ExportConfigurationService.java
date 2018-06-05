@@ -11,26 +11,19 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.datatype.serialization;
+package gov.nist.hit.hl7.igamt.export.configuration.service;
 
-import java.util.Map;
+import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.serialization.service.ResourceSerializationService;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  *
- * @author Maxence Lefort on Mar 19, 2018.
+ * @author Maxence Lefort on May 8, 2018.
  */
-public class SerializeDatatypeServiceImpl extends ResourceSerializationService {
+@Service("exportConfigurationService")
+public interface ExportConfigurationService {
 
-  public SerializableDatatype serializeDatatype(Datatype datatype, ExportConfiguration exportConfiguration,  Map<String, Datatype> datatypeMap, Map<String, Valueset> valueSetMap) {
-    if(datatype instanceof ComplexDatatype) {
-      return new SerializableComplexDatatype((ComplexDatatype)datatype, 1);
-    }
-    return null;
-  }
+  public ExportConfiguration getExportConfiguration(String username);
+
 }

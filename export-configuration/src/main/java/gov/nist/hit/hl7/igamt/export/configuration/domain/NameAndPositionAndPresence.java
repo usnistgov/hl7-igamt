@@ -11,52 +11,62 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration;
+package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public class CodeUsageConfiguration {
+public class NameAndPositionAndPresence {
 
-  private boolean r;
-  private boolean p;
-  private boolean e;
+  private String name;
+  private int position;
+  private boolean present;
+  private boolean disabled;
 
-
-  public CodeUsageConfiguration() {
+  public NameAndPositionAndPresence() {
     super();
   }
 
-  public CodeUsageConfiguration(boolean r, boolean p, boolean e) {
+  public NameAndPositionAndPresence(String name, int position, boolean present, boolean disabled) {
     super();
-    this.r = r;
-    this.p = p;
-    this.e = e;
+    this.name = name;
+    this.position = position;
+    this.present = present;
+    this.disabled = disabled;
   }
 
-  public boolean isR() {
-    return r;
+  public String getName() {
+    return name;
   }
 
-  public void setR(boolean r) {
-    this.r = r;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public boolean isP() {
-    return p;
+  public int getPosition() {
+    return position;
   }
 
-  public void setP(boolean p) {
-    this.p = p;
+  public void setPosition(int position) {
+    this.position = position;
   }
 
-  public boolean isE() {
-    return e;
+  public boolean isPresent() {
+    return present;
   }
 
-  public void setE(boolean e) {
-    this.e = e;
+  public void setPresent(boolean present) {
+    this.present = present;
   }
+
+  public boolean isDisabled() {
+    return disabled;
+  }
+
+  public void setDisabled(boolean disabled) {
+    this.disabled = disabled;
+  }
+
 
 }

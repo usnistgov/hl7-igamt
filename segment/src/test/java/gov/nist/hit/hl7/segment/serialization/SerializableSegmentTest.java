@@ -28,6 +28,7 @@ import org.junit.Test;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
@@ -47,6 +48,7 @@ public class SerializableSegmentTest {
 
   private static final String TEST_POSTION = "123";
   private static final String TEST_NAME = "test_name";
+  private static final int TEST_LEVEL = 456;
   private static final String TEST_ID = "test_id";
   private static final String TEST_EXT = "test_ext";
   private static final String TEST_DM1_DT_ID = "test_dm1_dt_id";
@@ -130,11 +132,11 @@ public class SerializableSegmentTest {
     // TODO need to check
     Map<String, String> valuesetsMap = new HashMap<>();
     SerializableSegment serializableSegment =
-        new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
+        new SerializableSegment(segment, TEST_POSTION, TEST_LEVEL, datatypesMap, valuesetsMap);
     Element testElement = serializableSegment.serialize();
-    assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
-    assertEquals(1, testElement.getChildElements("DynamicMapping").size());
-    Element testDynamicMappingElement = testElement.getFirstChildElement("DynamicMapping");
+    Element segmentElement = testElement.getFirstChildElement("Segment");
+    assertEquals(1, segmentElement.getChildElements("DynamicMapping").size());
+    Element testDynamicMappingElement = segmentElement.getFirstChildElement("DynamicMapping");
     assertEquals(TEST_DM_REF_PATH,
         testDynamicMappingElement.getAttribute("referencePath").getValue());
     assertEquals(TEST_DM_VARIES_DT_PATH,
@@ -154,8 +156,8 @@ public class SerializableSegmentTest {
         fail();
       }
     }
-    assertEquals(1, testElement.getChildElements("Fields").size());
-    Elements testFieldsElements = testElement.getFirstChildElement("Fields").getChildElements();
+    assertEquals(1, segmentElement.getChildElements("Fields").size());
+    Elements testFieldsElements = segmentElement.getFirstChildElement("Fields").getChildElements();
     assertEquals(2, testFieldsElements.size());
     for (int i = 0; i < testFieldsElements.size(); i++) {
       Element testFieldElement = testFieldsElements.get(i);
@@ -197,7 +199,6 @@ public class SerializableSegmentTest {
         fail();
       }
     }
-    System.out.println(testElement.toXML());
   }
 
   @Test(expected = ResourceSerializationException.class)
@@ -209,13 +210,13 @@ public class SerializableSegmentTest {
     // TODO need to check
     Map<String, String> valuesetsMap = new HashMap<>();
     SerializableSegment serializableSegment =
-        new SerializableSegment(segment, TEST_POSTION, datatypesMap, valuesetsMap);
+        new SerializableSegment(segment, TEST_POSTION, TEST_LEVEL, datatypesMap, valuesetsMap);
     try {
       serializableSegment.serialize();
     } catch (ResourceSerializationException e) {
-      assertTrue(e.getOriginException() instanceof SubStructElementSerializationException);
-      assertTrue(((SubStructElementSerializationException) e.getOriginException())
-          .getOriginException() instanceof DatatypeNotFoundException);
+      assertTrue(e.getCause() instanceof SubStructElementSerializationException);
+      assertTrue(((SubStructElementSerializationException) e.getCause())
+          .getCause() instanceof DatatypeNotFoundException);
       throw e;
     }
   }

@@ -11,14 +11,15 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.service.impl;
+package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.export.repository.ExportConfigurationRepository;
-import gov.nist.hit.hl7.igamt.export.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportConfigurationRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+
 
 /**
  *
