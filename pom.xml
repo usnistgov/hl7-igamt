@@ -81,12 +81,11 @@
 		<module>valueset</module>
 		<module>bootstrap</module>
 		<module>conformance-profile</module>
-		<module>export</module>
 		<module>serialization</module>
 		<module>segment</module>
   		<module>datatype-library</module>
   		<module>igamt-auth</module>
   		<module>export-configuration</module>
-  		<module>igamt-web-export</module>
-	</modules>
+  		<module>export</module>
+</modules>
 </project>
