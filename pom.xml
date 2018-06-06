@@ -37,7 +37,7 @@
 				<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.8.0.RELEASE</version>
+			<!-- <version>1.8.0.RELEASE</version> -->
 		</dependency>
 	</dependencies>
 <dependencyManagement>
@@ -87,5 +87,6 @@
   		<module>datatype-library</module>
   		<module>igamt-auth</module>
   		<module>export-configuration</module>
+  		<module>igamt-web-export</module>
 	</modules>
 </project>
