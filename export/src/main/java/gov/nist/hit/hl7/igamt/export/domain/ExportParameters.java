@@ -17,11 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.ExportFontConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.MetadataConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.NameAndPositionAndPresence;
-import gov.nist.hit.hl7.igamt.export.configuration.ValueSetMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.NameAndPositionAndPresence;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ValueSetMetadataConfiguration;
 
 /**
  *

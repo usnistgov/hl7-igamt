@@ -24,22 +24,21 @@
 			<artifactId>jsoup</artifactId>
 			<version>1.9.2</version>
 		</dependency>
-	<dependency>
-     	<groupId>gov.nist.hit.hl7</groupId>
-     	<artifactId>common-base</artifactId>
-   		<version>0.0.1-SNAPSHOT</version>
-   
-    </dependency>
-    	 <dependency>
-     	<groupId>gov.nist.hit.hl7</groupId>
-     	<artifactId>common-binding</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-     	<groupId>gov.nist.hit.hl7</groupId>
-     	<artifactId>common-exception</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-
-    </dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-binding</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-exception</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+	
 	</dependencies>
 </project>

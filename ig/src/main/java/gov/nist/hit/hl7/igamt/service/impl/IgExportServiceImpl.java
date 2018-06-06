@@ -15,18 +15,17 @@ package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.io.InputStream;
 
-import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
-import gov.nist.hit.hl7.igamt.export.configuration.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
-import gov.nist.hit.hl7.igamt.export.service.ExportConfigurationService;
-import gov.nist.hit.hl7.igamt.export.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
 import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;

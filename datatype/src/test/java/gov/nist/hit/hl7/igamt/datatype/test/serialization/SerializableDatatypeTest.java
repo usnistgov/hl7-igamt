@@ -46,6 +46,7 @@ public class SerializableDatatypeTest {
   private static final String TEST_EXT = "test_ext";
   private static final String TEST_PURPOSE_AND_USE = "test_purpose_and_use";
   private static final String TEST_POSTION = "123";
+  private static final int TEST_LEVEL = 456;
   private static final String TEST_NAME = "test_name";
   private static final String TEST_ID = "test_id";
 
@@ -72,8 +73,8 @@ public class SerializableDatatypeTest {
     datatype.setPurposeAndUse(TEST_PURPOSE_AND_USE);
     SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION);
     Element testElement = serializableDatatype.serialize();
-    assertEquals(TEST_EXT, testElement.getAttribute("ext").getValue());
-    assertEquals(TEST_PURPOSE_AND_USE, testElement.getAttribute("purposeAndUse").getValue());
+    Element datatypeElement = testElement.getFirstChildElement("Datatype");
+    assertEquals(TEST_PURPOSE_AND_USE, datatypeElement.getAttribute("purposeAndUse").getValue());
     assertEquals(TEST_POSTION, testElement.getAttribute("position").getValue());
   }
 
@@ -102,10 +103,11 @@ public class SerializableDatatypeTest {
     Datatype datatype = getComplexDatatype();
     Map<String, String> refDatatypeLabel = new HashMap<>();
     refDatatypeLabel.put(REF_COMPONENT1.getId(), TEST_COMPONENT1_REF_LABEL);
-    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION,
+    SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION, TEST_LEVEL,
         refDatatypeLabel, new HashMap<String, String>());
     Element testElement = serializableDatatype.serialize();
-    Elements componentElements = testElement.getChildElements("Component");
+    Element datatypeElement = testElement.getFirstChildElement("Datatype");
+    Elements componentElements = datatypeElement.getChildElements("Component");
     assertEquals(1, componentElements.size());
     Element testComponent = componentElements.get(0);
     assertEquals(TEST_COMPONENT1_NAME, testComponent.getAttribute("name").getValue());
@@ -128,9 +130,9 @@ public class SerializableDatatypeTest {
     try {
       serializableDatatype.serialize();
     } catch (ResourceSerializationException e) {
-      assertTrue(e.getOriginException() instanceof SubStructElementSerializationException);
-      assertTrue(((SubStructElementSerializationException) e.getOriginException())
-          .getOriginException() instanceof DatatypeNotFoundException);
+      assertTrue(e.getCause() instanceof SubStructElementSerializationException);
+      assertTrue(((SubStructElementSerializationException) e.getCause())
+          .getCause() instanceof DatatypeNotFoundException);
       throw e;
     }
   }

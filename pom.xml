@@ -86,6 +86,7 @@
 		<module>segment</module>
   		<module>datatype-library</module>
   		<module>igamt-auth</module>
+  		<module>export-configuration</module>
   		<module>igamt-web-export</module>
 	</modules>
 </project>

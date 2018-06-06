@@ -27,9 +27,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
-
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Element;
 
 /**
@@ -55,17 +56,15 @@ public class SerializableAbstractDomainTest {
   private static final String PUBLICATION_VERSION_TEST = "publication_version_test";
   private static final String USERNAME_TEST = "username_test";
   private static final String POSITION_TEST = "456";
-  private static final String RESOURCE_NAME_TEST = "AbstractDomain";
 
   public static SerializableAbstractDomain getSerializableAbstractDomainTest() {
     AbstractDomain abstractDomain = new AbstractDomain() {
       
       @Override
       public String getLabel() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getName();
       }
-    };() {};
+    };
     abstractDomain.setComment(COMMENT_TEST);
     abstractDomain.setCreatedFrom(CREATED_FROM_TEST);
     abstractDomain.setDescription(DESCRIPTION_TEST);
@@ -87,7 +86,7 @@ public class SerializableAbstractDomainTest {
 
           @Override
           public Element serialize() throws SerializationException {
-            return this.getElement(RESOURCE_NAME_TEST);
+            return this.getElement(Type.SECTION);
           }
 
         };
@@ -101,21 +100,23 @@ public class SerializableAbstractDomainTest {
   public void testSerialize() throws SerializationException {
     SerializableAbstractDomain serializableAbstractDomain = getSerializableAbstractDomainTest();
     Element testElement = serializableAbstractDomain.serialize();
-    assertEquals(COMMENT_TEST, testElement.getAttribute("comment").getValue());
+    
+    assertEquals(FroalaSerializationUtil.cleanFroalaInput(COMMENT_TEST), testElement.getFirstChildElement("Comment").getValue());
     assertEquals(CREATED_FROM_TEST, testElement.getAttribute("createdFrom").getValue());
-    assertEquals(DESCRIPTION_TEST, testElement.getAttribute("description").getValue());
+    assertEquals(FroalaSerializationUtil.cleanFroalaInput(DESCRIPTION_TEST), testElement.getAttribute("description").getValue());
+    Element testMetadataElement = testElement.getFirstChildElement("Metadata");
     assertEquals(String.join(",", DOMAIN_COMPATIBILITY_VERSIONS_TEST),
-        testElement.getAttribute("domainCompatibilityVersions").getValue());
-    assertEquals(DOMAIN_SCOPE_TEST.name(), testElement.getAttribute("domainScope").getValue());
-    assertEquals(DOMAIN_VERSION_TEST, testElement.getAttribute("domainVersion").getValue());
+        testMetadataElement.getAttribute("domainCompatibilityVersions").getValue());
+    assertEquals(DOMAIN_SCOPE_TEST.name(), testMetadataElement.getAttribute("scope").getValue());
+    assertEquals(DOMAIN_VERSION_TEST, testMetadataElement.getAttribute("hl7Version").getValue());
     assertEquals(COMPOSITE_KEY_TEST.getId(), testElement.getAttribute("id").getValue());
     assertEquals(NAME_TEST, testElement.getAttribute("name").getValue());
     assertEquals(DateSerializationUtil.serializeDate(PUBLICATION_DATE_TEST),
-        testElement.getAttribute("publicationDate").getValue());
+        testMetadataElement.getAttribute("publicationDate").getValue());
     assertEquals(PUBLICATION_VERSION_TEST,
-        testElement.getAttribute("publicationVersion").getValue());
+        testMetadataElement.getAttribute("publicationVersion").getValue());
     assertEquals(USERNAME_TEST, testElement.getAttribute("username").getValue());
-    assertEquals(RESOURCE_NAME_TEST, testElement.getLocalName());
+    assertEquals("Section", testElement.getLocalName());
 
   }
 
