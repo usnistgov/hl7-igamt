@@ -30,8 +30,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable()
         // http.formLogin().disable();
         // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        .authorizeRequests().antMatchers("/login").permitAll().antMatchers("/register").permitAll()
-        .antMatchers("/api/**").fullyAuthenticated().and()
+        .authorizeRequests().antMatchers("/api/login").permitAll().antMatchers("/api/register")
+        .permitAll().antMatchers("/api/**").fullyAuthenticated().and()
         .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
 

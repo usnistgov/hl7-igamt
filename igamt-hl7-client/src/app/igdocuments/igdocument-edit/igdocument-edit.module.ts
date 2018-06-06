@@ -52,6 +52,9 @@ import {TableModule} from "primeng/components/table/table";
 import { AddDatatypeComponent } from './add-datatype/add-datatype.component';
 import { AddValueSetComponent } from './add-value-set/add-value-set.component';
 import { CopyElementComponent } from './copy-element/copy-element.component';
+import {NamingService} from "./services/naming.service";
+import {SplitButtonModule} from "primeng/components/splitbutton/splitbutton";
+import {ExportService} from "./service/export.service";
 
 
 @NgModule({
@@ -91,6 +94,7 @@ import { CopyElementComponent } from './copy-element/copy-element.component';
     RadioButtonModule,
     ButtonModule,
     BlockUIModule,
+    SplitButtonModule,
     ModalModule.forRoot()
 
   ],
@@ -101,7 +105,7 @@ import { CopyElementComponent } from './copy-element/copy-element.component';
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamingService,ExportService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

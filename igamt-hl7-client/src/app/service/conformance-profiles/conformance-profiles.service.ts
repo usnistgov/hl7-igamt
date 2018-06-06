@@ -13,7 +13,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfileMetadata(id).then((metadata) => {
         resolve(metadata);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/metadata').subscribe(serverConformanceProfileMetadata => {
+        this.http.get('api/conformanceprofiles/' + id + '/metadata').subscribe(serverConformanceProfileMetadata => {
           resolve(serverConformanceProfileMetadata);
         }, error => {
           reject(error);
@@ -28,7 +28,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfileStructure(id).then((structure) => {
         resolve(structure);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/structure').subscribe(serverConformanceProfileStructure => {
+        this.http.get('api/conformanceprofiles/' + id + '/structure').subscribe(serverConformanceProfileStructure => {
           resolve(serverConformanceProfileStructure);
         }, error => {
           reject(error);
@@ -43,7 +43,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfileCrossReference(id).then((crossReference) => {
         resolve(crossReference);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/crossReference').subscribe(serverConformanceProfileCrossReference => {
+        this.http.get('api/conformanceprofiles/' + id + '/crossReference').subscribe(serverConformanceProfileCrossReference => {
           resolve(serverConformanceProfileCrossReference);
         }, error => {
           reject(error);
@@ -58,7 +58,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfilePostDef(id).then((postDef) => {
         resolve(postDef);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/postDef').subscribe(serverConformanceProfilePostDef => {
+        this.http.get('api/conformanceprofiles/' + id + '/postDef').subscribe(serverConformanceProfilePostDef => {
           resolve(serverConformanceProfilePostDef);
         }, error => {
           reject(error);
@@ -73,7 +73,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfilePreDef(id).then((preDef) => {
         resolve(preDef);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/preDef').subscribe(serverConformanceProfilePreDef => {
+        this.http.get('api/conformanceprofiles/' + id + '/preDef').subscribe(serverConformanceProfilePreDef => {
           resolve(serverConformanceProfilePreDef);
         }, error => {
           reject(error);
@@ -88,7 +88,7 @@ export class ConformanceProfilesService {
       this.conformanceProfilesIndexedDbService.getConformanceProfileConformanceStatements(id).then((conformanceStatement) => {
         resolve(conformanceStatement);
       }).catch(() => {
-        this.http.get('api/conformanceProfiles/' + id + '/conformanceStatement').subscribe(serverConformanceProfileConformanceStatement => {
+        this.http.get('api/conformanceprofiles/' + id + '/conformanceStatement').subscribe(serverConformanceProfileConformanceStatement => {
           resolve(serverConformanceProfileConformanceStatement);
         }, error => {
           reject(error);

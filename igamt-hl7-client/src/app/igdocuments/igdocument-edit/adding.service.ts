@@ -14,19 +14,19 @@ export  class IgDocumentAddingService {
 
 
   addMessages(wrapper){
-  return this.http.post('/api/ig/addConforanceProfile', wrapper);
+  return this.http.post('api/ig/addConforanceProfile', wrapper);
 
   }
   addSegment(wrapper){
-    return this.http.post('/api/ig/addSegments', wrapper);
+    return this.http.post('api/ig/addSegments', wrapper);
 
   }
   addDatatypes(wrapper){
-    return this.http.post('/api/ig/addDatatypes', wrapper);
+    return this.http.post('api/ig/addDatatypes', wrapper);
 
   }
   addValueSets(wrapper){
-    return this.http.post('/api/ig/addValueSets', wrapper);
+    return this.http.post('api/ig/addValueSets', wrapper);
 
   }
   getMessagesByVersion(hl7Version :string){

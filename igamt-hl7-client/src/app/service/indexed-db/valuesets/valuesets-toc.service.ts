@@ -101,7 +101,7 @@ export class ValuesetsTocService {
     return promise;
   }
 
-  private getAllFromAdded(): Promise<Array<TocNode>> {
+  public getAllFromAdded(): Promise<Array<TocNode>> {
     const promise = new Promise<Array<TocNode>>((resolve, reject) => {
       this.indexeddbService.addedObjectsDatabase.transaction('rw', this.indexeddbService.addedObjectsDatabase.valuesets, async () => {
         const valuesets = await this.indexeddbService.addedObjectsDatabase.valuesets.toArray();

@@ -58,7 +58,7 @@ export class DatatypesService {
       this.datatypesIndexedDbService.getDatatypePostDef(id).then((postDef) => {
         resolve(postDef);
       }).catch(() => {
-        this.http.get('api/datatypes/' + id + '/postDef').subscribe(serverDatatypePostDef => {
+        this.http.get('api/datatypes/' + id + '/postdef').subscribe(serverDatatypePostDef => {
           resolve(serverDatatypePostDef);
         }, error => {
           reject(error);
@@ -73,7 +73,7 @@ export class DatatypesService {
       this.datatypesIndexedDbService.getDatatypePreDef(id).then((preDef) => {
         resolve(preDef);
       }).catch(() => {
-        this.http.get('api/datatypes/' + id + '/preDef').subscribe(serverDatatypePreDef => {
+        this.http.get('api/datatypes/' + id + '/predef').subscribe(serverDatatypePreDef => {
           resolve(serverDatatypePreDef);
         }, error => {
           reject(error);
@@ -88,7 +88,7 @@ export class DatatypesService {
       this.datatypesIndexedDbService.getDatatypeConformanceStatements(id).then((conformanceStatement) => {
         resolve(conformanceStatement);
       }).catch(() => {
-        this.http.get('api/datatypes/' + id + '/conformanceStatement').subscribe(serverDatatypeConformanceStatement => {
+        this.http.get('api/datatypes/' + id + '/conformancestatement').subscribe(serverDatatypeConformanceStatement => {
           resolve(serverDatatypeConformanceStatement);
         }, error => {
           reject(error);

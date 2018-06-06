@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
@@ -76,4 +77,6 @@ public interface DatatypeService {
   public Datatype saveDatatype(ChangedDatatype changedDatatype);
 
   List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
+
+  public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
 }

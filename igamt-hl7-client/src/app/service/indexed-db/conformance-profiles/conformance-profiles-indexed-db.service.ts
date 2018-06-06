@@ -35,6 +35,16 @@ export class ConformanceProfilesIndexedDbService {
     });
     return promise;
   }
+  public getMetadataByListOfIds(ids:any[]): Promise<object> {
+    const promises=[];
+    for(let i=0;i<ids.length;i++){
+      promises.push(this.getConformanceProfileMetadata(ids[i]));
+
+    }
+
+    return Promise.all(promises);
+
+  }
 
   public getConformanceProfileStructure(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
