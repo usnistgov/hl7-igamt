@@ -77,11 +77,12 @@ import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/common';
+import {LocationStrategy, HashLocationStrategy, CommonModule,APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
 import {IgDocumentService} from './service/ig-document/ig-document.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
+import {ConformanceProfilesIndexedDbService} from './service/indexed-db/conformance-profiles/conformance-profiles-indexed-db.service';
 import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
 import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
 import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
@@ -92,6 +93,7 @@ import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
 import {SegmentsService} from './service/segments/segments.service';
 import {DatatypesService} from './service/datatypes/datatypes.service';
+import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
 // import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
@@ -222,6 +224,11 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
       AppBreadcrumbComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
+    // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
+    // {
+    //   provide: APP_BASE_HREF,
+    //   useValue: '<%= APP_BASE %>'
+    // },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
@@ -231,6 +238,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     GeneralConfigurationService,
     IgDocumentService,
     IndexedDbService,
+        ConformanceProfilesIndexedDbService,
      SegmentsIndexedDbService,
     DatatypesIndexedDbService,
     ValuesetsIndexedDbService,
@@ -241,6 +249,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     SegmentsTocService,
     ValuesetsTocService,
     DatatypesService,
+        ConformanceProfilesService,
     ConformanceProfilesTocService,
     CompositeProfilesTocService,
     SegmentsService,

@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
@@ -15,13 +15,16 @@ import { _ } from 'underscore';
 import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
 import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
 
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import * as __ from 'lodash';
 
 @Component({
     selector : 'segment-edit',
     templateUrl : './segment-edit-structure.component.html',
     styleUrls : ['./segment-edit-structure.component.css']
 })
-export class SegmentEditStructureComponent {
+export class SegmentEditStructureComponent implements WithSave {
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
     segmentId:any;
@@ -44,6 +47,11 @@ export class SegmentEditStructureComponent {
     datatypesLinks :any = [];
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
+
+    backup:any;
+
+    @ViewChild('editForm')
+    private editForm: NgForm;
 
     constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
@@ -70,7 +78,7 @@ export class SegmentEditStructureComponent {
             this.datatypesTocService.getAll().then((dtTOCdata) => {
                 let listTocDTs:any = dtTOCdata[0];
                 for(let entry of listTocDTs){
-                    var treeObj = entry.treeNode;
+                    var treeObj = entry.data;
 
                     var dtLink:any = {};
                     dtLink.id = treeObj.key.id;
@@ -98,7 +106,7 @@ export class SegmentEditStructureComponent {
                     let listTocVSs: any = valuesetTOCdata[0];
 
                     for (let entry of listTocVSs) {
-                        var treeObj = entry.treeNode;
+                        var treeObj = entry.data;
                         var valuesetLink: any = {};
                         valuesetLink.id = treeObj.key.id;
                         valuesetLink.label = treeObj.label;
@@ -114,10 +122,33 @@ export class SegmentEditStructureComponent {
                     this.segmentStructure.scope = x.scope;
 
                     this.updateDatatype(this.segmentStructure, x.children, x.binding, null, null, null, null, null, null);
+
+                    this.backup=__.cloneDeep(this.segmentStructure);
                 });
             });
 
         });
+    }
+
+    reset(){
+        this.segmentStructure=__.cloneDeep(this.backup);
+    }
+
+    getCurrent(){
+        return  this.segmentStructure;
+    }
+
+    getBackup(){
+        return this.backup;
+    }
+
+    isValid(){
+        // return !this.editForm.invalid;
+        return true;
+    }
+
+    save(): Promise<any>{
+        return this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure);
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
@@ -139,9 +170,10 @@ export class SegmentEditStructureComponent {
             if(entry.data.displayData.idPath.split("-").length === 1){
                 entry.data.displayData.type = 'FIELD';
                 entry.data.displayData.segmentBinding = this.findBinding(entry.data.displayData.idPath, currentBinding);
-
                 if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding) {
                     entry.data.displayData.segmentBinding = {};
+                }
+                if(entry.data.usage === 'C' && !entry.data.displayData.segmentBinding.predicate){
                     entry.data.displayData.segmentBinding.predicate = {};
                 }
             }else if(entry.data.displayData.idPath.split("-").length === 2){

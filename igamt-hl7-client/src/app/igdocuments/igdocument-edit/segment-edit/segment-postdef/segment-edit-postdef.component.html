@@ -1,6 +1,8 @@
 <h2>SEGMENT Post Definition TEXT</h2>
 <div *ngIf="segmentPostdef">
-    <div class="ui-g input-box">
-        <div class="ui-g-12" [froalaEditor] [(froalaModel)]="segmentPostdef.postDef"></div>
-    </div>
+    <form #editForm="ngForm">
+        <div class="ui-g input-box">
+            <div class="ui-g-12" [froalaEditor] [(froalaModel)]="segmentPostdef.postDef"></div>
+        </div>
+    </form>
 </div>

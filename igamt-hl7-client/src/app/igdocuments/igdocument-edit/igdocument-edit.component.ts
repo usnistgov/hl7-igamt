@@ -20,6 +20,7 @@ import {CopyElementComponent} from "./copy-element/copy-element.component";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
 import {TocDbService} from "../../service/indexed-db/toc-db.service";
+import {ExportService} from "./service/export.service";
 
 
 @Component({
@@ -37,6 +38,7 @@ export class IgDocumentEditComponent {
 
   igId:any;
   bsModalRef: BsModalRef;
+  exportModel: MenuItem[];
 
   ig:any;
   currentUrl:any;
@@ -128,7 +130,7 @@ export class IgDocumentEditComponent {
 
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService,public exportService:ExportService){
 
     router.events.subscribe(event => {
       console.log(event);
@@ -174,7 +176,32 @@ export class IgDocumentEditComponent {
     });
 
 
+    this.exportModel = [
+      {label: 'As Word', command: () => {
 
+        this.exportAsWord();
+
+      }},
+      {label: 'As HTML', command: () => {
+        this.exportAsHTML();
+
+      }}
+
+    ];
+
+  }
+
+  exportAsWord(){
+  this.exportService.exportAsWord(this.igId).subscribe(x=>{
+
+    console.log(x);
+  });
+  }
+  exportAsHTML(){
+    this.exportService.exportAsHtml(this.igId).subscribe(x=>{
+
+      console.log(x);
+    });
   }
 
   toggleHideToc(){
@@ -503,7 +530,7 @@ export class IgDocumentEditComponent {
   convertList(list : any[]){
     let ret : any[]=[];
     for (let i=0; i<list.length;i++ ){
-      ret.push({id:list[i].id,treeNode:list[i].data});
+      ret.push(list[i]);
     }
     return ret;
   }

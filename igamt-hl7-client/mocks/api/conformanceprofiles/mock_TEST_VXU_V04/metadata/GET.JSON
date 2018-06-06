@@ -12,6 +12,7 @@
   "identifier": "Z22",
   "description": "Send an Unsolicited Immunization Event",
   "messageType": "VXU",
+  "messageEvent": "V04",
   "structId": "VXU_V04",
   "authorNotes": null,
   "usageNote": null

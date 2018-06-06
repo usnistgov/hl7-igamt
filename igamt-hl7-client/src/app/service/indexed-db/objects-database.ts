@@ -12,11 +12,11 @@ export class IObject {
 
 export class Section {
   id?: string;
-  description?: object;
   oldParent?: string;
   newParent?: string;
-  position?: number;
-  changeType?: string;
+  changeType:string;
+  section:any;
+
 }
 
 export class ObjectsDatabase extends Dexie {

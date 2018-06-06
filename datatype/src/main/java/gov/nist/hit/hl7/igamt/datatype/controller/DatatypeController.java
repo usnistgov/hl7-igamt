@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
@@ -65,5 +66,14 @@ public class DatatypeController {
     Datatype Datatype = datatypeService.findLatestById(id);
     return datatypeService.convertDomainToPostdef(Datatype);
 
+  }
+
+  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody DatatypeConformanceStatement getDatatypeConformanceStatement(
+      @PathVariable("id") String id, Authentication authentication) {
+
+    Datatype datatype = datatypeService.findLatestById(id);
+    return datatypeService.convertDomainToConformanceStatement(datatype);
   }
 }

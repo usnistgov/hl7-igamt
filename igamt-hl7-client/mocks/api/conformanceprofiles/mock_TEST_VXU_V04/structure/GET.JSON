@@ -15,7 +15,7 @@
 
   "binding": null,
 
-  "structure": [
+  "children": [
     {
       "data": {
         "id": "58c1ad64dffe7ef91ba359f9",
@@ -35,30 +35,31 @@
       "data": {
         "id": "58c1ad64dffe7ef91ba359fc",
         "name": "MF_CDM",
-        "position": 1,
+        "position": 2,
         "usage": "R",
         "type": "GROUP",
         "text": "",
         "custom": false,
         "min": 1,
-        "max": "*",
-        "children": [
-          {
-            "id": "58c1ad64dffe7ef91ba359ff",
-            "name": null,
-            "position": 1,
-            "usage": "O",
-            "type": "SEGMENTREF",
-            "text": "",
-            "custom": false,
-            "min": 0,
-            "max": "*",
-            "ref": {
-              "id": "mock_ARBITRARY_OBX"
-            }
+        "max": "*"
+      },
+      "children": [
+        {"data": {
+          "id": "58c1ad64dffe7ef91ba359ff",
+          "name": null,
+          "position": 1,
+          "usage": "O",
+          "type": "SEGMENTREF",
+          "text": "",
+          "custom": false,
+          "min": 0,
+          "max": "*",
+          "ref": {
+            "id": "mock_ARBITRARY_OBX"
           }
-        ]
-      }
+        }
+        }
+      ]
     }
   ]
 }

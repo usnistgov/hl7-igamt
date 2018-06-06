@@ -6,7 +6,7 @@
   "apps": [
     {
       "root": "src",
-      "outDir": "../bootstrap/src/main/public/",
+      "outDir": "../bootstrap/src/main/resources/public/",
       "assets": [
         "assets",
         "upload.php",
