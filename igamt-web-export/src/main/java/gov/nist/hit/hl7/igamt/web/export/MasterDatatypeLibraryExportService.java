@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.datatype.service.newrobexport;
+package gov.nist.hit.hl7.igamt.web.export;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,14 +23,18 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.MongoClient;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Component;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.Ref;
+
 
 @Service
 public class MasterDatatypeLibraryExportService {
@@ -38,6 +42,8 @@ public class MasterDatatypeLibraryExportService {
 		  
   @Autowired
   private  DatatypeService datatypeService;
+  @Autowired
+  private  DatatypeLibraryService datatypeLibraryService;
 		 
 	
 	public MyExportObject serializeMasterDatatypeLib(List<String> listIDs) {
@@ -121,7 +127,7 @@ public class MasterDatatypeLibraryExportService {
 		for(String key : datatypesMap.keySet()) {
 			Datatype datatype = datatypesMap.get(key);
 			if(!datatype.getName().equals("-")) {
-			SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,String.valueOf(position),datatypeNamesMap);
+			SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,String.valueOf(position));
 			try {
 				String datatypeXmlWhitoutEncoding = serializableDatatype.serialize().toXML();
 				String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
@@ -151,7 +157,7 @@ public class MasterDatatypeLibraryExportService {
 			for(Datatype datatype : datatypesbyRoot.get(key)) {
 //				System.out.println("valeur de la cle"+ key+ " est la chose suivante" +datatype.getName());
 
-			SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,String.valueOf(position),datatypeNamesMap);
+			SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,String.valueOf(position));
 			try {
 				String datatypeXml = serializableDatatype.serialize().toXML();
 				allRootDatatypeXML = allRootDatatypeXML + datatypeXml;
@@ -311,6 +317,15 @@ public class MasterDatatypeLibraryExportService {
 		return myExportObject ;
 	}
 	
+	
+	void TestLibrary() {
+		String testId="5b156211ad166643bef51c10";
+		DatatypeLibrary myDtLib= datatypeLibraryService.findLatestById(testId);
+		if(myDtLib !=null) {
+			Set<Link> links = myDtLib.getDatatypeRegistry().getChildren();
+		}
+		
+	}
 	
 
 }

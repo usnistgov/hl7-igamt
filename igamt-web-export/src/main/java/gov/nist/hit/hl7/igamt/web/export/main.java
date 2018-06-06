@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.datatype.service.newrobexport;
+package gov.nist.hit.hl7.igamt.web.export;
 
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ public class main {
 	}
 	
 	@PostConstruct
-	public void postConstruct() {
+	public void postConstruct() throws JSONException {
 		System.out.println("DONE");
 		 JSONExtractor je = new JSONExtractor();
 		MyExportObject myExportObject = mds.serializeMasterDatatypeLib((je.extract()));
