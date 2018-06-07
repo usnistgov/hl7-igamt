@@ -25,7 +25,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
  *
  * @author Maxence Lefort on Jun 5, 2018.
  */
-public class ConformanceStatementTableOptionsDisplay {
+public class SegmentTableOptionsDisplay {
   private String id;
   private boolean includeMessageTable = true;
   private UsageConfiguration segmentORGroupsMessageExport;
@@ -35,7 +35,7 @@ public class ConformanceStatementTableOptionsDisplay {
   /**
    * 
    */
-  public ConformanceStatementTableOptionsDisplay(ExportConfiguration exportConfiguration) {
+  public SegmentTableOptionsDisplay(ExportConfiguration exportConfiguration) {
     this.id = exportConfiguration.getId();
     this.includeMessageTable = exportConfiguration.isIncludeMessageTable();
     this.segmentORGroupsMessageExport = exportConfiguration.getSegmentORGroupsMessageExport();
@@ -43,11 +43,11 @@ public class ConformanceStatementTableOptionsDisplay {
     this.metadataConfig = exportConfiguration.getMessageMetadataConfig();
   }
   
-  public ConformanceStatementTableOptionsDisplay() {
+  public SegmentTableOptionsDisplay() {
     super();
   }
 
-  public ConformanceStatementTableOptionsDisplay(String id, boolean includeMessageTable,
+  public SegmentTableOptionsDisplay(String id, boolean includeMessageTable,
       UsageConfiguration segmentORGroupsMessageExport, List<NameAndPositionAndPresence> columns,
       MetadataConfiguration metadataConfig) {
     super();

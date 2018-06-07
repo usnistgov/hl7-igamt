@@ -15,6 +15,8 @@ package gov.nist.hit.hl7.igamt.export.configuration.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,16 +39,32 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody ConformanceStatementTableOptionsDisplay getConformanceStatementTableOptions(Authentication authentication){
-    return new ConformanceStatementTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication(authentication));
+  public @ResponseBody ConformanceStatementTableOptionsDisplay getConformanceStatementTableOptions(){
+    return new ConformanceStatementTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveConformanceStatementTableOptions(@RequestBody ConformanceStatementTableOptionsDisplay conformanceStatementTableOptionsDisplay){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
+    if(authentication != null) {
+      ExportConfiguration exportConfiguration = conformanceStatementTableOptionsDisplay.populateExportConfiguration(this.findExportConfigurationServiceByAuthentication(authentication));
+      exportConfiguration.setUsername(authentication.getPrincipal().toString());
+      exportConfigurationService.save(exportConfiguration);
+    }
+  }
+  
+  private ExportConfiguration findExportConfigurationServiceByAuthentication() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      return this.findExportConfigurationServiceByAuthentication(authentication);
+    }
+    return ExportConfiguration.getBasicExportConfiguration(false);
   }
   
   private ExportConfiguration findExportConfigurationServiceByAuthentication(Authentication authentication) {
-    if (authentication != null) {
-      String username = authentication.getPrincipal().toString();
-      return exportConfigurationService.getExportConfiguration(username);
-    }
-    return ExportConfiguration.getBasicExportConfiguration(false);
+    String username = authentication.getPrincipal().toString();
+    return exportConfigurationService.getExportConfiguration(username);
   }
 
 }

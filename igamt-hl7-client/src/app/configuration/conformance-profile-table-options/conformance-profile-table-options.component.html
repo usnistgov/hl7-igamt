@@ -1,19 +1,17 @@
-<h1>Conformance Profile Table Options</h1>
 <p-card>
   <p-header>
-    <h2>
+    <h1>
       <p-checkbox [(ngModel)]="tableOptions.includeMessageTable" binary="true"
                   onChange="setChanged()" label="Include Conformance Profile Table Options"></p-checkbox>
-    </h2>
+    </h1>
   </p-header>
 
   <div>
     <!-- Usages card -->
     <div>
       <p-card>
-        <h4>Usages</h4>
+        <h2>Usages (Segments/Groups to Export)</h2>
         <hr/>
-        <p>Segments/Groups to Export:</p>
         <div>
           <div>
             <p-checkbox
@@ -43,27 +41,27 @@
         </div>
       </p-card>
       <p-card>
-        <h4>Metadata</h4>
+        <h2>Metadata</h2>
         <hr/>
         <div layout="column">
           <div class="config-checkbox">
             <p-checkbox
-              [(ngModel)]="tableOptions.metadatatableOptions.hl7version"
+              [(ngModel)]="tableOptions.metadataConfig.hl7version"
               onChange="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
-              [(ngModel)]="tableOptions.metadatatableOptions.publicationDate"
+              [(ngModel)]="tableOptions.metadataConfig.publicationDate"
               onChange="setChanged()" label="Publication Date" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
-              [(ngModel)]="tableOptions.metadatatableOptions.publicationVersion"
+              [(ngModel)]="tableOptions.metadataConfig.publicationVersion"
               onChange="setChanged()" label="Publication Version" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
-              [(ngModel)]="tableOptions.metadatatableOptions.scope"
+              [(ngModel)]="tableOptions.metadataConfig.scope"
               onChange="setChanged()" label="Scope" binary="true"></p-checkbox>
           </div>
         </div>
@@ -72,7 +70,7 @@
     <!-- Columns card-->
     <div flex>
       <p-card>
-        <h4>Columns</h4>
+        <h2>Columns</h2>
         <hr/>
         <div layout="column" style="width: 100%">
           <div *ngFor="let column of tableOptions.columns">
