@@ -35,16 +35,24 @@ export class ConformanceProfilesIndexedDbService {
     });
     return promise;
   }
-  public getMetadataByListOfIds(ids:any[]): Promise<object> {
-    const promises=[];
-    for(let i=0;i<ids.length;i++){
-      promises.push(this.getConformanceProfileMetadata(ids[i]));
 
-    }
-
-    return Promise.all(promises);
-
+  public getAllMetaData(): Promise<any> {
+    let conformanceProfiles;
+    const promise = new Promise<any>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.conformanceProfiles, async () => {
+          conformanceProfiles = await this.indexeddbService.changedObjectsDatabase.conformanceProfiles.filter(function (conformanceProfile) {
+            return conformanceProfile.metadata;
+          }).toArray();
+          resolve(conformanceProfiles);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
+
 
   public getConformanceProfileStructure(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {

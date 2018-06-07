@@ -56,19 +56,20 @@ public interface DisplayConverterService {
 
   public List<TreeNode> getProfileCompoenents(Set<ProfileComponent> profileComponents);
 
-  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile);
+  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile,
+      int position);
 
-  public TreeNode createConformanceProfileNode(ConformanceProfile elm);
+  public TreeNode createConformanceProfileNode(ConformanceProfile elm, int position);
 
-  public TreeNode createPcNode(ProfileComponent profileComponent);
+  public TreeNode createPcNode(ProfileComponent profileComponent, int position);
 
-  public TreeNode createSegmentNode(Segment elm);
+  public TreeNode createSegmentNode(Segment elm, int position);
 
-  public TreeNode createDatatypeNode(Datatype elm);
+  public TreeNode createDatatypeNode(Datatype elm, int position);
 
-  public TreeNode createValueSetsNode(Valueset vs);
+  public TreeNode createValueSetsNode(Valueset vs, int position);
 
-  public TreeNode createCpNode(ConformanceProfile confromanceProfile);
+  public TreeNode createCpNode(ConformanceProfile confromanceProfile, int position);
 
   public List<TreeNode> getConformaneProfile(Set<ConformanceProfile> conformanceProfiles);
 

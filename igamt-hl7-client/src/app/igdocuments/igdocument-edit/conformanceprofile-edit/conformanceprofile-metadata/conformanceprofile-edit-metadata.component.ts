@@ -6,7 +6,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import * as _ from 'lodash';
 
 import 'rxjs/add/operator/filter';
-import {TocService} from "../../toc/toc.service";
+import {TocService} from "../../service/toc.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";

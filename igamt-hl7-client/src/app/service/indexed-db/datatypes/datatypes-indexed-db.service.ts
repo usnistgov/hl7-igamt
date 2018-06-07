@@ -35,16 +35,24 @@ export class DatatypesIndexedDbService {
     });
     return promise;
   }
-  public getMetadataByListOfIds(ids:any[]): Promise<object> {
-    const promises=[];
-    for(let i=0;i<ids.length;i++){
-      promises.push(this.getDatatypeMetadata(ids[i]));
 
-    }
-
-    return Promise.all(promises);
-
+  public getAllMetaData(): Promise<any> {
+    let datatypes;
+    const promise = new Promise<any>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.datatypes, async () => {
+          datatypes = await this.indexeddbService.changedObjectsDatabase.datatypes.filter(function (datatype) {
+            return datatype.metadata;
+          }).toArray();
+          resolve(datatypes);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
   }
+
 
   public getDatatypeStructure(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {

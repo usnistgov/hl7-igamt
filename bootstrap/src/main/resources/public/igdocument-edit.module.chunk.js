@@ -82,7 +82,7 @@ module.exports = "<p-dialog [(visible)]=\"_visible\">\n    <p-header>\n      Add
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_workspace_workspace_service__ = __webpack_require__("../../../../../src/app/service/workspace/workspace.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__igdocument_edit_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__igdocument_edit_service_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__common_prime_ng_adapters_prime_dialog_adapter__ = __webpack_require__("../../../../../src/app/common/prime-ng-adapters/prime-dialog-adapter.ts");
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
@@ -310,7 +310,7 @@ var AddConformanceProfileComponent = (function (_super) {
             template: __webpack_require__("../../../../../src/app/igdocuments/add-conformance-profile/add-conformance-profile.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/add-conformance-profile/add-conformance-profile.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__igdocument_edit_adding_service__["a" /* IgDocumentAddingService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_3__igdocument_edit_service_adding_service__["a" /* IgDocumentAddingService */],
             __WEBPACK_IMPORTED_MODULE_2__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_2__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_1__service_workspace_workspace_service__["a" /* WorkspaceService */]])
     ], AddConformanceProfileComponent);
     return AddConformanceProfileComponent;
@@ -354,7 +354,7 @@ module.exports = "<p-dialog [(visible)]=\"_visible\">\n  <p-header>\n    Add Dat
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__common_prime_ng_adapters_prime_dialog_adapter__ = __webpack_require__("../../../../../src/app/common/prime-ng-adapters/prime-dialog-adapter.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__ = __webpack_require__("../../../../../src/app/service/workspace/workspace.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
 var __extends = (this && this.__extends) || (function () {
@@ -483,7 +483,7 @@ var AddDatatypeComponent = (function (_super) {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-datatype/add-datatype.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-datatype/add-datatype.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__["a" /* IgDocumentAddingService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__["a" /* IgDocumentAddingService */],
             __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__["a" /* WorkspaceService */]])
     ], AddDatatypeComponent);
     return AddDatatypeComponent;
@@ -527,7 +527,7 @@ module.exports = "<p-dialog [(visible)]=\"_visible\">\n  <p-header>\n    Add Seg
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__common_prime_ng_adapters_prime_dialog_adapter__ = __webpack_require__("../../../../../src/app/common/prime-ng-adapters/prime-dialog-adapter.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__ = __webpack_require__("../../../../../src/app/service/workspace/workspace.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
 var __extends = (this && this.__extends) || (function () {
@@ -656,7 +656,7 @@ var AddSegmentComponent = (function (_super) {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-segment/add-segment.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-segment/add-segment.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__["a" /* IgDocumentAddingService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__["a" /* IgDocumentAddingService */],
             __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__["a" /* WorkspaceService */]])
     ], AddSegmentComponent);
     return AddSegmentComponent;
@@ -700,7 +700,7 @@ module.exports = "<p-dialog [(visible)]=\"_visible\">\n  <p-header>\n    Add HL7
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__common_prime_ng_adapters_prime_dialog_adapter__ = __webpack_require__("../../../../../src/app/common/prime-ng-adapters/prime-dialog-adapter.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__ = __webpack_require__("../../../../../src/app/service/workspace/workspace.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
 var __extends = (this && this.__extends) || (function () {
@@ -829,71 +829,11 @@ var AddValueSetComponent = (function (_super) {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-value-set/add-value-set.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-value-set/add-value-set.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_adding_service__["a" /* IgDocumentAddingService */],
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_4__igdocument_edit_service_adding_service__["a" /* IgDocumentAddingService */],
             __WEBPACK_IMPORTED_MODULE_3__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_2__service_workspace_workspace_service__["a" /* WorkspaceService */]])
     ], AddValueSetComponent);
     return AddValueSetComponent;
 }(__WEBPACK_IMPORTED_MODULE_1__common_prime_ng_adapters_prime_dialog_adapter__["a" /* PrimeDialogAdapter */]));
-
-
-
-/***/ }),
-
-/***/ "../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts":
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IgDocumentAddingService; });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
-var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
-    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
-    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
-    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
-    return c > 3 && r && Object.defineProperty(target, key, r), r;
-};
-var __metadata = (this && this.__metadata) || function (k, v) {
-    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
-};
-/**
- * Created by ena3 on 5/14/18.
- */
-
-
-var IgDocumentAddingService = (function () {
-    function IgDocumentAddingService(http) {
-        this.http = http;
-    }
-    IgDocumentAddingService.prototype.addMessages = function (wrapper) {
-        return this.http.post('api/ig/addConforanceProfile', wrapper);
-    };
-    IgDocumentAddingService.prototype.addSegment = function (wrapper) {
-        return this.http.post('api/ig/addSegments', wrapper);
-    };
-    IgDocumentAddingService.prototype.addDatatypes = function (wrapper) {
-        return this.http.post('api/ig/addDatatypes', wrapper);
-    };
-    IgDocumentAddingService.prototype.addValueSets = function (wrapper) {
-        return this.http.post('api/ig/addValueSets', wrapper);
-    };
-    IgDocumentAddingService.prototype.getMessagesByVersion = function (hl7Version) {
-        return this.http.get('api/igdocuments/findMessageEvents/' + hl7Version);
-    };
-    IgDocumentAddingService.prototype.getHl7SegmentByVersion = function (hl7Version) {
-        return this.http.get('api/ig/findHl7Segments/' + hl7Version);
-    };
-    IgDocumentAddingService.prototype.getHl7DatatypesByVersion = function (hl7Version) {
-        return this.http.get('api/ig/findHl7Datatypes/' + hl7Version);
-    };
-    IgDocumentAddingService.prototype.getHl7ValueSetsByVersion = function (hl7Version) {
-        return this.http.get('api/ig/findHl7ValueSets/' + hl7Version);
-    };
-    IgDocumentAddingService = __decorate([
-        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
-    ], IgDocumentAddingService);
-    return IgDocumentAddingService;
-}());
 
 
 
@@ -1224,7 +1164,7 @@ module.exports = "<div>\n  <p-confirmDialog header=\"Confirmation\" icon=\"fa fa
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IgDocumentEditComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__toc_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angular_tree_component__ = __webpack_require__("../../../../angular-tree-component/dist/angular-tree-component.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ngx_contextmenu__ = __webpack_require__("../../../../ngx-contextmenu/lib/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
@@ -1236,6 +1176,9 @@ module.exports = "<div>\n  <p-confirmDialog header=\"Confirmation\" icon=\"fa fa
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10__service_indexed_db_datatypes_datatypes_toc_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/datatypes/datatypes-toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__service_indexed_db_toc_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/toc-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__service_export_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/export.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__common_constants_types__ = __webpack_require__("../../../../../src/app/common/constants/types.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_14__service_sections_sections_service__ = __webpack_require__("../../../../../src/app/service/sections/sections.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_15__service_indexed_db_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -1259,8 +1202,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
+
 var IgDocumentEditComponent = (function () {
-    function IgDocumentEditComponent(tocService, sp, router, dtsToCService, tocDbService, exportService) {
+    function IgDocumentEditComponent(tocService, sp, router, dtsToCService, tocDbService, exportService, sectionService, indexedDbService) {
         var _this = this;
         this.tocService = tocService;
         this.sp = sp;
@@ -1268,6 +1214,8 @@ var IgDocumentEditComponent = (function () {
         this.dtsToCService = dtsToCService;
         this.tocDbService = tocDbService;
         this.exportService = exportService;
+        this.sectionService = sectionService;
+        this.indexedDbService = indexedDbService;
         this.displayMessageAdding = false;
         this.hideToc = false;
         this.searchFilter = "";
@@ -1286,18 +1234,27 @@ var IgDocumentEditComponent = (function () {
             { label: "HL7 Flavors", value: "MASTER" }
         ];
         this.options = {
-            allowDrag: function (node) { return node.data.data.type == "TEXT" || node.data.data.type == 'CONFORMANCEPROFILE' || node.data.data.type == 'PROFILE'; },
+            allowDrag: function (node) { return node.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].TEXT || node.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].CONFORMANCEPROFILE || node.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].PROFILE; },
             actionMapping: {
                 mouse: {
                     drop: function (tree, node, $event, _a) {
                         var from = _a.from, to = _a.to;
-                        if (from.data.data.type == "TEXT" && (!_this.isOrphan(to) && to.parent.data.data.type == "TEXT" || _this.isOrphan(to))) {
+                        console.log("dropping");
+                        console.log(node);
+                        console.log(from);
+                        console.log(to);
+                        if (from.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].TEXT && (!_this.isOrphan(to) && to.parent.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].TEXT || _this.isOrphan(to))) {
                             console.log(from);
-                            __WEBPACK_IMPORTED_MODULE_2_angular_tree_component__["a" /* TREE_ACTIONS */].MOVE_NODE(tree, node, $event, { from: from, to: to });
+                            _this.sectionService.updateDnD(from.id, from.data, { from: to.id, to: node.id, position: from.data.data.position }).then(function (res) {
+                                __WEBPACK_IMPORTED_MODULE_2_angular_tree_component__["a" /* TREE_ACTIONS */].MOVE_NODE(tree, node, $event, { from: from, to: to });
+                                _this.indexedDbService.updateIgDocument(_this.igId, _this.tree.treeModel.nodes);
+                            });
                         }
-                        if (from.data.data.type == "PROFILE" && _this.isOrphan(to)) {
+                        if (from.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].PROFILE && _this.isOrphan(to)) {
                             console.log(from);
                             __WEBPACK_IMPORTED_MODULE_2_angular_tree_component__["a" /* TREE_ACTIONS */].MOVE_NODE(tree, node, $event, { from: from, to: to });
+                            _this.indexedDbService.updateIgDocument(_this.igId, _this.tree.treeModel.nodes);
+                            //this.sectionService.updateDnD(node.id,node.data, {from:from.id,to:to.id,position:node.data.data.position})
                         }
                     },
                     mouse: {
@@ -1374,7 +1331,6 @@ var IgDocumentEditComponent = (function () {
         this.hideToc = !this.hideToc;
     };
     IgDocumentEditComponent.prototype.print = function (node) {
-        console.log("calling print  ");
         console.log(node);
     };
     IgDocumentEditComponent.prototype.ngAfterViewInit = function () {
@@ -1400,14 +1356,13 @@ var IgDocumentEditComponent = (function () {
                     childId = child.substring(0, child.indexOf("/"));
                 }
                 else {
-                    console.log("wdwd");
                     childId = child;
                 }
                 var node = this.tree.treeModel.getNodeById(childId);
                 if (node) {
                     this.tocService.setActiveNode(node);
                     node.setIsActive(true);
-                    this.activateNode(node);
+                    this.activeNode = node.id;
                 }
             }
         }
@@ -1429,7 +1384,7 @@ var IgDocumentEditComponent = (function () {
     };
     IgDocumentEditComponent.prototype.getItemFromTargetType = function (node) {
         this.currentNode = node;
-        if (node.data.data.type == 'IGDOCUMENT') {
+        if (node.data.data.type == __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].IGDOCUMENT) {
             this.items = [
                 { label: 'Add Section', icon: 'fa-plus', command: function (event) {
                         console.log(event);
@@ -1446,7 +1401,7 @@ var IgDocumentEditComponent = (function () {
         var data1 = {
             label: "new Section",
             content: "",
-            type: "TEXT",
+            type: __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].TEXT,
             position: this.tree.treeModel.nodes.length + 1
         };
         var newNode = { id: "bla", data: data1, children: [] };
@@ -1470,7 +1425,7 @@ var IgDocumentEditComponent = (function () {
         });
     };
     IgDocumentEditComponent.prototype.activateNode = function (node) {
-        this.activeNode = node.id;
+        // this.activeNode=node.id;
     };
     IgDocumentEditComponent.prototype.goToSection = function (id) {
         var _this = this;
@@ -1519,24 +1474,25 @@ var IgDocumentEditComponent = (function () {
         }
         this.tocDbService.bulkAddTocNewElements(valueSets, datatypes, segments, conformanceProfiles, profileComponents, compositeProfiles).then(function () {
             if (object.conformanceProfiles) {
-                _this.tocService.addNodesByType(object.conformanceProfiles, _this.tree.treeModel.nodes, "CONFORMANCEPROFILEREGISTRY");
+                _this.tocService.addNodesByType(object.conformanceProfiles, _this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].CONFORMANCEPROFILEREGISTRY);
             }
             if (object.segments) {
-                _this.tocService.addNodesByType(object.segments, _this.tree.treeModel.nodes, "SEGMENTREGISTRY");
+                _this.tocService.addNodesByType(object.segments, _this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
             }
             if (object.datatypes) {
-                _this.tocService.addNodesByType(object.datatypes, _this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+                _this.tocService.addNodesByType(object.datatypes, _this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].DATATYPEREGISTRY);
             }
             if (object.valueSets) {
-                _this.tocService.addNodesByType(object.valueSets, _this.tree.treeModel.nodes, "VALUESETREGISTRY");
+                _this.tocService.addNodesByType(object.valueSets, _this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].VALUESETREGISTRY);
             }
             _this.tree.treeModel.update();
+            _this.indexedDbService.updateIgDocument(_this.igId, _this.tree.treeModel.nodes);
         }).catch(function (error) {
         });
     };
     IgDocumentEditComponent.prototype.addSegments = function () {
         var _this = this;
-        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, "SEGMENTREGISTRY");
+        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
         console.log(existing);
         this.addSegs.open({
             id: this.igId,
@@ -1549,7 +1505,7 @@ var IgDocumentEditComponent = (function () {
     };
     IgDocumentEditComponent.prototype.addDatatypes = function () {
         var _this = this;
-        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].DATATYPEREGISTRY);
         this.addDts.open({
             id: this.igId,
             namingIndicators: existing
@@ -1560,7 +1516,7 @@ var IgDocumentEditComponent = (function () {
     };
     IgDocumentEditComponent.prototype.addValueSets = function () {
         var _this = this;
-        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, "VALUESETREGISTRY");
+        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].VALUESETREGISTRY);
         this.addVs.open({
             id: this.igId,
             namingIndicators: existing
@@ -1570,7 +1526,7 @@ var IgDocumentEditComponent = (function () {
     };
     IgDocumentEditComponent.prototype.copyDatatype = function (node) {
         var _this = this;
-        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, "DATATYPEREGISTRY");
+        var existing = this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes, __WEBPACK_IMPORTED_MODULE_13__common_constants_types__["a" /* Types */].DATATYPEREGISTRY);
         this.copyElemt.open({
             igDocumentId: this.igId,
             id: node.data.data.key,
@@ -1633,7 +1589,7 @@ var IgDocumentEditComponent = (function () {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/igdocument-edit.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/igdocument-edit.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__toc_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_4__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_4__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_10__service_indexed_db_datatypes_datatypes_toc_service__["a" /* DatatypesTocService */], __WEBPACK_IMPORTED_MODULE_11__service_indexed_db_toc_db_service__["a" /* TocDbService */], __WEBPACK_IMPORTED_MODULE_12__service_export_service__["a" /* ExportService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__service_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_4__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_4__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_10__service_indexed_db_datatypes_datatypes_toc_service__["a" /* DatatypesTocService */], __WEBPACK_IMPORTED_MODULE_11__service_indexed_db_toc_db_service__["a" /* TocDbService */], __WEBPACK_IMPORTED_MODULE_12__service_export_service__["a" /* ExportService */], __WEBPACK_IMPORTED_MODULE_14__service_sections_sections_service__["a" /* SectionsService */], __WEBPACK_IMPORTED_MODULE_15__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */]])
     ], IgDocumentEditComponent);
     return IgDocumentEditComponent;
 }());
@@ -1664,7 +1620,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_primeng_components_tieredmenu_tieredmenu__ = __webpack_require__("../../../../primeng/components/tieredmenu/tieredmenu.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_primeng_components_tieredmenu_tieredmenu___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_primeng_components_tieredmenu_tieredmenu__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__utils_utils_module__ = __webpack_require__("../../../../../src/app/utils/utils.module.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__toc_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__service_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_primeng_components_common_treedragdropservice__ = __webpack_require__("../../../../primeng/components/common/treedragdropservice.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_13_primeng_components_common_treedragdropservice___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_13_primeng_components_common_treedragdropservice__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_14_primeng_components_dragdrop_dragdrop__ = __webpack_require__("../../../../primeng/components/dragdrop/dragdrop.js");
@@ -1710,14 +1666,14 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_40_primeng_components_radiobutton_radiobutton___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_40_primeng_components_radiobutton_radiobutton__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_41_primeng_components_blockui_blockui__ = __webpack_require__("../../../../primeng/components/blockui/blockui.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_41_primeng_components_blockui_blockui___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_41_primeng_components_blockui_blockui__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/adding.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_42__service_adding_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_43__add_segment_add_segment_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-segment/add-segment.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_44_primeng_components_table_table__ = __webpack_require__("../../../../primeng/components/table/table.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_44_primeng_components_table_table___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_44_primeng_components_table_table__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_45__add_datatype_add_datatype_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-datatype/add-datatype.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_46__add_value_set_add_value_set_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/add-value-set/add-value-set.component.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_47__copy_element_copy_element_component__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/copy-element/copy-element.component.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_48__services_naming_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/services/naming.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_48__service_names_and_positions_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/names-and-positions.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_49_primeng_components_splitbutton_splitbutton__ = __webpack_require__("../../../../primeng/components/splitbutton/splitbutton.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_49_primeng_components_splitbutton_splitbutton___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_49_primeng_components_splitbutton_splitbutton__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_50__service_export_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/export.service.ts");
@@ -1829,7 +1785,7 @@ var IgDocumentEditModule = (function () {
             ],
             entryComponents: [],
             providers: [
-                __WEBPACK_IMPORTED_MODULE_12__toc_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_13_primeng_components_common_treedragdropservice__["TreeDragDropService"], __WEBPACK_IMPORTED_MODULE_16__igdocument_edit_resolver__["a" /* IgdocumentEditResolver */], __WEBPACK_IMPORTED_MODULE_23__section_sectionResolver_resolver__["a" /* SectionResolver */], __WEBPACK_IMPORTED_MODULE_27__igdocument_metadata_IgMetaDataResolver_resolver__["a" /* IgMetaDataResolver */], __WEBPACK_IMPORTED_MODULE_34__guards_save_guard__["a" /* SaveFormsGuard */], __WEBPACK_IMPORTED_MODULE_31_primeng_components_common_confirmationservice__["ConfirmationService"], __WEBPACK_IMPORTED_MODULE_42__adding_service__["a" /* IgDocumentAddingService */], __WEBPACK_IMPORTED_MODULE_48__services_naming_service__["a" /* NamingService */], __WEBPACK_IMPORTED_MODULE_50__service_export_service__["a" /* ExportService */]
+                __WEBPACK_IMPORTED_MODULE_12__service_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_13_primeng_components_common_treedragdropservice__["TreeDragDropService"], __WEBPACK_IMPORTED_MODULE_16__igdocument_edit_resolver__["a" /* IgdocumentEditResolver */], __WEBPACK_IMPORTED_MODULE_23__section_sectionResolver_resolver__["a" /* SectionResolver */], __WEBPACK_IMPORTED_MODULE_27__igdocument_metadata_IgMetaDataResolver_resolver__["a" /* IgMetaDataResolver */], __WEBPACK_IMPORTED_MODULE_34__guards_save_guard__["a" /* SaveFormsGuard */], __WEBPACK_IMPORTED_MODULE_31_primeng_components_common_confirmationservice__["ConfirmationService"], __WEBPACK_IMPORTED_MODULE_42__service_adding_service__["a" /* IgDocumentAddingService */], __WEBPACK_IMPORTED_MODULE_48__service_names_and_positions_service__["a" /* NamesAndPositionsService */], __WEBPACK_IMPORTED_MODULE_50__service_export_service__["a" /* ExportService */]
             ],
             schemas: [__WEBPACK_IMPORTED_MODULE_0__angular_core__["CUSTOM_ELEMENTS_SCHEMA"]]
         })
@@ -1858,6 +1814,9 @@ var IgDocumentEditModule = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__service_indexed_db_profile_components_profile_components_toc_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/profile-components/profile-components-toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_10_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_10_lodash__);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_11__common_constants_types__ = __webpack_require__("../../../../../src/app/common/constants/types.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_12__service_names_and_positions_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/names-and-positions.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_13__service_indexed_db_ig_document_info_database__ = __webpack_require__("../../../../../src/app/service/indexed-db/ig-document-info-database.ts");
 /**
  * Created by ena3 on 4/16/18.
  */
@@ -1881,8 +1840,11 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
+
+
+
 var IgdocumentEditResolver = (function () {
-    function IgdocumentEditResolver(http, indexedDbService, saveService, valuesetsTocService, segmentsTocService, datatypesTocService, conformanceProfilesTocService, compositeProfilesTocService, profileComponentsTocService) {
+    function IgdocumentEditResolver(http, indexedDbService, saveService, valuesetsTocService, segmentsTocService, datatypesTocService, conformanceProfilesTocService, compositeProfilesTocService, profileComponentsTocService, namesAndPositionsService) {
         this.http = http;
         this.indexedDbService = indexedDbService;
         this.saveService = saveService;
@@ -1892,6 +1854,7 @@ var IgdocumentEditResolver = (function () {
         this.conformanceProfilesTocService = conformanceProfilesTocService;
         this.compositeProfilesTocService = compositeProfilesTocService;
         this.profileComponentsTocService = profileComponentsTocService;
+        this.namesAndPositionsService = namesAndPositionsService;
         this.segments = [];
         this.datatypes = [];
         this.profileComponents = [];
@@ -1906,20 +1869,23 @@ var IgdocumentEditResolver = (function () {
             console.log("TEST");
             _this.indexedDbService.getIgDocumentId().then(function (id) {
                 if (id !== igId) {
-                    _this.initToc(igId, resolve, reject);
+                    // this.initToc(igId,resolve,reject);
+                    _this.initIgDocument(igId, resolve, reject);
                 }
                 else {
-                    _this.getMergedIg(igId, resolve, reject);
+                    _this.getFromClientDb(igId, resolve, reject);
+                    //this.getMergedIg(igId, resolve,reject);
                 }
             }, function (error) {
-                _this.initToc(igId, resolve, reject);
+                _this.initIgDocument(igId, resolve, reject);
+                // this.initToc(igId,resolve,reject);
             });
         });
     };
     IgdocumentEditResolver.prototype.parseToc = function (toc) {
         for (var i = 0; i < toc.length; i++) {
             var node = toc[i];
-            if (node.data.type == 'PROFILE') {
+            if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].PROFILE) {
                 this.parseProfile(node);
             }
         }
@@ -1928,22 +1894,22 @@ var IgdocumentEditResolver = (function () {
         for (var i = 0; i < profile.children.length; i++) {
             var node = profile.children[i];
             var converted = this.convertList(node.children);
-            if (node.data.type == 'CONFORMANCEPROFILEREGISTRY') {
+            if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].CONFORMANCEPROFILEREGISTRY) {
                 this.conformanceProfiles = converted;
             }
-            else if (node.data.type == 'PROFILECOMPONENTSREGISTRY') {
+            else if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].PROFILECOMPONENTREGISTRY) {
                 this.profileComponents = converted;
             }
-            else if (node.data.type == 'COMPOSITEPROFILEREGISTRY') {
+            else if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].COMPOSITEPROFILEREGISTRY) {
                 this.compositeProfiles = converted;
             }
-            else if (node.data.type == 'SEGMENTREGISTRY') {
+            else if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].SEGMENTREGISTRY) {
                 this.segments = converted;
             }
-            else if (node.data.type == 'DATATYPEREGISTRY') {
+            else if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].DATATYPEREGISTRY) {
                 this.datatypes = converted;
             }
-            else if (node.data.type == 'VALUESETREGISTRY') {
+            else if (node.data.type == __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].VALUESETREGISTRY) {
                 this.valueSets = converted;
             }
         }
@@ -1955,11 +1921,19 @@ var IgdocumentEditResolver = (function () {
         }
         return ret;
     };
+    IgdocumentEditResolver.prototype.getFromClientDb = function (igId, resolve, reject) {
+        var _this = this;
+        this.http.get("api/igdocuments/" + igId + "/display").subscribe(function (x) {
+            _this.ig = x;
+            _this.indexedDbService.getIgDocument().then(function (x) {
+                resolve(x);
+            });
+        });
+    };
     IgdocumentEditResolver.prototype.getMergedIg = function (igId, resolve, reject) {
         var _this = this;
         this.http.get("api/igdocuments/" + igId + "/display").subscribe(function (x) {
             _this.ig = x;
-            console.log("Appliying the db changes");
             console.log(_this.ig.toc);
             _this.segments = [];
             _this.datatypes = [];
@@ -1971,40 +1945,40 @@ var IgdocumentEditResolver = (function () {
                 _this.conformanceProfiles = cpsNodes;
                 console.log(_this.conformanceProfiles);
                 if (_this.conformanceProfiles.length > 0) {
-                    _this.addNodesByType(_this.ig.toc, "CONFORMANCEPROFILEREGISTRY", _this.conformanceProfiles);
+                    _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].CONFORMANCEPROFILEREGISTRY, _this.conformanceProfiles);
                 }
                 _this.profileComponentsTocService.getAllFromAdded().then(function (pcsNodes) {
                     _this.profileComponents = pcsNodes;
                     console.log(_this.profileComponents);
                     if (_this.profileComponents.length > 0) {
-                        _this.addNodesByType(_this.ig.toc, "PROFILECOMPONENTREGISTRY", _this.profileComponents);
+                        _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].PROFILECOMPONENTREGISTRY, _this.profileComponents);
                     }
                     _this.compositeProfilesTocService.getAllFromAdded().then(function (composites) {
                         _this.compositeProfiles = composites;
                         console.log(_this.compositeProfiles);
                         if (_this.compositeProfiles.length > 0) {
-                            _this.addNodesByType(_this.ig.toc, "COMPOSITEPROFILEREGISTRY", _this.compositeProfiles);
+                            _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].COMPOSITEPROFILEREGISTRY, _this.compositeProfiles);
                         }
                         _this.segmentsTocService.getAllFromAdded().then(function (segments) {
                             _this.segments = segments;
                             console.log(_this.segments);
                             if (_this.segments.length > 0) {
-                                _this.addNodesByType(_this.ig.toc, "SEGMENTREGISTRY", _this.segments);
+                                _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].SEGMENTREGISTRY, _this.segments);
                             }
                             _this.datatypesTocService.getAllFromAdded().then(function (datatypes) {
                                 _this.datatypes = datatypes;
                                 console.log(_this.datatypes);
                                 if (_this.datatypes.length > 0) {
-                                    _this.addNodesByType(_this.ig.toc, "DATATYPEREGISTRY", _this.datatypes);
+                                    _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].DATATYPEREGISTRY, _this.datatypes);
                                 }
                                 _this.valuesetsTocService.getAllFromAdded().then(function (valueSets) {
                                     _this.valueSets = valueSets;
                                     if (_this.valueSets.length > 0) {
-                                        _this.addNodesByType(_this.ig.toc, "VALUESETREGISTRY", _this.valueSets);
+                                        _this.addNodesByType(_this.ig.toc, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].VALUESETREGISTRY, _this.valueSets);
                                     }
                                     console.log("resolving ig");
                                     console.log(_this.ig);
-                                    // this.updateNames(this.ig);
+                                    _this.namesAndPositionsService.updateIgTocNames(_this.ig, resolve, reject);
                                     resolve(_this.ig);
                                 }, function (error) {
                                 });
@@ -2037,11 +2011,31 @@ var IgdocumentEditResolver = (function () {
             });
         });
     };
+    IgdocumentEditResolver.prototype.initIgDocument = function (igId, resolve, reject) {
+        var _this = this;
+        this.http.get("api/igdocuments/" + igId + "/display").subscribe(function (x) {
+            // this.parseToc(x.toc);
+            _this.indexedDbService.initializeDatabase(igId).then(function () {
+                var ig = new __WEBPACK_IMPORTED_MODULE_13__service_indexed_db_ig_document_info_database__["a" /* IgDocumentInfo */](igId);
+                ig.metadata = x["metadata"];
+                ig.toc = x["toc"];
+                _this.indexedDbService.initIg(ig).then(function () {
+                    resolve(ig);
+                }, function (error) {
+                    console.log("Could not add elements to client db");
+                    reject();
+                });
+            }, function (error) {
+                console.log("Could not load Ig : " + error);
+                reject();
+            });
+        });
+    };
     IgdocumentEditResolver.prototype.findNodeByType = function (children, type) {
         return __WEBPACK_IMPORTED_MODULE_10_lodash__["find"](children, function (node) { return type == node.data.type; });
     };
     IgdocumentEditResolver.prototype.addNodesByType = function (tocChildren, type, added) {
-        var profile = this.findNodeByType(tocChildren, "PROFILE");
+        var profile = this.findNodeByType(tocChildren, __WEBPACK_IMPORTED_MODULE_11__common_constants_types__["a" /* Types */].PROFILE);
         if (profile != null) {
             if (profile.children && profile.children.length > 0) {
                 var registry = this.findNodeByType(profile.children, type);
@@ -2050,7 +2044,8 @@ var IgdocumentEditResolver = (function () {
                     registry.children = __WEBPACK_IMPORTED_MODULE_10_lodash__["union"](registry.children, added);
                     registry.children = __WEBPACK_IMPORTED_MODULE_10_lodash__["sortBy"](registry.children, [function (node) {
                             return node.data.label;
-                        }]);
+                        }
+                    ]);
                 }
             }
         }
@@ -2058,7 +2053,7 @@ var IgdocumentEditResolver = (function () {
     ;
     IgdocumentEditResolver = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_2__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */], __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_toc_db_service__["a" /* TocDbService */], __WEBPACK_IMPORTED_MODULE_5__service_indexed_db_valuesets_valuesets_toc_service__["a" /* ValuesetsTocService */], __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_segments_segments_toc_service__["a" /* SegmentsTocService */], __WEBPACK_IMPORTED_MODULE_7__service_indexed_db_datatypes_datatypes_toc_service__["a" /* DatatypesTocService */], __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_conformance_profiles_conformance_profiles_toc_service__["a" /* ConformanceProfilesTocService */], __WEBPACK_IMPORTED_MODULE_8__service_indexed_db_composite_profiles_composite_profiles_toc_service__["a" /* CompositeProfilesTocService */], __WEBPACK_IMPORTED_MODULE_9__service_indexed_db_profile_components_profile_components_toc_service__["a" /* ProfileComponentsTocService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */], __WEBPACK_IMPORTED_MODULE_2__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */], __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_toc_db_service__["a" /* TocDbService */], __WEBPACK_IMPORTED_MODULE_5__service_indexed_db_valuesets_valuesets_toc_service__["a" /* ValuesetsTocService */], __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_segments_segments_toc_service__["a" /* SegmentsTocService */], __WEBPACK_IMPORTED_MODULE_7__service_indexed_db_datatypes_datatypes_toc_service__["a" /* DatatypesTocService */], __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_conformance_profiles_conformance_profiles_toc_service__["a" /* ConformanceProfilesTocService */], __WEBPACK_IMPORTED_MODULE_8__service_indexed_db_composite_profiles_composite_profiles_toc_service__["a" /* CompositeProfilesTocService */], __WEBPACK_IMPORTED_MODULE_9__service_indexed_db_profile_components_profile_components_toc_service__["a" /* ProfileComponentsTocService */], __WEBPACK_IMPORTED_MODULE_12__service_names_and_positions_service__["a" /* NamesAndPositionsService */]])
     ], IgdocumentEditResolver);
     return IgdocumentEditResolver;
 }());
@@ -2186,7 +2181,7 @@ module.exports = "<div>\n    <span style=\"font-weight: 700; font-size: 16px\">\
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__toc_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__service_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__service_sections_sections_service__ = __webpack_require__("../../../../../src/app/service/sections/sections.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_objects_database__ = __webpack_require__("../../../../../src/app/service/indexed-db/objects-database.ts");
@@ -2231,16 +2226,13 @@ var SectionComponent = (function () {
         this.tocService.getActiveNode().subscribe(function (x) {
             var node = x;
             if (_this.section.id === node.data.id) {
-                console.log("found node");
                 node.data.data.label = _this.section.label;
-                console.log("updating node");
             }
         });
         var s = new __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_objects_database__["c" /* Section */]();
         s.id = this.section.id;
-        s.changeType = "EDITED";
         s.section = this.section;
-        return this.sectionsService.saveSection(s);
+        return this.sectionsService.updateContent(this.section.id, this.section, null);
     };
     SectionComponent.prototype.reset = function () {
         this.section = __WEBPACK_IMPORTED_MODULE_2_lodash__["cloneDeep"](this.backup);
@@ -2262,7 +2254,7 @@ var SectionComponent = (function () {
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Component"])({
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/section/section.component.html"),
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__toc_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_5__service_sections_sections_service__["a" /* SectionsService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_3__service_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_5__service_sections_sections_service__["a" /* SectionsService */]])
     ], SectionComponent);
     return SectionComponent;
 }());
@@ -2342,6 +2334,66 @@ var SectionResolver = (function () {
 
 /***/ }),
 
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/service/adding.service.ts":
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IgDocumentAddingService; });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_common_http__ = __webpack_require__("../../../common/esm5/http.js");
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+/**
+ * Created by ena3 on 5/14/18.
+ */
+
+
+var IgDocumentAddingService = (function () {
+    function IgDocumentAddingService(http) {
+        this.http = http;
+    }
+    IgDocumentAddingService.prototype.addMessages = function (wrapper) {
+        return this.http.post('api/ig/addConformanceProfile', wrapper);
+    };
+    IgDocumentAddingService.prototype.addSegment = function (wrapper) {
+        return this.http.post('api/ig/addSegments', wrapper);
+    };
+    IgDocumentAddingService.prototype.addDatatypes = function (wrapper) {
+        return this.http.post('api/ig/addDatatypes', wrapper);
+    };
+    IgDocumentAddingService.prototype.addValueSets = function (wrapper) {
+        return this.http.post('api/ig/addValueSets', wrapper);
+    };
+    IgDocumentAddingService.prototype.getMessagesByVersion = function (hl7Version) {
+        return this.http.get('api/igdocuments/findMessageEvents/' + hl7Version);
+    };
+    IgDocumentAddingService.prototype.getHl7SegmentByVersion = function (hl7Version) {
+        return this.http.get('api/ig/findHl7Segments/' + hl7Version);
+    };
+    IgDocumentAddingService.prototype.getHl7DatatypesByVersion = function (hl7Version) {
+        return this.http.get('api/ig/findHl7Datatypes/' + hl7Version);
+    };
+    IgDocumentAddingService.prototype.getHl7ValueSetsByVersion = function (hl7Version) {
+        return this.http.get('api/ig/findHl7ValueSets/' + hl7Version);
+    };
+    IgDocumentAddingService = __decorate([
+        Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__angular_common_http__["b" /* HttpClient */]])
+    ], IgDocumentAddingService);
+    return IgDocumentAddingService;
+}());
+
+
+
+/***/ }),
+
 /***/ "../../../../../src/app/igdocuments/igdocument-edit/service/export.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -2382,19 +2434,20 @@ var ExportService = (function () {
 
 /***/ }),
 
-/***/ "../../../../../src/app/igdocuments/igdocument-edit/services/naming.service.ts":
+/***/ "../../../../../src/app/igdocuments/igdocument-edit/service/names-and-positions.service.ts":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NamingService; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return NamesAndPositionsService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_indexed_db_segments_segments_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/segments/segments-indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__service_indexed_db_datatypes_datatypes_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/datatypes/datatypes-indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_valuesets_valuesets_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/valuesets/valuesets-indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_sections_sections_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/sections/sections-indexed-db.service.ts");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_lodash__);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_conformance_profiles_conformance_profiles_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/conformance-profiles/conformance-profiles-indexed-db.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__service_indexed_db_conformance_profiles_conformance_profiles_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/conformance-profiles/conformance-profiles-indexed-db.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__common_constants_types__ = __webpack_require__("../../../../../src/app/common/constants/types.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_7_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -2411,39 +2464,83 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 
 
 
-var NamingService = (function () {
-    function NamingService(segmentsIndexedDbService, datatypesIndexedDbService, valueSetsIndexedDbService, sectionsIndexedDbService, conformanceProfilesIndexedDbService) {
+
+var NamesAndPositionsService = (function () {
+    function NamesAndPositionsService(segmentsIndexedDbService, datatypesIndexedDbService, valueSetsIndexedDbService, sectionsIndexedDbService, conformanceProfilesIndexedDbService) {
         this.segmentsIndexedDbService = segmentsIndexedDbService;
+        this.datatypesIndexedDbService = datatypesIndexedDbService;
         this.valueSetsIndexedDbService = valueSetsIndexedDbService;
         this.sectionsIndexedDbService = sectionsIndexedDbService;
         this.conformanceProfilesIndexedDbService = conformanceProfilesIndexedDbService;
     }
-    NamingService.prototype.updateIgTocNames = function (igToc) {
-        this.updateNarratives(igToc);
-        this.updateProfile(igToc);
+    NamesAndPositionsService.prototype.updateIgTocNames = function (ig, resolve, reject) {
+        console.log("Merging profile");
+        this.updateProfile(ig, resolve, reject);
     };
-    NamingService.prototype.findNodeByType = function (children, type) {
-        return __WEBPACK_IMPORTED_MODULE_5_lodash__["find"](children, function (node) { return type == node.data.type; });
+    NamesAndPositionsService.prototype.findNodeByType = function (children, type) {
+        return __WEBPACK_IMPORTED_MODULE_7_lodash__["find"](children, function (node) { return type == node.data.type; });
     };
-    NamingService.prototype.updateNarratives = function (igToc) {
+    NamesAndPositionsService.prototype.updateProfile = function (igToc, resolve, reject) {
+        this.mergeRegistries(igToc, resolve, reject);
     };
-    NamingService.prototype.updateProfile = function (igToc) {
-        var profile = this.findNodeByType(igToc, "PROFILE");
-        __WEBPACK_IMPORTED_MODULE_5_lodash__["forEach"](profile.children, function (child) {
-            if (child.data.type) {
-                if (child.data.type == 'SEGMENTREGISTRY') {
+    NamesAndPositionsService.prototype.mergeRegistries = function (ig, resolve, reject) {
+        var _this = this;
+        var profile = this.findNodeByType(ig.toc, __WEBPACK_IMPORTED_MODULE_6__common_constants_types__["a" /* Types */].PROFILE);
+        this.segmentsIndexedDbService.getAllMetaData().then(function (metadataList) {
+            if (metadataList.length > 0) {
+                var registry = _this.findNodeByType(profile.children, __WEBPACK_IMPORTED_MODULE_6__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
+                _this.updateChildren(registry, metadataList);
+            }
+            _this.datatypesIndexedDbService.getAllMetaData().then(function (metadataList) {
+                if (metadataList.length > 0) {
+                    var registry = _this.findNodeByType(profile.children, __WEBPACK_IMPORTED_MODULE_6__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
+                    _this.updateChildren(registry, metadataList);
                 }
+                _this.conformanceProfilesIndexedDbService.getAllMetaData().then(function (metadataList) {
+                    if (metadataList.length > 0) {
+                        var registry = _this.findNodeByType(profile.children, __WEBPACK_IMPORTED_MODULE_6__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
+                        _this.updateChildren(registry, metadataList);
+                    }
+                    _this.valueSetsIndexedDbService.getAllMetaData().then(function (metadataList) {
+                        if (metadataList.length > 0) {
+                            var registry = _this.findNodeByType(profile.children, __WEBPACK_IMPORTED_MODULE_6__common_constants_types__["a" /* Types */].SEGMENTREGISTRY);
+                            _this.updateChildren(registry, metadataList);
+                        }
+                        resolve(ig);
+                    }, function (error) {
+                    });
+                }, function (error) {
+                });
+            }, function (error) {
+            });
+        }, function (error) {
+        });
+    };
+    ;
+    NamesAndPositionsService.prototype.updateChildren = function (registry, metadataList) {
+        __WEBPACK_IMPORTED_MODULE_7_lodash__["forEach"](metadataList, function (metadata) {
+            var node = __WEBPACK_IMPORTED_MODULE_7_lodash__["find"](registry.children, function (node) {
+                return node.id == metadata.id;
+            });
+            if (node != null) {
+                node.data.ext = metadata.metadata.ext;
+                node.data.label = metadata.metadata.label;
+                node.data.description = metadata.metadata.description;
             }
         });
     };
-    NamingService = __decorate([
+    ;
+    NamesAndPositionsService.prototype.findNodeById = function (children, id) {
+        return __WEBPACK_IMPORTED_MODULE_7_lodash__["find"](children, function (node) { return id == node.id; });
+    };
+    NamesAndPositionsService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
         __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__service_indexed_db_segments_segments_indexed_db_service__["a" /* SegmentsIndexedDbService */], __WEBPACK_IMPORTED_MODULE_2__service_indexed_db_datatypes_datatypes_indexed_db_service__["a" /* DatatypesIndexedDbService */],
             __WEBPACK_IMPORTED_MODULE_3__service_indexed_db_valuesets_valuesets_indexed_db_service__["a" /* ValuesetsIndexedDbService */],
             __WEBPACK_IMPORTED_MODULE_4__service_indexed_db_sections_sections_indexed_db_service__["a" /* SectionsIndexedDbService */],
-            __WEBPACK_IMPORTED_MODULE_6__service_indexed_db_conformance_profiles_conformance_profiles_indexed_db_service__["a" /* ConformanceProfilesIndexedDbService */]])
-    ], NamingService);
-    return NamingService;
+            __WEBPACK_IMPORTED_MODULE_5__service_indexed_db_conformance_profiles_conformance_profiles_indexed_db_service__["a" /* ConformanceProfilesIndexedDbService */]])
+    ], NamesAndPositionsService);
+    return NamesAndPositionsService;
 }());
 
 
@@ -2481,7 +2578,7 @@ module.exports = "<div class=\"card\" style=\"padding: 0px\">\n\n\n<p-panel [tog
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return TocComponent; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__service_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_angular_tree_component__ = __webpack_require__("../../../../angular-tree-component/dist/angular-tree-component.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_ngx_contextmenu__ = __webpack_require__("../../../../ngx-contextmenu/lib/index.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__angular_router__ = __webpack_require__("../../../router/esm5/router.js");
@@ -2664,7 +2761,7 @@ var TocComponent = (function () {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_4__angular_router__["ActivatedRoute"]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_1__service_toc_service__["a" /* TocService */], __WEBPACK_IMPORTED_MODULE_4__angular_router__["ActivatedRoute"]])
     ], TocComponent);
     return TocComponent;
 }());

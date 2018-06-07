@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import {PrimeDialogAdapter} from "../../../common/prime-ng-adapters/prime-dialog-adapter";
 import {WorkspaceService} from "../../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {IgDocumentAddingService} from "../../igdocument-edit/adding.service";
 import * as _ from 'lodash';
 @Component({
   selector: 'app-copy-element',

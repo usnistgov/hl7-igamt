@@ -154,6 +154,8 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       sectionChildren = createValueSetsNodes(ig.getValueSetRegistry().getChildren());
 
     }
+    sectionChildren.sort((h1, h2) -> h1.compareTo(h2));
+
     return sectionChildren;
 
   }
@@ -169,10 +171,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       if (dt != null) {
 
 
-        Nodes.add(createDatatypeNode(dt));
+        Nodes.add(createDatatypeNode(dt, l.getPosition()));
       }
     }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
 
     return Nodes;
   }
@@ -185,7 +186,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       Segment segment = segmentService.findByKey(l.getId());
       if (segment != null) {
         // addChildrenByType(node, Type.SEGMENT);
-        Nodes.add(createSegmentNode(segment));
+        Nodes.add(createSegmentNode(segment, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -203,10 +204,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     for (Link l : children) {
       CompositeProfileStructure compositeProfile = compositeProfileServie.findByKey(l.getId());
       if (compositeProfile != null) {
-
-
-
-        Nodes.add(createCompositeProfileNode(compositeProfile));
+        Nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -219,7 +217,8 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile) {
+  public TreeNode createCompositeProfileNode(CompositeProfileStructure compositeProfile,
+      int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
@@ -227,6 +226,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setDescription(compositeProfile.getDescription());
     data.setDomainInfo(compositeProfile.getDomainInfo());
     data.setKey(compositeProfile.getId());
+    data.setPosition(position);
     data.setType(Type.COMPOSITEPROFILE);
     node.setData(data);
     node.setId(compositeProfile.getId().getId());
@@ -243,7 +243,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       ProfileComponent profileComponent = profileComponentService.findByCompositeKey(l.getId());
       if (profileComponent != null) {
 
-        Nodes.add(createPcNode(profileComponent));
+        Nodes.add(createPcNode(profileComponent, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -256,11 +256,12 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createPcNode(ProfileComponent profileComponent) {
+  public TreeNode createPcNode(ProfileComponent profileComponent, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
     data.setLabel(profileComponent.getName());
+    data.setPosition(position);
     data.setDescription(profileComponent.getName());
     data.setDomainInfo(profileComponent.getDomainInfo());
     data.setKey(profileComponent.getId());
@@ -280,7 +281,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       if (vs != null) {
 
         // addChildrenByType(node, Type.VALUESET);
-        Nodes.add(createValueSetsNode(vs));
+        Nodes.add(createValueSetsNode(vs, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -295,12 +296,13 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createValueSetsNode(Valueset vs) {
+  public TreeNode createValueSetsNode(Valueset vs, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
     data.setLabel(vs.getBindingIdentifier());
     data.setDescription(vs.getName());
+    data.setPosition(position);
     data.setDomainInfo(vs.getDomainInfo());
     data.setKey(vs.getId());
     data.setType(Type.VALUESET);
@@ -320,10 +322,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       ConformanceProfile confromanceProfile = conformanceProfileService.findByKey(l.getId());
       if (confromanceProfile != null) {
 
-        Nodes.add(createCpNode(confromanceProfile));
+        Nodes.add(createCpNode(confromanceProfile, l.getPosition()));
       }
     }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
 
     return Nodes;
   }
@@ -335,7 +336,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createCpNode(ConformanceProfile confromanceProfile) {
+  public TreeNode createCpNode(ConformanceProfile confromanceProfile, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
@@ -344,6 +345,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setDomainInfo(confromanceProfile.getDomainInfo());
     data.setKey(confromanceProfile.getId());
     node.setData(data);
+    data.setPosition(position);
     node.setId(confromanceProfile.getId().getId());
     data.setType(Type.CONFORMANCEPROFILE);
     return node;
@@ -403,7 +405,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     for (Datatype elm : datatypes) {
 
 
-      Nodes.add(createDatatypeNode(elm));
+      Nodes.add(createDatatypeNode(elm, 0));
 
     }
 
@@ -417,13 +419,14 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createDatatypeNode(Datatype elm) {
+  public TreeNode createDatatypeNode(Datatype elm, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
     if (!(elm instanceof ComplexDatatype)) {
       data.lazyLoading = false;
     }
+    data.setPosition(position);
     data.setLabel(elm.getName());
     data.setDescription(elm.getDescription());
     data.setKey(elm.getId());
@@ -447,7 +450,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Segment elm : segments) {
-      Nodes.add(createSegmentNode(elm));
+      Nodes.add(createSegmentNode(elm, 0));
 
     }
 
@@ -461,12 +464,13 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createSegmentNode(Segment elm) {
+  public TreeNode createSegmentNode(Segment elm, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
     data.setLabel(elm.getName());
     data.setExt(elm.getExt());
+    data.setPosition(position);
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
     data.setKey(elm.getId());
@@ -591,7 +595,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     // TODO Auto-generated method stub
     for (ConformanceProfile elm : conformanceProfiles) {
 
-      Nodes.add(createConformanceProfileNode(elm));
+      Nodes.add(createConformanceProfileNode(elm, 0));
 
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -606,11 +610,12 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createConformanceProfileNode(ConformanceProfile elm) {
+  public TreeNode createConformanceProfileNode(ConformanceProfile elm, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
     data.setLabel(elm.getName());
+    data.setPosition(position);
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
     data.setKey(elm.getId());

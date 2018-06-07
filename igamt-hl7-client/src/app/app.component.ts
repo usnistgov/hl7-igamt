@@ -205,6 +205,9 @@ export class AppComponent implements AfterViewInit {
 
   checkRouterEvent(event): void {
     if (event instanceof NavigationStart) {
+      console.log("Navigation Start");
+
+      console.log(event);
       this.loading = true;
     }
 

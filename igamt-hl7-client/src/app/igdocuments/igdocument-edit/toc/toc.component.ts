@@ -1,6 +1,6 @@
 import {Component, Input, ViewChildren, ViewChild} from "@angular/core";
 import {WorkspaceService, Entity} from "../../../service/workspace/workspace.service";
-import {TocService} from "./toc.service";
+import {TocService} from "../service/toc.service";
 import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "angular-tree-component";
 
 import {MenuItem} from 'primeng/api';

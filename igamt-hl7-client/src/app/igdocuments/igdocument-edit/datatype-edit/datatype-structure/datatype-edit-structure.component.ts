@@ -11,6 +11,7 @@ import {ConstraintsService} from "../../../../service/constraints/constraints.se
 import { _ } from 'underscore';
 import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
 import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
+import {TocService} from "../../service/toc.service";
 
 @Component({
   selector : 'datatype-edit',
@@ -41,7 +42,7 @@ export class DatatypeEditStructureComponent {
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService){
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService, private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -56,9 +57,8 @@ export class DatatypeEditStructureComponent {
         this.valuesetStrengthOptions = this.configService._valuesetStrengthOptions;
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
-
-        this.datatypesTocService.getAll().then((dtTOCdata) => {
-            let listTocDTs:any = dtTOCdata[0];
+        this.tocService.getDataypeList().then((dtTOCdata) => {
+            let listTocDTs:any = dtTOCdata;
             for(let entry of listTocDTs){
                 var treeObj = entry.data;
 
@@ -84,8 +84,8 @@ export class DatatypeEditStructureComponent {
             }
 
 
-            this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
-                let listTocVSs:any = valuesetTOCdata[0];
+            this.tocService.getValueSetList().then((valuesetTOCdata) => {
+                let listTocVSs:any = valuesetTOCdata;
 
                 for(let entry of listTocVSs){
                     var treeObj = entry.data;

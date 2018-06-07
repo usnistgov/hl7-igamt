@@ -21,6 +21,7 @@ import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
 import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
 import {SegmentsTocService} from "../../../../service/indexed-db/segments/segments-toc.service";
+import {TocService} from "../../service/toc.service";
 
 @Component({
     templateUrl : './conformanceprofile-edit-structure.component.html',
@@ -68,7 +69,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                 private datatypesTocService : DatatypesTocService,
                 private segmentsTocService : SegmentsTocService,
                 private valuesetsTocService : ValuesetsTocService,
-                private conformanceProfilesTocService : ConformanceProfilesTocService){
+                private conformanceProfilesTocService : ConformanceProfilesTocService, private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -87,8 +88,8 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
 
         this.route.data.map(data =>data.conformanceprofileStructure).subscribe(x=>{
             console.log(x);
-            this.segmentsTocService.getAll().then((segTOCdata) => {
-                let listTocSegs:any = segTOCdata[0];
+            this.tocService.getSegmentsList().then((segTOCdata) => {
+                let listTocSegs:any = segTOCdata;
                 for(let entry of listTocSegs){
                     var treeObj = entry.data;
 
@@ -113,7 +114,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                     this.segmentsOptions.push(segOption);
                 }
 
-                this.datatypesTocService.getAll().then((dtTOCdata) => {
+                this.tocService.getDataypeList().then((dtTOCdata) => {
                     let listTocDts: any = dtTOCdata[0];
                     for (let entry of listTocDts) {
                         var treeObj = entry.data;
@@ -140,7 +141,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                         this.datatypesOptions.push(dtOption);
 
 
-                        this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
+                        this.tocService.getValueSetList().getAll().then((valuesetTOCdata) => {
                             let listTocVSs: any = valuesetTOCdata[0];
 
                             for (let entry of listTocVSs) {
