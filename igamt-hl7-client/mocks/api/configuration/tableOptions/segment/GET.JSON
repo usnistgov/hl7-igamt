@@ -67,7 +67,7 @@
       "disabled": false
     }
   ],
-  "segmentMetadata": {
+  "metadataConfig": {
     "hl7version": true,
     "publicationDate": true,
     "publicationVersion": false,

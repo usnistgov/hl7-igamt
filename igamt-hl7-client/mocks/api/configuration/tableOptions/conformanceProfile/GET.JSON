@@ -46,7 +46,7 @@
       "disabled" : false
     }
   ],
-  "messageMetadatatableOptions" : {
+  "metadataConfig" : {
     "hl7version" : true,
     "publicationDate" : true,
     "publicationVersion" : false,
