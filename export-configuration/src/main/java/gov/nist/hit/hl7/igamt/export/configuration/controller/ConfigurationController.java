@@ -22,7 +22,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ConformanceStatementTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.CompositeProfileTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ConformanceProfileTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.DatatypeTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ProfileComponentTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.SegmentTableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.TableOptionsDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ValuesetTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 
@@ -39,21 +45,86 @@ public class ConfigurationController {
 
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody ConformanceStatementTableOptionsDisplay getConformanceStatementTableOptions(){
-    return new ConformanceStatementTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  public @ResponseBody ConformanceProfileTableOptionsDisplay getConformanceProfileTableOptions(){
+    return new ConformanceProfileTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
   }
   
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile/save", method = RequestMethod.POST,
       consumes = {"application/json"})
-  public void saveConformanceStatementTableOptions(@RequestBody ConformanceStatementTableOptionsDisplay conformanceStatementTableOptionsDisplay){
+  public void saveConformanceProfileTableOptions(@RequestBody ConformanceProfileTableOptionsDisplay conformanceProfileTableOptionsDisplay){
+    this.saveTableOptionsDisplay(conformanceProfileTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/segment", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody SegmentTableOptionsDisplay getSegmentTableOptions(){
+    return new SegmentTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/segment/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveSegmentTableOptions(@RequestBody SegmentTableOptionsDisplay segmentTableOptionsDisplay){
+      this.saveTableOptionsDisplay(segmentTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/datatype", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody DatatypeTableOptionsDisplay getDatatypeTableOptions(){
+    return new DatatypeTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/datatype/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveDatatypeTableOptions(@RequestBody DatatypeTableOptionsDisplay datatypeTableOptionsDisplay){
+      this.saveTableOptionsDisplay(datatypeTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/valueset", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody ValuesetTableOptionsDisplay getValuesetTableOptions(){
+    return new ValuesetTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/valueset/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveValuesetTableOptions(@RequestBody ValuesetTableOptionsDisplay valuesetTableOptionsDisplay){
+      this.saveTableOptionsDisplay(valuesetTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/profileComponent", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody ProfileComponentTableOptionsDisplay getProfileComponentTableOptions(){
+    return new ProfileComponentTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/profileComponent/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveProfileComponentTableOptions(@RequestBody ProfileComponentTableOptionsDisplay profileComponentTableOptionsDisplay){
+      this.saveTableOptionsDisplay(profileComponentTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/compositeProfile", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody CompositeProfileTableOptionsDisplay getCompositeProfileTableOptions(){
+    return new CompositeProfileTableOptionsDisplay(this.findExportConfigurationServiceByAuthentication());
+  }
+  
+  @RequestMapping(value = "api/configuration/tableOptions/compositeProfile/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveCompositeProfileTableOptions(@RequestBody CompositeProfileTableOptionsDisplay compositeProfileTableOptionsDisplay){
+      this.saveTableOptionsDisplay(compositeProfileTableOptionsDisplay);
+  }
+  
+  private void saveTableOptionsDisplay(TableOptionsDisplay tableOptionsDisplay) {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
     if(authentication != null) {
-      ExportConfiguration exportConfiguration = conformanceStatementTableOptionsDisplay.populateExportConfiguration(this.findExportConfigurationServiceByAuthentication(authentication));
+      ExportConfiguration exportConfiguration = tableOptionsDisplay.populateExportConfiguration(this.findExportConfigurationServiceByAuthentication(authentication));
       exportConfiguration.setUsername(authentication.getPrincipal().toString());
+      exportConfiguration.setDefaultType(false);
       exportConfigurationService.save(exportConfiguration);
     }
   }
-  
+
   private ExportConfiguration findExportConfigurationServiceByAuthentication() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null) {

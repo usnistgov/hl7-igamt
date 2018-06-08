@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.export.configuration.domain.CoConstraintExportMode;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ColumnsConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
@@ -25,61 +26,98 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
  *
  * @author Maxence Lefort on Jun 5, 2018.
  */
-public class SegmentTableOptionsDisplay {
-  private String id;
-  private boolean includeMessageTable = true;
-  private UsageConfiguration segmentORGroupsMessageExport;
+public class SegmentTableOptionsDisplay implements TableOptionsDisplay {
+
+  private boolean includeSegmentTable = true;
+  private boolean greyOutOBX2FlavorColumn = false;
+  private UsageConfiguration segmentsExport;
+  private UsageConfiguration fieldsExport;
+  private CoConstraintExportMode coConstraintExportMode;
   private List<NameAndPositionAndPresence> columns;
   private MetadataConfiguration metadataConfig;
 
-  /**
-   * 
-   */
   public SegmentTableOptionsDisplay(ExportConfiguration exportConfiguration) {
-    this.id = exportConfiguration.getId();
-    this.includeMessageTable = exportConfiguration.isIncludeMessageTable();
-    this.segmentORGroupsMessageExport = exportConfiguration.getSegmentORGroupsMessageExport();
-    this.columns = exportConfiguration.getMessageColumn().getColumns();
-    this.metadataConfig = exportConfiguration.getMessageMetadataConfig();
-  }
-  
-  public SegmentTableOptionsDisplay() {
-    super();
+    this.includeSegmentTable = exportConfiguration.isIncludeSegmentTable();
+    this.greyOutOBX2FlavorColumn = exportConfiguration.isGreyOutOBX2FlavorColumn();
+    this.segmentsExport = exportConfiguration.getSegmentsExport();
+    this.fieldsExport = exportConfiguration.getFieldsExport();
+    this.coConstraintExportMode = exportConfiguration.getCoConstraintExportMode();
+    this.columns = exportConfiguration.getSegmentColumn().getColumns();
+    this.metadataConfig = exportConfiguration.getSegmentMetadataConfig();
   }
 
-  public SegmentTableOptionsDisplay(String id, boolean includeMessageTable,
-      UsageConfiguration segmentORGroupsMessageExport, List<NameAndPositionAndPresence> columns,
+  /**
+   * @param findExportConfigurationServiceByAuthentication
+   * @return
+   */
+  @Override
+  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
+    exportConfiguration.setIncludeSegmentTable(this.includeSegmentTable);
+    exportConfiguration.setSegmentsExport(this.segmentsExport);
+    exportConfiguration.setFieldsExport(this.fieldsExport);
+    exportConfiguration.setSegmentColumn(new ColumnsConfiguration(this.columns));
+    exportConfiguration.setSegmentMetadataConfig(this.metadataConfig);
+    exportConfiguration.setCoConstraintExportMode(this.coConstraintExportMode);
+    exportConfiguration.setGreyOutOBX2FlavorColumn(greyOutOBX2FlavorColumn);
+    return exportConfiguration;
+  }
+
+  public SegmentTableOptionsDisplay(boolean includeSegmentTable, boolean greyOutOBX2FlavorColumn,
+      UsageConfiguration segmentsExport, UsageConfiguration fieldsExport,
+      CoConstraintExportMode coConstraintExportMode, List<NameAndPositionAndPresence> columns,
       MetadataConfiguration metadataConfig) {
     super();
-    this.id = id;
-    this.includeMessageTable = includeMessageTable;
-    this.segmentORGroupsMessageExport = segmentORGroupsMessageExport;
+    this.includeSegmentTable = includeSegmentTable;
+    this.greyOutOBX2FlavorColumn = greyOutOBX2FlavorColumn;
+    this.segmentsExport = segmentsExport;
+    this.fieldsExport = fieldsExport;
+    this.coConstraintExportMode = coConstraintExportMode;
     this.columns = columns;
     this.metadataConfig = metadataConfig;
   }
 
-  public String getId() {
-    return id;
+  public SegmentTableOptionsDisplay() {
+    super();
   }
 
-  public void setId(String id) {
-    this.id = id;
+  public boolean isIncludeSegmentTable() {
+    return includeSegmentTable;
   }
 
-  public boolean isIncludeMessageTable() {
-    return includeMessageTable;
+  public void setIncludeSegmentTable(boolean includeSegmentTable) {
+    this.includeSegmentTable = includeSegmentTable;
   }
 
-  public void setIncludeMessageTable(boolean includeMessageTable) {
-    this.includeMessageTable = includeMessageTable;
+  public boolean isGreyOutOBX2FlavorColumn() {
+    return greyOutOBX2FlavorColumn;
   }
 
-  public UsageConfiguration getSegmentORGroupsMessageExport() {
-    return segmentORGroupsMessageExport;
+  public void setGreyOutOBX2FlavorColumn(boolean greyOutOBX2FlavorColumn) {
+    this.greyOutOBX2FlavorColumn = greyOutOBX2FlavorColumn;
   }
 
-  public void setSegmentORGroupsMessageExport(UsageConfiguration segmentORGroupsMessageExport) {
-    this.segmentORGroupsMessageExport = segmentORGroupsMessageExport;
+  public UsageConfiguration getSegmentsExport() {
+    return segmentsExport;
+  }
+
+  public void setSegmentsExport(UsageConfiguration segmentsExport) {
+    this.segmentsExport = segmentsExport;
+  }
+
+  public UsageConfiguration getFieldsExport() {
+    return fieldsExport;
+  }
+
+  public void setFieldsExport(UsageConfiguration fieldsExport) {
+    this.fieldsExport = fieldsExport;
+  }
+
+  public CoConstraintExportMode getCoConstraintExportMode() {
+    return coConstraintExportMode;
+  }
+
+  public void setCoConstraintExportMode(CoConstraintExportMode coConstraintExportMode) {
+    this.coConstraintExportMode = coConstraintExportMode;
   }
 
   public List<NameAndPositionAndPresence> getColumns() {
@@ -96,18 +134,6 @@ public class SegmentTableOptionsDisplay {
 
   public void setMetadataConfig(MetadataConfiguration metadataConfig) {
     this.metadataConfig = metadataConfig;
-  }
-
-  /**
-   * @param findExportConfigurationServiceByAuthentication
-   * @return
-   */
-  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
-    exportConfiguration.setIncludeMessageTable(this.includeMessageTable);
-    exportConfiguration.setSegmentORGroupsMessageExport(this.segmentORGroupsMessageExport);
-    exportConfiguration.setMessageColumn(new ColumnsConfiguration(this.columns));
-    exportConfiguration.setMessageMetadataConfig(this.metadataConfig);
-    return exportConfiguration;
   }
 
 }

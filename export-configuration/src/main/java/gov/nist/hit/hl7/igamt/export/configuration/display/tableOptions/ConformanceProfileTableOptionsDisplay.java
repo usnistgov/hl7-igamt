@@ -25,8 +25,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
  *
  * @author Maxence Lefort on Jun 5, 2018.
  */
-public class ConformanceStatementTableOptionsDisplay {
-  private String id;
+public class ConformanceProfileTableOptionsDisplay implements TableOptionsDisplay{
   private boolean includeMessageTable = true;
   private UsageConfiguration segmentORGroupsMessageExport;
   private List<NameAndPositionAndPresence> columns;
@@ -35,35 +34,25 @@ public class ConformanceStatementTableOptionsDisplay {
   /**
    * 
    */
-  public ConformanceStatementTableOptionsDisplay(ExportConfiguration exportConfiguration) {
-    this.id = exportConfiguration.getId();
+  public ConformanceProfileTableOptionsDisplay(ExportConfiguration exportConfiguration) {
     this.includeMessageTable = exportConfiguration.isIncludeMessageTable();
     this.segmentORGroupsMessageExport = exportConfiguration.getSegmentORGroupsMessageExport();
     this.columns = exportConfiguration.getMessageColumn().getColumns();
     this.metadataConfig = exportConfiguration.getMessageMetadataConfig();
   }
   
-  public ConformanceStatementTableOptionsDisplay() {
+  public ConformanceProfileTableOptionsDisplay() {
     super();
   }
 
-  public ConformanceStatementTableOptionsDisplay(String id, boolean includeMessageTable,
+  public ConformanceProfileTableOptionsDisplay(boolean includeMessageTable,
       UsageConfiguration segmentORGroupsMessageExport, List<NameAndPositionAndPresence> columns,
       MetadataConfiguration metadataConfig) {
     super();
-    this.id = id;
     this.includeMessageTable = includeMessageTable;
     this.segmentORGroupsMessageExport = segmentORGroupsMessageExport;
     this.columns = columns;
     this.metadataConfig = metadataConfig;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public boolean isIncludeMessageTable() {
@@ -102,6 +91,7 @@ public class ConformanceStatementTableOptionsDisplay {
    * @param findExportConfigurationServiceByAuthentication
    * @return
    */
+  @Override
   public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
     exportConfiguration.setIncludeMessageTable(this.includeMessageTable);
     exportConfiguration.setSegmentORGroupsMessageExport(this.segmentORGroupsMessageExport);

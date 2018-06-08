@@ -39,7 +39,7 @@ public class ExportConfiguration {
   private boolean includeMessageTable = true;
   private boolean includeSegmentTable = true;
   private boolean includeDatatypeTable = true;
-  private boolean includeValueSetsTable = true;
+  private boolean includeValuesetsTable = true;
   private boolean includeCompositeProfileTable = true;
   private boolean includeProfileComponentTable = true;
 
@@ -57,7 +57,7 @@ public class ExportConfiguration {
 
   private UsageConfiguration profileComponentItemsExport;
 
-  private UsageConfiguration valueSetsExport;
+  private UsageConfiguration valuesetsExport;
   private boolean includeComposition;
   private CodeUsageConfiguration codesExport;
   private boolean phinvadsUpdateEmailNotification;
@@ -69,8 +69,8 @@ public class ExportConfiguration {
   private ColumnsConfiguration segmentColumn;
   private ColumnsConfiguration profileComponentColumn;
   private ColumnsConfiguration datatypeColumn;
-  private ColumnsConfiguration valueSetColumn;
-  private ValueSetMetadataConfiguration valueSetsMetadata;
+  private ColumnsConfiguration valuesetColumn;
+  private ValuesetMetadataConfiguration valuesetsMetadata;
   private MetadataConfiguration datatypeMetadataConfig;
   private MetadataConfiguration segmentMetadataConfig;
   private MetadataConfiguration messageMetadataConfig;
@@ -92,7 +92,7 @@ public class ExportConfiguration {
     defaultConfiguration.setIncludeMessageTable(true);
     defaultConfiguration.setIncludeSegmentTable(true);
     defaultConfiguration.setIncludeDatatypeTable(true);
-    defaultConfiguration.setIncludeValueSetsTable(true);
+    defaultConfiguration.setIncludeValuesetsTable(true);
     defaultConfiguration.setIncludeCompositeProfileTable(true);
     defaultConfiguration.setIncludeProfileComponentTable(true);
     // Default Usages
@@ -127,11 +127,11 @@ public class ExportConfiguration {
     defaultConfiguration.setDatatypesExport(displaySelectives);
     defaultConfiguration.setSegmentsExport(displaySelectives);
 
-    defaultConfiguration.setValueSetsExport(displaySelectives);
+    defaultConfiguration.setValuesetsExport(displaySelectives);
 
-    ValueSetMetadataConfiguration valueSetMetadataConfig =
-        new ValueSetMetadataConfiguration(true, true, true, true, true);
-    defaultConfiguration.setValueSetsMetadata(valueSetMetadataConfig);
+    ValuesetMetadataConfiguration valuesetMetadataConfig =
+        new ValuesetMetadataConfiguration(true, true, true, true, true);
+    defaultConfiguration.setValuesetsMetadata(valuesetMetadataConfig);
 
     MetadataConfiguration metadataDefaultConfig =
         new MetadataConfiguration(false, false, false, false);
@@ -193,16 +193,16 @@ public class ExportConfiguration {
     defaultConfiguration
         .setCompositeProfileColumn(new ColumnsConfiguration(messageColumnsDefaultList));
 
-    ArrayList<NameAndPositionAndPresence> valueSetsDefaultList =
+    ArrayList<NameAndPositionAndPresence> valuesetsDefaultList =
         new ArrayList<NameAndPositionAndPresence>();
 
-    valueSetsDefaultList.add(new NameAndPositionAndPresence("Value", 1, true, true));
-    valueSetsDefaultList.add(new NameAndPositionAndPresence("Code System", 2, true, true));
-    valueSetsDefaultList.add(new NameAndPositionAndPresence("Usage", 3, setAllTrue, setAllTrue));
-    valueSetsDefaultList.add(new NameAndPositionAndPresence("Description", 4, true, true));
-    valueSetsDefaultList.add(new NameAndPositionAndPresence("Comment", 5, setAllTrue, setAllTrue));
+    valuesetsDefaultList.add(new NameAndPositionAndPresence("Value", 1, true, true));
+    valuesetsDefaultList.add(new NameAndPositionAndPresence("Code System", 2, true, true));
+    valuesetsDefaultList.add(new NameAndPositionAndPresence("Usage", 3, setAllTrue, setAllTrue));
+    valuesetsDefaultList.add(new NameAndPositionAndPresence("Description", 4, true, true));
+    valuesetsDefaultList.add(new NameAndPositionAndPresence("Comment", 5, setAllTrue, setAllTrue));
 
-    defaultConfiguration.setValueSetColumn(new ColumnsConfiguration(valueSetsDefaultList));
+    defaultConfiguration.setValuesetColumn(new ColumnsConfiguration(valuesetsDefaultList));
     defaultConfiguration.setMaxCodeNumber(MAX_CODE);
     return defaultConfiguration;
   }
@@ -334,14 +334,14 @@ public class ExportConfiguration {
 
 
 
-  public boolean isIncludeValueSetsTable() {
-    return includeValueSetsTable;
+  public boolean isIncludeValuesetsTable() {
+    return includeValuesetsTable;
   }
 
 
 
-  public void setIncludeValueSetsTable(boolean includeValueSetsTable) {
-    this.includeValueSetsTable = includeValueSetsTable;
+  public void setIncludeValuesetsTable(boolean includeValuesetsTable) {
+    this.includeValuesetsTable = includeValuesetsTable;
   }
 
 
@@ -467,14 +467,14 @@ public class ExportConfiguration {
 
 
 
-  public UsageConfiguration getValueSetsExport() {
-    return valueSetsExport;
+  public UsageConfiguration getValuesetsExport() {
+    return valuesetsExport;
   }
 
 
 
-  public void setValueSetsExport(UsageConfiguration valueSetsExport) {
-    this.valueSetsExport = valueSetsExport;
+  public void setValuesetsExport(UsageConfiguration valuesetsExport) {
+    this.valuesetsExport = valuesetsExport;
   }
 
 
@@ -599,26 +599,26 @@ public class ExportConfiguration {
 
 
 
-  public ColumnsConfiguration getValueSetColumn() {
-    return valueSetColumn;
+  public ColumnsConfiguration getValuesetColumn() {
+    return valuesetColumn;
   }
 
 
 
-  public void setValueSetColumn(ColumnsConfiguration valueSetColumn) {
-    this.valueSetColumn = valueSetColumn;
+  public void setValuesetColumn(ColumnsConfiguration valuesetColumn) {
+    this.valuesetColumn = valuesetColumn;
   }
 
 
 
-  public ValueSetMetadataConfiguration getValueSetsMetadata() {
-    return valueSetsMetadata;
+  public ValuesetMetadataConfiguration getValuesetsMetadata() {
+    return valuesetsMetadata;
   }
 
 
 
-  public void setValueSetsMetadata(ValueSetMetadataConfiguration valueSetsMetadata) {
-    this.valueSetsMetadata = valueSetsMetadata;
+  public void setValuesetsMetadata(ValuesetMetadataConfiguration valuesetsMetadata) {
+    this.valuesetsMetadata = valuesetsMetadata;
   }
 
 

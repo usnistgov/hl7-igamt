@@ -93,11 +93,11 @@ public class IgSerializationServiceImpl implements IgSerializationService {
           exportConfiguration.getSegmentORGroupsMessageExport());
       this.initializeSegmentsMap(igDocument.getSegmentRegistry(),
           exportConfiguration.getSegmentsExport(), exportConfiguration.getDatatypesExport(),
-          exportConfiguration.getValueSetsExport());
+          exportConfiguration.getValuesetsExport());
       this.initializeDatatypesMap(igDocument.getDatatypeRegistry(),
           exportConfiguration.getDatatypesExport());
       this.initializeValuesetsMap(igDocument.getValueSetRegistry(),
-          exportConfiguration.getValueSetsExport());
+          exportConfiguration.getValuesetsExport());
       SerializableIG serializableIG = new SerializableIG(igDocument, "1", datatypesMap,
           valuesetsMap, segmentsMap, conformanceProfilesMap, exportConfiguration);
       return serializableIG.serialize().toXML();
