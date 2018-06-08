@@ -11,19 +11,16 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration.display;
+package gov.nist.hit.hl7.igamt.export.configuration.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
 
 /**
  *
- * @author Maxence Lefort on Jun 5, 2018.
+ * @author Maxence Lefort on Jun 8, 2018.
  */
-public class ExportFontDisplay {
-
-  /**
-   * 
-   */
-  public ExportFontDisplay() {
-    // TODO Auto-generated constructor stub
-  }
+public interface ExportFontRepository extends MongoRepository<ExportFont, String>{
 
 }

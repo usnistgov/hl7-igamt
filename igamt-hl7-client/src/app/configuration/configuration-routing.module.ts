@@ -15,6 +15,7 @@ import {DatatypeTableOptionsResolve} from './datatype-table-options/datatype-tab
 import {ProfileComponentTableOptionsResolve} from './profile-component-table-options/profile-component-table-options.resolve.service';
 import {SegmentTableOptionsResolve} from './segment-table-options/segment-table-options.resolve.service';
 import {ValuesetTableOptionsResolve} from './valueset-table-options/valueset-table-options.resolve.service';
+import {ExportFontResolve} from "./export-font/export-font.resolve.service";
 
 @NgModule({
   imports: [
@@ -28,7 +29,10 @@ import {ValuesetTableOptionsResolve} from './valueset-table-options/valueset-tab
             children: [
               {
                 path: 'export-fonts',
-                component: ExportFontComponent
+                component: ExportFontComponent,
+                resolve: {
+                  exportFontConfiguration: ExportFontResolve
+                }
               },
               {
                 path: 'conformance-profile-table-options',
@@ -95,7 +99,8 @@ import {ValuesetTableOptionsResolve} from './valueset-table-options/valueset-tab
     ValuesetTableOptionsResolve,
     DatatypeTableOptionsResolve,
     ProfileComponentTableOptionsResolve,
-    CompositeProfileTableOptionsResolve
+    CompositeProfileTableOptionsResolve,
+    ExportFontResolve
   ]
 })
 export class ConfigurationRoutingModule {

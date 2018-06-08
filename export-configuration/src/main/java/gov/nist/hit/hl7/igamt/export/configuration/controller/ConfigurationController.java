@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.CompositeProfileTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ConformanceProfileTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.DatatypeTableOptionsDisplay;
@@ -30,7 +31,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.SegmentT
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.TableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions.ValuesetTableOptionsDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 
 
 /**
@@ -42,6 +45,9 @@ public class ConfigurationController {
   
   @Autowired
   private ExportConfigurationService exportConfigurationService;
+  
+  @Autowired
+  private ExportFontConfigurationService exportFontConfigurationService;
 
   @RequestMapping(value = "api/configuration/tableOptions/conformanceProfile", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -113,6 +119,29 @@ public class ConfigurationController {
       consumes = {"application/json"})
   public void saveCompositeProfileTableOptions(@RequestBody CompositeProfileTableOptionsDisplay compositeProfileTableOptionsDisplay){
       this.saveTableOptionsDisplay(compositeProfileTableOptionsDisplay);
+  }
+  
+  @RequestMapping(value = "api/configuration/exportFont", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody ExportFontConfigurationDisplay getExportFontConfigurationDisplay(){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
+    if(authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      return this.exportFontConfigurationService.getExportFontConfigurationDisplay(username);
+    }
+    return null;
+  }
+  
+  @RequestMapping(value = "api/configuration/exportFont/save", method = RequestMethod.POST,
+      consumes = {"application/json"})
+  public void saveExportFontConfiguration(@RequestBody ExportFontConfigurationDisplay exportFontConfigurationDisplay){
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); 
+    if(authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportFontConfiguration exportFontConfiguration = exportFontConfigurationDisplay.getExportFontConfiguration();
+      exportFontConfiguration.setUsername(username);
+      this.exportFontConfigurationService.save(exportFontConfiguration);
+    }
   }
   
   private void saveTableOptionsDisplay(TableOptionsDisplay tableOptionsDisplay) {

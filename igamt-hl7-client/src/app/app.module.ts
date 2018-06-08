@@ -121,6 +121,7 @@ import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from "./service/sections/sections.service";
 import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
 import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
+import {ExportFontService} from "./service/configuration/export-font/export-font.service";
 
 @NgModule({
     imports: [
@@ -259,7 +260,8 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     UserService,
     BreadcrumbService,
     ConstraintsService,
-    TableOptionsService
+    TableOptionsService,
+    ExportFontService
   ],
     bootstrap: [AppComponent]
 })

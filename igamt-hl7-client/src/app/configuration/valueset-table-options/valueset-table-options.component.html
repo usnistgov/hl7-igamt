@@ -72,7 +72,7 @@
         <hr/>
         <div>
           <h3>Max Number of Codes to Export: {{tableOptions.codeNumber}}</h3>
-          <p-slider [(ngModel)]="tableOptions.codeNumber" min="0" [max]="tableOptions.maxCodeNumber" [style]="{'width':'30%'}" [animate]="true"></p-slider>
+          <p-slider [(ngModel)]="tableOptions.codeNumber" min="0" (onChange)="setChanged()" [max]="tableOptions.maxCodeNumber" [style]="{'width':'30%'}" [animate]="true"></p-slider>
         </div>
       </p-card>
       <p-card>

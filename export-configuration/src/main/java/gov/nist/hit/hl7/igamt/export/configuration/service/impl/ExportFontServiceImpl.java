@@ -11,24 +11,31 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration.service;
+package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 
-import org.springframework.stereotype.Service;
+import java.util.List;
 
-import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
-import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on Jun 8, 2018.
  */
-@Service("exportFontConfigurationService")
-public interface ExportFontConfigurationService {
+public class ExportFontServiceImpl implements ExportFontService {
 
-  public ExportFontConfiguration getExportFontConfiguration(String username);
+  @Autowired
+  private ExportFontRepository exportFontRepository;
   
-  public ExportFontConfigurationDisplay getExportFontConfigurationDisplay(String username);
-  
-  public void save(ExportFontConfiguration exportFontConfiguration);
+   /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService#findAll()
+   */
+  @Override
+  public List<ExportFont> findAll() {
+    return exportFontRepository.findAll();
+  }
 
 }

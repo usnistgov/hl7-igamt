@@ -1,3 +1,32 @@
-<p>
-  export-font works!
-</p>
+<p-card>
+  <p-header>
+    <h1>Export Font configuration</h1>
+  </p-header>
+
+  <div>
+    <!-- Font type card -->
+    <div>
+      <p-card>
+        <h2>Font type</h2>
+        <hr/>
+        <div *ngFor="let exportFont of exportFontConfigurationDisplay.exportFonts">
+          <div class="ui-g-12"><p-radioButton (onClick)="setChanged()" name="selectedExportFont" [value]="exportFont.value" [label]="exportFont.name" [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.exportFont"></p-radioButton></div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Font size card-->
+    <div flex>
+      <p-card>
+        <h2>Font size: {{exportFontConfigurationDisplay.exportFontConfiguration.fontSize}}</h2>
+        <hr/>
+        <div>
+          <p-slider [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.fontSize" min="0" (onChange)="setChanged()" [max]="exportFontConfigurationDisplay.exportFontConfiguration.maxFontSize" [style]="{'width':'30%'}" [animate]="true"></p-slider>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <p-footer>
+    <p-button label="Save" (onClick)="save($event)" [disabled]="!changed"></p-button>
+  </p-footer>
+</p-card>
