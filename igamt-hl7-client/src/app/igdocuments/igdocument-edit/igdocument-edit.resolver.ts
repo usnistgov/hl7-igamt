@@ -16,6 +16,9 @@ import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-
 import {CompositeProfilesTocService} from "../../service/indexed-db/composite-profiles/composite-profiles-toc.service";
 import {ProfileComponentsTocService} from "../../service/indexed-db/profile-components/profile-components-toc.service";
 import * as _ from 'lodash';
+import {Types} from "../../common/constants/types";
+import {NamesAndPositionsService} from "./service/names-and-positions.service";
+import {IgDocumentInfo} from "../../service/indexed-db/ig-document-info-database";
 
 @Injectable()
 export  class IgdocumentEditResolver implements Resolve<any>{
@@ -29,7 +32,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   valueSets: any[]=[];
 
 
-  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public saveService:TocDbService,public valuesetsTocService:ValuesetsTocService,public segmentsTocService:SegmentsTocService,public datatypesTocService :DatatypesTocService,public conformanceProfilesTocService:ConformanceProfilesTocService,public compositeProfilesTocService:CompositeProfilesTocService,public profileComponentsTocService:ProfileComponentsTocService) {
+  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public saveService:TocDbService,public valuesetsTocService:ValuesetsTocService,public segmentsTocService:SegmentsTocService,public datatypesTocService :DatatypesTocService,public conformanceProfilesTocService:ConformanceProfilesTocService,public compositeProfilesTocService:CompositeProfilesTocService,public profileComponentsTocService:ProfileComponentsTocService, public namesAndPositionsService:NamesAndPositionsService) {
 
   }
 
@@ -39,23 +42,26 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         let igId = route.params["igId"];
         console.log("TEST");
 
+
         this.indexedDbService.getIgDocumentId().then(id => {
 
               if(id!==igId) {
 
-                this.initToc(igId,resolve,reject);
+               // this.initToc(igId,resolve,reject);
+                this.initIgDocument(igId, resolve,reject);
 
               } else {
-                this.getMergedIg(igId, resolve,reject);
-
-
+                this.getFromClientDb(igId, resolve,reject);
+                //this.getMergedIg(igId, resolve,reject);
               }
 
 
 
 
           },error =>{
-          this.initToc(igId,resolve,reject);
+          this.initIgDocument(igId, resolve,reject);
+
+         // this.initToc(igId,resolve,reject);
           }
         )
 
@@ -69,7 +75,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
     for(let i =0 ; i<toc.length; i++){
       let node= toc[i];
-      if(node.data.type=='PROFILE'){
+      if(node.data.type==Types.PROFILE){
         this.parseProfile(node);
 
       }
@@ -81,24 +87,24 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     for (let i = 0; i < profile.children.length; i++) {
       let node = profile.children[i];
       let converted= this.convertList(node.children);
-      if (node.data.type == 'CONFORMANCEPROFILEREGISTRY'){
+      if (node.data.type == Types.CONFORMANCEPROFILEREGISTRY){
         this.conformanceProfiles =converted
 
       }
-      else if (node.data.type == 'PROFILECOMPONENTSREGISTRY'){
+      else if (node.data.type == Types.PROFILECOMPONENTREGISTRY){
         this.profileComponents =converted;
       }
-      else if (node.data.type == 'COMPOSITEPROFILEREGISTRY'){
+      else if (node.data.type == Types.COMPOSITEPROFILEREGISTRY){
         this.compositeProfiles = converted;
       }
-      else if (node.data.type == 'SEGMENTREGISTRY'){
+      else if (node.data.type == Types.SEGMENTREGISTRY){
         this.segments = converted;
       }
-      else if (node.data.type == 'DATATYPEREGISTRY'){
+      else if (node.data.type == Types.DATATYPEREGISTRY){
         this.datatypes = converted;
 
       }
-      else if (node.data.type == 'VALUESETREGISTRY'){
+      else if (node.data.type == Types.VALUESETREGISTRY){
         this.valueSets =converted;
       }
 
@@ -115,11 +121,22 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     return ret;
   }
 
+  getFromClientDb(igId:any,resolve,reject){
+    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
+      this.ig = x;
+
+      this.indexedDbService.getIgDocument().then(x=>{
+        resolve(x);
+
+      });
+    })
+
+  }
+
 
   getMergedIg(igId:any,resolve,reject){
     this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
       this.ig=x;
-      console.log("Appliying the db changes");
       console.log(this.ig.toc);
       this.segments = [];
       this.datatypes = [];
@@ -133,7 +150,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
         console.log(this.conformanceProfiles);
         if (this.conformanceProfiles.length > 0) {
 
-          this.addNodesByType(this.ig.toc, "CONFORMANCEPROFILEREGISTRY", this.conformanceProfiles);
+          this.addNodesByType(this.ig.toc, Types.CONFORMANCEPROFILEREGISTRY, this.conformanceProfiles);
         }
 
         this.profileComponentsTocService.getAllFromAdded().then(pcsNodes => {
@@ -141,7 +158,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
           console.log(this.profileComponents);
           if (this.profileComponents.length > 0) {
 
-            this.addNodesByType(this.ig.toc, "PROFILECOMPONENTREGISTRY", this.profileComponents);
+            this.addNodesByType(this.ig.toc, Types.PROFILECOMPONENTREGISTRY, this.profileComponents);
           }
 
           this.compositeProfilesTocService.getAllFromAdded().then(composites => {
@@ -150,7 +167,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
               console.log(this.compositeProfiles);
               if (this.compositeProfiles.length > 0) {
 
-                this.addNodesByType(this.ig.toc, "COMPOSITEPROFILEREGISTRY", this.compositeProfiles);
+                this.addNodesByType(this.ig.toc, Types.COMPOSITEPROFILEREGISTRY, this.compositeProfiles);
               }
 
               this.segmentsTocService.getAllFromAdded().then(segments => {
@@ -158,7 +175,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                 console.log(this.segments);
                 if (this.segments.length > 0) {
 
-                  this.addNodesByType(this.ig.toc, "SEGMENTREGISTRY", this.segments);
+                  this.addNodesByType(this.ig.toc, Types.SEGMENTREGISTRY, this.segments);
                 }
 
                 this.datatypesTocService.getAllFromAdded().then(datatypes => {
@@ -167,7 +184,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                   console.log(this.datatypes);
                   if (this.datatypes.length > 0) {
 
-                    this.addNodesByType(this.ig.toc, "DATATYPEREGISTRY", this.datatypes);
+                    this.addNodesByType(this.ig.toc, Types.DATATYPEREGISTRY, this.datatypes);
                   }
 
                   this.valuesetsTocService.getAllFromAdded().then(valueSets => {
@@ -175,11 +192,11 @@ export  class IgdocumentEditResolver implements Resolve<any>{
                     this.valueSets = valueSets;
                     if (this.valueSets.length > 0) {
 
-                      this.addNodesByType(this.ig.toc, "VALUESETREGISTRY", this.valueSets);
+                      this.addNodesByType(this.ig.toc, Types.VALUESETREGISTRY, this.valueSets);
                     }
                     console.log("resolving ig");
                     console.log(this.ig);
-                    // this.updateNames(this.ig);
+                    this.namesAndPositionsService.updateIgTocNames(this.ig,resolve,reject);
                     resolve(this.ig);
                   }, error => {
                   })
@@ -228,13 +245,48 @@ export  class IgdocumentEditResolver implements Resolve<any>{
             );
   }
 
+  initIgDocument(igId:any,resolve,reject){
+    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
+        // this.parseToc(x.toc);
+        this.indexedDbService.initializeDatabase(igId).then(() => {
+
+            let  ig = new IgDocumentInfo(igId);
+            ig.metadata=x["metadata"];
+            ig.toc=x["toc"];
+          this.indexedDbService.initIg(ig).then(
+              () => {
+                resolve(ig);
+              }, (error) => {
+                console.log("Could not add elements to client db");
+                reject();
+              }
+            );
+          },
+          (error) => {
+            console.log("Could not load Ig : " + error);
+            reject();
+          }
+        );
+
+      }
+
+    );
+  }
+
+
+
+
+
+
+
+
   findNodeByType(children, type){
     return _.find(children, function(node) { return type == node.data.type;});
 
   }
 
   addNodesByType(tocChildren, type,added){
-    let profile=this.findNodeByType(tocChildren, "PROFILE");
+    let profile=this.findNodeByType(tocChildren, Types.PROFILE);
     if(profile !=null){
       if(profile.children&& profile.children.length>0){
         let registry =this.findNodeByType(profile.children, type);
@@ -244,7 +296,8 @@ export  class IgdocumentEditResolver implements Resolve<any>{
           registry.children = _.sortBy(registry.children,[function (node) {
             return node.data.label;
 
-          }]);
+          }
+          ]);
         }
       }
     }

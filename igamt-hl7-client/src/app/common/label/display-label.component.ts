@@ -102,7 +102,6 @@ export class DisplayLabelComponent {
   getTableLabel(elm){
     return elm.bindingIdentifier+"-"+elm.label;
 
-
   };
 
   getMessageLabel(elm){

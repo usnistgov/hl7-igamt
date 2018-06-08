@@ -10,12 +10,12 @@ import {MenubarModule} from "primeng/components/menubar/menubar";
 import {TooltipModule} from "primeng/components/tooltip/tooltip";
 import {TieredMenuModule} from "primeng/components/tieredmenu/tieredmenu";
 import {UtilsModule} from "../../utils/utils.module";
-import {TocService} from "./toc/toc.service";
+import {TocService} from "./service/toc.service";
 import {TreeDragDropService} from "primeng/components/common/treedragdropservice";
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
 import {MenuItem} from 'primeng/primeng';
 // import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 import { TreeModule } from 'angular-tree-component';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
@@ -46,13 +46,13 @@ import {ModalModule} from "ngx-bootstrap";
 import {IgDocumentCreateService} from "../igdocument-create/igdocument-create.service";
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {BlockUIModule} from "primeng/components/blockui/blockui";
-import {IgDocumentAddingService} from "./adding.service";
+import {IgDocumentAddingService} from "./service/adding.service";
 import { AddSegmentComponent } from './add-segment/add-segment.component';
 import {TableModule} from "primeng/components/table/table";
 import { AddDatatypeComponent } from './add-datatype/add-datatype.component';
 import { AddValueSetComponent } from './add-value-set/add-value-set.component';
 import { CopyElementComponent } from './copy-element/copy-element.component';
-import {NamingService} from "./services/naming.service";
+import {NamesAndPositionsService} from "./service/names-and-positions.service";
 import {SplitButtonModule} from "primeng/components/splitbutton/splitbutton";
 import {ExportService} from "./service/export.service";
 
@@ -75,7 +75,7 @@ import {ExportService} from "./service/export.service";
     TreeModule,
     PanelModule,
     MultiSelectModule,
-    FormsModule,
+    FormsModule,ReactiveFormsModule,
     ContextMenuModule.forRoot(),
     DropdownModule,
     FroalaEditorModule.forRoot(),
@@ -105,7 +105,7 @@ import {ExportService} from "./service/export.service";
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamingService,ExportService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamesAndPositionsService,ExportService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

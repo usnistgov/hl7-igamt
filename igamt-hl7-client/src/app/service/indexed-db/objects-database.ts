@@ -2,22 +2,35 @@ import Dexie from 'dexie';
 
 export class IObject {
   id?: string;
-  metadata?: object;
-  structure?: object;
-  preDef?: object;
-  postDef?: object;
-  crossReference?: object;
-  conformanceStatements?: object;
+  metadata?: any;
+  structure?: any;
+  preDef?: any;
+  postDef?: any;
+  crossReference?: any;
+  conformanceStatements?: any;
+  changeType?:ChangeType
 }
 
+export class dndObject{
+  from:any;
+  to:any;
+  position:any;
+
+}
 export class Section {
   id?: string;
-  oldParent?: string;
-  newParent?: string;
-  changeType:string;
+  dnd:dndObject;
   section:any;
 
 }
+
+export enum ChangeType{
+  UPDATED="UPDATED",
+  DELETED="DELETED",
+  ADDED="ADDED"
+}
+
+
 
 export class ObjectsDatabase extends Dexie {
 
@@ -26,7 +39,7 @@ export class ObjectsDatabase extends Dexie {
     this.version(1).stores({
       datatypes: '&id',
       segments: '&id',
-      sections: '&id,changeType',
+      sections: '&id',
       profileComponents: '&id',
       conformanceProfiles: '&id',
       compositeProfiles: '&id',
