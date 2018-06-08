@@ -26,6 +26,14 @@ import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-str
 import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
 import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
 import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
+import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
+import {DndListModule} from 'ngx-drag-and-drop-lists';
+import {RegisterFormModelDirective} from '../../../common/form-directive/register-form-model.directive';
+import {CoConstraintTableService} from './coconstraint-table/coconstraint-table.service';
+import {HttpClientModule} from '@angular/common/http';
+import {HttpModule} from '@angular/http';
+import {CCHeaderDialogDmComponent} from './coconstraint-table/header-dialog/header-dialog-dm.component';
+import {CCHeaderDialogUserComponent} from './coconstraint-table/header-dialog/header-dialog-user.component';
 
 @NgModule({
     imports: [
@@ -34,19 +42,22 @@ import {SegmentEditConformanceStatementsResolver} from "./segment-conformancesta
         TabMenuModule,
         DialogModule,
         DropdownModule,
+        DndListModule,
         SegmentEditRoutingModule,
         UtilsModule,
         TreeTableModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,
+      HttpClientModule,
+      HttpModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
-    declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
+    providers : [CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
+    declarations: [RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}
