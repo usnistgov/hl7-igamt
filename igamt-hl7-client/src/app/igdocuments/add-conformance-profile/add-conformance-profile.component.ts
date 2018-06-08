@@ -1,7 +1,7 @@
 import { Component, OnInit ,Input} from '@angular/core';
 import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
-import {IgDocumentAddingService} from "../igdocument-edit/adding.service";
+import {IgDocumentAddingService} from "../igdocument-edit/service/adding.service";
 import {PrimeDialogAdapter} from "../../common/prime-ng-adapters/prime-dialog-adapter";
 
 @Component({

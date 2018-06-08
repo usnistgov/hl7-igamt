@@ -3,7 +3,7 @@ import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import * as _ from 'lodash';
 import {setUpControl} from "@angular/forms/src/directives/shared";
 
-import {TocService} from "../toc/toc.service";
+import {TocService} from "../service/toc.service";
 import {NgForm} from "@angular/forms";
 import {WithSave} from "../../../guards/with.save.interface";
 import {SectionsService} from "../../../service/sections/sections.service";
@@ -46,19 +46,15 @@ export class SectionComponent implements OnInit, WithSave {
    this.tocService.getActiveNode().subscribe(x=>{
        let node= x;
        if(this.section.id===node.data.id){
-         console.log("found node");
-
          node.data.data.label= this.section.label;
 
-         console.log("updating node");
        }
       }
     );
     let s= new Section();
     s.id=this.section.id;
-    s.changeType="EDITED";
     s.section=this.section;
-    return this.sectionsService.saveSection(s);
+    return this.sectionsService.updateContent(this.section.id, this.section,null);
 
   }
   reset(){

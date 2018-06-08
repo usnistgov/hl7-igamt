@@ -37,7 +37,7 @@
 				<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.8.0.RELEASE</version>
+			<!-- <version>1.8.0.RELEASE</version> -->
 		</dependency>
 	</dependencies>
 <dependencyManagement>
@@ -81,10 +81,11 @@
 		<module>valueset</module>
 		<module>bootstrap</module>
 		<module>conformance-profile</module>
-		<module>export</module>
 		<module>serialization</module>
 		<module>segment</module>
   		<module>datatype-library</module>
   		<module>igamt-auth</module>
-	</modules>
+  		<module>export-configuration</module>
+  		<module>export</module>
+</modules>
 </project>

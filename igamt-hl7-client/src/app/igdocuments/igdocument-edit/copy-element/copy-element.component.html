@@ -2,15 +2,23 @@
   <p-header>
     Choose Name of your  {{name}} flavor
   </p-header>
-  <!--<form [formGroup]="registrationForm" novalidate>-->
-  <!--</form>-->
+  <form [formGroup]="namingForm"  novalidate>
+
+    <div class="ui-g" style="margin-top:30px">
+
+      <input  name="ext" id="ext" pInputText placeholder="LAAA"
+             formControlName="ext" [(ngModel)]="userExt" class="ui-g-9">
+
+    </div>
 
 
+  </form>
 
 
   <p-footer>
-    <p-button  styleClass="green-btn" (onClick)="submit()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+    <p-button  styleClass="green-btn" (onClick)="submit()" [disabled]="!namingForm.valid" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
   </p-footer>
+
 
 </p-dialog>
 

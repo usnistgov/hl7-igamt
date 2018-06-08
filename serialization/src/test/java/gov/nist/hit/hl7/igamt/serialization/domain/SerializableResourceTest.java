@@ -19,7 +19,9 @@ import org.junit.Test;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Element;
 
 /**
@@ -41,10 +43,9 @@ public class SerializableResourceTest {
       
       @Override
       public String getLabel() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.getName();
       }
-    };();
+    };
     resource.setId(COMPOSITE_KEY_TEST);
     resource.setName(NAME_TEST);
     resource.setPostDef(POSTDEF_TEST);
@@ -53,7 +54,7 @@ public class SerializableResourceTest {
 
       @Override
       public Element serialize() {
-        return this.getElement("Resource");
+        return this.getElement(Type.SECTION);
       }
     };
     return serializableResource;
@@ -63,8 +64,8 @@ public class SerializableResourceTest {
   public void testSerialize() throws SerializationException {
     SerializableResource serializableResource = getSerializableResourceTest();
     Element testElement = serializableResource.serialize();
-    assertEquals(POSTDEF_TEST, testElement.getAttribute("postDef").getValue());
-    assertEquals(PREDEF_TEST, testElement.getAttribute("preDef").getValue());
+    assertEquals(FroalaSerializationUtil.cleanFroalaInput(POSTDEF_TEST), testElement.getAttribute("postDef").getValue());
+    assertEquals(FroalaSerializationUtil.cleanFroalaInput(PREDEF_TEST), testElement.getAttribute("preDef").getValue());
   }
 
 }

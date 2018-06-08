@@ -25,11 +25,35 @@ export class SegmentsIndexedDbService {
     return promise;
   }
 
+  public getAllMetaData(): Promise<any> {
+    let segments;
+    const promise = new Promise<any>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.segments, async () => {
+          segments = await this.indexeddbService.changedObjectsDatabase.segments.filter(function (segment) {
+            return segment.metadata;
+          }).toArray();
+          resolve(segments);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
+  }
+
+
+
+
+
   public getSegmentMetadata(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getSegment(id).then((segment) => {
-        if(segment.metadata) resolve(segment.metadata);
-        else reject();
+        if(segment.metadata) {
+          resolve(segment.metadata);
+        } else {
+          reject();
+        }
       }).catch(() => {
         reject();
       });
@@ -43,6 +67,7 @@ export class SegmentsIndexedDbService {
       promises.push(this.getSegmentMetadata(ids[i]));
 
     }
+    console.log(promises);
 
     return Promise.all(promises);
 
