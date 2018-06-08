@@ -169,7 +169,7 @@ var AppBreadcrumbComponent = (function () {
 /***/ "../../../../../src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<div class=\"layout-wrapper\" (click)=\"onLayoutClick()\"\n     [ngClass]=\"{'layout-horizontal': isHorizontal(),\n                 'layout-overlay': isOverlay(),\n                 'layout-static': isStatic(),\n                 'layout-slim':isSlim(),\n                 'layout-static-inactive': staticMenuDesktopInactive,\n                 'layout-mobile-active': staticMenuMobileActive,\n                 'layout-overlay-active':overlayMenuActive}\">\n\n    <app-topbar></app-topbar>\n    <div class=\"layout-menu-container\" (click)=\"onMenuClick($event)\">\n        <p-scrollPanel #layoutMenuScroller [style]=\"{height: '100%'}\">\n            <div class=\"layout-menu-content\">\n                <div class=\"layout-menu-title\">MENU</div>\n                <app-menu [reset]=\"resetMenu\"></app-menu>\n                <div class=\"layout-menu-footer\">\n                    <div class=\"layout-menu-footer-title\">TASKS</div>\n\n                    <div class=\"layout-menu-footer-content\">\n                        <p-progressBar [value]=\"50\" [showValue]=\"false\"></p-progressBar>\n                        Today\n\n                        <p-progressBar [value]=\"80\" [showValue]=\"false\"></p-progressBar>\n                        Overall\n                    </div>\n                </div>\n            </div>\n        </p-scrollPanel>\n    </div>\n\n    <div class=\"layout-content\">\n      <!--<tree-root [nodes]=\"nodes\" [options]=\"options\"></tree-root>-->\n\n        <div class=\"layout-content-container\">\n          <!--<div class=\"loader\" *ngIf=\"loading\">-->\n          <!--<div>-->\n          <!--<span></span>-->\n          <!--<span></span>-->\n          <!--<span></span>-->\n          <!--</div>-->\n          <!--</div>-->\n          <!--&lt;!&ndash;<div *ngIf=\"!loading\">&ndash;&gt;-->\n            <router-outlet></router-outlet>\n          <!--</div>-->\n        </div>\n\n        <app-footer></app-footer>\n        <div class=\"layout-mask\" *ngIf=\"staticMenuMobileActive\"></div>\n    </div>\n</div>\n\n"
+module.exports = "<div class=\"layout-wrapper\" (click)=\"onLayoutClick()\"\n     [ngClass]=\"{'layout-horizontal': isHorizontal(),\n                 'layout-overlay': isOverlay(),\n                 'layout-static': isStatic(),\n                 'layout-slim':isSlim(),\n                 'layout-static-inactive': staticMenuDesktopInactive,\n                 'layout-mobile-active': staticMenuMobileActive,\n                 'layout-overlay-active':overlayMenuActive}\">\n\n    <app-topbar></app-topbar>\n    <div class=\"layout-menu-container\" (click)=\"onMenuClick($event)\">\n        <p-scrollPanel #layoutMenuScroller [style]=\"{height: '100%'}\">\n            <div class=\"layout-menu-content\">\n                <div class=\"layout-menu-title\">MENU</div>\n                <app-menu [reset]=\"resetMenu\"></app-menu>\n                <div class=\"layout-menu-footer\">\n                    <div class=\"layout-menu-footer-title\">TASKS</div>\n\n                    <div class=\"layout-menu-footer-content\">\n                        <p-progressBar [value]=\"50\" [showValue]=\"false\"></p-progressBar>\n                        Today\n\n                        <p-progressBar [value]=\"80\" [showValue]=\"false\"></p-progressBar>\n                        Overall\n                    </div>\n                </div>\n            </div>\n        </p-scrollPanel>\n    </div>\n\n    <div class=\"layout-content\">\n      <!--<tree-root [nodes]=\"nodes\" [options]=\"options\"></tree-root>-->\n\n        <div class=\"layout-content-container\">\n          <!--<div class=\"loader\" *ngIf=\"loading\">-->\n          <!--<div>-->\n          <!--<span></span>-->\n          <!--<span></span>-->\n          <!--<span></span>-->\n          <!--</div>-->\n          <!--</div>-->\n         <!--<div *ngIf=\"!loading\">-->\n            <router-outlet></router-outlet>\n          </div>\n        <!--</div>-->\n\n        <app-footer></app-footer>\n        <div class=\"layout-mask\" *ngIf=\"staticMenuMobileActive\"></div>\n    </div>\n</div>\n\n"
 
 /***/ }),
 
@@ -357,6 +357,8 @@ var AppComponent = (function () {
     };
     AppComponent.prototype.checkRouterEvent = function (event) {
         if (event instanceof __WEBPACK_IMPORTED_MODULE_4__angular_router__["NavigationStart"]) {
+            console.log("Navigation Start");
+            console.log(event);
             this.loading = true;
         }
         if (event instanceof __WEBPACK_IMPORTED_MODULE_4__angular_router__["NavigationEnd"] ||
@@ -2685,12 +2687,30 @@ var ConformanceProfilesIndexedDbService = (function () {
         });
         return promise;
     };
-    ConformanceProfilesIndexedDbService.prototype.getMetadataByListOfIds = function (ids) {
-        var promises = [];
-        for (var i = 0; i < ids.length; i++) {
-            promises.push(this.getConformanceProfileMetadata(ids[i]));
-        }
-        return Promise.all(promises);
+    ConformanceProfilesIndexedDbService.prototype.getAllMetaData = function () {
+        var _this = this;
+        var conformanceProfiles;
+        var promise = new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.transaction('r', _this.indexeddbService.changedObjectsDatabase.conformanceProfiles, function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.indexeddbService.changedObjectsDatabase.conformanceProfiles.filter(function (conformanceProfile) {
+                                    return conformanceProfile.metadata;
+                                }).toArray()];
+                            case 1:
+                                conformanceProfiles = _a.sent();
+                                resolve(conformanceProfiles);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
+            else {
+                reject();
+            }
+        });
+        return promise;
     };
     ConformanceProfilesIndexedDbService.prototype.getConformanceProfileStructure = function (id) {
         var _this = this;
@@ -3106,12 +3126,30 @@ var DatatypesIndexedDbService = (function () {
         });
         return promise;
     };
-    DatatypesIndexedDbService.prototype.getMetadataByListOfIds = function (ids) {
-        var promises = [];
-        for (var i = 0; i < ids.length; i++) {
-            promises.push(this.getDatatypeMetadata(ids[i]));
-        }
-        return Promise.all(promises);
+    DatatypesIndexedDbService.prototype.getAllMetaData = function () {
+        var _this = this;
+        var datatypes;
+        var promise = new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.transaction('r', _this.indexeddbService.changedObjectsDatabase.datatypes, function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.indexeddbService.changedObjectsDatabase.datatypes.filter(function (datatype) {
+                                    return datatype.metadata;
+                                }).toArray()];
+                            case 1:
+                                datatypes = _a.sent();
+                                resolve(datatypes);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
+            else {
+                reject();
+            }
+        });
+        return promise;
     };
     DatatypesIndexedDbService.prototype.getDatatypeStructure = function (id) {
         var _this = this;
@@ -3233,6 +3271,8 @@ var DatatypesIndexedDbService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indexed_db_utils__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db-utils.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -3277,6 +3317,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -3371,15 +3412,18 @@ var DatatypesTocService = (function () {
             promises.push(_this.getAllFromToc());
             promises.push(_this.getAllFromAdded());
             Promise.all(promises).then(function (results) {
-                var allNodes = new Array();
+                var allNodes = [];
                 var tocNodes = results[0];
                 var addedNodes = results[1];
                 if (tocNodes != null) {
-                    allNodes.push(tocNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, tocNodes);
                 }
                 if (addedNodes != null) {
-                    allNodes.push(addedNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, addedNodes);
                 }
+                allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["sortBy"](allNodes, function (data) {
+                    return data.data.label;
+                });
                 resolve(allNodes);
             });
         });
@@ -3670,6 +3714,43 @@ var IndexedDbService = (function () {
         }));
         return Promise.all(promises);
     };
+    IndexedDbService.prototype.getIgDocument = function () {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.igDocumentInfoDataBase.igDocument.toArray().then(function (collection) {
+                if (collection != null && collection.length >= 1) {
+                    resolve(collection[0]);
+                }
+                else {
+                    reject();
+                }
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    };
+    IndexedDbService.prototype.updateIgDocument = function (id, nodes) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.igDocumentInfoDataBase.igDocument.update(id, { toc: nodes }).then(function (x) {
+                console.log(x);
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    };
+    IndexedDbService.prototype.initIg = function (ig) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            _this.igDocumentInfoDataBase.igDocument.put(ig).then(function (x) {
+                console.log("Putting IG ");
+                console.log(x);
+                resolve(ig);
+            }).catch(function (error) {
+                reject(error);
+            });
+        });
+    };
     IndexedDbService.prototype.getIgDocumentId = function () {
         var _this = this;
         return new Promise(function (resolve, reject) {
@@ -3824,6 +3905,7 @@ var NodeDatabase = (function (_super) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return IObject; });
+/* unused harmony export dndObject */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return Section; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return ObjectsDatabase; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_dexie__ = __webpack_require__("../../../../dexie/dist/dexie.es.js");
@@ -3842,6 +3924,12 @@ var IObject = (function () {
     function IObject() {
     }
     return IObject;
+}());
+
+var dndObject = (function () {
+    function dndObject() {
+    }
+    return dndObject;
 }());
 
 var Section = (function () {
@@ -4086,6 +4174,7 @@ var ProfileComponentsTocService = (function () {
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return SectionsIndexedDbService; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__objects_database__ = __webpack_require__("../../../../../src/app/service/indexed-db/objects-database.ts");
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4130,6 +4219,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 var SectionsIndexedDbService = (function () {
@@ -4181,8 +4271,59 @@ var SectionsIndexedDbService = (function () {
     SectionsIndexedDbService.prototype.getByChangeType = function (type) {
         return this.indexeddbService.changedObjectsDatabase.sections.where('changeType').equals(type).toArray();
     };
+    SectionsIndexedDbService.prototype.updateDnD = function (id, section, dnd) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.sections.update(id, { dnd: dnd }).then(function (res) {
+                    if (res) {
+                        resolve();
+                    }
+                    else {
+                        _this.saveNew(id, section, dnd, resolve, reject);
+                    }
+                }).catch(function (error) {
+                    _this.saveNew(id, section, dnd, resolve, reject);
+                });
+            }
+            else {
+                reject();
+            }
+        });
+    };
+    SectionsIndexedDbService.prototype.updateContent = function (id, section, dnd) {
+        var _this = this;
+        return new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.sections.update(id, { section: section }).then(function (res) {
+                    if (res) {
+                        resolve();
+                    }
+                    else {
+                        _this.saveNew(id, section, dnd, resolve, reject);
+                    }
+                }).catch(function (error) {
+                    _this.saveNew(id, section, dnd, resolve, reject);
+                });
+            }
+            else {
+                reject();
+            }
+        });
+    };
     SectionsIndexedDbService.prototype.getAll = function () {
         return this.indexeddbService.changedObjectsDatabase.sections.toArray();
+    };
+    SectionsIndexedDbService.prototype.saveNew = function (id, section, dnd, resolve, reject) {
+        var s = new __WEBPACK_IMPORTED_MODULE_2__objects_database__["c" /* Section */]();
+        s.section = section;
+        s.dnd = dnd;
+        s.id = id;
+        this.indexeddbService.changedObjectsDatabase.sections.put(s).then(function () {
+            resolve();
+        }).catch(function (error) {
+            reject(error);
+        });
     };
     SectionsIndexedDbService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),
@@ -4279,14 +4420,41 @@ var SegmentsIndexedDbService = (function () {
         });
         return promise;
     };
+    SegmentsIndexedDbService.prototype.getAllMetaData = function () {
+        var _this = this;
+        var segments;
+        var promise = new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.transaction('r', _this.indexeddbService.changedObjectsDatabase.segments, function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.indexeddbService.changedObjectsDatabase.segments.filter(function (segment) {
+                                    return segment.metadata;
+                                }).toArray()];
+                            case 1:
+                                segments = _a.sent();
+                                resolve(segments);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
+            else {
+                reject();
+            }
+        });
+        return promise;
+    };
     SegmentsIndexedDbService.prototype.getSegmentMetadata = function (id) {
         var _this = this;
         var promise = new Promise(function (resolve, reject) {
             _this.getSegment(id).then(function (segment) {
-                if (segment.metadata)
+                if (segment.metadata) {
                     resolve(segment.metadata);
-                else
+                }
+                else {
                     reject();
+                }
             }).catch(function () {
                 reject();
             });
@@ -4298,6 +4466,7 @@ var SegmentsIndexedDbService = (function () {
         for (var i = 0; i < ids.length; i++) {
             promises.push(this.getSegmentMetadata(ids[i]));
         }
+        console.log(promises);
         return Promise.all(promises);
     };
     SegmentsIndexedDbService.prototype.getSegmentStructure = function (id) {
@@ -4442,6 +4611,8 @@ var SegmentsIndexedDbService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indexed_db_utils__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db-utils.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -4486,6 +4657,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -4580,15 +4752,18 @@ var SegmentsTocService = (function () {
             promises.push(_this.getAllFromToc());
             promises.push(_this.getAllFromAdded());
             Promise.all(promises).then(function (results) {
-                var allNodes = new Array();
+                var allNodes = [];
                 var tocNodes = results[0];
                 var addedNodes = results[1];
                 if (tocNodes != null) {
-                    allNodes.push(tocNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, tocNodes);
                 }
                 if (addedNodes != null) {
-                    allNodes.push(addedNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, addedNodes);
                 }
+                allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["sortBy"](allNodes, function (data) {
+                    return data.data.label;
+                });
                 resolve(allNodes);
             });
         });
@@ -4870,6 +5045,31 @@ var ValuesetsIndexedDbService = (function () {
         });
         return promise;
     };
+    ValuesetsIndexedDbService.prototype.getAllMetaData = function () {
+        var _this = this;
+        var valuesets;
+        var promise = new Promise(function (resolve, reject) {
+            if (_this.indexeddbService.changedObjectsDatabase != null) {
+                _this.indexeddbService.changedObjectsDatabase.transaction('r', _this.indexeddbService.changedObjectsDatabase.valuesets, function () { return __awaiter(_this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, this.indexeddbService.changedObjectsDatabase.valuesets.filter(function (valueset) {
+                                    return valueset.metadata;
+                                }).toArray()];
+                            case 1:
+                                valuesets = _a.sent();
+                                resolve(valuesets);
+                                return [2 /*return*/];
+                        }
+                    });
+                }); });
+            }
+            else {
+                reject();
+            }
+        });
+        return promise;
+    };
     ValuesetsIndexedDbService.prototype.getValuesetMetadata = function (id) {
         var _this = this;
         var promise = new Promise(function (resolve, reject) {
@@ -5008,6 +5208,8 @@ var ValuesetsIndexedDbService = (function () {
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("../../../core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__indexed_db_utils__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db-utils.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_3_lodash__);
 var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
     var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
     if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
@@ -5052,6 +5254,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 
 
 
@@ -5146,15 +5349,18 @@ var ValuesetsTocService = (function () {
             promises.push(_this.getAllFromToc());
             promises.push(_this.getAllFromAdded());
             Promise.all(promises).then(function (results) {
-                var allNodes = new Array();
+                var allNodes = [];
                 var tocNodes = results[0];
                 var addedNodes = results[1];
                 if (tocNodes != null) {
-                    allNodes.push(tocNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, tocNodes);
                 }
                 if (addedNodes != null) {
-                    allNodes.push(addedNodes);
+                    allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["union"](allNodes, addedNodes);
                 }
+                allNodes = __WEBPACK_IMPORTED_MODULE_3_lodash__["sortBy"](allNodes, function (data) {
+                    return data.data.label;
+                });
                 resolve(allNodes);
             });
         });
@@ -5258,6 +5464,15 @@ var SectionsService = (function () {
     };
     SectionsService.prototype.saveSection = function (section) {
         return this.sectionsIndexedDbService.saveSection(section);
+    };
+    SectionsService.prototype.getAllSections = function (section) {
+        return this.sectionsIndexedDbService.getAll();
+    };
+    SectionsService.prototype.updateContent = function (id, section, dnd) {
+        return this.sectionsIndexedDbService.updateContent(id, section, dnd);
+    };
+    SectionsService.prototype.updateDnD = function (id, section, dnd) {
+        return this.sectionsIndexedDbService.updateDnD(id, section, dnd);
     };
     SectionsService = __decorate([
         Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["Injectable"])(),

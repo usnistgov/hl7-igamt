@@ -559,7 +559,7 @@ module.exports = "<h2>Conformance Profile Metadata</h2>\n<div *ngIf=\"conformanc
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash__ = __webpack_require__("../../../../lodash/lodash.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2_lodash___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_2_lodash__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3_rxjs_add_operator_filter__ = __webpack_require__("../../../../rxjs/_esm5/add/operator/filter.js");
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__toc_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/toc/toc.service.ts");
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__service_toc_service__ = __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/service/toc.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__service_indexed_db_indexed_db_service__ = __webpack_require__("../../../../../src/app/service/indexed-db/indexed-db.service.ts");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__angular_forms__ = __webpack_require__("../../../forms/esm5/forms.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__service_conformance_profiles_conformance_profiles_service__ = __webpack_require__("../../../../../src/app/service/conformance-profiles/conformance-profiles.service.ts");
@@ -639,7 +639,7 @@ var ConformanceprofileEditMetadataComponent = (function () {
             template: __webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-metadata/conformanceprofile-edit-metadata.component.html"),
             styles: [__webpack_require__("../../../../../src/app/igdocuments/igdocument-edit/conformanceprofile-edit/conformanceprofile-metadata/conformanceprofile-edit-metadata.component.css")]
         }),
-        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */], __WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_7__service_conformance_profiles_conformance_profiles_service__["a" /* ConformanceProfilesService */], __WEBPACK_IMPORTED_MODULE_8__service_indexed_db_conformance_profiles_conformance_profiles_toc_service__["a" /* ConformanceProfilesTocService */], __WEBPACK_IMPORTED_MODULE_4__toc_toc_service__["a" /* TocService */]])
+        __metadata("design:paramtypes", [__WEBPACK_IMPORTED_MODULE_5__service_indexed_db_indexed_db_service__["a" /* IndexedDbService */], __WEBPACK_IMPORTED_MODULE_1__angular_router__["ActivatedRoute"], __WEBPACK_IMPORTED_MODULE_1__angular_router__["Router"], __WEBPACK_IMPORTED_MODULE_7__service_conformance_profiles_conformance_profiles_service__["a" /* ConformanceProfilesService */], __WEBPACK_IMPORTED_MODULE_8__service_indexed_db_conformance_profiles_conformance_profiles_toc_service__["a" /* ConformanceProfilesTocService */], __WEBPACK_IMPORTED_MODULE_4__service_toc_service__["a" /* TocService */]])
     ], ConformanceprofileEditMetadataComponent);
     return ConformanceprofileEditMetadataComponent;
 }());
@@ -1117,7 +1117,7 @@ var ConformanceprofileEditStructureComponent = (function () {
         this.route.data.map(function (data) { return data.conformanceprofileStructure; }).subscribe(function (x) {
             console.log(x);
             _this.segmentsTocService.getAll().then(function (segTOCdata) {
-                var listTocSegs = segTOCdata[0];
+                var listTocSegs = segTOCdata;
                 for (var _i = 0, listTocSegs_1 = listTocSegs; _i < listTocSegs_1.length; _i++) {
                     var entry = listTocSegs_1[_i];
                     var treeObj = entry.data;

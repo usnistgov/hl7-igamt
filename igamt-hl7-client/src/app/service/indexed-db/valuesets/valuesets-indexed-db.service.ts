@@ -25,6 +25,23 @@ export class ValuesetsIndexedDbService {
     return promise;
   }
 
+  public getAllMetaData(): Promise<any> {
+    let valuesets;
+    const promise = new Promise<any>((resolve, reject) => {
+      if (this.indexeddbService.changedObjectsDatabase != null) {
+        this.indexeddbService.changedObjectsDatabase.transaction('r', this.indexeddbService.changedObjectsDatabase.valuesets, async () => {
+          valuesets = await this.indexeddbService.changedObjectsDatabase.valuesets.filter(function (valueset) {
+            return valueset.metadata;
+          }).toArray();
+          resolve(valuesets);
+        });
+      } else {
+        reject();
+      }
+    });
+    return promise;
+  }
+
   public getValuesetMetadata(id): Promise<object> {
     const promise = new Promise<object>((resolve, reject) => {
       this.getValueset(id).then((valueset) => {

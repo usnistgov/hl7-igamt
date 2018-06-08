@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {IndexedDbService} from '../indexed-db.service';
 import IndexedDbUtils from '../indexed-db-utils';
 import {TocNode} from '../toc-database';
+import * as _ from 'lodash';
 
 @Injectable()
 export class ValuesetsTocService {
@@ -76,15 +77,21 @@ export class ValuesetsTocService {
       promises.push(this.getAllFromToc());
       promises.push(this.getAllFromAdded());
       Promise.all(promises).then( (results: Array<any>) => {
-        const allNodes = new Array<TocNode>();
+        let allNodes = [];
         const tocNodes = results[0];
         const addedNodes = results[1];
         if (tocNodes != null) {
-          allNodes.push(tocNodes);
+          allNodes=_.union(allNodes,tocNodes);
         }
         if (addedNodes != null) {
-          allNodes.push(addedNodes);
+          allNodes=_.union(allNodes,addedNodes);
+
         }
+        allNodes=_.sortBy(allNodes,function (data) {
+          return data.data.label;
+
+        });
+
         resolve(allNodes);
       });
     });
