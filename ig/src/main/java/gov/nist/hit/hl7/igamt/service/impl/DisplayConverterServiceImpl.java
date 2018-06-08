@@ -281,7 +281,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       if (vs != null) {
 
         // addChildrenByType(node, Type.VALUESET);
-        Nodes.add(createValueSetsNode(vs, l.getPosition()));
+        Nodes.add(createValueSetNode(vs, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));
@@ -296,7 +296,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * @return
    */
   @Override
-  public TreeNode createValueSetsNode(Valueset vs, int position) {
+  public TreeNode createValueSetNode(Valueset vs, int position) {
     // TODO Auto-generated method stub
     TreeNode node = new TreeNode();
     ElementTreeData data = new ElementTreeData();
@@ -428,6 +428,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     }
     data.setPosition(position);
     data.setLabel(elm.getName());
+    data.setExt(elm.getExt());
     data.setDescription(elm.getDescription());
     data.setKey(elm.getId());
     data.setDomainInfo(elm.getDomainInfo());

@@ -141,7 +141,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                         this.datatypesOptions.push(dtOption);
 
 
-                        this.tocService.getValueSetList().getAll().then((valuesetTOCdata) => {
+                        this.tocService.getValueSetList().then((valuesetTOCdata) => {
                             let listTocVSs: any = valuesetTOCdata[0];
 
                             for (let entry of listTocVSs) {

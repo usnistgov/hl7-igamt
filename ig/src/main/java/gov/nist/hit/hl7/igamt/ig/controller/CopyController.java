@@ -147,7 +147,7 @@ public class CopyController {
       clone.setUsername(username);
       clone.setId(new CompositeKey());
       clone.setBindingIdentifier(wrapper.getName());
-      return displayConverter.createValueSetsNode(clone, 0);
+      return displayConverter.createValueSetNode(clone, 0);
     } else {
       return null;
     }

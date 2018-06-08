@@ -67,7 +67,7 @@ public interface DisplayConverterService {
 
   public TreeNode createDatatypeNode(Datatype elm, int position);
 
-  public TreeNode createValueSetsNode(Valueset vs, int position);
+  public TreeNode createValueSetNode(Valueset vs, int position);
 
   public TreeNode createCpNode(ConformanceProfile confromanceProfile, int position);
 

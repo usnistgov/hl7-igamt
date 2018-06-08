@@ -445,7 +445,7 @@ export class IgDocumentEditComponent {
 
         }
       );
-  }
+  };
 
 
 
@@ -505,7 +505,8 @@ export class IgDocumentEditComponent {
       igDocumentId : this.igId,
       id:node.data.data.key,
       name:node.data.data.label,
-
+      ext:node.data.data.ext,
+      type:node.data.data.type,
       namingIndicators:existing
 
     })
@@ -515,7 +516,7 @@ export class IgDocumentEditComponent {
           this.distributeResult(result);
         }
       )
-  }
+  };
 
 
 
@@ -525,7 +526,7 @@ export class IgDocumentEditComponent {
       ret.push(list[i]);
     }
     return ret;
-  }
+  };
 
 
 

@@ -15,7 +15,7 @@ import {TreeDragDropService} from "primeng/components/common/treedragdropservice
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
 import {MenuItem} from 'primeng/primeng';
 // import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
-import { FormsModule } from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 import { TreeModule } from 'angular-tree-component';
 import {OverlayPanelModule} from 'primeng/overlaypanel';
@@ -75,7 +75,7 @@ import {ExportService} from "./service/export.service";
     TreeModule,
     PanelModule,
     MultiSelectModule,
-    FormsModule,
+    FormsModule,ReactiveFormsModule,
     ContextMenuModule.forRoot(),
     DropdownModule,
     FroalaEditorModule.forRoot(),
