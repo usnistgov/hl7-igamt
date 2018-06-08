@@ -26,10 +26,12 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
  */
 public class ProfileComponentTableOptionsDisplay implements TableOptionsDisplay {
 
+  private boolean includeProfileComponentTable = true;
   private UsageConfiguration profileComponentItemsExport;
   private List<NameAndPositionAndPresence> columns;
 
   public ProfileComponentTableOptionsDisplay(ExportConfiguration exportConfiguration) {
+    this.includeProfileComponentTable = exportConfiguration.isIncludeProfileComponentTable();
     this.profileComponentItemsExport = exportConfiguration.getProfileComponentItemsExport();
     this.columns = exportConfiguration.getProfileComponentColumn().getColumns();
   }
@@ -40,16 +42,26 @@ public class ProfileComponentTableOptionsDisplay implements TableOptionsDisplay 
    */
   @Override
   public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration) {
+    exportConfiguration.setIncludeProfileComponentTable(this.includeProfileComponentTable);
     exportConfiguration.setProfileComponentItemsExport(this.profileComponentItemsExport);
     exportConfiguration.setProfileComponentColumn(new ColumnsConfiguration(this.columns));
     return exportConfiguration;
   }
 
-  public ProfileComponentTableOptionsDisplay(UsageConfiguration profileComponentItemsExport,
-      List<NameAndPositionAndPresence> columns) {
+  public ProfileComponentTableOptionsDisplay(boolean includeProfileComponentTable,
+      UsageConfiguration profileComponentItemsExport, List<NameAndPositionAndPresence> columns) {
     super();
+    this.includeProfileComponentTable = includeProfileComponentTable;
     this.profileComponentItemsExport = profileComponentItemsExport;
     this.columns = columns;
+  }
+
+  public boolean isIncludeProfileComponentTable() {
+    return includeProfileComponentTable;
+  }
+
+  public void setIncludeProfileComponentTable(boolean includeProfileComponentTable) {
+    this.includeProfileComponentTable = includeProfileComponentTable;
   }
 
   public ProfileComponentTableOptionsDisplay() {

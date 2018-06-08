@@ -1,55 +1,68 @@
 {
-  "_id" : "59ce56c784ae3adc43b87c7e",
-  "includeMessageTable" : true,
-  "segmentORGroupsMessageExport" : {
-    "r" : true,
-    "re" : true,
-    "c" : true,
-    "x" : true,
-    "o" : true
+  "includeDatatypeTable": true,
+  "datatypesExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": false,
+    "o": false
   },
-  "columns" : [
+  "componentExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": true,
+    "o": true
+  },
+  "columns": [
     {
-      "name" : "Segment",
-      "position" : 1,
-      "present" : true,
-      "disabled" : true
+      "name": "Name",
+      "position": 1,
+      "present": true,
+      "disabled": true
     },
     {
-      "name" : "Flavor",
-      "position" : 2,
-      "present" : true,
-      "disabled" : true
+      "name": "Conformance Length",
+      "position": 2,
+      "present": false,
+      "disabled": false
     },
     {
-      "name" : "Element Name",
-      "position" : 3,
-      "present" : true,
-      "disabled" : true
+      "name": "Data Type",
+      "position": 3,
+      "present": true,
+      "disabled": false
     },
     {
-      "name" : "Cardinality",
-      "position" : 4,
-      "present" : true,
-      "disabled" : false
+      "name": "Usage",
+      "position": 4,
+      "present": true,
+      "disabled": false
     },
     {
-      "name" : "Usage",
-      "position" : 5,
-      "present" : true,
-      "disabled" : false
+      "name": "Length",
+      "position": 5,
+      "present": false,
+      "disabled": false
     },
     {
-      "name" : "Comment",
-      "position" : 1,
-      "present" : true,
-      "disabled" : false
+      "name": "Value Set",
+      "position": 6,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Comment",
+      "position": 7,
+      "present": true,
+      "disabled": false
     }
   ],
-  "messageMetadatatableOptions" : {
-    "hl7version" : true,
-    "publicationDate" : true,
-    "publicationVersion" : false,
-    "scope" : true
-  }
+  "metadataConfig": {
+    "hl7version": false,
+    "publicationDate": false,
+    "publicationVersion": false,
+    "scope": false
+  },
+  "includeVaries": false
 }

@@ -90,7 +90,12 @@ import {ValuesetTableOptionsResolve} from './valueset-table-options/valueset-tab
     RouterModule
   ],
   providers: [
-    ConformanceProfileTableOptionsResolve
+    ConformanceProfileTableOptionsResolve,
+    SegmentTableOptionsResolve,
+    ValuesetTableOptionsResolve,
+    DatatypeTableOptionsResolve,
+    ProfileComponentTableOptionsResolve,
+    CompositeProfileTableOptionsResolve
   ]
 })
 export class ConfigurationRoutingModule {

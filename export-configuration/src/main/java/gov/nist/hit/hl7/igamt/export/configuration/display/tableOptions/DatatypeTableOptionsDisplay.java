@@ -32,10 +32,12 @@ public class DatatypeTableOptionsDisplay implements TableOptionsDisplay {
   private UsageConfiguration componentExport;
   private List<NameAndPositionAndPresence> columns;
   private MetadataConfiguration metadataConfig;
+  private boolean includeVaries = false;
 
   public DatatypeTableOptionsDisplay(ExportConfiguration exportConfiguration) {
     this.includeDatatypeTable = exportConfiguration.isIncludeDatatypeTable();
     this.datatypesExport = exportConfiguration.getDatatypesExport();
+    this.includeVaries = exportConfiguration.isIncludeVaries();
     this.componentExport = exportConfiguration.getComponentExport();
     this.columns = exportConfiguration.getDatatypeColumn().getColumns();
     this.metadataConfig = exportConfiguration.getDatatypeMetadataConfig();
@@ -52,18 +54,21 @@ public class DatatypeTableOptionsDisplay implements TableOptionsDisplay {
     exportConfiguration.setComponentExport(this.componentExport);
     exportConfiguration.setDatatypeColumn(new ColumnsConfiguration(this.columns));
     exportConfiguration.setDatatypeMetadataConfig(this.metadataConfig);
+    exportConfiguration.setIncludeVaries(this.includeVaries);
     return exportConfiguration;
   }
 
   public DatatypeTableOptionsDisplay(boolean includeDatatypeTable,
-      UsageConfiguration datatypesExport, UsageConfiguration componentExport, List<NameAndPositionAndPresence> columns,
-      MetadataConfiguration metadataConfig) {
+      UsageConfiguration datatypesExport, UsageConfiguration componentExport,
+      List<NameAndPositionAndPresence> columns, MetadataConfiguration metadataConfig,
+      boolean includeVaries) {
     super();
     this.includeDatatypeTable = includeDatatypeTable;
     this.datatypesExport = datatypesExport;
     this.componentExport = componentExport;
     this.columns = columns;
     this.metadataConfig = metadataConfig;
+    this.includeVaries = includeVaries;
   }
 
   public DatatypeTableOptionsDisplay() {
@@ -108,6 +113,14 @@ public class DatatypeTableOptionsDisplay implements TableOptionsDisplay {
 
   public void setComponentExport(UsageConfiguration componentExport) {
     this.componentExport = componentExport;
+  }
+
+  public boolean isIncludeVaries() {
+    return includeVaries;
+  }
+
+  public void setIncludeVaries(boolean includeVaries) {
+    this.includeVaries = includeVaries;
   }
 
 }

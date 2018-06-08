@@ -1,3 +1,101 @@
-<p>
-  composite-profile-table-options works!
-</p>
+<p-card>
+  <p-header>
+    <h1>
+      <p-checkbox [(ngModel)]="tableOptions.includeCompositeProfileTable" binary="true"
+                  onChange="setChanged()" label="Include Composite Profile Table Options"></p-checkbox>
+    </h1>
+  </p-header>
+
+  <div>
+    <!-- Usages card -->
+    <div>
+      <p-card>
+        <h2>Usages (Segments/Groups to Export)</h2>
+        <hr/>
+        <div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsCompositeProfileExport.r"
+              onChange="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsCompositeProfileExport.re"
+              onChange="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsCompositeProfileExport.c"
+              onChange="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsCompositeProfileExport.o"
+              onChange="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsCompositeProfileExport.x"
+              onChange="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+      <p-card>
+        <h2>Metadata</h2>
+        <hr/>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.hl7version"
+              onChange="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationDate"
+              onChange="setChanged()" label="Publication Date" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationVersion"
+              onChange="setChanged()" label="Publication Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.scope"
+              onChange="setChanged()" label="Scope" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Columns card-->
+    <div flex>
+      <p-card>
+        <h2>Columns</h2>
+        <hr/>
+        <div layout="column" style="width: 100%">
+          <div *ngFor="let column of tableOptions.columns">
+            <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                        (onChange)="setChanged()" [label]="column.name">
+            </p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <div flex>
+      <p-card>
+        <div>
+          <p-checkbox [(ngModel)]="tableOptions.includeComposition" binary="true"
+                    onChange="setChanged()" label="Include Composition"></p-checkbox>
+        </div>
+        <div>
+          <p-checkbox [(ngModel)]="tableOptions.includeDerived" binary="true"
+                    onChange="setChanged()" label="Include Generated Flavors"></p-checkbox>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <p-footer>
+    <p-button label="Save" (onClick)="save($event)" [disabled]="!changed"></p-button>
+  </p-footer>
+</p-card>

@@ -1,55 +1,59 @@
 {
-  "_id" : "59ce56c784ae3adc43b87c7e",
-  "includeMessageTable" : true,
-  "segmentORGroupsMessageExport" : {
-    "r" : true,
-    "re" : true,
-    "c" : true,
-    "x" : true,
-    "o" : true
+  "includeValuesetsTable": true,
+  "valuesetsExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": false,
+    "o": false
   },
-  "columns" : [
+  "codesExport": {
+    "r": true,
+    "p": true,
+    "e": false
+  },
+  "columns": [
     {
-      "name" : "Segment",
-      "position" : 1,
-      "present" : true,
-      "disabled" : true
+      "name": "Value",
+      "position": 1,
+      "present": true,
+      "disabled": true
     },
     {
-      "name" : "Flavor",
-      "position" : 2,
-      "present" : true,
-      "disabled" : true
+      "name": "Code System",
+      "position": 2,
+      "present": true,
+      "disabled": true
     },
     {
-      "name" : "Element Name",
-      "position" : 3,
-      "present" : true,
-      "disabled" : true
+      "name": "Usage",
+      "position": 3,
+      "present": false,
+      "disabled": false
     },
     {
-      "name" : "Cardinality",
-      "position" : 4,
-      "present" : true,
-      "disabled" : false
+      "name": "Description",
+      "position": 4,
+      "present": true,
+      "disabled": true
     },
     {
-      "name" : "Usage",
-      "position" : 5,
-      "present" : true,
-      "disabled" : false
-    },
-    {
-      "name" : "Comment",
-      "position" : 1,
-      "present" : true,
-      "disabled" : false
+      "name": "Comment",
+      "position": 5,
+      "present": false,
+      "disabled": false
     }
   ],
-  "messageMetadatatableOptions" : {
-    "hl7version" : true,
-    "publicationDate" : true,
-    "publicationVersion" : false,
-    "scope" : true
-  }
+  "metadataConfig": {
+    "stability": true,
+    "extensibility": true,
+    "contentDefinition": true,
+    "oid": true,
+    "type": true
+  },
+  "unboundHL7": false,
+  "unboundCustom": false,
+  "phinvadsUpdateEmailNotification": false,
+  "codeNumber": 500,
+  "maxCodeNumber": 500
 }
