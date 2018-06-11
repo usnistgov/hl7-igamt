@@ -20,7 +20,7 @@
         <h2>Font size: {{exportFontConfigurationDisplay.exportFontConfiguration.fontSize}}</h2>
         <hr/>
         <div>
-          <p-slider [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.fontSize" min="0" (onChange)="setChanged()" [max]="exportFontConfigurationDisplay.exportFontConfiguration.maxFontSize" [style]="{'width':'30%'}" [animate]="true"></p-slider>
+          <p-slider [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.fontSize" min="0" (onChange)="setChanged()" [max]="exportFontConfigurationDisplay.maxFontSize" [style]="{'width':'30%'}" [animate]="true"></p-slider>
         </div>
       </p-card>
     </div>

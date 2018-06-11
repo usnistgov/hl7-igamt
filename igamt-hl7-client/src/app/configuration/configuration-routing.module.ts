@@ -31,7 +31,7 @@ import {ExportFontResolve} from "./export-font/export-font.resolve.service";
                 path: 'export-fonts',
                 component: ExportFontComponent,
                 resolve: {
-                  exportFontConfiguration: ExportFontResolve
+                  exportFontConfigurationDisplay: ExportFontResolve
                 }
               },
               {

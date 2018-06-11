@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontRepository;
@@ -25,14 +26,12 @@ import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService;
  *
  * @author Maxence Lefort on Jun 8, 2018.
  */
+@Service("exportFontService")
 public class ExportFontServiceImpl implements ExportFontService {
 
   @Autowired
   private ExportFontRepository exportFontRepository;
   
-   /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService#findAll()
-   */
   @Override
   public List<ExportFont> findAll() {
     return exportFontRepository.findAll();
