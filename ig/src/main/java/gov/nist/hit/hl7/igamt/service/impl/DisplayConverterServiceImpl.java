@@ -618,6 +618,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     ElementTreeData data = new ElementTreeData();
     data.setLabel(elm.getName());
     data.setPosition(position);
+    data.setExt(elm.getIdentifier());
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
     data.setKey(elm.getId());
