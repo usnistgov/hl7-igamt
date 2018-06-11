@@ -342,6 +342,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     ElementTreeData data = new ElementTreeData();
     data.setLabel(confromanceProfile.getName());
     data.setDescription(confromanceProfile.getDescription());
+    data.setExt(confromanceProfile.getIdentifier());
     data.setDomainInfo(confromanceProfile.getDomainInfo());
     data.setKey(confromanceProfile.getId());
     node.setData(data);

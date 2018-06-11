@@ -111,6 +111,7 @@ export class AddDatatypeComponent extends PrimeDialogAdapter {
   submit(){
 
 
+
     let wrapper:any ={};
     wrapper.toAdd=this.dest;
     wrapper.id=this.id;
@@ -124,6 +125,9 @@ export class AddDatatypeComponent extends PrimeDialogAdapter {
 
   }
 
+  print(obj){
+    console.log(obj);
+  }
 
 
 }

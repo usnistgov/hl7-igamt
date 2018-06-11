@@ -23,6 +23,8 @@ import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-pos
 import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-predef.component";
 
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
+import {MessageModule} from "primeng/components/message/message";
+import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
 
 @NgModule({
   imports: [
@@ -38,6 +40,8 @@ import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
     AccordionModule,
     SelectButtonModule,
     TableModule,
+    MessageModule,
+    NamingConventionModule,
       FroalaEditorModule.forRoot(),
       FroalaViewModule.forRoot()
   ],

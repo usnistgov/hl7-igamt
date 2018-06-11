@@ -13,8 +13,6 @@ import {UtilsModule} from "../../utils/utils.module";
 import {TocService} from "./service/toc.service";
 import {TreeDragDropService} from "primeng/components/common/treedragdropservice";
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
-import {MenuItem} from 'primeng/primeng';
-// import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {IgdocumentEditResolver} from "./igdocument-edit.resolver";
 import { TreeModule } from 'angular-tree-component';
@@ -55,6 +53,8 @@ import { CopyElementComponent } from './copy-element/copy-element.component';
 import {NamesAndPositionsService} from "./service/names-and-positions.service";
 import {SplitButtonModule} from "primeng/components/splitbutton/splitbutton";
 import {ExportService} from "./service/export.service";
+import {CopyService} from "./copy-element/copy.service";
+import {NamingConventionModule} from "../../common/naming-convention/naming-convention.module";
 
 
 @NgModule({
@@ -95,6 +95,7 @@ import {ExportService} from "./service/export.service";
     ButtonModule,
     BlockUIModule,
     SplitButtonModule,
+    NamingConventionModule,
     ModalModule.forRoot()
 
   ],
@@ -105,7 +106,7 @@ import {ExportService} from "./service/export.service";
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamesAndPositionsService,ExportService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamesAndPositionsService,ExportService,CopyService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

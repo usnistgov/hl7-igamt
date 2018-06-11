@@ -222,6 +222,7 @@ import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-i
         RegisterComponent,
         DocumentationComponent,
       AppBreadcrumbComponent
+
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },

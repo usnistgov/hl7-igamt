@@ -65,7 +65,7 @@
 </div>
 
 <div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
-  <div class="ui-g-3 no-margin" style="padding : 0;"  *ngIf="!hideToc">
+  <div class="ui-g-3 no-margin" style="padding : 0; max-height: 800px; overflow: scroll"  *ngIf="!hideToc">
   <p-panel [toggleable]="false">
     <p-header class="toc-panel-header">
       Table Of Content
@@ -238,7 +238,7 @@
   </div>
 
   <!--ROUTE-->
-  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;">
+  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0; max-height: 800px;overflow: scroll">
 
       <router-outlet></router-outlet>
 

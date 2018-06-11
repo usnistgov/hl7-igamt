@@ -79,6 +79,7 @@ public class CopyController {
       ConformanceProfile clone = profile.clone();
       clone.setUsername(username);
       clone.setId(new CompositeKey());
+      clone.setIdentifier(wrapper.getExt());
       clone.setName(wrapper.getName());
       clone = conformanceProfileService.save(clone);
       return displayConverter.createConformanceProfileNode(clone, 0);

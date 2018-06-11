@@ -402,49 +402,41 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
-    var conformanceProfiles=[];
-    var segments=[];
-    var datatypes=[];
-    var valueSets=[];
-    var compositeProfiles=[];
-    var profileComponents=[];
+    console.log("Adding Objs");
+
+    console.log(object);
 
     if(object.conformanceProfiles){
-      conformanceProfiles= this.convertList(object.conformanceProfiles);
-    }if(object.segments){
+      this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, Types.CONFORMANCEPROFILEREGISTRY);
 
-      segments=this.convertList(object.segments);
+    }if(object.segments){
+      this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  Types.SEGMENTREGISTRY);
+
+
 
     }
     if(object.datatypes){
-      datatypes=this.convertList(object.datatypes);
+      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
+
     }
     if(object.valueSets){
-      valueSets=this.convertList(object.valueSets);
+      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
+
     }
 
-    this.tocDbService.bulkAddTocNewElements(valueSets,datatypes,segments,conformanceProfiles,profileComponents,compositeProfiles).then(()=>{
 
-      if(object.conformanceProfiles){
-        this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, Types.CONFORMANCEPROFILEREGISTRY);
-      }
-      if(object.segments){
-        this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  Types.SEGMENTREGISTRY);
-      }
-      if(object.datatypes){
-
-        this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
-      }
-      if(object.valueSets){
-        this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
-      }
       this.tree.treeModel.update();
-      this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+      this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes).then(x => {
 
-    }).catch((error)=>{
+        console.log("updated");
+        }, error=>{
+        console.log("could not update IG")
 
         }
-      );
+
+      )
+
+
   };
 
 
@@ -512,12 +504,90 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
+          let toDistribute:any={};
+          let datatypes=[];
+          datatypes.push(result);
+          toDistribute.datatypes=datatypes;
+          this.distributeResult(toDistribute);
 
-          this.distributeResult(result);
         }
       )
   };
 
+  copySegment(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let segments=[];
+          segments.push(result);
+          toDistribute.segments=segments;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+  };
+
+  copyValueSet(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.VALUESETREGISTRY);
+    console.log(existing);
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let valueSets=[];
+          valueSets.push(result);
+          toDistribute.valueSets=valueSets;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+
+  };
+
+  copyConformanceProfile(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
+    console.log(existing);
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let conformanceProfiles=[];
+          conformanceProfiles.push(result);
+          toDistribute.conformanceProfiles=conformanceProfiles;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+  }
 
 
   convertList(list : any[]){

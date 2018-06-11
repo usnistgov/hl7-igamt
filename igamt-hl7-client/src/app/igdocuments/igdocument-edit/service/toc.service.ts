@@ -34,27 +34,33 @@ export  class TocService{
     return null;
 
   }
-  addNodesByType(toAdd, toc,type ){
+  addNodesByType(toAdd:any, toc:any,type ){
     var profile= this.findDirectChildByType(toc,Types.PROFILE);
     var registry = this.findDirectChildByType(profile.children,type);
-    var position=registry.children.length+1;
-    for(let i=0 ; i<toAdd.length; i++){
-      toAdd[i].data.position =position;
-      position++;
-      registry.children.push(toAdd[i]);
+
+
+    let union :any[]=_.union(registry.children,toAdd);
+    union= _.sortBy(union, [function(node) { return node.data.label+node.data.ext; }]);
+
+    for(let i=0 ; i<union.length; i++){
+       union[i].data.position =i+1;
     }
+
+    registry.children=union;
+
+
 
 
   }
 
   getNameUnicityIndicators(nodes,type){
 
+    var profile= this.findDirectChildByType(nodes,Types.PROFILE);
+    var registry = this.findDirectChildByType(profile.children,type);
+    return _.map(registry.children, function (obj) {
+      return obj.data.label+obj.data.ext;
 
-    if(type==Types.SEGMENTREGISTRY){
-      return this.getNameUnicityIndicatorsForSegment(nodes, type);
-    }else if(type==Types.DATATYPEREGISTRY){
-      return this.getNameUnicityIndicatorsForDatatype(nodes,type);
-    }
+    });
   }
 
   getNameUnicityIndicatorsForSegment(nodes, type){
@@ -112,6 +118,20 @@ export  class TocService{
     return this.getNodesList(Types.DATATYPEREGISTRY);
 
   }
+  getDataypeNamesList(){
+    return new Promise((resolve, reject)=> {
+
+      this.getNodesList(Types.DATATYPEREGISTRY).then( children =>{
+        resolve(_.map(children, function (obj) {
+            return obj.data.label+obj.data.ext;
+          }))
+
+      },
+      error=>{
+        resolve([]);
+      });
+    })
+  }
 
   getValueSetList(){
     return this.getNodesList(Types.VALUESETREGISTRY);
@@ -122,9 +142,7 @@ export  class TocService{
 
   }
 
-  getCurrentValueSetList(id){
 
-  }
 
 
   findRegistryByType(toc, type){
@@ -150,6 +168,9 @@ export  class TocService{
       return null;
     }
   }
+
+
+
 
 
 

@@ -5,6 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import * as _ from 'lodash';
 import {FormGroup, Validators, ValidatorFn, AbstractControl, FormControl} from "@angular/forms";
 import {Types} from "../../../common/constants/types";
+import {CopyService} from "./copy.service";
 @Component({
   selector: 'app-copy-element',
   templateUrl: './copy-element.component.html',
@@ -16,12 +17,13 @@ export class CopyElementComponent extends PrimeDialogAdapter{
   ext="";
   type="";
   userExt="";
-  wrapper={};
+  id={};
+  wrapper:any={};
   namingIndicators = [];
   namingForm:FormGroup;
 
 
-  constructor(private router: Router, private route: ActivatedRoute, private ws: WorkspaceService) {
+  constructor(private router: Router, private route: ActivatedRoute,private copyService:CopyService ) {
     super();
 
     this.namingForm= new FormGroup({
@@ -29,6 +31,10 @@ export class CopyElementComponent extends PrimeDialogAdapter{
       'ext':new FormControl(
         this.userExt,
         [this.duplicationValidator(this.name+this.userExt),this.conventionValidator(this.userExt),Validators.required,Validators.minLength(4),Validators.maxLength(4) ] )
+      ,
+      'name':new FormControl(
+        this.name,
+        [ Validators.required] )
     });
   }
 
@@ -63,14 +69,14 @@ export class CopyElementComponent extends PrimeDialogAdapter{
 
   duplicationValidator(obj: string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      return !this.isDuplicated(this.name+this.userExt) ? null: {'Duplicated': {value: control.value}};
+      return !this.isDuplicated(this.name+this.userExt) ? null: {'duplicated': {value: control.value}};
     };
 
   }
 
   conventionValidator(obj: string): ValidatorFn {
     return (control: AbstractControl): {[key: string]: any} => {
-      return !this.validConvention(this.userExt) ? {'InvalidConvention': {value: control.value}} : null;
+      return !this.validConvention(this.userExt) ? {'invalidConvention': {value: control.value}} : null;
     };
 
   }
@@ -92,7 +98,25 @@ export class CopyElementComponent extends PrimeDialogAdapter{
 
   }
   submit(){
+    this.wrapper.igDocument=this.igDocumentId;
+    this.wrapper.id=this.id;
+    this.wrapper.name=this.name;
+    this.wrapper.ext=this.userExt;
+    console.log(this.namingForm);
 
 
+
+    this.copyService.copyElement(this.wrapper, this.type).subscribe(
+      res => {
+        console.log(res);
+        this.closeWithData(res);
+      }
+    )
+
+  }
+
+
+  print(obj){
+    console.log(obj);
   }
 }
