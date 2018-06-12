@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.datatype.serialization;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
@@ -39,16 +40,18 @@ public class SerializableDatatype extends SerializableResource {
   private Map<String, String> valuesetNamesMap = null;
   private int level;
   private Map<String, String> componentValuesetMap = new HashMap<>();
+  private Set<String> bindedComponents;
 
   /**
    * @param abstractDomain
    * @param position
    */
   public SerializableDatatype(Datatype datatype, String position, int level,
-      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap) {
+      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap, Set<String> bindedComponents) {
     super(datatype, position);
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.bindedComponents = bindedComponents;
     this.level = level;
   }
 
@@ -104,40 +107,42 @@ public class SerializableDatatype extends SerializableResource {
       throws SubStructElementSerializationException {
     ComplexDatatype complexDatatype = (ComplexDatatype) super.getAbstractDomain();
     for (Component component : complexDatatype.getComponents()) {
-      try {
-        Element componentElement = new Element("Component");
-        componentElement.addAttribute(new Attribute("confLength",
-            component.getConfLength() != null ? component.getConfLength() : ""));
-        componentElement
-            .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
-        componentElement.addAttribute(
-            new Attribute("name", component.getName() != null ? component.getName() : ""));
-        componentElement.addAttribute(new Attribute("maxLength",
-            component.getMaxLength() != null ? component.getMaxLength() : ""));
-        componentElement.addAttribute(new Attribute("minLength",
-            component.getMinLength() != null ? component.getMinLength() : ""));
-        componentElement.addAttribute(
-            new Attribute("text", component.getText() != null ? component.getText() : ""));
-        componentElement
-            .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
-        if (componentValuesetMap.containsKey(component.getId())) {
+      if(this.bindedComponents.contains(component.getId())) {
+        try {
+          Element componentElement = new Element("Component");
+          componentElement.addAttribute(new Attribute("confLength",
+              component.getConfLength() != null ? component.getConfLength() : ""));
           componentElement
-              .addAttribute(new Attribute("valueset", componentValuesetMap.get(component.getId())));
-        }
-        if (component.getRef() != null) {
-          if (datatypeNamesMap != null
-              && datatypeNamesMap.containsKey(component.getRef().getId())) {
-            componentElement.addAttribute(
-                new Attribute("datatype", datatypeNamesMap.get(component.getRef().getId())));
-          } else {
-            throw new DatatypeNotFoundException(component.getRef().getId());
+              .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
+          componentElement.addAttribute(
+              new Attribute("name", component.getName() != null ? component.getName() : ""));
+          componentElement.addAttribute(new Attribute("maxLength",
+              component.getMaxLength() != null ? component.getMaxLength() : ""));
+          componentElement.addAttribute(new Attribute("minLength",
+              component.getMinLength() != null ? component.getMinLength() : ""));
+          componentElement.addAttribute(
+              new Attribute("text", component.getText() != null ? component.getText() : ""));
+          componentElement
+              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
+          if (componentValuesetMap.containsKey(component.getId())) {
+            componentElement
+                .addAttribute(new Attribute("valueset", componentValuesetMap.get(component.getId())));
           }
+          if (component.getRef() != null) {
+            if (datatypeNamesMap != null
+                && datatypeNamesMap.containsKey(component.getRef().getId())) {
+              componentElement.addAttribute(
+                  new Attribute("datatype", datatypeNamesMap.get(component.getRef().getId())));
+            } else {
+              throw new DatatypeNotFoundException(component.getRef().getId());
+            }
+          }
+          componentElement.addAttribute(new Attribute("usage",
+              component.getUsage() != null ? component.getUsage().toString() : ""));
+          datatypeElement.appendChild(componentElement);
+        } catch (Exception exception) {
+          throw new SubStructElementSerializationException(exception, component);
         }
-        componentElement.addAttribute(new Attribute("usage",
-            component.getUsage() != null ? component.getUsage().toString() : ""));
-        datatypeElement.appendChild(componentElement);
-      } catch (Exception exception) {
-        throw new SubStructElementSerializationException(exception, component);
       }
     }
     return datatypeElement;

@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -36,6 +37,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
+  private Set<String> bindedGroupsAndSegmentRefs;
 
   /**
    * @param section
@@ -43,11 +45,12 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   public SerializableConformanceProfileRegistry(Section section, int level,
       ConformanceProfileRegistry conformanceProfileRegistry,
       Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap,
-      Map<String, String> valuesetNamesMap) {
+      Map<String, String> valuesetNamesMap, Set<String> bindedGroupsAndSegmentRefs) {
     super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
   }
 
   /*
@@ -69,7 +72,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
               SerializableConformanceProfile serializableConformanceProfile =
                   new SerializableConformanceProfile(conformanceProfile,
                       String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
-                      this.valuesetNamesMap, this.segmentsMap);
+                      this.valuesetNamesMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs);
               Element conformanceProfileElement = serializableConformanceProfile.serialize();
               if (conformanceProfileElement != null) {
                 conformanceProfileRegistryElement.appendChild(conformanceProfileElement);

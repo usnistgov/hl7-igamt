@@ -27,7 +27,7 @@
 			</xsl:if>
 			<xsl:if test="$columnDisplay.message.flavor = 'true'">
 				<xsl:element name="td">
-					<xsl:value-of select="@name" />
+					<xsl:value-of select="@label" />
 				</xsl:element>
 			</xsl:if>
 			<xsl:if test="$columnDisplay.message.name = 'true'">

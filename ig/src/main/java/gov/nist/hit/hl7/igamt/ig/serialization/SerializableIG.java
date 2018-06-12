@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.ig.serialization;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -43,21 +44,31 @@ public class SerializableIG extends SerializableAbstractDomain {
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private ExportConfiguration exportConfiguration;
+  private Set<String> bindedGroupsAndSegmentRefs;
+  private Set<String> bindedFields;
+  private Set<String> bindedSegments;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
+  private Set<String> bindedValueSets;
 
-  /**
-   * @param abstractDomain
-   * @param position
-   */
-  public SerializableIG(Ig ig, String position, Map<String, Datatype> datatypesMap,
-      Map<String, Valueset> valueSetsMap, Map<String, Segment> segmentsMap,
-      Map<String, ConformanceProfile> conformanceProfilesMap,
-      ExportConfiguration exportConfiguration) {
+  public SerializableIG(Ig ig, String position,
+      Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
+      ExportConfiguration exportConfiguration, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets) {
     super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.exportConfiguration = exportConfiguration;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
+    this.bindedFields = bindedFields;
+    this.bindedSegments = bindedSegments;
+    this.bindedDatatypes = bindedDatatypes;
+    this.bindedComponents = bindedComponents;
+    this.bindedValueSets = bindedValueSets;
     this.populateNamesMap();
   }
 
@@ -86,7 +97,9 @@ public class SerializableIG extends SerializableAbstractDomain {
               datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
               igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
               igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
-              igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry());
+              igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry(),
+              this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
+              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets);
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }

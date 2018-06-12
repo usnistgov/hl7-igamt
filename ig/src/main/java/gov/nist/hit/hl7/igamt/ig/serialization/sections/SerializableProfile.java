@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -49,6 +50,12 @@ public class SerializableProfile extends SerializableSection {
   private ConformanceProfileRegistry conformanceProfileRegistry;
   private ProfileComponentRegistry profileComponentRegistry;
   private CompositeProfileRegistry compositeProfileRegistry;
+  private Set<String> bindedGroupsAndSegmentRefs;
+  private Set<String> bindedFields;
+  private Set<String> bindedSegments;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
+  private Set<String> bindedValueSets;
 
   /**
    * @param section
@@ -60,7 +67,9 @@ public class SerializableProfile extends SerializableSection {
       DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
       ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
-      CompositeProfileRegistry compositeProfileRegistry) {
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets) {
     super(section, level);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
@@ -74,6 +83,12 @@ public class SerializableProfile extends SerializableSection {
     this.conformanceProfileRegistry = conformanceProfileRegistry;
     this.profileComponentRegistry = profileComponentRegistry;
     this.compositeProfileRegistry = compositeProfileRegistry;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
+    this.bindedFields = bindedFields;
+    this.bindedSegments = bindedSegments;
+    this.bindedDatatypes = bindedDatatypes;
+    this.bindedComponents = bindedComponents;
+    this.bindedValueSets = bindedValueSets;
   }
 
   /*
@@ -90,7 +105,9 @@ public class SerializableProfile extends SerializableSection {
             SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(),
                 datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
-                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
+                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
+                this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
+                this.bindedDatatypes, this.bindedComponents, this.bindedValueSets);
         if (childSection != null) {
           Element childSectionElement = childSection.serialize();
           if (childSectionElement != null) {

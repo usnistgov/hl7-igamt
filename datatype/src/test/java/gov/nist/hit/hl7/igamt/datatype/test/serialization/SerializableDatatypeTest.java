@@ -103,8 +103,10 @@ public class SerializableDatatypeTest {
     Datatype datatype = getComplexDatatype();
     Map<String, String> refDatatypeLabel = new HashMap<>();
     refDatatypeLabel.put(REF_COMPONENT1.getId(), TEST_COMPONENT1_REF_LABEL);
+    Set<String> bindedComponents = new HashSet<>();
+    bindedComponents.add(REF_COMPONENT1.getId());
     SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION, TEST_LEVEL,
-        refDatatypeLabel, new HashMap<String, String>());
+        refDatatypeLabel, new HashMap<String, String>(), bindedComponents);
     Element testElement = serializableDatatype.serialize();
     Element datatypeElement = testElement.getFirstChildElement("Datatype");
     Elements componentElements = datatypeElement.getChildElements("Component");

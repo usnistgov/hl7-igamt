@@ -91,8 +91,12 @@ public class SerializableConformanceProfileTest {
     Map<String,Segment> segmentsMap = new HashMap<>();
     segmentsMap.put("test_segmentref1_ref", segment1);
     segmentsMap.put("test_segmentref2_ref", segment2);
+    Set<String> bindedGroupsAndSegmentRefs = new HashSet<>();
+    bindedGroupsAndSegmentRefs.add(segment1.getId().getId());
+    bindedGroupsAndSegmentRefs.add(segment2.getId().getId());
+    bindedGroupsAndSegmentRefs.add(TEST_GROUP.getId());
     SerializableConformanceProfile serializableConformanceProfile =
-        new SerializableConformanceProfile(conformanceProfile, "1", TEST_LEVEL, valuesetMap, segmentsMap);
+        new SerializableConformanceProfile(conformanceProfile, "1", TEST_LEVEL, valuesetMap, segmentsMap, bindedGroupsAndSegmentRefs);
     Element testElement = serializableConformanceProfile.serialize();
     Element conformanceProfileElement = testElement.getFirstChildElement("ConformanceProfile");
     assertEquals(TEST_IDENTIFIER, conformanceProfileElement.getAttribute("identifier").getValue());

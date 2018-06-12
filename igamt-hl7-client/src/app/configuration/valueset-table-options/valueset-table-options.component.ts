@@ -27,6 +27,7 @@ export class ValuesetTableOptionsComponent implements OnInit {
   save() {
     this.tableOptionService.saveValuesetTableOptions(this.tableOptions).then(() => {
       console.log('saved successfully');
+      this.changed = false;
     }).catch(error => {
       console.log('unable to save table options: ' + error);
     });

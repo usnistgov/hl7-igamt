@@ -27,6 +27,7 @@ export class SegmentTableOptionsComponent implements OnInit {
   save() {
     this.tableOptionService.saveSegmentTableOptions(this.tableOptions).then(() => {
       console.log('saved successfully');
+      this.changed = false;
     }).catch(error => {
       console.log('unable to save table options: ' + error);
     });

@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -49,7 +50,9 @@ public class SerializableSectionFactory {
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
-      CompositeProfileRegistry compositeProfileRegistry) {
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets) {
     SerializableSection serializableSection = null;
     if (Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection) section, level);
@@ -57,10 +60,11 @@ public class SerializableSectionFactory {
       serializableSection = new SerializableProfile(section, level, datatypesMap, datatypeNamesMap,
           valuesetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap, valueSetRegistry,
           datatypeRegistry, segmentRegistry, conformanceProfileRegistry, profileComponentRegistry,
-          compositeProfileRegistry);
+          compositeProfileRegistry, bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
+          bindedDatatypes, bindedComponents, bindedValueSets);
     } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
-          datatypesMap, datatypeNamesMap, valuesetNamesMap);
+          datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
     } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
       serializableSection =
           new SerializableValuesetRegistry(section, level, valueSetRegistry, valuesetsMap);
@@ -69,7 +73,7 @@ public class SerializableSectionFactory {
           segmentsMap, datatypeNamesMap, valuesetNamesMap);
     } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       serializableSection = new SerializableConformanceProfileRegistry(section, level,
-          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap);
+          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, bindedGroupsAndSegmentRefs);
     } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
 
     } else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {

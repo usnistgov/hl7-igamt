@@ -27,6 +27,7 @@ export class ExportFontComponent implements OnInit {
   save() {
     this.exportFontService.saveExportFont(this.exportFontConfigurationDisplay).then(() => {
       console.log('saved successfully');
+      this.changed = false;
     }).catch(error => {
       console.log('unable to save table options: ' + error);
     });

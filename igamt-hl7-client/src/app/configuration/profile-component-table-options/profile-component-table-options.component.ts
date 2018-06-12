@@ -27,6 +27,7 @@ export class ProfileComponentTableOptionsComponent implements OnInit {
   save() {
     this.tableOptionService.saveProfileComponentTableOptions(this.tableOptions).then(() => {
       console.log('saved successfully');
+      this.changed = false;
     }).catch(error => {
       console.log('unable to save table options: ' + error);
     });

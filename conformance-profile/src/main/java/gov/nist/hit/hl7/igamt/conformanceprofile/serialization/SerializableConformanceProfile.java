@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +41,7 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
+  private Set<String> bindedGroupsAndSegmentRefs;
   private int level;
 
   /**
@@ -47,10 +49,11 @@ public class SerializableConformanceProfile extends SerializableResource {
    * @param position
    */
   public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
-      int level, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap) {
+      int level, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap, Set<String> bindedGroupsAndSegmentRefs) {
     super(conformanceProfile, position);
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
     this.level = level;
   }
 
@@ -73,9 +76,11 @@ public class SerializableConformanceProfile extends SerializableResource {
             && conformanceProfile.getChildren().size() > 0) {
           for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
             if (msgStructElm != null) {
-              Element msgStructElement = this.serializeMsgStructElement(msgStructElm, 0);
-              if (msgStructElement != null) {
-                conformanceProfileElement.appendChild(msgStructElement);
+              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
+                Element msgStructElement = this.serializeMsgStructElement(msgStructElm, 0);
+                if (msgStructElement != null) {
+                  conformanceProfileElement.appendChild(msgStructElement);
+                }
               }
             }
           }
@@ -135,7 +140,9 @@ public class SerializableConformanceProfile extends SerializableResource {
       segmentRefElement
           .addAttribute(new Attribute("position", String.valueOf(segmentRef.getPosition())));
       segmentRefElement
-          .addAttribute(new Attribute("name", segment.getName() != null ? segment.getName() : ""));
+          .addAttribute(new Attribute("ref", segment.getName() != null ? segment.getName() : ""));
+      segmentRefElement
+      .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
       segmentRefElement.addAttribute(new Attribute("description",
           segment.getDescription() != null ? segment.getDescription() : ""));
       segmentRefElement.addAttribute(

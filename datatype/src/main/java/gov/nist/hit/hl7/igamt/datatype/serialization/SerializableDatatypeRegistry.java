@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -35,17 +36,21 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
 
   /**
    * @param section
    */
   public SerializableDatatypeRegistry(Section section, int level, DatatypeRegistry datatypeRegistry,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap) {
+      Map<String, String> valuesetNamesMap, Set<String> bindedDatatypes, Set<String> bindedComponents) {
     super(section, level, datatypeRegistry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.bindedComponents = bindedComponents;
+    this.bindedDatatypes = bindedDatatypes;
   }
 
   @Override
@@ -56,17 +61,19 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
       if (datatypeRegistry != null) {
         if (!datatypeRegistry.getChildren().isEmpty()) {
           for (Link datatypeLink : datatypeRegistry.getChildren()) {
-            if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
-              Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
-              SerializableDatatype serializableDatatype =
-                  new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
-                      this.getChildLevel(), datatypeNamesMap, valuesetNamesMap);
-              Element datatypeElement = serializableDatatype.serialize();
-              if (datatypeElement != null) {
-                datatypeRegistryElement.appendChild(datatypeElement);
+            if(this.bindedDatatypes.contains(datatypeLink.getId().getId())) {
+              if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
+                Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
+                SerializableDatatype serializableDatatype =
+                    new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
+                        this.getChildLevel(), datatypeNamesMap, valuesetNamesMap, bindedComponents);
+                Element datatypeElement = serializableDatatype.serialize();
+                if (datatypeElement != null) {
+                  datatypeRegistryElement.appendChild(datatypeElement);
+                }
+              } else {
+                throw new DatatypeNotFoundException(datatypeLink.getId().getId());
               }
-            } else {
-              throw new DatatypeNotFoundException(datatypeLink.getId().getId());
             }
           }
         }
