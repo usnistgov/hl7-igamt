@@ -71,7 +71,7 @@ public class SerializableIG extends SerializableAbstractDomain {
     Ig igDocument = (Ig) this.getAbstractDomain();
     Element igDocumentElement = super.getElement(Type.IGDOCUMENT);
     SerializableDocumentMetadata serializableDocumentMetadata =
-        new SerializableDocumentMetadata(igDocument.getMetadata());
+        new SerializableDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(), igDocument.getPublicationInfo());
     if (serializableDocumentMetadata != null) {
       Element metadataElement = serializableDocumentMetadata.serialize();
       if (metadataElement != null) {

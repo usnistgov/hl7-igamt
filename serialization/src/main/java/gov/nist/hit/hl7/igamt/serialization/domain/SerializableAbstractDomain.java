@@ -60,38 +60,6 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
               : ""));
       element.addAttribute(new Attribute("name",
           this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
-      Element metadataElement = new Element("Metadata");
-      metadataElement.addAttribute(new Attribute("hl7Version",
-          this.abstractDomain.getDomainInfo() != null
-              && this.abstractDomain.getDomainInfo().getVersion() != null
-                  ? this.abstractDomain.getDomainInfo().getVersion()
-                  : ""));
-      String domainCompatibilityVersions = "";
-      if (this.abstractDomain.getDomainInfo() != null
-          && this.abstractDomain.getDomainInfo().getCompatibilityVersion() != null) {
-        domainCompatibilityVersions =
-            String.join(",", this.abstractDomain.getDomainInfo().getCompatibilityVersion());
-      }
-      metadataElement
-          .addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
-      metadataElement.addAttribute(new Attribute("scope",
-          this.abstractDomain.getDomainInfo() != null
-              && this.abstractDomain.getDomainInfo().getScope() != null
-                  ? this.abstractDomain.getDomainInfo().getScope().name()
-                  : ""));
-      metadataElement.addAttribute(new Attribute("publicationVersion",
-          this.abstractDomain.getPublicationInfo() != null
-              && this.abstractDomain.getPublicationInfo().getPublicationVersion() != null
-                  ? this.abstractDomain.getPublicationInfo().getPublicationVersion()
-                  : ""));
-      String publicationDate = "";
-      if (this.abstractDomain.getPublicationInfo() != null
-          && this.abstractDomain.getPublicationInfo().getPublicationDate() != null) {
-        publicationDate = DateSerializationUtil
-            .serializeDate(this.abstractDomain.getPublicationInfo().getPublicationDate());
-      }
-      metadataElement.addAttribute(new Attribute("publicationDate", publicationDate));
-      element.appendChild(metadataElement);
       element.addAttribute(new Attribute("id",
           this.abstractDomain.getId() != null && this.abstractDomain.getId().getId() != null
               ? this.abstractDomain.getId().getId()

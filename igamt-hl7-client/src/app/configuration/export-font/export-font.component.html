@@ -10,7 +10,7 @@
         <h2>Font type</h2>
         <hr/>
         <div *ngFor="let exportFont of exportFontConfigurationDisplay.exportFonts">
-          <div class="ui-g-12"><p-radioButton (onClick)="setChanged()" name="selectedExportFont" [value]="exportFont.value" [label]="exportFont.name" [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.exportFont"></p-radioButton></div>
+          <div class="ui-g-12"><p-radioButton (onClick)="setChanged()" name="selectedExportFont" [value]="exportFont" [label]="exportFont.name" [(ngModel)]="exportFontConfigurationDisplay.exportFontConfiguration.exportFont"></p-radioButton></div>
         </div>
       </p-card>
     </div>
