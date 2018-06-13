@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 import {FormGroup, Validators, ValidatorFn, AbstractControl, FormControl} from "@angular/forms";
 import {Types} from "../../../common/constants/types";
 import {CopyService} from "./copy.service";
+import {SectionsService} from "../../../service/sections/sections.service";
 @Component({
   selector: 'app-copy-element',
   templateUrl: './copy-element.component.html',
@@ -98,11 +99,14 @@ export class CopyElementComponent extends PrimeDialogAdapter{
 
   }
   submit(){
-    this.wrapper.igDocument=this.igDocumentId;
+
+    this.wrapper.igDocumentId=this.igDocumentId;
     this.wrapper.id=this.id;
     this.wrapper.name=this.name;
-    this.wrapper.ext=this.userExt;
-    console.log(this.namingForm);
+    if(this.type !== Types.TEXT.toString()){
+      this.wrapper.ext=this.userExt;
+
+    }
 
 
 

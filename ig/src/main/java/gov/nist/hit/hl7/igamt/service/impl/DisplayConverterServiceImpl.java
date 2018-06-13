@@ -124,6 +124,37 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     return t;
   }
 
+  @Override
+  public TreeNode createNarrativeNode(TextSection s) {
+    TreeNode t = new TreeNode();
+    TextSectionData sectionTree = new TextSectionData();
+    sectionTree.setLabel(s.getLabel());
+    sectionTree.setPosition(s.getPosition());
+    sectionTree.setType(s.getType());
+    t.setId(s.getId());
+
+    sectionTree.setDescription(s.getDescription());
+    t.setData(sectionTree);
+
+    if (s.getChildren() != null && !s.getChildren().isEmpty()) {
+
+      List<TreeNode> children = new ArrayList<TreeNode>();
+
+      for (TextSection section : s.getChildren()) {
+        if (s instanceof TextSection) {
+          TextSection sect = section;
+          children.add(createNarrativeNode(sect));
+        }
+
+      }
+      children.sort((h1, h2) -> h1.compareTo(h2));
+
+      t.setChildren(children);
+    }
+    return t;
+
+  }
+
 
 
   /**

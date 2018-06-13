@@ -589,20 +589,41 @@ export class IgDocumentEditComponent {
       )
   }
 
+  copySection(node){
+   console.log( this.tree._options);
+    this.tocService.cloneNode(node);
+   let ret =  this.tree.treeModel.getNodeById(node.id);
+    console.log(ret);
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.id,
+      name:node.data.data.label,
+      type:node.data.data.type,
 
-  convertList(list : any[]){
-    let ret : any[]=[];
-    for (let i=0; i<list.length;i++ ){
-      ret.push(list[i]);
-    }
-    return ret;
-  };
+    })
+      .subscribe(
+        result => {
+         console.log("result");
+         console.log(result);
+         console.log(node.parent);
+         console.log(node.parent.treeModel);
+         node.parent.data.children.push(result);
+          this.tree.treeModel.update();
+          this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes).then(x => {
+
+              console.log("updated");
+            }, error=>{
+              console.log("could not update IG")
+
+            }
+
+          )
 
 
+        }
+      )
 
-
-
-
+  }
 
 
 }

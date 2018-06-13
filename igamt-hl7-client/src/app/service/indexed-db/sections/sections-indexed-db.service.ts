@@ -55,11 +55,11 @@ export class SectionsIndexedDbService {
             resolve();
           }else{
 
-           this.saveNew(id,section,dnd, resolve, reject);
+           this.saveNew(id,section, resolve, reject);
 
           }
         }).catch((error) => {
-          this.saveNew(id,section,dnd, resolve, reject);
+          this.saveNew(id,section, resolve, reject);
 
         });
       } else {
@@ -77,11 +77,11 @@ export class SectionsIndexedDbService {
             resolve();
           }else{
 
-            this.saveNew(id,section,dnd, resolve, reject);
+            this.saveNew(id,section, resolve, reject);
 
           }
         }).catch((error) => {
-          this.saveNew(id,section,dnd, resolve, reject);
+          this.saveNew(id,section, resolve, reject);
 
         });
       } else {
@@ -95,11 +95,10 @@ export class SectionsIndexedDbService {
     return this.indexeddbService.changedObjectsDatabase.sections.toArray();
   }
 
-  private saveNew(id,section,dnd, resolve, reject){
+  private saveNew(id,section, resolve, reject){
 
     let s = new Section();
     s.section=section;
-    s.dnd=dnd;
     s.id=id;
 
     this.indexeddbService.changedObjectsDatabase.sections.put(s).then(() => {

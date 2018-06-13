@@ -10,21 +10,23 @@ import {Observable} from "rxjs";
 import {observable} from "rxjs/symbol/observable";
 import {forEach} from "@angular/router/src/utils/collection";
 import {SectionsService} from "../../../service/sections/sections.service";
+import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
 
 @Injectable()
 export  class SectionResolver implements Resolve<any>{
-  constructor(private http: HttpClient,private router : Router,private sectionService: SectionsService ) {
+  constructor(private http: HttpClient,private router : Router,private sectionService: SectionsService ,private dbService:IndexedDbService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
 
           let sectionId= route.params["sectionId"];
 
-          return this.sectionService.getSection(sectionId);
+
+
+          //return this.sectionService.getSection(sectionId);
+          return this.getSection(sectionId);
 
   }
-
-
 
   findSectionById(sections:any[], id){
 
@@ -60,6 +62,26 @@ export  class SectionResolver implements Resolve<any>{
       return null;
   }
 
+  getSection(id){
+    return new Promise((resolve, reject)=>{
+      this.dbService.getIgDocument().then(
+        x => {
+          console.log(x);
+          if(x.toc){
+            console.log(x.toc);
+            resolve(this.findSectionById(x.toc,id).data);
+          }else{
+            console.log("Could not find the toc ")
+          }
+        },
+        error=>{
+
+          console.log("Could not find the toc ")
+
+        }
+      )
+    })
+  };
 
 
 

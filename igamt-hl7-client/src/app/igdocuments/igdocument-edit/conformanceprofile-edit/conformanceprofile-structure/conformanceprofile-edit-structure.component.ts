@@ -31,7 +31,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
     conformanceprofileId:any;
-    conformanceprofileStructure:any;
+    conformanceprofileStructure:any={};
     usages:any;
     cUsages:any;
     textDefinitionDialogOpen:boolean = false;
@@ -53,7 +53,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     valuesetsLinks :any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    backup:any;
+    backup:any={};
 
     @ViewChild('editForm')
     private editForm: NgForm;

@@ -33,7 +33,6 @@ export class SectionComponent implements OnInit, WithSave {
   ngOnInit() {
 
     this.sp.data.map(data =>data.currentSection).subscribe(x=>{
-      console.log(this.section);
       this.backup=x;
       this.section=_.cloneDeep(this.backup);
     });

@@ -39,6 +39,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
   }
   compareHash(obj1:any, obj2:any):boolean{
+
     return Md5.hashStr(JSON.stringify(obj1))==Md5.hashStr(JSON.stringify(obj2))
   }
 

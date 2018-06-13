@@ -7,12 +7,16 @@ import {BehaviorSubject} from "rxjs";
 import * as _ from 'lodash';
 import {Types} from "../../../common/constants/types";
 import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
+import { UUID } from 'angular2-uuid';
+import {TreeNode} from "angular-tree-component";
 
 
 @Injectable()
 export  class TocService{
 
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
+  nodes :BehaviorSubject<any> =new BehaviorSubject(null);
+
   constructor(private dbService:IndexedDbService){
   }
 
@@ -22,6 +26,26 @@ export  class TocService{
   getActiveNode(){
 
     return  this.activeNode;
+  }
+  setNodes(nodes){
+
+      this.dbService.getIgDocument().then(
+        x => {
+          x.toc=nodes;
+          this.nodes.next(nodes);
+          this.dbService.updateIgDocument(x.id,nodes);
+
+        },
+        error => {
+
+          console.log("Could not find the toc ")
+
+        }
+      )
+  }
+  getNodes(){
+
+    return  this.nodes;
   }
 
   findDirectChildByType(nodes, type){
@@ -110,6 +134,9 @@ export  class TocService{
   })
   };
 
+
+
+
   getSegmentsList(){
     return this.getNodesList(Types.SEGMENTREGISTRY);
 
@@ -153,6 +180,7 @@ export  class TocService{
 
 
 
+
     var registry=  _.find(profile.children, function(node) { return type == node.data.type;});
 
     if(registry !=null){
@@ -167,6 +195,30 @@ export  class TocService{
 
       return null;
     }
+  }
+
+
+  cloneNode(treeNode: TreeNode){
+    let newData=_.cloneDeep(treeNode.data);
+    newData.id = UUID.UUID();
+    if(newData.data.id){
+      newData.id = UUID.UUID();
+
+    }
+    console.log(treeNode);
+
+    newData.data.label=treeNode.data.label+"Copy";
+
+    console.log(newData);
+    if(treeNode.data.children && treeNode.data.children.length>0) {
+      _.forEach(treeNode.data.children, function (child) {
+        newData.children.push(this.cloneNode(child));
+
+      })
+
+    }
+    treeNode.parent.data.children.push(newData);
+    treeNode.parent.treeModel.update();
   }
 
 

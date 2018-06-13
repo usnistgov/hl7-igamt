@@ -1,18 +1,20 @@
 <p-dialog [(visible)]="_visible">
   <p-header>
-    Choose Name of your {{name}} flavor
+    Choose Name of your flavor
   </p-header>
   <form #namingForm="ngForm" novalidate>
 
     <ng-container [ngSwitch]="type">
       <ng-container *ngSwitchCase="'TEXT'">
+        <input class="ui-g-12" name="name" id="name" required pInputText #label="ngModel"
+               [(ngModel)]="name">
       </ng-container>
       <ng-container *ngSwitchCase="'DATATYPE'">
-        <div class="ui-g" style="margin-top:30px; max-width: 300px; padding: 4px;">
+        <div class="ui-g" style="margin-top:30px; padding: 4px;">
 
 
-          <input class="ui-g-6" name="name" id="name" pInputText #label="ngModel"
-                 [(ngModel)]="name" class="ui-g-2" disabled>
+          <input class="ui-g-5" name="name" id="name" pInputText #label="ngModel"
+                 [(ngModel)]="name"  disabled>
           <span style=" border-bottom: 1px solid;
     width: 20px;"></span>
 
@@ -22,7 +24,20 @@
                  pInputText [(ngModel)]="userExt"
                  required minlength="4" maxlength="4"/>
 
-          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors">
+          <div class="ui-g-12">
+
+            <div class="ui-g-5">
+            *Convention: (LAAA)
+              <br>
+              L :Letter
+              <br>
+              A :Alphanumeric
+            </div>
+
+
+
+
+          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors" class="ui-g-offset-5">
 
 
             <div *ngIf="namingForm.controls.ext.errors.required">
@@ -47,26 +62,27 @@
 
           </div>
 
-
+          </div>
         </div>
+
       </ng-container>
       <ng-container *ngSwitchCase="'SEGMENT'">
 
-        <div class="ui-g" style="margin-top:30px; max-width: 300px; padding: 4px;">
+        <div class="ui-g" style="margin-top:30px; padding: 4px;">
 
 
-          <input class="ui-g-6" name="name" id="name" pInputText #label="ngModel"
-                 [(ngModel)]="name" class="ui-g-2" disabled>
+          <input class="ui-g-4" name="name" id="name" pInputText #label="ngModel"
+                 [(ngModel)]="name"  disabled>
           <span style=" border-bottom: 1px solid;
     width: 20px;"></span>
 
           <input class="ui-g-6" name="ext" id="ext" #ext="ngModel"
                  NamingDuplication
-                 [existing]="namingIndicators" [label]="name" type="text" placeholder="LAAA"
+                 [existing]="namingIndicators" [label]="name" type="text"
                  pInputText [(ngModel)]="userExt"
                  required minlength="4" maxlength="4"/>
 
-          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors">
+          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors"  class="ui-g-offset-4 ui-g-6">
 
 
             <div *ngIf="namingForm.controls.ext.errors.required">
@@ -95,16 +111,16 @@
         </div>
       </ng-container>
       <ng-container *ngSwitchCase="'VALUESET'">
-        <div class="ui-g" style="margin-top:30px; max-width: 300px; padding: 4px;">
+        <div class="ui-g" style="margin-top:30px; padding: 4px;">
 
-          <label> Binding Indentifier</label>
+          <label class="metadata-label ui-g-4"> Binding Indentifier</label>
           <input class="ui-g-6" name="bindingIdentifier" id="bindingIdentifier" #bindingIdentifier="ngModel"
                  NamingDuplication
                  [existing]="namingIndicators" [label]="name" type="text" placeholder="LAAA"
                  pInputText [(ngModel)]="name"
                  required/>
 
-          <div *ngIf="namingForm.controls.bindingIdentifier&& namingForm.controls.bindingIdentifier.errors">
+          <div *ngIf="namingForm.controls.bindingIdentifier&& namingForm.controls.bindingIdentifier.errors" class="ui-g-offset-4">
 
 
             <div *ngIf="namingForm.controls.bindingIdentifier.errors.required">
@@ -122,36 +138,36 @@
       </ng-container>
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
 
-        <div class="ui-g" style="margin-top:30px; max-width: 300px; padding: 4px;">
+        <div class="ui-g" style="margin-top:30px;  padding: 4px;">
 
 
           <input class="ui-g-6" name="name" id="name" pInputText #label="ngModel"
-                 [(ngModel)]="name" class="ui-g-2" disabled>
+                 [(ngModel)]="name" disabled>
           <span style=" border-bottom: 1px solid;
                    width: 20px;"></span>
 
-          <input class="ui-g-6" name="ext" id="ext" #ext="ngModel"
+          <input class="ui-g-4" name="ext" id="ext" #ext="ngModel"
                  NamingDuplication
                  [existing]="namingIndicators" [label]="name" type="text" placeholder="Message Identifier"
                  pInputText [(ngModel)]="userExt"
                  required minlength="4" maxlength="4"/>
 
-          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors">
+          <div *ngIf="namingForm.controls.ext&& namingForm.controls.ext.errors"  class="ui-g-offset-6 ui-g-6">
 
 
             <div *ngIf="namingForm.controls.ext.errors.required">
-              <p-message severity="error" text="extension is required"></p-message>
+              <p-message severity="error" text="Identifier is Required"></p-message>
             </div>
             <div *ngIf="namingForm.controls.ext.errors.maxlength">
-              <p-message severity="error" text="extension is too long"></p-message>
+              <p-message severity="error" text="Identifier is too long"></p-message>
 
             </div>
             <div *ngIf="namingForm.controls.ext.errors.minlength">
-              <p-message severity="error" text="extension is too short"></p-message>
+              <p-message severity="error" text="Identifier is too short"></p-message>
 
             </div>
             <div *ngIf="namingForm.controls.ext.errors.duplicated">
-              <p-message severity="error" text="extension is duplicated"></p-message>
+              <p-message severity="error" text="Identifier is duplicated"></p-message>
 
             </div>
             <div *ngIf="namingForm.controls.ext.errors.invalidConvention">
