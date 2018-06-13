@@ -12,15 +12,10 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
-
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
-import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import {SegmentsTocService} from "../../../../service/indexed-db/segments/segments-toc.service";
 import {TocService} from "../../service/toc.service";
 
 @Component({
@@ -66,10 +61,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                 private segmentsService : SegmentsService,
                 private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
-                private datatypesTocService : DatatypesTocService,
-                private segmentsTocService : SegmentsTocService,
-                private valuesetsTocService : ValuesetsTocService,
-                private conformanceProfilesTocService : ConformanceProfilesTocService, private tocService:TocService){
+                private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;

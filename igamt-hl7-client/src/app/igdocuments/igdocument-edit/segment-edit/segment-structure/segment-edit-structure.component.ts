@@ -12,9 +12,6 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
-
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
@@ -57,8 +54,7 @@ export class SegmentEditStructureComponent implements WithSave {
 
     constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
-                private datatypesTocService : DatatypesTocService,
-                private valuesetsTocService : ValuesetsTocService,private tocService:TocService){
+                private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;

@@ -3,21 +3,11 @@
  */
 
 import {Injectable}  from "@angular/core";
-import {Http} from "@angular/http";
 import {HttpClient} from "@angular/common/http";
 import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
-import {Observable} from "rxjs";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
-import {ConformanceProfilesTocService} from "../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import {TocDbService} from "../../service/indexed-db/toc-db.service";
-import {ValuesetsTocService} from "../../service/indexed-db/valuesets/valuesets-toc.service";
-import {SegmentsTocService} from "../../service/indexed-db/segments/segments-toc.service";
-import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
-import {CompositeProfilesTocService} from "../../service/indexed-db/composite-profiles/composite-profiles-toc.service";
-import {ProfileComponentsTocService} from "../../service/indexed-db/profile-components/profile-components-toc.service";
 import * as _ from 'lodash';
 import {Types} from "../../common/constants/types";
-import {NamesAndPositionsService} from "./service/names-and-positions.service";
 import {IgDocumentInfo} from "../../service/indexed-db/ig-document-info-database";
 
 @Injectable()
@@ -32,7 +22,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   valueSets: any[]=[];
 
 
-  constructor(private http: HttpClient,public indexedDbService: IndexedDbService,public saveService:TocDbService,public valuesetsTocService:ValuesetsTocService,public segmentsTocService:SegmentsTocService,public datatypesTocService :DatatypesTocService,public conformanceProfilesTocService:ConformanceProfilesTocService,public compositeProfilesTocService:CompositeProfilesTocService,public profileComponentsTocService:ProfileComponentsTocService, public namesAndPositionsService:NamesAndPositionsService) {
+  constructor(private http: HttpClient,public indexedDbService: IndexedDbService) {
 
   }
 
@@ -131,119 +121,8 @@ export  class IgdocumentEditResolver implements Resolve<any>{
       });
     })
 
-  }
+  };
 
-
-  getMergedIg(igId:any,resolve,reject){
-    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
-      this.ig=x;
-      console.log(this.ig.toc);
-      this.segments = [];
-      this.datatypes = [];
-      this.profileComponents = [];
-      this.conformanceProfiles = [];
-      this.compositeProfiles = [];
-      this.valueSets = [];
-
-      this.conformanceProfilesTocService.getAllFromAdded().then(cpsNodes => {
-        this.conformanceProfiles = cpsNodes;
-        console.log(this.conformanceProfiles);
-        if (this.conformanceProfiles.length > 0) {
-
-          this.addNodesByType(this.ig.toc, Types.CONFORMANCEPROFILEREGISTRY, this.conformanceProfiles);
-        }
-
-        this.profileComponentsTocService.getAllFromAdded().then(pcsNodes => {
-          this.profileComponents = pcsNodes;
-          console.log(this.profileComponents);
-          if (this.profileComponents.length > 0) {
-
-            this.addNodesByType(this.ig.toc, Types.PROFILECOMPONENTREGISTRY, this.profileComponents);
-          }
-
-          this.compositeProfilesTocService.getAllFromAdded().then(composites => {
-
-              this.compositeProfiles = composites;
-              console.log(this.compositeProfiles);
-              if (this.compositeProfiles.length > 0) {
-
-                this.addNodesByType(this.ig.toc, Types.COMPOSITEPROFILEREGISTRY, this.compositeProfiles);
-              }
-
-              this.segmentsTocService.getAllFromAdded().then(segments => {
-                this.segments = segments;
-                console.log(this.segments);
-                if (this.segments.length > 0) {
-
-                  this.addNodesByType(this.ig.toc, Types.SEGMENTREGISTRY, this.segments);
-                }
-
-                this.datatypesTocService.getAllFromAdded().then(datatypes => {
-
-                  this.datatypes = datatypes;
-                  console.log(this.datatypes);
-                  if (this.datatypes.length > 0) {
-
-                    this.addNodesByType(this.ig.toc, Types.DATATYPEREGISTRY, this.datatypes);
-                  }
-
-                  this.valuesetsTocService.getAllFromAdded().then(valueSets => {
-
-                    this.valueSets = valueSets;
-                    if (this.valueSets.length > 0) {
-
-                      this.addNodesByType(this.ig.toc, Types.VALUESETREGISTRY, this.valueSets);
-                    }
-                    console.log("resolving ig");
-                    console.log(this.ig);
-                    this.namesAndPositionsService.updateIgTocNames(this.ig,resolve,reject);
-                    resolve(this.ig);
-                  }, error => {
-                  })
-                }, error => {
-                })
-              }, error => {
-
-              })
-
-            }, error => {
-            }
-          )
-        }, error => {
-
-        })
-
-      }, error => {
-
-      });
-    });
-
-  }
-
-
-  initToc(igId:any,resolve,reject){
-    this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {
-              this.parseToc(x.toc);
-                  this.indexedDbService.initializeDatabase(igId).then(() => {
-                      this.saveService.bulkAddToc(this.valueSets, this.datatypes, this.segments, this.conformanceProfiles, this.profileComponents, this.compositeProfiles).then(
-                        () => {
-                          resolve(x);
-                        }, (error) => {
-                          console.log("Could not add elements to client db");
-                          reject();
-                        }
-                      );
-                    },
-                    (error) => {
-                      console.log("Could not load Ig : " + error);
-                      reject();
-                    }
-                  );
-
-              }
-
-            );
-  }
 
   initIgDocument(igId:any,resolve,reject){
     this.http.get<any>("api/igdocuments/" + igId + "/display").subscribe(x => {

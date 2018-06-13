@@ -20,22 +20,16 @@ export class CopyService {
   }
   copySegment(wrapper){
     return this.http.post('api/ig/copySegment', wrapper);
-
   }
   copyDatatype(wrapper){
     return this.http.post('api/ig/copyDatatype', wrapper);
-
   }
   copyValueSet(wrapper){
     return this.http.post('api/ig/copyValueSet', wrapper);
-
   }
 
   copySection(sectionWrapper){
-
-
     return this.http.post('api/ig/copySection', sectionWrapper);
-
   }
   copyElement(wrapper,type){
 
@@ -82,22 +76,22 @@ export class CopyService {
   }
 
   cloneSection(section: any){
-    let ret : any;
-    ret.id = UUID.UUID();
-    ret.description= section.description;
-    ret.type=Types.TEXT;
-    ret.position=0;
-    ret.label=section.label;
-    ret.children=[];
-    if(section.children && section.children.length>0) {
-      _.forEach(section.children, function (s) {
-        ret.children.push(this.cloneSection(s));
+        let ret : any;
+        ret.id = UUID.UUID();
+        ret.description= section.description;
+        ret.type=Types.TEXT;
+        ret.position=0;
+        ret.label=section.label;
+        ret.children=[];
+        if(section.children && section.children.length>0) {
+          _.forEach(section.children, function (s) {
+            ret.children.push(this.cloneSection(s));
 
-      })
+          })
 
-    }
-    return ret;
-    }
+        }
+        return ret;
+  }
 
 
 

@@ -11,7 +11,6 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
-import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
 
 
 
@@ -28,7 +27,7 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   @ViewChild('editForm')
   private editForm: NgForm;
 
-  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private conformanceProfilesTocService:ConformanceProfilesTocService,private tocService:TocService){
+  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService,private tocService:TocService){
     this.tocService.getActiveNode().subscribe(x=>{
       console.log(x);
       this.currentNode=x;
@@ -38,13 +37,10 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   ngOnInit() {
     this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
     this.route.data.map(data =>data.conformanceprofileMetadata).subscribe(x=>{
-      this.conformanceProfilesTocService.getAll().then(conformanceprofiles=>{
-        console.log(conformanceprofiles);
         this.backup=x;
         this.conformanceprofileMetadata=_.cloneDeep(this.backup);
       });
 
-    });
   }
 
   reset(){

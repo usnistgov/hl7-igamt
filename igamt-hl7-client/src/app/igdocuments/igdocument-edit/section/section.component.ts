@@ -50,11 +50,7 @@ export class SectionComponent implements OnInit, WithSave {
        }
       }
     );
-    let s= new Section();
-    s.id=this.section.id;
-    s.section=this.section;
-    return this.sectionsService.updateContent(this.section.id, this.section,null);
-
+   return null;
   }
   reset(){
     this.section=_.cloneDeep(this.backup);

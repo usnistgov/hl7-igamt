@@ -25,6 +25,8 @@ import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-prede
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from "primeng/components/message/message";
 import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
+import { DatatypeCrossRefComponent } from './datatype-cross-ref/datatype-cross-ref.component';
+import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
 
 @NgModule({
   imports: [
@@ -42,11 +44,11 @@ import {NamingConventionModule} from "../../../common/naming-convention/naming-c
     TableModule,
     MessageModule,
     NamingConventionModule,
-      FroalaEditorModule.forRoot(),
-      FroalaViewModule.forRoot()
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot()
   ],
-  providers : [],
-  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent],
+  providers : [DatatypeCrossRefResolver],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

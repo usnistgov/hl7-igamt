@@ -50,7 +50,6 @@ import {TableModule} from "primeng/components/table/table";
 import { AddDatatypeComponent } from './add-datatype/add-datatype.component';
 import { AddValueSetComponent } from './add-value-set/add-value-set.component';
 import { CopyElementComponent } from './copy-element/copy-element.component';
-import {NamesAndPositionsService} from "./service/names-and-positions.service";
 import {SplitButtonModule} from "primeng/components/splitbutton/splitbutton";
 import {ExportService} from "./service/export.service";
 import {CopyService} from "./copy-element/copy.service";
@@ -106,7 +105,7 @@ import {NamingConventionModule} from "../../common/naming-convention/naming-conv
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,NamesAndPositionsService,ExportService,CopyService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

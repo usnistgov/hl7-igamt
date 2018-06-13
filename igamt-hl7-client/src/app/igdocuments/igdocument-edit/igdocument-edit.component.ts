@@ -15,8 +15,7 @@ import {AddSegmentComponent} from "./add-segment/add-segment.component";
 import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
 import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 import {CopyElementComponent} from "./copy-element/copy-element.component";
-import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
-import {TocDbService} from "../../service/indexed-db/toc-db.service";
+
 import {ExportService} from "./service/export.service";
 import {Types} from "../../common/constants/types";
 import {SectionsService} from "../../service/sections/sections.service";
@@ -105,13 +104,11 @@ export class IgDocumentEditComponent {
             console.log(from);
 
 
-            this.sectionService.updateDnD(from.id,from.data, {from:to.id,to:node.id,position:from.data.data.position}).then(res=>{
 
               TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
               this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
 
 
-            });
           }
           if(from.data.data.type== Types.PROFILE && this.isOrphan(to)) {
             console.log(from);
@@ -141,7 +138,7 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
 
     router.events.subscribe(event => {
       console.log(event);
