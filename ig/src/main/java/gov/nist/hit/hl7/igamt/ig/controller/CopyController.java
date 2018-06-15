@@ -81,7 +81,7 @@ public class CopyController {
       clone.setId(new CompositeKey());
       clone.setName(wrapper.getName());
       clone = conformanceProfileService.save(clone);
-      return displayConverter.createConformanceProfileNode(clone);
+      return displayConverter.createConformanceProfileNode(clone, 0);
     } else {
       return null;
 
@@ -104,7 +104,7 @@ public class CopyController {
       clone.setName(segment.getName());
       clone.setExt(wrapper.getExt());
       clone = segmentService.save(clone);
-      return displayConverter.createSegmentNode(clone);
+      return displayConverter.createSegmentNode(clone, 0);
     } else {
       return null;
 
@@ -129,7 +129,7 @@ public class CopyController {
       clone.setName(datatype.getName());
       clone.setExt(wrapper.getExt());
       clone = datatypeService.save(clone);
-      return displayConverter.createDatatypeNode(clone);
+      return displayConverter.createDatatypeNode(clone, 0);
     } else {
       return null;
     }
@@ -147,7 +147,7 @@ public class CopyController {
       clone.setUsername(username);
       clone.setId(new CompositeKey());
       clone.setBindingIdentifier(wrapper.getName());
-      return displayConverter.createValueSetsNode(clone);
+      return displayConverter.createValueSetNode(clone, 0);
     } else {
       return null;
     }

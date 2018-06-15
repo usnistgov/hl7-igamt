@@ -1,0 +1,91 @@
+<h1>Conformance Profile Table Options</h1>
+<p-card>
+  <p-header>
+    <h2>
+      <p-checkbox [(ngModel)]="tableOptions.includeMessageTable" binary="true"
+                  onChange="setChanged()" label="Include Conformance Profile Table Options"></p-checkbox>
+    </h2>
+  </p-header>
+
+  <div>
+    <!-- Usages card -->
+    <div>
+      <p-card>
+        <h4>Usages</h4>
+        <hr/>
+        <p>Segments/Groups to Export:</p>
+        <div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsMessageExport.r"
+              onChange="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsMessageExport.re"
+              onChange="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsMessageExport.c"
+              onChange="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsMessageExport.o"
+              onChange="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentORGroupsMessageExport.x"
+              onChange="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+      <p-card>
+        <h4>Metadata</h4>
+        <hr/>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadatatableOptions.hl7version"
+              onChange="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadatatableOptions.publicationDate"
+              onChange="setChanged()" label="Publication Date" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadatatableOptions.publicationVersion"
+              onChange="setChanged()" label="Publication Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadatatableOptions.scope"
+              onChange="setChanged()" label="Scope" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Columns card-->
+    <div flex>
+      <p-card>
+        <h4>Columns</h4>
+        <hr/>
+        <div layout="column" style="width: 100%">
+          <div *ngFor="let column of tableOptions.columns">
+            <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                        (onChange)="setChanged()" [label]="column.name">
+            </p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <p-footer>
+    <p-button label="Save" (onClick)="save($event)" [disabled]="!changed"></p-button>
+  </p-footer>
+</p-card>

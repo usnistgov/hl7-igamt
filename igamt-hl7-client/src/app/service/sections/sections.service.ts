@@ -31,8 +31,28 @@ export class SectionsService {
   }
 
   public saveSection(section: Section): Promise<void> {
+
+
     return this.sectionsIndexedDbService.saveSection(section);
   }
+
+  public getAllSections(section: Section): Promise<any> {
+
+    return this.sectionsIndexedDbService.getAll();
+  }
+
+  public updateContent(id,section,dnd){
+
+    return this.sectionsIndexedDbService.updateContent(id,section,dnd);
+  }
+
+  public updateDnD(id,section,dnd){
+
+    return this.sectionsIndexedDbService.updateDnD(id,section,dnd);
+
+  }
+
+
 
 
 }

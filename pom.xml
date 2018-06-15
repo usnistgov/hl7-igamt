@@ -37,9 +37,15 @@
 				<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.8.0.RELEASE</version>
+			<version>2.0.8.RELEASE</version>
 		</dependency>
 		
+				<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-commons</artifactId>
+    <version>2.0.8.RELEASE</version>
+</dependency>
+
 					
 			 <dependency>
             <groupId>de.flapdoodle.embed</groupId>
@@ -99,11 +105,12 @@
 		<module>valueset</module>
 		<module>bootstrap</module>
 		<module>conformance-profile</module>
-		<module>export</module>
 		<module>serialization</module>
 		<module>segment</module>
   		<module>datatype-library</module>
-  		<module>igamt-auth</module>
+   		<module>igamt-auth</module>
   		<module>x-reference</module>
-	</modules>
-</project>
+    	<module>export-configuration</module>
+  		<module>export</module>
+</modules>
+ </project>

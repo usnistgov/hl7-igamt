@@ -2,6 +2,9 @@ import Dexie from 'dexie';
 
 export class IgDocumentInfo {
   id?: string;
+  toc?:any[];
+  metadata:any;
+
   constructor(id) {
     this.id = id;
   }

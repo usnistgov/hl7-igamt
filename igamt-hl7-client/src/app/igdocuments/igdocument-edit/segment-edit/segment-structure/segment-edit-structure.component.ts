@@ -18,6 +18,8 @@ import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valu
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
+import {TocService} from "../../service/toc.service";
+import {Types} from "../../../../common/constants/types";
 
 @Component({
     selector : 'segment-edit',
@@ -56,7 +58,7 @@ export class SegmentEditStructureComponent implements WithSave {
     constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private datatypesTocService : DatatypesTocService,
-                private valuesetsTocService : ValuesetsTocService){
+                private valuesetsTocService : ValuesetsTocService,private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -75,8 +77,8 @@ export class SegmentEditStructureComponent implements WithSave {
 
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
             console.log(x);
-            this.datatypesTocService.getAll().then((dtTOCdata) => {
-                let listTocDTs:any = dtTOCdata[0];
+            this.tocService.getDataypeList().then((dtTOCdata) => {
+                let listTocDTs:any = dtTOCdata;
                 for(let entry of listTocDTs){
                     var treeObj = entry.data;
 
@@ -102,8 +104,8 @@ export class SegmentEditStructureComponent implements WithSave {
                 }
 
 
-                this.valuesetsTocService.getAll().then((valuesetTOCdata) => {
-                    let listTocVSs: any = valuesetTOCdata[0];
+                this.tocService.getValueSetList().then((valuesetTOCdata) => {
+                    let listTocVSs: any = valuesetTOCdata;
 
                     for (let entry of listTocVSs) {
                         var treeObj = entry.data;
