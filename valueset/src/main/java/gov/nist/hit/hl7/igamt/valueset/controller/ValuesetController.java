@@ -28,25 +28,25 @@ public class ValuesetController {
 
   @RequestMapping(value = "/api/valuesets/{id}/structure", method = RequestMethod.GET, produces = {"application/json"})
 
-  public @ResponseBody ValuesetStructure getvaluesetstructure(@PathVariable("id") String id, Authentication authentication) {
+  public @ResponseBody ValuesetStructure getValuesetStructure(@PathVariable("id") String id, Authentication authentication) {
     Valueset valueset = valuesetService.findLatestById(id);
     return valuesetService.convertDomainToStructure(valueset);
   }
 
   @RequestMapping(value = "/api/valuesets/{id}/metadata", method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody ValuesetMetadata getDatatypeMetadata(@PathVariable("id") String id, Authentication authentication) {
+  public @ResponseBody ValuesetMetadata getValuesetMetadata(@PathVariable("id") String id, Authentication authentication) {
     Valueset valueset = valuesetService.findLatestById(id);
     return valuesetService.convertDomainToMetadata(valueset);
   }
 
   @RequestMapping(value = "/api/valuesets/{id}/predef", method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody ValuesetPreDef getDatatypePredef(@PathVariable("id") String id, Authentication authentication) {
+  public @ResponseBody ValuesetPreDef getValuesetPredef(@PathVariable("id") String id, Authentication authentication) {
     Valueset valueset = valuesetService.findLatestById(id);
     return valuesetService.convertDomainToPredef(valueset);
   }
 
   @RequestMapping(value = "/api/valuesets/{id}/postdef", method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody ValuesetPostDef getDatatypePostdef(@PathVariable("id") String id, Authentication authentication) {
+  public @ResponseBody ValuesetPostDef getValuesetPostdef(@PathVariable("id") String id, Authentication authentication) {
     Valueset valueset = valuesetService.findLatestById(id);
     return valuesetService.convertDomainToPostdef(valueset);
   }
