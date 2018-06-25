@@ -61,31 +61,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-jwt</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>conformance-profile</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>valueset</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>ig</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>datatype-library</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-
-		</dependency>
-
+ 
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-config</artifactId>
@@ -95,12 +71,6 @@
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-base</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-
-		</dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>igamt-auth</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 

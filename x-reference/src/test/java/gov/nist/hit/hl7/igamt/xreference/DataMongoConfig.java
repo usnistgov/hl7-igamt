@@ -22,7 +22,7 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   Environment env;
 
 
-  private static final String DB_NAME = "igamt";
+  private static final String DB_NAME = "igamt-hl7";
   private static final String DB_HOST = "localhost";
   private static final String DB_PORT = "27017";
 

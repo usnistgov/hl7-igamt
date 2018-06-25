@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -8,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.mongodb.BasicDBObject;
+
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -15,6 +21,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 
 
 @RestController
@@ -22,6 +29,9 @@ public class SegmentController {
 
   @Autowired
   SegmentService segmentService;
+
+  @Autowired
+  private XRefService xRefService;
 
   public SegmentController() {
     // TODO Auto-generated constructor stub
@@ -80,4 +90,25 @@ public class SegmentController {
     return segmentService.convertDomainToPostdef(segment);
 
   }
+
+  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody PostDef getSegmentCrossRef(@PathVariable("id") String id,
+      Set<String> conformanceProfileId, Set<String> compositeProfileId,
+      Authentication authentication) {
+    Segment segment = segmentService.findLatestById(id);
+    return segmentService.convertDomainToPostdef(segment);
+
+  }
+
+  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody Map<String, List<BasicDBObject>> getDatatypeCrossRef(
+      @PathVariable("id") String id, Set<String> conformanceProfileIds,
+      Authentication authentication) {
+    Map<String, List<BasicDBObject>> results =
+        xRefService.getSegmentReferences(id, conformanceProfileIds);
+    return results;
+  }
+
 }
