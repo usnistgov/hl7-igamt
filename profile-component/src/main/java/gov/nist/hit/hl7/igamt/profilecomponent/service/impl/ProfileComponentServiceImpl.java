@@ -35,7 +35,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public ProfileComponent findByCompositeKey(CompositeKey compositeKey) {
-    return profileComponentRepository.findOne(compositeKey);
+    return profileComponentRepository.findById(compositeKey).get();
   }
 
   @Override
@@ -68,7 +68,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public void delete(CompositeKey id) {
-    profileComponentRepository.delete(id);
+    profileComponentRepository.deleteById(id);
   }
 
   @Override

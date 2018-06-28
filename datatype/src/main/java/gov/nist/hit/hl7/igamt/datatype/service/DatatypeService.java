@@ -79,4 +79,5 @@ public interface DatatypeService {
   List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 
   public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
+
 }

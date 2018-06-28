@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -78,9 +79,9 @@ public class IgServiceImpl implements IgService {
   ValuesetService valueSetService;
 
   @Override
-  public Ig findById(CompositeKey id) {
+  public Optional<Ig> findById(CompositeKey id) {
     // TODO Auto-generated method stub
-    return igRepository.findOne(id);
+    return igRepository.findById(id);
   }
 
   @Override
@@ -92,7 +93,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public void delete(CompositeKey id) {
     // TODO Auto-generated method stub
-    igRepository.delete(id);
+    igRepository.deleteById(id);
   }
 
   @Override

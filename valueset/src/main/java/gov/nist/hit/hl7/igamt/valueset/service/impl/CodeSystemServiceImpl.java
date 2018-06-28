@@ -36,7 +36,7 @@ public class CodeSystemServiceImpl implements CodeSystemService {
 
   @Override
   public CodeSystem findById(CompositeKey id) {
-    return codeSystemRepository.findOne(id);
+    return codeSystemRepository.findById(id).get();
   }
 
   @Override
@@ -64,7 +64,7 @@ public class CodeSystemServiceImpl implements CodeSystemService {
 
   @Override
   public void delete(CompositeKey id) {
-    codeSystemRepository.delete(id);
+    codeSystemRepository.deleteById(id);
   }
 
   @Override
