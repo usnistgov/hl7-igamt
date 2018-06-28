@@ -9,6 +9,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -91,23 +92,15 @@ public class SegmentController {
 
   }
 
-  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.GET,
-      produces = {"application/json"})
-  public @ResponseBody PostDef getSegmentCrossRef(@PathVariable("id") String id,
-      Set<String> conformanceProfileId, Set<String> compositeProfileId,
-      Authentication authentication) {
-    Segment segment = segmentService.findLatestById(id);
-    return segmentService.convertDomainToPostdef(segment);
 
-  }
-
-  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.POST,
       produces = {"application/json"})
   public @ResponseBody Map<String, List<BasicDBObject>> getDatatypeCrossRef(
-      @PathVariable("id") String id, Set<String> conformanceProfileIds,
+      @PathVariable("id") String id,
+      @RequestParam("filterConformanceProfileIds") Set<String> filterConformanceProfileIds,
       Authentication authentication) {
     Map<String, List<BasicDBObject>> results =
-        xRefService.getSegmentReferences(id, conformanceProfileIds);
+        xRefService.getSegmentReferences(id, filterConformanceProfileIds);
     return results;
   }
 
