@@ -34,20 +34,37 @@ public abstract class XRefService {
 
   /**
    * 
-   * @param datatype
-   * @return the references a datatype from a collection of segment ids and datatype ids
+   * @param id: id of the datatype
+   * @param filterDatatypeIds: filter list of datatypes ids. If null, no filtering which means all
+   *        datatypes referencing the datatype will be returned
+   * @param filterSegmentIds:filter list of segment ids. If null, no filtering which means all
+   *        segments referencing the datatype will be returned
+   * @return
    */
   public abstract Map<String, List<BasicDBObject>> getDatatypeReferences(String id,
-      Set<String> datatypeIds, Set<String> segmentIds);
+      Set<String> filterDatatypeIds, Set<String> filterSegmentIds);
 
   /**
    * 
-   * @param id
-   * @param conformanceProfileIds
+   * @param id: if of the segment
+   * @param filterConformanceProfileIds: filter list of conformance profile Ids. If null, no
+   *        filtering which means all conformance profiles referencing the segment will be returned
    * @return the references a segment from a collection of conformance profile ids
    */
   public abstract Map<String, List<BasicDBObject>> getSegmentReferences(String id,
-      Set<String> conformanceProfileIds);
+      Set<String> filterConformanceProfileIds);
+
+  /**
+   * 
+   * @param id: id of the value set
+   * @param filterDatatypeIds: filter list of datatypes ids. If null, no filtering which means all
+   *        datatypes referencing the valueset will be returned
+   * @param filterSegmentIds:filter list of segment ids. If null, no filtering which means all
+   *        segments referencing the valueset will be returned
+   * @return
+   */
+  public abstract Map<String, List<BasicDBObject>> getValueSetReferences(String id,
+      Set<String> filterDatatypeIds, Set<String> filterSegmentIds);
 
 
 }

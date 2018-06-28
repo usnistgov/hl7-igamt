@@ -110,4 +110,14 @@ public class XRefServiceTest {
     assertTrue(references.keySet().contains(XRefService.CONFORMANCE_PROFILE));
     assertTrue(references.get(XRefService.CONFORMANCE_PROFILE).size() == 1);
   }
+
+  @Test
+  public void testGetValuesetReferencesBySegment() throws Exception {
+    java.util.Map<String, List<BasicDBObject>> references = service.getValueSetReferences(
+        "565f3ab4d4c6e52cfd437b91", null, new HashSet<>(Arrays.asList("565f3ab4d4c6e52cfd438638")));
+    assertTrue(!references.isEmpty());
+    assertTrue(references.keySet().contains(XRefService.SEGMENT));
+    assertTrue(references.get(XRefService.SEGMENT).size() == 1);
+  }
+
 }

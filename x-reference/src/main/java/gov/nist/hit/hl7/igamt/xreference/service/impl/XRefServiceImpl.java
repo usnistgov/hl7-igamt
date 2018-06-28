@@ -46,18 +46,16 @@ public class XRefServiceImpl extends XRefService {
   private MongoTemplate mongoTemplate;
 
 
-  /**
-   * 
-   */
+
   @Override
-  public Map<String, List<BasicDBObject>> getDatatypeReferences(String id, Set<String> datatypeIds,
-      Set<String> segmentIds) {
+  public Map<String, List<BasicDBObject>> getDatatypeReferences(String id,
+      Set<String> filterDatatypeIds, Set<String> filterSegmentIds) {
     Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
-    List<BasicDBObject> datatypes = getDatatypeRefsByDatatypes(id, datatypeIds);
+    List<BasicDBObject> datatypes = getDatatypeRefsByDatatypes(id, filterDatatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }
-    List<BasicDBObject> segments = getDatatypeRefsBySegments(id, segmentIds);
+    List<BasicDBObject> segments = getDatatypeRefsBySegments(id, filterSegmentIds);
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
@@ -69,20 +67,26 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the datatypes referencing the data type with id at a component level
    */
-  private List<BasicDBObject> getDatatypeRefsByDatatypes(String id, Set<String> datatypeIds) {
-    if (datatypeIds != null && !datatypeIds.isEmpty()) {
-      Aggregation aggregation =
-          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(datatypeIds))),
+  private List<BasicDBObject> getDatatypeRefsByDatatypes(String id, Set<String> filterDatatypeIds) {
+    Aggregation aggregation = null;
+    if (filterDatatypeIds != null && !filterDatatypeIds.isEmpty()) {
+      aggregation =
+          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterDatatypeIds))),
               match(Criteria.where("components.ref._id").is(new ObjectId(id))),
               project(fields("name", "ext", "domainInfo"))
                   .and(filter("components").as("component")
                       .by(valueOf("component.ref._id").equalToValue(new ObjectId(id))))
                   .as("components"));
-      List<BasicDBObject> results =
-          mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults();
-      return results;
+    } else {
+      aggregation = newAggregation(match(Criteria.where("components.ref._id").is(new ObjectId(id))),
+          project(fields("name", "ext", "domainInfo"))
+              .and(filter("components").as("component")
+                  .by(valueOf("component.ref._id").equalToValue(new ObjectId(id))))
+              .as("components"));
     }
-    return null;
+    List<BasicDBObject> results =
+        mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults();
+    return results;
   }
 
 
@@ -91,27 +95,33 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the segments referencing a data type at a field level
    */
-  private List<BasicDBObject> getDatatypeRefsBySegments(String id, Set<String> segmentIds) {
-    if (segmentIds != null && !segmentIds.isEmpty()) {
-      Aggregation aggregation =
-          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(segmentIds))),
+  private List<BasicDBObject> getDatatypeRefsBySegments(String id, Set<String> filterSegmentIds) {
+    Aggregation aggregation = null;
+    if (filterSegmentIds != null && !filterSegmentIds.isEmpty()) {
+      aggregation =
+          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterSegmentIds))),
               match(Criteria.where("children.ref._id").is(new ObjectId(id))),
               project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
                   .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
-      List<BasicDBObject> results =
-          mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults();
-      return results;
+
+    } else {
+      aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))),
+          project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
+              .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
     }
-    return null;
+    List<BasicDBObject> results =
+        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults();
+    return results;
   }
+
 
 
   @Override
   public Map<String, List<BasicDBObject>> getSegmentReferences(String id,
-      Set<String> conformanceProfileIds) {
+      Set<String> filterConformanceProfileIds) {
     Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
     List<BasicDBObject> conformanceProfiles =
-        getSegmentReferencesByConformanceProfiles(id, conformanceProfileIds);
+        getSegmentReferencesByConformanceProfiles(id, filterConformanceProfileIds);
     if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
       results.put(CONFORMANCE_PROFILE, conformanceProfiles);
     }
@@ -129,12 +139,28 @@ public class XRefServiceImpl extends XRefService {
    * @return
    */
   public List<BasicDBObject> getSegmentReferencesByConformanceProfiles(String id,
-      Set<String> conformanceProfileIds) {
-    if (conformanceProfileIds != null && !conformanceProfileIds.isEmpty()) {
-      ObjectId objId = new ObjectId(id);
+      Set<String> filterConformanceProfileIds) {
+    Aggregation aggregation = null;
+    ObjectId objId = new ObjectId(id);
+
+    if (filterConformanceProfileIds != null && !filterConformanceProfileIds.isEmpty()) {
       // from bydirect segmentRefs
-      Aggregation aggregation =
-          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(conformanceProfileIds))),
+      aggregation = newAggregation(
+          match(Criteria.where("_id._id").in(toObjectIds(filterConformanceProfileIds))),
+          match(new Criteria().orOperator(Criteria.where("children.ref._id").is(objId),
+              Criteria.where("children.children.ref._id").is(objId),
+              Criteria.where("children.children.children.ref._id").is(objId),
+              Criteria.where("children.children.children.children.ref._id").is(objId),
+              Criteria.where("children.children.children.children.children.ref._id").is(objId),
+              Criteria.where("children.children.children.children.children.children.ref._id")
+                  .is(objId))),
+          project(fields("identifier", "messageType", "name", "structID", "event", "domainInfo"))
+              .and(filter("children").as("child").by(valueOf("child.ref._id").equalToValue(objId)))
+              .as("children"));
+
+    } else {
+      aggregation =
+          newAggregation(
               match(new Criteria().orOperator(Criteria.where("children.ref._id").is(objId),
                   Criteria.where("children.children.ref._id").is(objId),
                   Criteria.where("children.children.children.ref._id").is(objId),
@@ -148,15 +174,15 @@ public class XRefServiceImpl extends XRefService {
                       .and(filter("children").as("child")
                           .by(valueOf("child.ref._id").equalToValue(objId)))
                       .as("children"));
-
-      List<BasicDBObject> results = new ArrayList<BasicDBObject>();
-      results.addAll(mongoTemplate.aggregate(aggregation, "conformanceProfile", BasicDBObject.class)
-          .getMappedResults());
-      System.out.println(results);
-
-      return results;
     }
-    return null;
+
+
+    System.out.println(aggregation);
+    List<BasicDBObject> results = new ArrayList<BasicDBObject>();
+    results.addAll(mongoTemplate.aggregate(aggregation, "conformanceProfile", BasicDBObject.class)
+        .getMappedResults());
+    System.out.println(results);
+    return results;
   }
 
 
@@ -167,6 +193,59 @@ public class XRefServiceImpl extends XRefService {
       objIds.add(new ObjectId(id));
     }
     return objIds;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.xreference.service.XRefService#getValueSetReferences(java.lang.String,
+   * java.util.Set, java.util.Set)
+   */
+  @Override
+  public Map<String, List<BasicDBObject>> getValueSetReferences(String id, Set<String> datatypeIds,
+      Set<String> segmentIds) {
+    Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
+    // List<BasicDBObject> datatypes = getDatatypeRefsByDatatypes(id, datatypeIds);
+    // if (datatypes != null && !datatypes.isEmpty()) {
+    // results.put(DATATYPE, datatypes);
+    // }
+    List<BasicDBObject> segments = getValueSetRefsBySegments(id, segmentIds);
+    if (segments != null && !segments.isEmpty()) {
+      results.put(SEGMENT, segments);
+    }
+    return results;
+  }
+
+
+  /**
+   * 
+   * @param id
+   * @return the segments referencing a data type at a field level
+   */
+  private List<BasicDBObject> getValueSetRefsBySegments(String id, Set<String> segmentIds) {
+    Aggregation aggregation = null;
+    if (segmentIds != null && !segmentIds.isEmpty()) {
+
+      aggregation = newAggregation(match(Criteria.where("_id._id").in(toObjectIds(segmentIds))),
+          match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)),
+          project(fields("name", "ext", "domainInfo"))
+              .and(filter("children").as("field").by(valueOf("field.position").equalToValue(1)))
+              .as("children"));
+
+    } else {
+      aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))),
+          project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
+              .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
+    }
+    System.out.println(aggregation);
+
+    List<BasicDBObject> results =
+        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults();
+
+    System.out.println(results);
+
+    return results;
   }
 
 
