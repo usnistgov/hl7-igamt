@@ -8,8 +8,10 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -23,8 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSFile;
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 
 @RestController
@@ -33,6 +34,9 @@ public class FileStorageController {
 
   @Autowired
   FileStorageService storageService;
+
+  @Autowired
+  GridFsOperations operations;
 
 
 
@@ -58,9 +62,8 @@ public class FileStorageController {
         DBObject metaData = new BasicDBObject();
         metaData.put("accountId", authentication.getPrincipal().toString());
         String generatedName = UUID.randomUUID().toString() + "." + extension;
-        GridFSFile fsFile =
-            storageService.store(in, generatedName, part.getContentType(), metaData);
-        GridFSDBFile dbFile = storageService.findOne(fsFile.getId().toString());
+        ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
+        GridFSFile dbFile = storageService.findOne(fsFile.toString());
         return new UploadFileResponse(
             HttpUtil.getImagesRootUrl(request) + "/file?name=" + dbFile.getFilename());
       }
@@ -78,11 +81,12 @@ public class FileStorageController {
   public ResponseEntity<InputStreamResource> getByName(@RequestParam("name") String filename)
       throws UploadImageFileException {
     try {
-      GridFSDBFile dbFile = storageService.findOneByFilename(filename);
+      GridFSFile dbFile = storageService.findOneByFilename(filename);
+
       if (dbFile != null) {
         return ResponseEntity.ok().contentLength(dbFile.getLength())
             .contentType(MediaType.parseMediaType(dbFile.getContentType()))
-            .body(new InputStreamResource(dbFile.getInputStream()));
+            .body(operations.getResource(filename));
       }
     } catch (RuntimeException e) {
       throw new UploadImageFileException(e);

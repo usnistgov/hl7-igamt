@@ -3,11 +3,8 @@ package gov.nist.hit.hl7.igamt.ig.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
-<<<<<<< HEAD
-import java.util.Set;
-=======
 import java.util.Optional;
->>>>>>> origin/feature/integration
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 

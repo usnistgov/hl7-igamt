@@ -168,13 +168,13 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> sectionChildren = new ArrayList<TreeNode>();
 
     if (type.equals(Type.PROFILECOMPONENTREGISTRY)) {
-      sectionChildren = createPcsNodes(ig.getCompositeProfileRegistry().getChildren());
+      sectionChildren = createPcsNodes(ig.getProfileComponentRegistry().getChildren());
 
     } else if (type.equals(Type.CONFORMANCEPROFILEREGISTRY)) {
       sectionChildren = createCpsNodes(ig.getConformanceProfileRegistry().getChildren());
 
     } else if (type.equals(Type.COMPOSITEPROFILEREGISTRY)) {
-      sectionChildren = createCompositePrfileNodes(ig.getCompositeProfileRegistry().getChildren());
+      sectionChildren = createCompositeProfileNodes(ig.getCompositeProfileRegistry().getChildren());
 
     } else if (type.equals(Type.SEGMENTREGISTRY)) {
       sectionChildren = createSegmentsNodes(ig.getSegmentRegistry().getChildren());
@@ -228,7 +228,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private List<TreeNode> createCompositePrfileNodes(Set<Link> children) {
+  private List<TreeNode> createCompositeProfileNodes(Set<Link> children) {
 
     // TODO Auto-generated method stub
     List<TreeNode> Nodes = new ArrayList<TreeNode>();

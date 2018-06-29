@@ -58,7 +58,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfile findByKey(CompositeKey key) {
-    return conformanceProfileRepository.findOne(key);
+    return conformanceProfileRepository.findById(key).get();
   }
 
   @Override
@@ -85,7 +85,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public void delete(CompositeKey key) {
-    conformanceProfileRepository.delete(key);
+    conformanceProfileRepository.deleteById(key);
   }
 
   @Override

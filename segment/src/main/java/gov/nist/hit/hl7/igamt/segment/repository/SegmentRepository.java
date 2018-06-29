@@ -14,11 +14,13 @@
 package gov.nist.hit.hl7.igamt.segment.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -27,10 +29,14 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  *
  * @author Jungyub Woo on Mar 15, 2018.
  */
+@Repository
 public interface SegmentRepository extends MongoRepository<Segment, CompositeKey> {
   List<Segment> findByDomainInfoVersion(String version);
 
   List<Segment> findByDomainInfoScope(String scope);
+
+  @Override
+  public Optional<Segment> findById(CompositeKey id);
 
   List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 

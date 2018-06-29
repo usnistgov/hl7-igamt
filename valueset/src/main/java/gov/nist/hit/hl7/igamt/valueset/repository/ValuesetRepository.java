@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -33,6 +34,9 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 public interface ValuesetRepository extends MongoRepository<Valueset, CompositeKey> {
 
   List<Valueset> findByDomainInfoVersion(String version);
+
+  @Override
+  public Optional<Valueset> findById(CompositeKey id);
 
   List<Valueset> findByDomainInfoScope(String scope);
 

@@ -2,21 +2,20 @@ package gov.nist.hit.hl7.igamt.common.util.files.storage;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Set;
+
+import org.bson.types.ObjectId;
 
 import com.mongodb.DBObject;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSFile;
 
 public interface FileStorageService {
 
 
-  public GridFSFile store(InputStream inputStream, String fileName, String contentType,
+  public ObjectId store(InputStream inputStream, String fileName, String contentType,
       DBObject metaData);
 
-  public GridFSDBFile findOne(String id);
+  public com.mongodb.client.gridfs.model.GridFSFile findOne(String id);
 
-  public GridFSDBFile findOneByFilename(String filename);
+  public com.mongodb.client.gridfs.model.GridFSFile findOneByFilename(String filename);
 
   public List findAll();
 }
