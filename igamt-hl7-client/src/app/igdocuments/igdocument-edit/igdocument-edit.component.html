@@ -1,5 +1,14 @@
 <div>
-  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425"></p-confirmDialog>
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  key ='UNSAVEDDATA'>
+
+  </p-confirmDialog>
+
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  #cd  key ='INVALIDDATA'>
+
+    <p-footer>
+      <button type="button" pButton icon="fa fa-check" label="OK" (click)="cd.reject()"></button>
+    </p-footer>
+  </p-confirmDialog>
   <app-add-conformance-profile [id]="igId"></app-add-conformance-profile>
   <app-add-segment [id]="igId" ></app-add-segment>
   <app-add-datatype></app-add-datatype>
@@ -7,10 +16,8 @@
   <app-copy-element></app-copy-element>
   <div>
 
-      <span class="ig-title">{{ig.metadata.title}}</span>
-              <span class="ig-title">{{ig.metadata.title}}</span>
+      <span class="ig-title">{{metadata.title}}</span>
 
-              <span class="ig-title">{{ig.metadata.title}}</span>
 
     <hr style="margin-top: 0rem;
     margin-bottom: 0rem;
@@ -43,7 +50,7 @@
     <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
     <p-splitButton   label="Export"  icon="fa-download" [model]="exportModel"></p-splitButton>
 
-  <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
     <button  pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
 
 

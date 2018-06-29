@@ -9,6 +9,7 @@ import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import * as _ from 'lodash';
 import {Types} from "../../common/constants/types";
 import {IgDocumentInfo} from "../../service/indexed-db/ig-document-info-database";
+import {TocService} from "./service/toc.service";
 
 @Injectable()
 export  class IgdocumentEditResolver implements Resolve<any>{
@@ -22,7 +23,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
   valueSets: any[]=[];
 
 
-  constructor(private http: HttpClient,public indexedDbService: IndexedDbService) {
+  constructor(private http: HttpClient,public indexedDbService: IndexedDbService, private tocService:TocService) {
 
   }
 
@@ -30,7 +31,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
     return new Promise(
       (resolve , reject) => {
         let igId = route.params["igId"];
-        console.log("TEST");
+        //console.log("TEST");
 
 
         this.indexedDbService.getIgDocumentId().then(id => {
@@ -116,6 +117,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
       this.ig = x;
 
       this.indexedDbService.getIgDocument().then(x=>{
+        this.tocService.metadata.next(x.metadata);
         resolve(x);
 
       });
@@ -131,18 +133,21 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
             let  ig = new IgDocumentInfo(igId);
             ig.metadata=x["metadata"];
+            this.tocService.metadata.next(ig.metadata);
+
+
             ig.toc=x["toc"];
           this.indexedDbService.initIg(ig).then(
               () => {
                 resolve(ig);
               }, (error) => {
-                console.log("Could not add elements to client db");
+                //console.log("Could not add elements to client db");
                 reject();
               }
             );
           },
           (error) => {
-            console.log("Could not load Ig : " + error);
+            //console.log("Could not load Ig : " + error);
             reject();
           }
         );
@@ -170,7 +175,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
       if(profile.children&& profile.children.length>0){
         let registry =this.findNodeByType(profile.children, type);
         if(registry && registry.children && registry.children.length>0){
-          console.log("adding"+type);
+          //console.log("adding"+type);
           registry.children = _.union(registry.children,added);
           registry.children = _.sortBy(registry.children,[function (node) {
             return node.data.label;

@@ -80,10 +80,22 @@ export class IndexedDbService {
     });
   }
 
-  public updateIgDocument(id, nodes): Promise<string> {
+  public updateIgToc(id, nodes): Promise<string> {
     return new Promise((resolve, reject) => {
       this.igDocumentInfoDataBase.igDocument.update(id, {toc: nodes}).then(x => {
         console.log(x);
+        resolve(x);
+
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+  public updateIgMetadata(id, nodes): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.update(id, {metadata: nodes}).then(x => {
+        console.log(x);
+        resolve(x);
 
       }).catch((error) => {
         reject(error);

@@ -38,6 +38,8 @@ export class IgDocumentEditComponent {
   igId:any;
   exportModel: MenuItem[];
 
+  metadata:any;
+
   ig:any;
   currentUrl:any;
   displayMessageAdding: boolean = false;
@@ -94,27 +96,27 @@ export class IgDocumentEditComponent {
     actionMapping: {
       mouse: {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
-          console.log("dropping");
-          console.log(node);
-          console.log(from);
-          console.log(to);
+          //console.log("dropping");
+          //console.log(node);
+          //console.log(from);
+          //console.log(to);
 
 
           if(from.data.data.type== Types.TEXT && (!this.isOrphan(to) && to.parent.data.data.type==Types.TEXT||this.isOrphan(to))){
-            console.log(from);
+            //console.log(from);
 
 
 
               TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-              this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+              this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
 
 
           }
           if(from.data.data.type== Types.PROFILE && this.isOrphan(to)) {
-            console.log(from);
+            //console.log(from);
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-            this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+            this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
 
             //this.sectionService.updateDnD(node.id,node.data, {from:from.id,to:to.id,position:node.data.data.position})
 
@@ -127,7 +129,7 @@ export class IgDocumentEditComponent {
         contextMenu: (model: any, node: any, event: any) => {
           event.preventDefault();
           this.onContextMenu(event, node);
-          console.log('in context menu...');
+          //console.log('in context menu...');
         }
       }
     }
@@ -141,7 +143,7 @@ export class IgDocumentEditComponent {
   constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
 
     router.events.subscribe(event => {
-      console.log(event);
+      //console.log(event);
 
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -171,7 +173,7 @@ export class IgDocumentEditComponent {
 
 
   ngOnInit() {
-    console.log("Calling on Init");
+    //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
@@ -182,6 +184,11 @@ export class IgDocumentEditComponent {
       this.nodes=this.ig.toc;
 
     });
+
+    this.tocService.metadata.subscribe(x=>{
+
+      this.metadata=x;
+    })
 
 
     this.exportModel = [
@@ -202,13 +209,13 @@ export class IgDocumentEditComponent {
   exportAsWord(){
   this.exportService.exportAsWord(this.igId).subscribe(x=>{
 
-    console.log(x);
+    //console.log(x);
   });
   }
   exportAsHTML(){
     this.exportService.exportAsHtml(this.igId).subscribe(x=>{
 
-      console.log(x);
+      //console.log(x);
     });
   }
 
@@ -223,10 +230,17 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
+      this.setTreeModel();
+
       this.parseUrl();
 
 
   }
+  setTreeModel(){
+    this.tocService.setTreeModel(this.tree.treeModel);
+  }
+
+
   parseUrl(){
     if(this.tree) {
 
@@ -235,7 +249,7 @@ export class IgDocumentEditComponent {
       var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
 
       var paramIndex = fromIg.indexOf('?');
-      console.log(paramIndex);
+      //console.log(paramIndex);
       if (paramIndex > -1) {
         fromIg = fromIg.substring(0, paramIndex);
       }
@@ -245,9 +259,9 @@ export class IgDocumentEditComponent {
         var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
         var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
         let childId="";
-        console.log(child);
+        //console.log(child);
         if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
-          console.log(childId);
+          //console.log(childId);
           childId=child.substring( 0,child.indexOf("/"));
 
         }else{
@@ -292,7 +306,7 @@ export class IgDocumentEditComponent {
       this.items =  [
         {label: 'Add Section', icon: 'fa-plus', command :(event)=>{
 
-          console.log(event);
+          //console.log(event);
         }
         }
       ];
@@ -306,7 +320,7 @@ export class IgDocumentEditComponent {
   }
 
   addSection(){
-    //console.log(this.toc);
+    ////console.log(this.toc);
 
     let data1 ={
       label: "new Section",
@@ -364,7 +378,7 @@ export class IgDocumentEditComponent {
 
     this.sp.queryParams
       .subscribe(params => {
-        console.log(params);
+        //console.log(params);
 
         this.router.navigate(["./section/"+id],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
 
@@ -391,7 +405,7 @@ export class IgDocumentEditComponent {
         result => {
 
           this.distributeResult(result);
-          console.log(result);
+          //console.log(result);
         }
       )
 
@@ -399,9 +413,9 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
-    console.log("Adding Objs");
+    //console.log("Adding Objs");
 
-    console.log(object);
+    //console.log(object);
 
     if(object.conformanceProfiles){
       this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, Types.CONFORMANCEPROFILEREGISTRY);
@@ -423,11 +437,11 @@ export class IgDocumentEditComponent {
 
 
       this.tree.treeModel.update();
-      this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes).then(x => {
+      this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
 
-        console.log("updated");
+        //console.log("updated");
         }, error=>{
-        console.log("could not update IG")
+        //console.log("could not update IG")
 
         }
 
@@ -441,7 +455,7 @@ export class IgDocumentEditComponent {
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
 
-    console.log(existing);
+    //console.log(existing);
     this.addSegs.open({
       id : this.igId,
       namingIndicators:existing
@@ -450,7 +464,7 @@ export class IgDocumentEditComponent {
         result => {
 
           this.distributeResult(result);
-          console.log(result);
+          //console.log(result);
         }
       )
   }
@@ -537,7 +551,7 @@ export class IgDocumentEditComponent {
 
   copyValueSet(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.VALUESETREGISTRY);
-    console.log(existing);
+    //console.log(existing);
 
     this.copyElemt.open({
       igDocumentId : this.igId,
@@ -563,7 +577,7 @@ export class IgDocumentEditComponent {
 
   copyConformanceProfile(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
-    console.log(existing);
+    //console.log(existing);
 
     this.copyElemt.open({
       igDocumentId : this.igId,
@@ -587,10 +601,10 @@ export class IgDocumentEditComponent {
   }
 
   copySection(node){
-   console.log( this.tree._options);
+   //console.log( this.tree._options);
     this.tocService.cloneNode(node);
    let ret =  this.tree.treeModel.getNodeById(node.id);
-    console.log(ret);
+    //console.log(ret);
     this.copyElemt.open({
       igDocumentId : this.igId,
       id:node.id,
@@ -600,17 +614,17 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
-         console.log("result");
-         console.log(result);
-         console.log(node.parent);
-         console.log(node.parent.treeModel);
+         //console.log("result");
+         //console.log(result);
+         //console.log(node.parent);
+         //console.log(node.parent.treeModel);
          node.parent.data.children.push(result);
           this.tree.treeModel.update();
-          this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes).then(x => {
+          this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
 
-              console.log("updated");
+              //console.log("updated");
             }, error=>{
-              console.log("could not update IG")
+              //console.log("could not update IG")
 
             }
 

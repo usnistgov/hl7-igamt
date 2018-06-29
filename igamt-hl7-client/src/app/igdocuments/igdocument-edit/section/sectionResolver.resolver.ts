@@ -14,7 +14,7 @@ import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
 
 @Injectable()
 export  class SectionResolver implements Resolve<any>{
-  constructor(private http: HttpClient,private router : Router,private sectionService: SectionsService ,private dbService:IndexedDbService) {
+  constructor(private http: HttpClient,private router : Router,private dbService:IndexedDbService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
@@ -30,8 +30,8 @@ export  class SectionResolver implements Resolve<any>{
 
   findSectionById(sections:any[], id){
 
-    console.log(sections);
-    console.log(id);
+    //console.log(sections);
+    //console.log(id);
     for(let i=0;i<sections.length;i++){
       let section = this.findInSideSection(sections[i],id);
       if(section!=null){
@@ -66,17 +66,20 @@ export  class SectionResolver implements Resolve<any>{
     return new Promise((resolve, reject)=>{
       this.dbService.getIgDocument().then(
         x => {
-          console.log(x);
+          //console.log(x);
           if(x.toc){
-            console.log(x.toc);
-            resolve(this.findSectionById(x.toc,id).data);
+            //console.log(x.toc);
+            let section:any=this.findSectionById(x.toc,id).data;
+            section.id=id;
+
+            resolve(section);
           }else{
-            console.log("Could not find the toc ")
+            //console.log("Could not find the toc ")
           }
         },
         error=>{
 
-          console.log("Could not find the toc ")
+          //console.log("Could not find the toc ")
 
         }
       )

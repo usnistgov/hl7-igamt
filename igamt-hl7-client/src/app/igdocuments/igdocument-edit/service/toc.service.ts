@@ -8,45 +8,68 @@ import * as _ from 'lodash';
 import {Types} from "../../../common/constants/types";
 import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
 import { UUID } from 'angular2-uuid';
-import {TreeNode} from "angular-tree-component";
+import {TreeNode, TreeModel} from "angular-tree-component";
 
 
 @Injectable()
 export  class TocService{
 
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
-  nodes :BehaviorSubject<any> =new BehaviorSubject(null);
+  metadata :BehaviorSubject<any> =new BehaviorSubject(null);
+
+  treeModel :TreeModel
 
   constructor(private dbService:IndexedDbService){
   }
 
   setActiveNode(node){
-    this.activeNode.next(node);
+    this.activeNode=node;
   }
   getActiveNode(){
 
     return  this.activeNode;
   }
-  setNodes(nodes){
+  setTreeModel(treeModel){
+    return new Promise((resolve, reject)=> {
+    this.treeModel=treeModel;
+    this.dbService.getIgDocument().then(
+      x => {
+        x.toc = treeModel.nodes;
+        this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+         resolve(true);
+        });
+      });
+  })
+  };
 
+
+
+  setMetaData(metadata){
+
+    return new Promise((resolve, reject)=> {
       this.dbService.getIgDocument().then(
         x => {
-          x.toc=nodes;
-          this.nodes.next(nodes);
-          this.dbService.updateIgDocument(x.id,nodes);
+          x.metadata = metadata;
+          this.dbService.updateIgMetadata(x.id,metadata ).then(saved => {
+            this.metadata.next(_.cloneDeep(metadata));
+            resolve(true);
+          });
+        });
+    })
 
-        },
-        error => {
 
-          console.log("Could not find the toc ")
-
-        }
-      )
   }
-  getNodes(){
 
-    return  this.nodes;
+
+
+
+
+  getTreeModel(){
+
+    return  this.treeModel;
   }
+
+
 
   findDirectChildByType(nodes, type){
 
