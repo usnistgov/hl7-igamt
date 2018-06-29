@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableElement;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Element;
@@ -29,14 +30,13 @@ public class SerializableElementTest {
   private static final String ID_TEST = "id_test";
   private static final String TITLE_TEST = "title_test";
   private static final String POSITION_TEST = "14";
-  private static final String ELEMENT_NAME_TEST = "element_name_test";
 
   public static SerializableElement getTestElement() {
     SerializableElement serializableElement = new SerializableElement(ID_TEST,POSITION_TEST,TITLE_TEST) {
       
       @Override
       public Element serialize() {
-        return this.getElement(ELEMENT_NAME_TEST);
+        return this.getElement(Type.SECTION);
       }
     };
     return serializableElement;
@@ -49,6 +49,6 @@ public class SerializableElementTest {
     assertEquals(ID_TEST, testElement.getAttribute("id").getValue());
     assertEquals(TITLE_TEST, testElement.getAttribute("title").getValue());
     assertEquals(POSITION_TEST, testElement.getAttribute("position").getValue());
-    assertEquals(ELEMENT_NAME_TEST, testElement.getQualifiedName());
+    assertEquals("Section", testElement.getQualifiedName());
   }
 }

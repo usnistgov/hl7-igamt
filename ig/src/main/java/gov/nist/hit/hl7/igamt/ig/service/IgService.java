@@ -3,7 +3,11 @@ package gov.nist.hit.hl7.igamt.ig.service;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+<<<<<<< HEAD
 import java.util.Set;
+=======
+import java.util.Optional;
+>>>>>>> origin/feature/integration
 
 import org.springframework.stereotype.Service;
 
@@ -20,7 +24,7 @@ public interface IgService {
 
 
 
-  public Ig findById(CompositeKey id);
+  public Optional<Ig> findById(CompositeKey id);
 
   public List<Ig> findAll();
 

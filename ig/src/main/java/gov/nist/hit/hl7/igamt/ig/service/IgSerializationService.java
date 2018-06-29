@@ -15,7 +15,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.export.configuration.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 

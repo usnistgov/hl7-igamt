@@ -71,7 +71,6 @@ import { TooltipModule } from 'primeng/primeng';
 import {KeyFilterModule} from 'primeng/keyfilter';
 import {MessageModule} from 'primeng/message';
 
-// import { TreeModule } from 'primeng/primeng';
 import { TreeTableModule } from 'primeng/primeng';
 import { AppComponent } from './app.component';
 import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
@@ -106,6 +105,8 @@ import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
 import {BreadcrumbService} from "./breadcrumb.service";
 import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from "./service/sections/sections.service";
+
+import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
 
 @NgModule({
     imports: [
@@ -232,7 +233,9 @@ import {SectionsService} from "./service/sections/sections.service";
     AuthGuard,
     UserService,
     BreadcrumbService,
-    ConstraintsService
+
+    ConstraintsService,
+    TableOptionsService
   ],
     bootstrap: [AppComponent]
 })

@@ -14,13 +14,12 @@
 package gov.nist.hit.hl7.igamt.ig.serialization;
 
 import static org.junit.Assert.assertEquals;
-
 import org.junit.Test;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
 import nu.xom.Element;
 
 /**
@@ -33,6 +32,7 @@ public class SerializableSectionTest {
   private final static String TEST_ID = "test_id";
   private final static String TEST_LABEL = "test_label";
   private final static int TEST_POSITION = 1;
+  private final static int TEST_LEVEL = 123;
   private final static Type TEST_TYPE = Type.COMPONENT;
   private final static String TEST_ELEMENT_NAME = "Section";
 
@@ -49,7 +49,7 @@ public class SerializableSectionTest {
   @Test
   public void testSerialize() throws SerializationException {
     Section section = getSectionTest();
-    SerializableSection serializableSection = new SerializableSection(section) {
+    SerializableSection serializableSection = new SerializableSection(section , TEST_LEVEL) {
       @Override
       public Element serialize() throws SerializationException {
         return this.getElement();
