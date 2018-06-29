@@ -151,33 +151,13 @@ public class SegmentServiceImpl implements SegmentService {
 
   }
 
+  /**
+   * @deprecated. Use segment.toStructure()
+   */
   @Override
   public SegmentStructure convertDomainToStructure(Segment segment) {
-    if (segment != null) {
-      SegmentStructure result = new SegmentStructure();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-
-      result.setBinding(segment.getBinding());
-
-      if (segment.getChildren() != null && segment.getChildren().size() > 0) {
-        for (Field f : segment.getChildren()) {
-          FieldDisplay fieldDisplay = new FieldDisplay();
-          fieldDisplay.setData(f);
-          result.addChild(fieldDisplay);
-        }
-      }
-      return result;
-    }
-    return null;
+    return segment.toStructure();
   }
-
 
   @Override
   public Segment findLatestById(String id) {

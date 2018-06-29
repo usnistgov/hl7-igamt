@@ -7,6 +7,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,6 +49,8 @@ public class SegmentController {
     return segmentService.convertDomainToStructure(segment);
 
   }
+
+
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -103,5 +106,15 @@ public class SegmentController {
         xRefService.getSegmentReferences(id, filterConformanceProfileIds);
     return results;
   }
+
+  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody SegmentStructure saveStructure(@PathVariable("id") String id,
+      @RequestBody SegmentStructure structure, Authentication authentication) {
+    Segment segment = structure.toSegment();
+    segmentService.save(segment);
+  }
+
 
 }
