@@ -109,6 +109,44 @@ export class IndexedDbService {
     return Promise.all(promises);
   }
 
+  public getIgDocument(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {
+        if (collection != null && collection.length >= 1) {
+          resolve(collection[0]);
+        } else {
+          reject();
+        }
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+  public updateIgDocument(id, nodes): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.update(id, {toc: nodes}).then(x => {
+        console.log(x);
+
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  public initIg(ig): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.put(ig).then(x => {
+        console.log("Putting IG ");
+        console.log(x);
+        resolve(ig);
+
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
   public getIgDocumentId(): Promise<string> {
     return new Promise((resolve, reject) => {
       this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {

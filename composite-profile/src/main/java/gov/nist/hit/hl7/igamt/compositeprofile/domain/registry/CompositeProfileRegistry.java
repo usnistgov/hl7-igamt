@@ -11,12 +11,9 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.domain.registry;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-
 /**
  * @author ena3
- *
+ * 
  */
 public class CompositeProfileRegistry extends Registry {
 

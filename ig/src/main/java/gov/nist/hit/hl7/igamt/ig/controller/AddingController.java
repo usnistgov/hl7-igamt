@@ -84,7 +84,7 @@ public class AddingController {
   @Autowired
   ValuesetService valuesetService;
 
-  @RequestMapping(value = "/api/ig/addConforanceProfile", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/ig/addConformanceProfile", method = RequestMethod.POST,
       produces = {"application/json"})
 
   public @ResponseBody AddMessageResponseDisplay addConforanceProfile(

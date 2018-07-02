@@ -9,8 +9,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>composite-profile</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>composite-profile</name>
+ 	<name>composite-profile</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
