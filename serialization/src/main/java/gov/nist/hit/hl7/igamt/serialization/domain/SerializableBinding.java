@@ -44,14 +44,16 @@ public class SerializableBinding extends SerializableElement {
 
   private Binding binding;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> idPathMap;
 
   /**
    * @param binding
    */
-  public SerializableBinding(Binding binding, Map<String, String> valuesetNamesMap) {
+  public SerializableBinding(Binding binding, Map<String, String> idPathMap, Map<String, String> valuesetNamesMap) {
     super("binding" + binding.getElementId(), "1", "Bindings");
     this.binding = binding;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.idPathMap = idPathMap;
   }
 
   /*
@@ -67,7 +69,7 @@ public class SerializableBinding extends SerializableElement {
           new Attribute("elementId", binding.getElementId() != null ? binding.getElementId() : ""));
       if (binding.getChildren() != null && binding.getChildren().size() > 0) {
         Element structureElementBindingsElement =
-            this.serializeStructureElementBindings(binding.getChildren(), valuesetNamesMap);
+            this.serializeStructureElementBindings(binding.getChildren(), idPathMap, valuesetNamesMap);
         if (structureElementBindingsElement != null) {
           bindingElement.appendChild(structureElementBindingsElement);
         }
@@ -96,14 +98,14 @@ public class SerializableBinding extends SerializableElement {
    * @throws ValuesetNotFoundException
    */
   private Element serializeStructureElementBindings(
-      Set<StructureElementBinding> structureElementBindings, Map<String, String> valuesetNamesMap)
+      Set<StructureElementBinding> structureElementBindings, Map<String, String> idPathMap, Map<String, String> valuesetNamesMap)
       throws ValuesetNotFoundException {
     if (structureElementBindings != null) {
       Element structureElementBindingsElement = new Element("StructureElementBindings");
       for (StructureElementBinding structureElementBinding : structureElementBindings) {
         if (structureElementBinding != null) {
           Element structureElementBindingElement =
-              this.serializeStructureElementBinding(structureElementBinding, valuesetNamesMap);
+              this.serializeStructureElementBinding(structureElementBinding, idPathMap, valuesetNamesMap);
           if (structureElementBindingElement != null) {
             structureElementBindingsElement.appendChild(structureElementBindingElement);
           }
@@ -119,7 +121,7 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding,
+  private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding, Map<String, String> idPathMap,
       Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     if (structureElementBinding != null) {
       Element structureElementBindingElement = new Element("StructureElementBinding");
@@ -130,7 +132,7 @@ public class SerializableBinding extends SerializableElement {
       if (structureElementBinding.getChildren() != null
           && structureElementBinding.getChildren().size() > 0) {
         Element structureElementBindingsElement = this.serializeStructureElementBindings(
-            structureElementBinding.getChildren(), valuesetNamesMap);
+            structureElementBinding.getChildren(), idPathMap, valuesetNamesMap);
         if (structureElementBindingsElement != null) {
           structureElementBindingElement.appendChild(structureElementBindingsElement);
         }

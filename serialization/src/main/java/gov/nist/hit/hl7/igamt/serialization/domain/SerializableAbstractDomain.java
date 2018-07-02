@@ -19,7 +19,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -31,6 +30,10 @@ import nu.xom.Element;
 public abstract class SerializableAbstractDomain extends SerializableElement {
 
   private AbstractDomain abstractDomain;
+  
+  protected static final String FIELD_PATH_SEPARATOR = "-";
+  protected static final String COMPONENT_PATH_SEPARATOR = "-";
+  protected static final String SEGMENT_GROUP_PATH_SEPARATOR = ".";
 
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position) {
     this(abstractDomain, position, abstractDomain.getName());
@@ -78,9 +81,12 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
    */
   public Element serializeResourceBinding(ResourceBinding binding,
       Map<String, String> valuesetNamesMap) throws SerializationException {
-    SerializableBinding serializableBinding = new SerializableBinding(binding, valuesetNamesMap);
+    Map<String, String> pathLocationMap = this.getIdPathMap();
+    SerializableBinding serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
     return serializableBinding.serialize();
   }
+  
+  public abstract Map<String, String> getIdPathMap();
 
   public AbstractDomain getAbstractDomain() {
     return abstractDomain;

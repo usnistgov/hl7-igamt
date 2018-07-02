@@ -176,5 +176,20 @@ public class SerializableDatatype extends SerializableResource {
     }
     return datatypeElement;
   }
+  
+  @Override
+  public Map<String, String> getIdPathMap() {
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    if(this.getAbstractDomain() instanceof ComplexDatatype) {
+      ComplexDatatype datatype = (ComplexDatatype) this.getAbstractDomain();
+      for(Component component : datatype.getComponents()) {
+        if(!idPathMap.containsKey(component.getId())) {
+          String path = datatype.getLabel()+COMPONENT_PATH_SEPARATOR+component.getPosition();
+          idPathMap.put(component.getId(), path);
+        }
+      }
+    }
+    return idPathMap;
+  }
 
 }

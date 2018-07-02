@@ -99,7 +99,7 @@ public class SerializableIG extends SerializableAbstractDomain {
               igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
               igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry(),
               this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
-              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets);
+              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration);
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }
@@ -126,6 +126,12 @@ public class SerializableIG extends SerializableAbstractDomain {
         }
       }
     }
+  }
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    // Never used for the IG Document as it doesn't have any binding.
+    return null;
   }
 
 }

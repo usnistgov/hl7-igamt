@@ -2,7 +2,7 @@
   <p-header>
     <h1>
       <p-checkbox [(ngModel)]="tableOptions.includeMessageTable" binary="true"
-                  onChange="setChanged()" label="Include Conformance Profile Table Options"></p-checkbox>
+                  (onChange)="setChanged()" label="Include Conformance Profile Table Options"></p-checkbox>
     </h1>
   </p-header>
 
@@ -16,27 +16,27 @@
           <div>
             <p-checkbox
               [(ngModel)]="tableOptions.segmentORGroupsMessageExport.r"
-              onChange="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+              (onChange)="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
           </div>
           <div>
             <p-checkbox
               [(ngModel)]="tableOptions.segmentORGroupsMessageExport.re"
-              onChange="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+              (onChange)="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
           </div>
           <div>
             <p-checkbox
               [(ngModel)]="tableOptions.segmentORGroupsMessageExport.c"
-              onChange="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+              (onChange)="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
           </div>
           <div>
             <p-checkbox
               [(ngModel)]="tableOptions.segmentORGroupsMessageExport.o"
-              onChange="setChanged()" label="O" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="O" binary="true"></p-checkbox>
           </div>
           <div>
             <p-checkbox
               [(ngModel)]="tableOptions.segmentORGroupsMessageExport.x"
-              onChange="setChanged()" label="X" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="X" binary="true"></p-checkbox>
           </div>
         </div>
       </p-card>
@@ -47,22 +47,22 @@
           <div class="config-checkbox">
             <p-checkbox
               [(ngModel)]="tableOptions.metadataConfig.hl7version"
-              onChange="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
               [(ngModel)]="tableOptions.metadataConfig.publicationDate"
-              onChange="setChanged()" label="Publication Date" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="Publication Date" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
               [(ngModel)]="tableOptions.metadataConfig.publicationVersion"
-              onChange="setChanged()" label="Publication Version" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="Publication Version" binary="true"></p-checkbox>
           </div>
           <div class="config-checkbox">
             <p-checkbox
               [(ngModel)]="tableOptions.metadataConfig.scope"
-              onChange="setChanged()" label="Scope" binary="true"></p-checkbox>
+              (onChange)="setChanged()" label="Scope" binary="true"></p-checkbox>
           </div>
         </div>
       </p-card>

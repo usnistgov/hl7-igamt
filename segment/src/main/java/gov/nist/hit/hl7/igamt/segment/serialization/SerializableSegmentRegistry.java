@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.segment.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -35,17 +36,21 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Set<String> bindedSegments;
+  private Set<String> bindedFields;
 
   /**
    * @param section
    */
   public SerializableSegmentRegistry(Section section, int level, SegmentRegistry segmentRegistry,
       Map<String, Segment> segmentsMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap) {
+      Map<String, String> valuesetNamesMap, Set<String> bindedSegments, Set<String> bindedFields) {
     super(section, level, segmentRegistry);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.bindedSegments = bindedSegments;
+    this.bindedFields = bindedFields;
   }
 
   /*
@@ -61,11 +66,11 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
       if (segmentRegistry != null) {
         if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
           for (Link segmentLink : segmentRegistry.getChildren()) {
-            if (segmentsMap.containsKey(segmentLink.getId().getId())) {
+            if (bindedSegments.contains(segmentLink.getId().getId()) && segmentsMap.containsKey(segmentLink.getId().getId())) {
               Segment segment = segmentsMap.get(segmentLink.getId().getId());
               SerializableSegment serializableSegment =
                   new SerializableSegment(segment, super.position, this.getChildLevel(),
-                      this.datatypeNamesMap, this.valuesetNamesMap);
+                      this.datatypeNamesMap, this.valuesetNamesMap, this.bindedFields);
               if (serializableSegment != null) {
                 Element segmentElement = serializableSegment.serialize();
                 if (segmentElement != null) {

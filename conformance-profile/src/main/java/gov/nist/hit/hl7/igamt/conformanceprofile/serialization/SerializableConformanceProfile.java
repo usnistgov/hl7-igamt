@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,6 +26,7 @@ import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
@@ -218,6 +220,47 @@ public class SerializableConformanceProfile extends SerializableResource {
     elementGroupEnd.addAttribute(new Attribute("position", String.valueOf(group.getPosition())));
     groupElement.appendChild(elementGroupEnd);
     return groupElement;
+  }
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    String basePath = "";
+    for(MsgStructElement msgStructElement : conformanceProfile.getChildren()) {
+      Map<String, String> msgStructElementIdPathMap = getIdPathMap(msgStructElement, basePath);
+      idPathMap.putAll(msgStructElementIdPathMap);
+    }
+    return idPathMap;
+  }
+
+  private Map<String, String> getIdPathMap(MsgStructElement msgStructElement, String basePath) {
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    if(!basePath.isEmpty()) {
+      basePath += SEGMENT_GROUP_PATH_SEPARATOR;
+    }
+    if(msgStructElement instanceof Group) {
+      Group group = (Group) msgStructElement;
+      idPathMap.put(group.getId(), basePath+group.getName());
+      basePath += group.getName();
+      for(MsgStructElement groupMsgStructElement : group.getChildren()) {
+        idPathMap.putAll(getIdPathMap(groupMsgStructElement, basePath));
+      }
+      
+    } else if (msgStructElement instanceof SegmentRef) {
+      Segment segment = segmentsMap.get(msgStructElement.getId());
+      if(segment != null) {
+        idPathMap.put(segment.getId().getId(), basePath+segment.getLabel());
+        basePath += segment.getLabel();
+        for(Field field : segment.getChildren()) {
+          if(!idPathMap.containsKey(field.getId())) {
+            String path = basePath+SEGMENT_GROUP_PATH_SEPARATOR+field.getPosition();
+            idPathMap.put(field.getId(), path);
+          }
+        }
+      }
+    }
+    return idPathMap;
   }
 
 }

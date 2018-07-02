@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationException;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -47,7 +48,7 @@ public class SectionSerializationUtil {
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets) throws SerializationException {
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) throws SerializationException {
     if (section != null) {
       try {
         SerializableSection serializableSection =
@@ -56,7 +57,7 @@ public class SectionSerializationUtil {
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
-                bindedDatatypes, bindedComponents, bindedValueSets);
+                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
         if (serializableSection != null) {
           return serializableSection.serialize();
         }
@@ -68,8 +69,9 @@ public class SectionSerializationUtil {
   }
 
   public static Element serializeSection(Section section, int level) throws SerializationException {
+    //This is used only for text sections (narratives)
     return serializeSection(section, level, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null);
+        null, null, null, null, null, null, null, null, null, null);
   }
 
 }

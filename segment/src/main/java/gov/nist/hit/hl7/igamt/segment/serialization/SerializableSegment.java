@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.segment.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -39,17 +40,19 @@ public class SerializableSegment extends SerializableResource {
   private Map<String, String> datatypesMap;
   private Map<String, String> valuesetNamesMap;
   private int level;
+  private Set<String> bindedFields;
 
   /**
    * @param segment
    * @param position
    */
   public SerializableSegment(Segment segment, String position, int level,
-      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap) {
+      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap, Set<String> bindedFields) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
     this.valuesetNamesMap = valuesetNamesMap;
     this.level = level;
+    this.bindedFields = bindedFields;
   }
 
   @Override
@@ -94,40 +97,42 @@ public class SerializableSegment extends SerializableResource {
     if (fields.size() > 0) {
       Element fieldsElement = new Element("Fields");
       for (Field field : fields) {
-        try {
-          if (field != null) {
-            Element fieldElement = new Element("Field");
-            fieldElement.addAttribute(new Attribute("confLength",
-                field.getConfLength() != null ? field.getConfLength() : ""));
-            fieldElement.addAttribute(
-                new Attribute("name", field.getName() != null ? field.getName() : ""));
-            fieldElement
-                .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
-            fieldElement.addAttribute(new Attribute("maxLength",
-                field.getMaxLength() != null ? field.getMaxLength() : ""));
-            fieldElement.addAttribute(new Attribute("minLength",
-                field.getMinLength() != null ? field.getMinLength() : ""));
-            fieldElement.addAttribute(
-                new Attribute("text", field.getText() != null ? field.getText() : ""));
-            fieldElement.addAttribute(new Attribute("custom", String.valueOf(field.isCustom())));
-            fieldElement.addAttribute(new Attribute("max", String.valueOf(field.getMax())));
-            fieldElement.addAttribute(new Attribute("min", String.valueOf(field.getMin())));
-            fieldElement
-                .addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
-            if (field.getRef() != null && field.getRef().getId() != null) {
-              if (this.datatypesMap.containsKey(field.getRef().getId())) {
-                fieldElement.addAttribute(
-                    new Attribute("datatype", this.datatypesMap.get(field.getRef().getId())));
-              } else {
-                throw new DatatypeNotFoundException(field.getRef().getId());
+        if(this.bindedFields.contains(field.getId())) {
+          try {
+            if (field != null) {
+              Element fieldElement = new Element("Field");
+              fieldElement.addAttribute(new Attribute("confLength",
+                  field.getConfLength() != null ? field.getConfLength() : ""));
+              fieldElement.addAttribute(
+                  new Attribute("name", field.getName() != null ? field.getName() : ""));
+              fieldElement
+                  .addAttribute(new Attribute("id", field.getId() != null ? field.getId() : ""));
+              fieldElement.addAttribute(new Attribute("maxLength",
+                  field.getMaxLength() != null ? field.getMaxLength() : ""));
+              fieldElement.addAttribute(new Attribute("minLength",
+                  field.getMinLength() != null ? field.getMinLength() : ""));
+              fieldElement.addAttribute(
+                  new Attribute("text", field.getText() != null ? field.getText() : ""));
+              fieldElement.addAttribute(new Attribute("custom", String.valueOf(field.isCustom())));
+              fieldElement.addAttribute(new Attribute("max", String.valueOf(field.getMax())));
+              fieldElement.addAttribute(new Attribute("min", String.valueOf(field.getMin())));
+              fieldElement
+                  .addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
+              if (field.getRef() != null && field.getRef().getId() != null) {
+                if (this.datatypesMap.containsKey(field.getRef().getId())) {
+                  fieldElement.addAttribute(
+                      new Attribute("datatype", this.datatypesMap.get(field.getRef().getId())));
+                } else {
+                  throw new DatatypeNotFoundException(field.getRef().getId());
+                }
               }
+              fieldElement.addAttribute(
+                  new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
+              fieldsElement.appendChild(fieldElement);
             }
-            fieldElement.addAttribute(
-                new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
-            fieldsElement.appendChild(fieldElement);
+          } catch (DatatypeNotFoundException exception) {
+            throw new SubStructElementSerializationException(exception, field);
           }
-        } catch (DatatypeNotFoundException exception) {
-          throw new SubStructElementSerializationException(exception, field);
         }
       }
       return fieldsElement;
@@ -162,5 +167,18 @@ public class SerializableSegment extends SerializableResource {
       }
     }
     return dynamicMappingElement;
+  }
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    Segment segment = (Segment) this.getAbstractDomain();
+    for(Field field : segment.getChildren()) {
+      if(!idPathMap.containsKey(field.getId())) {
+        String path = segment.getLabel()+FIELD_PATH_SEPARATOR+field.getPosition();
+        idPathMap.put(field.getId(), path);
+      }
+    }
+    return idPathMap;
   }
 }

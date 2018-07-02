@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -33,14 +34,16 @@ import nu.xom.Element;
 public class SerializableValuesetRegistry extends SerializableRegistry {
 
   private Map<String, Valueset> valuesetsMap;
+  private Set<String> bindedValueSets;
 
   /**
    * @param section
    */
   public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
-      Map<String, Valueset> valuesetsMap) {
+      Map<String, Valueset> valuesetsMap, Set<String> bindedValueSets) {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
+    this.bindedValueSets = bindedValueSets;
   }
 
   /*
@@ -56,7 +59,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
       if (valuesetRegistry != null) {
         if (!valuesetRegistry.getChildren().isEmpty()) {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
-            if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+            if (bindedValueSets.contains(valuesetLink.getId().getId()) && valuesetsMap.containsKey(valuesetLink.getId().getId())) {
               Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
               SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
                   String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
