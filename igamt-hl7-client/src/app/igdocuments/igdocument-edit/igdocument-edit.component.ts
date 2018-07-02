@@ -15,8 +15,7 @@ import {AddSegmentComponent} from "./add-segment/add-segment.component";
 import {AddDatatypeComponent} from "./add-datatype/add-datatype.component";
 import {AddValueSetComponent} from "./add-value-set/add-value-set.component";
 import {CopyElementComponent} from "./copy-element/copy-element.component";
-import {DatatypesTocService} from "../../service/indexed-db/datatypes/datatypes-toc.service";
-import {TocDbService} from "../../service/indexed-db/toc-db.service";
+
 import {ExportService} from "./service/export.service";
 import {Types} from "../../common/constants/types";
 import {SectionsService} from "../../service/sections/sections.service";
@@ -38,6 +37,8 @@ export class IgDocumentEditComponent {
 
   igId:any;
   exportModel: MenuItem[];
+
+  metadata:any;
 
   ig:any;
   currentUrl:any;
@@ -95,29 +96,27 @@ export class IgDocumentEditComponent {
     actionMapping: {
       mouse: {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
-          console.log("dropping");
-          console.log(node);
-          console.log(from);
-          console.log(to);
+          //console.log("dropping");
+          //console.log(node);
+          //console.log(from);
+          //console.log(to);
 
 
           if(from.data.data.type== Types.TEXT && (!this.isOrphan(to) && to.parent.data.data.type==Types.TEXT||this.isOrphan(to))){
-            console.log(from);
+            //console.log(from);
 
 
-            this.sectionService.updateDnD(from.id,from.data, {from:to.id,to:node.id,position:from.data.data.position}).then(res=>{
 
               TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-              this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+              this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
 
 
-            });
           }
           if(from.data.data.type== Types.PROFILE && this.isOrphan(to)) {
-            console.log(from);
+            //console.log(from);
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-            this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+            this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
 
             //this.sectionService.updateDnD(node.id,node.data, {from:from.id,to:to.id,position:node.data.data.position})
 
@@ -130,7 +129,7 @@ export class IgDocumentEditComponent {
         contextMenu: (model: any, node: any, event: any) => {
           event.preventDefault();
           this.onContextMenu(event, node);
-          console.log('in context menu...');
+          //console.log('in context menu...');
         }
       }
     }
@@ -141,10 +140,10 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public dtsToCService  : DatatypesTocService,public tocDbService:TocDbService,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
 
     router.events.subscribe(event => {
-      console.log(event);
+      //console.log(event);
 
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -174,7 +173,7 @@ export class IgDocumentEditComponent {
 
 
   ngOnInit() {
-    console.log("Calling on Init");
+    //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
@@ -185,6 +184,11 @@ export class IgDocumentEditComponent {
       this.nodes=this.ig.toc;
 
     });
+
+    this.tocService.metadata.subscribe(x=>{
+
+      this.metadata=x;
+    })
 
 
     this.exportModel = [
@@ -205,13 +209,13 @@ export class IgDocumentEditComponent {
   exportAsWord(){
   this.exportService.exportAsWord(this.igId).subscribe(x=>{
 
-    console.log(x);
+    //console.log(x);
   });
   }
   exportAsHTML(){
     this.exportService.exportAsHtml(this.igId).subscribe(x=>{
 
-      console.log(x);
+      //console.log(x);
     });
   }
 
@@ -226,10 +230,17 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
+      this.setTreeModel();
+
       this.parseUrl();
 
 
   }
+  setTreeModel(){
+    this.tocService.setTreeModel(this.tree.treeModel);
+  }
+
+
   parseUrl(){
     if(this.tree) {
 
@@ -238,7 +249,7 @@ export class IgDocumentEditComponent {
       var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
 
       var paramIndex = fromIg.indexOf('?');
-      console.log(paramIndex);
+      //console.log(paramIndex);
       if (paramIndex > -1) {
         fromIg = fromIg.substring(0, paramIndex);
       }
@@ -248,9 +259,9 @@ export class IgDocumentEditComponent {
         var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
         var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
         let childId="";
-        console.log(child);
+        //console.log(child);
         if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
-          console.log(childId);
+          //console.log(childId);
           childId=child.substring( 0,child.indexOf("/"));
 
         }else{
@@ -295,7 +306,7 @@ export class IgDocumentEditComponent {
       this.items =  [
         {label: 'Add Section', icon: 'fa-plus', command :(event)=>{
 
-          console.log(event);
+          //console.log(event);
         }
         }
       ];
@@ -309,7 +320,7 @@ export class IgDocumentEditComponent {
   }
 
   addSection(){
-    //console.log(this.toc);
+    ////console.log(this.toc);
 
     let data1 ={
       label: "new Section",
@@ -367,7 +378,7 @@ export class IgDocumentEditComponent {
 
     this.sp.queryParams
       .subscribe(params => {
-        console.log(params);
+        //console.log(params);
 
         this.router.navigate(["./section/"+id],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
 
@@ -394,7 +405,7 @@ export class IgDocumentEditComponent {
         result => {
 
           this.distributeResult(result);
-          console.log(result);
+          //console.log(result);
         }
       )
 
@@ -402,49 +413,41 @@ export class IgDocumentEditComponent {
 
 
   distributeResult(object:any){
-    var conformanceProfiles=[];
-    var segments=[];
-    var datatypes=[];
-    var valueSets=[];
-    var compositeProfiles=[];
-    var profileComponents=[];
+    //console.log("Adding Objs");
+
+    //console.log(object);
 
     if(object.conformanceProfiles){
-      conformanceProfiles= this.convertList(object.conformanceProfiles);
-    }if(object.segments){
+      this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, Types.CONFORMANCEPROFILEREGISTRY);
 
-      segments=this.convertList(object.segments);
+    }if(object.segments){
+      this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  Types.SEGMENTREGISTRY);
+
+
 
     }
     if(object.datatypes){
-      datatypes=this.convertList(object.datatypes);
+      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
+
     }
     if(object.valueSets){
-      valueSets=this.convertList(object.valueSets);
+      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
+
     }
 
-    this.tocDbService.bulkAddTocNewElements(valueSets,datatypes,segments,conformanceProfiles,profileComponents,compositeProfiles).then(()=>{
 
-      if(object.conformanceProfiles){
-        this.tocService.addNodesByType(object.conformanceProfiles,this.tree.treeModel.nodes, Types.CONFORMANCEPROFILEREGISTRY);
-      }
-      if(object.segments){
-        this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  Types.SEGMENTREGISTRY);
-      }
-      if(object.datatypes){
-
-        this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
-      }
-      if(object.valueSets){
-        this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
-      }
       this.tree.treeModel.update();
-      this.indexedDbService.updateIgDocument(this.igId,this.tree.treeModel.nodes);
+      this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
 
-    }).catch((error)=>{
+        //console.log("updated");
+        }, error=>{
+        //console.log("could not update IG")
 
         }
-      );
+
+      )
+
+
   };
 
 
@@ -452,7 +455,7 @@ export class IgDocumentEditComponent {
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
 
-    console.log(existing);
+    //console.log(existing);
     this.addSegs.open({
       id : this.igId,
       namingIndicators:existing
@@ -461,7 +464,7 @@ export class IgDocumentEditComponent {
         result => {
 
           this.distributeResult(result);
-          console.log(result);
+          //console.log(result);
         }
       )
   }
@@ -512,27 +515,126 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
+          let toDistribute:any={};
+          let datatypes=[];
+          datatypes.push(result);
+          toDistribute.datatypes=datatypes;
+          this.distributeResult(toDistribute);
 
-          this.distributeResult(result);
         }
       )
   };
 
+  copySegment(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
 
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
 
-  convertList(list : any[]){
-    let ret : any[]=[];
-    for (let i=0; i<list.length;i++ ){
-      ret.push(list[i]);
-    }
-    return ret;
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let segments=[];
+          segments.push(result);
+          toDistribute.segments=segments;
+          this.distributeResult(toDistribute);
+
+        }
+      )
   };
 
+  copyValueSet(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.VALUESETREGISTRY);
+    //console.log(existing);
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let valueSets=[];
+          valueSets.push(result);
+          toDistribute.valueSets=valueSets;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+
+  };
+
+  copyConformanceProfile(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
+    //console.log(existing);
+
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let conformanceProfiles=[];
+          conformanceProfiles.push(result);
+          toDistribute.conformanceProfiles=conformanceProfiles;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+  }
+
+  copySection(node){
+   //console.log( this.tree._options);
+    this.tocService.cloneNode(node);
+   let ret =  this.tree.treeModel.getNodeById(node.id);
+    //console.log(ret);
+    this.copyElemt.open({
+      igDocumentId : this.igId,
+      id:node.id,
+      name:node.data.data.label,
+      type:node.data.data.type,
+
+    })
+      .subscribe(
+        result => {
+         //console.log("result");
+         //console.log(result);
+         //console.log(node.parent);
+         //console.log(node.parent.treeModel);
+         node.parent.data.children.push(result);
+          this.tree.treeModel.update();
+          this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
+
+              //console.log("updated");
+            }, error=>{
+              //console.log("could not update IG")
+
+            }
+
+          )
 
 
+        }
+      )
 
-
-
+  }
 
 
 }

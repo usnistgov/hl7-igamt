@@ -20,12 +20,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.SectionCopyWrapper;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
@@ -79,6 +84,7 @@ public class CopyController {
       ConformanceProfile clone = profile.clone();
       clone.setUsername(username);
       clone.setId(new CompositeKey());
+      clone.setIdentifier(wrapper.getExt());
       clone.setName(wrapper.getName());
       clone = conformanceProfileService.save(clone);
       return displayConverter.createConformanceProfileNode(clone, 0);
@@ -152,5 +158,32 @@ public class CopyController {
       return null;
     }
   }
+
+  @RequestMapping(value = "/api/ig/copySection", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody TreeNode copySection(@RequestBody SectionCopyWrapper wrapper,
+      Authentication authentication) throws IGNotFoundException, SectionNotFoundException {
+    String username = authentication.getPrincipal().toString();
+
+    Ig ig = igService.findLatestById(wrapper.getIgDocumentId());
+    if (ig == null) {
+      throw new IGNotFoundException(wrapper.getIgDocumentId());
+    } else {
+      TextSection section = igService.findSectionById(ig.getContent(), wrapper.getId());
+      if (section == null) {
+        throw new SectionNotFoundException(wrapper.getId());
+      } else {
+        TextSection res = section.clone();
+        res.setLabel(wrapper.getName());
+        return displayConverter.createNarrativeNode(res);
+
+      }
+    }
+
+
+
+  }
+
 
 }

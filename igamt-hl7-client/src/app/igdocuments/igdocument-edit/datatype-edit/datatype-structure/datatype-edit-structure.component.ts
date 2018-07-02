@@ -9,8 +9,6 @@ import {GeneralConfigurationService} from "../../../../service/general-configura
 import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
 import {TocService} from "../../service/toc.service";
 
 @Component({
@@ -42,7 +40,7 @@ export class DatatypeEditStructureComponent {
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService, private tocService:TocService){
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;

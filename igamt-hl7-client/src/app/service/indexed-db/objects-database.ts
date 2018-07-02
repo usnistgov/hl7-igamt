@@ -19,7 +19,6 @@ export class dndObject{
 }
 export class Section {
   id?: string;
-  dnd:dndObject;
   section:any;
 
 }

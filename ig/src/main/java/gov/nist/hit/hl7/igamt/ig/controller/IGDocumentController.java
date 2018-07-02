@@ -236,7 +236,7 @@ public class IGDocumentController {
     Ig ig = igService.findIgContentById(id);
 
     if (ig != null) {
-      TextSection s = findSectionById(ig.getContent(), sectionId);
+      TextSection s = igService.findSectionById(ig.getContent(), sectionId);
       if (s == null) {
         throw new SectionNotFoundException("Section Not Foud");
       } else {
@@ -246,45 +246,6 @@ public class IGDocumentController {
       throw new IGNotFoundException("Cannot found Id document");
     }
 
-  }
-
-  /**
-   * @param content
-   * @param sectionId
-   * @return
-   */
-  private TextSection findSectionById(Set<TextSection> content, String sectionId) {
-    // TODO Auto-generated method stub
-    for (TextSection s : content) {
-      TextSection ret = findSectionInside(s, sectionId);
-      if (ret != null) {
-        return ret;
-      }
-    }
-    return null;
-
-  }
-
-  /**
-   * @param s
-   * @param sectionId
-   * @return
-   */
-  private TextSection findSectionInside(TextSection s, String sectionId) {
-    // TODO Auto-generated method stub
-    if (s.getId().equals(sectionId)) {
-      return s;
-    }
-    if (s.getChildren() != null && s.getChildren().size() > 0) {
-      for (TextSection ss : s.getChildren()) {
-        TextSection ret = findSectionInside(ss, sectionId);
-        if (ret != null) {
-          return ret;
-        }
-      }
-      return null;
-    }
-    return null;
   }
 
 

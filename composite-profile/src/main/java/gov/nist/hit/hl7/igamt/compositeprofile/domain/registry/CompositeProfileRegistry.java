@@ -16,7 +16,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 /**
  * @author ena3
- *
+ * 
  */
 public class CompositeProfileRegistry extends Registry {
 

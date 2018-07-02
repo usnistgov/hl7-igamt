@@ -23,6 +23,10 @@ import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-pos
 import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-predef.component";
 
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
+import {MessageModule} from "primeng/components/message/message";
+import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
+import { DatatypeCrossRefComponent } from './datatype-cross-ref/datatype-cross-ref.component';
+import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
 
 @NgModule({
   imports: [
@@ -38,11 +42,13 @@ import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
     AccordionModule,
     SelectButtonModule,
     TableModule,
-      FroalaEditorModule.forRoot(),
-      FroalaViewModule.forRoot()
+    MessageModule,
+    NamingConventionModule,
+    FroalaEditorModule.forRoot(),
+    FroalaViewModule.forRoot()
   ],
-  providers : [],
-  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent],
+  providers : [DatatypeCrossRefResolver],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

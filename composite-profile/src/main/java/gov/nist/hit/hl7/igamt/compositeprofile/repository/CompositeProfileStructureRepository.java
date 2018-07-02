@@ -13,16 +13,20 @@
  */
 package gov.nist.hit.hl7.igamt.compositeprofile.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 
 /**
- *
+ * 
  * @author Jungyub Woo on Mar 9, 2018.
  */
 public interface CompositeProfileStructureRepository
     extends MongoRepository<CompositeProfileStructure, CompositeKey> {
 
+  @Override
+  public Optional<CompositeProfileStructure> findById(CompositeKey id);
 }

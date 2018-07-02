@@ -1,143 +1,101 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {SegmentsIndexedDbService} from '../indexed-db/segments/segments-indexed-db.service';
 import {IObject} from '../indexed-db/objects-database';
 
 @Injectable()
 export class SegmentsService {
-  constructor(private http: HttpClient, private segmentsIndexedDbService: SegmentsIndexedDbService) {
+  constructor(private http: HttpClient) {
   }
 
   public getSegmentMetadata(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentMetadata(id).then((metadata) => {
-        resolve(metadata);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/metadata').subscribe(serverSegmentMetadata => {
+
+        this.http.get('api/segments/' + id + '/metadata').toPromise().then(serverSegmentMetadata => {
           resolve(serverSegmentMetadata);
         }, error => {
           reject(error);
         });
       });
-    });
     return promise;
   }
 
   public getSegmentStructure(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentStructure(id).then((structure) => {
-        resolve(structure);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/structure').subscribe(serverSegmentStructure => {
+        this.http.get('api/segments/' + id + '/structure').toPromise().then(serverSegmentStructure => {
           resolve(serverSegmentStructure);
         }, error => {
           reject(error);
         });
-      });
     });
     return promise;
   }
 
   public getSegmentCrossReference(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentCrossReference(id).then((crossReference) => {
-        resolve(crossReference);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/crossReference').subscribe(serverSegmentCrossReference => {
+        this.http.get('api/segments/' + id + '/crossReference').toPromise().then(serverSegmentCrossReference => {
           resolve(serverSegmentCrossReference);
         }, error => {
           reject(error);
         });
       });
-    });
     return promise;
   }
 
   public getSegmentPostDef(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentPostDef(id).then((postDef) => {
-        resolve(postDef);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/postdef').subscribe(serverSegmentPostDef => {
+        this.http.get('api/segments/' + id + '/postdef').toPromise().then(serverSegmentPostDef => {
           resolve(serverSegmentPostDef);
         }, error => {
           reject(error);
         });
       });
-    });
     return promise;
   }
 
   public getSegmentPreDef(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentPreDef(id).then((preDef) => {
-        resolve(preDef);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/predef').subscribe(serverSegmentPreDef => {
+        this.http.get('api/segments/' + id + '/predef').toPromise().then(serverSegmentPreDef => {
           resolve(serverSegmentPreDef);
         }, error => {
           reject(error);
         });
-      });
     });
     return promise;
   }
 
   public getSegmentConformanceStatements(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      this.segmentsIndexedDbService.getSegmentConformanceStatements(id).then((conformanceStatement) => {
-        resolve(conformanceStatement);
-      }).catch(() => {
-        this.http.get('api/segments/' + id + '/conformancestatement').subscribe(serverSegmentConformanceStatement => {
+        this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(serverSegmentConformanceStatement => {
           resolve(serverSegmentConformanceStatement);
         }, error => {
           reject(error);
         });
       });
-    });
     return promise;
   }
 
   public saveSegmentMetadata(id, metadata): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.metadata = metadata;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
   public saveSegmentStructure(id, structure): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.structure = structure;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
   public saveSegmentPreDef(id, preDef): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.preDef = preDef;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
   public saveSegmentPostDef(id, postDef): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.postDef = postDef;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
   public saveSegmentCrossReferences(id, crossReference): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.crossReference = crossReference;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
   public saveSegmentConformanceStatements(id, conformanceStatements): Promise<any> {
-    const segment = new IObject();
-    segment.id = id;
-    segment.conformanceStatements = conformanceStatements;
-    return this.segmentsIndexedDbService.saveSegment(segment);
+    return null;
   }
 
 }
