@@ -1,0 +1,63 @@
+<h2>Datatype Metadata</h2>
+<div *ngIf="datatypeMetadata">
+    <form #datatypeMetadataForm="ngForm">
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Name
+            </label>
+            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="datatypeMetadata.name" required />
+            <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                <p-message severity="error" text="Name is required"></p-message>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Flavor Name (Ext)
+            </label>
+            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #extension="ngModel" minlength="4" maxlength="4" DatatypeNamingConvention NamingDuplication [existing]="existingNames" [label]="datatypeMetadata.name" [(ngModel)]="datatypeMetadata.ext" required />
+
+
+          <div *ngIf="extension&&extension.errors" class="ui-g-offset-2">
+
+
+            <div *ngIf="extension.errors.required">
+              <p-message severity="error" text="extension is required"></p-message>
+
+            </div>
+            <div *ngIf="extension.errors.maxlength">
+              <p-message severity="error" text="extension is too long"></p-message>
+
+            </div>
+            <div  *ngIf="extension.errors.minlength">
+              <p-message severity="error" text="extension is too short"></p-message>
+
+            </div>
+            <div  *ngIf="extension.errors.duplicated">
+              <p-message severity="error" text="extension is duplicated"></p-message>
+
+            </div>
+            <div *ngIf="extension.errors.invalidConvention">
+              <p-message severity="error" text="invalid convention"></p-message>
+
+            </div>
+
+          </div>
+        </div>
+
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Description
+            </label>
+            <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="datatypeMetadata.description" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Author Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="datatypeMetadata.authorNote"></div>
+        </div>
+    </form>
+</div>
