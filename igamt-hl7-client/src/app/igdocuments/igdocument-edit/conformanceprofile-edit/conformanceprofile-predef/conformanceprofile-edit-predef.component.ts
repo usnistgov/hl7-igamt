@@ -5,11 +5,10 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {HttpClient} from "@angular/common/http";
-import {SegmentsService} from "../../../../service/segments/segments.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
 
 
 

@@ -5,18 +5,16 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
-
 import { _ } from 'underscore';
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
 import {Types} from "../../../../common/constants/types";
+import {SegmentsService} from "../segments.service";
+import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     selector : 'segment-edit',

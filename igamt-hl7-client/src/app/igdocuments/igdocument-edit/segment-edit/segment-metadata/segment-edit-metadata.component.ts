@@ -8,10 +8,10 @@ import * as _ from 'lodash';
 
 import 'rxjs/add/operator/filter';
 import {TocService} from "../../service/toc.service";
-import {SegmentsService} from "../../../../service/segments/segments.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
+import {SegmentsService} from "../segments.service";
 
 
 

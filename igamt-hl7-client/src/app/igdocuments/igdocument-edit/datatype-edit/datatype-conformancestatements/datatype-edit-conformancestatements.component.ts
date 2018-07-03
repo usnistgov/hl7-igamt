@@ -4,10 +4,10 @@
 import {Component, Input} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {DatatypesService} from "../datatypes.service";
 
 
 @Component({

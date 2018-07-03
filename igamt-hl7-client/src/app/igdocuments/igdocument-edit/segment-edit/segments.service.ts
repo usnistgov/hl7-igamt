@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {IObject} from '../indexed-db/objects-database';
+
 
 @Injectable()
 export class SegmentsService {

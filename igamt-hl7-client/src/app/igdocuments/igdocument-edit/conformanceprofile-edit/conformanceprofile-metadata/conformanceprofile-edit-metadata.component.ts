@@ -10,7 +10,7 @@ import {TocService} from "../../service/toc.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
 
 
 

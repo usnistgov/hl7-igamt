@@ -5,11 +5,10 @@ import {Component} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
 import {TocService} from "../../service/toc.service";
+import {DatatypesService} from "../datatypes.service";
 
 @Component({
   selector : 'datatype-edit',

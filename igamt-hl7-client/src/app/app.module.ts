@@ -80,15 +80,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy, CommonModule,APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
-import {IgDocumentService} from './service/ig-document/ig-document.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-import {SegmentsService} from './service/segments/segments.service';
-import {DatatypesService} from './service/datatypes/datatypes.service';
-import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
 import {HttpClientModule} from "@angular/common/http";
@@ -223,11 +219,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     },
      WorkspaceService,
     GeneralConfigurationService,
-    IgDocumentService,
     IndexedDbService,
-    DatatypesService,
-    ConformanceProfilesService,
-    SegmentsService,
     SectionsService,
     AuthService,
     AuthGuard,

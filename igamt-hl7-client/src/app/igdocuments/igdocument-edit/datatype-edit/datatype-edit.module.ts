@@ -27,6 +27,7 @@ import {MessageModule} from "primeng/components/message/message";
 import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
 import { DatatypeCrossRefComponent } from './datatype-cross-ref/datatype-cross-ref.component';
 import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
+import {DatatypesService} from "./datatypes.service";
 
 @NgModule({
   imports: [
@@ -47,7 +48,7 @@ import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  providers : [DatatypeCrossRefResolver],
+  providers : [DatatypeCrossRefResolver,DatatypesService],
   declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

@@ -8,7 +8,7 @@ import {HttpClient} from "@angular/common/http";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
 
 @Component({
   templateUrl : './conformanceprofile-edit-postdef.component.html',

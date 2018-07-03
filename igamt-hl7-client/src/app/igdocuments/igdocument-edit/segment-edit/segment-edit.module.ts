@@ -26,6 +26,7 @@ import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-str
 import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
 import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
 import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
+import {SegmentsService} from "./segments.service";
 
 @NgModule({
     imports: [
@@ -45,7 +46,7 @@ import {SegmentEditConformanceStatementsResolver} from "./segment-conformancesta
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
+    providers : [SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver,SegmentsService],
     declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

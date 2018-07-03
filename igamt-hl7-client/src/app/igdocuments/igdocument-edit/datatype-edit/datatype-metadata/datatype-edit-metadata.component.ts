@@ -4,10 +4,10 @@
 import {Component, Input} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {HttpClient} from "@angular/common/http";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {TocService} from "../../service/toc.service";
+import {DatatypesService} from "../datatypes.service";
 
 
 

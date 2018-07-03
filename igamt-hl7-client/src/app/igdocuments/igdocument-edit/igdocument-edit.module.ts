@@ -54,6 +54,7 @@ import {SplitButtonModule} from "primeng/components/splitbutton/splitbutton";
 import {ExportService} from "./service/export.service";
 import {CopyService} from "./copy-element/copy.service";
 import {NamingConventionModule} from "../../common/naming-convention/naming-convention.module";
+import {IgDocumentService} from "./ig-document.service";
 
 
 @NgModule({
@@ -105,7 +106,7 @@ import {NamingConventionModule} from "../../common/naming-convention/naming-conv
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

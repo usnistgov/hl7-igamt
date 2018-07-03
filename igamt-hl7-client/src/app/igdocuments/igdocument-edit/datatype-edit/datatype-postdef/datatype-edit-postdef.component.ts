@@ -4,7 +4,7 @@
 import {Component} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
+import {DatatypesService} from "../datatypes.service";
 
 
 

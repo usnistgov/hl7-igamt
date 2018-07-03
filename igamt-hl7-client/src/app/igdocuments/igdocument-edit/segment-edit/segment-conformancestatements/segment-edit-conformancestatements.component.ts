@@ -4,14 +4,14 @@
 import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
+import {SegmentsService} from "../segments.service";
+import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',

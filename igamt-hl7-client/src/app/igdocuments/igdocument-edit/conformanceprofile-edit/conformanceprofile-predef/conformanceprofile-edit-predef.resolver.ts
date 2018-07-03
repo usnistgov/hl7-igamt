@@ -10,8 +10,8 @@ import {Http} from "@angular/http";
 import {HttpClient} from "@angular/common/http";
 import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
+
 
 
 @Injectable()
