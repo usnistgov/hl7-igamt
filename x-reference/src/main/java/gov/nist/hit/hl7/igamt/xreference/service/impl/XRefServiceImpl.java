@@ -19,6 +19,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.proj
 import static org.springframework.data.mongodb.core.aggregation.ArrayOperators.Filter.filter;
 import static org.springframework.data.mongodb.core.aggregation.ComparisonOperators.Eq.valueOf;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -34,6 +35,7 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.BasicDBObject;
 
+import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 import gov.nist.hit.hl7.igamt.xreference.util.XReferenceUtil;
 
@@ -84,7 +86,7 @@ public class XRefServiceImpl extends XRefService {
               .as("children"));
     }
 
-    return XReferenceUtil.filterDatatypes(
+    return XReferenceUtil.processDatatypes(
         mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults());
   }
 
@@ -108,7 +110,7 @@ public class XRefServiceImpl extends XRefService {
           project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
               .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
     }
-    return XReferenceUtil.filterSegments(
+    return XReferenceUtil.processSegments(
         mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults());
   }
 
@@ -149,7 +151,7 @@ public class XRefServiceImpl extends XRefService {
           newAggregation(match(XReferenceUtil.getConformanceProfileMultiLevelCriteria(10, objId)));
     }
 
-    return XReferenceUtil.filterChildrenBySegmentId(mongoTemplate
+    return XReferenceUtil.processSegmentReferences(mongoTemplate
         .aggregate(aggregation, "conformanceProfile", BasicDBObject.class).getMappedResults(), id);
   }
 
@@ -172,7 +174,7 @@ public class XRefServiceImpl extends XRefService {
    */
   @Override
   public Map<String, List<BasicDBObject>> getValueSetReferences(String id, Set<String> datatypeIds,
-      Set<String> segmentIds) {
+      Set<String> segmentIds) throws XReferenceException {
     Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
     List<BasicDBObject> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
@@ -192,8 +194,10 @@ public class XRefServiceImpl extends XRefService {
    * 
    * @param id
    * @return the segments referencing a data type at a field level
+   * @throws XReferenceException
    */
-  private List<BasicDBObject> getValueSetRefsBySegments(String id, Set<String> segmentIds) {
+  private List<BasicDBObject> getValueSetRefsBySegments(String id, Set<String> segmentIds)
+      throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
 
@@ -205,9 +209,9 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<BasicDBObject> results = XReferenceUtil.filterReferencesByValueSetId(
-        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults(),
-        id);
+    List<BasicDBObject> results = processValueSetReferences(
+        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults(), id,
+        "segment");
 
     return results;
   }
@@ -217,8 +221,10 @@ public class XRefServiceImpl extends XRefService {
    * 
    * @param id
    * @return the segments referencing a data type at a field level
+   * @throws XReferenceException
    */
-  private List<BasicDBObject> getValueSetRefsByDatatypes(String id, Set<String> segmentIds) {
+  private List<BasicDBObject> getValueSetRefsByDatatypes(String id, Set<String> segmentIds)
+      throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
 
@@ -230,11 +236,250 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<BasicDBObject> results = XReferenceUtil.filterReferencesByValueSetId(
+    List<BasicDBObject> results = processValueSetReferences(
         mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults(),
-        id);
+        id, "datatype");
 
     return results;
+  }
+
+
+  /**
+   * Create a new structure and remove unnecessary references, add path field
+   * 
+   * @param referenceObject
+   * @param valueSetId
+   * @param referenceType
+   * @return
+   * @throws XReferenceException
+   */
+  private BasicDBObject processValueSetReferences(BasicDBObject referenceObject, String valueSetId,
+      String referenceType) throws XReferenceException {
+    List<BasicDBObject> children =
+        (List<BasicDBObject>) ((BasicDBObject) referenceObject.get("binding")).get("children");
+    List<BasicDBObject> tmp = new ArrayList<BasicDBObject>();
+    for (BasicDBObject child : children) {
+      List<BasicDBObject> valuesetBindings = (List<BasicDBObject>) child.get("valuesetBindings");
+      List<BasicDBObject> tmpValuesetBinding = new ArrayList<BasicDBObject>();
+      String path =
+          findElementPath(referenceObject, referenceType, child.get("elementId").toString());
+      if (path == null) {
+        throw new XReferenceException(child.get("elementId").toString() + " Not found in "
+            + referenceType + " with id= " + referenceObject.getString("_id"));
+      }
+      path = XReferenceUtil.getName(referenceObject) + "." + path;
+      child.append("path", path);
+
+      for (BasicDBObject valuesetBinding : valuesetBindings) {
+        if (valuesetBinding.get("valuesetId").equals(valueSetId)) {
+          valuesetBinding.remove("valuesetId"); // no need of extra information
+          tmpValuesetBinding.add(valuesetBinding);
+        }
+      }
+      if (!tmpValuesetBinding.isEmpty()) {
+        child.remove("valuesetBindings");
+        child.append("valuesetBindings", tmpValuesetBinding);
+        tmp.add(child);
+      }
+    }
+    referenceObject.remove("_class");
+    referenceObject.remove("children");
+    referenceObject.remove("preDef");
+    referenceObject.remove("postDef");
+    referenceObject.remove("description");
+    referenceObject.remove("comment");
+    referenceObject.remove("binding");
+    referenceObject.append("children", tmp);
+    return referenceObject;
+  }
+
+
+  private List<BasicDBObject> getObjectByIdAndVersion(String id, int version, String type) {
+    Aggregation aggregation = null;
+    aggregation = newAggregation(
+        match(Criteria.where("_id._id").is(new ObjectId(id)).and("_id.version").is(version)));
+    List<BasicDBObject> results =
+        mongoTemplate.aggregate(aggregation, type, BasicDBObject.class).getMappedResults();
+    return results;
+  }
+
+
+
+  /**
+   * Remove unecessaries fields and create a new structure for easy access
+   * 
+   * @param references
+   * @param valueSetId
+   * @param referenceType
+   * @return
+   * @throws XReferenceException
+   */
+  public List<BasicDBObject> processValueSetReferences(List<BasicDBObject> references,
+      String valueSetId, String referenceType) throws XReferenceException {
+    for (BasicDBObject reference : references) {
+      processValueSetReferences(reference, valueSetId, referenceType);
+    }
+    return references;
+  }
+
+
+  private String getRefId(BasicDBObject element) {
+    String id = ((BasicDBObject) element.get("ref")).get("_id").toString();
+    return id;
+  }
+
+  private String getId(BasicDBObject element) {
+    String id = element.getString("_id");
+    return id;
+  }
+
+
+
+  private String findElementPath(BasicDBObject parent, String parentType, String elementId) {
+    int version = parent.getInt("version");
+
+    if (parentType.equals("segment")) {
+      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("children");
+      for (BasicDBObject child : children) {
+        String childId = getId(child);
+        if (childId.equals(elementId)) {
+          return child.getInt("position") + "";
+        } else {
+          String datatypeId = getRefId(child);
+          List<BasicDBObject> datatypes = getObjectByIdAndVersion(datatypeId, version, "datatype");
+          if (datatypes != null && !datatypes.isEmpty()) {
+            BasicDBObject datatype = datatypes.get(0);
+            String path = getDatatypeChildPath(datatype, elementId);
+            if (path != null) { // 2
+              return child.getInt("position") + "." + path; // MSH.1.2
+            }
+          }
+        }
+      }
+    } else if (parentType.equals("datatype")) {
+      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("components");
+      if (children != null) {
+        for (BasicDBObject child : children) {
+          String childId = getId(child);
+          if (childId.equals(elementId)) {
+            return child.getInt("position") + "";
+          } else {
+            String datatypeId = getRefId(child);
+            List<BasicDBObject> datatypes =
+                getObjectByIdAndVersion(datatypeId, version, "datatype");
+            if (datatypes != null && !datatypes.isEmpty()) {
+              BasicDBObject datatype = datatypes.get(0);
+              String path = getDatatypeChildPath(datatype, elementId);
+              if (path != null) { // 2
+                return child.getInt("position") + "." + path; // MSH.1.2
+              }
+            }
+          }
+        }
+      }
+    } else if (parentType.equals("conformanceProfile")) {
+      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("children");
+      for (BasicDBObject child : children) {
+        String childId = getId(child);
+        if (childId.equals(elementId)) {
+          return child.getString("position");
+        } else {
+          if (child.getString("type").equals("SEGMENTREF")) {
+            String segmentId = getRefId(child);
+            List<BasicDBObject> segments = getObjectByIdAndVersion(segmentId, version, "segment");
+            BasicDBObject segment = segments.get(0);
+            String path = getSegmentChildPath(segment, elementId);
+            if (path != null) { // 2
+              return child.getInt("position") + "." + path; // ADMSH.1.2
+            }
+          } else {
+            String path = getGroupChildPath(child, version, elementId);
+            if (path != null) {
+              return child.getInt("position") + "." + path;
+            }
+          }
+        }
+      }
+    } else {
+      throw new UnsupportedOperationException(
+          "findElementPath for " + parentType + " is not yet supported");
+    }
+    return null;
+  }
+
+
+  private String getGroupChildPath(BasicDBObject referenceObject, int conformanceProfileVersion,
+      String elementId) {
+    List<BasicDBObject> children = (List<BasicDBObject>) referenceObject.get("children");
+    for (BasicDBObject child : children) {
+      String childId = getId(child);
+      if (childId.equals(elementId)) {
+        return child.getString("position");
+      } else {
+        if (child.getString("type").equals("SEGMENTREF")) {
+          String segmentId = getRefId(child);
+          List<BasicDBObject> segments =
+              getObjectByIdAndVersion(segmentId, conformanceProfileVersion, "segment");
+          BasicDBObject segment = segments.get(0);
+          String path = getSegmentChildPath(segment, elementId);
+          if (path != null) { // 2
+            return child.getInt("position") + "." + path; // ADMSH.1.2
+          }
+        } else {
+          String path = getGroupChildPath(child, conformanceProfileVersion, elementId);
+          if (path != null) {
+            return child.getInt("position") + "." + path;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+
+  private String getDatatypeChildPath(BasicDBObject object, String elementId) {
+    List<BasicDBObject> children = (List<BasicDBObject>) object.get("components");
+    if (children != null) {
+      int version = object.getInt("version");
+      for (BasicDBObject child : children) {
+        String childId = getId(child);
+        if (childId.equals(elementId)) {
+          return child.getString("position");
+        } else {
+          String compDatatypeId = getRefId(child);
+          List<BasicDBObject> datatypes =
+              getObjectByIdAndVersion(compDatatypeId, version, "datatype");
+          BasicDBObject compDatatype = datatypes.get(0);
+          String path = getDatatypeChildPath(compDatatype, elementId);
+          if (path != null) {
+            return child.getString("position") + "." + path;
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+
+  private String getSegmentChildPath(BasicDBObject object, String elementId) {
+    List<BasicDBObject> children = (List<BasicDBObject>) object.get("children");
+    int version = object.getInt("version");
+    for (BasicDBObject child : children) {
+      String childId = getId(child);
+      if (childId.equals(elementId)) {
+        return child.getString("position");
+      } else {
+        String compDatatypeId = getRefId(child);
+        List<BasicDBObject> datatypes =
+            getObjectByIdAndVersion(compDatatypeId, version, "datatype");
+        BasicDBObject compDatatype = datatypes.get(0);
+        String path = getDatatypeChildPath(compDatatype, elementId);
+        if (path != null) {
+          return child.getString("position") + "." + path;
+        }
+      }
+    }
+    return null;
   }
 
 
