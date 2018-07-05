@@ -174,7 +174,7 @@ public class XRefServiceImpl extends XRefService {
    */
   @Override
   public Map<String, List<BasicDBObject>> getValueSetReferences(String id, Set<String> datatypeIds,
-      Set<String> segmentIds) throws XReferenceException {
+      Set<String> segmentIds, Set<String> conformanceProfileIds) throws XReferenceException {
     Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
     List<BasicDBObject> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
@@ -184,6 +184,13 @@ public class XRefServiceImpl extends XRefService {
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
+
+    List<BasicDBObject> conformanceProfiles =
+        getValueSetRefsByConformanceProfiles(id, conformanceProfileIds);
+    if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
+      results.put(CONFORMANCE_PROFILE, conformanceProfiles);
+    }
+
     System.out.println(segments);
 
     return results;
@@ -215,6 +222,35 @@ public class XRefServiceImpl extends XRefService {
 
     return results;
   }
+
+
+  /**
+   * 
+   * @param id
+   * @return the segments referencing a data type at a field level
+   * @throws XReferenceException
+   */
+  private List<BasicDBObject> getValueSetRefsByConformanceProfiles(String id,
+      Set<String> conformanceProfileIds) throws XReferenceException {
+    Aggregation aggregation = null;
+    if (conformanceProfileIds != null) {
+
+      aggregation =
+          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(conformanceProfileIds))),
+              match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
+
+    } else {
+      aggregation = newAggregation(
+          match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
+    }
+
+    List<BasicDBObject> results = processValueSetReferences(mongoTemplate
+        .aggregate(aggregation, "conformanceProfile", BasicDBObject.class).getMappedResults(), id,
+        "conformanceProfile");
+
+    return results;
+  }
+
 
 
   /**

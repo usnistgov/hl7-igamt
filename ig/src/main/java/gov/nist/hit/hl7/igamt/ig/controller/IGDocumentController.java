@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -23,8 +24,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.mongodb.BasicDBObject;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
@@ -45,6 +48,8 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.service.SaveService;
+import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 
 @RestController
 public class IGDocumentController {
@@ -69,6 +74,11 @@ public class IGDocumentController {
 
   @Autowired
   SaveService saveService;
+
+  @Autowired
+  private XRefService xRefService;
+
+
 
   public IGDocumentController() {
     // TODO Auto-generated constructor stub
@@ -247,6 +257,73 @@ public class IGDocumentController {
     }
 
   }
+
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody Map<String, List<BasicDBObject>> findDatatypeCrossRef(
+      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
+      Authentication authentication) throws IGNotFoundException, XReferenceException {
+    Ig ig = igService.findLatestById(id);
+    if (ig != null) {
+      Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
+      Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
+      Map<String, List<BasicDBObject>> results =
+          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
+      return results;
+    } else {
+      throw new IGNotFoundException("Cannot found Id document");
+    }
+  }
+
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/crossref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody Map<String, List<BasicDBObject>> findSegmentCrossRef(
+      @PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
+      Authentication authentication) throws IGNotFoundException, XReferenceException {
+    Ig ig = igService.findLatestById(id);
+    if (ig != null) {
+      Set<String> filterConformanceProfileIds =
+          gatherIds(ig.getConformanceProfileRegistry().getChildren());
+      Map<String, List<BasicDBObject>> results =
+          xRefService.getSegmentReferences(segmentId, filterConformanceProfileIds);
+      return results;
+    } else {
+      throw new IGNotFoundException("Cannot found Id document");
+    }
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/crossref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody Map<String, List<BasicDBObject>> findValueSetCrossRef(
+      @PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
+      Authentication authentication) throws IGNotFoundException, XReferenceException {
+    Ig ig = igService.findLatestById(id);
+    if (ig != null) {
+      Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
+      Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
+      Set<String> filterConformanceProfileIds =
+          gatherIds(ig.getConformanceProfileRegistry().getChildren());
+      Map<String, List<BasicDBObject>> results = xRefService.getValueSetReferences(id,
+          filterDatatypeIds, filterSegmentIds, filterConformanceProfileIds);
+      return results;
+    } else {
+      throw new IGNotFoundException("Cannot found Id document");
+    }
+  }
+
+
+
+  private Set<String> gatherIds(Set<Link> links) {
+    Set<String> results = new HashSet<String>();
+    links.forEach(link -> results.add(link.getId().getId()));
+    return results;
+  }
+
 
   /**
    * @param content
