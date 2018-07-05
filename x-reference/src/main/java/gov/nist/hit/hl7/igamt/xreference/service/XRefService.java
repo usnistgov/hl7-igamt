@@ -56,6 +56,7 @@ public abstract class XRefService {
   public abstract Map<String, List<BasicDBObject>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds);
 
+
   /**
    * 
    * @param id: id of the value set
@@ -67,7 +68,8 @@ public abstract class XRefService {
    * @throws XReferenceException
    */
   public abstract Map<String, List<BasicDBObject>> getValueSetReferences(String id,
-      Set<String> filterDatatypeIds, Set<String> filterSegmentIds) throws XReferenceException;
+      Set<String> datatypeIds, Set<String> segmentIds, Set<String> conformanceProfiles)
+      throws XReferenceException;
 
 
 }

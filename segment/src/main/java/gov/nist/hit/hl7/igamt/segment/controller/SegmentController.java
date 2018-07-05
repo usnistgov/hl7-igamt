@@ -1,20 +1,13 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.mongodb.BasicDBObject;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
@@ -96,16 +89,6 @@ public class SegmentController {
   }
 
 
-  @RequestMapping(value = "/api/segments/{id}/crossref", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public @ResponseBody Map<String, List<BasicDBObject>> getDatatypeCrossRef(
-      @PathVariable("id") String id,
-      @RequestParam("filterConformanceProfileIds") Set<String> filterConformanceProfileIds,
-      Authentication authentication) {
-    Map<String, List<BasicDBObject>> results =
-        xRefService.getSegmentReferences(id, filterConformanceProfileIds);
-    return results;
-  }
 
   @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
       produces = {"application/json"})
