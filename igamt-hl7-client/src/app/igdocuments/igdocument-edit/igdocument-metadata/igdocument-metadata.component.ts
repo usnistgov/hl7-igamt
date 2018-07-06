@@ -55,32 +55,23 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
     )
 
   };
+
   reset(){
     this.metaData=_.cloneDeep(this.backup);
-
-
   }
-
   getCurrent(){
     return this.metaData;
   }
   getBackup(){
     return this.backup;
   }
-
   isValid(){
     return !this.editForm.invalid;
   }
-
-
   upload(event) {
     this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
-
     for(let file of event.files) {
       this.uploadedFiles.push(file);
-
     }
-
-
   }
 }
