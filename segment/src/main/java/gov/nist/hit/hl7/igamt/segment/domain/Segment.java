@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.segment.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -27,6 +28,9 @@ public class Segment extends Resource {
   }
 
   public ResourceBinding getBinding() {
+    if (binding == null) {
+      binding = new ResourceBinding();
+    }
     return binding;
   }
 
@@ -35,6 +39,9 @@ public class Segment extends Resource {
   }
 
   public Set<Field> getChildren() {
+    if (children == null) {
+      children = new HashSet<Field>();
+    }
     return children;
   }
 
@@ -51,6 +58,9 @@ public class Segment extends Resource {
   }
 
   public DynamicMappingInfo getDynamicMappingInfo() {
+    if (dynamicMappingInfo == null) {
+      dynamicMappingInfo = new DynamicMappingInfo();
+    }
     return dynamicMappingInfo;
   }
 
@@ -101,7 +111,7 @@ public class Segment extends Resource {
     result.setScope(this.getDomainInfo().getScope());
     result.setVersion(this.getDomainInfo().getVersion());
     if (this.getExt() != null) {
-      result.setLabel(this.getName() + this.getExt());
+      result.setLabel(this.getName() + "_" + this.getExt());
     } else {
       result.setLabel(this.getName());
     }

@@ -31,19 +31,22 @@ public class ResponseMessage {
 
 
 
-  public ResponseMessage(Type type, String text, String resourceId) {
+  public ResponseMessage(Type type, String text, String resourceId, Date date) {
+    this(type, text, resourceId, date, false);
+  }
+
+  public ResponseMessage(Type type, String text, String resourceId, Date updateDate, boolean hide) {
     this.type = type;
     this.text = text;
     this.resourceId = resourceId;
-    this.date = new Date();
+    this.date = updateDate;
+    this.hide = false;
   }
 
 
-  public ResponseMessage(Type type, String text, String resourceId, boolean hide) {
-    this.type = type;
-    this.text = text;
-    this.resourceId = resourceId;
-    this.hide = hide;
+
+  public ResponseMessage(Type type, String text) {
+    this(type, text, null, new Date(), false);
   }
 
 

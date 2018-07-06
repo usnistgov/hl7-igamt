@@ -11,24 +11,26 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.segment.exception;
+package gov.nist.hit.hl7.igamt.datatype.exception;
 
 /**
  * 
  * @author Harold Affo
  *
  */
-public class SegmentException extends Exception {
+public class DatatypeException extends Exception {
 
   /**
    * 
    */
   private static final long serialVersionUID = -6887787296077348003L;
 
-  public SegmentException(String id, String error) {
-    super("Error while processing segment with id=" + id + ", details=" + error);
-  }
+  private String id;
 
+  public DatatypeException(String id, String error) {
+    super(error);
+    this.id = id;
+  }
 
 
 }

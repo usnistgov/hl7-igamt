@@ -11,24 +11,17 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.segment.exception;
+package gov.nist.hit.hl7.igamt.common.base.exception;
 
 /**
- * 
- * @author Harold Affo
  *
+ * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SegmentException extends Exception {
+public class ValuesetNotFoundException extends Exception {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6887787296077348003L;
+  private static final long serialVersionUID = 3425565153244575063L;
 
-  public SegmentException(String id, String error) {
-    super("Error while processing segment with id=" + id + ", details=" + error);
+  public ValuesetNotFoundException(String id) {
+    super("Value set with id " + id + " not found");
   }
-
-
-
 }

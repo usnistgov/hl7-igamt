@@ -11,24 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.segment.exception;
+package gov.nist.hit.hl7.igamt.datatype.exception;
 
 /**
- * 
- * @author Harold Affo
  *
+ * @author Maxence Lefort on Mar 22, 2018.
  */
-public class SegmentException extends Exception {
+public class DatatypeNotFoundException extends Exception {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6887787296077348003L;
+  private static final long serialVersionUID = 6099795044591697558L;
 
-  public SegmentException(String id, String error) {
-    super("Error while processing segment with id=" + id + ", details=" + error);
+  public DatatypeNotFoundException(String id) {
+    super("Datatype with id " + id + " not found");
   }
-
-
 
 }

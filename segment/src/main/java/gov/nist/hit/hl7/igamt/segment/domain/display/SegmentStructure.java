@@ -73,8 +73,14 @@ public class SegmentStructure {
   }
 
 
+  /**
+   * TODO
+   * 
+   * @return
+   * @throws SegmentException
+   */
   public Segment toSegment() throws SegmentException {
-    throw new SegmentException("Operation not currently supported");
+    throw new SegmentException(id.getId(), "Operation not currently supported");
   }
 
 
