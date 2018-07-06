@@ -71,5 +71,14 @@ public class IGDocumentExceptionHandler {
   }
 
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({CloneException.class})
+  public ResponseMessage handleCloneException(CloneException exception) {
+    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+
 
 }
