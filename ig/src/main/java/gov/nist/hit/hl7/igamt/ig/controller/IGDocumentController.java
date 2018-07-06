@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -42,14 +43,28 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddIngInfo;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingMessagesWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.exception.XReferenceFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
+import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
+import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
+import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
@@ -97,7 +112,7 @@ public class IGDocumentController extends BaseController {
   SegmentService segmentService;
 
   @Autowired
-  ValuesetService valueSetService;
+  ValuesetService valuesetService;
 
 
 
@@ -481,10 +496,10 @@ public class IGDocumentController extends BaseController {
     if (found != null) {
       ig.getValueSetRegistry().getChildren().remove(found);
     }
-    Valueset valueSet = valueSetService.findLatestById(valuesetId);
+    Valueset valueSet = valuesetService.findLatestById(valuesetId);
     if (valueSet != null) {
       if (valueSet.getDomainInfo().getScope().equals(Scope.USER)) {
-        valueSetService.delete(valueSet);
+        valuesetService.delete(valueSet);
       }
     }
     igService.save(ig);
@@ -528,6 +543,211 @@ public class IGDocumentController extends BaseController {
   }
 
 
+  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone",
+      method = RequestMethod.POST, produces = {"application/json"})
+  public TreeNode cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
+      @PathVariable("id") String id,
+      @PathVariable("conformanceProfileId") String conformanceProfileId,
+      Authentication authentication) throws CloneException, IGNotFoundException {
+    Ig ig = findIgById(id);
+    String username = authentication.getName();
+    ConformanceProfile profile = conformanceProfileService.findDisplayFormat(wrapper.getId());
+    if (profile == null) {
+      throw new CloneException("Failed to build conformance profile tree structure");
+    }
+    ConformanceProfile clone = profile.clone();
+    clone.setUsername(username);
+    clone.setId(new CompositeKey());
+    clone.setName(wrapper.getName());
+    clone = conformanceProfileService.save(clone);
+    ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId()));
+    igService.save(ig);
+    return displayConverter.createConformanceProfileNode(clone, 0);
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone",
+      method = RequestMethod.POST, produces = {"application/json"})
+  public TreeNode cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+      @PathVariable("segmentId") String segmentId, Authentication authentication)
+      throws IGNotFoundException, ValidationException, CloneException {
+    Ig ig = findIgById(id);
+    String username = authentication.getPrincipal().toString();
+    Segment segment = segmentService.findByKey(wrapper.getId());
+    if (segment == null) {
+      throw new CloneException("Cannot find segment with id=" + wrapper.getId().getId());
+    }
+    Segment clone = segment.clone();
+    clone.setUsername(username);
+    clone.setId(new CompositeKey());
+    clone.setName(segment.getName());
+    clone.setExt(wrapper.getExt());
+    clone = segmentService.save(clone);
+    ig.getSegmentRegistry().getChildren().add(new Link(clone.getId()));
+    igService.save(ig);
+    return displayConverter.createSegmentNode(clone, 0);
+  }
+
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone",
+      method = RequestMethod.POST, produces = {"application/json"})
+  public TreeNode copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+      @PathVariable("datatypeId") String datatypeId, Authentication authentication)
+      throws IGNotFoundException, CloneException {
+    Ig ig = findIgById(id);
+    String username = authentication.getPrincipal().toString();
+    Datatype datatype = datatypeService.findByKey(wrapper.getId());
+    if (datatype == null) {
+      throw new CloneException("Cannot find datatype with id=" + wrapper.getId().getId());
+    }
+    Datatype clone = datatype.clone();
+    clone.setUsername(username);
+    clone.setId(new CompositeKey());
+    clone.setName(datatype.getName());
+    clone.setExt(wrapper.getExt());
+    clone = datatypeService.save(clone);
+    ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
+    igService.save(ig);
+    return displayConverter.createDatatypeNode(clone, 0);
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone",
+      method = RequestMethod.POST, produces = {"application/json"})
+
+  public TreeNode cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
+      @PathVariable("valuesetId") String valuesetId, Authentication authentication)
+      throws CloneException, IGNotFoundException {
+    Ig ig = findIgById(id);
+    String username = authentication.getPrincipal().toString();
+    Valueset valueset = valuesetService.findById(wrapper.getId());
+    if (valueset == null) {
+      throw new CloneException("Cannot find valueset with id=" + wrapper.getId().getId());
+    }
+    Valueset clone = valueset.clone();
+    clone.setUsername(username);
+    clone.setId(new CompositeKey());
+    clone.setBindingIdentifier(wrapper.getName());
+    ig.getValueSetRegistry().getChildren().add(new Link(clone.getId()));
+    igService.save(ig);
+    return displayConverter.createValueSetNode(clone, 0);
+
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/add",
+      method = RequestMethod.POST, produces = {"application/json"})
+  public AddMessageResponseDisplay addConforanceProfile(@PathVariable("id") String id,
+      @RequestBody AddingMessagesWrapper wrapper, Authentication authentication)
+      throws IGNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    Set<String> savedIds = new HashSet<String>();
+    for (Event ev : wrapper.getMsgEvts()) {
+      ConformanceProfile profile = conformanceProfileService.findByKey(ev.getId());
+      if (profile != null) {
+        ConformanceProfile clone = profile.clone();
+        clone.setUsername(username);
+        clone.setEvent(ev.getName());
+        clone.setId(new CompositeKey());
+        clone.setName(profile.getName());
+        clone = conformanceProfileService.save(clone);
+        savedIds.add(clone.getId().getId());
+      }
+    }
+    AddMessageResponseObject objects = crudService.addConformanceProfiles(savedIds, ig);
+    return displayConverter.convertMessageAddResponseToDisplay(objects);
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST,
+      produces = {"application/json"})
+  public AddSegmentResponseDisplay addSegments(@PathVariable("id") String id,
+      @RequestBody AddingWrapper wrapper, Authentication authentication)
+      throws IGNotFoundException, ValidationException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    Set<String> savedIds = new HashSet<String>();
+    for (AddIngInfo elm : wrapper.getToAdd()) {
+      if (elm.isFlavor()) {
+        Segment segment = segmentService.findByKey(elm.getId());
+        if (segment != null) {
+          Segment clone = segment.clone();
+          clone.setUsername(username);
+          clone.setId(new CompositeKey());
+          clone.setName(segment.getName());
+          clone.setExt(elm.getExt());
+          clone = segmentService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
+      } else {
+        savedIds.add(elm.getId().getId());
+      }
+    }
+    AddSegmentResponseObject objects = crudService.addSegments(savedIds, ig);
+    return displayConverter.convertSegmentResponseToDisplay(objects);
+
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST,
+      produces = {"application/json"})
+  public AddDatatypeResponseDisplay addDatatypes(@PathVariable("id") String id,
+      @RequestBody AddingWrapper wrapper, Authentication authentication)
+      throws IGNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    Set<String> savedIds = new HashSet<String>();
+    for (AddIngInfo elm : wrapper.getToAdd()) {
+      if (elm.isFlavor()) {
+        Datatype datatype = datatypeService.findByKey(elm.getId());
+        if (datatype != null) {
+          Datatype clone = datatype.clone();
+          clone.setUsername(username);
+          clone.setId(new CompositeKey());
+          clone.setName(datatype.getName());
+          clone.setExt(elm.getExt());
+          clone = datatypeService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
+      } else {
+        savedIds.add(elm.getId().getId());
+      }
+    }
+    AddDatatypeResponseObject objects = crudService.addDatatypes(savedIds, ig);
+    return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
+
+
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST,
+      produces = {"application/json"})
+  public AddValueSetsResponseDisplay addValueSets(@PathVariable("id") String id,
+      @RequestBody AddingWrapper wrapper, Authentication authentication)
+      throws IGNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    Set<String> savedIds = new HashSet<String>();
+    for (AddIngInfo elm : wrapper.getToAdd()) {
+      if (elm.isFlavor()) {
+        Valueset valueset = valuesetService.findById(elm.getId());
+        if (valueset != null) {
+          Valueset clone = valueset.clone();
+          clone.setUsername(username);
+          clone.setId(new CompositeKey());
+          clone.setBindingIdentifier(elm.getName());
+          clone = valuesetService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
+      } else {
+        savedIds.add(elm.getId().getId());
+      }
+    }
+    AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
+    return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
 
   /**
    * 

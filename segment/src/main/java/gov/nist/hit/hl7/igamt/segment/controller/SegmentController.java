@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -147,6 +149,13 @@ public class SegmentController extends BaseController {
     return new ResponseMessage(Type.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         segment.getUpdateDate());
 
+  }
+
+  @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody List<Segment> find(@PathVariable String version,
+      Authentication authentication) {
+    return segmentService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
   }
 
 

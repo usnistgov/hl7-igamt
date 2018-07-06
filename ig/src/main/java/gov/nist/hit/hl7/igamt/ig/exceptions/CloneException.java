@@ -9,49 +9,17 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.exception;
-
-import java.util.List;
-import java.util.Map;
-
-import com.mongodb.BasicDBObject;
+package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 /**
  * @author Harold Affo
  *
  */
-public class XReferenceFoundException extends Exception {
+public class CloneException extends Exception {
+  private static final long serialVersionUID = 1L;
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6887787296077348003L;
-
-  private Map<String, List<BasicDBObject>> xreferences;
-  private String id;
-
-  public XReferenceFoundException(String id, Map<String, List<BasicDBObject>> xreferences) {
-    super("Cross references found for " + id);
-    this.id = id;
-    this.xreferences = xreferences;
+  public CloneException(String string) {
+    super(string);
   }
-
-  public Map<String, List<BasicDBObject>> getXreferences() {
-    return xreferences;
-  }
-
-  public void setXreferences(Map<String, List<BasicDBObject>> xreferences) {
-    this.xreferences = xreferences;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-
 
 }

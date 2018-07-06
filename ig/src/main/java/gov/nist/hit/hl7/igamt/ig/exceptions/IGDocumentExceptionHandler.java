@@ -9,7 +9,7 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.exception;
+package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 import java.util.List;
 import java.util.Map;
@@ -25,7 +25,6 @@ import com.mongodb.BasicDBObject;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
-import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 
 /**

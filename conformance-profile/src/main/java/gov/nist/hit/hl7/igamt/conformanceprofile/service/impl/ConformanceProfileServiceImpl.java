@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -83,6 +84,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Override
   public ConformanceProfile save(ConformanceProfile conformanceProfile) {
     // conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+    conformanceProfile.setUpdateDate(new Date());
     return conformanceProfileRepository.save(conformanceProfile);
   }
 
