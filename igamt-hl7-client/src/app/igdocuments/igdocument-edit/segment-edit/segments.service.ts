@@ -53,41 +53,32 @@ export class SegmentsService {
   }
 
   public getSegmentPreDef(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-        this.http.get('api/segments/' + id + '/predef').toPromise().then(serverSegmentPreDef => {
-          resolve(serverSegmentPreDef);
-        }, error => {
-          reject(error);
-        });
-    });
-    return promise;
+       return  this.http.get('api/segments/' + id + '/predef').toPromise();
+
   }
 
   public getSegmentConformanceStatements(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-        this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(serverSegmentConformanceStatement => {
-          resolve(serverSegmentConformanceStatement);
-        }, error => {
-          reject(error);
-        });
-      });
-    return promise;
+        return this.http.get('api/segments/' + id + '/conformancestatement').toPromise();
   }
 
   public saveSegmentMetadata(id, metadata): Promise<any> {
-    return null;
+
+
+      return this.http.post('api/segments/' + id + '/metadata',metadata).toPromise();
   }
 
   public saveSegmentStructure(id, structure): Promise<any> {
-    return null;
+     return  this.http.post('api/segments/' + id + '/structure',structure).toPromise();
   }
 
   public saveSegmentPreDef(id, preDef): Promise<any> {
-    return null;
+      return this.http.post('api/segments/' + id + '/predef', preDef).toPromise();
+
   }
 
   public saveSegmentPostDef(id, postDef): Promise<any> {
-    return null;
+      return this.http.get('api/segments/' + id + '/postdef').toPromise();
+
   }
 
   public saveSegmentCrossReferences(id, crossReference): Promise<any> {
@@ -95,7 +86,8 @@ export class SegmentsService {
   }
 
   public saveSegmentConformanceStatements(id, conformanceStatements): Promise<any> {
-    return null;
+
+    return this.http.post('api/segments/' + id + '/conformancestatement', conformanceStatements).toPromise();
   }
 
 }

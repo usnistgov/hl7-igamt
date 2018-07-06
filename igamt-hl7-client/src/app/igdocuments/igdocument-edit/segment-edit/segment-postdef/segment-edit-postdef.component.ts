@@ -43,6 +43,8 @@ export class SegmentEditPostdefComponent implements WithSave {
 
     reset(){
         this.segmentPostdef=_.cloneDeep(this.backup);
+        this.editForm.control.markAsPristine();
+
     }
 
     getCurrent(){
@@ -58,6 +60,23 @@ export class SegmentEditPostdefComponent implements WithSave {
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentPostDef(this.segmentId, this.segmentPostdef);
+      return new Promise((resolve, reject)=> {
+
+
+         this.segmentsService.saveSegmentPostDef(this.segmentId, this.segmentPostdef).then(saved => {
+
+          this.backup = _.cloneDeep(this.segmentPostdef);
+
+          this.editForm.control.markAsPristine();
+          resolve(true);
+
+        }, error => {
+          console.log("error saving");
+          reject();
+
+         }
+
+        );
+    })
     }
 }

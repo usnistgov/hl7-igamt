@@ -7,7 +7,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
-import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import com.mongodb.ServerAddress;
 
@@ -32,8 +31,7 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   }
 
   @Override
-  public Mongo mongo() throws Exception {
-
+  public MongoClient mongo() {
 
     return new MongoClient(new ServerAddress(DB_HOST, Integer.parseInt(DB_PORT)));
   }
@@ -42,5 +40,7 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   protected String getMappingBasePackage() {
     return "gov.nist.hit.hl7.igamt";
   }
+
+
 
 }

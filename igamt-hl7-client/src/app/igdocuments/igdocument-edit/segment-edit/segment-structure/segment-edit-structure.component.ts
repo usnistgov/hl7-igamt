@@ -128,6 +128,8 @@ export class SegmentEditStructureComponent implements WithSave {
 
     reset(){
         this.segmentStructure=__.cloneDeep(this.backup);
+      this.editForm.control.markAsPristine();
+
     }
 
     getCurrent(){
@@ -144,7 +146,21 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure);
+      return new Promise((resolve, reject)=> {
+
+          this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure).then(saved => {
+
+          this.backup = _.cloneDeep(this.segmentStructure);
+          this.editForm.control.markAsPristine();
+          resolve(true);
+
+        }, error => {
+          console.log("error saving");
+
+          reject();
+
+        });
+      })
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>gov.nist.hit.hl7</groupId>
 	<artifactId>igamt</artifactId>
@@ -9,11 +7,11 @@
 	<name>Igamt</name>
 	<description>Igamt tool</description>
 	<packaging>pom</packaging>
-	
+
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.1.RELEASE</version>
+		 <version>1.5.1.RELEASE</version>
 	</parent>
 
 	<properties>
@@ -21,49 +19,42 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
+		 <dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-		   	<artifactId>spring-boot-starter-test</artifactId>
-		   	<scope>test</scope>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
 		</dependency>
-				<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<version>2.0.8.RELEASE</version>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 		
-				<dependency>
-    <groupId>org.springframework.data</groupId>
-    <artifactId>spring-data-commons</artifactId>
-    <version>2.0.8.RELEASE</version>
-</dependency>
 
-					
-			 <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-             <scope>test</scope>
-        </dependency>
-		
-		 <dependency>
-            <groupId>cz.jirutka.spring</groupId>
-            <artifactId>embedmongo-spring</artifactId>
-            <version>RELEASE</version>
-             <scope>test</scope>
-        </dependency>
-       
-
-        
 	</dependencies>
-<dependencyManagement>
+	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>io.spring.platform</groupId>
@@ -78,7 +69,7 @@
 				<version>0.8.1</version>
 				<scope>test</scope>
 			</dependency>
-			
+
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
@@ -93,9 +84,17 @@
 				<scope>test</scope>
 			</dependency>
 
+			<dependency>
+				<artifactId>spring-boot-starter-test</artifactId>
+				<groupId>spring-boot-starter-test</groupId>
+				<version>1.5.13.RELEASE</version>
+				<scope>test</scope>
+			</dependency>
+
+
 		</dependencies>
 	</dependencyManagement>
-	
+
 	<modules>
 		<module>common</module>
 		<module>profile-component</module>
@@ -107,10 +106,11 @@
 		<module>conformance-profile</module>
 		<module>serialization</module>
 		<module>segment</module>
-  		<module>datatype-library</module>
-   		<module>igamt-auth</module>
-  		<module>x-reference</module>
-    	<module>export-configuration</module>
-  		<module>export</module>
-</modules>
- </project>
+		<module>datatype-library</module>
+		<module>igamt-auth</module>
+		<module>file-storage</module>
+		<module>x-reference</module>
+		<module>export-configuration</module>
+		<module>export</module>
+  </modules>
+</project>

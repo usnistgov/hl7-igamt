@@ -34,8 +34,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     listTab: boolean = true;
     editorTab: boolean = false;
 
-    @ViewChild('csForm')
-    private csForm: NgForm;
+    @ViewChild('editForm')
+    private editForm: NgForm;
 
     constructor(
         private route: ActivatedRoute,
@@ -125,11 +125,27 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     isValid(){
-        return !this.csForm.invalid;
+        return !this.editForm.invalid;
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements);
+      return new Promise((resolve, reject)=> {
+
+         this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
+
+          this.backup = _.cloneDeep(this.segmentConformanceStatements);
+
+          this.editForm.control.markAsPristine();
+          resolve(true);
+
+        }, error=>{
+
+
+          console.log("error saving");
+          reject();
+
+        });
+        });
     }
 
     popChild(id, dtId, parentTreeNode){

@@ -21,8 +21,8 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
 export class ConformanceprofileEditMetadataComponent implements WithSave {
     conformanceprofileId:any;
     conformanceprofileMetadata:any;
-  backup:any;
-  currentNode:any;
+     backup:any;
+     currentNode:any;
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -57,12 +57,49 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   isValid(){
     return !this.editForm.invalid;
   }
-  save(): Promise<any>{
-    this.tocService.getActiveNode().subscribe(x=>{
-      let node= x;
-      node.data.data.ext= _.cloneDeep(this.conformanceprofileMetadata.ext);
-    });
 
-    return this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileMetadata);
+
+
+  save(): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+        let treeModel = this.tocService.getTreeModel();
+        let node = treeModel.getNodeById(this.conformanceprofileId);
+
+        console.log(node);
+
+        node.data.data.label = this.conformanceprofileMetadata.name;
+        node.data.data.ext = this.conformanceprofileMetadata.identifier;
+        this.tocService.setTreeModel(treeModel).then(x => {
+
+
+          this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileMetadata).then(saved => {
+
+
+              this.backup = _.cloneDeep(this.conformanceprofileMetadata);
+
+              this.editForm.control.markAsPristine();
+
+
+              resolve(true);
+            }, error => {
+              console.log("Error Saving");
+
+            }
+          );
+
+        })
+
+
+      }
+    )
+
+
   }
+
+
+
+
+
+
 }

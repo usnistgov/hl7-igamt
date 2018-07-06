@@ -14,7 +14,6 @@
 package gov.nist.hit.hl7.igamt.datatype.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -36,8 +35,7 @@ public interface DatatypeRepository extends MongoRepository<Datatype, CompositeK
 
   List<Datatype> findByDomainInfoVersion(String version);
 
-  @Override
-  public Optional<Datatype> findById(CompositeKey id);
+
 
   List<Datatype> findByDomainInfoScope(String scope);
 

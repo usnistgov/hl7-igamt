@@ -12,7 +12,6 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,8 +33,8 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
   CompositeProfileStructureRepository compositeProfileStructureRepository;
 
   @Override
-  public Optional<CompositeProfileStructure> findByKey(CompositeKey key) {
-    return compositeProfileStructureRepository.findById(key);
+  public CompositeProfileStructure findByKey(CompositeKey key) {
+    return compositeProfileStructureRepository.findOne(key);
   }
 
   @Override
@@ -63,7 +62,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public void delete(CompositeKey key) {
-    compositeProfileStructureRepository.deleteById(key);
+    compositeProfileStructureRepository.delete(key);
   }
 
   @Override

@@ -13,6 +13,8 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
 
   metaData:any;
   backup:any;
+  uploadedFiles: any[] = [];
+
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -68,5 +70,17 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
 
   isValid(){
     return !this.editForm.invalid;
+  }
+
+
+  upload(event) {
+    this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
+
+    for(let file of event.files) {
+      this.uploadedFiles.push(file);
+
+    }
+
+
   }
 }

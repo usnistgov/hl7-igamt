@@ -1,11 +1,5 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -21,14 +15,8 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 
 @SpringBootApplication
@@ -158,27 +146,27 @@ public class BootstrapApplication implements CommandLineRunner {
   //
   //
   // }
-//   @PostConstruct
-//   void generateDatatypeLibrary()
-//   throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
-//   DatatypeLibrary dataypeLibrary = dataypeLibraryService.createEmptyDatatypeLibrary();
-//  
-//   List<Datatype> intermasters = dataypeService.findByDomainInfoScope("INTERMASTER");
-//   List<Datatype> masters = dataypeService.findByDomainInfoScope("MASTER");
-//   if (masters.size() > 10 && intermasters.size() > 10)
-//   for (int i = 0; i < 10; i++) {
-//   if (intermasters.get(i) != null) {
-//   Link l = new Link(intermasters.get(i).getId(), intermasters.get(i).getDomainInfo(), i);
-//   dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
-//   }
-//   if (masters.get(i) != null) {
-//   Link l = new Link(masters.get(i).getId(), masters.get(i).getDomainInfo(), i);
-//   dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
-//   }
-//   }
-//   dataypeLibraryService.save(dataypeLibrary);
-//  
-//   }
+  // @PostConstruct
+  // void generateDatatypeLibrary()
+  // throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+  // DatatypeLibrary dataypeLibrary = dataypeLibraryService.createEmptyDatatypeLibrary();
+  //
+  // List<Datatype> intermasters = dataypeService.findByDomainInfoScope("INTERMASTER");
+  // List<Datatype> masters = dataypeService.findByDomainInfoScope("MASTER");
+  // if (masters.size() > 10 && intermasters.size() > 10)
+  // for (int i = 0; i < 10; i++) {
+  // if (intermasters.get(i) != null) {
+  // Link l = new Link(intermasters.get(i).getId(), intermasters.get(i).getDomainInfo(), i);
+  // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
+  // }
+  // if (masters.get(i) != null) {
+  // Link l = new Link(masters.get(i).getId(), masters.get(i).getDomainInfo(), i);
+  // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
+  // }
+  // }
+  // dataypeLibraryService.save(dataypeLibrary);
+  //
+  // }
 
 
 }

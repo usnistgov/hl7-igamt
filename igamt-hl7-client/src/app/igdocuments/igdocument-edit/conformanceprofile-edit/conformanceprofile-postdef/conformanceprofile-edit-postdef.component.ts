@@ -7,7 +7,7 @@ import 'rxjs/add/operator/filter';
 import {HttpClient} from "@angular/common/http";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
-import * as _ from 'lodash';
+import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
 
 @Component({
@@ -36,12 +36,14 @@ export class ConformanceprofileEditPostdefComponent implements WithSave {
         this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
         this.route.data.map(data =>data.conformanceprofilePostdef).subscribe(x=>{
             this.backup=x;
-            this.conformanceProfilePostdef=_.cloneDeep(this.backup);
+            this.conformanceProfilePostdef=__.cloneDeep(this.backup);
         });
     }
 
     reset(){
-        this.conformanceProfilePostdef=_.cloneDeep(this.backup);
+        this.conformanceProfilePostdef=__.cloneDeep(this.backup);
+        this.editForm.control.markAsPristine();
+
     }
 
     getCurrent(){
@@ -57,6 +59,24 @@ export class ConformanceprofileEditPostdefComponent implements WithSave {
     }
 
     save(): Promise<any>{
-        return this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceProfilePostdef);
+      return new Promise((resolve, reject)=> {
+
+         this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceProfilePostdef).then(saved => {
+
+             this.backup = __.cloneDeep(this.conformanceProfilePostdef);
+
+             this.editForm.control.markAsPristine();
+             resolve(true);
+
+           }, error => {
+             console.log("error saving");
+             reject();
+
+           }
+
+         );
+
+      })
+
     }
 }

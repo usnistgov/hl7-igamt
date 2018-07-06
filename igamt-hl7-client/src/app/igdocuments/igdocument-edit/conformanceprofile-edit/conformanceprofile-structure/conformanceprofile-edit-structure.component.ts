@@ -173,12 +173,29 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     }
 
     isValid(){
-        return true;
+        return this.editForm.valid;
     }
 
     save(): Promise<any>{
-        return this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, this.conformanceprofileStructure);
-    }
+      return new Promise((resolve, reject)=> {
+
+         this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, this.conformanceprofileStructure).then(saved => {
+
+            this.backup = __.cloneDeep(this.conformanceprofileStructure);
+
+            this.editForm.control.markAsPristine();
+            resolve(true);
+
+          }, error => {
+            console.log("error saving");
+            reject();
+
+          }
+
+        );
+
+    })
+    };
 
     updateMessage(children, currentBinding, parentFieldId){
         for (let entry of children) {

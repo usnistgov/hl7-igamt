@@ -68,7 +68,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment findByKey(CompositeKey key) {
-    return segmentRepository.findById(key).get();
+    return segmentRepository.findOne(key);
   }
 
   @Override
@@ -96,7 +96,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public void delete(CompositeKey key) {
-    segmentRepository.deleteById(key);
+    segmentRepository.delete(key);
   }
 
   @Override

@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.util.files.storage;
+package gov.nist.hit.hl7.igamt.files.util;
 
 
 import javax.servlet.http.HttpServletRequest;

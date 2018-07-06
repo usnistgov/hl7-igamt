@@ -51,7 +51,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset findById(CompositeKey id) {
-    return valuesetRepository.findById(id).get();
+    return valuesetRepository.findOne(id);
   }
 
   @Override
@@ -87,7 +87,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public void delete(CompositeKey id) {
-    valuesetRepository.deleteById(id);
+    valuesetRepository.delete(id);
   }
 
   @Override

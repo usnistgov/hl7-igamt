@@ -14,7 +14,6 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -32,9 +31,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 @Repository
 public interface ConformanceProfileRepository
     extends MongoRepository<ConformanceProfile, CompositeKey> {
-
-  @Override
-  public Optional<ConformanceProfile> findById(CompositeKey id);
 
   public List<ConformanceProfile> findByIdentifier(String identifier);
 

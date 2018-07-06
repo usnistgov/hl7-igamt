@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.common.util.files.storage;
+package gov.nist.hit.hl7.igamt.files.controller;
 
 
 
@@ -8,10 +8,8 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.data.mongodb.gridfs.GridFsOperations;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,7 +23,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
-import com.mongodb.client.gridfs.model.GridFSFile;
+import com.mongodb.gridfs.GridFSDBFile;
+import com.mongodb.gridfs.GridFSFile;
+
+import gov.nist.hit.hl7.igamt.files.exception.UploadImageFileException;
+import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
+import gov.nist.hit.hl7.igamt.files.util.FileStorageUtil;
+import gov.nist.hit.hl7.igamt.files.util.HttpUtil;
+import gov.nist.hit.hl7.igamt.files.util.UploadFileResponse;
 
 
 @RestController
@@ -34,9 +39,6 @@ public class FileStorageController {
 
   @Autowired
   FileStorageService storageService;
-
-  @Autowired
-  GridFsOperations operations;
 
 
 
@@ -62,8 +64,9 @@ public class FileStorageController {
         DBObject metaData = new BasicDBObject();
         metaData.put("accountId", authentication.getPrincipal().toString());
         String generatedName = UUID.randomUUID().toString() + "." + extension;
-        ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
-        GridFSFile dbFile = storageService.findOne(fsFile.toString());
+        GridFSFile fsFile =
+            storageService.store(in, generatedName, part.getContentType(), metaData);
+        GridFSDBFile dbFile = storageService.findOne(fsFile.getId().toString());
         return new UploadFileResponse(
             HttpUtil.getImagesRootUrl(request) + "/file?name=" + dbFile.getFilename());
       }
@@ -81,12 +84,11 @@ public class FileStorageController {
   public ResponseEntity<InputStreamResource> getByName(@RequestParam("name") String filename)
       throws UploadImageFileException {
     try {
-      GridFSFile dbFile = storageService.findOneByFilename(filename);
-
+      GridFSDBFile dbFile = storageService.findOneByFilename(filename);
       if (dbFile != null) {
         return ResponseEntity.ok().contentLength(dbFile.getLength())
             .contentType(MediaType.parseMediaType(dbFile.getContentType()))
-            .body(operations.getResource(filename));
+            .body(new InputStreamResource(dbFile.getInputStream()));
       }
     } catch (RuntimeException e) {
       throw new UploadImageFileException(e);

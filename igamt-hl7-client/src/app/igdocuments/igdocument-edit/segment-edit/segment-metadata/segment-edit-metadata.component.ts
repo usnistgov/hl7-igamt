@@ -29,7 +29,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   @ViewChild('editForm')
   private editForm: NgForm;
 
-  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService){
+  constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService){
     this.tocService.getActiveNode().subscribe(x=>{
       console.log(x);
       this.currentNode=x;
@@ -63,21 +63,40 @@ export class SegmentEditMetadataComponent implements WithSave {
   isValid(){
     return !this.editForm.invalid;
   }
-  save(){
-    this.tocService.getActiveNode().subscribe(x=>{
 
-        let node= x;
-        node.data.data.ext= _.cloneDeep(this.segmentMetadata.ext);
+  save(): Promise<any>{
+    return new Promise((resolve, reject)=>{
+
+        let treeModel=this.tocService.getTreeModel();
+        let node = treeModel.getNodeById(this.segmentId.id);
+
+        console.log(node);
+
+        node.data.data.label= this.segmentMetadata.name;
+        node.data.data.ext= this.segmentMetadata.ext;
+        this.tocService.setTreeModel(treeModel).then(x=>{
 
 
+          this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata).then( saved => {
+
+
+            this.backup = _.cloneDeep(this.segmentMetadata);
+
+            this.editForm.control.markAsPristine();
+
+
+            resolve(true);
+          }, error => {
+            console.log("Error Saving");
+
+            }
+          );
+
+        })
       }
-    );
-    console.log("saving segment Meta Data");
+    )
 
-    return this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata);
-
-
-  }
+  };
 
 
 

@@ -34,8 +34,8 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     listTab: boolean = true;
     editorTab: boolean = false;
 
-    @ViewChild('csForm')
-    private csForm: NgForm;
+    @ViewChild('editForm')
+    private editForm: NgForm;
 
     constructor(
         private route: ActivatedRoute,
@@ -125,7 +125,7 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     }
 
     isValid(){
-        return !this.csForm.invalid;
+        return !this.editForm.invalid;
     }
 
     save(): Promise<any>{
