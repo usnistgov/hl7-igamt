@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.segment.domain;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,6 +10,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 
 
 @Document(collection = "segment")
@@ -25,6 +28,9 @@ public class Segment extends Resource {
   }
 
   public ResourceBinding getBinding() {
+    if (binding == null) {
+      binding = new ResourceBinding();
+    }
     return binding;
   }
 
@@ -33,6 +39,9 @@ public class Segment extends Resource {
   }
 
   public Set<Field> getChildren() {
+    if (children == null) {
+      children = new HashSet<Field>();
+    }
     return children;
   }
 
@@ -49,6 +58,9 @@ public class Segment extends Resource {
   }
 
   public DynamicMappingInfo getDynamicMappingInfo() {
+    if (dynamicMappingInfo == null) {
+      dynamicMappingInfo = new DynamicMappingInfo();
+    }
     return dynamicMappingInfo;
   }
 
@@ -92,6 +104,29 @@ public class Segment extends Resource {
     return clone;
 
   };
+
+  public SegmentStructure toStructure() {
+    SegmentStructure result = new SegmentStructure();
+    result.setId(this.getId());
+    result.setScope(this.getDomainInfo().getScope());
+    result.setVersion(this.getDomainInfo().getVersion());
+    if (this.getExt() != null) {
+      result.setLabel(this.getName() + "_" + this.getExt());
+    } else {
+      result.setLabel(this.getName());
+    }
+
+    result.setBinding(this.getBinding());
+
+    if (this.getChildren() != null && this.getChildren().size() > 0) {
+      for (Field f : this.getChildren()) {
+        FieldDisplay fieldDisplay = new FieldDisplay();
+        fieldDisplay.setData(f);
+        result.addChild(fieldDisplay);
+      }
+    }
+    return result;
+  }
 
 
 }

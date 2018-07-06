@@ -11,18 +11,24 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.common.exception;
+package gov.nist.hit.hl7.igamt.conformanceprofile.exception;
 
 /**
+ * 
+ * @author Harold Affo
  *
- * @author Maxence Lefort on Mar 22, 2018.
  */
-public class ConformanceProfileNotFoundException extends Exception {
+public class ConformanceProfileException extends Exception {
 
-  private static final long serialVersionUID = -1993944139439499892L;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6887787296077348003L;
 
-  public ConformanceProfileNotFoundException(String id) {
-    super("Conformance profile with id "+id+" not found");
+  public ConformanceProfileException(String id, String error) {
+    super("Error while processing conformance profile with id=" + id + ", details=" + error);
   }
-  
+
+
+
 }
