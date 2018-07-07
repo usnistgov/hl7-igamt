@@ -5,6 +5,8 @@ import {
 } from './coconstraint.domain';
 import {Http} from '@angular/http';
 import {UUID} from 'angular2-uuid';
+import * as _ from 'lodash';
+import {TocService} from '../../service/toc.service';
 
 /**
  * Created by hnt5 on 10/11/17.
@@ -13,19 +15,21 @@ import {UUID} from 'angular2-uuid';
 @Injectable()
 export class CoConstraintTableService {
 
-    constructor(private $http : Http){}
+    constructor(private $http: Http,
+                private tocService: TocService) {}
 
-    getCCTableForSegment(segment : any) : CoConstraintTable {
-        if(!segment) {
+    async getCCTableForSegment(segment: any): Promise<CoConstraintTable> {
+        if (!segment) {
             return null;
-        }
-        else {
-            let table : CoConstraintTable = this.fetch_coconstraint_table(segment.id);
-            if(!table){
-                if(segment.name === 'OBX')
-                    return this.generate_obx_table(segment);
-                else
-                    return this.generate_generic_table(segment.name);
+        } else {
+            const table: CoConstraintTable = this.fetch_coconstraint_table(segment.id);
+            if (!table) {
+                if (segment.name === 'OBX') {
+                  return await this.generate_obx_table(segment);
+                }
+                else {
+                  return this.generate_generic_table(segment.name);
+                }
             }
             else
                 return table;
@@ -34,7 +38,7 @@ export class CoConstraintTableService {
 
     }
 
-    generate_generic_table(name : string) : CoConstraintTable {
+    generate_generic_table(name: string): CoConstraintTable {
         return {
             supportGroups : false,
             segment : name,
@@ -50,8 +54,20 @@ export class CoConstraintTableService {
         };
     }
 
-    generate_obx_table(segment : any) : CoConstraintTable {
-        let tmp : CoConstraintTable = this.generate_generic_table(segment.name);
+
+    async generate_obx_table(segment: any): Promise<CoConstraintTable> {
+        const tmp: CoConstraintTable = this.generate_generic_table(segment.name);
+        const obx3 = _.find(segment.children, function (child) {
+          return child.data.position === 3;
+        });
+        const obx2 = _.find(segment.children, function (child) {
+          return child.data.position === 2;
+        });
+
+        const obx3_dt = await this.tocService.getDatatypeById(obx3.data.ref.id);
+        const obx2_dt = await this.tocService.getDatatypeById(obx2.data.ref.id);
+
+
         tmp.supportGroups = true;
         tmp.headers.selectors.push({
             id : 'k3',
@@ -60,7 +76,10 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.CODE,
                 elmType : 'field',
-                path : '3[1]'
+                path : '3',
+                version : obx3_dt.data.domainInfo.version,
+                coded : true,
+                complex : true
             }
         });
         tmp.headers.data.push({
@@ -71,7 +90,10 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.VALUE,
                 elmType : 'field',
-                path : '2[1]'
+                path : '2',
+                version : obx2_dt.data.domainInfo.version,
+                coded : false,
+                complex : false
             }
         });
         tmp.headers.data.push({
@@ -82,7 +104,7 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.IGNORE,
                 elmType : 'field',
-                path : '5[1]'
+                path : '5'
             }
         });
         tmp.headers.user.push({
@@ -93,35 +115,35 @@ export class CoConstraintTableService {
         return tmp;
     }
 
-    async get_bound_codes(segment : any){
-        if(segment && segment.valueSetBindings){
-            for(let binding of segment.valueSetBindings){
-                if(binding.location === '2'){
+    async get_bound_codes(segment: any){
+        if (segment && segment.valueSetBindings){
+            for (const binding of segment.valueSetBindings){
+                if (binding.location === '2'){
                     return this.$http.get('api/tables/' + binding.tableId).toPromise();
                 }
             }
         }
     }
 
-    fetch_coconstraint_table(id : string)  {
+    fetch_coconstraint_table(id: string)  {
         return null;
     }
 
-    new_line(selectors : any[], data : any[], user : any[]){
-        let row : CCRow = {
+    new_line(selectors: any[], data: any[], user: any[]){
+        const row: CCRow = {
             id : UUID.UUID(),
             cells : {},
             requirements : null
         };
         this.init_req(row);
 
-        for(let header of selectors){
+        for (const header of selectors){
             this.init_cell(row, header);
         }
-        for(let header of data){
+        for (const header of data){
             this.init_cell(row, header);
         }
-        for(let header of user){
+        for (const header of user){
             this.init_cell(row, header);
         }
 
@@ -133,15 +155,15 @@ export class CoConstraintTableService {
             usage : 'R',
                 cardinality : {
                 min : 1,
-                    max : "1"
+                    max : '1'
             }
-        }
+        };
     }
 
-    init_cell(row : CCRow, header : CCHeader){
+    init_cell(row: CCRow, header: CCHeader){
 
         // --- USER
-        if(!header.content){
+        if (!header.content){
             row.cells[header.id] = <DataCell> {
                 value : '',
                 type  : header.template
@@ -150,16 +172,16 @@ export class CoConstraintTableService {
         }
 
         // --- RELEVANT FIELD
-        let tmpl : string;
+        let tmpl: string;
 
-        if(header.content.type && header.content.type === CCSelectorType.IGNORE){
+        if (header.content.type && header.content.type === CCSelectorType.IGNORE){
             tmpl = header.template;
         }
         else {
             tmpl = header.content.type;
         }
 
-        switch(tmpl){
+        switch (tmpl){
 
             case CCSelectorType.VALUE :
             case CellTemplate.DATATYPE :
@@ -181,7 +203,7 @@ export class CoConstraintTableService {
             case CCSelectorType.CODE :
                 row.cells[header.id]  = <CodeCell> {
                     value : '',
-                    location : '1',
+                    location : [1],
                     type : header.content.type
                 };
                 break;

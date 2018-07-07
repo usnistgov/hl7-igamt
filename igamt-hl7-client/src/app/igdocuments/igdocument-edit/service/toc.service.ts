@@ -35,16 +35,14 @@ export  class TocService{
 
   }
   addNodesByType(toAdd, toc,type ){
-    var profile= this.findDirectChildByType(toc,Types.PROFILE);
-    var registry = this.findDirectChildByType(profile.children,type);
-    var position=registry.children.length+1;
-    for(let i=0 ; i<toAdd.length; i++){
-      toAdd[i].data.position =position;
+    const profile = this.findDirectChildByType(toc,Types.PROFILE);
+    const registry = this.findDirectChildByType(profile.children,type);
+    let position = registry.children.length + 1;
+    for (let i = 0 ; i < toAdd.length; i++) {
+      toAdd[i].data.position = position;
       position++;
       registry.children.push(toAdd[i]);
     }
-
-
   }
 
   getNameUnicityIndicators(nodes,type){
@@ -74,6 +72,14 @@ export  class TocService{
 
     }
 
+  }
+
+  async getDatatypeById(id: string) {
+    const list = await this.getDataypeList();
+    const elm = _.find(list, function (x) {
+      return x.data.key.id === id;
+    });
+    return elm;
   }
 
   getNameUnicityIndicatorsForDatatype(nodes, type){

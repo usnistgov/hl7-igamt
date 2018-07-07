@@ -4,16 +4,17 @@
 
 import {Component, Input, ViewChild, TemplateRef, OnInit} from '@angular/core';
 import {
-  CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow, CCCell,
-  CCContent, DataCell, CodeCell, CCHeaders, CCGroup
+  CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow
 } from './coconstraint.domain';
 import {CCHeaderDialogDmComponent} from './header-dialog/header-dialog-dm.component';
 import {CoConstraintTableService} from './coconstraint-table.service';
 import {CCHeaderDialogUserComponent} from './header-dialog/header-dialog-user.component';
 import {ValidatorFn, AbstractControl, NgForm, Validators} from '@angular/forms';
 import {ValueSetBindingPickerComponent} from '../../../../common/valueset-binding-picker/valueset-binding-picker.component';
-import * as _ from 'lodash';
-import {ActivatedRoute, Router} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
+import {TocService} from '../../service/toc.service';
+import {GeneralConfigurationService} from '../../../../service/general-configuration/general-configuration.service';
+import {HttpClient} from '@angular/common/http';
 
 @Component({
     selector: 'app-coconstraint-table',
@@ -22,8 +23,6 @@ import {ActivatedRoute, Router} from '@angular/router';
 })
 
 export class CoConstraintTableComponent implements OnInit {
-
-
 
     @ViewChild(ValueSetBindingPickerComponent) vsPicker: ValueSetBindingPickerComponent;
     @ViewChild(CCHeaderDialogDmComponent) headerDialogDm: CCHeaderDialogDmComponent;
@@ -52,40 +51,100 @@ export class CoConstraintTableComponent implements OnInit {
     table: CoConstraintTable;
     tableId: any;
     config: any;
-    _segment: any;
     activeType: string;
+    ceBindingLocations: any;
+    _segment: any;
 
-    constructor(private ccTableService: CoConstraintTableService, private route: ActivatedRoute, private  router: Router) {
-        this.activeType = 'data';
-        this.table = {
-          id: '',
-      supportGroups: true,
-      segment: 'OBX',
-      headers: {
-        selectors: [],
-      data: [],
-      user: []
-    },
-      content: {
-        free: [],
-        groups: []
-      },
-    };
 
+    constructor(private ccTableService: CoConstraintTableService,
+                private configService: GeneralConfigurationService,
+                private route: ActivatedRoute,
+                private tocService: TocService,
+                private http: HttpClient) {
+
+      this.activeType = 'data';
+      this.table = {
+        id: '',
+        supportGroups: true,
+        segment: 'OBX',
+        headers: {
+          selectors: [],
+          data: [],
+          user: []
+        },
+        content: {
+          free: [],
+          groups: []
+        },
+      };
+      this.ceBindingLocations = configService.getAllValuesetLocations();
+      this.config = {
+        usages: [
+          {
+            label: 'R',
+            value: 'R'
+          },
+          {
+            label: 'O',
+            value: 'O'
+          }
+        ],
+        dynCodes: [],
+        datatypes: []
+      };
     }
 
     @Input() set segment(value: any) {
         this._segment = value;
-        this.table = this.ccTableService.getCCTableForSegment(this._segment);
         const ctrl = this;
+        this.ccTableService.getCCTableForSegment(this._segment).then(function (table) {
+          ctrl.table = table;
+        });
+
         if (this.table.segment === 'OBX') {
-            this.ccTableService.get_bound_codes(this._segment).then(function (response) {
-                ctrl.config.dynCodes = [];
-                for (const code of response.json().codes) {
-                    ctrl.config.dynCodes.push({label: code.value, value: code.value});
+            ctrl.config.dynCodes = [];
+            ctrl.tocService.getValueSetList().then(function (vsList: any[]) {
+              for(const vs of vsList){
+                if (vs.data.label === '0125') {
+                  ctrl.getCodes(vs.data.key.id).subscribe( (data: any) => {
+                    for (const code of data.codes) {
+                      ctrl.config.dynCodes.push({ label : code.value, value : code.value });
+                    }
+                    ctrl.tocService.getDataypeList().then(function (dtList: any[]) {
+                      for (const dt of dtList){
+                        ctrl.config.datatypes.push({ label : dt.data.label, value : dt.data});
+                      }
+                      ctrl.config.dynCodes = ctrl.filterDynCodeFromIg(ctrl.config.datatypes, ctrl.config.dynCodes);
+                    });
+                  });
+                  break;
                 }
+              }
             });
         }
+    }
+
+    variesIsCoded(field, node){
+      console.log(field);
+      console.log(node);
+    }
+
+    filterDynCodeFromIg(datatypes, codes){
+      const filtered = [];
+
+      for (const code of codes){
+        for (const dt of datatypes){
+          if (dt.value.label === code.value){
+            filtered.push(code);
+            break;
+          }
+        }
+      }
+      return filtered;
+    }
+
+    getCodes(id: string){
+      return this.http.get('api/valueset/' + id);
     }
 
     // ------ DND -----
@@ -135,7 +194,7 @@ export class CoConstraintTableComponent implements OnInit {
         if (!empty) {
           return 'initial';
         } else {
-            return (x + 1) * 200 + 'px';
+            return 200 + x * 250;
         }
     }
 
@@ -196,11 +255,14 @@ export class CoConstraintTableComponent implements OnInit {
 
     // ------ DIALOGS ------
 
-    openVSDialog(obj: any, key: string) {
+    openVSDialog(obj: any, key: string, field: CCHeader) {
         console.log(obj);
         this.vsPicker.open({
             libraryId: this.tableId,
-            selectedTables: (<VSCell> obj[key]).vs
+            selectedTables: (<VSCell> obj[key]).vs,
+            complex: field.content.complex,
+            coded: field.content.coded,
+            version: field.content.version
         }).subscribe(
             result => {
                 (<VSCell> obj[key]).vs = result;
@@ -208,10 +270,27 @@ export class CoConstraintTableComponent implements OnInit {
         );
     }
 
+    selectedPaths() {
+      const paths: any[] = [];
+
+      for (const h of this.table.headers.data) {
+        if (h.content.type !== CCSelectorType.IGNORE) {
+          paths.push({ path : h.content.path, type : h.content.type });
+        }
+      }
+      for (const h of this.table.headers.selectors) {
+        if (h.content.type !== CCSelectorType.IGNORE) {
+          paths.push({path: h.content.path, type: h.content.type});
+        }
+      }
+
+      return paths;
+    }
+
     openHeaderDialog (h: string) {
         const resolve = {
             header: h,
-            selectedPaths: [],
+            selectedPaths: this.selectedPaths(),
             type: null,
             fixed: false
         };
@@ -326,6 +405,11 @@ export class CoConstraintTableComponent implements OnInit {
         console.log(this.table);
     }
 
+    getLocationForCoded(version) {
+      return this.configService.getValuesetLocationsForCE(version);
+    }
+
+
 
     ngOnInit() {
         // console.log("[CONF]");
@@ -333,31 +417,19 @@ export class CoConstraintTableComponent implements OnInit {
         // console.log(this.conf.usages);
         // console.log(this.conf.getBindingLocationByVersion("2.5"));
         const ctrl = this;
-        const segmentId = this.route.snapshot.params['segmentId'];
         this.route.data.map(data => data.segment).subscribe(x => {
           ctrl.segment = x;
         });
 
-        this.config = {
-            usages: [
-                {
-                    label: 'R',
-                    value: 'R'
-                },
-                {
-                    label: 'O',
-                    value: 'O'
-                }
-            ],
-            dynCodes: [],
-            datatypes: []
-        };
+
         this.dndGroups = false;
         // this.tableId = ig.profile.tableLibrary.id;
         // this.segment = this._ws.getCurrent(Entity.SEGMENT);
         // for (let dt of ig.profile.datatypeLibrary.children) {
         //     this.config.datatypes.push({label: dt.label, value: dt});
         // }
+
+
     }
 }
 

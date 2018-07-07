@@ -64,7 +64,7 @@ export interface DataCell extends CCCell {
 
 export interface CodeCell extends DataCell {
     value: string;
-    location: string;
+    location: number[];
 }
 
 
@@ -81,6 +81,9 @@ export interface DataElementHeader {
     path: string;
     elmType: string;
     type: string;
+    coded?: boolean;
+    complex?: boolean;
+    version?: string;
 }
 
 export class CCSelectorType {

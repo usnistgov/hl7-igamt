@@ -1,6 +1,6 @@
 {
   "id": {
-    "id": "59ccfa0e84aeb3275ab0be2c",
+    "id": "5a203e68d3a51dfc4512407e",
     "version": 1
   },
   "name": "OBX",
@@ -64,7 +64,7 @@
       "maxLength": "705",
       "minLength": "0",
       "confLength": "NA",
-      "ref": {"id": "mock_ARBITRARY_XCN"},
+      "ref": {"id": "VARIES"},
       "min": 1,
       "max": "2"
     }}

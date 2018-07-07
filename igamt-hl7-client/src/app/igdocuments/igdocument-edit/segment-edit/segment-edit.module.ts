@@ -34,6 +34,12 @@ import {HttpClientModule} from '@angular/common/http';
 import {HttpModule} from '@angular/http';
 import {CCHeaderDialogDmComponent} from './coconstraint-table/header-dialog/header-dialog-dm.component';
 import {CCHeaderDialogUserComponent} from './coconstraint-table/header-dialog/header-dialog-user.component';
+import {SegmentTreeComponent} from '../../../common/segment-tree/segment-tree.component';
+import {SegmentTreeNodeService} from '../../../common/segment-tree/segment-tree.service';
+import {TreeModule} from 'primeng/tree';
+import {TocService} from '../service/toc.service';
+import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
+import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
 
 @NgModule({
     imports: [
@@ -45,19 +51,22 @@ import {CCHeaderDialogUserComponent} from './coconstraint-table/header-dialog/he
         DndListModule,
         SegmentEditRoutingModule,
         UtilsModule,
+        TreeModule,
         TreeTableModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,
-      HttpClientModule,
-      HttpModule,
+        HttpClientModule,
+        HttpModule,
+      DataTableModule,
+      DataListModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
-    declarations: [RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
+    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

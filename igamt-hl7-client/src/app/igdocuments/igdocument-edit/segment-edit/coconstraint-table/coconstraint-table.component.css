@@ -68,6 +68,17 @@ body .ui-dialog .ui-dialog-titlebar {
     margin: auto;
 }
 
+.textzone {
+  width: 100%;
+  height: 100%;
+  top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute;
+  resize: none;
+  -webkit-box-sizing: border-box; /* <=iOS4, <= Android  2.3 */
+  -moz-box-sizing: border-box; /* FF1+ */
+  box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
+}
+
 .invalid {
     border : 1px solid red;
 }
@@ -94,9 +105,10 @@ th {
 
 .wide {
     vertical-align: middle;
-    min-width: 200px;
-    max-width: 200px;
-    width: 200px;
+    min-width: 250px;
+    max-width: 250px;
+    width: 250px;
+    position: relative;
 }
 
 .small {
@@ -155,6 +167,7 @@ input:-ms-input-placeholder {
 
 .label-gray {
   background-color: gray;
+  color : white;
 }
 
 .label-icon {
