@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
@@ -23,6 +24,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfi
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 
 /**
  *
@@ -91,5 +95,82 @@ public interface ConformanceProfileService {
 
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
       ConformanceProfile conformanceProfile);
+
+
+  /**
+   * 
+   * @param structure
+   * @return
+   */
+  public ConformanceProfile convertToConformanceProfile(ConformanceProfileStructure structure);
+
+
+
+  /**
+   * Validate the structure of the segment
+   * 
+   * @param structure
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(ConformanceProfileStructure structure)
+      throws ConformanceProfileValidationException;
+
+  /**
+   * Validate the metadata information of the segment
+   * 
+   * @param metadata
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileValidationException;
+
+
+  /**
+   * 
+   * @param predef
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   */
+  public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException;
+
+  /**
+   * 
+   * @param postdef
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   */
+  public ConformanceProfile savePostdef(PostDef postdef) throws ConformanceProfileNotFoundException;
+
+  /**
+   * 
+   * @param metadata
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   * @throws ConformanceProfileValidationException
+   */
+  public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
+
+  /**
+   * Validate conformance statements of the segment
+   * 
+   * @param conformanceStatement
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileValidationException;
+
+
+  /**
+   * Save the conformance statements of the segment
+   * 
+   * @param conformanceStatement
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   * @throws ConformanceProfileValidationException
+   */
+  public ConformanceProfile saveConformanceStatement(
+      ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
 
 }

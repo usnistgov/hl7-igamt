@@ -11,17 +11,24 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.service;
-
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
+package gov.nist.hit.hl7.igamt.segment.exception;
 
 /**
+ * 
+ * @author Harold Affo
  *
- * @author Maxence Lefort on May 8, 2018.
  */
-public interface SaveService {
+public class SegmentException extends Exception {
 
-  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -6887787296077348003L;
+
+  public SegmentException(String id, String error) {
+    super("Error while processing segment with id=" + id + ", details=" + error);
+  }
+
+
 
 }

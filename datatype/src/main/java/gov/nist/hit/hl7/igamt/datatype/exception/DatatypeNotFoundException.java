@@ -11,17 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.service;
-
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
+package gov.nist.hit.hl7.igamt.datatype.exception;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on Mar 22, 2018.
  */
-public interface SaveService {
+public class DatatypeNotFoundException extends Exception {
 
-  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException;
+  private static final long serialVersionUID = 6099795044591697558L;
+
+  public DatatypeNotFoundException(String id) {
+    super("Datatype with id " + id + " not found");
+  }
 
 }

@@ -76,6 +76,9 @@ public class ConformanceProfile extends Resource {
   }
 
   public ResourceBinding getBinding() {
+    if (binding == null) {
+      binding = new ResourceBinding();
+    }
     return binding;
   }
 

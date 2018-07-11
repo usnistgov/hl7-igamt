@@ -1,5 +1,4 @@
 /**
- * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -9,19 +8,23 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * 
  */
-package gov.nist.hit.hl7.igamt.ig.service;
+package gov.nist.hit.hl7.igamt.datatype.exception;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 
 /**
+ * @author Harold Affo
  *
- * @author Maxence Lefort on May 8, 2018.
  */
-public interface SaveService {
+public class DatatypeValidationException extends ValidationException {
 
-  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException;
+
+  public DatatypeValidationException(String error) {
+    super(error);
+  }
+
+
+  private static final long serialVersionUID = 1L;
 
 }

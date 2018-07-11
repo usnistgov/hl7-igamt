@@ -11,17 +11,17 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.service;
-
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
+package gov.nist.hit.hl7.igamt.common.base.exception;
 
 /**
  *
- * @author Maxence Lefort on May 8, 2018.
+ * @author Maxence Lefort on Apr 9, 2018.
  */
-public interface SaveService {
+public class ValuesetNotFoundException extends Exception {
 
-  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException;
+  private static final long serialVersionUID = 3425565153244575063L;
 
+  public ValuesetNotFoundException(String id) {
+    super("Value set with id " + id + " not found");
+  }
 }
