@@ -18,6 +18,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
@@ -87,6 +88,11 @@ public class SerializableAbstractDomainTest {
           @Override
           public Element serialize() throws SerializationException {
             return this.getElement(Type.SECTION);
+          }
+
+          @Override
+          public Map<String, String> getIdPathMap() {
+            return null;
           }
 
         };

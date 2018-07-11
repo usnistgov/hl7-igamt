@@ -34,7 +34,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -45,6 +44,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.MsgStructElementDisplay;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -72,7 +72,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfile findByKey(CompositeKey key) {
-    return conformanceProfileRepository.findOne(key);
+    return conformanceProfileRepository.findOneById(key);
   }
 
   @Override
@@ -100,7 +100,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public void delete(CompositeKey key) {
-    conformanceProfileRepository.delete(key);
+    conformanceProfileRepository.deleteById(key);
   }
 
   @Override

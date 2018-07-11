@@ -13,16 +13,18 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -38,6 +40,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
   private Set<String> bindedGroupsAndSegmentRefs;
+  private Set<SerializableConformanceProfile> serializableConformanceProfiles;
 
   /**
    * @param section
@@ -51,6 +54,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
     this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
+    this.serializableConformanceProfiles = new HashSet<>();
   }
 
   /*
@@ -73,9 +77,12 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
                   new SerializableConformanceProfile(conformanceProfile,
                       String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
                       this.valuesetNamesMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs);
-              Element conformanceProfileElement = serializableConformanceProfile.serialize();
-              if (conformanceProfileElement != null) {
-                conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
+              if(serializableConformanceProfile != null) {
+                this.serializableConformanceProfiles.add(serializableConformanceProfile);
+                Element conformanceProfileElement = serializableConformanceProfile.serialize();
+                if (conformanceProfileElement != null) {
+                  conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
+                }
               }
             } else {
               throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId().getId());
@@ -88,6 +95,24 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
       throw new RegistrySerializationException(exception, super.getSection(),
           conformanceProfileRegistry);
     }
+  }
+
+  @Override
+  public Set<SerializableConstraints> getConformanceStatements(int level) {
+    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
+    for(SerializableConformanceProfile serializableConformanceProfile : this.serializableConformanceProfiles) {
+      conformanceStatements.add(serializableConformanceProfile.getConformanceStatements(level));
+    }
+    return conformanceStatements;
+  }
+
+  @Override
+  public Set<SerializableConstraints> getPredicates(int level) {
+    Set<SerializableConstraints> predicates = new HashSet<>();
+    for(SerializableConformanceProfile serializableConformanceProfile : this.serializableConformanceProfiles) {
+      predicates.add(serializableConformanceProfile.getPredicates(level));
+    }
+    return predicates;
   }
 
 

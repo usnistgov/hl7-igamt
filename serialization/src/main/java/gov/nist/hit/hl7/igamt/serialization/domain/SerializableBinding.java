@@ -19,6 +19,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -30,7 +31,6 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
-import gov.nist.hit.hl7.igamt.common.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import nu.xom.Attribute;
@@ -45,15 +45,20 @@ public class SerializableBinding extends SerializableElement {
   private Binding binding;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> idPathMap;
+  private Set<Element> conformanceStatements;
+  private Set<Element> predicates;
 
   /**
    * @param binding
    */
-  public SerializableBinding(Binding binding, Map<String, String> idPathMap, Map<String, String> valuesetNamesMap) {
+  public SerializableBinding(Binding binding, Map<String, String> idPathMap,
+      Map<String, String> valuesetNamesMap) {
     super("binding" + binding.getElementId(), "1", "Bindings");
     this.binding = binding;
     this.valuesetNamesMap = valuesetNamesMap;
     this.idPathMap = idPathMap;
+    this.conformanceStatements = new HashSet<>();
+    this.predicates = new HashSet<>();
   }
 
   /*
@@ -68,8 +73,8 @@ public class SerializableBinding extends SerializableElement {
       bindingElement.addAttribute(
           new Attribute("elementId", binding.getElementId() != null ? binding.getElementId() : ""));
       if (binding.getChildren() != null && binding.getChildren().size() > 0) {
-        Element structureElementBindingsElement =
-            this.serializeStructureElementBindings(binding.getChildren(), idPathMap, valuesetNamesMap);
+        Element structureElementBindingsElement = this
+            .serializeStructureElementBindings(binding.getChildren(), idPathMap, valuesetNamesMap);
         if (structureElementBindingsElement != null) {
           bindingElement.appendChild(structureElementBindingsElement);
         }
@@ -81,6 +86,7 @@ public class SerializableBinding extends SerializableElement {
             Element conformanceStatementElement =
                 this.serializeConformanceStatement(conformanceStatement);
             if (conformanceStatementElement != null) {
+              this.conformanceStatements.add(conformanceStatementElement);
               bindingElement.appendChild(conformanceStatementElement);
             }
           }
@@ -98,14 +104,14 @@ public class SerializableBinding extends SerializableElement {
    * @throws ValuesetNotFoundException
    */
   private Element serializeStructureElementBindings(
-      Set<StructureElementBinding> structureElementBindings, Map<String, String> idPathMap, Map<String, String> valuesetNamesMap)
-      throws ValuesetNotFoundException {
+      Set<StructureElementBinding> structureElementBindings, Map<String, String> idPathMap,
+      Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     if (structureElementBindings != null) {
       Element structureElementBindingsElement = new Element("StructureElementBindings");
       for (StructureElementBinding structureElementBinding : structureElementBindings) {
         if (structureElementBinding != null) {
-          Element structureElementBindingElement =
-              this.serializeStructureElementBinding(structureElementBinding, idPathMap, valuesetNamesMap);
+          Element structureElementBindingElement = this.serializeStructureElementBinding(
+              structureElementBinding, idPathMap, valuesetNamesMap);
           if (structureElementBindingElement != null) {
             structureElementBindingsElement.appendChild(structureElementBindingElement);
           }
@@ -121,8 +127,9 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding, Map<String, String> idPathMap,
-      Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
+  private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding,
+      Map<String, String> idPathMap, Map<String, String> valuesetNamesMap)
+      throws ValuesetNotFoundException {
     if (structureElementBinding != null) {
       Element structureElementBindingElement = new Element("StructureElementBinding");
       structureElementBindingElement.addAttribute(new Attribute("elementId",
@@ -170,6 +177,7 @@ public class SerializableBinding extends SerializableElement {
       if (structureElementBinding.getPredicate() != null) {
         Element predicateElement = this.serializePredicate(structureElementBinding.getPredicate());
         if (predicateElement != null) {
+          this.predicates.add(predicateElement);
           structureElementBindingElement.appendChild(predicateElement);
         }
       }
@@ -198,30 +206,7 @@ public class SerializableBinding extends SerializableElement {
     return externalSingleCodeElement;
   }
 
-  /**
-   * @param predicate
-   * @return
-   */
-  private Element serializePredicate(Predicate predicate) {
-    Element predicateElement = new Element("Predicate");
-    predicateElement.addAttribute(new Attribute("true",
-        predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
-    predicateElement.addAttribute(new Attribute("codeSystem",
-        predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
-    if (predicate instanceof AssertionPredicate) {
-      if (((AssertionPredicate) predicate).getAssertion() != null) {
-        String description = ((AssertionPredicate) predicate).getAssertion().getDescription();
-        predicateElement
-            .addAttribute(new Attribute("description", description != null ? description : ""));
-      }
-    } else if (predicate instanceof FreeTextPredicate) {
-      predicateElement.addAttribute(new Attribute("description",
-          ((FreeTextPredicate) predicate).getFreeText() != null
-              ? ((FreeTextPredicate) predicate).getFreeText()
-              : ""));
-    }
-    return predicateElement;
-  }
+
 
   /**
    * @param comment
@@ -280,12 +265,20 @@ public class SerializableBinding extends SerializableElement {
     return String.join(",", valuesetLocationsString);
   }
 
+  public Set<Element> getConformanceStatements() {
+    return conformanceStatements;
+  }
+
+  public Set<Element> getPredicates() {
+    return predicates;
+  }
+
   /**
    * @param conformanceStatement
    * @return
    */
   private Element serializeConformanceStatement(ConformanceStatement conformanceStatement) {
-    Element conformanceStatementElement = new Element("ConformanceStatementElement");
+    Element conformanceStatementElement = new Element("ConformanceStatement");
     conformanceStatementElement.addAttribute(new Attribute("identifier",
         conformanceStatement.getIdentifier() != null ? conformanceStatement.getIdentifier() : ""));
     if (conformanceStatement instanceof AssertionConformanceStatement) {
@@ -304,6 +297,29 @@ public class SerializableBinding extends SerializableElement {
     return conformanceStatementElement;
   }
 
-
+  /**
+   * @param predicate
+   * @return
+   */
+  private Element serializePredicate(Predicate predicate) {
+    Element predicateElement = new Element("Predicate");
+    predicateElement.addAttribute(new Attribute("true",
+        predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
+    predicateElement.addAttribute(new Attribute("codeSystem",
+        predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
+    if (predicate instanceof AssertionPredicate) {
+      if (((AssertionPredicate) predicate).getAssertion() != null) {
+        String description = ((AssertionPredicate) predicate).getAssertion().getDescription();
+        predicateElement
+            .addAttribute(new Attribute("description", description != null ? description : ""));
+      }
+    } else if (predicate instanceof FreeTextPredicate) {
+      predicateElement.addAttribute(new Attribute("description",
+          ((FreeTextPredicate) predicate).getFreeText() != null
+              ? ((FreeTextPredicate) predicate).getFreeText()
+              : ""));
+    }
+    return predicateElement;
+  }
 
 }

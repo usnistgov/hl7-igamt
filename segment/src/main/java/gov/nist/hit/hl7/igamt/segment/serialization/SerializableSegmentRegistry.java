@@ -13,15 +13,17 @@
  */
 package gov.nist.hit.hl7.igamt.segment.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -38,7 +40,8 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
   private Map<String, String> valuesetNamesMap;
   private Set<String> bindedSegments;
   private Set<String> bindedFields;
-
+  private Set<SerializableSegment> serializableSegments;
+  
   /**
    * @param section
    */
@@ -51,6 +54,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
     this.valuesetNamesMap = valuesetNamesMap;
     this.bindedSegments = bindedSegments;
     this.bindedFields = bindedFields;
+    this.serializableSegments = new HashSet<>();
   }
 
   /*
@@ -76,6 +80,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
                 if (segmentElement != null) {
                   segmentRegistryElement.appendChild(segmentElement);
                 }
+                this.serializableSegments.add(serializableSegment);
               }
             } else {
               throw new SegmentNotFoundException(segmentLink.getId().getId());
@@ -87,6 +92,30 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
     } catch (Exception exception) {
       throw new RegistrySerializationException(exception, super.getSection(), segmentRegistry);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getConformanceStatements(int)
+   */
+  @Override
+  public Set<SerializableConstraints> getConformanceStatements(int level) {
+    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
+    for(SerializableSegment serializableSegment : this.serializableSegments) {
+      conformanceStatements.add(serializableSegment.getConformanceStatements(level));
+    }
+    return conformanceStatements;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getPredicates(int)
+   */
+  @Override
+  public Set<SerializableConstraints> getPredicates(int level) {
+    Set<SerializableConstraints> predicates = new HashSet<>();
+    for(SerializableSegment serializableSegment : this.serializableSegments) {
+      predicates.add(serializableSegment.getPredicates(level));
+    }
+    return predicates;
   }
 
 }

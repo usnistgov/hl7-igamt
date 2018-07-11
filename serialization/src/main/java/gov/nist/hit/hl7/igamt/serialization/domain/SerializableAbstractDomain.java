@@ -34,7 +34,8 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   protected static final String FIELD_PATH_SEPARATOR = "-";
   protected static final String COMPONENT_PATH_SEPARATOR = "-";
   protected static final String SEGMENT_GROUP_PATH_SEPARATOR = ".";
-
+  private SerializableBinding serializableBinding = null;
+  
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position) {
     this(abstractDomain, position, abstractDomain.getName());
   }
@@ -82,8 +83,8 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   public Element serializeResourceBinding(ResourceBinding binding,
       Map<String, String> valuesetNamesMap) throws SerializationException {
     Map<String, String> pathLocationMap = this.getIdPathMap();
-    SerializableBinding serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
-    return serializableBinding.serialize();
+    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
+    return this.serializableBinding.serialize();
   }
   
   public abstract Map<String, String> getIdPathMap();
@@ -94,6 +95,14 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
 
   public void setAbstractDomain(AbstractDomain abstractDomain) {
     this.abstractDomain = abstractDomain;
+  }
+
+  public SerializableConstraints getConformanceStatements(int level) {
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getConformanceStatements());
+  }
+
+  public SerializableConstraints getPredicates(int level) {
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getPredicates());
   }
 
 }

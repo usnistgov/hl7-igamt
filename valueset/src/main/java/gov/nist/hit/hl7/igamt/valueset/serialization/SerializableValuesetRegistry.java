@@ -13,13 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -35,6 +37,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
 
   private Map<String, Valueset> valuesetsMap;
   private Set<String> bindedValueSets;
+  private Set<SerializableValueSet> serializableValueSets;
 
   /**
    * @param section
@@ -44,6 +47,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
     this.bindedValueSets = bindedValueSets;
+    this.serializableValueSets = new HashSet<>();
   }
 
   /*
@@ -77,6 +81,24 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
     } catch (Exception exception) {
       throw new RegistrySerializationException(exception, super.getSection(), valuesetRegistry);
     }
+  }
+  
+  @Override
+  public Set<SerializableConstraints> getConformanceStatements(int level) {
+    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
+    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
+      conformanceStatements.add(serializableValueSet.getConformanceStatements(level));
+    }
+    return conformanceStatements;
+  }
+
+  @Override
+  public Set<SerializableConstraints> getPredicates(int level) {
+    Set<SerializableConstraints> predicates = new HashSet<>();
+    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
+      predicates.add(serializableValueSet.getPredicates(level));
+    }
+    return predicates;
   }
 
 }

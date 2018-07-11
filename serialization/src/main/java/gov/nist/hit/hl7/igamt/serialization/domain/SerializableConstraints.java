@@ -15,33 +15,33 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Element;
 
 /**
  *
- * @author Maxence Lefort on May 11, 2018.
+ * @author Maxence Lefort on Jul 11, 2018.
  */
-public abstract class SerializableRegistry extends SerializableSection {
+public class SerializableConstraints extends SerializableSection {
 
-  private Registry registry;
+  private Set<Element> constraints;
 
-  /**
-   * @param id
-   * @param position
-   * @param title
-   */
-  public SerializableRegistry(Section section, int level, Registry registry) {
-    super(section, level);
-    this.registry = registry;
+  public SerializableConstraints(String id, String description, Type type, int position, String label, int level, Set<Element> constraints) {
+    super(new Section(id, description, type, position, label), level);
+    this.constraints = constraints;
   }
 
-  public Registry getRegistry() {
-    return registry;
+  @Override
+  public Element serialize() throws SerializationException {
+    Element constraintsElement = this.getElement();
+    for(Element element : constraints) {
+      if(element != null) {
+        constraintsElement.appendChild(element);
+      }
+    }
+    return constraintsElement;
   }
   
-  public abstract Set<SerializableConstraints> getConformanceStatements(int level);
-  public abstract Set<SerializableConstraints> getPredicates(int level);
-
 }
