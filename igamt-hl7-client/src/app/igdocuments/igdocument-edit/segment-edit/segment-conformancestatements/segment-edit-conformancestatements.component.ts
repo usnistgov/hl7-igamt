@@ -84,6 +84,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
                         childData.child.instanceParameter = '1';
                     }else{
                         childData.child.instanceParameter = '*';
+                        childData.repeatable = true;
                     }
 
                     var treeNode = {

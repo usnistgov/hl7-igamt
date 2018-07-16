@@ -24,6 +24,8 @@ export class GeneralConfigurationService {
 
   _simpleConstraintVerbs:any[];
 
+  _instanceNums: any[];
+
   _ifConstraintVerbs:any[];
 
   _operators: any[];
@@ -73,6 +75,19 @@ export class GeneralConfigurationService {
         ]
       }
     ];
+
+    this._instanceNums = [ { label : 'ONE', value : '*' },
+      { label : 'the first', value : '1' },
+      { label : 'the second', value : '2' },
+      { label : 'the third', value : '3' },
+      { label : 'the forth', value : '4' },
+      { label : 'the fifth', value : '5' },
+      { label : 'the sixth', value : '6' },
+      { label : 'the seventh', value : '7' },
+      { label : 'the eighth', value : '8' },
+      { label : 'the ninth', value : '9' },
+      { label : 'the tenth', value : '10' }
+      ];
 
     this._assertionModes = [
       // {label: 'Select Assertion Type', value: null},
