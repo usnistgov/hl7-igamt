@@ -20,7 +20,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  *
  * @author Maxence Lefort on May 15, 2018.
  */
-@Document(collection = "exportFontConfig")
+@Document(collection = "exportFontConfiguration")
 public class ExportFontConfiguration {
 
   @Id

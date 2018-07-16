@@ -11,19 +11,30 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.export.configuration.display;
+package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService;
 
 /**
  *
- * @author Maxence Lefort on Jun 5, 2018.
+ * @author Maxence Lefort on Jun 8, 2018.
  */
-public class ExportFontDisplay {
+@Service("exportFontService")
+public class ExportFontServiceImpl implements ExportFontService {
 
-  /**
-   * 
-   */
-  public ExportFontDisplay() {
-    // TODO Auto-generated constructor stub
+  @Autowired
+  private ExportFontRepository exportFontRepository;
+  
+  @Override
+  public List<ExportFont> findAll() {
+    return exportFontRepository.findAll();
   }
 
 }

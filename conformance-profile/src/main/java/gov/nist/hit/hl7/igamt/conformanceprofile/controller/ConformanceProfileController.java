@@ -16,7 +16,6 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
-import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
@@ -24,6 +23,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileException;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;

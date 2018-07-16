@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.service;
 
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 
 /**
@@ -25,5 +26,9 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguratio
 public interface ExportFontConfigurationService {
 
   public ExportFontConfiguration getExportFontConfiguration(String username);
+  
+  public ExportFontConfigurationDisplay getExportFontConfigurationDisplay(String username);
+  
+  public void save(ExportFontConfiguration exportFontConfiguration);
 
 }

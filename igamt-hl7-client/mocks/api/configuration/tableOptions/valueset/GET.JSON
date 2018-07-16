@@ -1,0 +1,59 @@
+{
+  "includeValuesetsTable": true,
+  "valuesetsExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": false,
+    "o": false
+  },
+  "codesExport": {
+    "r": true,
+    "p": true,
+    "e": false
+  },
+  "columns": [
+    {
+      "name": "Value",
+      "position": 1,
+      "present": true,
+      "disabled": true
+    },
+    {
+      "name": "Code System",
+      "position": 2,
+      "present": true,
+      "disabled": true
+    },
+    {
+      "name": "Usage",
+      "position": 3,
+      "present": false,
+      "disabled": false
+    },
+    {
+      "name": "Description",
+      "position": 4,
+      "present": true,
+      "disabled": true
+    },
+    {
+      "name": "Comment",
+      "position": 5,
+      "present": false,
+      "disabled": false
+    }
+  ],
+  "metadataConfig": {
+    "stability": true,
+    "extensibility": true,
+    "contentDefinition": true,
+    "oid": true,
+    "type": true
+  },
+  "unboundHL7": false,
+  "unboundCustom": false,
+  "phinvadsUpdateEmailNotification": false,
+  "codeNumber": 500,
+  "maxCodeNumber": 500
+}
