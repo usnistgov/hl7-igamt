@@ -74,7 +74,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   @Override
   public void delete(CompositeKey id) {
     // TODO Auto-generated method stub
-    datatypeLibraryRepository.delete(id);
+    datatypeLibraryRepository.deleteById(id);
   }
 
 

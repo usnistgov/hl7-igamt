@@ -13,12 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -33,14 +36,18 @@ import nu.xom.Element;
 public class SerializableValuesetRegistry extends SerializableRegistry {
 
   private Map<String, Valueset> valuesetsMap;
+  private Set<String> bindedValueSets;
+  private Set<SerializableValueSet> serializableValueSets;
 
   /**
    * @param section
    */
   public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
-      Map<String, Valueset> valuesetsMap) {
+      Map<String, Valueset> valuesetsMap, Set<String> bindedValueSets) {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
+    this.bindedValueSets = bindedValueSets;
+    this.serializableValueSets = new HashSet<>();
   }
 
   /*
@@ -56,16 +63,18 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
       if (valuesetRegistry != null) {
         if (!valuesetRegistry.getChildren().isEmpty()) {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
-            if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-              Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-              SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
-                  String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
-              Element valuesetElement = serializableValueSet.serialize();
-              if (valuesetElement != null) {
-                valuesetRegistryElement.appendChild(valuesetElement);
+            if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
+              if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+                Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
+                SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
+                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
+                Element valuesetElement = serializableValueSet.serialize();
+                if (valuesetElement != null) {
+                  valuesetRegistryElement.appendChild(valuesetElement);
+                }
+              } else {
+                throw new ValuesetNotFoundException(valuesetLink.getId().getId());
               }
-            } else {
-              throw new ValuesetNotFoundException(valuesetLink.getId().getId());
             }
           }
         }
@@ -74,6 +83,24 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
     } catch (Exception exception) {
       throw new RegistrySerializationException(exception, super.getSection(), valuesetRegistry);
     }
+  }
+  
+  @Override
+  public Set<SerializableConstraints> getConformanceStatements(int level) {
+    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
+    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
+      conformanceStatements.add(serializableValueSet.getConformanceStatements(level));
+    }
+    return conformanceStatements;
+  }
+
+  @Override
+  public Set<SerializableConstraints> getPredicates(int level) {
+    Set<SerializableConstraints> predicates = new HashSet<>();
+    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
+      predicates.add(serializableValueSet.getPredicates(level));
+    }
+    return predicates;
   }
 
 }

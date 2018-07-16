@@ -1,0 +1,31 @@
+{
+  "exportFonts": [
+    {
+      "id": "596d110b77c857c73a00a259",
+      "name": "'Arial Narrow',sans-serif",
+      "value": "'Arial Narrow',sans-serif;"
+    },
+    {
+      "id": "596d110b77c857c73a00a25b",
+      "name": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif",
+      "value": "\"Palatino Linotype\", \"Book Antiqua\", Palatino, serif;"
+    },
+    {
+      "id": "596d110b77c857c73a00a25c",
+      "name": "\"Times New Roman\", Times, serif",
+      "value": "\"Times New Roman\", Times, serif;"
+    }
+  ],
+  "exportFontConfiguration": {
+    "id": null,
+    "username": null,
+    "exportFont": {
+      "id": null,
+      "name": "'Arial Narrow',sans-serif",
+      "value": "'Arial Narrow',sans-serif;"
+    },
+    "fontSize": 12,
+    "defaultConfig": true
+  },
+  "maxFontSize": 25
+}

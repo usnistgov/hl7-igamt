@@ -62,4 +62,6 @@ public interface ConformanceProfileRepository
   @Query(value = "{ '_id._id' : ?0 }")
   List<ConformanceProfile> findLatestById(ObjectId id, Sort sort);
 
+  public ConformanceProfile findOneById(CompositeKey key);
+
 }

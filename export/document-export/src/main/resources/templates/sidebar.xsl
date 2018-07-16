@@ -15,7 +15,8 @@
             </xsl:element>
             <xsl:element name="br"/>
             <xsl:for-each select="Document/Section">
-            	<xsl:call-template name="displayTableOfContentSection"/>
+            		<xsl:sort select="@position" data-type="number"></xsl:sort>
+            		<xsl:call-template name="displayTableOfContentSection"/>
             </xsl:for-each>
         </xsl:element>
         <xsl:element name="div">

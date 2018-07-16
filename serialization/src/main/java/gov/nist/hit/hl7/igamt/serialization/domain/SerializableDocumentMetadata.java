@@ -14,7 +14,10 @@
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -25,16 +28,17 @@ import nu.xom.Element;
 public class SerializableDocumentMetadata extends SerializableElement {
 
   private DocumentMetadata metadata;
+  private DomainInfo domainInfo;
+  private PublicationInfo publicationInfo;
 
-  /**
-   * @param id
-   * @param position
-   * @param title
-   */
-  public SerializableDocumentMetadata(DocumentMetadata metadata) {
+  public SerializableDocumentMetadata(DocumentMetadata metadata, DomainInfo domainInfo, PublicationInfo publicationInfo) {
     super(metadata.getIdentifier(), "0", metadata.getTitle());
     this.metadata = metadata;
+    this.domainInfo = domainInfo;
+    this.publicationInfo = publicationInfo;
   }
+
+
 
   /*
    * (non-Javadoc)
@@ -45,8 +49,10 @@ public class SerializableDocumentMetadata extends SerializableElement {
   public Element serialize() throws SerializationException {
     Element metadataElement = new Element("Metadata");
     metadataElement.addAttribute(
+        new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
+    metadataElement.addAttribute(
         new Attribute("topics", metadata.getTopics() != null ? metadata.getTopics() : ""));
-    metadataElement.addAttribute(new Attribute("specificationName",
+    metadataElement.addAttribute(new Attribute("description",
         metadata.getSpecificationName() != null ? metadata.getSpecificationName() : ""));
     metadataElement.addAttribute(new Attribute("identifier",
         metadata.getIdentifier() != null ? metadata.getIdentifier() : ""));
@@ -58,6 +64,38 @@ public class SerializableDocumentMetadata extends SerializableElement {
         metadata.getCoverPicture() != null ? metadata.getCoverPicture() : ""));
     metadataElement.addAttribute(
         new Attribute("subTitle", metadata.getSubTitle() != null ? metadata.getSubTitle() : ""));
+    
+    metadataElement.addAttribute(new Attribute("hl7Version",
+        this.domainInfo != null
+            && this.domainInfo.getVersion() != null
+                ? this.domainInfo.getVersion()
+                : ""));
+    String domainCompatibilityVersions = "";
+    if (this.domainInfo != null
+        && this.domainInfo.getCompatibilityVersion() != null) {
+      domainCompatibilityVersions =
+          String.join(",", this.domainInfo.getCompatibilityVersion());
+    }
+    metadataElement
+        .addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
+    metadataElement.addAttribute(new Attribute("scope",
+        this.domainInfo != null
+            && this.domainInfo.getScope() != null
+                ? this.domainInfo.getScope().name()
+                : ""));
+    metadataElement.addAttribute(new Attribute("publicationVersion",
+        this.publicationInfo != null
+            && this.publicationInfo.getPublicationVersion() != null
+                ? this.publicationInfo.getPublicationVersion()
+                : ""));
+    String publicationDate = "";
+    if (this.publicationInfo != null
+        && this.publicationInfo.getPublicationDate() != null) {
+      publicationDate = DateSerializationUtil
+          .serializeDate(this.publicationInfo.getPublicationDate());
+    }
+    metadataElement.addAttribute(new Attribute("publicationDate", publicationDate));
+    //TODO add appVersion
     return metadataElement;
   }
 

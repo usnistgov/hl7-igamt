@@ -17,7 +17,7 @@ package gov.nist.hit.hl7.igamt.export.configuration.domain;
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
-public class ValueSetMetadataConfiguration {
+public class ValuesetMetadataConfiguration {
 
   private boolean stability = true;
   private boolean extensibility = true;
@@ -25,11 +25,11 @@ public class ValueSetMetadataConfiguration {
   private boolean oid = true;
   private boolean type = true;
 
-  public ValueSetMetadataConfiguration() {
+  public ValuesetMetadataConfiguration() {
     super();
   }
 
-  public ValueSetMetadataConfiguration(boolean stability, boolean extensibility,
+  public ValuesetMetadataConfiguration(boolean stability, boolean extensibility,
       boolean contentDefinition, boolean oid, boolean type) {
     super();
     this.stability = stability;

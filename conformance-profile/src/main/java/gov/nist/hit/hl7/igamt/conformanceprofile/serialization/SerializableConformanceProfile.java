@@ -13,18 +13,21 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.serialization;
 
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.MsgStructElementSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
@@ -40,6 +43,7 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
+  private Set<String> bindedGroupsAndSegmentRefs;
   private int level;
 
   /**
@@ -47,10 +51,11 @@ public class SerializableConformanceProfile extends SerializableResource {
    * @param position
    */
   public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
-      int level, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap) {
+      int level, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap, Set<String> bindedGroupsAndSegmentRefs) {
     super(conformanceProfile, position);
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
     this.level = level;
   }
 
@@ -73,9 +78,11 @@ public class SerializableConformanceProfile extends SerializableResource {
             && conformanceProfile.getChildren().size() > 0) {
           for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
             if (msgStructElm != null) {
-              Element msgStructElement = this.serializeMsgStructElement(msgStructElm, 0);
-              if (msgStructElement != null) {
-                conformanceProfileElement.appendChild(msgStructElement);
+              if(this.bindedGroupsAndSegmentRefs.contains(msgStructElm.getId())) {
+                Element msgStructElement = this.serializeMsgStructElement(msgStructElm, 0);
+                if (msgStructElement != null) {
+                  conformanceProfileElement.appendChild(msgStructElement);
+                }
               }
             }
           }
@@ -135,7 +142,9 @@ public class SerializableConformanceProfile extends SerializableResource {
       segmentRefElement
           .addAttribute(new Attribute("position", String.valueOf(segmentRef.getPosition())));
       segmentRefElement
-          .addAttribute(new Attribute("name", segment.getName() != null ? segment.getName() : ""));
+          .addAttribute(new Attribute("ref", segment.getName() != null ? segment.getName() : ""));
+      segmentRefElement
+      .addAttribute(new Attribute("label", segment.getLabel() != null ? segment.getLabel() : ""));
       segmentRefElement.addAttribute(new Attribute("description",
           segment.getDescription() != null ? segment.getDescription() : ""));
       segmentRefElement.addAttribute(
@@ -211,6 +220,47 @@ public class SerializableConformanceProfile extends SerializableResource {
     elementGroupEnd.addAttribute(new Attribute("position", String.valueOf(group.getPosition())));
     groupElement.appendChild(elementGroupEnd);
     return groupElement;
+  }
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    ConformanceProfile conformanceProfile = (ConformanceProfile) this.getAbstractDomain();
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    String basePath = "";
+    for(MsgStructElement msgStructElement : conformanceProfile.getChildren()) {
+      Map<String, String> msgStructElementIdPathMap = getIdPathMap(msgStructElement, basePath);
+      idPathMap.putAll(msgStructElementIdPathMap);
+    }
+    return idPathMap;
+  }
+
+  private Map<String, String> getIdPathMap(MsgStructElement msgStructElement, String basePath) {
+    Map<String, String> idPathMap = new HashMap<String, String>();
+    if(!basePath.isEmpty()) {
+      basePath += SEGMENT_GROUP_PATH_SEPARATOR;
+    }
+    if(msgStructElement instanceof Group) {
+      Group group = (Group) msgStructElement;
+      idPathMap.put(group.getId(), basePath+group.getName());
+      basePath += group.getName();
+      for(MsgStructElement groupMsgStructElement : group.getChildren()) {
+        idPathMap.putAll(getIdPathMap(groupMsgStructElement, basePath));
+      }
+      
+    } else if (msgStructElement instanceof SegmentRef) {
+      Segment segment = segmentsMap.get(msgStructElement.getId());
+      if(segment != null) {
+        idPathMap.put(segment.getId().getId(), basePath+segment.getLabel());
+        basePath += segment.getLabel();
+        for(Field field : segment.getChildren()) {
+          if(!idPathMap.containsKey(field.getId())) {
+            String path = basePath+SEGMENT_GROUP_PATH_SEPARATOR+field.getPosition();
+            idPathMap.put(field.getId(), path);
+          }
+        }
+      }
+    }
+    return idPathMap;
   }
 
 }

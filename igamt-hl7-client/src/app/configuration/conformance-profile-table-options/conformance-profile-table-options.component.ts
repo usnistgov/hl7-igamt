@@ -30,6 +30,7 @@ export class ConformanceProfileTableOptionsComponent implements OnInit {
   save() {
     this.tableOptionService.saveConformanceProfileTableOptions(this.tableOptions).then(() => {
       console.log('saved successfully');
+      this.changed = false;
     }).catch(error => {
       console.log('unable to save table options: ' + error);
     });
