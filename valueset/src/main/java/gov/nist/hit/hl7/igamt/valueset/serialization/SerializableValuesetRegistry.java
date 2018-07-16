@@ -63,16 +63,18 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
       if (valuesetRegistry != null) {
         if (!valuesetRegistry.getChildren().isEmpty()) {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
-            if (bindedValueSets.contains(valuesetLink.getId().getId()) && valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-              Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-              SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
-                  String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
-              Element valuesetElement = serializableValueSet.serialize();
-              if (valuesetElement != null) {
-                valuesetRegistryElement.appendChild(valuesetElement);
+            if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
+              if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+                Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
+                SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
+                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
+                Element valuesetElement = serializableValueSet.serialize();
+                if (valuesetElement != null) {
+                  valuesetRegistryElement.appendChild(valuesetElement);
+                }
+              } else {
+                throw new ValuesetNotFoundException(valuesetLink.getId().getId());
               }
-            } else {
-              throw new ValuesetNotFoundException(valuesetLink.getId().getId());
             }
           }
         }

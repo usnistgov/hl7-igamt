@@ -142,31 +142,34 @@ public class SerializableSegment extends SerializableResource {
 
   private Element serializeDynamicMapping(DynamicMappingInfo dynamicMappingInfo)
       throws DatatypeNotFoundException {
-    Element dynamicMappingElement = new Element("DynamicMapping");
-    dynamicMappingElement.addAttribute(new Attribute("referencePath",
-        dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
-            : ""));
-    dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
-        dynamicMappingInfo.getVariesDatatypePath() != null
-            ? dynamicMappingInfo.getVariesDatatypePath()
-            : ""));
-    for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
-      if (dynamicMappingItem != null) {
-        Element dynamicMappingItemElement = new Element("DynamicMappingItem");
-        if (dynamicMappingItem.getDatatypeId() != null) {
-          if (this.datatypesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
-            dynamicMappingItemElement.addAttribute(new Attribute("datatype",
-                this.datatypesMap.get((dynamicMappingItem.getDatatypeId()))));
-          } else {
-            throw new DatatypeNotFoundException(dynamicMappingItem.getDatatypeId());
+    if(dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
+      Element dynamicMappingElement = new Element("DynamicMapping");
+      dynamicMappingElement.addAttribute(new Attribute("referencePath",
+          dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
+              : ""));
+      dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
+          dynamicMappingInfo.getVariesDatatypePath() != null
+              ? dynamicMappingInfo.getVariesDatatypePath()
+              : ""));
+      for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
+        if (dynamicMappingItem != null) {
+          Element dynamicMappingItemElement = new Element("DynamicMappingItem");
+          if (dynamicMappingItem.getDatatypeId() != null) {
+            if (this.datatypesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
+              dynamicMappingItemElement.addAttribute(new Attribute("datatype",
+                  this.datatypesMap.get((dynamicMappingItem.getDatatypeId()))));
+            } else {
+              throw new DatatypeNotFoundException(dynamicMappingItem.getDatatypeId());
+            }
           }
+          dynamicMappingItemElement.addAttribute(new Attribute("value",
+              dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
+          dynamicMappingElement.appendChild(dynamicMappingItemElement);
         }
-        dynamicMappingItemElement.addAttribute(new Attribute("value",
-            dynamicMappingItem.getValue() != null ? dynamicMappingItem.getValue() : ""));
-        dynamicMappingElement.appendChild(dynamicMappingItemElement);
       }
+      return dynamicMappingElement;
     }
-    return dynamicMappingElement;
+    return null;
   }
 
   @Override

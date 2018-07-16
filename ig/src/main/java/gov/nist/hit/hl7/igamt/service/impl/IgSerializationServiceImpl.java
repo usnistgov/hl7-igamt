@@ -217,19 +217,21 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   private void identifyBindedFields(Segment segment, UsageConfiguration segmentUsageConfiguration,
       UsageConfiguration datatapeUsageConfiguration,
       UsageConfiguration valuesetUsageConfiguration) {
-    for (Field field : segment.getChildren()) {
-      if (!this.bindedFields.contains(field.getId())) {
-        if (segmentUsageConfiguration.isBinded(field.getUsage())) {
-          this.bindedFields.add(field.getId());
-          this.bindedDatatypes.add(field.getRef().getId());
+    if(segment != null) {
+      for (Field field : segment.getChildren()) {
+        if (!this.bindedFields.contains(field.getId())) {
+          if (segmentUsageConfiguration.isBinded(field.getUsage())) {
+            this.bindedFields.add(field.getId());
+            this.bindedDatatypes.add(field.getRef().getId());
+          }
         }
       }
-    }
-    if(segment.getBinding() != null) {
-      for(StructureElementBinding binding : segment.getBinding().getChildren()) {
-        if(this.bindedFields.contains(binding.getElementId()) && binding.getValuesetBindings() != null && !binding.getValuesetBindings().isEmpty()) {
-          for(ValuesetBinding valuesetBinding : binding.getValuesetBindings()) {
-            this.bindedValueSets.add(valuesetBinding.getValuesetId());
+      if(segment.getBinding() != null && segment.getBinding().getChildren() != null) {
+        for(StructureElementBinding binding : segment.getBinding().getChildren()) {
+          if(binding != null && this.bindedFields.contains(binding.getElementId()) && binding.getValuesetBindings() != null && !binding.getValuesetBindings().isEmpty()) {
+            for(ValuesetBinding valuesetBinding : binding.getValuesetBindings()) {
+              this.bindedValueSets.add(valuesetBinding.getValuesetId());
+            }
           }
         }
       }
