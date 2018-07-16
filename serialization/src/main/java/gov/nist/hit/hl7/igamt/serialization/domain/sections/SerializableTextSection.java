@@ -11,7 +11,7 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.ig.serialization.sections;
+package gov.nist.hit.hl7.igamt.serialization.domain.sections;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -42,9 +42,9 @@ public class SerializableTextSection extends SerializableSection {
     Element textSectionElement = super.getElement();
     if (((TextSection) super.getSection()).getChildren() != null) {
       for (Section child : ((TextSection) super.getSection()).getChildren()) {
-        Element childElement =
-            SectionSerializationUtil.serializeSection(child, this.getChildLevel());
-        if (child != null) {
+        SerializableTextSection serializableChild = new SerializableTextSection((TextSection) child, this.getChildLevel());
+        Element childElement = serializableChild.serialize();
+        if (childElement != null) {
           textSectionElement.appendChild(childElement);
         }
       }
