@@ -80,7 +80,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public Ig findById(CompositeKey id) {
     // TODO Auto-generated method stub
-    return igRepository.findOne(id);
+    return igRepository.findById(id).get();
   }
 
   @Override
@@ -92,7 +92,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public void delete(CompositeKey id) {
     // TODO Auto-generated method stub
-    igRepository.findOne(id);
+    igRepository.findById(id);
   }
 
   @Override
@@ -201,7 +201,6 @@ public class IgServiceImpl implements IgService {
 
 
     Criteria where = Criteria.where("username").is(username);
-    where.andOperator(Criteria.where("domainInfo.scope").is("USER"));
 
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { AppComponent } from './app.component';
 import {AuthService} from "./login/auth.service";
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-topbar',
@@ -8,9 +9,9 @@ import {AuthService} from "./login/auth.service";
 })
 export class AppTopBarComponent {
 
-    username="Guest";
+    currentUser:any={};
     constructor(public app: AppComponent,public auth:AuthService ) {
-     this.username= this.auth.getcurrentUser();
+
     }
 
     themeChange(e) {
@@ -26,6 +27,31 @@ export class AppTopBarComponent {
     }
 
   getUsername(){
-    return this.username;
+      if(this.currentUser){
+        return this.currentUser.username;
+
+      }else{
+        return "Hello Guest";
+      }
+
+  }
+  ngOnInit(){
+  this.auth.getCurrentUser();
+
+
+  }
+  ngAfterViewInit() {
+    this.auth.currentUser.subscribe(x=> {
+      this.currentUser = x;
+
+
+    });
+
+  }
+
+  logout(){
+
+    this.auth.logout();
+
   }
 }

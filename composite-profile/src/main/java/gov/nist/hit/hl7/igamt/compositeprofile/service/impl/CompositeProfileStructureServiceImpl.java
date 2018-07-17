@@ -34,7 +34,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public CompositeProfileStructure findByKey(CompositeKey key) {
-    return compositeProfileStructureRepository.findOne(key);
+    return compositeProfileStructureRepository.findById(key).get();
   }
 
   @Override
@@ -62,7 +62,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public void delete(CompositeKey key) {
-    compositeProfileStructureRepository.delete(key);
+    compositeProfileStructureRepository.deleteById(key);
   }
 
   @Override

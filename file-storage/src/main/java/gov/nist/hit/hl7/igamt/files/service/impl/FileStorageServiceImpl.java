@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -12,8 +13,7 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
 import com.mongodb.DBObject;
-import com.mongodb.gridfs.GridFSDBFile;
-import com.mongodb.gridfs.GridFSFile;
+import com.mongodb.client.gridfs.model.GridFSFile;
 
 import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
 
@@ -29,25 +29,25 @@ public class FileStorageServiceImpl implements FileStorageService {
   public void init() {}
 
   @Override
-  public GridFSFile store(InputStream inputStream, String fileName, String contentType,
+  public ObjectId store(InputStream inputStream, String fileName, String contentType,
       DBObject metaData) {
     return this.gridFsTemplate.store(inputStream, fileName, contentType, metaData);
   }
 
   @Override
-  public GridFSDBFile findOne(String id) {
+  public com.mongodb.client.gridfs.model.GridFSFile findOne(String id) {
     return this.gridFsTemplate.findOne(new Query(Criteria.where("_id").is(id)));
   }
 
   @Override
-  public GridFSDBFile findOneByFilename(String fileName) {
+  public GridFSFile findOneByFilename(String fileName) {
     return gridFsTemplate.findOne(new Query(Criteria.where("filename").is(fileName)));
   }
 
 
   @Override
   public List findAll() {
-    return gridFsTemplate.find(null);
+    return null;
   }
 
 

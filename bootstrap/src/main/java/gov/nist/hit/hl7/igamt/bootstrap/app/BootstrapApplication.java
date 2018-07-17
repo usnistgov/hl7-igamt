@@ -8,12 +8,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.MultipartAutoConfiguration;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -22,8 +18,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 @SpringBootApplication
 
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
-    DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
-    MultipartAutoConfiguration.class})
+    DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
 @ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto"})
 
@@ -46,16 +41,13 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   DatatypeService dataypeService;
 
-  @Bean
-  public ShaPasswordEncoder encoder() {
-    return new ShaPasswordEncoder(256);
-  }
 
-  @Bean(name = "multipartResolver")
-  public CommonsMultipartResolver multipartResolver() {
-    CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-    return multipartResolver;
-  }
+
+  // @Bean(name = "multipartResolver")
+  // public CommonsMultipartResolver multipartResolver() {
+  // CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+  // return multipartResolver;
+  // }
   // @Bean
   // public FilterRegistrationBean jwtFilter() {
   // final FilterRegistrationBean registrationBean = new FilterRegistrationBean();

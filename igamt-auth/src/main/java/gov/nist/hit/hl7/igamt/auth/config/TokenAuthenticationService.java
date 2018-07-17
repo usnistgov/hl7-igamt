@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
 
 import gov.nist.hit.hl7.auth.util.crypto.CryptoUtil;
 import io.jsonwebtoken.Claims;
@@ -40,11 +42,11 @@ public class TokenAuthenticationService {
       SignatureException, IllegalArgumentException, FileNotFoundException, NoSuchAlgorithmException,
       InvalidKeySpecException, IOException {
 
+    Cookie token = WebUtils.getCookie(request, "authCookie");
 
-    String jwt = request.getHeader("Authorization");
-    if (jwt != null && !jwt.isEmpty()) {
+    if (token != null && token.getValue() != null && !token.getValue().isEmpty()) {
       Claims claims = Jwts.parser().setSigningKey(crypto.pub(env.getProperty("key.public")))
-          .parseClaimsJws(jwt).getBody();
+          .parseClaimsJws(token.getValue()).getBody();
       String username = claims.getSubject();
       System.out.println(username);
       ArrayList<Map<String, String>> roles = (ArrayList<Map<String, String>>) claims.get("roles");
@@ -55,10 +57,13 @@ public class TokenAuthenticationService {
         authorities.add(new SimpleGrantedAuthority(r.get("authority")));
       });
       UsernamePasswordAuthenticationToken authenticatedUser =
-          new UsernamePasswordAuthenticationToken(username, jwt, authorities);
+          new UsernamePasswordAuthenticationToken(username, token.getValue(), authorities);
       return authenticatedUser;
     } else {
       return null;
     }
   }
+
+
+
 }
