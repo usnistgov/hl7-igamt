@@ -32,6 +32,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.serialization.SerializableSegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.sections.SerializableTextSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
