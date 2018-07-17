@@ -6,6 +6,7 @@ import {CommonModule} from "@angular/common";
 import {ValuesetEditRoutingModule} from "./valueset-edit-routing.module";
 import {TabMenuModule} from "primeng/components/tabmenu/tabmenu";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
+import {FieldsetModule} from 'primeng/fieldset';
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
@@ -16,10 +17,11 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 
+
 import {ValuesetEditMetadataComponent} from "./valueset-metadata/valueset-edit-metadata.component";
 import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-postdef.component";
 import {ValuesetEditPredefComponent} from "./valueset-predef/valueset-edit-predef.component";
-// import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit-structure.component";
+import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit-structure.component";
 
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from "primeng/components/message/message";
@@ -34,6 +36,7 @@ import {NamingConventionModule} from "../../../common/naming-convention/naming-c
     TabMenuModule,
     DialogModule,
     DropdownModule,
+    FieldsetModule,
     ValuesetEditRoutingModule,
     UtilsModule,
     TreeTableModule,
@@ -47,7 +50,7 @@ import {NamingConventionModule} from "../../../common/naming-convention/naming-c
     FroalaViewModule.forRoot()
   ],
   // providers : [ValuesetCrossRefResolver],
-  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent],
+  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ValuesetEditModule {}

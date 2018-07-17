@@ -3,7 +3,7 @@
  */
 import {RouterModule} from "@angular/router";
 import {NgModule} from "@angular/core";
-// import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit-structure.component";
+import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit-structure.component";
 import {ValuesetEditMetadataComponent} from "./valueset-metadata/valueset-edit-metadata.component";
 import {ValuesetEditPredefComponent} from "./valueset-predef/valueset-edit-predef.component";
 import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-postdef.component";
@@ -13,12 +13,12 @@ import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-pos
 @NgModule({
     imports: [
         RouterModule.forChild([
-            // {
-            //     path: ':valuesetId', component: ValuesetEditStructureComponent,
-            // },
-            // {
-            //     path: ':valuesetId/structure', component: ValuesetEditStructureComponent,
-            // },
+            {
+                path: ':valuesetId', component: ValuesetEditStructureComponent,
+            },
+            {
+                path: ':valuesetId/structure', component: ValuesetEditStructureComponent,
+            },
             {
                 path: ':valuesetId/metadata', component: ValuesetEditMetadataComponent,
             },

@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain.display;
 
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+
 /**
  * @author jungyubw
  *
@@ -19,6 +21,8 @@ public class DisplayCode {
   private String id;
   private String value;
   private String description;
+  private CodeUsage usage;
+  private String comments;
   
   private CodeSysRef codeSysRef;
 
@@ -52,6 +56,22 @@ public class DisplayCode {
 
   public void setCodeSysRef(CodeSysRef codeSysRef) {
     this.codeSysRef = codeSysRef;
+  }
+
+  public CodeUsage getUsage() {
+    return usage;
+  }
+
+  public void setUsage(CodeUsage usage) {
+    this.usage = usage;
+  }
+
+  public String getComments() {
+    return comments;
+  }
+
+  public void setComments(String comments) {
+    this.comments = comments;
   }
   
   

@@ -16,6 +16,9 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
  * @author jungyubw
@@ -27,6 +30,11 @@ public class ValuesetStructure {
   private String version;
   private String bindingIdentifier;
   private String name;
+  
+  
+  private Stability stability;
+  private Extensibility extensibility;
+  private ContentDefinition contentDefinition;
   
   
   private int numberOfCodes;
@@ -80,5 +88,23 @@ public class ValuesetStructure {
   }
   public void setDisplayCodeSystems(Set<DisplayCodeSystem> displayCodeSystems) {
     this.displayCodeSystems = displayCodeSystems;
+  }
+  public Stability getStability() {
+    return stability;
+  }
+  public void setStability(Stability stability) {
+    this.stability = stability;
+  }
+  public Extensibility getExtensibility() {
+    return extensibility;
+  }
+  public void setExtensibility(Extensibility extensibility) {
+    this.extensibility = extensibility;
+  }
+  public ContentDefinition getContentDefinition() {
+    return contentDefinition;
+  }
+  public void setContentDefinition(ContentDefinition contentDefinition) {
+    this.contentDefinition = contentDefinition;
   }  
 }

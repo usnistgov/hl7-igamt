@@ -35,6 +35,7 @@ import gov.nist.hit.hl7.igamt.common.util.compositeKey.CompositeKeyUtil;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -285,6 +286,9 @@ public class ValuesetServiceImpl implements ValuesetService {
       result.setName(valueset.getName());
       result.setScope(valueset.getDomainInfo().getScope());
       result.setVersion(valueset.getDomainInfo().getVersion());
+      result.setExtensibility(valueset.getExtensibility());
+      result.setStability(valueset.getStability());
+      result.setContentDefinition(valueset.getContentDefinition());
       Set<DisplayCode> displayCodes = new HashSet<DisplayCode>();
       Set<DisplayCodeSystem> displayCodeSystems = new HashSet<DisplayCodeSystem>();
       
@@ -304,6 +308,8 @@ public class ValuesetServiceImpl implements ValuesetService {
           if(code != null){
             dCode.setDescription(code.getDescription());
             dCode.setValue(code.getValue());
+            dCode.setUsage(CodeUsage.R);
+            dCode.setComments(code.getComments());
             displayCodes.add(dCode);            
           }
         }        
@@ -319,6 +325,8 @@ public class ValuesetServiceImpl implements ValuesetService {
           dCode.setDescription(iCode.getDescription());
           dCode.setId(iCode.getId());
           dCode.setValue(iCode.getValue());
+          dCode.setUsage(iCode.getUsage());
+          dCode.setComments(iCode.getComments());
           displayCodes.add(dCode); 
         }
       }
