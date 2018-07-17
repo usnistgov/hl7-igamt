@@ -45,7 +45,7 @@ export class ValuesetsService {
   public getValuesetPostDef(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
 
-        this.http.get('api/valuesets/' + id + '/postDef').subscribe(serverValuesetPostDef => {
+        this.http.get('api/valuesets/' + id + '/postdef').subscribe(serverValuesetPostDef => {
           resolve(serverValuesetPostDef);
         }, error => {
           reject(error);
@@ -57,7 +57,7 @@ export class ValuesetsService {
   public getValuesetPreDef(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
 
-        this.http.get('api/valuesets/' + id + '/preDef').subscribe(serverValuesetPreDef => {
+        this.http.get('api/valuesets/' + id + '/predef').subscribe(serverValuesetPreDef => {
           resolve(serverValuesetPreDef);
         }, error => {
           reject(error);

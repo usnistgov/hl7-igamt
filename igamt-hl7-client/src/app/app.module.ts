@@ -88,6 +88,7 @@ import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
 import {SegmentsService} from './service/segments/segments.service';
 import {DatatypesService} from './service/datatypes/datatypes.service';
+import {ValuesetsService} from './service/valueSets/valueSets.service';
 import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
@@ -226,6 +227,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     IgDocumentService,
     IndexedDbService,
     DatatypesService,
+        ValuesetsService,
     ConformanceProfilesService,
     SegmentsService,
     SectionsService,
