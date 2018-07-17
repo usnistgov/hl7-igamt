@@ -17,10 +17,12 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -31,6 +33,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -41,6 +48,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -80,9 +89,12 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment save(Segment segment) {
+    segment.setUpdateDate(new Date());
     segment = segmentRepository.save(segment);
     return segment;
   }
+
+
 
   @Override
   public List<Segment> findAll() {
@@ -151,33 +163,13 @@ public class SegmentServiceImpl implements SegmentService {
 
   }
 
+  /**
+   * @deprecated. Use segment.toStructure()
+   */
   @Override
   public SegmentStructure convertDomainToStructure(Segment segment) {
-    if (segment != null) {
-      SegmentStructure result = new SegmentStructure();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-
-      result.setBinding(segment.getBinding());
-
-      if (segment.getChildren() != null && segment.getChildren().size() > 0) {
-        for (Field f : segment.getChildren()) {
-          FieldDisplay fieldDisplay = new FieldDisplay();
-          fieldDisplay.setData(f);
-          result.addChild(fieldDisplay);
-        }
-      }
-      return result;
-    }
-    return null;
+    return segment.toStructure();
   }
-
 
   @Override
   public Segment findLatestById(String id) {
@@ -245,7 +237,8 @@ public class SegmentServiceImpl implements SegmentService {
    * segment.domain.display.SegmentMetadata)
    */
   @Override
-  public Segment saveSegment(ChangedSegment changedSegment) {
+  @Deprecated
+  public Segment saveSegment(ChangedSegment changedSegment) throws ValidationException {
     if (changedSegment != null && changedSegment.getId() != null) {
       Segment segment = this.findLatestById(changedSegment.getId());
 
@@ -335,4 +328,150 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+
+
+  private void validateField(Field f) throws ValidationException {
+    if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
+      throw new SegmentValidationException("Datatype not found");
+    }
+    Datatype d = datatypeService.getLatestById(f.getRef().getId());
+    if (d == null) {
+      throw new SegmentValidationException("Datatype not found");
+    }
+    ValidationUtil.validateUsage(f.getUsage(), f.getMin());
+    ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
+    ValidationUtil.validateCardinality(f.getMin(), f.getMax(), f.getUsage());
+    ValidationUtil.validateConfLength(f.getConfLength());
+  }
+
+
+
+  /**
+   * Validate the structure of the segment
+   * 
+   * @param structure
+   * @throws SegmentValidationException
+   */
+  @Override
+  public void validate(SegmentStructure structure) throws SegmentValidationException {
+    if (!structure.getScope().equals(Scope.HL7STANDARD)) {
+      if (structure.getChildren() != null) {
+        for (FieldDisplay fieldDisplay : structure.getChildren()) {
+          Field f = fieldDisplay.getData();
+          try {
+            validateField(f);
+          } catch (ValidationException e) {
+            throw new SegmentValidationException(structure.getLabel() + "-" + f.getPosition());
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void validate(DisplayMetadata metadata) throws SegmentValidationException {
+    if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
+      if (StringUtils.isEmpty(metadata.getName())) {
+        throw new SegmentValidationException("Name is missing");
+      }
+      if (StringUtils.isEmpty(metadata.getExt())) {
+        throw new SegmentValidationException("Ext is missing");
+      }
+    }
+  }
+
+
+
+  /**
+   * TODO: anything more to validate ??
+   */
+  @Override
+  public void validate(SegmentConformanceStatement conformanceStatement)
+      throws SegmentValidationException {
+    if (conformanceStatement != null) {
+      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
+        if (StringUtils.isEmpty(statement.getIdentifier())) {
+          throw new SegmentValidationException("conformance statement identifier is missing");
+        }
+      }
+    }
+  }
+
+
+
+  /**
+   * TODO
+   */
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#convertToSegment(gov.nist.hit.hl7.igamt.
+   * segment.domain.display.SegmentStructure)
+   */
+  @Override
+  public Segment convertToSegment(SegmentStructure structure) {
+    Segment segment = this.findLatestById(structure.getId().getId());
+    if (segment != null) {
+      segment.setBinding(structure.getBinding());
+      if (structure.getChildren() != null) {
+        Set<Field> fields = new HashSet<Field>();
+        for (FieldDisplay fd : structure.getChildren()) {
+          fields.add(fd.getData());
+        }
+        segment.setChildren(fields);
+      }
+    }
+    return segment;
+  }
+
+
+  @Override
+  public Segment savePredef(PreDef predef) throws SegmentNotFoundException {
+    Segment segment = findLatestById(predef.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(predef.getId().getId());
+    }
+    segment.setPreDef(predef.getPreDef());
+    return save(segment);
+  }
+
+  @Override
+  public Segment savePostdef(PostDef postdef) throws SegmentNotFoundException {
+    Segment segment = findLatestById(postdef.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(postdef.getId().getId());
+    }
+    segment.setPostDef(postdef.getPostDef());
+    return save(segment);
+  }
+
+
+  @Override
+  public Segment saveMetadata(DisplayMetadata metadata)
+      throws SegmentNotFoundException, SegmentValidationException {
+    validate(metadata);
+    Segment segment = findLatestById(metadata.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(metadata.getId().getId());
+    }
+    segment.setExt(metadata.getExt());
+    segment.setDescription(metadata.getDescription());
+    segment.setComment(metadata.getAuthorNote());
+    return save(segment);
+  }
+
+
+  @Override
+  public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
+      throws SegmentNotFoundException, SegmentValidationException {
+    validate(conformanceStatement);
+    Segment segment = findLatestById(conformanceStatement.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(conformanceStatement.getId().getId());
+    }
+    segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
+    return save(segment);
+  }
+
 }

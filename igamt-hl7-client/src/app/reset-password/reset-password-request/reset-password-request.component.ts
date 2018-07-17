@@ -25,8 +25,6 @@ export class ResetPasswordRequestComponent implements OnInit {
 
     error=>{
 
-
-
     }
 
     );

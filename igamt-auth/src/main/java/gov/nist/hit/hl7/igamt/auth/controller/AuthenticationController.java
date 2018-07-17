@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -98,16 +98,17 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/authentication", method = RequestMethod.GET)
   @ResponseBody
-  public UserResponse getCurrentUser() {
+  public UserResponse getCurrentUser(HttpServletResponse res) throws IOException {
+    UserResponse response = new UserResponse();
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      UserResponse response = new UserResponse();
+    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
       response.setUsername(authentication.getName());
       return response;
     } else {
-      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-
+      response.setUsername("Guest");
+      res.sendError(500);
+      return response;
     }
 
   }

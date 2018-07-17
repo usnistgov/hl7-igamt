@@ -11,18 +11,30 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.common.exception;
+package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
+import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontRepository;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Jun 8, 2018.
  */
-public class DatatypeNotFoundException extends Exception {
+@Service("exportFontService")
+public class ExportFontServiceImpl implements ExportFontService {
 
-  private static final long serialVersionUID = 6099795044591697558L;
-
-  public DatatypeNotFoundException(String id) {
-    super("Datatype with id "+id+" not found");
-  }
+  @Autowired
+  private ExportFontRepository exportFontRepository;
   
+  @Override
+  public List<ExportFont> findAll() {
+    return exportFontRepository.findAll();
+  }
+
 }

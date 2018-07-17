@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -98,6 +99,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public Ig save(Ig ig) {
     // TODO Auto-generated method stub
+    ig.setUpdateDate(new Date());
     return igRepository.save(ig);
   }
 

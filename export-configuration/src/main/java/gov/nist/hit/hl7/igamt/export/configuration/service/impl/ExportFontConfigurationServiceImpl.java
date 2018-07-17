@@ -13,12 +13,17 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.export.configuration.display.ExportFontConfigurationDisplay;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.repository.ExportFontConfigurationRepository;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
+import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontService;
 
 /**
  *
@@ -29,6 +34,9 @@ public class ExportFontConfigurationServiceImpl implements ExportFontConfigurati
 
   @Autowired
   private ExportFontConfigurationRepository exportFontConfigurationRepository;
+  
+  @Autowired
+  private ExportFontService exportFontService;
 
   @Override
   public ExportFontConfiguration getExportFontConfiguration(String username) {
@@ -37,6 +45,19 @@ public class ExportFontConfigurationServiceImpl implements ExportFontConfigurati
       exportFontConfiguration = ExportFontConfiguration.getDefault();
     }
     return exportFontConfiguration;
+  }
+
+  @Override
+  public ExportFontConfigurationDisplay getExportFontConfigurationDisplay(String username) {
+    List<ExportFont> exportFonts = exportFontService.findAll();
+    ExportFontConfiguration exportFontConfiguration = this.getExportFontConfiguration(username);
+    return new ExportFontConfigurationDisplay(exportFonts, exportFontConfiguration);
+  }
+
+  @Override
+  public void save(ExportFontConfiguration exportFontConfiguration) {
+    exportFontConfiguration.setDefaultConfig(false);
+    this.exportFontConfigurationRepository.save(exportFontConfiguration);
   }
   
   

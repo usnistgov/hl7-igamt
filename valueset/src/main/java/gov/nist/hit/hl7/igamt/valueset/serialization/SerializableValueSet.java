@@ -13,6 +13,8 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
+import java.util.Map;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
@@ -141,6 +143,12 @@ public class SerializableValueSet extends SerializableResource {
         }
       }
     }
+    return null;
+  }
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    // Never used as value sets doesn't have any binding
     return null;
   }
 

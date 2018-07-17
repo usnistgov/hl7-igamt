@@ -11,18 +11,16 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.common.exception;
+package gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Jun 7, 2018.
  */
-public class SegmentNotFoundException extends Exception {
+public interface TableOptionsDisplay {
 
-  private static final long serialVersionUID = 5027333480195464563L;
-
-  public SegmentNotFoundException(String id) {
-    super("Segment with id "+id+" not found");
-  }
+  public ExportConfiguration populateExportConfiguration(ExportConfiguration exportConfiguration);
   
 }

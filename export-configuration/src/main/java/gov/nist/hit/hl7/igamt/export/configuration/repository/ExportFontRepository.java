@@ -11,18 +11,16 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.common.exception;
+package gov.nist.hit.hl7.igamt.export.configuration.repository;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
+
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFont;
 
 /**
  *
- * @author Maxence Lefort on Mar 22, 2018.
+ * @author Maxence Lefort on Jun 8, 2018.
  */
-public class ConformanceProfileNotFoundException extends Exception {
+public interface ExportFontRepository extends MongoRepository<ExportFont, String>{
 
-  private static final long serialVersionUID = -1993944139439499892L;
-
-  public ConformanceProfileNotFoundException(String id) {
-    super("Conformance profile with id "+id+" not found");
-  }
-  
 }

@@ -11,17 +11,18 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.common.exception;
+package gov.nist.hit.hl7.igamt.conformanceprofile.exception;
 
 /**
  *
- * @author Maxence Lefort on Apr 9, 2018.
+ * @author Maxence Lefort on Mar 22, 2018.
  */
-public class ValuesetNotFoundException extends Exception{
+public class ConformanceProfileNotFoundException extends Exception {
 
-  private static final long serialVersionUID = 3425565153244575063L;
+  private static final long serialVersionUID = 5027333480195464563L;
 
-  public ValuesetNotFoundException(String id) {
-    super("Value set with id "+id+" not found");
+  public ConformanceProfileNotFoundException(String id) {
+    super("ConformanceProfile with id " + id + " not found");
   }
+
 }

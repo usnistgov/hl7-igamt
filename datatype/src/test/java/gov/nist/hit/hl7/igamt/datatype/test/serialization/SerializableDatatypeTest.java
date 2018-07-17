@@ -26,11 +26,11 @@ import org.junit.Test;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
-import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatype;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
@@ -103,8 +103,10 @@ public class SerializableDatatypeTest {
     Datatype datatype = getComplexDatatype();
     Map<String, String> refDatatypeLabel = new HashMap<>();
     refDatatypeLabel.put(REF_COMPONENT1.getId(), TEST_COMPONENT1_REF_LABEL);
+    Set<String> bindedComponents = new HashSet<>();
+    bindedComponents.add(REF_COMPONENT1.getId());
     SerializableDatatype serializableDatatype = new SerializableDatatype(datatype, TEST_POSTION, TEST_LEVEL,
-        refDatatypeLabel, new HashMap<String, String>());
+        refDatatypeLabel, new HashMap<String, String>(), bindedComponents);
     Element testElement = serializableDatatype.serialize();
     Element datatypeElement = testElement.getFirstChildElement("Datatype");
     Elements componentElements = datatypeElement.getChildElements("Component");

@@ -207,16 +207,11 @@ export class IgDocumentEditComponent {
   }
 
   exportAsWord(){
-  this.exportService.exportAsWord(this.igId).subscribe(x=>{
-
-    //console.log(x);
-  });
+  this.exportService.exportAsWord(this.igId);
   }
   exportAsHTML(){
-    this.exportService.exportAsHtml(this.igId).subscribe(x=>{
+    this.exportService.exportAsHtml(this.igId);
 
-      //console.log(x);
-    });
   }
 
   toggleHideToc(){

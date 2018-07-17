@@ -30,10 +30,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService){
-    this.tocService.getActiveNode().subscribe(x=>{
-      console.log(x);
-      this.currentNode=x;
-    });
+
   }
 
   ngOnInit() {
@@ -68,7 +65,7 @@ export class SegmentEditMetadataComponent implements WithSave {
     return new Promise((resolve, reject)=>{
 
         let treeModel=this.tocService.getTreeModel();
-        let node = treeModel.getNodeById(this.segmentId.id);
+        let node = treeModel.getNodeById(this.segmentId);
 
         console.log(node);
 

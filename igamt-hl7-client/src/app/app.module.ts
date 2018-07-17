@@ -106,6 +106,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
 import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
 import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
 import {ResetPasswordService} from "./reset-password/reset-password.service";
+import {ExportFontService} from "./service/configuration/export-font/export-font.service";
 
 @NgModule({
     imports: [
@@ -228,7 +229,8 @@ import {ResetPasswordService} from "./reset-password/reset-password.service";
     BreadcrumbService,
 
     ConstraintsService,
-    TableOptionsService
+    TableOptionsService,
+    ExportFontService
   ],
     bootstrap: [AppComponent]
 })

@@ -14,19 +14,19 @@ export  class IgDocumentAddingService {
 
 
   addMessages(wrapper){
-  return this.http.post('api/ig/addConformanceProfile', wrapper);
+  return this.http.post('api/igdocuments/'+wrapper.id+'/conformanceprofiles/add', wrapper);
 
   }
   addSegment(wrapper){
-    return this.http.post('api/ig/addSegments', wrapper);
+    return this.http.post('api/igdocuments/'+wrapper.id+'/segments/add', wrapper);
 
   }
   addDatatypes(wrapper){
-    return this.http.post('api/ig/addDatatypes', wrapper);
+    return this.http.post('api/igdocuments/'+wrapper.id+'/datatypes/add', wrapper);
 
   }
   addValueSets(wrapper){
-    return this.http.post('api/ig/addValueSets', wrapper);
+    return this.http.post('api/igdocuments/'+wrapper.id+'/valuesets/add', wrapper);
 
   }
   getMessagesByVersion(hl7Version :string){
@@ -35,18 +35,18 @@ export  class IgDocumentAddingService {
   }
 
   getHl7SegmentByVersion(hl7Version){
-    return  this.http.get('api/ig/findHl7Segments/'+hl7Version);
+    return  this.http.get('api/segments/hl7/'+hl7Version);
 
 
   }
 
   getHl7DatatypesByVersion(hl7Version){
-    return  this.http.get('api/ig/findHl7Datatypes/'+hl7Version);
+    return  this.http.get('api/datatypes/hl7/'+hl7Version);
 
 
   }
   getHl7ValueSetsByVersion(hl7Version){
-    return  this.http.get('api/ig/findHl7ValueSets/'+hl7Version);
+    return  this.http.get('api/valuesets/hl7/'+hl7Version);
 
   }
 
