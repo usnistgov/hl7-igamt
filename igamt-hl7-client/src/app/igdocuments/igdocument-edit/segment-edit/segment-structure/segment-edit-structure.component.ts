@@ -402,8 +402,6 @@ export class SegmentEditStructureComponent implements WithSave {
         node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem = node.data.displayData.segmentBinding.externalSingleCode.codeSystem;
 
         this.selectedSingleCode = node.data.displayData.segmentBinding.externalSingleCode;
-
-
     }
 
     deleteSingleCode(node){

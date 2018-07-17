@@ -276,7 +276,6 @@
     <p-dialog *ngIf="selectedNode && selectedConstantValue" header="Edit Constant Value for {{selectedNode.data.name}}" [(visible)]="constantValueDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
         <input [(ngModel)]="selectedConstantValue.newConstantValue" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
         <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewConstantValue(selectedNode, selectedConstantValue)" [disabled]="selectedConstantValue.newConstantValue === ''"></button>
-
     </p-dialog>
 
     <p-dialog *ngIf="selectedNode && selectedVS" header="Edit Valueset binding for {{selectedNode.data.name}}" [(visible)]="valuesetDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
