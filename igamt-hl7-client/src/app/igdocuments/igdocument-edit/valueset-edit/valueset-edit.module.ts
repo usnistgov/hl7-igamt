@@ -16,7 +16,7 @@ import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
 
-// import {ValuesetEditMetadataComponent} from "./valueset-metadata/valueset-edit-metadata.component";
+import {ValuesetEditMetadataComponent} from "./valueset-metadata/valueset-edit-metadata.component";
 import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-postdef.component";
 import {ValuesetEditPredefComponent} from "./valueset-predef/valueset-edit-predef.component";
 // import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit-structure.component";
@@ -47,7 +47,7 @@ import {NamingConventionModule} from "../../../common/naming-convention/naming-c
     FroalaViewModule.forRoot()
   ],
   // providers : [ValuesetCrossRefResolver],
-  declarations: [ValuesetEditPostdefComponent, ValuesetEditPredefComponent],
+  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ValuesetEditModule {}

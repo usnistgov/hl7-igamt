@@ -1,0 +1,51 @@
+<h2>Valueset Metadata</h2>
+<div *ngIf="valuesetMetadata">
+    <form #valuesetMetadataForm="ngForm">
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Name
+            </label>
+            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="valuesetMetadata.name" required />
+            <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                <p-message severity="error" text="Name is required"></p-message>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Binding Identifier
+            </label>
+            <input name="bindingIdentifier" id="bindingIdentifier" pInputText type="text" class="ui-g-10" #bindingIdentifier="ngModel" minlength="4" maxlength="4" NamingDuplication [existing]="existingNames" [label]="valuesetMetadata.bindingIdentifier" [(ngModel)]="valuesetMetadata.bindingIdentifier" required />
+
+          <div *ngIf="bindingIdentifier&&bindingIdentifier.errors" class="ui-g-offset-2">
+            <div *ngIf="bindingIdentifier.errors.required">
+              <p-message severity="error" text="bindingIdentifier is required"></p-message>
+
+            </div>
+            <div *ngIf="bindingIdentifier.errors.maxlength">
+              <p-message severity="error" text="bindingIdentifier is too long"></p-message>
+
+            </div>
+            <div  *ngIf="bindingIdentifier.errors.minlength">
+              <p-message severity="error" text="bindingIdentifier is too short"></p-message>
+
+            </div>
+            <div  *ngIf="bindingIdentifier.errors.duplicated">
+              <p-message severity="error" text="bindingIdentifier is duplicated"></p-message>
+
+            </div>
+            <!--<div *ngIf="extension.errors.invalidConvention">-->
+              <!--<p-message severity="error" text="invalid convention"></p-message>-->
+            <!--</div>-->
+          </div>
+        </div>
+
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Author Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="valuesetMetadata.authorNote"></div>
+        </div>
+    </form>
+</div>
