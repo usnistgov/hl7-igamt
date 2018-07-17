@@ -26,50 +26,35 @@
     <!--</span>-->
 
     <ul class="topbar-menu fadeInDown" [ngClass]="{'topbar-menu-visible': app.topbarMenuActive}">
-        <li #profile [ngClass]="{'menuitem-active':app.activeTopbarItem === profile}" (click)="app.onTopbarItemClick($event, profile)">
+        <li #profile [ngClass]="{'menuitem-active':app.activeTopbarItem === profile}" (click)="app.onTopbarItemClick($event, profile)" *ngIf="isAuthenticated()">
             <a href="#">
                 <i class="topbar-icon fa fa-fw fa-user"></i>
                 <span class="topbar-item-name">Profile</span>
             </a>
-            <ul>
-                <li  *ngIf="currentUser" role="menuitem">
-                    <a href="#">
-                        <i class="fa fa-fw fa-user"></i>
-                        <span>Profile</span>
-                    </a>
-                </li>
-              <li  *ngIf="currentUser" role="menuitem" (click)="logout()">
-                <a href="#">
-                  <i class="fa fa-fw fa-sign-out"></i>
-                  <span >Logout</span>
-                </a>
-              </li>
-
-              <li  *ngIf="!currentUser" role="menuitem" [routerLink]="['/login']">
-                <a href="#">
-                  <i class="fa fa-fw fa-sign-out"></i>
-                  <span >Logout</span>
-                </a>
-              </li>
-
-              <li  *ngIf="!currentUser" role="menuitem" [routerLink]="['/register']">
-                <a href="#">
-                  <i class="fa fa-fw fa-sign-out"></i>
-                  <span >Register</span>
-                </a>
-              </li>
-
-
-                <!--<li role="menuitem">-->
-                    <!--<a href="#">-->
-                        <!--<i class="fa fa-fw fa-cog"></i>-->
-                        <!--<span>Settings</span>-->
-                    <!--</a>-->
-                <!--</li>-->
-
-            </ul>
         </li>
+      <li  *ngIf="isAuthenticated()" (click)="logout()">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-out"></i>
+          <span class="topbar-item-name">Logout</span>
+        </a>
 
+      </li>
+
+      <li #login [ngClass]="{'menuitem-active':app.activeTopbarItem === login}" (click)="app.onTopbarItemClick($event, register)" *ngIf="!isAuthenticated()" [routerLink]="['/login']">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-in"></i>
+          <span class="topbar-item-name">Login</span>
+        </a>
+
+      </li>
+
+      <li #register [ngClass]="{'menuitem-active':app.activeTopbarItem === register}" (click)="app.onTopbarItemClick($event, register)" *ngIf="!isAuthenticated()" [routerLink]="['/register']">
+        <a href="#">
+          <i class="topbar-icon fa-fw fa-sign-in"></i>
+          <span class="topbar-item-name">Register</span>
+        </a>
+
+      </li>
 
     </ul>
 </div>

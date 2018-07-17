@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.auth.controller;
 
 
+import java.io.IOException;
+
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -9,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -31,19 +35,16 @@ public class AuthenticationController {
 
   @RequestMapping(value = "/api/login", method = RequestMethod.POST)
   public UserResponse login(@RequestBody LoginRequest user, HttpServletResponse response)
-      throws AuthenticationException {
+      throws AuthenticationException, IOException {
 
 
+    UserResponse userResponse = new UserResponse();
+    userResponse.setUsername(user.getUsername());
     try {
-      UserResponse userResponse = new UserResponse();
-      userResponse.setUsername(user.getUsername());
       String token = authService.connect(user);
-
-
       HttpHeaders headers = new HttpHeaders();
       headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
       headers.add("Authorization", token);
-
 
       Cookie authCookie = new Cookie("authCookie", token);
       authCookie.setPath("/api");
@@ -51,13 +52,12 @@ public class AuthenticationController {
       authCookie.setHttpOnly(true);
       response.setContentType("application/json");
       response.addCookie(authCookie);
-      return userResponse;
-
     } catch (AuthenticationException e) {
-    } catch (Exception e) {
-
+      response.sendError(403);
     }
-    return null;
+    return userResponse;
+
+
   }
 
 
@@ -96,13 +96,19 @@ public class AuthenticationController {
   }
 
 
-  @RequestMapping(value = "api/currentUser", method = RequestMethod.GET)
+  @RequestMapping(value = "api/authentication", method = RequestMethod.GET)
   @ResponseBody
-  public UserResponse getCurrentUser(Authentication authentication) {
-    UserResponse response = new UserResponse();
-    response.setUsername(authentication.getName());
+  public UserResponse getCurrentUser() {
 
-    return response;
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      UserResponse response = new UserResponse();
+      response.setUsername(authentication.getName());
+      return response;
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+
+    }
 
   }
 

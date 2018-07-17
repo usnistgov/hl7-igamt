@@ -89,7 +89,7 @@ import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
 import {HttpClientModule} from "@angular/common/http";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-// import {TokenInterceptor} from "./requestInterceptor";
+import {AuthInterceptor} from "./requestInterceptor";
 import {UserService} from "./service/userService/user.service";
 import {HomeComponent} from "./home/home.component";
 import {AboutComponent} from "./about/about.component";
@@ -212,16 +212,11 @@ import {ResetPasswordService} from "./reset-password/reset-password.service";
 
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
-    // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
-    // {
-    //   provide: APP_BASE_HREF,
-    //   useValue: '<%= APP_BASE %>'
-    // },
-    // {
-    //   provide: HTTP_INTERCEPTORS,
-    //   useClass: TokenInterceptor,
-    //   multi: true
-    // },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthInterceptor,
+      multi: true
+    },
      WorkspaceService,
     ResetPasswordService,
     GeneralConfigurationService,

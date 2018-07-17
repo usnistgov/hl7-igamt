@@ -31,7 +31,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // http.formLogin().disable();
         // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         .authorizeRequests().antMatchers("/api/login").permitAll().antMatchers("/api/register")
-        .permitAll().antMatchers("/api/password/**").permitAll().antMatchers("/api/**")
+        .permitAll().antMatchers("/api/password/**").permitAll().antMatchers("/api/config/**")
+        .permitAll().antMatchers("/api/authentication").permitAll().antMatchers("/api/**")
         .fullyAuthenticated().and()
         .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 

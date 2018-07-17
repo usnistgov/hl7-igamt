@@ -27,11 +27,14 @@ export class AppTopBarComponent {
     }
 
   getUsername(){
+
+
+
       if(this.currentUser){
         return this.currentUser.username;
 
       }else{
-        return "Hello Guest";
+        return "Guest";
       }
 
   }
@@ -45,8 +48,14 @@ export class AppTopBarComponent {
       this.currentUser = x;
 
 
+    },error=>{
+      this.currentUser = "Guest";
+
     });
 
+  }
+  isAuthenticated(){
+   return  this.auth.isAuthenticated();
   }
 
   logout(){

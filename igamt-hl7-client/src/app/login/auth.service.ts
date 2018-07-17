@@ -34,7 +34,7 @@ export class AuthService {
       console.log(data);
       let token = data.headers.get('Authorization');
       console.log(token);
-      this.currentUser.next(data);
+      this.currentUser.next(data.body);
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
     }, error =>{
@@ -53,6 +53,8 @@ export class AuthService {
 
       this.router.navigate(['/login']);
       this.currentUser.next(null);
+      this.isLoggedIn.next(false);
+
 
 
     }, error=>{
@@ -64,15 +66,19 @@ export class AuthService {
   getCurrentUser() {
 
 
-    this.http.get('api/currentUser').toPromise().then( res =>{
+    this.http.get('api/authentication').toPromise().then( res =>{
 
       console.log(res);
 
       this.currentUser.next(res);
+      this.isLoggedIn.next(true);
+
 
     }, error=>{
-      console.log("error")
-      this.currentUser.next("Hello Guest");
+      console.log("error");
+      this.isLoggedIn.next(false);
+
+      this.currentUser.next(null);
     })
 
   }
@@ -96,5 +102,9 @@ export class AuthService {
 
   }
 
+
+  isAuthenticated(){
+    return this.isLoggedIn.getValue();
+  }
 }
 
