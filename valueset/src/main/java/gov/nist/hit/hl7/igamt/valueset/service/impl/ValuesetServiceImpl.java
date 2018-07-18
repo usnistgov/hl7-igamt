@@ -308,7 +308,7 @@ public class ValuesetServiceImpl implements ValuesetService {
           if(code != null){
             dCode.setDescription(code.getDescription());
             dCode.setValue(code.getValue());
-            dCode.setUsage(CodeUsage.R);
+            dCode.setUsage(codeRef.getUsage());
             dCode.setComments(code.getComments());
             displayCodes.add(dCode);            
           }
