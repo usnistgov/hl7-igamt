@@ -363,10 +363,17 @@ public class CrudServiceImpl implements CrudService {
   public CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) {
     // TODO Auto-generated method stub
     AddMessageResponseObject ret = this.addConformanceProfiles(ids, ig);
+
+
     List<AbstractDomain> ordredSegment = ret.getSegments().stream()
         .sorted((Segment t1, Segment t2) -> t1.getName().compareTo(t2.getName()))
         .collect(Collectors.toList());
+
+
     orderRegistry(ig.getSegmentRegistry(), ordredSegment);
+
+
+
     System.out.println(ig.getDatatypeRegistry().getChildren().size());
     List<AbstractDomain> ordredDatatypes = ret.getDatatypesMap().stream()
         .sorted((Datatype t1, Datatype t2) -> t1.getName().compareTo(t2.getName()))
@@ -389,19 +396,17 @@ public class CrudServiceImpl implements CrudService {
    */
   private void orderRegistry(Registry registry, List<AbstractDomain> list) {
     // TODO Auto-generated method stub
-    HashMap<CompositeKey, Integer> orderMap = new HashMap<CompositeKey, Integer>();
+    HashMap<String, Integer> orderMap = new HashMap<String, Integer>();
     System.out.println(registry.getType());
-
     System.out.println(registry.getChildren().size());
     System.out.println(list.size());
 
     for (int i = 0; i < list.size(); i++) {
-
-      orderMap.put(list.get(i).getId(), i + 1);
+      orderMap.put(list.get(i).getId().getId(), i + 1);
     }
 
     for (Link link : registry.getChildren()) {
-      link.setPosition(orderMap.get(link.getId()));
+      link.setPosition(orderMap.get(link.getId().getId()));
     }
   }
 

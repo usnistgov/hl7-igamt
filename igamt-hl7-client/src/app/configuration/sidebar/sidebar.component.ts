@@ -16,8 +16,8 @@ export class SidebarComponent implements OnInit {
     this.items = [
       {
         label: 'Export Styles',
-        icon: 'fa-check',
         expanded: true,
+        disabled: true,
         items: [
           {
             label: 'ConformanceProfile Table Options',
@@ -46,11 +46,11 @@ export class SidebarComponent implements OnInit {
         ]
       },
       {
-        label: 'Export Fonts', icon: 'fa-soccer-ball-o',
+        label: 'Export Fonts', icon: 'fa-font',
         routerLink: 'export-fonts'
       },
       {
-        label: 'Datatype Library', icon: 'fa-soccer-ball-o',
+        label: 'Datatype Library', icon: 'fa-book',
         routerLink: 'datatype-library'
       }
     ];

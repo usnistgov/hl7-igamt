@@ -80,21 +80,16 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {LocationStrategy, HashLocationStrategy, CommonModule,APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
 import {WorkspaceService} from "./service/workspace/workspace.service";
-import {IgDocumentService} from './service/ig-document/ig-document.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-import {SegmentsService} from './service/segments/segments.service';
-import {DatatypesService} from './service/datatypes/datatypes.service';
-import {ValuesetsService} from './service/valueSets/valueSets.service';
-import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
 import {AuthService} from "./login/auth.service";
 import {AuthGuard} from "./login/auth-guard.service";
 import {HttpClientModule} from "@angular/common/http";
 import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {TokenInterceptor} from "./requestInterceptor";
+import {AuthInterceptor} from "./requestInterceptor";
 import {UserService} from "./service/userService/user.service";
 import {HomeComponent} from "./home/home.component";
 import {AboutComponent} from "./about/about.component";
@@ -108,6 +103,10 @@ import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from "./service/sections/sections.service";
 
 import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
+import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
+import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
+import {ResetPasswordService} from "./reset-password/reset-password.service";
+import {ExportFontService} from "./service/configuration/export-font/export-font.service";
 
 @NgModule({
     imports: [
@@ -208,28 +207,21 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent
+      AppBreadcrumbComponent,
+      ResetPasswordRequestComponent,
+      ResetPasswordConfirmComponent
 
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
-    // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
-    // {
-    //   provide: APP_BASE_HREF,
-    //   useValue: '<%= APP_BASE %>'
-    // },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
+      useClass: AuthInterceptor,
       multi: true
     },
      WorkspaceService,
+    ResetPasswordService,
     GeneralConfigurationService,
-    IgDocumentService,
     IndexedDbService,
-    DatatypesService,
-        ValuesetsService,
-    ConformanceProfilesService,
-    SegmentsService,
     SectionsService,
     AuthService,
     AuthGuard,
@@ -237,7 +229,8 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
     BreadcrumbService,
 
     ConstraintsService,
-    TableOptionsService
+    TableOptionsService,
+    ExportFontService
   ],
     bootstrap: [AppComponent]
 })

@@ -8,9 +8,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.bson.types.ObjectId;
@@ -79,9 +79,9 @@ public class IgServiceImpl implements IgService {
   ValuesetService valueSetService;
 
   @Override
-  public Optional<Ig> findById(CompositeKey id) {
+  public Ig findById(CompositeKey id) {
     // TODO Auto-generated method stub
-    return igRepository.findById(id);
+    return igRepository.findById(id).get();
   }
 
   @Override
@@ -93,12 +93,13 @@ public class IgServiceImpl implements IgService {
   @Override
   public void delete(CompositeKey id) {
     // TODO Auto-generated method stub
-    igRepository.deleteById(id);
+    igRepository.findById(id);
   }
 
   @Override
   public Ig save(Ig ig) {
     // TODO Auto-generated method stub
+    ig.setUpdateDate(new Date());
     return igRepository.save(ig);
   }
 
@@ -202,7 +203,6 @@ public class IgServiceImpl implements IgService {
 
 
     Criteria where = Criteria.where("username").is(username);
-    where.andOperator(Criteria.where("domainInfo.scope").is("USER"));
 
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 

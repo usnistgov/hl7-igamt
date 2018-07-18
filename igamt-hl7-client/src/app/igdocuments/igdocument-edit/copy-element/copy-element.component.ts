@@ -100,7 +100,7 @@ export class CopyElementComponent extends PrimeDialogAdapter{
   }
   submit(){
 
-    this.wrapper.igDocumentId=this.igDocumentId;
+    this.wrapper.igId=this.igDocumentId;
     this.wrapper.id=this.id;
     this.wrapper.name=this.name;
     if(this.type !== Types.TEXT.toString()){

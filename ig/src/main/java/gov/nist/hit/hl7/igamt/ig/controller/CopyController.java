@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -99,7 +100,7 @@ public class CopyController {
       produces = {"application/json"})
 
   public @ResponseBody TreeNode copySegment(@RequestBody CopyWrapper wrapper,
-      Authentication authentication) {
+      Authentication authentication) throws ValidationException {
     String username = authentication.getPrincipal().toString();
 
     Segment segment = segmentService.findByKey(wrapper.getId());

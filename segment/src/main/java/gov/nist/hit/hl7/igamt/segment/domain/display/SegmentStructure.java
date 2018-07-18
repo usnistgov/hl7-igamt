@@ -6,6 +6,8 @@ import java.util.TreeSet;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 
 public class SegmentStructure {
   private CompositeKey id;
@@ -71,6 +73,18 @@ public class SegmentStructure {
   }
 
 
+  /**
+   * TODO
+   * 
+   * @return
+   * @throws SegmentException
+   */
+  public Segment toSegment() throws SegmentException {
+    throw new SegmentException(id.getId(), "Operation not currently supported");
+  }
+
+
+
 }
 
 
@@ -83,4 +97,7 @@ class PositionCompForFieldDisplay implements Comparator<FieldDisplay> {
       return -1;
     }
   }
+
 }
+
+

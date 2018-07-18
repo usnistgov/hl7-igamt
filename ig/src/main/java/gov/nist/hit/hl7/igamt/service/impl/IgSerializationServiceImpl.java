@@ -25,15 +25,18 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.exception.ConformanceProfileNotFoundException;
-import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.common.exception.SegmentNotFoundException;
-import gov.nist.hit.hl7.igamt.common.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
@@ -42,6 +45,7 @@ import gov.nist.hit.hl7.igamt.ig.serialization.SerializableIG;
 import gov.nist.hit.hl7.igamt.ig.service.IgSerializationService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -70,6 +74,7 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   private Set<String> bindedFields = new HashSet<>();
   private Set<String> bindedSegments = new HashSet<>();
   private Set<String> bindedDatatypes = new HashSet<>();
+  private Set<String> bindedComponents = new HashSet<>();
   private Set<String> bindedValueSets = new HashSet<>();
 
   private Map<String, ConformanceProfile> conformanceProfilesMap = new HashMap<>();
@@ -93,13 +98,15 @@ public class IgSerializationServiceImpl implements IgSerializationService {
           exportConfiguration.getSegmentORGroupsMessageExport());
       this.initializeSegmentsMap(igDocument.getSegmentRegistry(),
           exportConfiguration.getSegmentsExport(), exportConfiguration.getDatatypesExport(),
-          exportConfiguration.getValueSetsExport());
+          exportConfiguration.getComponentExport(), exportConfiguration.getValuesetsExport());
       this.initializeDatatypesMap(igDocument.getDatatypeRegistry(),
           exportConfiguration.getDatatypesExport());
       this.initializeValuesetsMap(igDocument.getValueSetRegistry(),
-          exportConfiguration.getValueSetsExport());
+          exportConfiguration.getValuesetsExport());
       SerializableIG serializableIG = new SerializableIG(igDocument, "1", datatypesMap,
-          valuesetsMap, segmentsMap, conformanceProfilesMap, exportConfiguration);
+          valuesetsMap, segmentsMap, conformanceProfilesMap, exportConfiguration,
+          this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
+          this.bindedDatatypes, this.bindedComponents, this.bindedValueSets);
       return serializableIG.serialize().toXML();
     } catch (Exception exception) {
       throw new SerializationException(exception, Type.IGDOCUMENT,
@@ -157,8 +164,9 @@ public class IgSerializationServiceImpl implements IgSerializationService {
    * @throws SegmentNotFoundException
    */
   private void initializeSegmentsMap(Registry segmentLibrary, UsageConfiguration usageConfiguration,
-      UsageConfiguration datatapeUsageConfiguration, UsageConfiguration valuesetUsageConfiguration)
-      throws SegmentNotFoundException {
+      UsageConfiguration datatapeUsageConfiguration,
+      UsageConfiguration componentsUsageConfiguration,
+      UsageConfiguration valuesetUsageConfiguration) throws SegmentNotFoundException {
     for (Link segmentLink : segmentLibrary.getChildren()) {
       if (segmentLink != null && segmentLink.getId() != null
           && !segmentsMap.containsKey(segmentLink.getId().getId())) {
@@ -172,6 +180,34 @@ public class IgSerializationServiceImpl implements IgSerializationService {
         }
       }
     }
+    identifyBindedDatatypesAndValueSets(componentsUsageConfiguration, valuesetUsageConfiguration);
+  }
+
+  private void identifyBindedDatatypesAndValueSets(UsageConfiguration componentsUsageConfiguration, UsageConfiguration valuesetUsageConfiguration) {
+    for (String datatypeId : this.datatypesMap.keySet()) {
+      if (bindedDatatypes.contains(datatypeId)) {
+        Datatype datatype = this.datatypesMap.get(datatypeId);
+        if (datatype != null && datatype instanceof ComplexDatatype) {
+          for (Component component : ((ComplexDatatype) datatype).getComponents()) {
+            if (component != null && !bindedComponents.contains(component.getId())) {
+              if (componentsUsageConfiguration.isBinded(component.getUsage())) {
+                bindedComponents.add(component.getId());
+                bindedDatatypes.add(component.getRef().getId());
+              }
+            }
+          }
+        }
+        if(datatype.getBinding() != null) {
+          for(StructureElementBinding binding : datatype.getBinding().getChildren()) {
+            if(this.bindedComponents.contains(binding.getElementId()) && binding.getValuesetBindings() != null && !binding.getValuesetBindings().isEmpty()) {
+              for(ValuesetBinding valuesetBinding : binding.getValuesetBindings()) {
+                this.bindedValueSets.add(valuesetBinding.getValuesetId());
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -181,15 +217,25 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   private void identifyBindedFields(Segment segment, UsageConfiguration segmentUsageConfiguration,
       UsageConfiguration datatapeUsageConfiguration,
       UsageConfiguration valuesetUsageConfiguration) {
-    for (Field field : segment.getChildren()) {
-      if (!this.bindedFields.contains(field.getId())) {
-        if (segmentUsageConfiguration.isBinded(field.getUsage())) {
-          this.bindedFields.add(field.getId());
-          this.bindedDatatypes.add(field.getRef().getId());
+    if(segment != null) {
+      for (Field field : segment.getChildren()) {
+        if (!this.bindedFields.contains(field.getId())) {
+          if (segmentUsageConfiguration.isBinded(field.getUsage())) {
+            this.bindedFields.add(field.getId());
+            this.bindedDatatypes.add(field.getRef().getId());
+          }
+        }
+      }
+      if(segment.getBinding() != null && segment.getBinding().getChildren() != null) {
+        for(StructureElementBinding binding : segment.getBinding().getChildren()) {
+          if(binding != null && this.bindedFields.contains(binding.getElementId()) && binding.getValuesetBindings() != null && !binding.getValuesetBindings().isEmpty()) {
+            for(ValuesetBinding valuesetBinding : binding.getValuesetBindings()) {
+              this.bindedValueSets.add(valuesetBinding.getValuesetId());
+            }
+          }
         }
       }
     }
-    // TODO identify binded valuesets
   }
 
   /**

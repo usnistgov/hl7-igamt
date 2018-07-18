@@ -1,3 +1,131 @@
-<p>
-  segment-table-options works!
-</p>
+<p-card>
+  <p-header>
+    <h1>
+      <p-checkbox [(ngModel)]="tableOptions.includeSegmentTable" binary="true"
+                  (onChange)="setChanged()" label="Include Segment Table Options"></p-checkbox>
+    </h1>
+  </p-header>
+
+  <div>
+    <!-- Usages card -->
+    <div>
+      <p-card>
+        <h2>Usages</h2>
+        <hr/>
+        <div>
+          <h3>Segments to export</h3>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentsExport.r"
+              (onChange)="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentsExport.re"
+              (onChange)="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentsExport.c"
+              (onChange)="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentsExport.o"
+              (onChange)="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.segmentsExport.x"
+              (onChange)="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+        <hr/>
+        <div>
+          <h3>Fields to export</h3>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.fieldsExport.r"
+              (onChange)="setChanged()" disabled="true" label="R" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.fieldsExport.re"
+              (onChange)="setChanged()" disabled="true" label="RE" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.fieldsExport.c"
+              (onChange)="setChanged()" disabled="true" label="C" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.fieldsExport.o"
+              (onChange)="setChanged()" label="O" binary="true"></p-checkbox>
+          </div>
+          <div>
+            <p-checkbox
+              [(ngModel)]="tableOptions.fieldsExport.x"
+              (onChange)="setChanged()" label="X" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+      <p-card>
+        <h2>Metadata</h2>
+        <hr/>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.hl7version"
+              (onChange)="setChanged()" label="HL7 Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationDate"
+              (onChange)="setChanged()" label="Publication Date" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.publicationVersion"
+              (onChange)="setChanged()" label="Publication Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox
+              [(ngModel)]="tableOptions.metadataConfig.scope"
+              (onChange)="setChanged()" label="Scope" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Columns card-->
+    <div flex>
+      <p-card>
+        <h2>Columns</h2>
+        <hr/>
+        <div layout="column" style="width: 100%">
+          <div *ngFor="let column of tableOptions.columns">
+            <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                        (onChange)="setChanged()" [label]="column.name">
+            </p-checkbox>
+          </div>
+        </div>
+      </p-card>
+    </div>
+    <!-- Co-Constraints card-->
+    <div flex>
+      <p-card>
+        <h2>Co-Constraints</h2>
+        <hr/>
+        <p-checkbox [(ngModel)]="tableOptions.greyOutOBX2FlavorColumn" binary="true"
+                    onChange="setChanged()" label="Grey out OBX-2 Flavor column"></p-checkbox>
+        <h3>Display</h3>
+        <div class="ui-g-12"><p-radioButton (onClick)="setChanged()" name="coConstraintExportMode" value="COMPACT" label="Compact" [(ngModel)]="tableOptions.coConstraintExportMode"></p-radioButton></div>
+        <div class="ui-g-12"><p-radioButton (onClick)="setChanged()" name="coConstraintExportMode" value="VERBOSE" label="Verbose" [(ngModel)]="tableOptions.coConstraintExportMode"></p-radioButton></div>
+      </p-card>
+    </div>
+  </div>
+
+  <p-footer>
+    <p-button label="Save" (onClick)="save($event)" [disabled]="!changed"></p-button>
+  </p-footer>
+</p-card>

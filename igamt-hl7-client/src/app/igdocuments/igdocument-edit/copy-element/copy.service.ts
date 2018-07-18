@@ -15,17 +15,19 @@ export class CopyService {
 
 
   copyConformanceProfile(wrapper){
-    return this.http.post('api/ig/copyConformanceProfile', wrapper);
+    return this.http.post('/api/igdocuments/'+wrapper.igId+'/conformanceprofiles/'+wrapper.id.id+'/clone', wrapper);
 
   }
   copySegment(wrapper){
-    return this.http.post('api/ig/copySegment', wrapper);
+    return this.http.post('/api/igdocuments/'+wrapper.igId+'/segments/'+wrapper.id.id+'/clone', wrapper);
   }
   copyDatatype(wrapper){
-    return this.http.post('api/ig/copyDatatype', wrapper);
+    return this.http.post('/api/igdocuments/'+wrapper.igId+'/datatypes/'+wrapper.id.id+'/clone', wrapper);
   }
   copyValueSet(wrapper){
-    return this.http.post('api/ig/copyValueSet', wrapper);
+    return this.http.post('/api/igdocuments/'+wrapper.igId+'/valuesets/'+wrapper.id.id+'/clone', wrapper);
+
+
   }
 
   copySection(sectionWrapper){

@@ -27,13 +27,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import gov.nist.hit.hl7.TestApplication;
-import gov.nist.hit.hl7.config.TestMongoConfig;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.xreference.DataMongoConfig;
 
 
 // @RunWith(SpringRunner.class)
@@ -42,7 +42,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 // @RunWith(SpringJUnit4ClassRunner.class)
 // @SpringBootTest(classes = {TestApplication.class, TestMongoConfig.class})
 @RunWith(SpringRunner.class)
-@Import(TestMongoConfig.class)
+@Import(DataMongoConfig.class)
 @SpringBootTest(classes = TestApplication.class)
 public class IGDocumentControllerTest {
 

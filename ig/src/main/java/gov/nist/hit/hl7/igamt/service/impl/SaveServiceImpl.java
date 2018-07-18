@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
@@ -46,7 +47,8 @@ public class SaveServiceImpl implements SaveService {
   Logger logger = LoggerFactory.getLogger(SaveServiceImpl.class);
 
   @Override
-  public void saveChangedObjects(ChangedObjects changedObjects) {
+  @Deprecated
+  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException {
     if (changedObjects != null) {
       // Save value sets
       // TODO Add value sets save

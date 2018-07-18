@@ -13,14 +13,17 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import gov.nist.hit.hl7.igamt.common.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -35,17 +38,23 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
+  private Set<SerializableDatatype> serializableDatatypes;
 
   /**
    * @param section
    */
   public SerializableDatatypeRegistry(Section section, int level, DatatypeRegistry datatypeRegistry,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap) {
+      Map<String, String> valuesetNamesMap, Set<String> bindedDatatypes, Set<String> bindedComponents) {
     super(section, level, datatypeRegistry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.bindedComponents = bindedComponents;
+    this.bindedDatatypes = bindedDatatypes;
+    this.serializableDatatypes = new HashSet<>();
   }
 
   @Override
@@ -56,17 +65,22 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
       if (datatypeRegistry != null) {
         if (!datatypeRegistry.getChildren().isEmpty()) {
           for (Link datatypeLink : datatypeRegistry.getChildren()) {
-            if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
-              Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
-              SerializableDatatype serializableDatatype =
-                  new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
-                      this.getChildLevel(), datatypeNamesMap, valuesetNamesMap);
-              Element datatypeElement = serializableDatatype.serialize();
-              if (datatypeElement != null) {
-                datatypeRegistryElement.appendChild(datatypeElement);
+            if(this.bindedDatatypes.contains(datatypeLink.getId().getId())) {
+              if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
+                Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
+                SerializableDatatype serializableDatatype =
+                    new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
+                        this.getChildLevel(), datatypeNamesMap, valuesetNamesMap, bindedComponents);
+                if(serializableDatatype != null) {
+                  this.serializableDatatypes.add(serializableDatatype);
+                  Element datatypeElement = serializableDatatype.serialize();
+                  if (datatypeElement != null) {
+                    datatypeRegistryElement.appendChild(datatypeElement);
+                  }
+                }
+              } else {
+                throw new DatatypeNotFoundException(datatypeLink.getId().getId());
               }
-            } else {
-              throw new DatatypeNotFoundException(datatypeLink.getId().getId());
             }
           }
         }
@@ -75,6 +89,24 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
     } catch (Exception exception) {
       throw new RegistrySerializationException(exception, super.getSection(), datatypeRegistry);
     }
+  }
+  
+  @Override
+  public Set<SerializableConstraints> getConformanceStatements(int level) {
+    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
+    for(SerializableDatatype serializableDatatype : this.serializableDatatypes) {
+      conformanceStatements.add(serializableDatatype.getConformanceStatements(level));
+    }
+    return conformanceStatements;
+  }
+
+  @Override
+  public Set<SerializableConstraints> getPredicates(int level) {
+    Set<SerializableConstraints> predicates = new HashSet<>();
+    for(SerializableDatatype serializableDatatype : this.serializableDatatypes) {
+      predicates.add(serializableDatatype.getPredicates(level));
+    }
+    return predicates;
   }
 
 

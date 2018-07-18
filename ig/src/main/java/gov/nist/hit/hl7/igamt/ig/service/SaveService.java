@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.service;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 
 /**
@@ -21,6 +22,6 @@ import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
  */
 public interface SaveService {
 
-  public void saveChangedObjects(ChangedObjects changedObjects);
+  public void saveChangedObjects(ChangedObjects changedObjects) throws ValidationException;
 
 }

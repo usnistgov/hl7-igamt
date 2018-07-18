@@ -14,7 +14,6 @@
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -35,8 +34,7 @@ public interface CodeSystemRepository extends MongoRepository<CodeSystem, Compos
 
   List<CodeSystem> findByIdentifier(String identifier);
 
-  @Override
-  public Optional<CodeSystem> findById(CompositeKey id);
+
 
   List<CodeSystem> findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(String scope,
       String hl7version, String identifier);

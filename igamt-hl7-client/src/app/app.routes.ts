@@ -7,6 +7,8 @@ import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component"
 import {RegisterComponent} from "./register/register.component";
 import {ConfigurationComponent} from "./configuration/configuration.component";
+import {ResetPasswordRequestComponent} from "./reset-password/reset-password-request/reset-password-request.component";
+import {ResetPasswordConfirmComponent} from "./reset-password/reset-password-confirm/reset-password-confirm.component";
 
 
 export const routes: Routes = [
@@ -24,6 +26,10 @@ export const routes: Routes = [
   {path: '', component: DocumentationComponent},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
+  {path: 'reset-password', component: ResetPasswordRequestComponent},
+  {path: 'reset-password-confirm/:token', component: ResetPasswordConfirmComponent},
+
+
   {path : '**', component: NotFoundComponent}
 ];
 
