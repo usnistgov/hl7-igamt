@@ -299,7 +299,8 @@
             {
               "data": {
                 "type": "SEGMENT",
-                "label": "OBX_TEST",
+                "label": "OBX",
+                "ext":"TEST",
                 "dateUpdated": null,
                 "position": 8,
                 "key": {

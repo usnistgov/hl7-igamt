@@ -34,6 +34,7 @@ public interface ValuesetRepository extends MongoRepository<Valueset, CompositeK
 
   List<Valueset> findByDomainInfoVersion(String version);
 
+
   List<Valueset> findByDomainInfoScope(String scope);
 
   List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);

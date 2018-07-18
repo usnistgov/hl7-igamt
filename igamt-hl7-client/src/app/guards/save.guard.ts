@@ -16,35 +16,29 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
   canDeactivate(component: WithSave):Promise<any> {
     return new Promise((resolve, reject) => {
-      // if (!component.isValid()) {
-      //   console.log("invalid form");
-      //
-      //   this.getDialog(component, resolve , reject);
-      // }
-       if (this.compareHash(component.getBackup(), component.getCurrent())) {
+       if (!component.isValid()) {
+        console.log("invalid form");
+
+        this.getInvalidDataDialog(component, resolve , reject);
+      }else if (this.compareHash(component.getBackup(), component.getCurrent())) {
         resolve(true);
 
       }else{
-
-        component.save().then(x=>{
-          console.log("Segment saved");
-          resolve(true);
-        },error=>{
-          console.log("error saving");
-          reject(false);
-
-        })
-      }
+         this.getUnsavedDialog(component,resolve,reject);
+       }
     });
 
   }
   compareHash(obj1:any, obj2:any):boolean{
+
     return Md5.hashStr(JSON.stringify(obj1))==Md5.hashStr(JSON.stringify(obj2))
   }
 
-  getDialog(component,resolve,reject){
+  getInvalidDataDialog(component,resolve,reject){
       this.confirmationService.confirm({
-        message: "You have invalid Data. You cannot leave the page. Please fix you data ",
+        header:"Invalid Data",
+        message: "You have Invalid Data, please fix your data before leaving",
+        key :'INVALIDDATA',
         accept: () => {
 
           resolve(false);
@@ -55,5 +49,40 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
       });
   }
 
+
+
+
+  getUnsavedDialog(component,resolve,reject){
+    this.confirmationService.confirm({
+      header:"Unsaved Data",
+      message: "You have Unsaved Data, Do you want to save and continue?",
+      key :'UNSAVEDDATA',
+      accept: () => {
+        component.save().then(x=>{
+          resolve(true);
+        },error=>{
+          console.log("error saving");
+        })
+      },
+      reject: (cancel:boolean) => {
+        resolve(false);
+        // console.log(cancel);
+        // if(cancel){
+        //   console.log("canceling");
+        //
+        //   resolve(false);
+        //
+        // }else {
+        //
+        //
+        //   console.log("Rejecting ");
+        //   component.reset();
+        //   resolve(true);
+        // }
+
+      }
+
+    });
+  }
 
 }

@@ -8,6 +8,8 @@ import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformance
 import {DatatypeEditMetadataComponent} from "./datatype-metadata/datatype-edit-metadata.component";
 import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-predef.component";
 import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-postdef.component";
+import {DatatypeCrossRefComponent} from "./datatype-cross-ref/datatype-cross-ref.component";
+import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
 
 @NgModule({
   imports: [
@@ -29,7 +31,11 @@ import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-pos
         },
         {
             path: ':datatypeId/conformanceStatement', component: DatatypeEditConformanceStatementsComponent,
-        }
+        },
+      {
+        path: ':datatypeId/crossRef', component: DatatypeCrossRefComponent,resolve: { refs : DatatypeCrossRefResolver}
+      }
+
     ])
   ],
   exports: [

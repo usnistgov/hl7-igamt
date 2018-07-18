@@ -25,4 +25,5 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 public interface CompositeProfileStructureRepository
     extends MongoRepository<CompositeProfileStructure, CompositeKey> {
 
+
 }

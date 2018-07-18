@@ -4,14 +4,14 @@
 import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
+import {SegmentsService} from "../segments.service";
+import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
@@ -34,8 +34,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     listTab: boolean = true;
     editorTab: boolean = false;
 
-    @ViewChild('csForm')
-    private csForm: NgForm;
+    @ViewChild('editForm')
+    private editForm: NgForm;
 
     constructor(
         private route: ActivatedRoute,
@@ -125,11 +125,27 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     isValid(){
-        return !this.csForm.invalid;
+        return !this.editForm.invalid;
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements);
+      return new Promise((resolve, reject)=> {
+
+         this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
+
+          this.backup = _.cloneDeep(this.segmentConformanceStatements);
+
+          this.editForm.control.markAsPristine();
+          resolve(true);
+
+        }, error=>{
+
+
+          console.log("error saving");
+          reject();
+
+        });
+        });
     }
 
     popChild(id, dtId, parentTreeNode){

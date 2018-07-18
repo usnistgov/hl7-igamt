@@ -72,7 +72,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfile findByKey(CompositeKey key) {
-    return conformanceProfileRepository.findOneById(key);
+    return conformanceProfileRepository.findById(key).get();
+
   }
 
   @Override

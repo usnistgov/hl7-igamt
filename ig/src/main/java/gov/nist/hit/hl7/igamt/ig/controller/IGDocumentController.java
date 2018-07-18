@@ -313,7 +313,7 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException, SectionNotFoundException {
     Ig ig = igService.findIgContentById(id);
     if (ig != null) {
-      TextSection s = findSectionById(ig.getContent(), sectionId);
+      TextSection s = igService.findSectionById(ig.getContent(), sectionId);
       if (s == null) {
         throw new SectionNotFoundException("Section Not Foud");
       } else {
@@ -350,7 +350,6 @@ public class IGDocumentController extends BaseController {
       throw new IGNotFoundException("Cannot found Id document");
     }
   }
-
 
   /**
    * 

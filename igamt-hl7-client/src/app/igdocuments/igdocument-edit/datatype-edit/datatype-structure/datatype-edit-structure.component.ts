@@ -1,27 +1,30 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
+import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
+import {DatatypesService} from "../datatypes.service";
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector : 'datatype-edit',
   templateUrl : './datatype-edit-structure.component.html',
   styleUrls : ['./datatype-edit-structure.component.css']
 })
-export class DatatypeEditStructureComponent {
+export class DatatypeEditStructureComponent implements WithSave{
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
     datatypeId:any;
+    @ViewChild('editForm') editForm: NgForm;
+    backup:any;
+
     datatypeStructure:any;
     usages:any;
     cUsages:any;
@@ -42,7 +45,7 @@ export class DatatypeEditStructureComponent {
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService, private tocService:TocService){
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -106,6 +109,7 @@ export class DatatypeEditStructureComponent {
                     this.datatypeStructure.scope = structure.scope;
 
                     this.updateDatatype(this.datatypeStructure, structure.children, structure.binding, null, null, null, null);
+                    this.backup=__.cloneDeep(this.datatypeStructure);
                 });
             });
         });
@@ -551,4 +555,44 @@ export class DatatypeEditStructureComponent {
             }
         }
     }
+  reset(){
+    this.datatypeStructure=__.cloneDeep(this.backup);
+    this.editForm.control.markAsPristine();
+
+  }
+
+  getCurrent(){
+    return  this.datatypeStructure;
+  }
+
+  getBackup(){
+    return this.backup;
+  }
+
+  isValid(){
+    return !this.editForm.invalid;
+  }
+
+  save(): Promise<any>{
+    return new Promise((resolve, reject)=> {
+
+
+      this.datatypesService.saveDatatypeStructure(this.datatypeId, this.datatypeStructure).then(saved => {
+
+        this.backup = __.cloneDeep(this.datatypeStructure);
+
+        this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+        reject();
+        console.log("error saving");
+
+      }
+
+    );
+  })
+  }
+
+
 }

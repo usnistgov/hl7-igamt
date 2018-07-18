@@ -19,6 +19,7 @@ import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -29,9 +30,12 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
  *
  * @author Maxence Lefort on Mar 1, 2018.
  */
+@Repository
 public interface DatatypeRepository extends MongoRepository<Datatype, CompositeKey> {
 
   List<Datatype> findByDomainInfoVersion(String version);
+
+
 
   List<Datatype> findByDomainInfoScope(String scope);
 

@@ -7,8 +7,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>common</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	
 	<packaging>pom</packaging>
 	<name>common</name>
 	<url>http://maven.apache.org</url>
@@ -21,26 +19,6 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
-		<dependency>
-      <groupId>commons-fileupload</groupId>
-	  <artifactId>commons-fileupload</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-				<dependency>
-		  	<groupId>gov.nist.hit.hl7</groupId>
-  			<artifactId>auth-utils</artifactId>
-  			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
-		<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
-<dependency>
-    <groupId>commons-lang</groupId>
-    <artifactId>commons-lang</artifactId>
-    <version>2.3</version>
-</dependency>
-		
-		
 	</dependencies>
 	<modules>
 		<module>common-base</module>
