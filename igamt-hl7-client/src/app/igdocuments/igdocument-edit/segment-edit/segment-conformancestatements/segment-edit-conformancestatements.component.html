@@ -1,5 +1,5 @@
 <div *ngIf="segmentConformanceStatements">
-    <h1>Conformance Statements</h1>
+    <h1>Conformance Statements of {{segmentConformanceStatements.name}} {{segmentConformanceStatements.type}}</h1>
     <form #csForm="ngForm">
         <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">

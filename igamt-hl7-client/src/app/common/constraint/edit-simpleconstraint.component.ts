@@ -47,4 +47,10 @@ export class EditSimpleConstraintComponent {
 
     this.constraint.complement.values.push('');
   }
+
+  generateAssertionScript(constraint){
+    constraint.path1 = "OBX-4[" + constraint.instanceNum + "].1[1]";
+    constraint.positionPath1 = "4[" + constraint.instanceNum + "].1[1]";
+    constraint.assertionScript = "<PlainText Path=\"4[" + constraint.instanceNum + "].1[1]\" Text=\"AAAA\" IgnoreCase=\"false\"/>";
+  }
 }
