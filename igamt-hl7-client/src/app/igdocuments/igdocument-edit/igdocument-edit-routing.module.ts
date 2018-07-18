@@ -19,6 +19,7 @@ import {SaveFormsGuard} from "../../guards/save.guard";
           { path: '', component: IgDocumentMetadataComponent, resolve: { metadata : IgMetaDataResolver} ,canDeactivate: [SaveFormsGuard]},
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
           { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
+			{ path: 'valueset', loadChildren: './valueset-edit/valueset-edit.module#ValuesetEditModule' },
 			{ path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
         ]
 			},

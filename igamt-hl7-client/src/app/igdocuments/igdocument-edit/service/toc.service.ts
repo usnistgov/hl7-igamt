@@ -183,6 +183,21 @@ export  class TocService{
     })
   }
 
+    getValuesetBindingIdentifiersList(){
+        return new Promise((resolve, reject)=> {
+
+            this.getNodesList(Types.VALUESETREGISTRY).then( children =>{
+                    resolve(_.map(children, function (obj) {
+                        return obj.data.bindingIdentifier;
+                    }))
+
+                },
+                error=>{
+                    resolve([]);
+                });
+        })
+    }
+
   getValueSetList(){
     return this.getNodesList(Types.VALUESETREGISTRY);
   }

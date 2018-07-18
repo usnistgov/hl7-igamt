@@ -9,79 +9,49 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.valueset.domain;
+package gov.nist.hit.hl7.igamt.valueset.domain.display;
 
 import java.net.URL;
-import java.util.HashSet;
-import java.util.Set;
-
-import org.springframework.data.mongodb.core.mapping.Document;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-
 
 /**
  * @author jungyubw
  *
  */
-@Document(collection = "codesystem")
-public class CodeSystem extends Resource {
-
+public class DisplayCodeSystem {
+  private String codeSysRef;
   private String identifier;
-  private String oid;
+  private String description;
   private URL url;
-  private Set<Code> codes = new HashSet<Code>();
-
-  public CodeSystem() {
-    super();
+  private CodeSystemType codeSystemType;
+  
+  public String getCodeSysRef() {
+    return codeSysRef;
   }
-
+  public void setCodeSysRef(String codeSysRef) {
+    this.codeSysRef = codeSysRef;
+  }
   public String getIdentifier() {
     return identifier;
   }
-
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
   }
-
-  public String getOid() {
-    return oid;
+  public String getDescription() {
+    return description;
   }
-
-  public void setOid(String oid) {
-    this.oid = oid;
+  public void setDescription(String description) {
+    this.description = description;
   }
-
   public URL getUrl() {
     return url;
   }
-
   public void setUrl(URL url) {
     this.url = url;
   }
-
-  public Set<Code> getCodes() {
-    return codes;
+  public CodeSystemType getCodeSystemType() {
+    return codeSystemType;
   }
-
-  public void setCodes(Set<Code> codes) {
-    this.codes = codes;
+  public void setCodeSystemType(CodeSystemType codeSystemType) {
+    this.codeSystemType = codeSystemType;
   }
-
-  public void addCode(Code code) {
-    this.codes.add(code);
-  }
-
-  @Override
-  public String getLabel() {
-    return this.getName();
-  }
-  
-  public Code findCode(String id) {
-    for(Code c:codes){
-      if(c.getId().equals(id)) return c;
-    }
-    return null;
-  }
-
 }

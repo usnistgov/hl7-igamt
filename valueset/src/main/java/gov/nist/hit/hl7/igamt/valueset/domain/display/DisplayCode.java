@@ -9,35 +9,22 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.valueset.domain;
+package gov.nist.hit.hl7.igamt.valueset.domain.display;
 
-import org.bson.types.ObjectId;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 
 /**
  * @author jungyubw
  *
  */
-
-public class Code {
+public class DisplayCode {
   private String id;
   private String value;
   private String description;
-  private String codeSystemId;
+  private CodeUsage usage;
   private String comments;
-
-  public Code() {
-    super();
-    this.id = new ObjectId().toString();
-  }
-
-  public Code(String id, String value, String description, String codeSystemId, String comments) {
-    super();
-    this.id = id;
-    this.value = value;
-    this.description = description;
-    this.codeSystemId = codeSystemId;
-    this.comments = comments;
-  }
+  
+  private CodeSysRef codeSysRef;
 
   public String getId() {
     return id;
@@ -63,12 +50,20 @@ public class Code {
     this.description = description;
   }
 
-  public String getCodeSystemId() {
-    return codeSystemId;
+  public CodeSysRef getCodeSysRef() {
+    return codeSysRef;
   }
 
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
+  public void setCodeSysRef(CodeSysRef codeSysRef) {
+    this.codeSysRef = codeSysRef;
+  }
+
+  public CodeUsage getUsage() {
+    return usage;
+  }
+
+  public void setUsage(CodeUsage usage) {
+    this.usage = usage;
   }
 
   public String getComments() {
@@ -78,6 +73,6 @@ public class Code {
   public void setComments(String comments) {
     this.comments = comments;
   }
-
-
+  
+  
 }

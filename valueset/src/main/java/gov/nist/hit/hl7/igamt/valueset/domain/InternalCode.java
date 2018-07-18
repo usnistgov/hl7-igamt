@@ -7,8 +7,8 @@ public class InternalCode extends Code {
     super();
   }
 
-  public InternalCode(String id, String value, String description, String codeSystemId, CodeUsage usage) {
-    super(id, value, description, codeSystemId);
+  public InternalCode(String id, String value, String description, String codeSystemId, CodeUsage usage, String comments) {
+    super(id, value, description, codeSystemId, comments);
     this.usage = usage;
   }
 

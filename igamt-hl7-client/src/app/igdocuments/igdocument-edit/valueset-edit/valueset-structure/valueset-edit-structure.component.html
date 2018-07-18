@@ -1,0 +1,55 @@
+<h2>Valueset Structure</h2>
+
+<div *ngIf="valuesetStructure">
+   {{valuesetStructure|json}}
+
+    <form #valuesetStructureForm="ngForm">
+        <p-fieldset legend="Attributes" [toggleable]="true">
+
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Extensibility
+                </label>
+                <p-dropdown [options]="extensibilityOptions" [(ngModel)]="valuesetStructure.extensibility" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
+            </div>
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Stability
+                </label>
+                <p-dropdown [options]="stabilityOptions" [(ngModel)]="valuesetStructure.stability" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
+            </div>
+            <div class="ui-g input-box">
+                <label class="metadata-label ui-g-2">
+                    Content Definition
+                </label>
+                <p-dropdown [options]="contentDefinitionOptions" [(ngModel)]="valuesetStructure.contentDefinition" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
+            </div>
+
+        </p-fieldset>
+
+        <p-fieldset legend="Content" [toggleable]="true">
+            <p-table [value]="valuesetStructure.displayCodes">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Value</th>
+                        <th>Description</th>
+                        <th>CodeSystem</th>
+                        <th>Usage</th>
+                        <th>Comments</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-code>
+                    <tr>
+                        <td>{{code.value}}</td>
+                        <td>{{code.description}}</td>
+                        <td>{{code.codeSysRef}}</td>
+                        <td>{{code.usage}}</td>
+                        <td>{{code.comments}}</td>
+                    </tr>
+                </ng-template>
+            </p-table>
+        </p-fieldset>
+
+    </form>
+
+</div>

@@ -17,6 +17,10 @@ import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 
 /**
  *
@@ -69,5 +73,29 @@ public interface ValuesetService {
    * @return
    */
   public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetMetadata convertDomainToMetadata(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetPreDef convertDomainToPredef(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetPostDef convertDomainToPostdef(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetStructure convertDomainToStructure(Valueset valueset);
 
 }

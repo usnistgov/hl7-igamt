@@ -22,14 +22,24 @@ import {DatatypesService} from "../../datatype-edit/datatypes.service";
     styleUrls : ['./segment-edit-structure.component.css']
 })
 export class SegmentEditStructureComponent implements WithSave {
-    valuesetColumnWidth:string = '200px';
     currentUrl:any;
     segmentId:any;
     segmentStructure:any;
     usages:any;
     cUsages:any;
+
     textDefinitionDialogOpen:boolean = false;
+    changeDTDialogOpen:boolean = false;
+    valuesetDialogOpen:boolean = false;
+    singleCodeDialogOpen:boolean = false;
+    constantValueDialogOpen:boolean = false;
+    commentDialogOpen:boolean = false;
+
     selectedNode:any;
+    selectedVS:any;
+    selectedSingleCode:any;
+    selectedConstantValue:any;
+    selectedComment:any;
     valuesetStrengthOptions:any = [];
 
     preciateEditorOpen:boolean = false;
@@ -264,9 +274,7 @@ export class SegmentEditStructureComponent implements WithSave {
     addNewValueSet(node){
         if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = [];
         if(!node.data.displayData.segmentBinding.valuesetBindings) node.data.displayData.segmentBinding.valuesetBindings = [];
-
-        node.data.displayData.segmentBinding.valuesetBindings.push({edit:true, newvalue : {}});
-        this.valuesetColumnWidth = '500px';
+        this.selectedVS = {newvalue : {}};
     }
 
     updateValueSetBindings(binding){
@@ -338,50 +346,76 @@ export class SegmentEditStructureComponent implements WithSave {
         else node.leaf = false;
         node.data.displayData.datatype.edit = false;
 
-
         node.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(node.data.displayData.datatype.name,node.data.position, null, null, node.data.displayData.type);
         node.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(node.data.displayData.datatype.name, node.data.displayData.datatype.domainInfo.version);
     }
 
-    makeEditModeForValueSet(vs){
+    onDatatypeChangeForDialog(node){
+        if(!node.data.displayData.datatype.id) {
+            node.data.displayData.datatype.id = node.data.ref.id;
+        }
+        else node.data.ref.id = node.data.displayData.datatype.id;
+        node.data.displayData.datatype = this.getDatatypeLink(node.data.displayData.datatype.id);
+        node.children = null;
+        node.expanded = false;
+        if(node.data.displayData.datatype.leaf) node.leaf = true;
+        else node.leaf = false;
+        node.data.displayData.datatype.edit = false;
+
+        node.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(node.data.displayData.datatype.name,node.data.position, null, null, node.data.displayData.type);
+        node.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(node.data.displayData.datatype.name, node.data.displayData.datatype.domainInfo.version);
+        this.changeDTDialogOpen = false;
+    }
+
+    makeEditModeForValueSet(node, vs){
+        this.selectedNode = node;
         vs.newvalue = {};
         vs.newvalue.valuesetId = vs.valuesetId;
         vs.newvalue.strength = vs.strength;
         vs.newvalue.valuesetLocations = vs.valuesetLocations;
-        vs.edit = true;
-        this.valuesetColumnWidth = '500px';
+        this.selectedVS = vs;
+        this.valuesetDialogOpen = true;
     }
 
-    makeEditModeForComment(c){
-        c.newComment = {};
-        c.newComment.description = c.description;
-        c.edit = true;
+    makeEditModeForComment(node, c){
+        this.selectedNode = node;
+        this.selectedComment.newComment = {};
+        this.selectedComment.newComment.description = c.description;
+        this.commentDialogOpen = true;
     }
 
     addNewComment(node){
-        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = [];
-        if(!node.data.displayData.segmentBinding.comments) node.data.displayData.segmentBinding.comments = [];
-        node.data.displayData.segmentBinding.comments.push({edit:true, newComment : {description:''}});
+        this.selectedNode = node;
+        this.selectedComment = {newComment : {description:''}};
+        this.commentDialogOpen = true;
     }
 
     addNewSingleCode(node){
-        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
-        if(!node.data.displayData.segmentBinding.externalSingleCode) node.data.displayData.segmentBinding.externalSingleCode = {};
-        node.data.displayData.segmentBinding.externalSingleCode.newSingleCode = '';
-        node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem = '';
-        node.data.displayData.segmentBinding.externalSingleCode.edit = true;
+        this.selectedNode = node;
+        this.singleCodeDialogOpen = true;
+        this.selectedSingleCode = {};
+        this.selectedSingleCode.newSingleCode = '';
+        this.selectedSingleCode.newSingleCodeSystem = '';
     }
 
-    submitNewSingleCode(node){
-        node.data.displayData.segmentBinding.externalSingleCode.value = node.data.displayData.segmentBinding.externalSingleCode.newSingleCode;
-        node.data.displayData.segmentBinding.externalSingleCode.codeSystem = node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem;
-        node.data.displayData.segmentBinding.externalSingleCode.edit = false;
+    submitNewSingleCode(node, singleCode){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
+        if(!node.data.displayData.segmentBinding.externalSingleCode) node.data.displayData.segmentBinding.externalSingleCode = {};
+
+        node.data.displayData.segmentBinding.externalSingleCode.value = singleCode.newSingleCode;
+        node.data.displayData.segmentBinding.externalSingleCode.codeSystem = singleCode.newSingleCodeSystem;
+
+        this.singleCodeDialogOpen = false;
     }
 
     makeEditModeForSingleCode(node){
+        this.selectedNode = node;
+        this.singleCodeDialogOpen = true;
+
         node.data.displayData.segmentBinding.externalSingleCode.newSingleCode = node.data.displayData.segmentBinding.externalSingleCode.value;
         node.data.displayData.segmentBinding.externalSingleCode.newSingleCodeSystem = node.data.displayData.segmentBinding.externalSingleCode.codeSystem;
-        node.data.displayData.segmentBinding.externalSingleCode.edit = true;
+
+        this.selectedSingleCode = node.data.displayData.segmentBinding.externalSingleCode;
     }
 
     deleteSingleCode(node){
@@ -390,12 +424,10 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     addNewConstantValue(node){
-        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
-        node.data.displayData.segmentBinding.constantValue = null;
-        node.data.displayData.segmentBinding.newConstantValue= '';
-        node.data.displayData.segmentBinding.editConstantValue = true;
-
-        console.log(node);
+        this.selectedNode = node;
+        this.selectedConstantValue = {};
+        this.selectedConstantValue.newConstantValue = '';
+        this.constantValueDialogOpen = true;
     }
 
     deleteConstantValue(node){
@@ -404,31 +436,54 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     makeEditModeForConstantValue(node){
-        node.data.displayData.segmentBinding.newConstantValue = node.data.displayData.segmentBinding.constantValue;
-        node.data.displayData.segmentBinding.editConstantValue = true;
+        this.selectedNode = node;
+        this.selectedConstantValue = {};
+        this.selectedConstantValue.newConstantValue = node.data.displayData.segmentBinding.constantValue;
+        this.constantValueDialogOpen = true;
     }
 
-    submitNewConstantValue(node){
-        node.data.displayData.segmentBinding.constantValue = node.data.displayData.segmentBinding.newConstantValue;
-        node.data.displayData.segmentBinding.editConstantValue = false;
+    submitNewConstantValue(node, constantValue){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
+        node.data.displayData.segmentBinding.constantValue = constantValue.newConstantValue;
+        this.constantValueDialogOpen = false;
     }
 
-    submitNewValueSet(vs){
-        var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
-        vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
-        vs.label = displayValueSetLink.label;
-        vs.domainInfo = displayValueSetLink.domainInfo;
-        vs.valuesetId = vs.newvalue.valuesetId;
-        vs.strength = vs.newvalue.strength;
-        vs.valuesetLocations = vs.newvalue.valuesetLocations;
-        vs.edit = false;
-        this.valuesetColumnWidth = '200px';
+    submitNewValueSet(node, vs){
+        if(vs.valuesetId){
+            var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
+            vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
+            vs.label = displayValueSetLink.label;
+            vs.domainInfo = displayValueSetLink.domainInfo;
+            vs.valuesetId = vs.newvalue.valuesetId;
+            vs.strength = vs.newvalue.strength;
+            vs.valuesetLocations = vs.newvalue.valuesetLocations;
+        }else {
+            var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
+            vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
+            vs.label = displayValueSetLink.label;
+            vs.domainInfo = displayValueSetLink.domainInfo;
+            vs.valuesetId = vs.newvalue.valuesetId;
+            vs.strength = vs.newvalue.strength;
+            vs.valuesetLocations = vs.newvalue.valuesetLocations;
+            node.data.displayData.segmentBinding.valuesetBindings.push(vs);
+        }
+        this.valuesetDialogOpen = false;
     }
 
-    submitNewComment(c){
-        c.description = c.newComment.description;
-        c.dateupdated = new Date();
-        c.edit = false;
+    submitNewComment(node, c){
+        if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = [];
+        if(!node.data.displayData.segmentBinding.comments) node.data.displayData.segmentBinding.comments = [];
+
+        if(c.dateupdated){
+            c.description = c.newComment.description;
+            c.dateupdated = new Date();
+        }else{
+            c.description = c.newComment.description;
+            c.dateupdated = new Date();
+            node.data.displayData.segmentBinding.comments.push(c);
+        }
+
+        this.commentDialogOpen = false;
     }
 
     delValueSetBinding(binding, vs, node){
@@ -463,6 +518,17 @@ export class SegmentEditStructureComponent implements WithSave {
     editTextDefinition(node){
         this.selectedNode = node;
         this.textDefinitionDialogOpen = true;
+    }
+
+    editDatatypeForField(node){
+        this.selectedNode = node;
+        this.changeDTDialogOpen = true;
+    }
+
+    editValueSetBinding(node){
+        this.selectedNode = node;
+        this.addNewValueSet(this.selectedNode);
+        this.valuesetDialogOpen = true;
     }
 
     truncate(txt){
