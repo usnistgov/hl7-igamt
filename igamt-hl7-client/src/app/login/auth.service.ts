@@ -9,6 +9,7 @@ import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/delay';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs";
+import {Router} from "@angular/router";
 
 
 @Injectable()
@@ -19,7 +20,11 @@ export class AuthService {
   // store the URL so we can redirect after logging in
   redirectUrl: string;
 
-  constructor(private  http :HttpClient){
+  currentUser:BehaviorSubject<any> =new BehaviorSubject<any>(null);
+
+
+
+  constructor(private  http :HttpClient, private router :Router){
 
   }
 
@@ -29,9 +34,7 @@ export class AuthService {
       console.log(data);
       let token = data.headers.get('Authorization');
       console.log(token);
-
-      localStorage.setItem('currentUser', token );
-
+      this.currentUser.next(data.body);
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
     }, error =>{
@@ -46,21 +49,40 @@ export class AuthService {
 
 
   logout(): void {
-    localStorage.removeItem('currentUser');
+    this.http.get('api/logout').toPromise().then( res =>{
 
-    this.isLoggedIn.next(false);
+      this.router.navigate(['/login']);
+      this.currentUser.next(null);
+      this.isLoggedIn.next(false);
+
+
+
+    }, error=>{
+      console.log("Failed to logout")
+
+    })
   }
 
-  getcurrentUser() {
-    var token = localStorage.getItem('currentUser');
-    var tokenInfo=  this.getDecodedAccessToken(token);
-    if(tokenInfo){
-      return tokenInfo.sub;
-    }else{
-      return "Guest";
-    }
+  getCurrentUser() {
+
+
+    this.http.get('api/authentication').toPromise().then( res =>{
+
+      console.log(res);
+
+      this.currentUser.next(res);
+      this.isLoggedIn.next(true);
+
+
+    }, error=>{
+      console.log("error");
+      this.isLoggedIn.next(false);
+
+      this.currentUser.next(null);
+    })
 
   }
+
 
   getDecodedAccessToken(token: string): any {
     try{
@@ -80,5 +102,9 @@ export class AuthService {
 
   }
 
+
+  isAuthenticated(){
+    return this.isLoggedIn.getValue();
+  }
 }
 

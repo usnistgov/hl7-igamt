@@ -15,6 +15,8 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.Map;
+
 import org.junit.Test;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
@@ -55,6 +57,11 @@ public class SerializableResourceTest {
       @Override
       public Element serialize() {
         return this.getElement(Type.SECTION);
+      }
+
+      @Override
+      public Map<String, String> getIdPathMap() {
+        return null;
       }
     };
     return serializableResource;

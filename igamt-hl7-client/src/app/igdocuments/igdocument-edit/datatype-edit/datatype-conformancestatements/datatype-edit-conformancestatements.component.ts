@@ -1,25 +1,30 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, Input} from "@angular/core";
+import {Component, Input, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
-import { _ } from 'underscore';
+import { _ }  from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {DatatypesService} from "../datatypes.service";
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
 
+import * as __ from 'lodash';
 
 @Component({
     templateUrl : './datatype-edit-conformancestatements.component.html',
     styleUrls : ['./datatype-edit-conformancestatements.component.css']
 })
 
-export class DatatypeEditConformanceStatementsComponent {
+export class DatatypeEditConformanceStatementsComponent implements WithSave{
     cols:any;
     currentUrl:any;
     datatypeId:any;
     datatypeConformanceStatements:any;
+    @ViewChild('editForm') editForm: NgForm;
+    backup:any;
     idMap: any;
     treeData: any[];
     constraintTypes: any = [];
@@ -57,6 +62,7 @@ export class DatatypeEditConformanceStatementsComponent {
         this.datatypeId = this.route.snapshot.params["datatypeId"];
         this.datatypesService.getDatatypeConformanceStatements(this.datatypeId).then(conformanceStatementData => {
             this.datatypeConformanceStatements = conformanceStatementData;
+            this.backup=__.cloneDeep(this.datatypeConformanceStatements);
         });
 
         this.datatypesService.getDatatypeStructure(this.datatypeId).then( dtStructure  => {
@@ -192,5 +198,40 @@ export class DatatypeEditConformanceStatementsComponent {
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
+
+  reset(){
+    this.datatypeConformanceStatements=__.cloneDeep(this.backup);
+  }
+
+  getCurrent(){
+    return  this.datatypeConformanceStatements;
+  }
+
+  getBackup(){
+    return this.backup;
+  }
+
+  isValid(){
+    return !this.editForm.invalid;
+  }
+
+  save(): Promise<any>{
+    return new Promise((resolve, reject)=> {
+
+       this.datatypesService.saveDatatypeConformanceStatements(this.datatypeId, this.datatypeConformanceStatements).then(saved=>{
+
+      this.backup = __.cloneDeep(this.datatypeConformanceStatements);
+
+      this.editForm.control.markAsPristine();
+      resolve(true);
+
+    }, error=>{
+
+      console.log("error saving");
+      reject();
+
+    });
+  })}
+
 
 }

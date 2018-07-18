@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -25,11 +26,13 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.serialization.SerializableConfo
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.serialization.SerializableSegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.sections.SerializableTextSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -49,7 +52,9 @@ public class SerializableSectionFactory {
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
-      CompositeProfileRegistry compositeProfileRegistry) {
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) {
     SerializableSection serializableSection = null;
     if (Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection) section, level);
@@ -57,23 +62,36 @@ public class SerializableSectionFactory {
       serializableSection = new SerializableProfile(section, level, datatypesMap, datatypeNamesMap,
           valuesetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap, valueSetRegistry,
           datatypeRegistry, segmentRegistry, conformanceProfileRegistry, profileComponentRegistry,
-          compositeProfileRegistry);
+          compositeProfileRegistry, bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
+          bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
     } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
+      if(exportConfiguration.isIncludeDatatypeTable()) {
       serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
-          datatypesMap, datatypeNamesMap, valuesetNamesMap);
+          datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
+      }
     } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
-      serializableSection =
-          new SerializableValuesetRegistry(section, level, valueSetRegistry, valuesetsMap);
+      if(exportConfiguration.isIncludeValuesetsTable()) {
+        serializableSection =
+            new SerializableValuesetRegistry(section, level, valueSetRegistry, valuesetsMap, bindedValueSets);
+      }
     } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
+      if(exportConfiguration.isIncludeSegmentTable()) {
       serializableSection = new SerializableSegmentRegistry(section, level, segmentRegistry,
-          segmentsMap, datatypeNamesMap, valuesetNamesMap);
+          segmentsMap, datatypeNamesMap, valuesetNamesMap, bindedSegments, bindedFields);
+      }
     } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
+      if(exportConfiguration.isIncludeMessageTable()) {
       serializableSection = new SerializableConformanceProfileRegistry(section, level,
-          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap);
+          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, bindedGroupsAndSegmentRefs);
+      }
     } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
-
+      if(exportConfiguration.isIncludeProfileComponentTable()) {
+        //TODO add profile component registry serialization
+      }
     } else if (Type.COMPOSITEPROFILEREGISTRY.equals(section.getType())) {
-
+      if(exportConfiguration.isIncludeCompositeProfileTable()) {
+        //TODO add composite profile registry serialization
+      }
     } else {
       serializableSection = new SerializableSection(section, level) {
         @Override

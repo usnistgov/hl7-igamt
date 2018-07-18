@@ -14,7 +14,6 @@
 package gov.nist.hit.hl7.igamt.segment.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -34,9 +33,6 @@ public interface SegmentRepository extends MongoRepository<Segment, CompositeKey
   List<Segment> findByDomainInfoVersion(String version);
 
   List<Segment> findByDomainInfoScope(String scope);
-
-  @Override
-  public Optional<Segment> findById(CompositeKey id);
 
   List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 

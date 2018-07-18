@@ -1,8 +1,8 @@
 import {Injectable} from '@angular/core';
 import Dexie from 'dexie';
-import {IgDocumentService} from '../ig-document/ig-document.service';
 import {NodeDatabase} from './node-database';
 import {IgDocumentInfo, IgDocumentInfoDatabase} from "./ig-document-info-database";
+import {IgDocumentService} from "../../igdocuments/igdocument-edit/ig-document.service";
 
 @Injectable()
 export class IndexedDbService {
@@ -12,7 +12,7 @@ export class IndexedDbService {
 
   igDocumentId?: string;
 
-  constructor(public igDocumentService: IgDocumentService) {
+  constructor() {
     this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
     this.nodeDatabase = new NodeDatabase('NodeDatabase');
   }

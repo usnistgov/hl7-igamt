@@ -5,18 +5,16 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
-
 import { _ } from 'underscore';
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
 import {Types} from "../../../../common/constants/types";
+import {SegmentsService} from "../segments.service";
+import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     selector : 'segment-edit',
@@ -140,6 +138,8 @@ export class SegmentEditStructureComponent implements WithSave {
 
     reset(){
         this.segmentStructure=__.cloneDeep(this.backup);
+      this.editForm.control.markAsPristine();
+
     }
 
     getCurrent(){
@@ -156,7 +156,21 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     save(): Promise<any>{
-        return this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure);
+      return new Promise((resolve, reject)=> {
+
+          this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure).then(saved => {
+
+          this.backup = _.cloneDeep(this.segmentStructure);
+          this.editForm.control.markAsPristine();
+          resolve(true);
+
+        }, error => {
+          console.log("error saving");
+
+          reject();
+
+        });
+      })
     }
 
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){

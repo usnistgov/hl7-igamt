@@ -12,7 +12,6 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -22,7 +21,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
  * Created by Jungyub Woo on Feb 20, 2018.
  */
 public interface CompositeProfileStructureService {
-  public Optional<CompositeProfileStructure> findByKey(CompositeKey key);
+  public CompositeProfileStructure findByKey(CompositeKey key);
 
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 

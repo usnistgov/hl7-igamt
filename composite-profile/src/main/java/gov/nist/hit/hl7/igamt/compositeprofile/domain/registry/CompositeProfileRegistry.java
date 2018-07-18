@@ -23,7 +23,6 @@ public class CompositeProfileRegistry extends Registry {
   public CompositeProfileRegistry() {
     super();
     this.type = Type.COMPOSITEPROFILEREGISTRY;
-    // TODO Auto-generated constructor stub
   }
 
 

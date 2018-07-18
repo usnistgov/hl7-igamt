@@ -13,7 +13,6 @@ package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -234,10 +233,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Optional<CompositeProfileStructure> compositeProfile =
-          compositeProfileServie.findByKey(l.getId());
+      CompositeProfileStructure compositeProfile = compositeProfileServie.findByKey(l.getId());
       if (compositeProfile != null) {
-        Nodes.add(createCompositeProfileNode(compositeProfile.get(), l.getPosition()));
+        Nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
       }
     }
     Nodes.sort((h1, h2) -> h1.compareTo(h2));

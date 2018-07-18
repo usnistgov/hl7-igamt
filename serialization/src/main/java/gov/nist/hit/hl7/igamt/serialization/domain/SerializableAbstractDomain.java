@@ -19,7 +19,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
@@ -31,7 +30,12 @@ import nu.xom.Element;
 public abstract class SerializableAbstractDomain extends SerializableElement {
 
   private AbstractDomain abstractDomain;
-
+  
+  protected static final String FIELD_PATH_SEPARATOR = "-";
+  protected static final String COMPONENT_PATH_SEPARATOR = "-";
+  protected static final String SEGMENT_GROUP_PATH_SEPARATOR = ".";
+  private SerializableBinding serializableBinding = null;
+  
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position) {
     this(abstractDomain, position, abstractDomain.getName());
   }
@@ -60,38 +64,6 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
               : ""));
       element.addAttribute(new Attribute("name",
           this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
-      Element metadataElement = new Element("Metadata");
-      metadataElement.addAttribute(new Attribute("hl7Version",
-          this.abstractDomain.getDomainInfo() != null
-              && this.abstractDomain.getDomainInfo().getVersion() != null
-                  ? this.abstractDomain.getDomainInfo().getVersion()
-                  : ""));
-      String domainCompatibilityVersions = "";
-      if (this.abstractDomain.getDomainInfo() != null
-          && this.abstractDomain.getDomainInfo().getCompatibilityVersion() != null) {
-        domainCompatibilityVersions =
-            String.join(",", this.abstractDomain.getDomainInfo().getCompatibilityVersion());
-      }
-      metadataElement
-          .addAttribute(new Attribute("domainCompatibilityVersions", domainCompatibilityVersions));
-      metadataElement.addAttribute(new Attribute("scope",
-          this.abstractDomain.getDomainInfo() != null
-              && this.abstractDomain.getDomainInfo().getScope() != null
-                  ? this.abstractDomain.getDomainInfo().getScope().name()
-                  : ""));
-      metadataElement.addAttribute(new Attribute("publicationVersion",
-          this.abstractDomain.getPublicationInfo() != null
-              && this.abstractDomain.getPublicationInfo().getPublicationVersion() != null
-                  ? this.abstractDomain.getPublicationInfo().getPublicationVersion()
-                  : ""));
-      String publicationDate = "";
-      if (this.abstractDomain.getPublicationInfo() != null
-          && this.abstractDomain.getPublicationInfo().getPublicationDate() != null) {
-        publicationDate = DateSerializationUtil
-            .serializeDate(this.abstractDomain.getPublicationInfo().getPublicationDate());
-      }
-      metadataElement.addAttribute(new Attribute("publicationDate", publicationDate));
-      element.appendChild(metadataElement);
       element.addAttribute(new Attribute("id",
           this.abstractDomain.getId() != null && this.abstractDomain.getId().getId() != null
               ? this.abstractDomain.getId().getId()
@@ -110,9 +82,12 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
    */
   public Element serializeResourceBinding(ResourceBinding binding,
       Map<String, String> valuesetNamesMap) throws SerializationException {
-    SerializableBinding serializableBinding = new SerializableBinding(binding, valuesetNamesMap);
-    return serializableBinding.serialize();
+    Map<String, String> pathLocationMap = this.getIdPathMap();
+    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
+    return this.serializableBinding.serialize();
   }
+  
+  public abstract Map<String, String> getIdPathMap();
 
   public AbstractDomain getAbstractDomain() {
     return abstractDomain;
@@ -120,6 +95,14 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
 
   public void setAbstractDomain(AbstractDomain abstractDomain) {
     this.abstractDomain = abstractDomain;
+  }
+
+  public SerializableConstraints getConformanceStatements(int level) {
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getConformanceStatements());
+  }
+
+  public SerializableConstraints getPredicates(int level) {
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getPredicates());
   }
 
 }

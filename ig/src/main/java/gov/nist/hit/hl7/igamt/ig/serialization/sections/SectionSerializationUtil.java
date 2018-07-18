@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
@@ -21,6 +22,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationException;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -44,14 +46,18 @@ public class SectionSerializationUtil {
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
-      CompositeProfileRegistry compositeProfileRegistry) throws SerializationException {
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) throws SerializationException {
     if (section != null) {
       try {
         SerializableSection serializableSection =
             SerializableSectionFactory.getSerializableSection(section, level, datatypesMap,
                 datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
-                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
+                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
+                bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
+                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
         if (serializableSection != null) {
           return serializableSection.serialize();
         }
@@ -60,11 +66,6 @@ public class SectionSerializationUtil {
       }
     }
     return null;
-  }
-
-  public static Element serializeSection(Section section, int level) throws SerializationException {
-    return serializeSection(section, level, null, null, null, null, null, null, null, null, null,
-        null, null, null);
   }
 
 }

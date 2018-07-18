@@ -1,0 +1,76 @@
+{
+  "_id": "59ce56c784ae3adc43b87c7e",
+  "includeSegmentTable": true,
+  "greyOutOBX2FlavorColumn": false,
+  "coConstraintExportMode": "COMPACT",
+  "segmentsExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": false,
+    "o": false
+  },
+  "fieldsExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": true,
+    "o": true
+  },
+  "columns": [
+    {
+      "name": "Name",
+      "position": 1,
+      "present": true,
+      "disabled": true
+    },
+    {
+      "name": "Conformance Length",
+      "position": 2,
+      "present": false,
+      "disabled": false
+    },
+    {
+      "name": "Data Type",
+      "position": 3,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Usage",
+      "position": 4,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Cardinality",
+      "position": 5,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Length",
+      "position": 6,
+      "present": false,
+      "disabled": false
+    },
+    {
+      "name": "Value Set",
+      "position": 7,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Comment",
+      "position": 8,
+      "present": true,
+      "disabled": false
+    }
+  ],
+  "metadataConfig": {
+    "hl7version": true,
+    "publicationDate": true,
+    "publicationVersion": false,
+    "scope": true
+  }
+}

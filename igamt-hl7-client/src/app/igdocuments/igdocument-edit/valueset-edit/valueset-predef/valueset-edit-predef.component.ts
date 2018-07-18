@@ -4,7 +4,7 @@
 import {Component} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {ValuesetsService} from "../../../../service/valueSets/valueSets.service";
+import {ValuesetsService} from "../valueSets.service";
 
 
 

@@ -21,7 +21,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.MetadataConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.NameAndPositionAndPresence;
-import gov.nist.hit.hl7.igamt.export.configuration.domain.ValueSetMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ValuesetMetadataConfiguration;
 
 /**
  *
@@ -41,7 +41,7 @@ public class ExportParameters {
   private List<NameAndPositionAndPresence> segmentsColumns;
   private List<NameAndPositionAndPresence> dataTypeColumns;
   private List<NameAndPositionAndPresence> valueSetColumns;
-  private ValueSetMetadataConfiguration valueSetMetadataConfiguration;
+  private ValuesetMetadataConfiguration valuesetMetadataConfiguration;
   private MetadataConfiguration datatypeMetadataConfiguration;
   private MetadataConfiguration segmentMetadataConfiguration;
   private MetadataConfiguration messageMetadataConfiguration;
@@ -69,8 +69,8 @@ public class ExportParameters {
         exportConfiguration.getProfileComponentColumn().getColumns(),
         exportConfiguration.getSegmentColumn().getColumns(),
         exportConfiguration.getDatatypeColumn().getColumns(),
-        exportConfiguration.getValueSetColumn().getColumns(),
-        exportConfiguration.getValueSetsMetadata(), exportConfiguration.getDatatypeMetadataConfig(),
+        exportConfiguration.getValuesetColumn().getColumns(),
+        exportConfiguration.getValuesetsMetadata(), exportConfiguration.getDatatypeMetadataConfig(),
         exportConfiguration.getSegmentMetadataConfig(),
         exportConfiguration.getMessageMetadataConfig(),
         exportConfiguration.getCompositeProfileMetadataConfig(), exportFontConfiguration,
@@ -84,7 +84,7 @@ public class ExportParameters {
       List<NameAndPositionAndPresence> segmentsColumns,
       List<NameAndPositionAndPresence> dataTypeColumns,
       List<NameAndPositionAndPresence> valueSetColumns,
-      ValueSetMetadataConfiguration valueSetMetadataConfiguration,
+      ValuesetMetadataConfiguration valuesetMetadataConfiguration,
       MetadataConfiguration datatypeMetadataConfiguration,
       MetadataConfiguration segmentMetadataConfiguration,
       MetadataConfiguration messageMetadataConfiguration,
@@ -101,7 +101,7 @@ public class ExportParameters {
     this.segmentsColumns = segmentsColumns;
     this.dataTypeColumns = dataTypeColumns;
     this.valueSetColumns = valueSetColumns;
-    this.valueSetMetadataConfiguration = valueSetMetadataConfiguration;
+    this.valuesetMetadataConfiguration = valuesetMetadataConfiguration;
     this.datatypeMetadataConfiguration = datatypeMetadataConfiguration;
     this.segmentMetadataConfiguration = segmentMetadataConfiguration;
     this.messageMetadataConfiguration = messageMetadataConfiguration;
@@ -195,15 +195,15 @@ public class ExportParameters {
             String.valueOf(currentColumn.isPresent()));
       }
     }
-    if (valueSetMetadataConfiguration != null) {
+    if (valuesetMetadataConfiguration != null) {
       params.put("valueSetMetadataStability",
-          String.valueOf(valueSetMetadataConfiguration.isStability()));
+          String.valueOf(valuesetMetadataConfiguration.isStability()));
       params.put("valueSetMetadataExtensibility",
-          String.valueOf(valueSetMetadataConfiguration.isExtensibility()));
+          String.valueOf(valuesetMetadataConfiguration.isExtensibility()));
       params.put("valueSetMetadataContentDefinition",
-          String.valueOf(valueSetMetadataConfiguration.isContentDefinition()));
-      params.put("valueSetMetadataOid", String.valueOf(valueSetMetadataConfiguration.isOid()));
-      params.put("valueSetMetadataType", String.valueOf(valueSetMetadataConfiguration.isType()));
+          String.valueOf(valuesetMetadataConfiguration.isContentDefinition()));
+      params.put("valueSetMetadataOid", String.valueOf(valuesetMetadataConfiguration.isOid()));
+      params.put("valueSetMetadataType", String.valueOf(valuesetMetadataConfiguration.isType()));
     }
     if (datatypeMetadataConfiguration != null) {
       params.put("datatypeMetadataDisplay",

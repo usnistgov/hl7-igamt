@@ -13,8 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.profilecomponent.repository;
 
-import java.util.Optional;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -29,6 +27,4 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 public interface ProfileComponentRepository
     extends MongoRepository<ProfileComponent, CompositeKey> {
 
-  @Override
-  public Optional<ProfileComponent> findById(CompositeKey id);
 }

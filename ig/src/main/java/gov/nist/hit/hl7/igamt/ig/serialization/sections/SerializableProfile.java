@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -22,6 +23,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
@@ -49,6 +51,13 @@ public class SerializableProfile extends SerializableSection {
   private ConformanceProfileRegistry conformanceProfileRegistry;
   private ProfileComponentRegistry profileComponentRegistry;
   private CompositeProfileRegistry compositeProfileRegistry;
+  private Set<String> bindedGroupsAndSegmentRefs;
+  private Set<String> bindedFields;
+  private Set<String> bindedSegments;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
+  private Set<String> bindedValueSets;
+  private ExportConfiguration exportConfiguration;
 
   /**
    * @param section
@@ -60,7 +69,9 @@ public class SerializableProfile extends SerializableSection {
       DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
       ConformanceProfileRegistry conformanceProfileRegistry,
       ProfileComponentRegistry profileComponentRegistry,
-      CompositeProfileRegistry compositeProfileRegistry) {
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) {
     super(section, level);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
@@ -74,6 +85,13 @@ public class SerializableProfile extends SerializableSection {
     this.conformanceProfileRegistry = conformanceProfileRegistry;
     this.profileComponentRegistry = profileComponentRegistry;
     this.compositeProfileRegistry = compositeProfileRegistry;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
+    this.bindedFields = bindedFields;
+    this.bindedSegments = bindedSegments;
+    this.bindedDatatypes = bindedDatatypes;
+    this.bindedComponents = bindedComponents;
+    this.bindedValueSets = bindedValueSets;
+    this.exportConfiguration = exportConfiguration;
   }
 
   /*
@@ -90,7 +108,9 @@ public class SerializableProfile extends SerializableSection {
             SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(),
                 datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
-                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry);
+                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
+                this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
+                this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration);
         if (childSection != null) {
           Element childSectionElement = childSection.serialize();
           if (childSectionElement != null) {

@@ -26,6 +26,8 @@ import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit
 import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from "primeng/components/message/message";
 import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
+
+import {ValuesetsService} from "./valueSets.service";
 // import {ValuesetCrossRefComponent } from './valueset-cross-ref/valueset-cross-ref.component';
 // import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
 
@@ -49,7 +51,7 @@ import {NamingConventionModule} from "../../../common/naming-convention/naming-c
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  // providers : [ValuesetCrossRefResolver],
+  providers : [ValuesetsService],
   declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

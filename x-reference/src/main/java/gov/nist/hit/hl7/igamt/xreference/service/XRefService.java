@@ -17,6 +17,8 @@ import java.util.Set;
 
 import com.mongodb.BasicDBObject;
 
+import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+
 /**
  * 
  * @author Harold Affo
@@ -54,6 +56,7 @@ public abstract class XRefService {
   public abstract Map<String, List<BasicDBObject>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds);
 
+
   /**
    * 
    * @param id: id of the value set
@@ -62,9 +65,11 @@ public abstract class XRefService {
    * @param filterSegmentIds:filter list of segment ids. If null, no filtering which means all
    *        segments referencing the valueset will be returned
    * @return
+   * @throws XReferenceException
    */
   public abstract Map<String, List<BasicDBObject>> getValueSetReferences(String id,
-      Set<String> filterDatatypeIds, Set<String> filterSegmentIds);
+      Set<String> datatypeIds, Set<String> segmentIds, Set<String> conformanceProfiles)
+      throws XReferenceException;
 
 
 }
