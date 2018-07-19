@@ -79,6 +79,22 @@ public class IGDocumentExceptionHandler {
     return message;
   }
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IGTocUpdateException.class})
+  public ResponseMessage handleUpdateTocException(IGTocUpdateException exception) {
+    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IGConverterException.class})
+  public ResponseMessage handleUpdateTocException(IGConverterException exception) {
+    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
 
 
 }

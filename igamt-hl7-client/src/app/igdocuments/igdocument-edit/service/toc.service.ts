@@ -9,6 +9,7 @@ import {Types} from "../../../common/constants/types";
 import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
 import { UUID } from 'angular2-uuid';
 import {TreeNode, TreeModel} from "angular-tree-component";
+import {HttpClient} from "@angular/common/http";
 
 
 @Injectable()
@@ -17,9 +18,9 @@ export  class TocService{
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
   metadata :BehaviorSubject<any> =new BehaviorSubject(null);
 
-  treeModel :TreeModel
+  treeModel :TreeModel;
 
-  constructor(private dbService:IndexedDbService){
+  constructor(private dbService:IndexedDbService, private http:HttpClient){
   }
 
   setActiveNode(node){
@@ -30,11 +31,13 @@ export  class TocService{
     return  this.activeNode;
   }
   setTreeModel(treeModel){
+    console.log("Setting tree model");
     return new Promise((resolve, reject)=> {
     this.treeModel=treeModel;
     this.dbService.getIgDocument().then(
       x => {
         x.toc = treeModel.nodes;
+        this.saveNodes(x.id, x.toc,resolve, reject);
         this.dbService.updateIgToc(x.id, x.toc).then(saved => {
          resolve(true);
         });
@@ -44,8 +47,23 @@ export  class TocService{
 
 
 
-  setMetaData(metadata){
+  initTreeModel(treeModel){
+    console.log("init tree model");
 
+    return new Promise((resolve, reject)=> {
+      this.treeModel=treeModel;
+      this.dbService.getIgDocument().then(
+        x => {
+          x.toc = treeModel.nodes;
+          this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+            resolve(true);
+          });
+        });
+    })
+  };
+
+
+  setMetaData(metadata){
     return new Promise((resolve, reject)=> {
       this.dbService.getIgDocument().then(
         x => {
@@ -56,13 +74,7 @@ export  class TocService{
           });
         });
     })
-
-
   }
-
-
-
-
 
   getTreeModel(){
 
@@ -172,7 +184,7 @@ export  class TocService{
     return new Promise((resolve, reject)=> {
 
       this.getNodesList(Types.DATATYPEREGISTRY).then( children =>{
-        resolve(_.map(children, function (obj) {
+        resolve(_.map(children, function (obj:any) {
             return obj.data.label+obj.data.ext;
           }))
 
@@ -242,7 +254,23 @@ export  class TocService{
     }
     treeNode.parent.data.children.push(newData);
     treeNode.parent.treeModel.update();
+  };
+
+  saveNodes(id,nodes,resolve, reject){
+    this.http.post('/api/igdocuments/'+id+'/updatetoc',nodes).toPromise().then(result=>{
+      resolve(result);
+      console.log(result);
+
+    },error=>{
+        console.log(error);
+        reject(error);
+
+      }
+    );
+
   }
+
+
 
 
 

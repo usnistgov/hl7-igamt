@@ -10,27 +10,28 @@ import {DatatypeEditPredefComponent} from "./datatype-predef/datatype-edit-prede
 import {DatatypeEditPostdefComponent} from "./datatype-postdef/datatype-edit-postdef.component";
 import {DatatypeCrossRefComponent} from "./datatype-cross-ref/datatype-cross-ref.component";
 import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
+import {SaveFormsGuard} from "../../../guards/save.guard";
 
 @NgModule({
   imports: [
     RouterModule.forChild([
         {
-            path: ':datatypeId', component: DatatypeEditStructureComponent,
+            path: ':datatypeId', component: DatatypeEditStructureComponent,canDeactivate: [SaveFormsGuard]
         },
         {
-            path: ':datatypeId/structure', component: DatatypeEditStructureComponent,
+            path: ':datatypeId/structure', component: DatatypeEditStructureComponent,canDeactivate: [SaveFormsGuard]
         },
         {
-            path: ':datatypeId/metadata', component: DatatypeEditMetadataComponent,
+            path: ':datatypeId/metadata', component: DatatypeEditMetadataComponent,canDeactivate: [SaveFormsGuard]
         },
         {
-            path: ':datatypeId/preDef', component: DatatypeEditPredefComponent,
+            path: ':datatypeId/preDef', component: DatatypeEditPredefComponent,canDeactivate: [SaveFormsGuard]
         },
         {
-            path: ':datatypeId/postDef', component: DatatypeEditPostdefComponent,
+            path: ':datatypeId/postDef', component: DatatypeEditPostdefComponent,canDeactivate: [SaveFormsGuard]
         },
         {
-            path: ':datatypeId/conformanceStatement', component: DatatypeEditConformanceStatementsComponent,
+            path: ':datatypeId/conformanceStatement', component: DatatypeEditConformanceStatementsComponent,canDeactivate: [SaveFormsGuard]
         },
       {
         path: ':datatypeId/crossRef', component: DatatypeCrossRefComponent,resolve: { refs : DatatypeCrossRefResolver}

@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Router} from "@angular/router";
 
 
 @Injectable()
 export class SegmentsService {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private  router:Router ) {
   }
 
   public getSegmentMetadata(id): Promise<any> {
@@ -24,6 +25,7 @@ export class SegmentsService {
         this.http.get('api/segments/' + id + '/structure').toPromise().then(serverSegmentStructure => {
           resolve(serverSegmentStructure);
         }, error => {
+
           reject(error);
         });
     });

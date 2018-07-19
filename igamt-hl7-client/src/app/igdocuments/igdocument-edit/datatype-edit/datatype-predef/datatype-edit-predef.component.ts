@@ -8,6 +8,7 @@ import {DatatypesService} from "../datatypes.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
+import {MessageService} from "primeng/components/common/messageservice";
 
 
 
@@ -22,7 +23,7 @@ export class DatatypeEditPredefComponent implements WithSave{
     @ViewChild('editForm') editForm: NgForm;
     backup:any;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService){
+    constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private messageService :MessageService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -58,6 +59,7 @@ export class DatatypeEditPredefComponent implements WithSave{
   }
 
   save(): Promise<any>{
+    this.showError();
     return new Promise((resolve, reject)=> {
 
      this.datatypesService.saveDatatypePreDef(this.datatypeId, this.datatypePredef).then(saved => {
@@ -75,4 +77,10 @@ export class DatatypeEditPredefComponent implements WithSave{
 
     )});
   }
+
+  showError() {
+    console.log("test");
+    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
+  }
+
 }

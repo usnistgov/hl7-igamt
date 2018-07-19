@@ -52,6 +52,7 @@
 
     <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
     <button  pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+    <button  pButton type="button" (click)="showError()" label="show " class="red-btn" icon="fa-refresh"></button>
 
 
   </div>
@@ -60,6 +61,13 @@
 
 
 </p-toolbar>
+frfrrffrfrrf
+  <p-toolbar class="toc-filter-toolbar">
+
+
+  <p-messages [(value)]="msgs"></p-messages>
+  </p-toolbar>
+
 </div>
 <div class="ui-g">
 <div *ngIf="hideToc"  style="width: 50px">

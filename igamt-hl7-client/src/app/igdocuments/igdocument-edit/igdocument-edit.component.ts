@@ -20,11 +20,14 @@ import {ExportService} from "./service/export.service";
 import {Types} from "../../common/constants/types";
 import {SectionsService} from "../../service/sections/sections.service";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
+import {MessageService} from "primeng/components/common/messageservice";
 
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
-    styleUrls : ['./igdocument-edit.component.css']
+    styleUrls : ['./igdocument-edit.component.css'],
+  providers: [MessageService]
+
 })
 export class IgDocumentEditComponent {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
@@ -108,7 +111,7 @@ export class IgDocumentEditComponent {
 
 
               TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-              this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
+              this.setTreeModel();
 
 
           }
@@ -116,9 +119,8 @@ export class IgDocumentEditComponent {
             //console.log(from);
 
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
-            this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes);
+            this.setTreeModel();
 
-            //this.sectionService.updateDnD(node.id,node.data, {from:from.id,to:to.id,position:node.data.data.position})
 
 
           }
@@ -140,7 +142,7 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService,private messageService: MessageService){
 
     router.events.subscribe(event => {
       //console.log(event);
@@ -225,14 +227,20 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
-      this.setTreeModel();
+      this.initTreeModel();
 
       this.parseUrl();
 
 
   }
+
   setTreeModel(){
     this.tocService.setTreeModel(this.tree.treeModel);
+  }
+
+
+  initTreeModel(){
+    this.tocService.initTreeModel(this.tree.treeModel);
   }
 
 
@@ -327,7 +335,7 @@ export class IgDocumentEditComponent {
     this.tree.treeModel.nodes.push(newNode);
 
     this.tree.treeModel.update();
-
+    this.setTreeModel();
 
 
   };
@@ -374,7 +382,6 @@ export class IgDocumentEditComponent {
     this.sp.queryParams
       .subscribe(params => {
         //console.log(params);
-
         this.router.navigate(["./section/"+id],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
 
       });
@@ -432,16 +439,7 @@ export class IgDocumentEditComponent {
 
 
       this.tree.treeModel.update();
-      this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
-
-        //console.log("updated");
-        }, error=>{
-        //console.log("could not update IG")
-
-        }
-
-      )
-
+      this.setTreeModel();
 
   };
 
@@ -599,7 +597,6 @@ export class IgDocumentEditComponent {
    //console.log( this.tree._options);
     this.tocService.cloneNode(node);
    let ret =  this.tree.treeModel.getNodeById(node.id);
-    //console.log(ret);
     this.copyElemt.open({
       igDocumentId : this.igId,
       id:node.id,
@@ -609,26 +606,16 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
-         //console.log("result");
-         //console.log(result);
-         //console.log(node.parent);
-         //console.log(node.parent.treeModel);
+
          node.parent.data.children.push(result);
           this.tree.treeModel.update();
-          this.indexedDbService.updateIgToc(this.igId,this.tree.treeModel.nodes).then(x => {
-
-              //console.log("updated");
-            }, error=>{
-              //console.log("could not update IG")
-
-            }
-
-          )
-
-
+          this.setTreeModel();
         }
       )
+  }
 
+  showError() {
+    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
   }
 
 
