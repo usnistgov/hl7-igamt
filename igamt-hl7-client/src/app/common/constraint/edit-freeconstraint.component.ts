@@ -12,6 +12,8 @@ import { ControlContainer, NgForm } from '@angular/forms';
 })
 export class EditFreeConstraintComponent {
   @Input() constraint : any;
+  advanced:boolean = false;
+
 
   constructor(){}
   ngOnInit(){}

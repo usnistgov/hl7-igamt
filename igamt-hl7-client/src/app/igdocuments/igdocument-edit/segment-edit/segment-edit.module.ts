@@ -15,6 +15,7 @@ import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {ButtonModule} from 'primeng/button';
+import {FieldsetModule} from 'primeng/fieldset';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
@@ -38,6 +39,7 @@ import {SegmentsService} from "./segments.service";
         SegmentEditRoutingModule,
         UtilsModule,
         TreeTableModule,
+        FieldsetModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,

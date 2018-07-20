@@ -48,6 +48,8 @@ export class GeneralConfigurationService {
 
   _contentDefinitionOptions:any[];
 
+  _codeUsageOptions:any[];
+
   constructor(){
 
     this._constraintTypes = [
@@ -105,6 +107,8 @@ export class GeneralConfigurationService {
       {label: 'AND/OR', value: 'ANDOR'},
       {label: 'NOT', value: 'NOT'}
     ];
+
+    this._codeUsageOptions = [ { label : 'Required', value : 'R' },{ label : 'Permitted', value : 'P' },{ label : 'Excluded', value : 'E' }];
     this._simpleConstraintVerbs = [ { label : 'SHALL', value : 'SHALL' },{ label : 'SHALL NOT', value : 'SHALL NOT' }];
     this._ifConstraintVerbs = [ { label : 'is', value : 'IS' },{ label : 'is NOT', value : 'is NOT' }];
     this._formatTypes = [ { label : 'be ISO format', value : 'iso' },{ label : 'be positive', value : 'positive' },{ label : 'be negative', value : 'negative' },{ label : 'be numeric', value : 'numeric' },{ label : 'be alphanumeric', value : 'alphanumeric' },{ label : 'be regrex', value : 'regrex' }];

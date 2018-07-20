@@ -6,6 +6,7 @@
   "name": "OBX",
   "label": "OBXTXT",
   "scope": "ARCHIVED",
+  "type": "SEGMENT",
   "conformanceStatements": [
     {
       "type": "FREE",

@@ -1,6 +1,6 @@
 <div *ngIf="segmentConformanceStatements">
-    <h1>Conformance Statements</h1>
-    <form #editForm="ngForm">
+    <h1>Conformance Statements of {{segmentConformanceStatements.name}} {{segmentConformanceStatements.type}}</h1>
+    <form #csForm="ngForm">
         <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
                 <p-table [columns]="cols" [value]="segmentConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
@@ -106,7 +106,7 @@
                 <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
                 <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
+                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="csForm.invalid"></button>
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="printCS(selectedConformanceStatement)"></button>
             </p-accordionTab>
         </p-accordion>
