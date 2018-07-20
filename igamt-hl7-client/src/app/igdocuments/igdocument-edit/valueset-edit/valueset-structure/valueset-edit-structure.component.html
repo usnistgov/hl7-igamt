@@ -3,26 +3,25 @@
 <div *ngIf="valuesetStructure">
    {{valuesetStructure|json}}
 
+    {{codeSystemOptoins|json}}
     <form #valuesetStructureForm="ngForm">
         <p-fieldset legend="Attributes" [toggleable]="true">
 
             <div class="ui-g input-box">
                 <label class="metadata-label ui-g-2">
-                    Extensibility
+                    Extensibility:
                 </label>
-                <p-dropdown [options]="extensibilityOptions" [(ngModel)]="valuesetStructure.extensibility" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
-            </div>
-            <div class="ui-g input-box">
+                <p-dropdown [options]="extensibilityOptions" [(ngModel)]="valuesetStructure.extensibility" name="extensibility" id="extensibility" #extensibility="ngModel" required appendTo="body" class="ui-g-2"></p-dropdown>
+
                 <label class="metadata-label ui-g-2">
-                    Stability
+                    Stability:
                 </label>
-                <p-dropdown [options]="stabilityOptions" [(ngModel)]="valuesetStructure.stability" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
-            </div>
-            <div class="ui-g input-box">
+                <p-dropdown [options]="stabilityOptions" [(ngModel)]="valuesetStructure.stability" name="stability" id="stability" #stability="ngModel" required [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-2"></p-dropdown>
+
                 <label class="metadata-label ui-g-2">
-                    Content Definition
+                    Content Definition:
                 </label>
-                <p-dropdown [options]="contentDefinitionOptions" [(ngModel)]="valuesetStructure.contentDefinition" [ngModelOptions]="{standalone: true}" appendTo="body" class="ui-g-10"></p-dropdown>
+                <p-dropdown [options]="contentDefinitionOptions" [(ngModel)]="valuesetStructure.contentDefinition" name="contentDefinition" id="contentDefinition" #contentDefinition="ngModel" required appendTo="body" class="ui-g-2"></p-dropdown>
             </div>
 
         </p-fieldset>
@@ -36,15 +35,82 @@
                         <th>CodeSystem</th>
                         <th>Usage</th>
                         <th>Comments</th>
+                        <th>Actions <i class="fa fa-plus" (click)="addNewCode()"></i></th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-code>
                     <tr>
-                        <td>{{code.value}}</td>
-                        <td>{{code.description}}</td>
-                        <td>{{code.codeSysRef}}</td>
-                        <td>{{code.usage}}</td>
-                        <td>{{code.comments}}</td>
+                        <td pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="value" id="value" type="text" #value="ngModel" [(ngModel)]="code.value" required />
+                                    <div class="ui-g-offset-1" *ngIf="value.invalid&& (value.dirty || value.touched)">
+                                        <p-message severity="error" text="value is required"></p-message>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{code.value}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="description" id="description" type="text" #description="ngModel" [(ngModel)]="code.description" required />
+                                    <div class="ui-g-offset-1" *ngIf="description.invalid&& (description.dirty || description.touched)">
+                                        <p-message severity="error" text="description is required"></p-message>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{code.description}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-dropdown name="codeSysRef" id="codeSysRef" #codeSysRef="ngModel" [options]="codeSystemOptoins" [(ngModel)]="code.codeSysRef" required appendTo="body">
+                                        <ng-template let-option pTemplate="body">
+                                            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                                                {{option.label}}
+                                            </div>
+                                        </ng-template>
+                                    </p-dropdown>
+                                    <div class="ui-g-offset-1" *ngIf="codeSysRef.invalid&& (codeSysRef.dirty || codeSysRef.touched)">
+                                        <p-message severity="error" text="CodeSystem is required"></p-message>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{findCodeSysIdentifier(code.codeSysRef)}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <p-dropdown name="usage" id="usage" #usage="ngModel" required [options]="codeUsageOptions" [(ngModel)]="code.usage" appendTo="body"></p-dropdown>
+                                    <div class="ui-g-offset-1" *ngIf="usage.invalid&& (usage.dirty || usage.touched)">
+                                        <p-message severity="error" text="usage is required"></p-message>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{code.usage}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="comments" id="comments" type="text" #comments="ngModel" [(ngModel)]="code.comments" />
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{code.comments}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td>
+                            <i class="fa fa-times" (click)="delCode(code)"></i>
+                        </td>
                     </tr>
                 </ng-template>
             </p-table>
