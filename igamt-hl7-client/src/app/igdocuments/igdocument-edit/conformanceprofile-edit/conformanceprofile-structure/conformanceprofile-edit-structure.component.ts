@@ -5,23 +5,16 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {SegmentsService} from "../../../../service/segments/segments.service";
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
-
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
-
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
-import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import {SegmentsTocService} from "../../../../service/indexed-db/segments/segments-toc.service";
 import {TocService} from "../../service/toc.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
+import {SegmentsService} from "../../segment-edit/segments.service";
+import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     templateUrl : './conformanceprofile-edit-structure.component.html',
@@ -31,7 +24,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     valuesetColumnWidth:string = '200px';
     currentUrl:any;
     conformanceprofileId:any;
-    conformanceprofileStructure:any;
+    conformanceprofileStructure:any={};
     usages:any;
     cUsages:any;
     textDefinitionDialogOpen:boolean = false;
@@ -53,7 +46,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     valuesetsLinks :any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    backup:any;
+    backup:any={};
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -66,10 +59,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
                 private segmentsService : SegmentsService,
                 private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
-                private datatypesTocService : DatatypesTocService,
-                private segmentsTocService : SegmentsTocService,
-                private valuesetsTocService : ValuesetsTocService,
-                private conformanceProfilesTocService : ConformanceProfilesTocService, private tocService:TocService){
+                private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -183,12 +173,29 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     }
 
     isValid(){
-        return true;
+        return this.editForm.valid;
     }
 
     save(): Promise<any>{
-        return this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, this.conformanceprofileStructure);
-    }
+      return new Promise((resolve, reject)=> {
+
+         this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, this.conformanceprofileStructure).then(saved => {
+
+            this.backup = __.cloneDeep(this.conformanceprofileStructure);
+
+            this.editForm.control.markAsPristine();
+            resolve(true);
+
+          }, error => {
+            console.log("error saving");
+            reject();
+
+          }
+
+        );
+
+    })
+    };
 
     updateMessage(children, currentBinding, parentFieldId){
         for (let entry of children) {

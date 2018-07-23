@@ -1,0 +1,488 @@
+{
+  "id" : {
+    "id" : "579654545455fa34e848c7c4",
+    "version" : 1
+  },
+  "identifier" : "HL70125",
+  "codes" : [
+    {
+      "id" : "5b0ff902e2813f3b13786983",
+      "value" : "MO",
+      "description" : "Money",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786995",
+      "value" : "DR",
+      "description" : "Date/time range",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698b",
+      "value" : "EI",
+      "description" : "Entity identifier",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b0",
+      "value" : "XPN",
+      "description" : "Extended person name",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869ae",
+      "value" : "VH",
+      "description" : "Visiting hours",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869ac",
+      "value" : "QSC",
+      "description" : "Query selection criteria",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c8",
+      "value" : "NDL",
+      "description" : "Name with date and location",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699b",
+      "value" : "VR",
+      "description" : "Value range",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c6",
+      "value" : "ERL",
+      "description" : "Error location",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699a",
+      "value" : "SPD",
+      "description" : "Specialty description",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a0",
+      "value" : "MOC",
+      "description" : "Money and charge code",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a4",
+      "value" : "TM",
+      "description" : "Time",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869ad",
+      "value" : "SN",
+      "description" : "Structured numeric",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869bf",
+      "value" : "PTA",
+      "description" : "Policy type and amount",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786999",
+      "value" : "RFR",
+      "description" : "Reference range",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b6",
+      "value" : "RI",
+      "description" : "Repeat interval",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869be",
+      "value" : "PIP",
+      "description" : "Practitioner institutional privileges",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c1",
+      "value" : "TX",
+      "description" : "Text data",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b2",
+      "value" : "DT",
+      "description" : "Date",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698a",
+      "value" : "DLD",
+      "description" : "Discharge to location and date",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c5",
+      "value" : "DLT",
+      "description" : "Delta",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699f",
+      "value" : "HD",
+      "description" : "Hierarchic designator",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698d",
+      "value" : "MSG",
+      "description" : "Message type",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786996",
+      "value" : "FC",
+      "description" : "Financial class",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869bd",
+      "value" : "MOP",
+      "description" : "Money or percentage",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869aa",
+      "value" : "NA",
+      "description" : "Numeric array",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378697d",
+      "value" : "VID",
+      "description" : "Version identifier",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786994",
+      "value" : "CSU",
+      "description" : "Channel sensitivity and units",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b3",
+      "value" : "FT",
+      "description" : "Formatted text",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699c",
+      "value" : "CD",
+      "description" : "Channel definition",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c7",
+      "value" : "LA1",
+      "description" : "Location with address variation 1",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786991",
+      "value" : "UVC",
+      "description" : "UB value code and amount",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699e",
+      "value" : "DTN",
+      "description" : "Day type and number",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869af",
+      "value" : "CCD",
+      "description" : "Charge code and date",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786988",
+      "value" : "WVS",
+      "description" : "Waveform source",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786997",
+      "value" : "LA2",
+      "description" : "Location with address variation 2",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378697c",
+      "value" : "SNM",
+      "description" : "String of telephone number digits",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786981",
+      "value" : "DTM",
+      "description" : "Date/time",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786993",
+      "value" : "XON",
+      "description" : "Extended composite name and ID number for organizations",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869bc",
+      "value" : "ICD",
+      "description" : "Insurance certification definition",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378697b",
+      "value" : "RCD",
+      "description" : "Row column definition",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a2",
+      "value" : "PT",
+      "description" : "Processing type",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869bb",
+      "value" : "ED",
+      "description" : "Encapsulated data",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a8",
+      "value" : "EIP",
+      "description" : "Entity identifier pair",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869ab",
+      "value" : "PLN",
+      "description" : "Practitioner license or other ID number",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a5",
+      "value" : "XAD",
+      "description" : "Extended address",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b5",
+      "value" : "NR",
+      "description" : "Numeric range",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786984",
+      "value" : "OCD",
+      "description" : "Occurrence code and date",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869ba",
+      "value" : "DIN",
+      "description" : "Date and institution name",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786986",
+      "value" : "RMC",
+      "description" : "Room coverage",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a3",
+      "value" : "RP",
+      "description" : "Reference pointer",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a6",
+      "value" : "CNN",
+      "description" : "Composite ID number and name simplified",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c3",
+      "value" : "XCN",
+      "description" : "Extended composite ID number and name for persons",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786989",
+      "value" : "CNE",
+      "description" : "Coded with no exceptions",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b9",
+      "value" : "CF",
+      "description" : "Coded element with formatted values",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698e",
+      "value" : "PL",
+      "description" : "Person location",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b4",
+      "value" : "MA",
+      "description" : "Multiplexed array",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a9",
+      "value" : "JCC",
+      "description" : "Job code/class",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378699d",
+      "value" : "DDI",
+      "description" : "Daily deductible information",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378697f",
+      "value" : "XTN",
+      "description" : "Extended telecommunications number",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c9",
+      "value" : "PPN",
+      "description" : "Performing person time stamp",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a7",
+      "value" : "DLN",
+      "description" : "Driver's license number",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698c",
+      "value" : "IS",
+      "description" : "Coded value for user-defined tables",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869a1",
+      "value" : "OSP",
+      "description" : "Occurrence span code and date",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b1",
+      "value" : "CWE",
+      "description" : "Coded with exceptions",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786992",
+      "value" : "AUI",
+      "description" : "Authorization information",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378698f",
+      "value" : "QIP",
+      "description" : "Query input parameter list",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c0",
+      "value" : "RPT",
+      "description" : "Repeat pattern",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786980",
+      "value" : "CX",
+      "description" : "Extended composite ID with check digit",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786990",
+      "value" : "SCV",
+      "description" : "Scheduling class value pair",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b7",
+      "value" : "SRT",
+      "description" : "Sort order",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869b8",
+      "value" : "WVI",
+      "description" : "Channel Identifier",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786982",
+      "value" : "GTS",
+      "description" : "General timing specification",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786998",
+      "value" : "NM",
+      "description" : "Numeric",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c4",
+      "value" : "CP",
+      "description" : "Composite price",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b1378697e",
+      "value" : "CCP",
+      "description" : "Channel calibration parameters",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b137869c2",
+      "value" : "...",
+      "description" : "",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786985",
+      "value" : "PRL",
+      "description" : "Parent result link",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    },
+    {
+      "id" : "5b0ff902e2813f3b13786987",
+      "value" : "ST",
+      "description" : "String data",
+      "codeSystemId" : "5b0ff902e2813f3b1378697a"
+    }
+  ],
+  "domainInfo" : {
+    "version" : "2.8.2",
+    "compatibilityVersion" : [],
+    "scope" : "HL7STANDARD"
+  }
+}

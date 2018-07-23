@@ -62,7 +62,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   @Override
   public DatatypeLibrary findById(CompositeKey id) {
     // TODO Auto-generated method stub
-    return datatypeLibraryRepository.findOne(id);
+    return datatypeLibraryRepository.findById(id).get();
   }
 
   @Override

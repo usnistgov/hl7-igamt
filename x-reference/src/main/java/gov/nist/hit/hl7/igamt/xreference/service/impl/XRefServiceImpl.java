@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.xreference.service.impl;
 
-
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.fields;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;

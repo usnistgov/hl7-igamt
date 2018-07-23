@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 @Repository
 public interface ConformanceProfileRepository
     extends MongoRepository<ConformanceProfile, CompositeKey> {
+
   public List<ConformanceProfile> findByIdentifier(String identifier);
 
   public List<ConformanceProfile> findByMessageType(String messageType);

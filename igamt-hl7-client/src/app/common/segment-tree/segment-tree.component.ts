@@ -1,28 +1,34 @@
 /**
  * Created by hnt5 on 10/1/17.
  */
-import {Component, Input, Output, EventEmitter} from '@angular/core'
-import {SegmentTreeNodeService} from "./segment-tree.service";
-import {TreeNode} from "primeng/components/common/treenode";
+import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
+import {SegmentTreeNodeService} from './segment-tree.service';
+import {TreeNode} from 'primeng/components/common/treenode';
 
 @Component({
-    selector : 'segment-tree',
+    selector : 'app-segment-tree',
     templateUrl : 'segment-tree.template.html'
 })
 
 
-export class SegmentTreeComponent {
-    _segment : any;
+export class SegmentTreeComponent implements OnInit {
+    _segment: any;
+    _excluded: string[];
     @Output() nodeSelect = new EventEmitter();
-    tree : TreeNode[];
+    tree: TreeNode[];
 
-    constructor(private nodeService : SegmentTreeNodeService){
+    constructor(private nodeService: SegmentTreeNodeService) {
 
     }
 
-    @Input() set segment(value : any){
-        this._segment = value;
-        this.initTree();
+    @Input() set excluded(value: any[]){
+        this._excluded = value;
+        console.log(value);
+    }
+
+    @Input() set segment(value: any){
+      this._segment = value;
+      this.initTree(this._excluded);
     }
 
     nodeSelected(event){
@@ -31,22 +37,26 @@ export class SegmentTreeComponent {
         }
     }
 
-    loadNode(event){
-        if(event.node){
-            return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment).then(nodes => event.node.children = nodes);
+    updateTree(excluded: any[]) {
+      this.initTree(excluded);
+    }
+
+    loadNode(event) {
+        if (event.node) {
+            return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment, this._excluded).then(nodes => event.node.children = nodes);
         }
     }
 
-    initTree(){
-        if(this._segment){
-            this.nodeService.getFieldsAsTreeNodes(this._segment).then(result => {
+    initTree(l: string[]) {
+        if (this._segment) {
+            this.nodeService.getFieldsAsTreeNodes(this._segment, l).then(result => {
                 this.tree = result;
             });
         }
     }
 
-    ngOnInit(){
-        this.initTree();
+    ngOnInit() {
+        this.initTree(this._excluded);
     }
 
 

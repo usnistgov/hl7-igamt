@@ -20,6 +20,7 @@ export class EditSimpleConstraintComponent {
 
   simpleAssertionTypes: any[];
   verbs: any[];
+  instanceNums : any[];
   operators: any[];
   formatTypes:any[];
 
@@ -33,6 +34,8 @@ export class EditSimpleConstraintComponent {
     }else{
       this.verbs = this.configService._simpleConstraintVerbs;
     }
+
+    this.instanceNums = this.configService._instanceNums;
     this.operators = this.configService._operators;
     this.formatTypes = this.configService._formatTypes;
     this.simpleAssertionTypes = this.configService._simpleAssertionTypes;
@@ -43,5 +46,11 @@ export class EditSimpleConstraintComponent {
 
 
     this.constraint.complement.values.push('');
+  }
+
+  generateAssertionScript(constraint){
+    constraint.path1 = "OBX-4[" + constraint.instanceNum + "].1[1]";
+    constraint.positionPath1 = "4[" + constraint.instanceNum + "].1[1]";
+    constraint.assertionScript = "<PlainText Path=\"4[" + constraint.instanceNum + "].1[1]\" Text=\"AAAA\" IgnoreCase=\"false\"/>";
   }
 }

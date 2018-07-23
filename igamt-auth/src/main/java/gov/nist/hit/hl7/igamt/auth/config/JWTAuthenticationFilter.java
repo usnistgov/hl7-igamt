@@ -33,15 +33,9 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
     UsernamePasswordAuthenticationToken authentication;
     try {
       authentication = tokenService.getAuthentication(request);
-      if (authentication == null) {
-        filterChain.doFilter(request, response);
-        return;
-      } else {
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        filterChain.doFilter(request, response);
 
-      }
-
+      SecurityContextHolder.getContext().setAuthentication(authentication);
+      filterChain.doFilter(request, response);
     } catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException
         | SignatureException | IllegalArgumentException | NoSuchAlgorithmException
         | InvalidKeySpecException e) {

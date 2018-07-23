@@ -12,7 +12,7 @@ import {EditAndOrConstraintComponent} from "../common/constraint/edit-andorconst
 import {EditNotConstraintComponent} from "../common/constraint/edit-notconstraint.component";
 import {EditIfThenConstraintComponent} from "../common/constraint/edit-ifthenconstraint.component";
 
-import {DtFlavorPipe} from "../igdocuments/igdocument-edit/segment-edit/segment-definition/coconstraint-table/datatype-name.pipe";
+import {DtFlavorPipe} from "../igdocuments/igdocument-edit/segment-edit/coconstraint-table/datatype-name.pipe";
 import {CommonModule} from "@angular/common";
 import {EntityHeaderComponent} from "../common/entity-header/entity-header.component";
 import {DisplayLabelComponent} from "../common/label/display-label.component";
@@ -30,6 +30,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {TreeModule} from 'primeng/tree';
 import {DialogModule} from 'primeng/dialog';
 import {PanelModule} from 'primeng/panel';
+import {FieldsetModule} from 'primeng/fieldset';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import {PanelModule} from 'primeng/panel';
     CheckboxModule,
     TreeModule,
     DialogModule,
-    PanelModule
+    PanelModule,
+    FieldsetModule
   ],
   declarations: [
     DisplayBadgeComponent,

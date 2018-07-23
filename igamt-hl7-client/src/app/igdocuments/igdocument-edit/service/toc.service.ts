@@ -7,22 +7,79 @@ import {BehaviorSubject} from "rxjs";
 import * as _ from 'lodash';
 import {Types} from "../../../common/constants/types";
 import {IndexedDbService} from "../../../service/indexed-db/indexed-db.service";
+import { UUID } from 'angular2-uuid';
+import {TreeNode, TreeModel} from "angular-tree-component";
 
 
 @Injectable()
 export  class TocService{
 
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
+  metadata :BehaviorSubject<any> =new BehaviorSubject(null);
+
+  treeModel :TreeModel
+
   constructor(private dbService:IndexedDbService){
   }
 
   setActiveNode(node){
-    this.activeNode.next(node);
+    this.activeNode=node;
   }
   getActiveNode(){
 
     return  this.activeNode;
   }
+  setTreeModel(treeModel){
+    return new Promise((resolve, reject)=> {
+    this.treeModel=treeModel;
+    this.dbService.getIgDocument().then(
+      x => {
+        x.toc = treeModel.nodes;
+        this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+         resolve(true);
+        });
+      });
+  })
+  };
+
+  async getDatatypeById(id: string) {
+    const list = await this.getDataypeList();
+    const elm = _.find(list, function (x) {
+      return x.data.key.id === id;
+    });
+    return elm;
+  }
+
+
+
+
+
+  setMetaData(metadata){
+
+    return new Promise((resolve, reject)=> {
+      this.dbService.getIgDocument().then(
+        x => {
+          x.metadata = metadata;
+          this.dbService.updateIgMetadata(x.id,metadata ).then(saved => {
+            this.metadata.next(_.cloneDeep(metadata));
+            resolve(true);
+          });
+        });
+    })
+
+
+  }
+
+
+
+
+
+  getTreeModel(){
+
+    return  this.treeModel;
+  }
+
+
 
   findDirectChildByType(nodes, type){
 
@@ -34,27 +91,33 @@ export  class TocService{
     return null;
 
   }
-  addNodesByType(toAdd, toc,type ){
+  addNodesByType(toAdd:any, toc:any,type ){
     var profile= this.findDirectChildByType(toc,Types.PROFILE);
     var registry = this.findDirectChildByType(profile.children,type);
-    var position=registry.children.length+1;
-    for(let i=0 ; i<toAdd.length; i++){
-      toAdd[i].data.position =position;
-      position++;
-      registry.children.push(toAdd[i]);
+
+
+    let union :any[]=_.union(registry.children,toAdd);
+    union= _.sortBy(union, [function(node) { return node.data.label+node.data.ext; }]);
+
+    for(let i=0 ; i<union.length; i++){
+       union[i].data.position =i+1;
     }
+
+    registry.children=union;
+
+
 
 
   }
 
   getNameUnicityIndicators(nodes,type){
 
+    var profile= this.findDirectChildByType(nodes,Types.PROFILE);
+    var registry = this.findDirectChildByType(profile.children,type);
+    return _.map(registry.children, function (obj) {
+      return obj.data.label+obj.data.ext;
 
-    if(type==Types.SEGMENTREGISTRY){
-      return this.getNameUnicityIndicatorsForSegment(nodes, type);
-    }else if(type==Types.DATATYPEREGISTRY){
-      return this.getNameUnicityIndicatorsForDatatype(nodes,type);
-    }
+    });
   }
 
   getNameUnicityIndicatorsForSegment(nodes, type){
@@ -104,6 +167,9 @@ export  class TocService{
   })
   };
 
+
+
+
   getSegmentsList(){
     return this.getNodesList(Types.SEGMENTREGISTRY);
 
@@ -112,6 +178,35 @@ export  class TocService{
     return this.getNodesList(Types.DATATYPEREGISTRY);
 
   }
+  getDataypeNamesList(){
+    return new Promise((resolve, reject)=> {
+
+      this.getNodesList(Types.DATATYPEREGISTRY).then( children =>{
+        resolve(_.map(children, function (obj) {
+            return obj.data.label+obj.data.ext;
+          }))
+
+      },
+      error=>{
+        resolve([]);
+      });
+    })
+  }
+
+    getValuesetBindingIdentifiersList(){
+        return new Promise((resolve, reject)=> {
+
+            this.getNodesList(Types.VALUESETREGISTRY).then( children =>{
+                    resolve(_.map(children, function (obj) {
+                        return obj.data.bindingIdentifier;
+                    }))
+
+                },
+                error=>{
+                    resolve([]);
+                });
+        })
+    }
 
   getValueSetList(){
     return this.getNodesList(Types.VALUESETREGISTRY);
@@ -122,15 +217,14 @@ export  class TocService{
 
   }
 
-  getCurrentValueSetList(id){
 
-  }
 
 
   findRegistryByType(toc, type){
 
     var profile = _.find(toc, function(node) { return Types.PROFILE == node.data.type;});
     if(profile&&profile.children){
+
 
 
 
@@ -150,6 +244,33 @@ export  class TocService{
       return null;
     }
   }
+
+
+  cloneNode(treeNode: TreeNode){
+    let newData=_.cloneDeep(treeNode.data);
+    newData.id = UUID.UUID();
+    if(newData.data.id){
+      newData.id = UUID.UUID();
+
+    }
+    console.log(treeNode);
+
+    newData.data.label=treeNode.data.label+"Copy";
+
+    console.log(newData);
+    if(treeNode.data.children && treeNode.data.children.length>0) {
+      _.forEach(treeNode.data.children, function (child) {
+        newData.children.push(this.cloneNode(child));
+
+      })
+
+    }
+    treeNode.parent.data.children.push(newData);
+    treeNode.parent.treeModel.update();
+  }
+
+
+
 
 
 

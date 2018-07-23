@@ -1,32 +1,47 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-
-import {DatatypesService} from "../../../../service/datatypes/datatypes.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
-import {DatatypesTocService} from "../../../../service/indexed-db/datatypes/datatypes-toc.service";
-import {ValuesetsTocService} from "../../../../service/indexed-db/valuesets/valuesets-toc.service";
+import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
+import {DatatypesService} from "../datatypes.service";
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
 
 @Component({
   selector : 'datatype-edit',
   templateUrl : './datatype-edit-structure.component.html',
   styleUrls : ['./datatype-edit-structure.component.css']
 })
-export class DatatypeEditStructureComponent {
-    valuesetColumnWidth:string = '200px';
+
+export class DatatypeEditStructureComponent implements WithSave{
     currentUrl:any;
     datatypeId:any;
+    @ViewChild('editForm') editForm: NgForm;
+    backup:any;
+
     datatypeStructure:any;
     usages:any;
     cUsages:any;
+
+    changeDTDialogOpen:boolean = false;
     textDefinitionDialogOpen:boolean = false;
+    valuesetDialogOpen:boolean = false;
+    singleCodeDialogOpen:boolean = false;
+    constantValueDialogOpen:boolean = false;
+    commentDialogOpen:boolean = false;
+
     selectedNode:any;
+    selectedVS:any;
+    selectedSingleCode:any;
+    selectedConstantValue:any;
+    selectedComment:any;
+
     valuesetStrengthOptions:any = [];
 
     preciateEditorOpen:boolean = false;
@@ -42,7 +57,7 @@ export class DatatypeEditStructureComponent {
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private datatypesTocService : DatatypesTocService, private valuesetsTocService : ValuesetsTocService, private tocService:TocService){
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService, private constraintsService : ConstraintsService, private tocService:TocService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -106,6 +121,7 @@ export class DatatypeEditStructureComponent {
                     this.datatypeStructure.scope = structure.scope;
 
                     this.updateDatatype(this.datatypeStructure, structure.children, structure.binding, null, null, null, null);
+                    this.backup=__.cloneDeep(this.datatypeStructure);
                 });
             });
         });
@@ -199,9 +215,13 @@ export class DatatypeEditStructureComponent {
     addNewValueSet(node){
         if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = [];
         if(!node.data.displayData.datatypeBinding.valuesetBindings) node.data.displayData.datatypeBinding.valuesetBindings = [];
+        this.selectedVS = {newvalue : {}};
+    }
 
-        node.data.displayData.datatypeBinding.valuesetBindings.push({edit:true, newvalue : {}});
-        this.valuesetColumnWidth = '500px';
+    editValueSetBinding(node){
+        this.selectedNode = node;
+        this.addNewValueSet(this.selectedNode);
+        this.valuesetDialogOpen = true;
     }
 
     updateValueSetBindings(binding){
@@ -238,6 +258,28 @@ export class DatatypeEditStructureComponent {
         node.data.confLength = 'NA';
     }
 
+    editDatatypeForComponent(node){
+        this.selectedNode = node;
+        this.changeDTDialogOpen = true;
+    }
+
+    onDatatypeChangeForDialog(node){
+        if(!node.data.displayData.datatype.id) {
+            node.data.displayData.datatype.id = node.data.ref.id;
+        }
+        else node.data.ref.id = node.data.displayData.datatype.id;
+        node.data.displayData.datatype = this.getDatatypeLink(node.data.displayData.datatype.id);
+        node.children = null;
+        node.expanded = false;
+        if(node.data.displayData.datatype.leaf) node.leaf = true;
+        else node.leaf = false;
+        node.data.displayData.datatype.edit = false;
+
+        node.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(node.data.displayData.datatype.name,node.data.position, null, null, node.data.displayData.type);
+        node.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(node.data.displayData.datatype.name, node.data.displayData.datatype.domainInfo.version);
+        this.changeDTDialogOpen = false;
+    }
+
     makeEditModeForDatatype(node){
         node.data.displayData.datatype.edit = true;
         node.data.displayData.datatype.dtOptions = [];
@@ -272,50 +314,59 @@ export class DatatypeEditStructureComponent {
         else node.leaf = false;
         node.data.displayData.datatype.edit = false;
 
-
         node.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(node.data.displayData.datatype.name,node.data.position, null, null, node.data.displayData.type);
         node.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(node.data.displayData.datatype.name, node.data.displayData.datatype.domainInfo.version);
     }
 
-    makeEditModeForValueSet(vs){
+    makeEditModeForValueSet(node, vs){
+        this.selectedNode = node;
         vs.newvalue = {};
         vs.newvalue.valuesetId = vs.valuesetId;
         vs.newvalue.strength = vs.strength;
         vs.newvalue.valuesetLocations = vs.valuesetLocations;
-        vs.edit = true;
-        this.valuesetColumnWidth = '500px';
+        this.selectedVS = vs;
+        this.valuesetDialogOpen = true;
     }
 
-    makeEditModeForComment(c){
-        c.newComment = {};
-        c.newComment.description = c.description;
-        c.edit = true;
+    makeEditModeForComment(node, c){
+        this.selectedNode = node;
+        this.selectedComment.newComment = {};
+        this.selectedComment.newComment.description = c.description;
+        this.commentDialogOpen = true;
     }
 
     addNewComment(node){
-        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = [];
-        if(!node.data.displayData.datatypeBinding.comments) node.data.displayData.datatypeBinding.comments = [];
-        node.data.displayData.datatypeBinding.comments.push({edit:true, newComment : {description:''}});
+        this.selectedNode = node;
+        this.selectedComment = {newComment : {description:''}};
+        this.commentDialogOpen = true;
     }
 
     addNewSingleCode(node){
-        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = {};
-        if(!node.data.displayData.datatypeBinding.externalSingleCode) node.data.displayData.datatypeBinding.externalSingleCode = {};
-        node.data.displayData.datatypeBinding.externalSingleCode.newSingleCode = '';
-        node.data.displayData.datatypeBinding.externalSingleCode.newSingleCodeSystem = '';
-        node.data.displayData.datatypeBinding.externalSingleCode.edit = true;
+        this.selectedNode = node;
+        this.singleCodeDialogOpen = true;
+        this.selectedSingleCode = {};
+        this.selectedSingleCode.newSingleCode = '';
+        this.selectedSingleCode.newSingleCodeSystem = '';
     }
 
-    submitNewSingleCode(node){
-        node.data.displayData.datatypeBinding.externalSingleCode.value = node.data.displayData.datatypeBinding.externalSingleCode.newSingleCode;
-        node.data.displayData.datatypeBinding.externalSingleCode.codeSystem = node.data.displayData.datatypeBinding.externalSingleCode.newSingleCodeSystem;
-        node.data.displayData.datatypeBinding.externalSingleCode.edit = false;
+    submitNewSingleCode(node, singleCode){
+        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = {};
+        if(!node.data.displayData.datatypeBinding.externalSingleCode) node.data.displayData.datatypeBinding.externalSingleCode = {};
+
+        node.data.displayData.datatypeBinding.externalSingleCode.value = singleCode.newSingleCode;
+        node.data.displayData.datatypeBinding.externalSingleCode.codeSystem = singleCode.newSingleCodeSystem;
+
+        this.singleCodeDialogOpen = false;
     }
 
     makeEditModeForSingleCode(node){
+        this.selectedNode = node;
+        this.singleCodeDialogOpen = true;
+
         node.data.displayData.datatypeBinding.externalSingleCode.newSingleCode = node.data.displayData.datatypeBinding.externalSingleCode.value;
         node.data.displayData.datatypeBinding.externalSingleCode.newSingleCodeSystem = node.data.displayData.datatypeBinding.externalSingleCode.codeSystem;
-        node.data.displayData.datatypeBinding.externalSingleCode.edit = true;
+
+        this.selectedSingleCode = node.data.displayData.datatypeBinding.externalSingleCode;
     }
 
     deleteSingleCode(node){
@@ -324,12 +375,10 @@ export class DatatypeEditStructureComponent {
     }
 
     addNewConstantValue(node){
-        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = {};
-        node.data.displayData.datatypeBinding.constantValue = null;
-        node.data.displayData.datatypeBinding.newConstantValue= '';
-        node.data.displayData.datatypeBinding.editConstantValue = true;
-
-        console.log(node);
+        this.selectedNode = node;
+        this.selectedConstantValue = {};
+        this.selectedConstantValue.newConstantValue = '';
+        this.constantValueDialogOpen = true;
     }
 
     deleteConstantValue(node){
@@ -338,32 +387,55 @@ export class DatatypeEditStructureComponent {
     }
 
     makeEditModeForConstantValue(node){
-        node.data.displayData.datatypeBinding.newConstantValue = node.data.displayData.datatypeBinding.constantValue;
-        node.data.displayData.datatypeBinding.editConstantValue = true;
+        this.selectedNode = node;
+        this.selectedConstantValue = {};
+        this.selectedConstantValue.newConstantValue = node.data.displayData.datatypeBinding.constantValue;
+        this.constantValueDialogOpen = true;
     }
 
-    submitNewConstantValue(node){
-        node.data.displayData.datatypeBinding.constantValue = node.data.displayData.datatypeBinding.newConstantValue;
-        node.data.displayData.datatypeBinding.editConstantValue = false;
+    submitNewConstantValue(node, constantValue){
+        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = {};
+        node.data.displayData.datatypeBinding.constantValue = constantValue.newConstantValue;
+        this.constantValueDialogOpen = false;
     }
 
-    submitNewValueSet(vs){
-        var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
-        vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
-        vs.label = displayValueSetLink.label;
-        vs.domainInfo = displayValueSetLink.domainInfo;
-        vs.valuesetId = vs.newvalue.valuesetId;
-        vs.strength = vs.newvalue.strength;
-        vs.valuesetLocations = vs.newvalue.valuesetLocations;
-        vs.edit = false;
-        this.valuesetColumnWidth = '200px';
+    submitNewValueSet(node, vs){
+        if(vs.valuesetId){
+            var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
+            vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
+            vs.label = displayValueSetLink.label;
+            vs.domainInfo = displayValueSetLink.domainInfo;
+            vs.valuesetId = vs.newvalue.valuesetId;
+            vs.strength = vs.newvalue.strength;
+            vs.valuesetLocations = vs.newvalue.valuesetLocations;
+        }else {
+            var displayValueSetLink = this.getValueSetLink(vs.newvalue.valuesetId);
+            vs.bindingIdentifier = displayValueSetLink.displayValueSetLink;
+            vs.label = displayValueSetLink.label;
+            vs.domainInfo = displayValueSetLink.domainInfo;
+            vs.valuesetId = vs.newvalue.valuesetId;
+            vs.strength = vs.newvalue.strength;
+            vs.valuesetLocations = vs.newvalue.valuesetLocations;
+            node.data.displayData.datatypeBinding.valuesetBindings.push(vs);
+        }
+        this.valuesetDialogOpen = false;
     }
 
-    submitNewComment(c){
-        c.description = c.newComment.description;
-        c.dateupdated = new Date();
-        c.edit = false;
+    submitNewComment(node, c){
+        if(!node.data.displayData.datatypeBinding) node.data.displayData.datatypeBinding = [];
+        if(!node.data.displayData.datatypeBinding.comments) node.data.displayData.datatypeBinding.comments = [];
+
+        if(c.dateupdated){
+            c.description = c.newComment.description;
+            c.dateupdated = new Date();
+        }else{
+            c.description = c.newComment.description;
+            c.dateupdated = new Date();
+            node.data.displayData.datatypeBinding.comments.push(c);
+        }
+        this.commentDialogOpen = false;
     }
+
 
     delValueSetBinding(binding, vs, node){
         binding.valuesetBindings = _.without(binding.valuesetBindings, _.findWhere(binding.valuesetBindings, {valuesetId: vs.valuesetId}));
@@ -551,4 +623,44 @@ export class DatatypeEditStructureComponent {
             }
         }
     }
+  reset(){
+    this.datatypeStructure=__.cloneDeep(this.backup);
+    this.editForm.control.markAsPristine();
+
+  }
+
+  getCurrent(){
+    return  this.datatypeStructure;
+  }
+
+  getBackup(){
+    return this.backup;
+  }
+
+  isValid(){
+    return !this.editForm.invalid;
+  }
+
+  save(): Promise<any>{
+    return new Promise((resolve, reject)=> {
+
+
+      this.datatypesService.saveDatatypeStructure(this.datatypeId, this.datatypeStructure).then(saved => {
+
+        this.backup = __.cloneDeep(this.datatypeStructure);
+
+        this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+        reject();
+        console.log("error saving");
+
+      }
+
+    );
+  })
+  }
+
+
 }

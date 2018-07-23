@@ -76,5 +76,12 @@ public class CodeSystem extends Resource {
   public String getLabel() {
     return this.getName();
   }
+  
+  public Code findCode(String id) {
+    for(Code c:codes){
+      if(c.getId().equals(id)) return c;
+    }
+    return null;
+  }
 
 }

@@ -1,27 +1,30 @@
 /**
- * Created by ena3 on 3/1/18.
+ * Created by hnt5 on 12/3/17.
  */
-import { Injectable } from '@angular/core';
-import {
-  HttpRequest,
-  HttpHandler,
-  HttpEvent,
-  HttpInterceptor
-} from '@angular/common/http';
-import { Observable } from 'rxjs/Observable';
-@Injectable()
-export class TokenInterceptor implements HttpInterceptor {
-  constructor() {}
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    console.log("here");
-    if(localStorage.getItem('currentUser')){
-      request = request.clone({
-        setHeaders: {
-          Authorization: localStorage.getItem('currentUser')
-        }
-      });
-    }
+import 'rxjs/add/operator/do';
+import {HttpInterceptor, HttpRequest, HttpHandler, HttpEvent, HttpErrorResponse} from "@angular/common/http";
+import {Observable} from "rxjs";
+import {Router} from "@angular/router";
+import {Injectable} from "@angular/core";
+import {AuthService} from "./login/auth.service";
 
-    return next.handle(request);
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
+
+  constructor( private router: Router) {}
+
+  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    return next.handle(request).do((event: HttpEvent<any>) => {
+
+    }, (err: any) => {
+      if (err instanceof HttpErrorResponse) {
+        if (err.status === 401 || err.status === 403) {
+          console.log("UNAUTHORIZED");
+
+          this.router.navigate(['/login']);
+        }
+      }
+    });
   }
 }

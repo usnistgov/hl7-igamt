@@ -17,7 +17,9 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,8 +32,23 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.util.compositeKey.CompositeKeyUtil;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
+import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.InternalCodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.CodeSysRef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.CodeSystemType;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -44,7 +61,10 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Autowired
   private ValuesetRepository valuesetRepository;
-
+  
+  @Autowired
+  private CodeSystemService codeSystemService;
+  
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -195,5 +215,155 @@ public class ValuesetServiceImpl implements ValuesetService {
 
 
     return valueSets;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToMetadata(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+   */
+  @Override
+  public ValuesetMetadata convertDomainToMetadata(Valueset valueset) {
+    if (valueset != null) {
+      ValuesetMetadata result = new ValuesetMetadata();
+      result.setAuthorNotes(valueset.getComment());
+      result.setBindingIdentifier(valueset.getBindingIdentifier());
+      result.setId(valueset.getId());
+      result.setName(valueset.getName());
+      result.setOid(valueset.getOid());
+      result.setType(valueset.getSourceType());
+      result.setUrl(valueset.getUrl());
+      result.setScope(valueset.getDomainInfo().getScope());
+      result.setVersion(valueset.getDomainInfo().getVersion());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPredef(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+   */
+  @Override
+  public ValuesetPreDef convertDomainToPredef(Valueset valueset) {
+    if (valueset != null) {
+      ValuesetPreDef result = new ValuesetPreDef();
+      result.setBindingIdentifier(valueset.getBindingIdentifier());
+      result.setId(valueset.getId());
+      result.setName(valueset.getName());
+      result.setScope(valueset.getDomainInfo().getScope());
+      result.setVersion(valueset.getDomainInfo().getVersion());
+      result.setPreDef(valueset.getPreDef());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPostdef(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+   */
+  @Override
+  public ValuesetPostDef convertDomainToPostdef(Valueset valueset) {
+    if (valueset != null) {
+      ValuesetPostDef result = new ValuesetPostDef();
+      result.setBindingIdentifier(valueset.getBindingIdentifier());
+      result.setId(valueset.getId());
+      result.setName(valueset.getName());
+      result.setScope(valueset.getDomainInfo().getScope());
+      result.setVersion(valueset.getDomainInfo().getVersion());
+      result.setPostDef(valueset.getPostDef());
+      return result;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToStructure(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+   */
+  @Override
+  public ValuesetStructure convertDomainToStructure(Valueset valueset) {
+    if (valueset != null) {
+      ValuesetStructure result = new ValuesetStructure();
+      result.setBindingIdentifier(valueset.getBindingIdentifier());
+      result.setId(valueset.getId());
+      result.setName(valueset.getName());
+      result.setScope(valueset.getDomainInfo().getScope());
+      result.setVersion(valueset.getDomainInfo().getVersion());
+      result.setExtensibility(valueset.getExtensibility());
+      result.setStability(valueset.getStability());
+      result.setContentDefinition(valueset.getContentDefinition());
+      Set<DisplayCode> displayCodes = new HashSet<DisplayCode>();
+      Set<DisplayCodeSystem> displayCodeSystems = new HashSet<DisplayCodeSystem>();
+      
+      if(valueset.getCodeRefs() != null){
+        for(CodeRef codeRef:valueset.getCodeRefs()){
+          CodeSysRef codeSysRef = new CodeSysRef();
+          codeSysRef.setCodeSystemType(CodeSystemType.EXTERNAL);
+          codeSysRef.setRef(codeRef.getCodeSystemId());
+          
+          DisplayCode dCode = new DisplayCode();
+          dCode.setCodeSysRef(codeSysRef);
+          dCode.setId(codeRef.getCodeId());
+          
+          CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
+          Code code = codeSystem.findCode(codeRef.getCodeId());
+          
+          if(code != null){
+            dCode.setDescription(code.getDescription());
+            dCode.setValue(code.getValue());
+            dCode.setUsage(codeRef.getUsage());
+            dCode.setComments(code.getComments());
+            displayCodes.add(dCode);            
+          }
+        }        
+      }
+      
+      if(valueset.getCodes() != null){
+        for(InternalCode iCode:valueset.getCodes()){
+          CodeSysRef codeSysRef = new CodeSysRef();
+          codeSysRef.setCodeSystemType(CodeSystemType.INTERNAL);
+          codeSysRef.setRef(iCode.getCodeSystemId());
+          DisplayCode dCode = new DisplayCode();
+          dCode.setCodeSysRef(codeSysRef);
+          dCode.setDescription(iCode.getDescription());
+          dCode.setId(iCode.getId());
+          dCode.setValue(iCode.getValue());
+          dCode.setUsage(iCode.getUsage());
+          dCode.setComments(iCode.getComments());
+          displayCodes.add(dCode); 
+        }
+      }
+      
+      if(valueset.getCodeSystemIds() != null){
+        for(String codeSystemId:valueset.getCodeSystemIds()){
+          CodeSystem codeSystem = codeSystemService.findLatestById(codeSystemId);
+          if(codeSystem != null){
+            DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
+            displayCodeSystem.setCodeSysRef(codeSystemId);
+            displayCodeSystem.setCodeSystemType(CodeSystemType.EXTERNAL);
+            displayCodeSystem.setDescription(codeSystem.getDescription());
+            displayCodeSystem.setIdentifier(codeSystem.getIdentifier());
+            displayCodeSystem.setUrl(codeSystem.getUrl());
+            displayCodeSystems.add(displayCodeSystem);
+          }
+        }
+      }
+      
+      if(valueset.getInternalCodeSystems() != null){
+        for(InternalCodeSystem iCodeSystem:valueset.getInternalCodeSystems()){
+          DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
+          displayCodeSystem.setCodeSysRef(iCodeSystem.getIdentifier());
+          displayCodeSystem.setCodeSystemType(CodeSystemType.INTERNAL);
+          displayCodeSystem.setDescription(iCodeSystem.getDescription());
+          displayCodeSystem.setIdentifier(iCodeSystem.getIdentifier());
+          displayCodeSystem.setUrl(iCodeSystem.getUrl());
+          displayCodeSystems.add(displayCodeSystem);
+        }
+      }
+      
+      result.setDisplayCodes(displayCodes);
+      result.setDisplayCodeSystems(displayCodeSystems);
+      result.setNumberOfCodes(displayCodes.size());
+      
+      return result;
+    }
+    return null;
   }
 }

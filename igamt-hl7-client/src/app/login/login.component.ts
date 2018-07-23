@@ -22,10 +22,12 @@ export class LoginComponent {
     this.authService.login(this.username,this.password).subscribe(x => {
       if (x==true) {
         console.log("test");
-        console.log(this.authService.redirectUrl);
         let redirect = this.authService.redirectUrl;
         // Redirect the user
-        this.router.navigate([redirect]);
+        if(redirect) {
+          this.router.navigate([redirect]);
+        }else{ this.router.navigate(["/"]);
+        }
       }
       else{
         this.router.navigate(["/"]);

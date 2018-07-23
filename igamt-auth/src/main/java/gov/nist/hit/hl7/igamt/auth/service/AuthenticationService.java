@@ -11,9 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
-import gov.nist.hit.hl7.igamt.auth.controller.AuthenticationException;
+import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 
 /**
  * @author ena3
@@ -23,4 +24,17 @@ public interface AuthenticationService {
   public String connect(LoginRequest user) throws AuthenticationException;
 
   public void register(RegistrationRequest user) throws AuthenticationException;
+
+  void requestPasswordChange(String email, String url) throws AuthenticationException;
+
+  boolean validateToken(String token) throws AuthenticationException;
+
+  boolean confirmChangePassword(ChangePasswordConfirmRequest requestObject)
+      throws AuthenticationException;
+
+  /**
+   * @param email
+   * @param url
+   * @throws AuthenticationException
+   */
 }

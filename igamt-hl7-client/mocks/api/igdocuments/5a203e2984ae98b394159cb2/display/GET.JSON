@@ -299,7 +299,8 @@
             {
               "data": {
                 "type": "SEGMENT",
-                "label": "OBX_TEST",
+                "label": "OBX",
+                "ext" : "TEST",
                 "dateUpdated": null,
                 "position": 8,
                 "key": {
@@ -309,7 +310,7 @@
                 "domainInfo": {
                   "version": "2.7.1",
                   "compatibilityVersion": [],
-                  "scope": "HL7STANDARD"
+                  "scope": "USER"
                 },
                 "ext": null,
                 "description": "User Authentication Credential Segment",
@@ -341,6 +342,29 @@
                 "position": 1,
                 "key": {
                   "id": "579654555455fa34e848dd0a",
+                  "version": 1
+                },
+                "domainInfo": {
+                  "version": "2.7.1",
+                  "compatibilityVersion": ["2.7.1"],
+                  "scope": "HL7STANDARD"
+                },
+                "ext": null,
+                "description": "withdrawn",
+                "lazyLoading": false
+              },
+              "children": [],
+              "id": "579654555455fa34e848dd0a",
+              "isExpanded": true
+            },
+            {
+              "data": {
+                "type": "DATATYPE",
+                "label": "Varies",
+                "dateUpdated": null,
+                "position": 1,
+                "key": {
+                  "id": "VARIES",
                   "version": 1
                 },
                 "domainInfo": {
