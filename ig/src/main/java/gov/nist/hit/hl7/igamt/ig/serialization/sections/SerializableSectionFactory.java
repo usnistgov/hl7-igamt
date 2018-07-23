@@ -34,9 +34,9 @@ import gov.nist.hit.hl7.igamt.segment.serialization.SerializableSegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.domain.sections.SerializableTextSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -47,7 +47,7 @@ public class SerializableSectionFactory {
 
   public static SerializableSection getSerializableSection(Section section, int level,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, Valueset> valuesetsMap, Map<String, String> valuesetNamesMap,
+      Map<String, SerializableValuesetStructure> valuesetsMap, Map<String, String> valuesetNamesMap,
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,

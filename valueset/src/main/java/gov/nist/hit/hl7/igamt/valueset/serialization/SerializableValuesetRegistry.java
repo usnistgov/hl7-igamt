@@ -25,7 +25,6 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import nu.xom.Element;
 
@@ -35,7 +34,7 @@ import nu.xom.Element;
  */
 public class SerializableValuesetRegistry extends SerializableRegistry {
 
-  private Map<String, Valueset> valuesetsMap;
+  private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Set<String> bindedValueSets;
   private Set<SerializableValueSet> serializableValueSets;
 
@@ -43,7 +42,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
    * @param section
    */
   public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
-      Map<String, Valueset> valuesetsMap, Set<String> bindedValueSets) {
+      Map<String, SerializableValuesetStructure> valuesetsMap, Set<String> bindedValueSets) {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
     this.bindedValueSets = bindedValueSets;
@@ -65,8 +64,8 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
             if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
               if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-                Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-                SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
+                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId().getId());
+                SerializableValueSet serializableValueSet = new SerializableValueSet(serializableValuesetStructure,
                     String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
                 Element valuesetElement = serializableValueSet.serialize();
                 if (valuesetElement != null) {

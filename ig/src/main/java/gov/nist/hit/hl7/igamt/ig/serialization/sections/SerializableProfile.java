@@ -29,8 +29,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -41,7 +41,7 @@ public class SerializableProfile extends SerializableSection {
 
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
-  private Map<String, Valueset> valuesetsMap;
+  private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
@@ -63,7 +63,7 @@ public class SerializableProfile extends SerializableSection {
    * @param section
    */
   public SerializableProfile(Section section, int level, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valuesetsMap,
+      Map<String, String> datatypeNamesMap, Map<String, SerializableValuesetStructure> valuesetsMap,
       Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
       Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
       DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,

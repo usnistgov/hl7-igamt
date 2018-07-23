@@ -49,6 +49,8 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -79,7 +81,7 @@ public class IgSerializationServiceImpl implements IgSerializationService {
 
   private Map<String, ConformanceProfile> conformanceProfilesMap = new HashMap<>();
   private Map<String, Datatype> datatypesMap = new HashMap<>();
-  private Map<String, Valueset> valuesetsMap = new HashMap<>();
+  private Map<String, SerializableValuesetStructure> valuesetsMap = new HashMap<>();
   private Map<String, Segment> segmentsMap = new HashMap<>();
 
 
@@ -250,7 +252,8 @@ public class IgSerializationServiceImpl implements IgSerializationService {
           && !valuesetsMap.containsKey(valuesetLink.getId().getId())) {
         Valueset valueset = valuesetService.findById(valuesetLink.getId());
         if (valueset != null) {
-          valuesetsMap.put(valuesetLink.getId().getId(), valueset);
+          ValuesetStructure valuesetStructure = valuesetService.convertDomainToStructure(valueset);
+          valuesetsMap.put(valuesetLink.getId().getId(), new SerializableValuesetStructure(valuesetStructure, valueset));
         } else {
           throw new ValuesetNotFoundException(valuesetLink.getId().getId());
         }

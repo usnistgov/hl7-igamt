@@ -29,6 +29,7 @@ import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableDocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -38,7 +39,7 @@ import nu.xom.Element;
 public class SerializableIG extends SerializableAbstractDomain {
 
   private Map<String, Datatype> datatypesMap;
-  private Map<String, Valueset> valueSetsMap;
+  private Map<String, SerializableValuesetStructure> valueSetsMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, Segment> segmentsMap;
@@ -52,7 +53,7 @@ public class SerializableIG extends SerializableAbstractDomain {
   private Set<String> bindedValueSets;
 
   public SerializableIG(Ig ig, String position,
-      Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap,
+      Map<String, Datatype> datatypesMap, Map<String, SerializableValuesetStructure> valueSetsMap,
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
       ExportConfiguration exportConfiguration, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
@@ -120,7 +121,7 @@ public class SerializableIG extends SerializableAbstractDomain {
     valuesetNamesMap = new HashMap<>();
     if (valueSetsMap != null) {
       for (String valuesetId : valueSetsMap.keySet()) {
-        Valueset valueset = valueSetsMap.get(valuesetId);
+        Valueset valueset = valueSetsMap.get(valuesetId).getValueset();
         if (valueset != null) {
           valuesetNamesMap.put(valuesetId, valueset.getBindingIdentifier());
         }
