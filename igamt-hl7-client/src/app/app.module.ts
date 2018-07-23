@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import 'rxjs/add/operator/toPromise';
-import {AlertModule} from "ngx-bootstrap";
+import {AlertModule} from 'ngx-bootstrap';
 import { AccordionModule } from 'primeng/primeng';
 import { AutoCompleteModule } from 'primeng/primeng';
 
@@ -77,51 +77,38 @@ import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {LocationStrategy, HashLocationStrategy, CommonModule,APP_BASE_HREF} from '@angular/common';
+import {LocationStrategy, HashLocationStrategy, CommonModule, APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
-import {WorkspaceService} from "./service/workspace/workspace.service";
-import {IgDocumentService} from './service/ig-document/ig-document.service';
+import {WorkspaceService} from './service/workspace/workspace.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
-import {ConformanceProfilesIndexedDbService} from './service/indexed-db/conformance-profiles/conformance-profiles-indexed-db.service';
-import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
-import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
-import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
-import {ValuesetsService} from './service/valuesets/valuesets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
-import {SegmentsService} from './service/segments/segments.service';
-import {DatatypesService} from './service/datatypes/datatypes.service';
-import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
-// import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
-import {AuthService} from "./login/auth.service";
-import {AuthGuard} from "./login/auth-guard.service";
-import {HttpClientModule} from "@angular/common/http";
-import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {TokenInterceptor} from "./requestInterceptor";
-import {UserService} from "./service/userService/user.service";
-import {HomeComponent} from "./home/home.component";
-import {AboutComponent} from "./about/about.component";
-import {NotFoundComponent} from "./common/404/404.component";
-import {LoginComponent} from "./login/login.component";
-import {RegisterComponent} from "./register/register.component";
+// import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
+import {AuthService} from './login/auth.service';
+import {AuthGuard} from './login/auth-guard.service';
+import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {AuthInterceptor} from './requestInterceptor';
+import {UserService} from './service/userService/user.service';
+import {HomeComponent} from './home/home.component';
+import {AboutComponent} from './about/about.component';
+import {NotFoundComponent} from './common/404/404.component';
+import {LoginComponent} from './login/login.component';
+import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
-import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
-import {BreadcrumbService} from "./breadcrumb.service";
-import {ConformanceProfilesTocService} from "./service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
-import {TocDbService} from "./service/indexed-db/toc-db.service";
-import {CompositeProfilesTocService} from "./service/indexed-db/composite-profiles/composite-profiles-toc.service";
-import {DatatypesTocService} from "./service/indexed-db/datatypes/datatypes-toc.service";
-import {SegmentsTocService} from "./service/indexed-db/segments/segments-toc.service";
-import {ValuesetsTocService} from "./service/indexed-db/valuesets/valuesets-toc.service";
-import {ProfileComponentsTocService} from "./service/indexed-db/profile-components/profile-components-toc.service";
-
+import {AppBreadcrumbComponent} from './app.breadcrumb.component';
+import {BreadcrumbService} from './breadcrumb.service';
 import {ConstraintsService} from './service/constraints/constraints.service';
-import {SectionsService} from "./service/sections/sections.service";
-import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
-import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
+import {SectionsService} from './service/sections/sections.service';
+
+import {TableOptionsService} from './service/configuration/table-options/table-options.service';
 // import {NgDragDropModule} from 'ng-drag-drop';
+import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
+import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
+import {ResetPasswordService} from './reset-password/reset-password.service';
+import {ExportFontService} from './service/configuration/export-font/export-font.service';
 
 @NgModule({
     imports: [
@@ -223,45 +210,30 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent
+      AppBreadcrumbComponent,
+      ResetPasswordRequestComponent,
+      ResetPasswordConfirmComponent
+
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
-    // { provide: APP_BASE_HREF, useValue: window['_app_base'] || '/' },
-    // {
-    //   provide: APP_BASE_HREF,
-    //   useValue: '<%= APP_BASE %>'
-    // },
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
+      useClass: AuthInterceptor,
       multi: true
     },
      WorkspaceService,
+    ResetPasswordService,
     GeneralConfigurationService,
-    IgDocumentService,
     IndexedDbService,
-        ConformanceProfilesIndexedDbService,
-     SegmentsIndexedDbService,
-    DatatypesIndexedDbService,
-    ValuesetsIndexedDbService,
-    SectionsIndexedDbService,
-    ProfileComponentsTocService,
-    TocDbService,
-    DatatypesTocService,
-    SegmentsTocService,
-    ValuesetsTocService,
-    DatatypesService,
-        ConformanceProfilesService,
-    ConformanceProfilesTocService,
-    CompositeProfilesTocService,
-    SegmentsService,
     SectionsService,
     AuthService,
     AuthGuard,
     UserService,
     BreadcrumbService,
+
     ConstraintsService,
-    TableOptionsService
+    TableOptionsService,
+    ExportFontService
   ],
     bootstrap: [AppComponent]
 })

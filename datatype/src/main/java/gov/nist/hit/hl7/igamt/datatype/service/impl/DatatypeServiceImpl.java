@@ -21,6 +21,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,9 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -42,6 +46,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
@@ -60,10 +66,9 @@ public class DatatypeServiceImpl implements DatatypeService {
   private MongoTemplate mongoTemplate;
 
 
-
   @Override
   public Datatype findByKey(CompositeKey key) {
-    return datatypeRepository.findOne(key);
+    return datatypeRepository.findById(key).get();
   }
 
   @Override
@@ -92,7 +97,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public void delete(CompositeKey key) {
-    datatypeRepository.delete(key);
+    datatypeRepository.deleteById(key);
   }
 
   @Override
@@ -372,4 +377,153 @@ public class DatatypeServiceImpl implements DatatypeService {
     }
     return null;
   }
+
+
+
+  private void validateComponent(Component f) throws ValidationException {
+    if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
+      throw new DatatypeValidationException("Datatype is missing");
+    }
+    Datatype d = getLatestById(f.getRef().getId());
+    if (d == null) {
+      throw new DatatypeValidationException("Datatype is missing");
+    }
+    ValidationUtil.validateUsage(f.getUsage(), 2);
+    ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
+    ValidationUtil.validateConfLength(f.getConfLength());
+  }
+
+
+  /**
+   * Validate the structure of the segment
+   * 
+   * @param structure
+   * @throws DatatypeValidationException
+   */
+  @Override
+  public void validate(DatatypeStructure structure) throws DatatypeValidationException {
+    if (!structure.getScope().equals(Scope.HL7STANDARD)) {
+      if (structure.getChildren() != null) {
+        for (ComponentDisplay componentDisplay : structure.getChildren()) {
+          Component f = componentDisplay.getData();
+          try {
+            validateComponent(f);
+          } catch (ValidationException e) {
+            throw new DatatypeValidationException(structure.getLabel() + "-" + f.getPosition());
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void validate(DisplayMetadata metadata) throws DatatypeValidationException {
+    if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
+      if (StringUtils.isEmpty(metadata.getName())) {
+        throw new DatatypeValidationException("Name is missing");
+      }
+      if (StringUtils.isEmpty(metadata.getExt())) {
+        throw new DatatypeValidationException("Ext is missing");
+      }
+    }
+  }
+
+
+
+  /**
+   * TODO: anything more to validate ??
+   */
+  @Override
+  public void validate(DatatypeConformanceStatement conformanceStatement)
+      throws DatatypeValidationException {
+    if (conformanceStatement != null) {
+      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
+        if (StringUtils.isEmpty(statement.getIdentifier())) {
+          throw new DatatypeValidationException("conformance statement identifier is missing");
+        }
+      }
+    }
+  }
+
+
+
+  /**
+   * TODO
+   */
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.segment.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
+   * igamt. segment.domain.display.DatatypeStructure)
+   */
+  @Override
+  public Datatype convertToDatatype(DatatypeStructure structure) {
+    Datatype datatype = this.findLatestById(structure.getId().getId());
+    if (datatype != null) {
+      datatype.setBinding(structure.getBinding());
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype complexDatatype = (ComplexDatatype) datatype;
+        if (structure.getChildren() != null && !structure.getChildren().isEmpty()) {
+          Set<Component> components = new HashSet<Component>();
+          for (ComponentDisplay fd : structure.getChildren()) {
+            components.add(fd.getData());
+          }
+          complexDatatype.setComponents(components);
+        }
+        return complexDatatype;
+      }
+    }
+    return datatype;
+  }
+
+
+  @Override
+  public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException {
+    Datatype segment = findLatestById(predef.getId().getId());
+    if (segment == null) {
+      throw new DatatypeNotFoundException(predef.getId().getId());
+    }
+    segment.setPreDef(predef.getPreDef());
+    return save(segment);
+  }
+
+  @Override
+  public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException {
+    Datatype segment = findLatestById(postdef.getId().getId());
+    if (segment == null) {
+      throw new DatatypeNotFoundException(postdef.getId().getId());
+    }
+    segment.setPostDef(postdef.getPostDef());
+    return save(segment);
+  }
+
+
+  @Override
+  public Datatype saveMetadata(DisplayMetadata metadata)
+      throws DatatypeNotFoundException, DatatypeValidationException {
+    validate(metadata);
+    Datatype segment = findLatestById(metadata.getId().getId());
+    if (segment == null) {
+      throw new DatatypeNotFoundException(metadata.getId().getId());
+    }
+    segment.setExt(metadata.getExt());
+    segment.setDescription(metadata.getDescription());
+    segment.setComment(metadata.getAuthorNote());
+    return save(segment);
+  }
+
+
+  @Override
+  public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
+      throws DatatypeNotFoundException, DatatypeValidationException {
+    validate(conformanceStatement);
+    Datatype segment = findLatestById(conformanceStatement.getId().getId());
+    if (segment == null) {
+      throw new DatatypeNotFoundException(conformanceStatement.getId().getId());
+    }
+    segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
+    return save(segment);
+  }
+
+
 }

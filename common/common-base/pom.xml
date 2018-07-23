@@ -9,7 +9,6 @@
     <version>0.0.1-SNAPSHOT</version>
   </parent>
   <artifactId>common-base</artifactId>
-   <version>0.0.1-SNAPSHOT</version>
   
   <name>common-base</name>
   <url>http://maven.apache.org</url>
@@ -23,5 +22,6 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+   
   </dependencies>
 </project>

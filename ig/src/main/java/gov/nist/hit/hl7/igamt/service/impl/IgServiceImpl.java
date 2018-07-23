@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -80,7 +81,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public Ig findById(CompositeKey id) {
     // TODO Auto-generated method stub
-    return igRepository.findOne(id);
+    return igRepository.findById(id).get();
   }
 
   @Override
@@ -92,12 +93,13 @@ public class IgServiceImpl implements IgService {
   @Override
   public void delete(CompositeKey id) {
     // TODO Auto-generated method stub
-    igRepository.delete(id);
+    igRepository.findById(id);
   }
 
   @Override
   public Ig save(Ig ig) {
     // TODO Auto-generated method stub
+    ig.setUpdateDate(new Date());
     return igRepository.save(ig);
   }
 
@@ -201,7 +203,6 @@ public class IgServiceImpl implements IgService {
 
 
     Criteria where = Criteria.where("username").is(username);
-    where.andOperator(Criteria.where("domainInfo.scope").is("USER"));
 
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
@@ -273,6 +274,46 @@ public class IgServiceImpl implements IgService {
 
     Ig ig = mongoTemplate.findOne(query, Ig.class);
     return ig;
+  }
+
+  /**
+   * @param content
+   * @param sectionId
+   * @return
+   */
+  @Override
+  public TextSection findSectionById(Set<TextSection> content, String sectionId) {
+    // TODO Auto-generated method stub
+    for (TextSection s : content) {
+      TextSection ret = findSectionInside(s, sectionId);
+      if (ret != null) {
+        return ret;
+      }
+    }
+    return null;
+
+  }
+
+  /**
+   * @param s
+   * @param sectionId
+   * @return
+   */
+  private TextSection findSectionInside(TextSection s, String sectionId) {
+    // TODO Auto-generated method stub
+    if (s.getId().equals(sectionId)) {
+      return s;
+    }
+    if (s.getChildren() != null && s.getChildren().size() > 0) {
+      for (TextSection ss : s.getChildren()) {
+        TextSection ret = findSectionInside(ss, sectionId);
+        if (ret != null) {
+          return ret;
+        }
+      }
+      return null;
+    }
+    return null;
   }
 
 

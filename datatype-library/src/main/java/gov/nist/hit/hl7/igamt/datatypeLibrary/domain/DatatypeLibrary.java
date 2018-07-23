@@ -17,6 +17,7 @@ import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 
@@ -27,17 +28,17 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
  */
 @Document
 public class DatatypeLibrary extends AbstractDomain {
-  private LibraryMetaData metaData;
+  private DocumentMetadata metadata;
   private Set<TextSection> content = new HashSet<TextSection>();
 
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
 
-  public LibraryMetaData getMetaData() {
-    return metaData;
+  public DocumentMetadata getMetadata() {
+    return this.metadata;
   }
 
-  public void setMetaData(LibraryMetaData metaData) {
-    this.metaData = metaData;
+  public void setMetaData(DocumentMetadata metadata) {
+    this.metadata = metadata;
   }
 
   public Set<TextSection> getContent() {

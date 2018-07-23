@@ -23,6 +23,7 @@ import {ConformanceprofileEditStructureResolver} from "./conformanceprofile-stru
 import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-structure/conformanceprofile-edit-structure.component";
 import {ConformanceprofileEditConformancestatementsResolver} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver";
 import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
+import {ConformanceProfilesService} from "./conformance-profiles.service";
 
 @NgModule({
     imports: [
@@ -42,7 +43,7 @@ import {ConformanceprofileEditConformancestatementsComponent} from "./conformanc
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [ConformanceprofileEditMetadatResolver, ConformanceprofileEditPostdefResolver, ConformanceprofileEditPredefResolver, ConformanceprofileEditStructureResolver, ConformanceprofileEditConformancestatementsResolver],
+    providers : [ConformanceprofileEditMetadatResolver, ConformanceprofileEditPostdefResolver, ConformanceprofileEditPredefResolver, ConformanceprofileEditStructureResolver, ConformanceprofileEditConformancestatementsResolver,ConformanceProfilesService],
     declarations: [ConformanceprofileEditMetadataComponent, ConformanceprofileEditPostdefComponent, ConformanceprofileEditPredefComponent, ConformanceprofileEditStructureComponent, ConformanceprofileEditConformancestatementsComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

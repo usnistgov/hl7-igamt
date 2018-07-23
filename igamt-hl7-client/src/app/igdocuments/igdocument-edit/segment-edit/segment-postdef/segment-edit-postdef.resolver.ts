@@ -10,19 +10,19 @@ import {Http} from "@angular/http";
 import {HttpClient} from "@angular/common/http";
 import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
-import {SegmentsService} from '../../../../service/segments/segments.service';
+import {SegmentsService} from "../segments.service";
 
 
 @Injectable()
 export  class SegmentEditPostdefResolver implements Resolve<any>{
 
 
-    constructor(private http: HttpClient, private segmentService: SegmentsService) {
+    constructor(private http: HttpClient,private segmentService: SegmentsService) {
 
     }
 
-    resolve(route: ActivatedRouteSnapshot, rstate: RouterStateSnapshot): Promise<any>{
-        const segmentId = route.params['segmentId'];
+    resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Promise<any>{
+        let segmentId= route.params["segmentId"];
         return this.segmentService.getSegmentPostDef(segmentId);
 
     }

@@ -15,6 +15,7 @@ import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {ButtonModule} from 'primeng/button';
+import {FieldsetModule} from 'primeng/fieldset';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
@@ -40,6 +41,7 @@ import {TocService} from '../service/toc.service';
 import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
 import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
+import {SegmentsService} from "./segments.service";
 
 @NgModule({
     imports: [
@@ -53,6 +55,7 @@ import {DndListModule} from 'ngx-drag-and-drop-lists';
         UtilsModule,
         TreeModule,
         TreeTableModule,
+        FieldsetModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,
@@ -65,7 +68,7 @@ import {DndListModule} from 'ngx-drag-and-drop-lists';
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver],
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService],
     declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

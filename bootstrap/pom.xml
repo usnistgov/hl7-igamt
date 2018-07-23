@@ -1,6 +1,7 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>gov.nist.hit.hl7</groupId>
@@ -8,12 +9,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bootstrap</name>
 	<description>Application runner</description>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>1.5.10.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
+   <parent>
+    <groupId>gov.nist.hit.hl7</groupId>
+    <artifactId>igamt</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -36,7 +36,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-			<dependency>
+		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-core</artifactId>
 		</dependency>
@@ -50,88 +50,78 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 		</dependency>
-				
+
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
 			<version>0.7.0</version>
 		</dependency>
-		
-				<dependency>
-   		 <groupId>org.springframework.security</groupId>
-    		<artifactId>spring-security-jwt</artifactId>
-		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-jwt</artifactId>
+    			<version>1.0.8.RELEASE</version>
+    </dependency>
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>conformance-profile</artifactId>
-			<version>0.0.1-SNAPSHOT</version>	
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>valueset</artifactId>
-			<version>0.0.1-SNAPSHOT</version>	
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
-			<dependency>
+
+		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>ig</artifactId>
-			<version>0.0.1-SNAPSHOT</version>	
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>gov.nist.hit.hl7</groupId>
-  		  <artifactId>datatype-library</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-		
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>datatype-library</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
 		</dependency>
-		
+
 		<dependency>
-		  <groupId>gov.nist.hit.hl7</groupId>
-  		  <artifactId>common-config</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-		
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-config</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-base</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>igamt-auth</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 			<dependency>
-		  <groupId>gov.nist.hit.hl7</groupId>
-  		  <artifactId>common-base</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-		
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>file-storage</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-		  <groupId>gov.nist.hit.hl7</groupId>
-  		  <artifactId>igamt-auth</artifactId>
-          <version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
-		<dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-             <scope>test</scope>
-        </dependency>
-		
-		 <dependency>
-            <groupId>cz.jirutka.spring</groupId>
-            <artifactId>embedmongo-spring</artifactId>
-            <version>RELEASE</version>
-             <scope>test</scope>
-        </dependency>
-        
-<!--         <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-data-mongodb</artifactId>
-         <scope>test</scope>
-    </dependency>
-     -->
-     
-     <dependency>
-<groupId>org.springframework.security</groupId>
-<artifactId>spring-security-test</artifactId>
-<scope>test</scope>
-</dependency>
 
-        
-		
+
+
+		<!-- <dependency> <groupId>org.springframework.boot</groupId> <artifactId>spring-boot-starter-data-mongodb</artifactId> 
+			<scope>test</scope> </dependency> -->
+
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+		</dependency>
+
+
+
 	</dependencies>
 	<build>
 		<finalName>hl7-igamt</finalName>
@@ -188,8 +178,8 @@
 					<forkMode>once</forkMode>
 				</configuration>
 			</plugin>
-			</plugins>
- 	</build>
+		</plugins>
+	</build>
 
 
 </project>

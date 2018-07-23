@@ -10,8 +10,7 @@ import {TocService} from "../../service/toc.service";
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
-import {ConformanceProfilesService} from "../../../../service/conformance-profiles/conformance-profiles.service";
-import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conformance-profiles/conformance-profiles-toc.service";
+import {ConformanceProfilesService} from "../conformance-profiles.service";
 
 
 
@@ -22,13 +21,13 @@ import {ConformanceProfilesTocService} from "../../../../service/indexed-db/conf
 export class ConformanceprofileEditMetadataComponent implements WithSave {
     conformanceprofileId:any;
     conformanceprofileMetadata:any;
-  backup:any;
-  currentNode:any;
+     backup:any;
+     currentNode:any;
 
   @ViewChild('editForm')
   private editForm: NgForm;
 
-  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private conformanceProfilesTocService:ConformanceProfilesTocService,private tocService:TocService){
+  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService,private tocService:TocService){
     this.tocService.getActiveNode().subscribe(x=>{
       console.log(x);
       this.currentNode=x;
@@ -38,13 +37,10 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   ngOnInit() {
     this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
     this.route.data.map(data =>data.conformanceprofileMetadata).subscribe(x=>{
-      this.conformanceProfilesTocService.getAll().then(conformanceprofiles=>{
-        console.log(conformanceprofiles);
         this.backup=x;
         this.conformanceprofileMetadata=_.cloneDeep(this.backup);
       });
 
-    });
   }
 
   reset(){
@@ -61,12 +57,49 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   isValid(){
     return !this.editForm.invalid;
   }
-  save(): Promise<any>{
-    this.tocService.getActiveNode().subscribe(x=>{
-      let node= x;
-      node.data.data.ext= _.cloneDeep(this.conformanceprofileMetadata.ext);
-    });
 
-    return this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileMetadata);
+
+
+  save(): Promise<any> {
+    return new Promise((resolve, reject) => {
+
+        let treeModel = this.tocService.getTreeModel();
+        let node = treeModel.getNodeById(this.conformanceprofileId);
+
+        console.log(node);
+
+        node.data.data.label = this.conformanceprofileMetadata.name;
+        node.data.data.ext = this.conformanceprofileMetadata.identifier;
+        this.tocService.setTreeModel(treeModel).then(x => {
+
+
+          this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileMetadata).then(saved => {
+
+
+              this.backup = _.cloneDeep(this.conformanceprofileMetadata);
+
+              this.editForm.control.markAsPristine();
+
+
+              resolve(true);
+            }, error => {
+              console.log("Error Saving");
+
+            }
+          );
+
+        })
+
+
+      }
+    )
+
+
   }
+
+
+
+
+
+
 }

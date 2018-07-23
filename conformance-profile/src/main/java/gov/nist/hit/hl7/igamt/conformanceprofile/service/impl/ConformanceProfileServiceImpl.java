@@ -13,10 +13,13 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -25,11 +28,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -40,8 +44,14 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.MsgStructElementDisplay;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 
 /**
@@ -56,9 +66,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Autowired
   private MongoTemplate mongoTemplate;
 
+  @Autowired
+  SegmentService segmentService;
+
+
   @Override
   public ConformanceProfile findByKey(CompositeKey key) {
-    return conformanceProfileRepository.findOne(key);
+    return conformanceProfileRepository.findById(key).get();
+
   }
 
   @Override
@@ -70,6 +85,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Override
   public ConformanceProfile save(ConformanceProfile conformanceProfile) {
     // conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+    conformanceProfile.setUpdateDate(new Date());
     return conformanceProfileRepository.save(conformanceProfile);
   }
 
@@ -85,7 +101,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public void delete(CompositeKey key) {
-    conformanceProfileRepository.delete(key);
+    conformanceProfileRepository.deleteById(key);
   }
 
   @Override
@@ -173,16 +189,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   public ConformanceProfileStructure convertDomainToStructure(
       ConformanceProfile conformanceProfile) {
     if (conformanceProfile != null) {
-
-      ObjectMapper mapper = new ObjectMapper();
-      try {
-        String jsonInString = mapper.writeValueAsString(conformanceProfile);
-        System.out.println(jsonInString);
-      } catch (JsonProcessingException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
-
       ConformanceProfileStructure result = new ConformanceProfileStructure();
       result.setBinding(conformanceProfile.getBinding());
       result.setDomainInfo(conformanceProfile.getDomainInfo());
@@ -196,7 +202,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (child instanceof Group) {
           // System.out.println(child.getName());
         } else if (child instanceof SegmentRef) {
-          // System.out.println(((SegmentRef) child).getRef().getId());
+          // System.out.println(((ConformanceProfileRef) child).getRef().getId());
         }
         result.addStructure(this.convertMsgStructElement(child));
       }
@@ -275,6 +281,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
+  @Deprecated
   public ConformanceProfile saveConformanceProfile(
       ChangedConformanceProfile changedConformanceProfile) {
     if (changedConformanceProfile != null && changedConformanceProfile.getId() != null) {
@@ -353,5 +360,209 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     return null;
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#
+   * convertToConformanceProfile(gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.
+   * ConformanceProfileStructure)
+   */
+  @Override
+  public ConformanceProfile convertToConformanceProfile(ConformanceProfileStructure structure) {
+    ConformanceProfile conformanceProfile = this.findLatestById(structure.getId().getId());
+    if (conformanceProfile != null) {
+      conformanceProfile.setBinding(structure.getBinding());
+      if (structure.getStructure() != null) {
+        Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+        for (MsgStructElementDisplay child : structure.getStructure()) {
+          children.add(child.getData());
+        }
+        conformanceProfile.setChildren(children);
+      }
+    }
+    return conformanceProfile;
+  }
+
+
+
+  @Override
+  public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException {
+    ConformanceProfile conformanceProfile = findLatestById(predef.getId().getId());
+    if (conformanceProfile == null) {
+      throw new ConformanceProfileNotFoundException(predef.getId().getId());
+    }
+    conformanceProfile.setPreDef(predef.getPreDef());
+    return save(conformanceProfile);
+  }
+
+  @Override
+  public ConformanceProfile savePostdef(PostDef postdef)
+      throws ConformanceProfileNotFoundException {
+    ConformanceProfile conformanceProfile = findLatestById(postdef.getId().getId());
+    if (conformanceProfile == null) {
+      throw new ConformanceProfileNotFoundException(postdef.getId().getId());
+    }
+    conformanceProfile.setPostDef(postdef.getPostDef());
+    return save(conformanceProfile);
+  }
+
+
+  @Override
+  public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
+    validate(metadata);
+    ConformanceProfile conformanceProfile = findLatestById(metadata.getId().getId());
+    if (conformanceProfile == null) {
+      throw new ConformanceProfileNotFoundException(metadata.getId().getId());
+    }
+    conformanceProfile.setDescription(metadata.getDescription());
+    conformanceProfile.setDomainInfo(metadata.getDomainInfo());
+    conformanceProfile.setId(conformanceProfile.getId());
+    conformanceProfile.setIdentifier(conformanceProfile.getIdentifier());
+    conformanceProfile.setMessageType(conformanceProfile.getMessageType());
+    conformanceProfile.setName(conformanceProfile.getName());
+    conformanceProfile.setStructID(conformanceProfile.getStructID());
+
+    return save(conformanceProfile);
+  }
+
+
+  @Override
+  public ConformanceProfile saveConformanceStatement(
+      ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
+    validate(conformanceStatement);
+    ConformanceProfile conformanceProfile = findLatestById(conformanceStatement.getId().getId());
+    if (conformanceProfile == null) {
+      throw new ConformanceProfileNotFoundException(conformanceStatement.getId().getId());
+    }
+    conformanceProfile.getBinding()
+        .setConformanceStatements(conformanceStatement.getConformanceStatements());
+    return save(conformanceProfile);
+  }
+
+
+  private void validateMsgStructElement(MsgStructElement f) throws ValidationException {
+    if (f instanceof SegmentRef) {
+      validateSegmentRef((SegmentRef) f);
+    } else if (f instanceof Group) {
+      validateGroup((Group) f);
+    } else {
+      throw new ValidationException("Unknown element type " + f.getClass());
+    }
+  }
+
+  private void validateSegmentRef(SegmentRef f) throws ValidationException {
+    try {
+      ValidationUtil.validateUsage(f.getUsage(), f.getMin());
+      ValidationUtil.validateCardinality(f.getMin(), f.getMax(), f.getUsage());
+      if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
+        throw new ValidationException("Segment not found");
+      }
+      Segment s = segmentService.getLatestById(f.getRef().getId());
+      if (s == null) {
+        throw new ValidationException("Segment not found");
+      }
+    } catch (ValidationException e) {
+      throw new ValidationException(f.getPosition() + ":" + e.getMessage());
+    }
+
+  }
+
+
+
+  private void validateGroup(Group f) throws ValidationException {
+    try {
+      ValidationUtil.validateUsage(f.getUsage(), f.getMin());
+      ValidationUtil.validateCardinality(f.getMin(), f.getMax(), f.getUsage());
+    } catch (ValidationException e) {
+      throw new ValidationException(f.getPosition() + ":" + e.getMessage());
+    }
+
+    if (f.getChildren() != null && !f.getChildren().isEmpty()) {
+      for (MsgStructElement child : f.getChildren()) {
+        try {
+          validateMsgStructElement(child);
+        } catch (ValidationException e) {
+          String[] message = e.getMessage().split(Pattern.quote(":"));
+          throw new ValidationException(f.getPosition() + "." + message[0] + ":" + message[1]);
+        }
+      }
+    }
+
+
+  }
+
+
+
+  /**
+   * Validate the structure of the segment
+   * 
+   * @param structure
+   * @throws ConformanceProfileValidationException
+   */
+  @Override
+  public void validate(ConformanceProfileStructure structure)
+      throws ConformanceProfileValidationException {
+    if (!structure.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+      if (structure.getStructure() != null) {
+        for (MsgStructElementDisplay fieldDisplay : structure.getStructure()) {
+          MsgStructElement f = fieldDisplay.getData();
+          try {
+            validateMsgStructElement(f);
+          } catch (ValidationException e) {
+            String[] message = e.getMessage().split(Pattern.quote(":"));
+            throw new ConformanceProfileValidationException(
+                structure.getStructId() + "-" + message[0] + ":" + message[1]);
+          }
+        }
+      }
+    }
+  }
+
+  @Override
+  public void validate(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileValidationException {
+    if (!metadata.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
+      if (StringUtils.isEmpty(metadata.getName())) {
+        throw new ConformanceProfileValidationException("Name is missing");
+      }
+      if (StringUtils.isEmpty(metadata.getIdentifier())) {
+        throw new ConformanceProfileValidationException("Identifier is missing");
+      }
+
+      if (StringUtils.isEmpty(metadata.getMessageType())) {
+        throw new ConformanceProfileValidationException("Message Type is missing");
+      }
+
+      if (StringUtils.isEmpty(metadata.getName())) {
+        throw new ConformanceProfileValidationException("Name is missing");
+      }
+
+      if (StringUtils.isEmpty(metadata.getStructId())) {
+        throw new ConformanceProfileValidationException("Message Struct ID is missing");
+      }
+    }
+  }
+
+
+
+  /**
+   * TODO: anything more to validate ??
+   */
+  @Override
+  public void validate(ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileValidationException {
+    if (conformanceStatement != null) {
+      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
+        if (StringUtils.isEmpty(statement.getIdentifier())) {
+          throw new ConformanceProfileValidationException(
+              "conformance statement identifier is missing");
+        }
+      }
+    }
+  }
+
 
 }

@@ -39,6 +39,14 @@ public class ExportConfigurationServiceImpl implements ExportConfigurationServic
     }
     return exportConfiguration;
   }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService#save(gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration)
+   */
+  @Override
+  public ExportConfiguration save(ExportConfiguration exportConfiguration) {
+    return exportConfigurationRepository.save(exportConfiguration);
+  }
   
   
 

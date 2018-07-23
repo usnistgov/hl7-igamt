@@ -15,6 +15,7 @@ import {ActivatedRoute} from '@angular/router';
 import {TocService} from '../../service/toc.service';
 import {GeneralConfigurationService} from '../../../../service/general-configuration/general-configuration.service';
 import {HttpClient} from '@angular/common/http';
+import {WithSave} from '../../../../guards/with.save.interface';
 
 @Component({
     selector: 'app-coconstraint-table',
@@ -22,7 +23,7 @@ import {HttpClient} from '@angular/common/http';
     styleUrls: ['coconstraint-table.component.css']
 })
 
-export class CoConstraintTableComponent implements OnInit {
+export class CoconstraintTableComponent implements OnInit {
 
     @ViewChild(ValueSetBindingPickerComponent) vsPicker: ValueSetBindingPickerComponent;
     @ViewChild(CCHeaderDialogDmComponent) headerDialogDm: CCHeaderDialogDmComponent;
@@ -443,6 +444,26 @@ export class CoConstraintTableComponent implements OnInit {
 
 
     }
+
+  // getBackup(): any {
+  //
+  // }
+  //
+  // getCurrent(): any {
+  //
+  // }
+  //
+  // isValid(): boolean {
+  //   return false;
+  // }
+  //
+  // reset(): any {
+  //
+  // }
+  //
+  // save(): Promise<any> {
+  //   return undefined;
+  // }
 }
 
 

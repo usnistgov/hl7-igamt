@@ -1,7 +1,10 @@
 import {CUSTOM_ELEMENTS_SCHEMA, NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {ConfigurationRoutingModule} from './configuration-routing.module';
-import {AccordionModule, ButtonModule, TabViewModule, GrowlModule, Sidebar, PanelMenuModule} from 'primeng/primeng';
+import {
+  AccordionModule, ButtonModule, TabViewModule, GrowlModule, Sidebar, PanelMenuModule,
+  RadioButtonModule
+} from 'primeng/primeng';
 import {ConfigurationComponent} from './configuration.component';
 import { ExportFontComponent } from './export-font/export-font.component';
 import { SegmentTableOptionsComponent } from './segment-table-options/segment-table-options.component';
@@ -15,6 +18,7 @@ import { SidebarComponent } from './sidebar/sidebar.component';
 import { CardModule } from 'primeng/card';
 import { CheckboxModule } from 'primeng/checkbox';
 import { FormsModule } from '@angular/forms';
+import { SliderModule } from 'primeng/slider';
 
 @NgModule({
   imports: [
@@ -26,7 +30,9 @@ import { FormsModule } from '@angular/forms';
     GrowlModule,
     PanelMenuModule,
     CardModule,
-    CheckboxModule
+    CheckboxModule,
+    RadioButtonModule,
+    SliderModule
   ],
   declarations: [
     ConfigurationComponent,

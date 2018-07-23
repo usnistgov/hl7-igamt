@@ -25,5 +25,6 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 public interface ExportConfigurationService {
 
   public ExportConfiguration getExportConfiguration(String username);
+  public ExportConfiguration save(ExportConfiguration exportConfiguration);
 
 }

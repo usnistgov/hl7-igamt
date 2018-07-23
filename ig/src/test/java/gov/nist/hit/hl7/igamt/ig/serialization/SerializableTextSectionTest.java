@@ -23,7 +23,7 @@ import org.junit.Test;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.ig.serialization.sections.SerializableTextSection;
+import gov.nist.hit.hl7.igamt.serialization.domain.sections.SerializableTextSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import nu.xom.Element;
 

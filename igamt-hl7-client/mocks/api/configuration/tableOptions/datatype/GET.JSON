@@ -1,0 +1,68 @@
+{
+  "includeDatatypeTable": true,
+  "datatypesExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": false,
+    "o": false
+  },
+  "componentExport": {
+    "r": true,
+    "re": true,
+    "c": true,
+    "x": true,
+    "o": true
+  },
+  "columns": [
+    {
+      "name": "Name",
+      "position": 1,
+      "present": true,
+      "disabled": true
+    },
+    {
+      "name": "Conformance Length",
+      "position": 2,
+      "present": false,
+      "disabled": false
+    },
+    {
+      "name": "Data Type",
+      "position": 3,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Usage",
+      "position": 4,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Length",
+      "position": 5,
+      "present": false,
+      "disabled": false
+    },
+    {
+      "name": "Value Set",
+      "position": 6,
+      "present": true,
+      "disabled": false
+    },
+    {
+      "name": "Comment",
+      "position": 7,
+      "present": true,
+      "disabled": false
+    }
+  ],
+  "metadataConfig": {
+    "hl7version": false,
+    "publicationDate": false,
+    "publicationVersion": false,
+    "scope": false
+  },
+  "includeVaries": false
+}

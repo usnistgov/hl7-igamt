@@ -10,6 +10,12 @@ import {ProfileComponentTableOptionsComponent} from './profile-component-table-o
 import {SegmentTableOptionsComponent} from './segment-table-options/segment-table-options.component';
 import {ValuesetTableOptionsComponent} from './valueset-table-options/valueset-table-options.component';
 import {ConformanceProfileTableOptionsResolve} from './conformance-profile-table-options/conformance-profile-table-options.resolve.service';
+import {CompositeProfileTableOptionsResolve} from './composite-profile-table-options/composite-profile-table-options.resolve.service';
+import {DatatypeTableOptionsResolve} from './datatype-table-options/datatype-table-options.resolve.service';
+import {ProfileComponentTableOptionsResolve} from './profile-component-table-options/profile-component-table-options.resolve.service';
+import {SegmentTableOptionsResolve} from './segment-table-options/segment-table-options.resolve.service';
+import {ValuesetTableOptionsResolve} from './valueset-table-options/valueset-table-options.resolve.service';
+import {ExportFontResolve} from "./export-font/export-font.resolve.service";
 
 @NgModule({
   imports: [
@@ -23,7 +29,10 @@ import {ConformanceProfileTableOptionsResolve} from './conformance-profile-table
             children: [
               {
                 path: 'export-fonts',
-                component: ExportFontComponent
+                component: ExportFontComponent,
+                resolve: {
+                  exportFontConfigurationDisplay: ExportFontResolve
+                }
               },
               {
                 path: 'conformance-profile-table-options',
@@ -34,7 +43,10 @@ import {ConformanceProfileTableOptionsResolve} from './conformance-profile-table
               },
               {
                 path: 'composite-profile-table-options',
-                component: CompositeProfileTableOptionsComponent
+                component: CompositeProfileTableOptionsComponent,
+                resolve: {
+                  tableOptions: CompositeProfileTableOptionsResolve
+                }
               },
               {
                 path: 'datatype-library',
@@ -42,23 +54,39 @@ import {ConformanceProfileTableOptionsResolve} from './conformance-profile-table
               },
               {
                 path: 'datatype-table-options',
-                component: DatatypeTableOptionsComponent
+                component: DatatypeTableOptionsComponent,
+                resolve: {
+                  tableOptions: DatatypeTableOptionsResolve
+                }
               },
               {
                 path: 'profile-component-table-options',
-                component: ProfileComponentTableOptionsComponent
+                component: ProfileComponentTableOptionsComponent,
+                resolve: {
+                  tableOptions: ProfileComponentTableOptionsResolve
+                }
               },
               {
                 path: 'segment-table-options',
-                component: SegmentTableOptionsComponent
+                component: SegmentTableOptionsComponent,
+                resolve: {
+                  tableOptions: SegmentTableOptionsResolve
+                }
               },
               {
                 path: 'valueset-table-options',
-                component: ValuesetTableOptionsComponent
+                component: ValuesetTableOptionsComponent,
+                resolve: {
+                  tableOptions: ValuesetTableOptionsResolve
+                }
               }
             ]
           }
         ]
+      },
+      {
+        path: '**',
+        component: ConfigurationComponent
       }
     ])
   ],
@@ -66,7 +94,13 @@ import {ConformanceProfileTableOptionsResolve} from './conformance-profile-table
     RouterModule
   ],
   providers: [
-    ConformanceProfileTableOptionsResolve
+    ConformanceProfileTableOptionsResolve,
+    SegmentTableOptionsResolve,
+    ValuesetTableOptionsResolve,
+    DatatypeTableOptionsResolve,
+    ProfileComponentTableOptionsResolve,
+    CompositeProfileTableOptionsResolve,
+    ExportFontResolve
   ]
 })
 export class ConfigurationRoutingModule {

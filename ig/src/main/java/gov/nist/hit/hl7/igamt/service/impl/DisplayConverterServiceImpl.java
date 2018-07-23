@@ -124,6 +124,37 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     return t;
   }
 
+  @Override
+  public TreeNode createNarrativeNode(TextSection s) {
+    TreeNode t = new TreeNode();
+    TextSectionData sectionTree = new TextSectionData();
+    sectionTree.setLabel(s.getLabel());
+    sectionTree.setPosition(s.getPosition());
+    sectionTree.setType(s.getType());
+    t.setId(s.getId());
+
+    sectionTree.setDescription(s.getDescription());
+    t.setData(sectionTree);
+
+    if (s.getChildren() != null && !s.getChildren().isEmpty()) {
+
+      List<TreeNode> children = new ArrayList<TreeNode>();
+
+      for (TextSection section : s.getChildren()) {
+        if (s instanceof TextSection) {
+          TextSection sect = section;
+          children.add(createNarrativeNode(sect));
+        }
+
+      }
+      children.sort((h1, h2) -> h1.compareTo(h2));
+
+      t.setChildren(children);
+    }
+    return t;
+
+  }
+
 
 
   /**
@@ -136,13 +167,13 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> sectionChildren = new ArrayList<TreeNode>();
 
     if (type.equals(Type.PROFILECOMPONENTREGISTRY)) {
-      sectionChildren = createPcsNodes(ig.getCompositeProfileRegistry().getChildren());
+      sectionChildren = createPcsNodes(ig.getProfileComponentRegistry().getChildren());
 
     } else if (type.equals(Type.CONFORMANCEPROFILEREGISTRY)) {
       sectionChildren = createCpsNodes(ig.getConformanceProfileRegistry().getChildren());
 
     } else if (type.equals(Type.COMPOSITEPROFILEREGISTRY)) {
-      sectionChildren = createCompositePrfileNodes(ig.getCompositeProfileRegistry().getChildren());
+      sectionChildren = createCompositeProfileNodes(ig.getCompositeProfileRegistry().getChildren());
 
     } else if (type.equals(Type.SEGMENTREGISTRY)) {
       sectionChildren = createSegmentsNodes(ig.getSegmentRegistry().getChildren());
@@ -196,7 +227,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private List<TreeNode> createCompositePrfileNodes(Set<Link> children) {
+  private List<TreeNode> createCompositeProfileNodes(Set<Link> children) {
 
     // TODO Auto-generated method stub
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
@@ -342,6 +373,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     ElementTreeData data = new ElementTreeData();
     data.setLabel(confromanceProfile.getName());
     data.setDescription(confromanceProfile.getDescription());
+    data.setExt(confromanceProfile.getIdentifier());
     data.setDomainInfo(confromanceProfile.getDomainInfo());
     data.setKey(confromanceProfile.getId());
     node.setData(data);
@@ -617,6 +649,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     ElementTreeData data = new ElementTreeData();
     data.setLabel(elm.getName());
     data.setPosition(position);
+    data.setExt(elm.getIdentifier());
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
     data.setKey(elm.getId());

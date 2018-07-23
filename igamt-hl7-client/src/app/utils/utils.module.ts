@@ -30,6 +30,7 @@ import {CheckboxModule} from 'primeng/checkbox';
 import {TreeModule} from 'primeng/tree';
 import {DialogModule} from 'primeng/dialog';
 import {PanelModule} from 'primeng/panel';
+import {FieldsetModule} from 'primeng/fieldset';
 
 @NgModule({
   imports: [
@@ -41,7 +42,8 @@ import {PanelModule} from 'primeng/panel';
     CheckboxModule,
     TreeModule,
     DialogModule,
-    PanelModule
+    PanelModule,
+    FieldsetModule
   ],
   declarations: [
     DisplayBadgeComponent,

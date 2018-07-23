@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 @Repository
 public interface ConformanceProfileRepository
     extends MongoRepository<ConformanceProfile, CompositeKey> {
+
   public List<ConformanceProfile> findByIdentifier(String identifier);
 
   public List<ConformanceProfile> findByMessageType(String messageType);
@@ -61,5 +62,7 @@ public interface ConformanceProfileRepository
 
   @Query(value = "{ '_id._id' : ?0 }")
   List<ConformanceProfile> findLatestById(ObjectId id, Sort sort);
+
+  public ConformanceProfile findOneById(CompositeKey key);
 
 }
