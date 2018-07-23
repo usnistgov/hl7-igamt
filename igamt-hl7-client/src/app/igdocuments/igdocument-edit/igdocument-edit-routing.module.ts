@@ -7,6 +7,11 @@ import {IgdocumentEditResolver} from './igdocument-edit.resolver';
 import {SectionResolver} from './section/sectionResolver.resolver';
 import {IgMetaDataResolver} from './igdocument-metadata/IgMetaDataResolver.resolver';
 import {SaveFormsGuard} from "../../guards/save.guard";
+import {IgErrorService} from "./ig-error/ig-error.service";
+import { IgErrorComponent } from './ig-error/ig-error.component';
+import { IgErrorResolver } from './ig-error/ig-error.resolver';
+
+
 
 @NgModule({
 	imports: [
@@ -19,7 +24,10 @@ import {SaveFormsGuard} from "../../guards/save.guard";
           { path: '', component: IgDocumentMetadataComponent, resolve: { metadata : IgMetaDataResolver} ,canDeactivate: [SaveFormsGuard]},
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
           { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
-			{ path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
+			    { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' },
+          { path: 'error', component: IgErrorComponent , resolve:{error : IgErrorResolver}}
+
+
         ]
 			},
       // {

@@ -1,7 +1,6 @@
 <div *ngIf="segmentConformanceStatements">
-    <h1>Conformance Statements</h1>
-    <form #csForm="ngForm">
-        <p-accordion (onOpen)="onTabOpen($event)">
+    <form #editForm="ngForm">
+      <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
                 <p-table [columns]="cols" [value]="segmentConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
                     <ng-template pTemplate="header" let-columns>

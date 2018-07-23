@@ -34,7 +34,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -242,7 +242,7 @@ public class IGDocumentController extends BaseController {
       throw new IGTocUpdateException(id);
     }
 
-    return new ResponseMessage(Type.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+    return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
 
 
 
@@ -468,7 +468,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
+    return new ResponseMessage(Status.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
   }
 
 
@@ -504,7 +504,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, SEGMENT_DELETED, segmentId, new Date());
+    return new ResponseMessage(Status.SUCCESS, SEGMENT_DELETED, segmentId, new Date());
   }
 
   /**
@@ -539,7 +539,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, VALUESET_DELETE, valuesetId, new Date());
+    return new ResponseMessage(Status.SUCCESS, VALUESET_DELETE, valuesetId, new Date());
   }
 
 
@@ -574,7 +574,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId,
+    return new ResponseMessage(Status.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId,
         new Date());
   }
 

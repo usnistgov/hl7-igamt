@@ -52,7 +52,6 @@
 
     <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
     <button  pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
-    <button  pButton type="button" (click)="showError()" label="show " class="red-btn" icon="fa-refresh"></button>
 
 
   </div>
@@ -61,11 +60,10 @@
 
 
 </p-toolbar>
-frfrrffrfrrf
   <p-toolbar class="toc-filter-toolbar">
 
 
-  <p-messages [(value)]="msgs"></p-messages>
+  <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
   </p-toolbar>
 
 </div>
@@ -253,11 +251,16 @@ frfrrffrfrrf
   </div>
 
   <!--ROUTE-->
-  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0; max-height: 800px;overflow: scroll">
 
-      <router-outlet></router-outlet>
-
+  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0; max-height: 800px;overflow: scroll" >
+      <div  *ngIf="!loading">
+        <router-outlet></router-outlet>
+      </div>
   </div>
+
+
+
+
 </div>
 </div>
 

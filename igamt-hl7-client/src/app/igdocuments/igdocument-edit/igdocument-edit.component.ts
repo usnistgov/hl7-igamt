@@ -21,12 +21,12 @@ import {Types} from "../../common/constants/types";
 import {SectionsService} from "../../service/sections/sections.service";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {MessageService} from "primeng/components/common/messageservice";
+import {LoadingService} from "./service/loading.service";
 
 
 @Component({
     templateUrl: './igdocument-edit.component.html',
     styleUrls : ['./igdocument-edit.component.css'],
-  providers: [MessageService]
 
 })
 export class IgDocumentEditComponent {
@@ -41,6 +41,7 @@ export class IgDocumentEditComponent {
   igId:any;
   exportModel: MenuItem[];
 
+  loading=false;
   metadata:any;
 
   ig:any;
@@ -142,7 +143,7 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, public sectionService:SectionsService, public indexedDbService:IndexedDbService,private messageService: MessageService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService){
 
     router.events.subscribe(event => {
       //console.log(event);
@@ -177,6 +178,10 @@ export class IgDocumentEditComponent {
   ngOnInit() {
     //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
+    this.tocService.setIgId(this.igId);
+
+
+
 
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.ig= x;
@@ -190,6 +195,11 @@ export class IgDocumentEditComponent {
     this.tocService.metadata.subscribe(x=>{
 
       this.metadata=x;
+    })
+
+    this.loadingService.loading.subscribe(x=>{
+      this.loading=x;
+
     })
 
 
@@ -614,9 +624,6 @@ export class IgDocumentEditComponent {
       )
   }
 
-  showError() {
-    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
-  }
 
 
 }

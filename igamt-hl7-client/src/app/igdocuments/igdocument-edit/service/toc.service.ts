@@ -19,9 +19,21 @@ export  class TocService{
   metadata :BehaviorSubject<any> =new BehaviorSubject(null);
 
   treeModel :TreeModel;
+  igId:any;
+
 
   constructor(private dbService:IndexedDbService, private http:HttpClient){
   }
+  setIgId(igId){
+
+  this.igId=igId;
+  };
+
+  getIgId(){
+
+    return this.igId;
+  };
+
 
   setActiveNode(node){
     this.activeNode=node;
@@ -43,6 +55,21 @@ export  class TocService{
         });
       });
   })
+  };
+
+
+  setTreeModelInDB(treeModel){
+    console.log("Setting tree model");
+    return new Promise((resolve, reject)=> {
+      this.treeModel=treeModel;
+      this.dbService.getIgDocument().then(
+        x => {
+          x.toc = treeModel.nodes;
+          this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+            resolve(true);
+          });
+        });
+    })
   };
 
 

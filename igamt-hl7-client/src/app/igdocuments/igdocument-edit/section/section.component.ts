@@ -6,6 +6,7 @@ import {TocService} from "../service/toc.service";
 import {NgForm} from "@angular/forms";
 import {WithSave} from "../../../guards/with.save.interface";
 import {SectionsService} from "../../../service/sections/sections.service";
+import {IgErrorService} from "../ig-error/ig-error.service";
 
 @Component({
   templateUrl: './section.component.html',
@@ -14,7 +15,7 @@ import {SectionsService} from "../../../service/sections/sections.service";
 })
 
 export class SectionComponent implements OnInit, WithSave {
-  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private sectionsService:SectionsService) {
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private sectionsService:SectionsService, private igErrorService:IgErrorService) {
 
   }
   section:any;
@@ -57,6 +58,9 @@ export class SectionComponent implements OnInit, WithSave {
 
            resolve(true);
 
+         },error=>{
+           this.igErrorService.showError(error);
+           reject(error.message);
          })
 
 
@@ -68,6 +72,7 @@ export class SectionComponent implements OnInit, WithSave {
   };
   reset(){
     this.section=_.cloneDeep(this.backup);
+    this.editForm.control.markAsPristine();
 
 
   }
