@@ -3,6 +3,7 @@
  */
 import {Component, OnInit} from '@angular/core';
 import {PrimeDialogAdapter} from '../../../../../common/prime-ng-adapters/prime-dialog-adapter';
+import {CellTemplate} from '../coconstraint.domain';
 
 @Component({
     selector : 'app-cc-header-dialog-user',
@@ -19,7 +20,8 @@ export class CCHeaderDialogUserComponent extends PrimeDialogAdapter implements O
     addHeader() {
         this.dismissWithData({
             id : this.header.replace(' ', '-'),
-            label : this.header
+            label : this.header,
+            template: CellTemplate.TEXTAREA
         });
     }
 

@@ -37,7 +37,7 @@ export class SegmentTreeNodeService {
     node.data = {
       index: element.position,
       obj: element,
-      path: (parent && parent.data && parent.data.path) ? parent.data.path + '.' + element.position : element.position + '',
+      path: (parent && parent.data && parent.data.path) ? parent.data.path + '.' + element.position + '[1]' : element.position + '[1]',
     };
 
     if (element.ref.id) {

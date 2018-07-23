@@ -90,7 +90,7 @@ import {ValuesetsService} from './service/valuesets/valuesets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
-import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
+import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
 import {SegmentsService} from './service/segments/segments.service';
 import {DatatypesService} from './service/datatypes/datatypes.service';
 import {ConformanceProfilesService} from './service/conformance-profiles/conformance-profiles.service';
@@ -121,6 +121,7 @@ import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from "./service/sections/sections.service";
 import {SectionsIndexedDbService} from "./service/indexed-db/sections/sections-indexed-db.service";
 import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
+// import {NgDragDropModule} from 'ng-drag-drop';
 
 @NgModule({
     imports: [
@@ -163,6 +164,7 @@ import {TableOptionsService} from "./service/configuration/table-options/table-o
         InputTextModule,
         InputTextareaModule,
         LightboxModule,
+
         ListboxModule,
         MegaMenuModule,
         MessageModule,

@@ -2,7 +2,7 @@
  * Created by hnt5 on 10/3/17.
  */
 
-import {Component, Input, ViewChild, TemplateRef, OnInit} from '@angular/core';
+import {Component, Input, ViewChild, TemplateRef, OnInit, ChangeDetectorRef} from '@angular/core';
 import {
   CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow
 } from './coconstraint.domain';
@@ -60,7 +60,8 @@ export class CoConstraintTableComponent implements OnInit {
                 private configService: GeneralConfigurationService,
                 private route: ActivatedRoute,
                 private tocService: TocService,
-                private http: HttpClient) {
+                private http: HttpClient,
+                private cd: ChangeDetectorRef) {
 
       this.activeType = 'data';
       this.table = {
@@ -141,6 +142,15 @@ export class CoConstraintTableComponent implements OnInit {
         }
       }
       return filtered;
+    }
+
+    onDragStart() {
+      console.log('Detach');
+      this.cd.detach();
+    }
+    onDrop() {
+      console.log('Attach');
+      this.cd.reattach();
     }
 
     getCodes(id: string){
@@ -262,7 +272,8 @@ export class CoConstraintTableComponent implements OnInit {
             selectedTables: (<VSCell> obj[key]).vs,
             complex: field.content.complex,
             coded: field.content.coded,
-            version: field.content.version
+            version: field.content.version,
+            varies: field.content.varies
         }).subscribe(
             result => {
                 (<VSCell> obj[key]).vs = result;
@@ -402,12 +413,13 @@ export class CoConstraintTableComponent implements OnInit {
     }
 
     main() {
-        console.log(this.table);
+        console.log(JSON.stringify(this.table));
     }
 
     getLocationForCoded(version) {
       return this.configService.getValuesetLocationsForCE(version);
     }
+
 
 
 

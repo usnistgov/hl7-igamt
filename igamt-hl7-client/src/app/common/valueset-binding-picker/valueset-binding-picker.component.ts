@@ -21,6 +21,7 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
     bindingLocation: any[];
     complex = true;
     coded = false;
+    varies = false;
     version = '';
 
     constructor(private $http: Http, private tocService: TocService, private config : GeneralConfigurationService) {

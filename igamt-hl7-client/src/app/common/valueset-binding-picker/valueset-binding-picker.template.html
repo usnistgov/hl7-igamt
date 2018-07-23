@@ -7,7 +7,7 @@
       <p-table #tt styleClass="ui-g-6" [(selection)]="selectedTables" selectionMode="multiple" (onRowSelect)="selectRow($event)"  [value]="tables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['name','description']" >
         <ng-template pTemplate="caption">
           <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-          <input type="text" pInputText placeholder="Global Filter" (input)="tt.filterGlobal($event.target.value, 'contains')" style="width: 100%; margin-left: 20px;">
+          <input type="text" pInputText placeholder="Search" (input)="tt.filterGlobal($event.target.value, 'contains')"  style="width: 70%;">
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
@@ -27,7 +27,7 @@
       <p-table #tt styleClass="ui-g-6"  [value]="selectedTables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['name','description']" >
         <ng-template pTemplate="caption">
           <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
-          <input type="text" pInputText placeholder="Global Filter" (input)="tt.filterGlobal($event.target.value, 'contains')" style="width: 100%;">
+          <input type="text" pInputText placeholder="Search" (input)="tt.filterGlobal($event.target.value, 'contains')" style="width: 70%;">
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
@@ -38,7 +38,7 @@
               Binding Strength
             </th>
             <th pResizableColumn width="250px">
-              Binding Location ({{coded ? 'Coded Element' : complex ? 'Complex Element' : 'Primitive Element'}})
+              Binding Location
             </th>
           </tr>
         </ng-template>
@@ -51,9 +51,9 @@
               <p-dropdown [options]="bindingStrength" [(ngModel)]="vs.bindingStrength" placeholder="Binding Strength" [style]="{'width' : '100%', 'overflow' : 'visible'}" [appendTo]="'body'"></p-dropdown>
             </td>
             <td class="ui-resizable-column" width="250px">
-              <p-dropdown *ngIf="coded" [options]="bindingLocation" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" [style]="{'width' : '100%', 'overflow' : 'visible'}" [appendTo]="'body'"></p-dropdown>
-              <input *ngIf="!coded && complex" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" style="width : 100%; overflow : visible;" type="number" min="1">
-              <strong *ngIf="!coded && !complex">.</strong>
+              <p-dropdown *ngIf="coded || varies" [options]="bindingLocation" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" [style]="{'width' : '100%', 'overflow' : 'visible'}" [appendTo]="'body'"></p-dropdown>
+              <input *ngIf="!coded && complex && !varies" [(ngModel)]="vs.bindingLocation" placeholder="Binding Location" style="width : 100%; overflow : visible;" type="number" min="1">
+              <strong *ngIf="!coded && !complex && !varies">.</strong>
             </td>
           </tr>
         </ng-template>

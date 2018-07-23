@@ -27,7 +27,6 @@ import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.re
 import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
 import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
 import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
-import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {RegisterFormModelDirective} from '../../../common/form-directive/register-form-model.directive';
 import {CoConstraintTableService} from './coconstraint-table/coconstraint-table.service';
 import {HttpClientModule} from '@angular/common/http';
@@ -40,6 +39,7 @@ import {TreeModule} from 'primeng/tree';
 import {TocService} from '../service/toc.service';
 import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
 import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
+import {DndListModule} from 'ngx-drag-and-drop-lists';
 
 @NgModule({
     imports: [

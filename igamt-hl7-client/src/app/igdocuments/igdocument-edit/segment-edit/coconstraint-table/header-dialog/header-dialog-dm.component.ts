@@ -50,6 +50,7 @@ export class CCHeaderDialogDmComponent extends PrimeDialogAdapter implements OnI
                 type: this.type,
                 version : this.node.version,
                 coded : this.node.coded,
+                varies : this.node.variable,
                 complex : this.node.complex
             }
         };

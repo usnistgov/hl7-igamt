@@ -8,13 +8,13 @@
     <strong>DROP HERE</strong>
   </td>
 </tr>
-<button (click)="printForm()">DEBUG</button>
+<!--<button (click)="main()">DEBUG</button>-->
 <table #placeholderGrp class="table table-bordered table-condensed no-margin"
        style="background-color: #b1dbfeba; border: 3px dashed darkgrey; text-align: center;">
   <thead>
   <tr>
     <td [attr.colspan]="groupHeaderSize(table)+4"
-        [ngStyle]="{ 'min-width' : headWidth(table.content.free.length === 0, groupHeaderSize(table)) + 'px' }">
+        [ngStyle]="{ 'min-width' : (headWidth(table.content.free.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
       <strong>DROP HERE</strong>
     </td>
   </tr>
@@ -27,12 +27,13 @@
       <!--GROUPS DEFINITION-->
       <colgroup span="1" class="first-td"></colgroup>
       <colgroup span="1" class="first-td"></colgroup>
+      <colgroup span="1" class="small"></colgroup>
+      <colgroup span="1" class="small"></colgroup>
       <colgroup span="{{table.headers.selectors.length}}"
                 style="background-color:#B1daff; text-align: center;"></colgroup>
       <colgroup span="{{table.headers.data.length}}"></colgroup>
       <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
-      <colgroup span="1" class="small"></colgroup>
-      <colgroup span="1" class="small"></colgroup>
+
 
 
       <thead>
@@ -43,48 +44,49 @@
                   *ngIf="table.supportGroups && table.headers.selectors.length" type="button"><strong><i
             class="fa fa-plus"></i> Add <br> Group </strong></button>
         </th>
+        <th class="table-header small"
+            style="vertical-align: middle; border-right : 1px solid lightgrey; border-top: 1px solid lightgrey; border-left : 1px solid lightgrey;"
+            rowspan="2" >Usage
+        </th>
+        <th class="table-header small"
+            style="vertical-align: middle; border-right : 1px solid lightgrey; border-top: 1px solid lightgrey;"
+            rowspan="2" >Cardinality
+        </th>
         <th style="border-top: 1px solid lightgrey;" [attr.colspan]="table.headers.selectors.length"
             class="table-header selector-header wide" scope="colgroup">
-                        <span [ngClass]="{ 'col-dnd-handle' : activeType === 'selector' }"
-                              style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"
-                              (click)="activeType = 'selector';">
-                            <i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>
-                        </span>
+                        <!--<span [ngClass]="{ 'col-dnd-handle' : activeType === 'selector' }"-->
+                              <!--style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"-->
+                              <!--(click)="activeType = 'selector';">-->
+                            <!--&lt;!&ndash;<i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>&ndash;&gt;-->
+                        <!--</span>-->
           IF
           <i class="fa fa-plus" (click)="openHeaderDialog('selectors')"
              style="float : right; cursor : pointer; color: darkblue;"></i>
         </th>
         <th style="border-top: 1px solid lightgrey;" [attr.colspan]="table.headers.data.length"
             class="table-header data-header wide" scope="colgroup">
-                        <span [ngClass]="{ 'col-dnd-handle' : activeType === 'data' }"
-                              style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"
-                              (click)="activeType = 'data';">
-                            <i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>
-                        </span>
+                        <!--<span [ngClass]="{ 'col-dnd-handle' : activeType === 'data' }"-->
+                              <!--style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"-->
+                              <!--(click)="activeType = 'data';">-->
+                            <!--&lt;!&ndash;<i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>&ndash;&gt;-->
+                        <!--</span>-->
           THEN
           <i class="fa fa-plus" (click)="openHeaderDialog('data')"
              style="float : right; cursor : pointer; color: darkblue;"></i>
         </th>
         <th style="border-top: 1px solid lightgrey;" [attr.colspan]="table.headers.user.length"
             class="table-header user-header wide" scope="colgroup">
-                        <span [ngClass]="{ 'col-dnd-handle' : activeType === 'user' }"
-                              style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"
-                              (click)="activeType = 'user';">
-                            <i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>
-                        </span>
+                        <!--<span [ngClass]="{ 'col-dnd-handle' : activeType === 'user' }"-->
+                              <!--style="text-align: center; vertical-align: center; border-radius : 50%; height: 23px; width: 23px; float : left;"-->
+                              <!--(click)="activeType = 'user';">-->
+                            <!--&lt;!&ndash;<i class="fa fa-bars" style="cursor : pointer; color: deeppink;"></i>&ndash;&gt;-->
+                        <!--</span>-->
 
           USER
           <i class="fa fa-plus" (click)="openUserHeaderDialog()"
              style="float : right; cursor : pointer; color: darkblue;"></i>
         </th>
-        <th class="table-header small"
-            style="vertical-align: middle; border-right : 1px solid lightgrey; border-top: 1px solid lightgrey;"
-            rowspan="2" scope="colgroup">Usage
-        </th>
-        <th class="table-header small"
-            style="vertical-align: middle; border-right : 1px solid lightgrey; border-top: 1px solid lightgrey;"
-            rowspan="2" scope="colgroup">Cardinality
-        </th>
+
       </tr>
 
       <!--DYNAMIC HEADERS-->
@@ -176,21 +178,24 @@
 </ng-template>
 
 <ng-template #value let-node let-req="req" let-form="form" let-id="id" let-key="key">
-  <input type="text"
-         [(ngModel)]="node.value"
-         #val="ngModel"
-         [name]="'val-'+id+'-'+key"
-         [id]="'val-'+id+'-'+key"
-         [registerForm]="form"
-         [registerModel]="val"
-         style="width: 100%;"
-         [registerValidators]="req ? [required()] : []"
-         [placeholder]="'PlainText(CaseSensitive)'">
+  <div style="width: 100%;">
+    <input type="text"
+           [(ngModel)]="node.value"
+           #val="ngModel"
+           [name]="'val-'+id+'-'+key"
+           [id]="'val-'+id+'-'+key"
+           [registerForm]="form"
+           [registerModel]="val"
+           style="text-align: center; border: 1px solid;"
+           [registerValidators]="req ? [required()] : []"
+           [placeholder]="'PlainText'">
 
-  <p *ngIf="val.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-    {{val.control.errors.required ? 'This field is required' :
-    val.control.errors.unique ? val.control.errors.unique : ''}}
-  </p>
+    <p *ngIf="val.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+      {{val.control.errors.required ? 'This field is required' :
+      val.control.errors.unique ? val.control.errors.unique : ''}}
+    </p>
+  </div>
+
 </ng-template>
 
 <ng-template #code let-node let-field="field" let-form="form" let-req="req" let-id="id" let-key="key" let-varies="varies">
@@ -201,7 +206,7 @@
               [id]="'loc-'+id+'-'+key"
               [registerForm]="form"
               [registerModel]="loc"
-              [style]="{'width': '95%'}"
+              [style]="{'width': '95%' , 'border' : '1px solid'}"
               [placeholder]="'Location'"
               [required]="req"
               [options]="varies ? ceBindingLocations['2.8'] : ceBindingLocations[field.content.version]"
@@ -216,7 +221,7 @@
          [registerModel]="code"
          [registerValidators]="req ? [required(), uniq(ccFormVar,'code', key, 'code-'+id+'-'+key)] : [uniq(ccFormVar, 'code', key, 'code-'+id+'-'+key)]"
          [(ngModel)]="node.value"
-         style="width: 95%;"
+         style="width: 95%; border: 1px solid; text-align: center;"
          [placeholder]="'Code'">
 
   <p *ngIf="code.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
@@ -231,7 +236,7 @@
 </ng-template>
 
 <ng-template #varies let-node let-field="field" let-obj="obj" let-key="key">
-  <table style="width: 100%; border: 0;">
+  <table style="width: 100%; border: 0; height: 100%;">
     <tr>
       <td *ngIf="isIgnore(node)" style="border: 0; text-align: center; vertical-align: middle;">
         <div style="width: 100%; text-align: center; vertical-align: middle;">
@@ -240,11 +245,11 @@
           <span class="badge label-icon label-gray" (click)="setVariesNodeValue(node,'code')">Code</span>
         </div>
       </td>
-      <td *ngIf="!isIgnore(node)" style="border: 0;">
+      <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
         <ng-container
           *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node.value, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
       </td>
-      <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px;">
+      <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
         <i (click)="clearVariesNodeValue(node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
            aria-hidden="true"></i>
       </td>
@@ -283,12 +288,13 @@
     <!--GROUPS DEFINITION-->
     <colgroup span="1" class="first-td"></colgroup>
     <colgroup span="1" class="first-td"></colgroup>
+    <colgroup span="1" class="small"></colgroup>
+    <colgroup span="1" class="small"></colgroup>
     <colgroup span="{{table.headers.selectors.length}}"
               style="background-color:#B1daff; text-align: center;"></colgroup>
     <colgroup span="{{table.headers.data.length}}"></colgroup>
     <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
+
 
     <!--FIRST GROUP HEADER-->
     <thead>
@@ -322,12 +328,13 @@
     <!--GROUPS DEFINITION-->
     <colgroup span="1" class="first-td"></colgroup>
     <colgroup span="1" class="first-td"></colgroup>
+    <colgroup span="1" class="small"></colgroup>
+    <colgroup span="1" class="small"></colgroup>
+
     <colgroup span="{{table.headers.selectors.length}}"
               style="background-color:#B1daff; text-align: center;"></colgroup>
     <colgroup span="{{table.headers.data.length}}"></colgroup>
     <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
 
     <!--FIRST GROUP HEADER-->
     <thead>
@@ -340,19 +347,20 @@
            *ngIf="table.headers.selectors.length" class="fa fa-plus"></i>
         <i style="cursor: pointer; color: red;" (click)="delGroup(list,index)" class="fa fa-times"></i>
       </td>
+      <td class="small">
+        <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.data.requirements}"></ng-container>
+      </td>
+      <td class="small">
+        <ng-container
+          *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements}"></ng-container>
+      </td>
       <td [attr.colspan]="groupHeaderSize(table)"
           [ngStyle]="{ 'min-width' : (headWidth(node.content.free.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
         <span style="margin-left: 10px;" class="badge label-gray">Co-Constraints Group</span>
         <input style="width: 75% !important; font-weight: bold;" [(ngModel)]="node.data.name" type="text" required
                placeholder="required">
       </td>
-      <td class="small" style="background-color: white;">
-        <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.data.requirements}"></ng-container>
-      </td>
-      <td class="small" style="background-color: white;">
-        <ng-container
-          *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements}"></ng-container>
-      </td>
+
     </tr>
     </thead>
     <ng-container *ngTemplateOutlet="cclist; context : {$implicit : node.content.free}"></ng-container>
@@ -364,11 +372,14 @@
             disabled: false,
             effectAllowed: 'move',
             allowedTypes: ['cc']}"
+         (dndDrop)="onDrop()"
          [dndPlaceholder]="placeholder"
          [dndModel]="list">
 
   <tr *ngFor="let row of list; let i = index"
       [dndType]="'cc'"
+      (dndDragStart)="onDragStart()"
+      (dndDragEnd)="onDrop()"
       [dndDraggable]="{draggable:true, effectAllowed:'move'}"
       [dndObject]="row"
       (dndMoved)="removeItem(row, list)">
@@ -381,6 +392,14 @@
     <!--DELETE BUTTON-->
     <td class="first-td" style="text-align: center; vertical-align: middle;">
       <i (click)="delRow(list,i)" style="cursor: pointer; color: red;" class="fa fa-times"></i>
+    </td>
+
+    <!--REQUIREMENTS-->
+    <td class="small">
+      <ng-container *ngTemplateOutlet="usage; context : {$implicit : row.requirements}"></ng-container>
+    </td>
+    <td class="small">
+      <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements}"></ng-container>
     </td>
 
     <!--SELECTORS-->
@@ -443,13 +462,7 @@
       </ng-container>
     </td>
 
-    <!--REQUIREMENTS-->
-    <td class="small">
-      <ng-container *ngTemplateOutlet="usage; context : {$implicit : row.requirements}"></ng-container>
-    </td>
-    <td class="small">
-      <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements}"></ng-container>
-    </td>
+
   </tr>
   <tr *ngIf="!list || list.length == 0" style="background-color: #ececec; font-weight: bold; text-align: center;">
     <td [attr.colspan]="groupHeaderSize(table)+4"

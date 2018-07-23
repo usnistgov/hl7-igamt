@@ -76,7 +76,7 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.CODE,
                 elmType : 'field',
-                path : '3',
+                path : '3[1]',
                 version : obx3_dt.data.domainInfo.version,
                 coded : true,
                 complex : true
@@ -90,7 +90,7 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.VALUE,
                 elmType : 'field',
-                path : '2',
+                path : '2[1]',
                 version : obx2_dt.data.domainInfo.version,
                 coded : false,
                 complex : false
@@ -104,7 +104,7 @@ export class CoConstraintTableService {
             content : {
                 type : CCSelectorType.IGNORE,
                 elmType : 'field',
-                path : '5'
+                path : '5[1]'
             }
         });
         tmp.headers.user.push({

@@ -84,6 +84,7 @@ export interface DataElementHeader {
     coded?: boolean;
     complex?: boolean;
     version?: string;
+    varies?: boolean;
 }
 
 export class CCSelectorType {
