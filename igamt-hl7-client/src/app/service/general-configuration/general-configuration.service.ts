@@ -1,32 +1,32 @@
 /**
  * Created by hnt5 on 11/2/17.
  */
-import {Injectable} from "@angular/core";
+import {Injectable} from '@angular/core';
 @Injectable()
 export class GeneralConfigurationService {
 
   //TODO ADDING OTHER CONFIG DATA
-  _usages : any;
+  _usages: any;
 
-  _cUsages : any;
+  _cUsages: any;
 
-  _valueSetAllowedDTs : any;
+  _valueSetAllowedDTs: any;
 
-  _valueSetAllowedComponents : any;
+  _valueSetAllowedComponents: any;
 
   _singleValueSetDTs: any;
 
-  _valueSetAllowedFields:any;
+  _valueSetAllowedFields: any;
 
-  _valuesetStrengthOptions:any;
+  _valuesetStrengthOptions: any;
 
-  _codedElementDTs:any;
+  _codedElementDTs: any;
 
-  _simpleConstraintVerbs:any[];
+  _simpleConstraintVerbs: any[];
+
+  _ifConstraintVerbs: any[];
 
   _instanceNums: any[];
-
-  _ifConstraintVerbs:any[];
 
   _operators: any[];
 
@@ -38,9 +38,9 @@ export class GeneralConfigurationService {
 
   _partialComplexAssertionTypes: any[];
 
-  _assertionModes:any[];
+  _assertionModes: any[];
 
-  _constraintTypes:any[];
+  _constraintTypes: any[];
 
   _extensibilityOptions:any[];
 
@@ -124,84 +124,84 @@ export class GeneralConfigurationService {
     this._singleValueSetDTs = ["ID", "IS", "ST", "NM", "HD"];
     this._valueSetAllowedFields =[
         {
-          "segmentName": "PID",
-          "location": 23,
-          "type":"FIELD"
+          'segmentName': 'PID',
+          'location': 23,
+          'type': 'FIELD'
         }
     ];
     this._valueSetAllowedComponents =
     [
       {
-        "dtName": "CNS",
-        "location": 7
+        'dtName': 'CNS',
+        'location': 7
       },
       {
-        "dtName": "CSU",
-        "location": 11
+        'dtName': 'CSU',
+        'location': 11
       },
       {
-        "dtName": "XON",
-        "location": 10
+        'dtName': 'XON',
+        'location': 10
       },
       {
-        "dtName": "CSU",
-        "location": 2
+        'dtName': 'CSU',
+        'location': 2
       },
       {
-        "dtName": "LA2",
-        "location": 12
+        'dtName': 'LA2',
+        'location': 12
       },
       {
-        "dtName": "OSD",
-        "location": 4
+        'dtName': 'OSD',
+        'location': 4
       },
       {
-        "dtName": "AD",
-        "location": 4
+        'dtName': 'AD',
+        'location': 4
       },
       {
-        "dtName": "LA2",
-        "location": 11
+        'dtName': 'LA2',
+        'location': 11
       },
       {
-        "dtName": "XAD",
-        "location": 4
+        'dtName': 'XAD',
+        'location': 4
       },
       {
-        "dtName": "AD",
-        "location": 5
+        'dtName': 'AD',
+        'location': 5
       },
       {
-        "dtName": "XAD",
-        "location": 3
+        'dtName': 'XAD',
+        'location': 3
       },
       {
-        "dtName": "XON",
-        "location": 3
+        'dtName': 'XON',
+        'location': 3
       },
       {
-        "dtName": "AD",
-        "location": 3
+        'dtName': 'AD',
+        'location': 3
       },
       {
-        "dtName": "CSU",
-        "location": 14
+        'dtName': 'CSU',
+        'location': 14
       },
       {
-        "dtName": "LA2",
-        "location": 13
+        'dtName': 'LA2',
+        'location': 13
       },
       {
-        "dtName": "OSD",
-        "location": 2
+        'dtName': 'OSD',
+        'location': 2
       },
       {
-        "dtName": "XAD",
-        "location": 5
+        'dtName': 'XAD',
+        'location': 5
       },
       {
-        "dtName": "CSU",
-        "location": 5
+        'dtName': 'CSU',
+        'location': 5
       }
     ];
   }
@@ -220,46 +220,77 @@ export class GeneralConfigurationService {
   }
 
   isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
-    if(this._valueSetAllowedDTs.includes(dtName)) return true;
-    if(this._valueSetAllowedFields.includes({
-        "segmentName": SegmentName,
-        "location": position,
-        "type":type
+    if (this._valueSetAllowedDTs.includes(dtName)) return true;
+    if (this._valueSetAllowedFields.includes({
+        'segmentName': SegmentName,
+        'location': position,
+        'type': type
     })) return true;
 
-    if(this._valueSetAllowedComponents.includes({
-          "dtName": parrentDT,
-          "location": position
+    if (this._valueSetAllowedComponents.includes({
+          'dtName': parrentDT,
+          'location': position
     })) return true;
     return false;
   }
 
   isMultipleValuseSetAllowed(dtName){
-    if(this._singleValueSetDTs.includes(dtName)) return false;
+    if (this._singleValueSetDTs.includes(dtName)) return false;
     return true;
   }
 
   getValuesetLocations(dtName, version){
-    if(this._codedElementDTs.includes(dtName)){
-      if(['2.1', '2.2', '2.3', '2.3.1', '2.4', '2.5', '2.5.1', '2.6'].includes(version)) return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] }];
-      if(['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null},{ label : '1', value : [1] },{ label : '4', value : [4] },{ label : '1 or 4', value : [1,4] },{ label : '1 or 4 or 10', value : [1,4,10] }];
+    if (this._codedElementDTs.includes(dtName)){
+      if (['2.1', '2.2', '2.3', '2.3.1', '2.4', '2.5', '2.5.1', '2.6'].includes(version)) return [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }];
+      if (['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }, { label : '1 or 4 or 10', value : [1, 4, 10] }];
     }
     return null;
   }
 
+  getAllValuesetLocations(){
+    const c1 = [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }];
+    const c2 = [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }, { label : '1 or 4 or 10', value : [1, 4, 10] }];
+    return {
+      '2.1' : c1,
+      '2.2' : c1,
+      '2.3' : c1,
+      '2.3.1' : c1,
+      '2.4' : c1,
+      '2.5' : c1,
+      '2.5.1' : c1,
+      '2.6' : c1,
+      '2.7' : c2,
+      '2.7.1' : c2,
+      '2.8' : c2,
+      '2.8.1' : c2,
+      '2.8.2' : c2
+    };
+  }
+
+  getValuesetLocationsForCE(version){
+    if (['2.1', '2.2', '2.3', '2.3.1', '2.4', '2.5', '2.5.1', '2.6'].includes(version)) return [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }];
+    if (['2.7', '2.7.1', '2.8', '2.8.1', '2.8.2'].includes(version))                    return [ { label : 'Select Location', value : null}, { label : '1', value : [1] }, { label : '4', value : [4] }, { label : '1 or 4', value : [1, 4] }, { label : '1 or 4 or 10', value : [1, 4, 10] }];
+    return null;
+  }
+
+
+  isCodedElement(dtName) {
+    return this._codedElementDTs.includes(dtName);
+  }
+
   getOperatorLable(operator){
-    if(operator){
-      for (let entry of this._operators) {
-        if(entry.value === operator) return entry.label;
+    if (operator){
+      for (const entry of this._operators) {
+        if (entry.value === operator) return entry.label;
       }
     }
     return null;
   }
 
   getFormattedType(type){
-    if(type){
-      for (let entry of this._formatTypes) {
-        if(entry.value === type) return entry.label;
+    if (type){
+      for (const entry of this._formatTypes) {
+        if (entry.value === type) return entry.label;
       }
     }
     return null;
