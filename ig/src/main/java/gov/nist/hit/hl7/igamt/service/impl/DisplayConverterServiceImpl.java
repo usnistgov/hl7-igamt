@@ -12,6 +12,7 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,6 +31,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
@@ -90,7 +92,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private TreeNode createTextSectionNode(TextSection s, Ig ig) {
+  private TreeNode createTextSectionNode(TextSection s, Ig ig) throws IGConverterException {
     TreeNode t = new TreeNode();
     TextSectionData sectionTree = new TextSectionData();
     sectionTree.setLabel(s.getLabel());
@@ -100,6 +102,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
     sectionTree.setDescription(s.getDescription());
     t.setData(sectionTree);
+    if (s.getType() == null) {
+      throw new IGConverterException("Section type is missing");
+    }
     if (s.getType().equals(Type.TEXT) || s.getType().equals(Type.PROFILE)) {
 
       if (s.getChildren() != null && !s.getChildren().isEmpty()) {
@@ -392,7 +397,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * .igamt.ig.domain.Ig)
    */
   @Override
-  public IGDisplay convertDomainToModel(Ig ig) {
+  public IGDisplay convertDomainToModel(Ig ig) throws IGConverterException {
     // TODO Auto-generated method stub
     IGDisplay igDisplay = new IGDisplay();
     igDisplay.setMetadata(ig.getMetadata());
@@ -766,6 +771,51 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     addedNodes.setValueSets(valueSets);
 
     return addedNodes;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertTocToDomain(java.util.List)
+   */
+  @Override
+  public Set<TextSection> convertTocToDomain(List<TreeNode> toc) {
+
+    Set<TextSection> result = new HashSet<TextSection>();
+    for (TreeNode t : toc) {
+      result.add(this.convertTreeNodeToTextSection(t));
+    }
+
+    return result;
+
+  }
+
+  /**
+   * @param t
+   * @return
+   */
+  private TextSection convertTreeNodeToTextSection(TreeNode t) {
+    // TODO Auto-generated method stub
+    TextSection s = new TextSection();
+    s.setId(t.getId());
+    s.setPosition(t.getData().getPosition());
+    s.setLabel(t.getData().getLabel());
+    s.setType(t.getData().getType());
+
+    if (t.getData() instanceof TextSectionData) {
+      s.setDescription(((TextSectionData) t.getData()).getDescription());
+    }
+    if (t.getData().getType().equals(Type.TEXT) || t.getData().getType().equals(Type.PROFILE)) {
+      if (t.getChildren() != null && !t.getChildren().isEmpty()) {
+
+        for (TreeNode child : t.getChildren()) {
+          s.getChildren().add(convertTreeNodeToTextSection(child));
+        }
+      }
+    }
+    return s;
+
   }
 
 

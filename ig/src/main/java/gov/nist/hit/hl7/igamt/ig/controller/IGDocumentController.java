@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.BasicDBObject;
+import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
@@ -33,7 +34,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -50,7 +51,9 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGTocUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
@@ -120,6 +123,9 @@ public class IGDocumentController extends BaseController {
   private static final String SEGMENT_DELETED = "SEGMENT_DELETED";
   private static final String VALUESET_DELETE = "VALUESET_DELETE";
   private static final String CONFORMANCE_PROFILE_DELETE = "CONFORMANCE_PROFILE_DELETE";
+
+  private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
+
 
 
   public IGDocumentController() {}
@@ -196,17 +202,48 @@ public class IGDocumentController extends BaseController {
    * @param id
    * @param authentication
    * @return
+   * @throws IGNotFoundException
+   * @throws IGConverterException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET,
       produces = {"application/json"})
 
   public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id,
-      Authentication authentication) {
+      Authentication authentication) throws IGNotFoundException, IGConverterException {
 
 
-    Ig igdoument = igService.findLatestById(id);
+    Ig igdoument = findIgById(id);
     IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
     return ret;
+
+
+  }
+
+  /**
+   * 
+   * @param id
+   * @param authentication
+   * @return
+   * @throws IGNotFoundException
+   * @throws IGTocUpdateException
+   */
+  @RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
+      @RequestBody List<TreeNode> toc, Authentication authentication)
+      throws IGNotFoundException, IGTocUpdateException {
+
+
+    Set<TextSection> content = displayConverter.convertTocToDomain(toc);
+
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    if (!updateResult.wasAcknowledged()) {
+      throw new IGTocUpdateException(id);
+    }
+
+    return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+
 
 
   }
@@ -431,7 +468,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
+    return new ResponseMessage(Status.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
   }
 
 
@@ -467,7 +504,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, SEGMENT_DELETED, segmentId, new Date());
+    return new ResponseMessage(Status.SUCCESS, SEGMENT_DELETED, segmentId, new Date());
   }
 
   /**
@@ -502,7 +539,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, VALUESET_DELETE, valuesetId, new Date());
+    return new ResponseMessage(Status.SUCCESS, VALUESET_DELETE, valuesetId, new Date());
   }
 
 
@@ -537,7 +574,7 @@ public class IGDocumentController extends BaseController {
       }
     }
     igService.save(ig);
-    return new ResponseMessage(Type.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId,
+    return new ResponseMessage(Status.SUCCESS, CONFORMANCE_PROFILE_DELETE, conformanceProfileId,
         new Date());
   }
 

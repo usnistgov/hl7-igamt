@@ -34,10 +34,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.LibraryMetaData;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
@@ -124,7 +124,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
     emptyLibrary.setId(new CompositeKey());
-    emptyLibrary.setMetaData(new LibraryMetaData());
+    emptyLibrary.setMetaData(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : datatypeLibraryTemplate) {
       content.add(createSectionContent(template));

@@ -12,6 +12,7 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {SegmentsService} from "../segments.service";
+import {IgErrorService} from "../../ig-error/ig-error.service";
 
 
 
@@ -29,7 +30,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   @ViewChild('editForm')
   private editForm: NgForm;
 
-  constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService){
+  constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService,private igErrorService:IgErrorService ){
 
   }
 
@@ -47,6 +48,8 @@ export class SegmentEditMetadataComponent implements WithSave {
 
   reset(){
     this.segmentMetadata=_.cloneDeep(this.backup);
+    this.editForm.control.markAsPristine();
+
   }
 
   getCurrent(){
@@ -71,7 +74,7 @@ export class SegmentEditMetadataComponent implements WithSave {
 
         node.data.data.label= this.segmentMetadata.name;
         node.data.data.ext= this.segmentMetadata.ext;
-        this.tocService.setTreeModel(treeModel).then(x=>{
+        this.tocService.setTreeModelInDB(treeModel).then(x=>{
 
 
           this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata).then( saved => {
@@ -85,15 +88,22 @@ export class SegmentEditMetadataComponent implements WithSave {
             resolve(true);
           }, error => {
             console.log("Error Saving");
-
+            this.igErrorService.showError(error);
             }
           );
+
+        }, tocError=>{
+
+          console.log("TOC NOT SAVED")
+          this.igErrorService.showError(tocError);
+
 
         })
       }
     )
 
   };
+
 
 
 

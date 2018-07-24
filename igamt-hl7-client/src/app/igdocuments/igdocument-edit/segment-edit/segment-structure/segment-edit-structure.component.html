@@ -1,6 +1,34 @@
-<h2>Segment Structure</h2>
-
 <div *ngIf="segmentStructure">
+
+
+
+<form #editForm="ngForm">
+<div class="ui-g cp-header">
+
+  <div class="ui-g-8 ui-g-nopad">
+    <div class="cp-header-title ui-g-12">
+      Segment Structure: {{segmentStructure.label}}
+
+    </div>
+    <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="segmentStructure.updateDate">
+            <i class="fa fa-calendar"></i> {{segmentStructure.updateDate}}
+          </span>
+    </div>
+
+
+
+  </div>
+
+  <div class="ui-g-4">
+
+    <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+
+
+  </div>
+
+</div>
     <p-treeTable [value]="segmentStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
 
         <p-column header="Name" [style]="{'width':'350px'}">
@@ -237,6 +265,9 @@
         </p-column>
     </p-treeTable>
 
+
+
+</form>
     <p-dialog *ngIf="selectedNode" header="Edit Text Definition of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
         <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
     </p-dialog>

@@ -19,7 +19,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
@@ -113,7 +113,7 @@ public class DatatypeController extends BaseController {
         throw new DatatypeNotFoundException(id);
       }
       Datatype = datatypeService.save(Datatype);
-      return new ResponseMessage(Type.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
     } else {
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_Datatype");
     }
@@ -124,7 +124,7 @@ public class DatatypeController extends BaseController {
   public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
       Authentication authentication) throws ValidationException, DatatypeNotFoundException {
     Datatype Datatype = datatypeService.savePredef(preDef);
-    return new ResponseMessage(Type.SUCCESS, PREDEF_SAVED, id, Datatype.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, Datatype.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.POST,
@@ -132,7 +132,7 @@ public class DatatypeController extends BaseController {
   public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
       Authentication authentication) throws ValidationException, DatatypeNotFoundException {
     Datatype Datatype = datatypeService.savePostdef(postDef);
-    return new ResponseMessage(Type.SUCCESS, POSTDEF_SAVED, id, Datatype.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, Datatype.getUpdateDate());
   }
 
 
@@ -142,7 +142,7 @@ public class DatatypeController extends BaseController {
       @RequestBody DisplayMetadata displayMetadata, Authentication authentication)
       throws ValidationException, DatatypeNotFoundException {
     Datatype Datatype = datatypeService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Type.SUCCESS, METADATA_SAVED, id, Datatype.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id, Datatype.getUpdateDate());
   }
 
 
@@ -152,7 +152,7 @@ public class DatatypeController extends BaseController {
       Authentication authentication, @RequestBody DatatypeConformanceStatement conformanceStatement)
       throws DatatypeValidationException, DatatypeNotFoundException {
     Datatype Datatype = datatypeService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Type.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
+    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         Datatype.getUpdateDate());
 
   }
