@@ -23,7 +23,7 @@ import {WithSave} from '../../../../guards/with.save.interface';
     styleUrls: ['coconstraint-table.component.css']
 })
 
-export class CoconstraintTableComponent implements OnInit {
+export class CoConstraintTableComponent implements OnInit {
 
     @ViewChild(ValueSetBindingPickerComponent) vsPicker: ValueSetBindingPickerComponent;
     @ViewChild(CCHeaderDialogDmComponent) headerDialogDm: CCHeaderDialogDmComponent;

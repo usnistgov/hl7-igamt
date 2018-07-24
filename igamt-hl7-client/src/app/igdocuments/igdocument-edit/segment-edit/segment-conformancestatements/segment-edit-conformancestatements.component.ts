@@ -12,6 +12,7 @@ import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
+import {IgErrorService} from "../../ig-error/ig-error.service";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
@@ -44,6 +45,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         private datatypesService : DatatypesService,
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
+        private igErrorService:IgErrorService
     ){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
@@ -141,9 +143,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
         }, error=>{
 
-
+           this.igErrorService.showError(error);
+           reject();
           console.log("error saving");
-          reject();
 
         });
         });

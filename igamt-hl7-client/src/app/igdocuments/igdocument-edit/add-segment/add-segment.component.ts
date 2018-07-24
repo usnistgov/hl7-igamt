@@ -4,6 +4,7 @@ import {WorkspaceService} from "../../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IgDocumentAddingService} from "../../igdocument-edit/service/adding.service";
 import * as _ from 'lodash';
+import {IgErrorService} from "../ig-error/ig-error.service";
 
 @Component({
   selector: 'app-add-segment',
@@ -20,7 +21,7 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
 
 
   constructor(private  addingService: IgDocumentAddingService,
-              private router: Router, private route: ActivatedRoute, private ws: WorkspaceService) {
+              private router: Router, private route: ActivatedRoute, private ws: WorkspaceService, private igErrorService:IgErrorService) {
     super();
     this.hl7Versions = ws.getAppConstant().hl7Versions;
 
@@ -118,6 +119,9 @@ export class AddSegmentComponent extends PrimeDialogAdapter {
       res => {
         console.log(res);
         this.closeWithData(res);
+      }, error=>{
+        this.igErrorService.showError(error);
+
       }
     )
 

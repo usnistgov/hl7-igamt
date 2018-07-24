@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 
 /**
  * @author Harold Affo
@@ -32,7 +32,7 @@ public class DatatypeExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({DatatypeValidationException.class})
   public ResponseMessage handleValidationException(DatatypeValidationException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -41,7 +41,7 @@ public class DatatypeExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({DatatypeException.class})
   public ResponseMessage handleSegmentException(DatatypeException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -50,7 +50,7 @@ public class DatatypeExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({DatatypeNotFoundException.class})
   public ResponseMessage handleDatatypeNotFoundException(DatatypeNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 

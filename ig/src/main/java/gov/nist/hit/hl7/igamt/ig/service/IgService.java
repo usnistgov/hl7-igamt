@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -48,6 +49,8 @@ public interface IgService {
   public Ig findIgMetadataById(String id);
 
   public TextSection findSectionById(Set<TextSection> content, String sectionId);
+
+  UpdateResult updateAttribute(String id, String attributeName, Object value);
 
 
 

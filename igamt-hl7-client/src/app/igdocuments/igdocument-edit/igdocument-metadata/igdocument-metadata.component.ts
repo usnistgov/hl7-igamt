@@ -5,6 +5,7 @@ import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 
 import {TocService} from "../service/toc.service";
+import {MessageService} from "primeng/components/common/messageservice";
 @Component({
   templateUrl: './igdocument-metadata.component.html'
 })
@@ -20,23 +21,18 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
   private editForm: NgForm;
 
 
-  constructor(private sp: ActivatedRoute, private  router : Router,private tocService:TocService) { }
+  constructor(private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private messageService:MessageService) { }
 
   ngOnInit() {
     this.sp.data.map(data =>data.metadata).subscribe(x=>{
       this.metaData= x;
       this.backup=_.cloneDeep(this.metaData);
-
-      console.log(this.metaData);
-
-
-
-
     });
   }
 
 
   save(): Promise<any>{
+    this.showError();
     return new Promise((resolve, reject)=>{
 
 
@@ -74,4 +70,10 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
       this.uploadedFiles.push(file);
     }
   }
+  showError() {
+    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
+  }
+
+
+
 }

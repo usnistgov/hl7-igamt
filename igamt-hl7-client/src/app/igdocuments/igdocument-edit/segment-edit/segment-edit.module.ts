@@ -42,6 +42,7 @@ import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-p
 import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
+import {MessageService} from "primeng/components/common/messageservice";
 
 @NgModule({
     imports: [
@@ -68,7 +69,9 @@ import {SegmentsService} from "./segments.service";
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService],
+  exports:[CoConstraintTableComponent],
+
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService],
     declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

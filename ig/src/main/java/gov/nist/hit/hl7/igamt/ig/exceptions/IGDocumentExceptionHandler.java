@@ -24,7 +24,7 @@ import com.mongodb.BasicDBObject;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 
 /**
@@ -48,7 +48,7 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.FORBIDDEN)
   @ExceptionHandler({ForbiddenOperationException.class})
   public ResponseMessage handleForbiddenOperationException(ForbiddenOperationException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -57,7 +57,7 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({XReferenceException.class})
   public ResponseMessage handleXRefererenceException(XReferenceException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -66,7 +66,7 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({IGNotFoundException.class})
   public ResponseMessage handleIGNotFoundException(IGNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -75,7 +75,23 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({CloneException.class})
   public ResponseMessage handleCloneException(CloneException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IGTocUpdateException.class})
+  public ResponseMessage handleUpdateTocException(IGTocUpdateException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IGConverterException.class})
+  public ResponseMessage handleUpdateTocException(IGConverterException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 

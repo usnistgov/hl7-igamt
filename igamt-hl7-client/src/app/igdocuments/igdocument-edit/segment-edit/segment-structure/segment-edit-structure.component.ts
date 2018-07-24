@@ -8,7 +8,7 @@ import {GeneralConfigurationService} from "../../../../service/general-configura
 import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
-import {WithSave} from "../../../../guards/with.save.interface";
+import {WithSave, WithNotification} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
@@ -166,6 +166,7 @@ export class SegmentEditStructureComponent implements WithSave {
 
         }, error => {
           console.log("error saving");
+
 
           reject();
 
@@ -681,4 +682,6 @@ export class SegmentEditStructureComponent implements WithSave {
             }
         }
     }
+
+
 }
