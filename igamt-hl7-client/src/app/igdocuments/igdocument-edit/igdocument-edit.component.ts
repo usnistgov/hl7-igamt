@@ -623,7 +623,7 @@ export class IgDocumentEditComponent {
             this.tree.treeModel.update();
 
           }, error=>{
-            
+
           });
         }
       )
