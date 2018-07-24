@@ -68,10 +68,4 @@ public class SectionSerializationUtil {
     return null;
   }
 
-  public static Element serializeSection(Section section, int level) throws SerializationException {
-    //This is used only for text sections (narratives)
-    return serializeSection(section, level, null, null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null, null, null);
-  }
-
 }

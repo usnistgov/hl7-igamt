@@ -21,7 +21,23 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> contain the constant value '<input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;"/>'  <p-checkbox id="casesensitive" name="casesensitive" [(ngModel)]="constraint.complement.casesensitive" binary="true"></p-checkbox> Case Sensitive
+
+                    <div class="ui-g-12 ui-md-4">
+                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <ul class="a">
+                            <li *ngIf="constraint.subject.path && constraint.subject.path.repeatable">in <p-dropdown id="intanceNum" name="intanceNum" required #intanceNum="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum" placeholder="Select instance"></p-dropdown> occurrence of the repeatable field</li>
+                            <!--<li *ngIf="constraint.subject.path && constraint.subject.path.repeatable">in <p-dropdown id="intanceNum2" name="intanceNum2" required #intanceNum2="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum2" placeholder="Select instance"></p-dropdown> occurrence of the repeatable OBSERVATION Group</li>-->
+                            <!--<li *ngIf="constraint.subject.path && constraint.subject.path.repeatable">in <p-dropdown id="intanceNum3" name="intanceNum3" required #intanceNum3="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum3" placeholder="Select instance"></p-dropdown> occurrence of the repeatable ORDER Group</li>-->
+
+                        </ul>
+
+                    </div>
+                    <div class="ui-g-12 ui-md-2">
+                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+                        contain the constant value '<input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;"/>'  <p-checkbox id="casesensitive" name="casesensitive" [(ngModel)]="constraint.complement.casesensitive" binary="true"></p-checkbox> Case Sensitive
+                    </div>
                 </div>
             </div>
         </div>
@@ -31,8 +47,11 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input id="listValue_{{idx}}" name="listValue_{{idx}}" required [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>
+                    The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input id="listValue_{{idx}}" name="listValue_{{idx}}" required [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>
                 </div>
+                <!--<div class="ui-g-12 ui-md-10">-->
+                    <!--The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <span *ngIf="constraint.subject.path && constraint.subject.path.repeatable">in <p-dropdown id="intanceNum" name="intanceNum" required #intanceNum="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum" placeholder="Select instance"></p-dropdown> occurrence of the repeatable field in <p-dropdown id="intanceNum" name="intanceNum" required #intanceNum="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum2" placeholder="Select instance"></p-dropdown> occurrence of the repeatable OBX in OBSERVATION group in <p-dropdown id="intanceNum" name="intanceNum" required #intanceNum="ngModel" [options]="instanceNums" [(ngModel)]="constraint.instanceNum3" placeholder="Select instance"> </p-dropdown> occurrence of the repeatable ORDER group</span>  <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input id="listValue_{{idx}}" name="listValue_{{idx}}" required [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>-->
+                <!--</div>-->
             </div>
         </div>
 
@@ -42,7 +61,7 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-other'"></display-path>
+                    The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-other'"></display-path>
                 </div>
             </div>
         </div>
@@ -53,7 +72,7 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
+                    The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
                 </div>
             </div>
         </div>
@@ -63,7 +82,7 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="formatType" name="formatType" required #formatType="ngModel" [options]="formatTypes" [(ngModel)]="constraint.complement.type" placeholder="Select a format type"></p-dropdown>
+                    The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> <p-dropdown id="formatType" name="formatType" required #formatType="ngModel" [options]="formatTypes" [(ngModel)]="constraint.complement.type" placeholder="Select a format type"></p-dropdown>
                 </div>
             </div>
         </div>
@@ -73,11 +92,32 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    The value of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be presence
+                    The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path> <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be presence
                 </div>
             </div>
         </div>
     </div>
 
+
+    <p-fieldset legend="Advanced Fields" [toggleable]="true" collapsed="true" (onAfterToggle)="generateAssertionScript(constraint)">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label for="assertionScript">Path Information: </label>
+            </div>
+            <div class="ui-g-12 ui-md-5">
+                <input name="path1" id="path1" pInputText type="text" #path1="ngModel" class="ui-g-12" disabled [(ngModel)]="constraint.path1" />
+            </div>
+            <div class="ui-g-12 ui-md-5">
+                <input name="positionPath1" id="positionPath1" pInputText type="text" #positionPath1="ngModel" class="ui-g-12" disabled [(ngModel)]="constraint.positionPath1" />
+            </div>
+
+            <div class="ui-g-12 ui-md-2">
+                <label for="assertionScript">Assertion Script (Auto Generated): </label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <textarea id="assertionScript" name="assertionScript" class="form-control" disabled [(ngModel)]="constraint.assertionScript" pInputTextarea [(ngModel)]="property"></textarea>
+            </div>
+        </div>
+    </p-fieldset>
 
 </div>

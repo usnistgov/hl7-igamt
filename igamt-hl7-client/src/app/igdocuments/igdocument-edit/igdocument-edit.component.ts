@@ -618,8 +618,13 @@ export class IgDocumentEditComponent {
         result => {
 
          node.parent.data.children.push(result);
-          this.tree.treeModel.update();
-          this.setTreeModel();
+          this.setTreeModel().then(x=>{
+
+            this.tree.treeModel.update();
+
+          }, error=>{
+            
+          });
         }
       )
   }

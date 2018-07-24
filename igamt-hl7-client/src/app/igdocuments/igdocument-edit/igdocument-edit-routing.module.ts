@@ -24,10 +24,9 @@ import { IgErrorResolver } from './ig-error/ig-error.resolver';
           { path: '', component: IgDocumentMetadataComponent, resolve: { metadata : IgMetaDataResolver} ,canDeactivate: [SaveFormsGuard]},
           { path: 'segment', loadChildren: './segment-edit/segment-edit.module#SegmentEditModule' },
           { path: 'datatype', loadChildren: './datatype-edit/datatype-edit.module#DatatypeEditModule' },
-			    { path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' },
-          { path: 'error', component: IgErrorComponent , resolve:{error : IgErrorResolver}}
-
-
+          { path: 'error', component: IgErrorComponent , resolve:{error : IgErrorResolver}},
+			{ path: 'valueset', loadChildren: './valueset-edit/valueset-edit.module#ValuesetEditModule' },
+			{ path: 'conformanceprofile', loadChildren: './conformanceprofile-edit/conformanceprofile-edit.module#ConformanceprofileEditModule' }
         ]
 			},
       // {

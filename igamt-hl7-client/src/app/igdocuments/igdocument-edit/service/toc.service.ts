@@ -57,6 +57,16 @@ export  class TocService{
   })
   };
 
+  async getDatatypeById(id: string) {
+    const list = await this.getDataypeList();
+    const elm = _.find(list, function (x) {
+      return x.data.key.id === id;
+    });
+    return elm;
+  }
+
+
+
 
   setTreeModelInDB(treeModel){
     console.log("Setting tree model");
@@ -221,6 +231,21 @@ export  class TocService{
       });
     })
   }
+
+    getValuesetBindingIdentifiersList(){
+        return new Promise((resolve, reject)=> {
+
+            this.getNodesList(Types.VALUESETREGISTRY).then( children =>{
+                    resolve(_.map(children, function (obj) {
+                        return obj.data.bindingIdentifier;
+                    }))
+
+                },
+                error=>{
+                    resolve([]);
+                });
+        })
+    }
 
   getValueSetList(){
     return this.getNodesList(Types.VALUESETREGISTRY);

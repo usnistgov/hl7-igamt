@@ -1,0 +1,67 @@
+{
+  "id": {
+    "id": "mock_ARBITRARY_0001",
+    "version": 1
+  },
+  "scope": "USER",
+  "version": null,
+  "bindingIdentifier": "0001",
+  "name": "mock_ARBITRARY_0001",
+  "stability" : "Static",
+  "extensibility" : "Closed",
+  "contentDefinition" : "Extensional",
+  "numberOfCodes" : 2,
+
+  "displayCodeSystems" : [
+    {
+      "codeSysRef": "codesys1",
+      "identifier": "codesys11",
+      "description": "codesys 111",
+      "url": "url",
+      "codeSystemType" : "EXTERNAL"
+    },
+    {
+      "codeSysRef": "codesys2",
+      "identifier": "codesys22",
+      "description": "codesys 222",
+      "url": "url",
+      "codeSystemType" : "INTERNAL"
+    }
+  ],
+
+  "displayCodes" : [
+    {
+      "id" : "1111",
+      "value" : "CODE1",
+      "description" : "CODE1 desc",
+      "usage" : "R",
+      "comments" : null,
+      "codeSysRef" : {
+        "ref" : "codesys1",
+        "codeSystemType" : "EXTERNAL"
+      }
+    },
+    {
+      "id" : "2222",
+      "value" : "CODE2",
+      "description" : "CODE2 desc",
+      "usage" : "R",
+      "comments" : null,
+      "codeSysRef" : {
+        "ref" : "codesys1",
+        "codeSystemType" : "EXTERNAL"
+      }
+    },
+    {
+      "id" : "3333",
+      "value" : "CODE3",
+      "description" : "CODE3 desc",
+      "usage" : "R",
+      "comments" : null,
+      "codeSysRef" : {
+        "ref" : "codesys2",
+        "codeSystemType" : "INTERNAL"
+      }
+    }
+  ]
+}

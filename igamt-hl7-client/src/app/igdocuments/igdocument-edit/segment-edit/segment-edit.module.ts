@@ -15,6 +15,7 @@ import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {ButtonModule} from 'primeng/button';
+import {FieldsetModule} from 'primeng/fieldset';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
@@ -26,6 +27,20 @@ import {SegmentEditStructureResolver} from "./segment-structure/segment-edit-str
 import {SegmentEditPredefResolver} from "./segment-predef/segment-edit-predef.resolver";
 import {SegmentEditPostdefResolver} from "./segment-postdef/segment-edit-postdef.resolver";
 import {SegmentEditConformanceStatementsResolver} from "./segment-conformancestatements/segment-edit-conformancestatements.resolver";
+import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
+import {RegisterFormModelDirective} from '../../../common/form-directive/register-form-model.directive';
+import {CoConstraintTableService} from './coconstraint-table/coconstraint-table.service';
+import {HttpClientModule} from '@angular/common/http';
+import {HttpModule} from '@angular/http';
+import {CCHeaderDialogDmComponent} from './coconstraint-table/header-dialog/header-dialog-dm.component';
+import {CCHeaderDialogUserComponent} from './coconstraint-table/header-dialog/header-dialog-user.component';
+import {SegmentTreeComponent} from '../../../common/segment-tree/segment-tree.component';
+import {SegmentTreeNodeService} from '../../../common/segment-tree/segment-tree.service';
+import {TreeModule} from 'primeng/tree';
+import {TocService} from '../service/toc.service';
+import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
+import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
+import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
 
@@ -36,19 +51,28 @@ import {MessageService} from "primeng/components/common/messageservice";
         TabMenuModule,
         DialogModule,
         DropdownModule,
+        DndListModule,
         SegmentEditRoutingModule,
         UtilsModule,
+        TreeModule,
         TreeTableModule,
+        FieldsetModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,
+        HttpClientModule,
+        HttpModule,
+      DataTableModule,
+      DataListModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-    providers : [SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver,SegmentsService,MessageService],
-    declarations: [SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent],
+  exports:[CoConstraintTableComponent],
+
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService],
+    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

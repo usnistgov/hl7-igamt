@@ -1,0 +1,87 @@
+{
+  "id": {
+    "id": "5a203e68d3a51dfc4512407e",
+    "version": 1
+  },
+  "name": "OBX",
+  "label": "OBXTXT",
+  "scope": "ARCHIVED",
+  "version": null,
+  "children": [
+    {"data": {
+      "id": "59bbdea0a9acdef2ee04f39c",
+      "name": "Set ID - OBX",
+      "position": 1,
+      "usage": "R",
+      "type": "FIELD",
+      "text": "WOO",
+      "custom": false,
+      "maxLength": "4",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_SI"},
+      "min": 1,
+      "max": "1"
+    }},
+    {"data": {
+      "id": "59bbdea0a9acdef2ee04f39d",
+      "name": "Value Type",
+      "position": 2,
+      "usage": "R",
+      "type": "FIELD",
+      "text": "",
+      "custom": false,
+      "maxLength": "3",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ID"},
+      "min": 1,
+      "max": "1"
+    }},
+    {"data": {
+      "id": "59bbdea0a9acdef2ee04f39e",
+      "name": "Observation Identifier",
+      "position": 3,
+      "usage": "R",
+      "type": "FIELD",
+      "text": "",
+      "custom": false,
+      "maxLength": "705",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_CWE"},
+      "min": 1,
+      "max": "1"
+    }},
+    {"data": {
+      "id": "59bbdea0a9acdef2ee04f39f",
+      "name": "Observation Sub-ID",
+      "position": 4,
+      "usage": "C",
+      "type": "FIELD",
+      "text": "",
+      "custom": false,
+      "maxLength": "705",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "mock_ARBITRARY_ST"},
+      "min": 1,
+      "max": "2"
+    }},
+    {"data": {
+      "id": "59bbdea0abacdea2ee02f39f",
+      "name": "Observation Value",
+      "position": 5,
+      "usage": "C",
+      "type": "FIELD",
+      "text": "",
+      "custom": false,
+      "maxLength": "705",
+      "minLength": "0",
+      "confLength": "NA",
+      "ref": {"id": "VARIES"},
+      "min": 1,
+      "max": "2"
+    }}
+  ]
+}
