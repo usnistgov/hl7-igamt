@@ -3,26 +3,32 @@
 }
 
 .label-datatype {
+  color: white;
   background-color: rgba(52, 242, 101, 0.91);
 }
 
 .label-segment {
+  color: white;
   background-color: #0f44f2;
 }
 
 .label-field {
+  color: white;
   background-color: #f24a08;
 }
 
 .label-component {
+  color: white;
   background-color: #f2c60d;
 }
 
 .label-dynamicCase {
+  color: white;
   background-color: #ff43d8;
 }
 
 .label-gray {
+  color: white;
   background-color: gray;
 }
 

@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import 'rxjs/add/operator/toPromise';
-import {AlertModule} from "ngx-bootstrap";
+import {AlertModule} from 'ngx-bootstrap';
 import { AccordionModule } from 'primeng/primeng';
 import { AutoCompleteModule } from 'primeng/primeng';
 
@@ -77,36 +77,38 @@ import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {LocationStrategy, HashLocationStrategy, CommonModule,APP_BASE_HREF} from '@angular/common';
+import {LocationStrategy, HashLocationStrategy, CommonModule, APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
-import {WorkspaceService} from "./service/workspace/workspace.service";
+import {WorkspaceService} from './service/workspace/workspace.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
-import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-import {AuthService} from "./login/auth.service";
-import {AuthGuard} from "./login/auth-guard.service";
-import {HttpClientModule} from "@angular/common/http";
-import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {AuthInterceptor} from "./requestInterceptor";
-import {UserService} from "./service/userService/user.service";
-import {HomeComponent} from "./home/home.component";
-import {AboutComponent} from "./about/about.component";
-import {NotFoundComponent} from "./common/404/404.component";
-import {LoginComponent} from "./login/login.component";
-import {RegisterComponent} from "./register/register.component";
+import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
+// import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
+import {AuthService} from './login/auth.service';
+import {AuthGuard} from './login/auth-guard.service';
+import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {AuthInterceptor} from './requestInterceptor';
+import {UserService} from './service/userService/user.service';
+import {HomeComponent} from './home/home.component';
+import {AboutComponent} from './about/about.component';
+import {NotFoundComponent} from './common/404/404.component';
+import {LoginComponent} from './login/login.component';
+import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
-import {AppBreadcrumbComponent} from "./app.breadcrumb.component";
-import {BreadcrumbService} from "./breadcrumb.service";
+import {AppBreadcrumbComponent} from './app.breadcrumb.component';
+import {BreadcrumbService} from './breadcrumb.service';
 import {ConstraintsService} from './service/constraints/constraints.service';
-import {SectionsService} from "./service/sections/sections.service";
+import {SectionsService} from './service/sections/sections.service';
 
-import {TableOptionsService} from "./service/configuration/table-options/table-options.service";
+import {TableOptionsService} from './service/configuration/table-options/table-options.service';
+// import {NgDragDropModule} from 'ng-drag-drop';
 import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
 import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
-import {ResetPasswordService} from "./reset-password/reset-password.service";
-import {ExportFontService} from "./service/configuration/export-font/export-font.service";
+import {ResetPasswordService} from './reset-password/reset-password.service';
+import {ExportFontService} from './service/configuration/export-font/export-font.service';
 
 @NgModule({
     imports: [
@@ -149,6 +151,7 @@ import {ExportFontService} from "./service/configuration/export-font/export-font
         InputTextModule,
         InputTextareaModule,
         LightboxModule,
+
         ListboxModule,
         MegaMenuModule,
         MessageModule,
