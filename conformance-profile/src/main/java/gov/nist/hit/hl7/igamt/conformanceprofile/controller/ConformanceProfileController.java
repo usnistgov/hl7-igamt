@@ -15,7 +15,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
@@ -110,7 +110,7 @@ public class ConformanceProfileController extends BaseController {
         throw new ConformanceProfileNotFoundException(id);
       }
       conformanceProfile = conformanceProfileService.save(conformanceProfile);
-      return new ResponseMessage(Type.SUCCESS, STRUCTURE_SAVED, id,
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id,
           conformanceProfile.getUpdateDate());
     } else {
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
@@ -123,7 +123,8 @@ public class ConformanceProfileController extends BaseController {
       Authentication authentication)
       throws ValidationException, ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = conformanceProfileService.savePredef(preDef);
-    return new ResponseMessage(Type.SUCCESS, PREDEF_SAVED, id, conformanceProfile.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id,
+        conformanceProfile.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/conformanceProfiles/{id}/postdef", method = RequestMethod.POST,
@@ -132,7 +133,8 @@ public class ConformanceProfileController extends BaseController {
       Authentication authentication)
       throws ValidationException, ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = conformanceProfileService.savePostdef(postDef);
-    return new ResponseMessage(Type.SUCCESS, POSTDEF_SAVED, id, conformanceProfile.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id,
+        conformanceProfile.getUpdateDate());
   }
 
 
@@ -142,7 +144,7 @@ public class ConformanceProfileController extends BaseController {
       @RequestBody DisplayConformanceProfileMetadata displayMetadata, Authentication authentication)
       throws ValidationException, ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = conformanceProfileService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Type.SUCCESS, METADATA_SAVED, id,
+    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id,
         conformanceProfile.getUpdateDate());
   }
 
@@ -155,7 +157,7 @@ public class ConformanceProfileController extends BaseController {
       throws ConformanceProfileValidationException, ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile =
         conformanceProfileService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Type.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
+    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         conformanceProfile.getUpdateDate());
 
   }

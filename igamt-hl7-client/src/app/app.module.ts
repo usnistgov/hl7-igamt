@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import 'rxjs/add/operator/toPromise';
 import {AlertModule} from 'ngx-bootstrap';
 import { AccordionModule } from 'primeng/primeng';
@@ -107,8 +107,11 @@ import {TableOptionsService} from './service/configuration/table-options/table-o
 // import {NgDragDropModule} from 'ng-drag-drop';
 import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
 import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
-import {ResetPasswordService} from './reset-password/reset-password.service';
-import {ExportFontService} from './service/configuration/export-font/export-font.service';
+import {ResetPasswordService} from "./reset-password/reset-password.service";
+import {ExportFontService} from "./service/configuration/export-font/export-font.service";
+import { ErrorComponent } from './error/error.component';
+import {ErrorResolver} from "./error/error.resolver";
+import {ErrorService} from "./error/error.service";
 
 @NgModule({
     imports: [
@@ -212,7 +215,8 @@ import {ExportFontService} from './service/configuration/export-font/export-font
         DocumentationComponent,
       AppBreadcrumbComponent,
       ResetPasswordRequestComponent,
-      ResetPasswordConfirmComponent
+      ResetPasswordConfirmComponent,
+      ErrorComponent
 
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
@@ -221,7 +225,11 @@ import {ExportFontService} from './service/configuration/export-font/export-font
       useClass: AuthInterceptor,
       multi: true
     },
+
+    // {provide: ErrorHandler, useClass: IgErrorHandler},
      WorkspaceService,
+    ErrorResolver,
+    ErrorService,
     ResetPasswordService,
     GeneralConfigurationService,
     IndexedDbService,

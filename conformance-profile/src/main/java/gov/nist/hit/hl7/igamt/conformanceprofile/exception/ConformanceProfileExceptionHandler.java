@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 
 /**
  * @author Harold Affo
@@ -33,7 +33,7 @@ public class ConformanceProfileExceptionHandler {
   @ExceptionHandler({ConformanceProfileValidationException.class})
   public ResponseMessage handleValidationException(
       ConformanceProfileValidationException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -42,7 +42,7 @@ public class ConformanceProfileExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({ConformanceProfileException.class})
   public ResponseMessage handleSegmentException(ConformanceProfileException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -52,7 +52,7 @@ public class ConformanceProfileExceptionHandler {
   @ExceptionHandler({ConformanceProfileNotFoundException.class})
   public ResponseMessage handleConformanceProfileNotFoundException(
       ConformanceProfileNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Type.FAILED, exception.getLocalizedMessage());
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 

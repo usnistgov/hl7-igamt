@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
@@ -235,6 +237,19 @@ public class IgServiceImpl implements IgService {
     query.limit(1);
     Ig ig = mongoTemplate.findOne(query, Ig.class);
     return ig;
+
+  }
+
+  @Override
+  public UpdateResult updateAttribute(String id, String attributeName, Object value) {
+    // TODO Auto-generated method stub
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.fields().include(attributeName);
+    Update update = new Update();
+    update.set(attributeName, value);
+    update.set("updateDate", new Date());
+    return mongoTemplate.updateFirst(query, update, Ig.class);
 
   }
 

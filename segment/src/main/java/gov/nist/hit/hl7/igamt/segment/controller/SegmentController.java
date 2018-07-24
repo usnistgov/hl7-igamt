@@ -18,7 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -107,7 +107,7 @@ public class SegmentController extends BaseController {
         throw new SegmentNotFoundException(id);
       }
       segment = segmentService.save(segment);
-      return new ResponseMessage(Type.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
     } else {
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
     }
@@ -118,7 +118,7 @@ public class SegmentController extends BaseController {
   public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
       Authentication authentication) throws ValidationException, SegmentNotFoundException {
     Segment segment = segmentService.savePredef(preDef);
-    return new ResponseMessage(Type.SUCCESS, PREDEF_SAVED, id, segment.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, segment.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.POST,
@@ -126,7 +126,7 @@ public class SegmentController extends BaseController {
   public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
       Authentication authentication) throws ValidationException, SegmentNotFoundException {
     Segment segment = segmentService.savePostdef(postDef);
-    return new ResponseMessage(Type.SUCCESS, POSTDEF_SAVED, id, segment.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, segment.getUpdateDate());
   }
 
 
@@ -136,7 +136,7 @@ public class SegmentController extends BaseController {
       @RequestBody DisplayMetadata displayMetadata, Authentication authentication)
       throws ValidationException, SegmentNotFoundException {
     Segment segment = segmentService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Type.SUCCESS, METADATA_SAVED, id, segment.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id, segment.getUpdateDate());
   }
 
 
@@ -146,7 +146,7 @@ public class SegmentController extends BaseController {
       Authentication authentication, @RequestBody SegmentConformanceStatement conformanceStatement)
       throws SegmentValidationException, SegmentNotFoundException {
     Segment segment = segmentService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Type.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
+    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         segment.getUpdateDate());
 
   }

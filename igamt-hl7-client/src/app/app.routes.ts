@@ -9,6 +9,8 @@ import {RegisterComponent} from "./register/register.component";
 import {ConfigurationComponent} from "./configuration/configuration.component";
 import {ResetPasswordRequestComponent} from "./reset-password/reset-password-request/reset-password-request.component";
 import {ResetPasswordConfirmComponent} from "./reset-password/reset-password-confirm/reset-password-confirm.component";
+import {ErrorComponent} from "./error/error.component";
+import {ErrorResolver} from "./error/error.resolver";
 
 
 export const routes: Routes = [
@@ -28,6 +30,8 @@ export const routes: Routes = [
   {path: 'register', component: RegisterComponent},
   {path: 'reset-password', component: ResetPasswordRequestComponent},
   {path: 'reset-password-confirm/:token', component: ResetPasswordConfirmComponent},
+  {path: 'error', component: ErrorComponent, resolve:{error : ErrorResolver}},
+
 
 
   {path : '**', component: NotFoundComponent}

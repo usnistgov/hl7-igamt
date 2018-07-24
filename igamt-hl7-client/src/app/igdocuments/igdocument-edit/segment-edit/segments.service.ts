@@ -1,19 +1,23 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {Router} from "@angular/router";
+import {IgErrorService} from "../ig-error/ig-error.service";
+import {LoadingService} from "../service/loading.service";
 
 
 @Injectable()
 export class SegmentsService {
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService) {
   }
 
   public getSegmentMetadata(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
+      this.loadingService.show();
 
         this.http.get('api/segments/' + id + '/metadata').toPromise().then(serverSegmentMetadata => {
           resolve(serverSegmentMetadata);
         }, error => {
-          reject(error);
+          this.igErrorService.redirect(error);
         });
       });
     return promise;
@@ -23,8 +27,13 @@ export class SegmentsService {
     const promise = new Promise<any>((resolve, reject) => {
         this.http.get('api/segments/' + id + '/structure').toPromise().then(serverSegmentStructure => {
           resolve(serverSegmentStructure);
+
         }, error => {
-          reject(error);
+          console.log("Error");
+          resolve(null);
+          this.igErrorService.redirect(error);
+
+
         });
     });
     return promise;
@@ -35,7 +44,7 @@ export class SegmentsService {
         this.http.get('api/segments/' + id + '/crossReference').toPromise().then(serverSegmentCrossReference => {
           resolve(serverSegmentCrossReference);
         }, error => {
-          reject(error);
+          this.igErrorService.redirect(error);
         });
       });
     return promise;
@@ -46,19 +55,37 @@ export class SegmentsService {
         this.http.get('api/segments/' + id + '/postdef').toPromise().then(serverSegmentPostDef => {
           resolve(serverSegmentPostDef);
         }, error => {
-          reject(error);
+          this.igErrorService.redirect(error);
         });
       });
     return promise;
   }
 
   public getSegmentPreDef(id): Promise<any> {
-       return  this.http.get('api/segments/' + id + '/predef').toPromise();
-
+    const promise = new Promise<any>((resolve, reject) => {
+      this.http.get('api/segments/' + id + '/predef').toPromise().then(serverSegmentPostDef => {
+        resolve(serverSegmentPostDef);
+      }, error => {
+        this.igErrorService.redirect(error);
+      });
+    });
+    return promise;
   }
 
+
+
+
   public getSegmentConformanceStatements(id): Promise<any> {
-        return this.http.get('api/segments/' + id + '/conformancestatement').toPromise();
+    const promise = new Promise<any>((resolve, reject) => {
+
+
+      return this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(saveResponse=>{
+
+    }, error => {
+      this.igErrorService.showError(error);
+    });
+  });
+  return promise;
   }
 
   public saveSegmentMetadata(id, metadata): Promise<any> {
