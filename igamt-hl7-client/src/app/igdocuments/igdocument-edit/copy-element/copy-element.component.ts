@@ -7,6 +7,7 @@ import {FormGroup, Validators, ValidatorFn, AbstractControl, FormControl} from "
 import {Types} from "../../../common/constants/types";
 import {CopyService} from "./copy.service";
 import {SectionsService} from "../../../service/sections/sections.service";
+import {IgErrorService} from "../ig-error/ig-error.service";
 @Component({
   selector: 'app-copy-element',
   templateUrl: './copy-element.component.html',
@@ -24,7 +25,7 @@ export class CopyElementComponent extends PrimeDialogAdapter{
   namingForm:FormGroup;
 
 
-  constructor(private router: Router, private route: ActivatedRoute,private copyService:CopyService ) {
+  constructor(private router: Router, private route: ActivatedRoute,private copyService:CopyService, private igErrorService: IgErrorService ) {
     super();
 
     this.namingForm= new FormGroup({
@@ -114,6 +115,10 @@ export class CopyElementComponent extends PrimeDialogAdapter{
       res => {
         console.log(res);
         this.closeWithData(res);
+      } ,error =>{
+        this.igErrorService.showError(error);
+
+
       }
     )
 

@@ -55,6 +55,10 @@ import {ExportService} from "./service/export.service";
 import {CopyService} from "./copy-element/copy.service";
 import {NamingConventionModule} from "../../common/naming-convention/naming-convention.module";
 import {IgDocumentService} from "./ig-document.service";
+import { IgErrorComponent } from './ig-error/ig-error.component';
+import {IgErrorService} from "./ig-error/ig-error.service";
+import {IgErrorResolver} from "./ig-error/ig-error.resolver";
+import {LoadingService} from "./service/loading.service";
 
 
 @NgModule({
@@ -100,13 +104,13 @@ import {IgDocumentService} from "./ig-document.service";
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent
   ],
   entryComponents: [
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

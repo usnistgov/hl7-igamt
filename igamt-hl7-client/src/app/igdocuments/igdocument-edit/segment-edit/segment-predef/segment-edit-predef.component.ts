@@ -9,6 +9,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 import {SegmentsService} from "../segments.service";
+import {IgErrorService} from "../../ig-error/ig-error.service";
 
 
 
@@ -26,7 +27,7 @@ export class SegmentEditPredefComponent implements WithSave {
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient){
+    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient,private igErrorService:IgErrorService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -75,6 +76,7 @@ export class SegmentEditPredefComponent implements WithSave {
 
         }, error => {
 
+          this.igErrorService.showError(error);
           console.log("error saving");
           reject();
 

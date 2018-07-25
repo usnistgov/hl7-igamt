@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseDisplay;
@@ -43,7 +44,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 @Service
 public interface DisplayConverterService {
 
-  public IGDisplay convertDomainToModel(Ig ig);
+  public IGDisplay convertDomainToModel(Ig ig) throws IGConverterException;
 
   public Ig ConvertModelToDomain(IGDisplay ig);
 
@@ -99,5 +100,11 @@ public interface DisplayConverterService {
    */
   public AddValueSetsResponseDisplay convertDatatypeResponseToDisplay(
       AddValueSetResponseObject objects);
+
+  /**
+   * @param toc
+   * @return
+   */
+  public Set<TextSection> convertTocToDomain(List<TreeNode> toc);
 
 }
