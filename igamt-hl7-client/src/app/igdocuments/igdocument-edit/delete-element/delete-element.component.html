@@ -1,0 +1,38 @@
+<p-dialog [(visible)]="_visible">
+  <p-header>
+    Delete Confirmation
+  </p-header>
+  <form #namingForm="ngForm" novalidate>
+
+    <ng-container [ngSwitch]="type">
+      <ng-container *ngSwitchCase="'TEXT'">
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'DATATYPE'">
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'SEGMENT'">
+
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'VALUESET'">
+
+      </ng-container>
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+      </ng-container>
+
+    </ng-container>
+
+
+  </form>
+
+
+  <p-footer>
+    <p-button styleClass="green-btn" (onClick)="submit()" label="Submit"
+              icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+
+</p-dialog>
+
+

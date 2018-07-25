@@ -22,6 +22,7 @@ import {SectionsService} from "../../service/sections/sections.service";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {LoadingService} from "./service/loading.service";
+import {DeleteElementComponent} from "./delete-element/delete-element.component";
 
 
 @Component({
@@ -37,6 +38,8 @@ export class IgDocumentEditComponent {
   @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
+  @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
+
 
   igId:any;
   exportModel: MenuItem[];
@@ -245,12 +248,12 @@ export class IgDocumentEditComponent {
   }
 
   setTreeModel(){
-    this.tocService.setTreeModel(this.tree.treeModel);
+    return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 
   initTreeModel(){
-    this.tocService.initTreeModel(this.tree.treeModel);
+    return this.tocService.initTreeModel(this.tree.treeModel);
   }
 
 
@@ -623,11 +626,107 @@ export class IgDocumentEditComponent {
             this.tree.treeModel.update();
 
           }, error=>{
-            
+
           });
         }
       )
   }
+
+
+
+
+  // Delete
+
+  deleteDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type
+    })
+      .subscribe(
+        result => {
+        }
+      )
+  };
+
+  deleteSegment(node){
+
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let segments=[];
+          segments.push(result);
+          toDistribute.segments=segments;
+
+        }
+      )
+  };
+
+  deleteValueSet(node){
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type
+
+    })
+      .subscribe(
+        result => {
+
+        }
+      )
+
+  };
+
+  deleteConformanceProfile(node){
+
+    this.deleteElement.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type
+    })
+      .subscribe(
+        result => {
+
+        }
+      )
+  }
+
+  deleteSection(node){
+    //console.log( this.tree._options);
+    let ret =  this.tree.treeModel.getNodeById(node.id);
+    this.deleteElement.open({
+      igDocumentId : this.igId,
+      id:node.id,
+      name:node.data.data.label,
+      type:node.data.data.type,
+
+    })
+      .subscribe(
+        result => {
+        }
+      )
+  }
+
+
+
+
+
+
 
 
 

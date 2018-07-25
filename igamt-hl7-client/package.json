@@ -43,6 +43,7 @@
     "ngx-contextmenu": "^4.2.0",
     "ngx-cookie-service": "^1.0.10",
     "ngx-cookies": "^1.0.5",
+    "ngx-drag-and-drop-lists": "^1.2.5",
     "ngx-modal-dialog": "^2.0.1",
     "popper.js": "^1.12.9",
     "primeng": "^5.2.6",
@@ -54,7 +55,7 @@
     "zone.js": "^0.8.14"
   },
   "devDependencies": {
-    "@angular/cli": "1.6.5",
+    "@angular/cli": "1.4.10",
     "@angular/compiler-cli": "5.2.0",
     "@types/jasmine": "2.5.53",
     "@types/jasminewd2": "2.0.2",

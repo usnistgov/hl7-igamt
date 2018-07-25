@@ -447,7 +447,7 @@ public class IGDocumentController extends BaseController {
    * @throws XReferenceException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete",
-      method = RequestMethod.POST, produces = {"application/json"})
+      method = RequestMethod.DELETE, produces = {"application/json"})
   public ResponseMessage deleteDatatype(@PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
@@ -483,7 +483,7 @@ public class IGDocumentController extends BaseController {
    * @throws XReferenceException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/delete",
-      method = RequestMethod.POST, produces = {"application/json"})
+      method = RequestMethod.DELETE, produces = {"application/json"})
   public ResponseMessage deleteSegment(@PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
@@ -518,7 +518,7 @@ public class IGDocumentController extends BaseController {
    * @throws XReferenceException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/delete",
-      method = RequestMethod.POST, produces = {"application/json"})
+      method = RequestMethod.DELETE, produces = {"application/json"})
   public ResponseMessage deleteValueSet(@PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
@@ -554,7 +554,7 @@ public class IGDocumentController extends BaseController {
    * @throws XReferenceException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete",
-      method = RequestMethod.POST, produces = {"application/json"})
+      method = RequestMethod.DELETE, produces = {"application/json"})
   public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
       @PathVariable("conformanceprofileId") String conformanceProfileId,
       Authentication authentication)
