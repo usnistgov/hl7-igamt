@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import {PrimeDialogAdapter} from "../../../common/prime-ng-adapters/prime-dialog-adapter";
 import {DeleteElementService} from "./delete-element.service";
 import {IgErrorService} from "../ig-error/ig-error.service";
+import {ExceptionType} from "../../../common/constants/ExceptionType";
+import {TocService} from "../service/toc.service";
 
 @Component({
   selector: 'app-delete-element',
@@ -14,8 +16,12 @@ export class DeleteElementComponent  extends PrimeDialogAdapter{
   ext="";
   type="";
   id="";
+  node="";
 
-  constructor(private deleteService:DeleteElementService, private igErrorService: IgErrorService ) {
+  xreferences:null;
+
+
+  constructor(private deleteService:DeleteElementService, private igErrorService: IgErrorService) {
     super();
 
 
@@ -23,6 +29,8 @@ export class DeleteElementComponent  extends PrimeDialogAdapter{
 
   ngOnInit() {
     // Mandatory
+    this.xreferences=null;
+
     super.hook(this);
   }
 
@@ -32,7 +40,7 @@ export class DeleteElementComponent  extends PrimeDialogAdapter{
   }
 
   close() {
-
+    this.xreferences=null;
     this.dismissWithNoData();
   }
 
@@ -45,11 +53,22 @@ export class DeleteElementComponent  extends PrimeDialogAdapter{
 
     this.deleteService.deleteElement(this.igId, this.id,this.type).subscribe(
       res => {
-        console.log(res);
-        this.closeWithData(res);
-      } ,error =>{
-        this.igErrorService.showError(error);
+        this.dismissWithData(this.id);
 
+      } ,error =>{
+
+        if(error.error.type ==ExceptionType.XREFERENCEFOUND){
+
+
+
+            this.xreferences=error.error.xreferences;
+
+        }else{
+
+           this.igErrorService.showError(error);
+
+
+        }
 
       }
     )
@@ -60,4 +79,8 @@ export class DeleteElementComponent  extends PrimeDialogAdapter{
   print(obj){
     console.log(obj);
   }
+
+
+
+
 }

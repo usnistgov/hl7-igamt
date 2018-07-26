@@ -11,7 +11,9 @@
  */
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
-public class IGTocUpdateException extends Exception {
+import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+
+public class IGTocUpdateException extends GenericException {
   private static final long serialVersionUID = 1L;
 
   public IGTocUpdateException(String id) {

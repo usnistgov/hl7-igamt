@@ -11,11 +11,13 @@
  */
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+
 /**
  * @author ena3
  *
  */
-public class IGConverterException extends Exception {
+public class IGConverterException extends GenericException {
   private static final long serialVersionUID = 1L;
 
   public IGConverterException(String message) {

@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.mongodb.BasicDBObject;
+import org.bson.Document;
 
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 
@@ -43,7 +43,7 @@ public abstract class XRefService {
    *        segments referencing the datatype will be returned
    * @return
    */
-  public abstract Map<String, List<BasicDBObject>> getDatatypeReferences(String id,
+  public abstract Map<String, List<Document>> getDatatypeReferences(String id,
       Set<String> filterDatatypeIds, Set<String> filterSegmentIds);
 
   /**
@@ -53,7 +53,7 @@ public abstract class XRefService {
    *        filtering which means all conformance profiles referencing the segment will be returned
    * @return the references a segment from a collection of conformance profile ids
    */
-  public abstract Map<String, List<BasicDBObject>> getSegmentReferences(String id,
+  public abstract Map<String, List<Document>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds);
 
 
@@ -67,7 +67,7 @@ public abstract class XRefService {
    * @return
    * @throws XReferenceException
    */
-  public abstract Map<String, List<BasicDBObject>> getValueSetReferences(String id,
+  public abstract Map<String, List<Document>> getValueSetReferences(String id,
       Set<String> datatypeIds, Set<String> segmentIds, Set<String> conformanceProfiles)
       throws XReferenceException;
 

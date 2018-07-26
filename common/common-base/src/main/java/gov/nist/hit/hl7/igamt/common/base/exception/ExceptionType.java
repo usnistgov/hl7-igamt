@@ -9,19 +9,39 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.exceptions;
-
-import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+package gov.nist.hit.hl7.igamt.common.base.exception;
 
 /**
- * @author Harold Affo
+ * @author ena3
  *
  */
-public class CloneException extends GenericException {
-  private static final long serialVersionUID = 1L;
+public enum ExceptionType {
 
-  public CloneException(String string) {
-    super(string);
+  XREFERENCEFOUND("XREFERENCEFOUND");
+
+  ExceptionType(String value) {
+    this.value = value;
+  }
+
+  private final String value;
+
+  public String getValue() {
+    return value;
+  }
+
+  @Override
+  public String toString() {
+    // TODO Auto-generated method stub
+    return this.value;
+  }
+
+  public static ExceptionType fromString(String text) {
+    for (ExceptionType t : ExceptionType.values()) {
+      if (t.value.equalsIgnoreCase(text)) {
+        return t;
+      }
+    }
+    return null;
   }
 
 }

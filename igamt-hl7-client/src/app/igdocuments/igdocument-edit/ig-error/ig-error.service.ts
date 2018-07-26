@@ -48,7 +48,6 @@ export class IgErrorService {
 
   showError(error:any) {
     console.log(error);
-
     this.messageService.add({severity:'error', summary:error.error.error, detail:error.error.message, id:'IGERROR'});
   }
 

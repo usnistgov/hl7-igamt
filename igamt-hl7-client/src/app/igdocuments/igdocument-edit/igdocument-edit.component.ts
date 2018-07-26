@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 
 import {SelectItem} from "primeng/components/common/selectitem";
 
+import * as _ from 'lodash'
 
 import {ViewChildren, ViewChild} from "@angular/core";
 import {TocService} from "./service/toc.service";
@@ -615,7 +616,6 @@ export class IgDocumentEditComponent {
       id:node.id,
       name:node.data.data.label,
       type:node.data.data.type,
-
     })
       .subscribe(
         result => {
@@ -645,10 +645,15 @@ export class IgDocumentEditComponent {
       id:node.data.data.key.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
-      type:node.data.data.type
+      type:node.data.data.type,
+      node:node.data.data
     })
       .subscribe(
-        result => {
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+
         }
       )
   };
@@ -660,14 +665,15 @@ export class IgDocumentEditComponent {
       id:node.data.data.key.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
-      type:node.data.data.type
+      type:node.data.data.type,
+      node:node.data.data
     })
       .subscribe(
-        result => {
-          let toDistribute:any={};
-          let segments=[];
-          segments.push(result);
-          toDistribute.segments=segments;
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+
 
         }
       )
@@ -679,11 +685,15 @@ export class IgDocumentEditComponent {
       id:node.data.data.key.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
-      type:node.data.data.type
+      type:node.data.data.type,
+      node:node.data.data
 
     })
       .subscribe(
-        result => {
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
 
         }
       )
@@ -697,10 +707,14 @@ export class IgDocumentEditComponent {
       id:node.data.data.key.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
-      type:node.data.data.type
+      type:node.data.data.type,
+      node:node.data.data
     })
       .subscribe(
-        result => {
+        id => {
+
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
 
         }
       )
@@ -714,14 +728,17 @@ export class IgDocumentEditComponent {
       id:node.id,
       name:node.data.data.label,
       type:node.data.data.type,
+      node:node.data.data
 
     })
       .subscribe(
-        result => {
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.setTreeModel();
+
         }
       )
   }
-
 
 
 

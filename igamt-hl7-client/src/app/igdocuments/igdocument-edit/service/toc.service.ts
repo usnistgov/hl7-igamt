@@ -51,6 +51,7 @@ export  class TocService{
         x.toc = treeModel.nodes;
         this.saveNodes(x.id, x.toc,resolve, reject);
         this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+          this.treeModel.update();
          resolve(true);
         });
       });
@@ -76,11 +77,13 @@ export  class TocService{
         x => {
           x.toc = treeModel.nodes;
           this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+            this.treeModel.update();
             resolve(true);
           });
         });
     })
-  };
+  }
+
 
 
 
@@ -98,6 +101,8 @@ export  class TocService{
         });
     })
   };
+
+
 
 
   setMetaData(metadata){
@@ -322,6 +327,23 @@ export  class TocService{
 
   }
 
+
+  deleteNodeById(id){
+
+    let node =this.treeModel.getNodeById(id);
+
+    if(node){
+
+      let parentNode = node.realParent ? node.realParent : node.treeModel.virtualRoot;
+      _.remove(parentNode.data.children, function (child:any) {
+        return child.id === id;
+      });
+
+      if (node.parent.data.children.length === 0) {
+        node.parent.data.hasChildren = false;
+      }
+    }
+  }
 
 
 

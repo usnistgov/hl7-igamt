@@ -1,14 +1,14 @@
 import { Injectable } from '@angular/core';
-import {IgErrorService} from "../ig-error/ig-error.service";
-import {PrimeDialogAdapter} from "../../../common/prime-ng-adapters/prime-dialog-adapter";
 import {HttpClient} from "@angular/common/http";
 import {SectionsService} from "../../../service/sections/sections.service";
 import {Types} from "../../../common/constants/types";
+import {TocService} from "../service/toc.service";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class DeleteElementService  {
 
-  constructor(private http: HttpClient,private sectionsService:SectionsService) {
+  constructor(private http: HttpClient,private sectionsService:SectionsService, private  tocService : TocService) {
 
   }
 
@@ -46,7 +46,9 @@ export class DeleteElementService  {
     }else if (type==Types.CONFORMANCEPROFILE){
       return this.deleteConformanceProfile(igId, id);
     }else if(type==Types.TEXT){
-      //return this.deleteSection(igId, id);
+
+
+     return Observable.of(id);
     }
     else{
       return null;
@@ -60,11 +62,6 @@ export class DeleteElementService  {
           let result: any =section;
 
           this.deleteSection(result);
-
-
-
-
-
         },
         error =>{
 

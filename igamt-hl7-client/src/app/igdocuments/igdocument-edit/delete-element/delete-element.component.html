@@ -1,27 +1,14 @@
-<p-dialog [(visible)]="_visible">
+<p-dialog [(visible)]="_visible" *ngIf="xreferences==null">
+
   <p-header>
     Delete Confirmation
   </p-header>
   <form #namingForm="ngForm" novalidate>
 
-    <ng-container [ngSwitch]="type">
-      <ng-container *ngSwitchCase="'TEXT'">
-
-      </ng-container>
-      <ng-container *ngSwitchCase="'DATATYPE'">
-
-      </ng-container>
-      <ng-container *ngSwitchCase="'SEGMENT'">
 
 
-      </ng-container>
-      <ng-container *ngSwitchCase="'VALUESET'">
+      Are You sure You want to delete <display-label *ngIf="node" [elm]="node" [igId]="igId"></display-label>
 
-      </ng-container>
-      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-      </ng-container>
-
-    </ng-container>
 
 
   </form>
@@ -34,5 +21,21 @@
 
 
 </p-dialog>
+
+
+
+<p-dialog [(visible)]="_visible" *ngIf="xreferences!==null" (onHide)="xreferences=null">
+
+  <p-header>
+    Cross Reference found
+  </p-header>
+
+  {{xreferences|json}}
+  <p-footer>
+  </p-footer>
+
+
+</p-dialog>
+
 
 
