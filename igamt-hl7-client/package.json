@@ -43,6 +43,7 @@
     "ngx-contextmenu": "^4.2.0",
     "ngx-cookie-service": "^1.0.10",
     "ngx-cookies": "^1.0.5",
+    "ngx-drag-and-drop-lists": "^1.2.5",
     "ngx-modal-dialog": "^2.0.1",
     "popper.js": "^1.12.9",
     "primeng": "^5.2.6",
