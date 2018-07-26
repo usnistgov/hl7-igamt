@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,7 +86,11 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
     for (IGDocument ig : oldIGDocuments) {
       Set<ProfileComponentLink> newProfileComponentLinkSet = new HashSet<ProfileComponentLink>();
       for (ProfileComponentLink link : ig.getProfile().getProfileComponentLibrary().getChildren()) {
-        ProfileComponent pc = oldProfileComponentRepository.findOne(link.getId());
+        ProfileComponent pc = null;
+        Optional<ProfileComponent> optional = oldProfileComponentRepository.findById(link.getId());
+        if(optional.isPresent()) {
+          pc = optional.get();
+        }
         if (pc != null && pc.getChildren() != null && pc.getChildren().size() > 0) {
           List<String> spcList = new ArrayList<String>();
 
@@ -134,7 +139,7 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
             this.convertCompositeProfileStructure(oldCompositeProfileStructure);
         if (ig.getAccountId() != null) {
           Account acc = accountRepository.findByAccountId(ig.getAccountId());
-          if (acc.getAccountId() != null) {
+          if (acc != null && acc.getAccountId() != null) {
             if (acc.getUsername() != null) {
               convertedCompositeProfileStructure.setUsername(acc.getUsername());
             }

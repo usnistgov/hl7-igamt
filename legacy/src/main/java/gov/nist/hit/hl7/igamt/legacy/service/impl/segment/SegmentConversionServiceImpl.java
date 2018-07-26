@@ -114,7 +114,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
 
     if (oldSegment.getAccountId() != null) {
       Account acc = accountRepository.findByAccountId(oldSegment.getAccountId());
-      if (acc.getAccountId() != null) {
+      if (acc != null && acc.getAccountId() != null) {
         if (acc.getUsername() != null) {
           convertedSegment.setUsername(acc.getUsername());
         }
