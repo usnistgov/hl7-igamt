@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.legacy.service.impl.profilecomponent;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -107,31 +108,25 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       if (spc.getFrom().equals("segment")) {
         convertedProfileComponent.setLevel(Level.SEGMENT);
         convertedProfileComponent.setSourceId(spc.getSource().getSegmentId());
-        if (convertedProfileComponent.getSourceId() == null) {
-          try {
-            throw new Exception();
-          } catch (Exception e) {
-            System.out.println("Source(Segment) ID is missing for " + spc.getId());
-            e.printStackTrace();
+        if (convertedProfileComponent.getSourceId() != null) {
+          Segment oldSeg = null;
+          Optional<Segment> optional = oldSegmentRepository.findById(convertedProfileComponent.getSourceId());
+          if(optional.isPresent()) {
+            oldSeg = optional.get();
+            convertedProfileComponent.setStructure(oldSeg.getName());
           }
-        } else {
-          Segment oldSeg = oldSegmentRepository.findOne(convertedProfileComponent.getSourceId());
-          convertedProfileComponent.setStructure(oldSeg.getName());
         }
       } else if (spc.getFrom().equals("message")) {
         convertedProfileComponent.setLevel(Level.MESSAGE);
         convertedProfileComponent.setSourceId(spc.getSource().getMessageId());
 
-        if (convertedProfileComponent.getSourceId() == null) {
-          try {
-            throw new Exception();
-          } catch (Exception e) {
-            System.out.println("Source(Message) ID is missing for " + spc.getId());
-            e.printStackTrace();
+        if (convertedProfileComponent.getSourceId() != null) {
+          Message oldMsg = null;
+          Optional<Message> optional = oldMessageRepository.findById(convertedProfileComponent.getSourceId());
+          if(optional.isPresent()) {
+            oldMsg = optional.get();
+            convertedProfileComponent.setStructure(oldMsg.getStructID());
           }
-        } else {
-          Message oldMsg = oldMessageRepository.findOne(convertedProfileComponent.getSourceId());
-          convertedProfileComponent.setStructure(oldMsg.getStructID());
         }
       }
 

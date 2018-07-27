@@ -244,13 +244,13 @@ export class IgDocumentEditComponent {
 
   }
 
-  setTreeModel(): Promise<any>{
+  setTreeModel(){
     return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 
   initTreeModel(){
-    this.tocService.initTreeModel(this.tree.treeModel);
+    return this.tocService.initTreeModel(this.tree.treeModel);
   }
 
 
@@ -623,7 +623,7 @@ export class IgDocumentEditComponent {
             this.tree.treeModel.update();
 
           }, error=>{
-
+            
           });
         }
       )
