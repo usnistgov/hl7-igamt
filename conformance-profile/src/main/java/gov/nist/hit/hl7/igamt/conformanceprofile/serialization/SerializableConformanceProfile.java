@@ -74,6 +74,10 @@ public class SerializableConformanceProfile extends SerializableResource {
             conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
         conformanceProfileElement.addAttribute(new Attribute("structID",
             conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
+        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
+        if (bindingElement != null) {
+          conformanceProfileElement.appendChild(bindingElement);
+        }
         if (conformanceProfile.getChildren() != null
             && conformanceProfile.getChildren().size() > 0) {
           for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {

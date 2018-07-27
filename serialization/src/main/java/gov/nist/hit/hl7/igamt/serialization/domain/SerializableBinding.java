@@ -278,7 +278,9 @@ public class SerializableBinding extends SerializableElement {
    * @return
    */
   private Element serializeConformanceStatement(ConformanceStatement conformanceStatement) {
-    Element conformanceStatementElement = new Element("ConformanceStatement");
+    Element conformanceStatementElement = new Element("Constraint");
+    //Attribute type is used in the export to separate conformance statements (cs) from predicates (pre)
+    conformanceStatementElement.addAttribute(new Attribute("Type","cs"));
     conformanceStatementElement.addAttribute(new Attribute("identifier",
         conformanceStatement.getIdentifier() != null ? conformanceStatement.getIdentifier() : ""));
     if (conformanceStatement instanceof AssertionConformanceStatement) {
@@ -302,11 +304,12 @@ public class SerializableBinding extends SerializableElement {
    * @return
    */
   private Element serializePredicate(Predicate predicate) {
-    Element predicateElement = new Element("Predicate");
-    predicateElement.addAttribute(new Attribute("true",
-        predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
-    predicateElement.addAttribute(new Attribute("codeSystem",
-        predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
+    Element predicateElement = new Element("Constraint");
+    //Attribute type is used in the export to separate conformance statements (cs) from predicates (pre)
+    predicateElement.addAttribute(new Attribute("type","pre"));
+    String usage = (predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : "")+(predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : "");
+    predicateElement.addAttribute(new Attribute("usage",
+        usage != null ? usage : ""));
     if (predicate instanceof AssertionPredicate) {
       if (((AssertionPredicate) predicate).getAssertion() != null) {
         String description = ((AssertionPredicate) predicate).getAssertion().getDescription();

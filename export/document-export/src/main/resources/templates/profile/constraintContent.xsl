@@ -50,7 +50,7 @@
                     </xsl:attribute>
                     <xsl:if test="$type='cs'">
                         <xsl:element name="td">
-                            <xsl:value-of select="@Id" />
+                            <xsl:value-of select="@identifier" />
                         </xsl:element>
                     </xsl:if>
                     <xsl:if test="$type='pre'">
@@ -69,7 +69,7 @@
                         </xsl:element>
                     </xsl:if>
                      <xsl:element name="td">
-                        <xsl:value-of select="." />
+                        <xsl:value-of select="@description" />
                     </xsl:element>
                 </xsl:element>
             </xsl:when>

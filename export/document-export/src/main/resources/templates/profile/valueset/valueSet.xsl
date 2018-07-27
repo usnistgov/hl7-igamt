@@ -4,6 +4,8 @@
 	<xsl:import href="/templates/profile/resource/postDef.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetMetadata.xsl" />
 	<xsl:import href="/templates/profile/valueset/valueSetAttributes.xsl" />
+	<xsl:import href="/templates/profile/valueset/codes.xsl" />
+	<xsl:import href="/templates/profile/valueset/codeSystems.xsl" />
 	<xsl:template match="Valueset" mode="toc">
 		<xsl:element name="a">
 			<xsl:attribute name="href">

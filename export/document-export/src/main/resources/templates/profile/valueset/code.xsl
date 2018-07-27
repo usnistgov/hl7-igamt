@@ -22,7 +22,7 @@
 			</xsl:if>
 			<xsl:if test="$columnDisplay.valueSet.description = 'true'">
 				<xsl:element name="td">
-					<xsl:value-of select="@label" />
+					<xsl:value-of select="@description" />
 				</xsl:element>
 			</xsl:if>
 			<xsl:if test="$columnDisplay.valueSet.comment = 'true'">
