@@ -1,7 +1,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <xsl:template match="ValueSetBindingList">
-        <xsl:if test="count(./ValueSetBinding) &gt; 0">
+        <xsl:if test="count(./ValuedetBinding) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">
@@ -76,33 +76,33 @@
                     </xsl:element>
                 </xsl:element>
                 <xsl:element name="tbody">
-                    <xsl:for-each select="ValueSetBinding">
-                        <xsl:sort select="@SortLocation" data-type="number" order="ascending" />
+                    <xsl:for-each select="ValuesetBinding">
+                        <xsl:sort select="@location" data-type="text" order="ascending" />
                         <xsl:element name="tr">
                             <xsl:attribute name="class">
                                 <xsl:text>contentTr</xsl:text>
                             </xsl:attribute>
                             <xsl:element name="td">
-                                <xsl:value-of select="@Location"/>
+                                <xsl:value-of select="@location"/>
                             </xsl:element>
                             <xsl:element name="td">
-                                <xsl:value-of select="@BindingIdentifier"/>
+                                <xsl:value-of select="@bindingIdentifier"/>
                             </xsl:element>
                             <xsl:element name="td">
-                                <xsl:value-of select="@Name"/>
+                                <xsl:value-of select="@name"/>
                             </xsl:element>
                             <xsl:choose>
                                 <xsl:when test="@Type='VS'">
                                     <xsl:element name="td">
-                                        <xsl:value-of select="@BindingStrength"/>
+                                        <xsl:value-of select="@bindingStrength"/>
                                     </xsl:element>
                                     <xsl:element name="td">
                                         <xsl:choose>
-                                            <xsl:when test="normalize-space(@BindingLocation) = ''">
+                                            <xsl:when test="normalize-space(@bindingLocation) = ''">
                                                 <xsl:attribute name="class"><xsl:text>greyCell</xsl:text></xsl:attribute>
                                             </xsl:when>
                                             <xsl:otherwise>
-                                                <xsl:value-of select="@BindingLocation"/>
+                                                <xsl:value-of select="@bindingLocation"/>
                                             </xsl:otherwise>
                                         </xsl:choose>
                                     </xsl:element>
