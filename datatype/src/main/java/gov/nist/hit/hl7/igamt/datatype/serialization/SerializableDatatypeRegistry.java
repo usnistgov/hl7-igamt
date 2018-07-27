@@ -38,6 +38,7 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Set<String> bindedDatatypes;
   private Set<String> bindedComponents;
   private Set<SerializableDatatype> serializableDatatypes;
@@ -47,11 +48,12 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
    */
   public SerializableDatatypeRegistry(Section section, int level, DatatypeRegistry datatypeRegistry,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap, Set<String> bindedDatatypes, Set<String> bindedComponents) {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedDatatypes, Set<String> bindedComponents) {
     super(section, level, datatypeRegistry);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.bindedComponents = bindedComponents;
     this.bindedDatatypes = bindedDatatypes;
     this.serializableDatatypes = new HashSet<>();
@@ -70,7 +72,7 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
                 Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
                 SerializableDatatype serializableDatatype =
                     new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
-                        this.getChildLevel(), datatypeNamesMap, valuesetNamesMap, bindedComponents);
+                        this.getChildLevel(), datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedComponents);
                 if(serializableDatatype != null) {
                   this.serializableDatatypes.add(serializableDatatype);
                   Element datatypeElement = serializableDatatype.serialize();

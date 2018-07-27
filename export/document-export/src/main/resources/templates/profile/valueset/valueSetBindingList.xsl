@@ -1,7 +1,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 
     <xsl:template match="ValueSetBindingList">
-        <xsl:if test="count(./ValuedetBinding) &gt; 0">
+        <xsl:if test="count(./ValuesetBinding) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">

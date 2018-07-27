@@ -38,6 +38,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
 
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Set<String> bindedGroupsAndSegmentRefs;
   private Set<SerializableConformanceProfile> serializableConformanceProfiles;
@@ -48,10 +49,11 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   public SerializableConformanceProfileRegistry(Section section, int level,
       ConformanceProfileRegistry conformanceProfileRegistry,
       Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap,
-      Map<String, String> valuesetNamesMap, Set<String> bindedGroupsAndSegmentRefs) {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedGroupsAndSegmentRefs) {
     super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.segmentsMap = segmentsMap;
     this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
     this.serializableConformanceProfiles = new HashSet<>();
@@ -76,7 +78,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
               SerializableConformanceProfile serializableConformanceProfile =
                   new SerializableConformanceProfile(conformanceProfile,
                       String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
-                      this.valuesetNamesMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs);
+                      this.valuesetNamesMap, this.valuesetLabelMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs);
               if(serializableConformanceProfile != null) {
                 this.serializableConformanceProfiles.add(serializableConformanceProfile);
                 Element conformanceProfileElement = serializableConformanceProfile.serialize();

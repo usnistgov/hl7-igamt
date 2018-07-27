@@ -37,16 +37,18 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
   private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Set<String> bindedValueSets;
   private Set<SerializableValueSet> serializableValueSets;
+  private int maxNumberOfCodes;
 
   /**
    * @param section
    */
   public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
-      Map<String, SerializableValuesetStructure> valuesetsMap, Set<String> bindedValueSets) {
+      Map<String, SerializableValuesetStructure> valuesetsMap, Set<String> bindedValueSets, int maxNumberOfCodes) {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
     this.bindedValueSets = bindedValueSets;
     this.serializableValueSets = new HashSet<>();
+    this.maxNumberOfCodes = maxNumberOfCodes;
   }
 
   /*
@@ -66,7 +68,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
               if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
                 SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId().getId());
                 SerializableValueSet serializableValueSet = new SerializableValueSet(serializableValuesetStructure,
-                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
+                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel(), maxNumberOfCodes);
                 Element valuesetElement = serializableValueSet.serialize();
                 if (valuesetElement != null) {
                   valuesetRegistryElement.appendChild(valuesetElement);

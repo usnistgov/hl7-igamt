@@ -13,8 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -37,15 +41,17 @@ public class SerializableValueSet extends SerializableResource {
   private int level;
   
   private ValuesetStructure valuesetStructure;
+  private int maxNumberOfCodes;
 
   /**
    * @param valueSet
    * @param position
    */
-  public SerializableValueSet(SerializableValuesetStructure serializableValuesetStructure, String position, int level) {
+  public SerializableValueSet(SerializableValuesetStructure serializableValuesetStructure, String position, int level, int maxNumberOfCodes) {
     super(serializableValuesetStructure.getValueset(), position);
     this.level = level;
     this.valuesetStructure = serializableValuesetStructure.getValuesetStructure();
+    this.maxNumberOfCodes = maxNumberOfCodes;
   }
 
   @Override
@@ -81,7 +87,12 @@ public class SerializableValueSet extends SerializableResource {
         }
       }
       Element codesElement = new Element("Codes");
-      if (this.valuesetStructure.getDisplayCodes().size() > 0) {
+      Set<DisplayCode> displayCodes = this.valuesetStructure.getDisplayCodes();
+      if (displayCodes.size() > 0) {
+        if(displayCodes.size() > maxNumberOfCodes) {
+          List<DisplayCode> list = new ArrayList<DisplayCode>(displayCodes);
+          displayCodes = new LinkedHashSet<DisplayCode>(list.subList(0, maxNumberOfCodes));
+        }
         for (DisplayCode displayCode : this.valuesetStructure.getDisplayCodes()) {
           Element codeRefElement = new Element("Code");
           codeRefElement.addAttribute(

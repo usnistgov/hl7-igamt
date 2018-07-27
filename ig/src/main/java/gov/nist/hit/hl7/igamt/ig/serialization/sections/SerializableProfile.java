@@ -43,6 +43,7 @@ public class SerializableProfile extends SerializableSection {
   private Map<String, String> datatypeNamesMap;
   private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private ValueSetRegistry valueSetRegistry;
@@ -64,7 +65,7 @@ public class SerializableProfile extends SerializableSection {
    */
   public SerializableProfile(Section section, int level, Map<String, Datatype> datatypesMap,
       Map<String, String> datatypeNamesMap, Map<String, SerializableValuesetStructure> valuesetsMap,
-      Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Map<String, Segment> segmentsMap,
       Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
       DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
       ConformanceProfileRegistry conformanceProfileRegistry,
@@ -77,6 +78,7 @@ public class SerializableProfile extends SerializableSection {
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetsMap = valuesetsMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valueSetRegistry = valueSetRegistry;
@@ -106,7 +108,7 @@ public class SerializableProfile extends SerializableSection {
       for (Section section : ((TextSection) super.getSection()).getChildren()) {
         SerializableSection childSection =
             SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(),
-                datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
+                datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,

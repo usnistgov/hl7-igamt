@@ -41,7 +41,7 @@ public class SectionSerializationUtil {
 
   public static Element serializeSection(Section section, int level,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, SerializableValuesetStructure> valueSetsMap, Map<String, String> valuesetNamesMap,
+      Map<String, SerializableValuesetStructure> valueSetsMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap,
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
@@ -53,7 +53,7 @@ public class SectionSerializationUtil {
       try {
         SerializableSection serializableSection =
             SerializableSectionFactory.getSerializableSection(section, level, datatypesMap,
-                datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap,
+                datatypeNamesMap, valueSetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,

@@ -81,9 +81,9 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
    * @throws SerializationException
    */
   public Element serializeResourceBinding(ResourceBinding binding,
-      Map<String, String> valuesetNamesMap) throws SerializationException {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap) throws SerializationException {
     Map<String, String> pathLocationMap = this.getIdPathMap();
-    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
+    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap, valuesetLabelMap);
     return this.serializableBinding.serialize();
   }
   

@@ -38,6 +38,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Set<String> bindedSegments;
   private Set<String> bindedFields;
   private Set<SerializableSegment> serializableSegments;
@@ -47,11 +48,12 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
    */
   public SerializableSegmentRegistry(Section section, int level, SegmentRegistry segmentRegistry,
       Map<String, Segment> segmentsMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap, Set<String> bindedSegments, Set<String> bindedFields) {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedSegments, Set<String> bindedFields) {
     super(section, level, segmentRegistry);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.bindedSegments = bindedSegments;
     this.bindedFields = bindedFields;
     this.serializableSegments = new HashSet<>();
@@ -75,7 +77,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
                 Segment segment = segmentsMap.get(segmentLink.getId().getId());
                 SerializableSegment serializableSegment =
                     new SerializableSegment(segment, super.position, this.getChildLevel(),
-                        this.datatypeNamesMap, this.valuesetNamesMap, this.bindedFields);
+                        this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields);
                 if (serializableSegment != null) {
                   Element segmentElement = serializableSegment.serialize();
                   if (segmentElement != null) {

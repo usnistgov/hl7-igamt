@@ -42,6 +42,7 @@ public class SerializableIG extends SerializableAbstractDomain {
   private Map<String, SerializableValuesetStructure> valueSetsMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private ExportConfiguration exportConfiguration;
@@ -95,7 +96,7 @@ public class SerializableIG extends SerializableAbstractDomain {
       int startLevel = 1;
       Element sectionElement =
           SectionSerializationUtil.serializeSection(section, startLevel, datatypesMap,
-              datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap,
+              datatypeNamesMap, valueSetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap, conformanceProfilesMap,
               igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
               igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
               igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry(),
@@ -119,11 +120,13 @@ public class SerializableIG extends SerializableAbstractDomain {
       }
     }
     valuesetNamesMap = new HashMap<>();
+    valuesetLabelMap = new HashMap<>();
     if (valueSetsMap != null) {
       for (String valuesetId : valueSetsMap.keySet()) {
         Valueset valueset = valueSetsMap.get(valuesetId).getValueset();
         if (valueset != null) {
           valuesetNamesMap.put(valuesetId, valueset.getBindingIdentifier());
+          valuesetLabelMap.put(valuesetId, valueset.getDescription());
         }
       }
     }
