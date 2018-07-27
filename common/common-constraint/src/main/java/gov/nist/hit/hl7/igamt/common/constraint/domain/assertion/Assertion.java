@@ -11,12 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author jungyubw
  *
  */
-public class Assertion {
 
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "mode")
+@JsonSubTypes({@JsonSubTypes.Type(value = SingleAssertion.class, name = "SIMPLE"),
+    @JsonSubTypes.Type(value = IfThenAssertion.class, name = "IFTHEN"),
+    @JsonSubTypes.Type(value = NotAssertion.class, name = "NOT"),
+    @JsonSubTypes.Type(value = OperatorAssertion.class, name = "ANDOR")})
+public abstract class Assertion {
   private AssertionMode mode;
   private String description;
 

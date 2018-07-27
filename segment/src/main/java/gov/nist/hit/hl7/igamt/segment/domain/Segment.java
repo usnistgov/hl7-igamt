@@ -110,6 +110,7 @@ public class Segment extends Resource {
     result.setId(this.getId());
     result.setScope(this.getDomainInfo().getScope());
     result.setVersion(this.getDomainInfo().getVersion());
+    result.setName(this.getName());
     if (this.getExt() != null) {
       result.setLabel(this.getName() + "_" + this.getExt());
     } else {

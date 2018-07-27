@@ -1,12 +1,12 @@
+{{segmentConformanceStatements|json}}
 <div *ngIf="segmentConformanceStatements">
-    <h1>Conformance Statements of {{segmentConformanceStatements.name}} {{segmentConformanceStatements.type}}</h1>
     <form #editForm="ngForm">
 
       <div class="ui-g cp-header">
 
         <div class="ui-g-8 ui-g-nopad">
           <div class="cp-header-title ui-g-12">
-            <h1>Conformance Statements of {{segmentConformanceStatements.name}} {{segmentConformanceStatements.type}}</h1>
+            <h1>Conformance Statements of {{segmentConformanceStatements.name}}</h1>
 
           </div>
           <div class="ui-g-12 cp-header-subtitle">
@@ -107,25 +107,14 @@
 
                 <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
                     <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-md-2">
+                        <div class="ui-g-12 ui-md-4">
                             <label>Assertion Level: </label>
                         </div>
-                        <div class="ui-g-12 ui-md-4">
+                        <div class="ui-g-12 ui-md-8">
                             <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
                             <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
                                 <div *ngIf="assertionMode.errors.required">
                                     Assertion Type is required.
-                                </div>
-                            </div>
-                        </div>
-                        <div *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
-                            <label>Complex Type: </label>
-                        </div>
-                        <div *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
-                            <p-dropdown id="complexAssertionType" name="complexAssertionType" required #complexAssertionType="ngModel" [options]="complexAssertionTypes" [(ngModel)]="selectedConformanceStatement.assertion.complexAssertionType" (onChange)="changeComplexAssertionType(selectedConformanceStatement.assertion)" placeholder="Select a complex type"></p-dropdown>
-                            <div *ngIf="complexAssertionType.invalid && (complexAssertionType.dirty || complexAssertionType.touched)" class="alert alert-danger">
-                                <div *ngIf="complexAssertionType.errors.required">
-                                    Complex Type is required.
                                 </div>
                             </div>
                         </div>
@@ -134,9 +123,9 @@
 
                 <edit-free-constraint *ngIf="selectedConformanceStatement.type === 'FREE'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
                 <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
-                <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'COMPLEX'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
+                <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="csForm.invalid"></button>
+                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="printCS(selectedConformanceStatement)"></button>
             </p-accordionTab>
         </p-accordion>

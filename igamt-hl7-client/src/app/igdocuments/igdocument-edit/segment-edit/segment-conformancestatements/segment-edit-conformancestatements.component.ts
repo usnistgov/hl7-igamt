@@ -27,7 +27,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     treeData: any[];
     constraintTypes: any = [];
     assertionModes: any = [];
-    complexAssertionTypes: any[];
     backup:any;
 
     selectedConformanceStatement: any = {};
@@ -62,13 +61,14 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
-        this.complexAssertionTypes = this.configService._complexAssertionTypes;
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
 
         this.route.data.map(data =>data.segmentConformanceStatements).subscribe(x=>{
             this.segmentConformanceStatements= x;
+
+            if(!this.segmentConformanceStatements.conformanceStatements) this.segmentConformanceStatements.conformanceStatements = [];
 
 
             this.segmentsService.getSegmentStructure(this.segmentId).then( segStructure  => {
@@ -106,7 +106,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
                     };
 
                     this.idMap[this.segmentId + '-' + data.id] = data;
-                    this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
+                    // this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
                     this.treeData.push(treeNode);
 
                     this.backup=__.cloneDeep(this.segmentConformanceStatements);
@@ -216,8 +216,35 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     changeAssertionMode(){
         if(this.selectedConformanceStatement.assertion.mode == 'SIMPLE'){
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.assertion.mode == 'COMPLEX'){
-            this.selectedConformanceStatement.assertion = {mode:"COMPLEX"};
+        }else if(this.selectedConformanceStatement.assertion.mode === 'ANDOR'){
+            this.selectedConformanceStatement.assertion.child = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
+            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
+            this.selectedConformanceStatement.assertion.operator = 'AND';
+            this.selectedConformanceStatement.assertion.assertions = [];
+            this.selectedConformanceStatement.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
+
+            this.selectedConformanceStatement.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
+        }else if(this.selectedConformanceStatement.assertion.mode === 'NOT'){
+            this.selectedConformanceStatement.assertion.assertions = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
+            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
+            this.selectedConformanceStatement.assertion.child = {
+                "mode": "SIMPLE"
+            };
+        }else if(this.selectedConformanceStatement.assertion.mode === 'IFTHEN'){
+            this.selectedConformanceStatement.assertion.assertions = undefined;
+            this.selectedConformanceStatement.assertion.child = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = {
+                "mode": "SIMPLE"
+            };
+            this.selectedConformanceStatement.assertion.thenAssertion = {
+                "mode": "SIMPLE"
+            };
         }
     }
 
@@ -247,38 +274,4 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
-
-    changeComplexAssertionType(constraint){
-        if(constraint.complexAssertionType === 'ANDOR'){
-            constraint.child = undefined;
-            constraint.ifAssertion = undefined;
-            constraint.thenAssertion = undefined;
-            constraint.operator = 'AND';
-            constraint.assertions = [];
-            constraint.assertions.push({
-                "mode": "SIMPLE"
-            });
-
-            constraint.assertions.push({
-                "mode": "SIMPLE"
-            });
-        }else if(constraint.complexAssertionType === 'NOT'){
-            constraint.assertions = undefined;
-            constraint.ifAssertion = undefined;
-            constraint.thenAssertion = undefined;
-            constraint.child = {
-                "mode": "SIMPLE"
-            };
-        }else if(constraint.complexAssertionType === 'IFTHEN'){
-            constraint.assertions = undefined;
-            constraint.child = undefined;
-            constraint.ifAssertion = {
-                "mode": "SIMPLE"
-            };
-            constraint.thenAssertion = {
-                "mode": "SIMPLE"
-            };
-        }
-    }
-
 }

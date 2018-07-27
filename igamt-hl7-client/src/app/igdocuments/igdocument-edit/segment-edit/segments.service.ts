@@ -72,15 +72,10 @@ export class SegmentsService {
     return promise;
   }
 
-
-
-
   public getSegmentConformanceStatements(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-
-
-      return this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(saveResponse=>{
-
+      return this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(serverSegmentConformancestatement=>{
+        resolve(serverSegmentConformancestatement);
     }, error => {
       this.igErrorService.showError(error);
     });

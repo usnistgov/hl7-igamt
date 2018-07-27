@@ -1,7 +1,8 @@
 package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -12,11 +13,12 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 public class SegmentStructure {
   private CompositeKey id;
   private String label;
+  private String name;
   private Scope scope;
   private String version;
   private ResourceBinding binding;
 
-  private TreeSet<FieldDisplay> structure;
+  private Set<FieldDisplay> children;
 
   public CompositeKey getId() {
     return id;
@@ -26,18 +28,18 @@ public class SegmentStructure {
     this.id = id;
   }
 
-  public TreeSet<FieldDisplay> getChildren() {
-    return structure;
+  public Set<FieldDisplay> getChildren() {
+    return children;
   }
 
-  public void setChildren(TreeSet<FieldDisplay> structure) {
-    this.structure = structure;
+  public void setChildren(Set<FieldDisplay> children) {
+    this.children = children;
   }
 
   public void addChild(FieldDisplay fieldDisplay) {
-    if (this.structure == null)
-      this.structure = new TreeSet<FieldDisplay>(new PositionCompForFieldDisplay());
-    this.structure.add(fieldDisplay);
+    if (this.children == null)
+      this.children = new HashSet<FieldDisplay>();
+    this.children.add(fieldDisplay);
   }
 
   public String getLabel() {
@@ -81,6 +83,14 @@ public class SegmentStructure {
    */
   public Segment toSegment() throws SegmentException {
     throw new SegmentException(id.getId(), "Operation not currently supported");
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 
