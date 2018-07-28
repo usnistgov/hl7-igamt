@@ -5,7 +5,6 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
 import {WithSave, WithNotification} from "../../../../guards/with.save.interface";
@@ -59,7 +58,7 @@ export class SegmentEditStructureComponent implements WithSave {
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private tocService:TocService){
         router.events.subscribe(event => {
@@ -638,7 +637,6 @@ export class SegmentEditStructureComponent implements WithSave {
         this.selectedNode = node;
         if(this.selectedNode.data.displayData.segmentBinding && this.selectedNode.data.displayData.segmentBinding.predicate) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
         if(!this.selectedPredicate) this.selectedPredicate = {};
-
 
         this.idMap = {};
         this.treeData = [];
