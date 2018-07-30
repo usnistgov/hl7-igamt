@@ -31,11 +31,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.util.compositeKey.CompositeKeyUtil;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -365,5 +365,47 @@ public class ValuesetServiceImpl implements ValuesetService {
       return result;
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertToValueset(gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure)
+   */
+  @Override
+  public Valueset convertToValueset(ValuesetStructure structure) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+  @Override
+  public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(preDef.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(preDef.getId().getId());
+    }
+    valueset.setPreDef(preDef.getPreDef());
+    return save(valueset);
+  }
+
+
+  @Override
+  public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(displayMetadata.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(displayMetadata.getId().getId());
+    }
+    // valueset.setExt(displayMetadata.getExt());
+    // valueset.setDescription(displayMetadata.getDescription());
+    // valueset.setComment(displayMetadata.getAuthorNote());
+    return save(valueset);
+  }
+
+  @Override
+  public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(postDef.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(postDef.getId().getId());
+    }
+    valueset.setPostDef(postDef.getPostDef());
+    return save(valueset);
   }
 }
