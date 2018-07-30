@@ -322,6 +322,9 @@ public class SegmentServiceImpl implements SegmentService {
       } else {
         result.setLabel(segment.getName());
       }
+      
+      result.setName(segment.getName());
+      result.setUpdateDate(segment.getUpdateDate());
 
       result.setConformanceStatements(segment.getBinding().getConformanceStatements());
       return result;

@@ -34,10 +34,6 @@ export class GeneralConfigurationService {
 
   _simpleAssertionTypes: any[];
 
-  _complexAssertionTypes: any[];
-
-  _partialComplexAssertionTypes: any[];
-
   _assertionModes: any[];
 
   _constraintTypes: any[];
@@ -59,11 +55,6 @@ export class GeneralConfigurationService {
       {label: 'Free Text', value: 'FREE', icon: 'fa fa-fw fa-file-text-o'}
     ];
 
-    this._complexAssertionTypes = [
-      {label: 'IFTHEN', value: 'IFTHEN'},
-      {label: 'AND/OR', value: 'ANDOR'},
-      {label: 'NOT', value: 'NOT'}
-    ];
 
     this._simpleAssertionTypes = [
       {
@@ -98,14 +89,20 @@ export class GeneralConfigurationService {
       ];
 
     this._assertionModes = [
-      // {label: 'Select Assertion Type', value: null},
-      {label: 'Simple Assertion', value: 'SIMPLE'},
-      {label: 'Complex Assertion', value: 'COMPLEX'}
-    ];
-
-    this._partialComplexAssertionTypes = [
-      {label: 'AND/OR', value: 'ANDOR'},
-      {label: 'NOT', value: 'NOT'}
+      {
+        label: 'Simple Assertion',
+        items: [
+          {label: 'Single', value: 'SIMPLE'}
+        ]
+      },
+      {
+        label: 'Complex Assertion',
+        items: [
+          {label: 'IFTHEN', value: 'IFTHEN'},
+          {label: 'AND/OR', value: 'ANDOR'},
+          {label: 'NOT', value: 'NOT'}
+        ]
+      }
     ];
 
     this._codeUsageOptions = [ { label : 'Required', value : 'R' },{ label : 'Permitted', value : 'P' },{ label : 'Excluded', value : 'E' }];

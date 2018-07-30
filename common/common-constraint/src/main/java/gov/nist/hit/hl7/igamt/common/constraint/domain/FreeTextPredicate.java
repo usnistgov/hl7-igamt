@@ -11,13 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
+import java.io.Serializable;
+
 /**
  * @author jungyubw
  *
  */
-public class FreeTextPredicate extends Predicate {
+public class FreeTextPredicate extends Predicate  implements Serializable{
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 8137080477013985379L;
   private String freeText;
+  private String assertion;
 
   public FreeTextPredicate() {
     super();
@@ -30,5 +37,13 @@ public class FreeTextPredicate extends Predicate {
 
   public void setFreeText(String freeText) {
     this.freeText = freeText;
+  }
+
+  public String getAssertion() {
+    return assertion;
+  }
+
+  public void setAssertion(String assertion) {
+    this.assertion = assertion;
   }
 }

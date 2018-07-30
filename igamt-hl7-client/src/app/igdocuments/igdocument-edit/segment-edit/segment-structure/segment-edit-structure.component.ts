@@ -5,14 +5,12 @@ import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import { _ } from 'underscore';
 import {WithSave, WithNotification} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
-import {Types} from "../../../../common/constants/types";
 import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
@@ -60,7 +58,7 @@ export class SegmentEditStructureComponent implements WithSave {
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
+    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private tocService:TocService){
         router.events.subscribe(event => {
@@ -80,7 +78,7 @@ export class SegmentEditStructureComponent implements WithSave {
         this.assertionModes = this.configService._assertionModes;
 
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
-            console.log(x);
+            x.children = _.sortBy(x.children, function(child){ return child.data.position});
             this.tocService.getDataypeList().then((dtTOCdata) => {
                 let listTocDTs:any = dtTOCdata;
                 for(let entry of listTocDTs){
@@ -123,9 +121,7 @@ export class SegmentEditStructureComponent implements WithSave {
                     }
 
                     this.segmentStructure = {};
-                    this.segmentStructure.name = x.name;
-                    this.segmentStructure.ext = x.ext;
-                    this.segmentStructure.scope = x.scope;
+                    this.segmentStructure = x;
 
                     this.updateDatatype(this.segmentStructure, x.children, x.binding, null, null, null, null, null, null);
 
@@ -158,9 +154,27 @@ export class SegmentEditStructureComponent implements WithSave {
     save(): Promise<any>{
       return new Promise((resolve, reject)=> {
 
-          this.segmentsService.saveSegmentStructure(this.segmentId, this.segmentStructure).then(saved => {
+          console.log(this.segmentStructure);
 
-          this.backup = _.cloneDeep(this.segmentStructure);
+          let saveObj:any = {};
+          saveObj.id = this.segmentStructure.id;
+          saveObj.label = this.segmentStructure.label;
+          saveObj.scope = this.segmentStructure.scope;
+          saveObj.version = this.segmentStructure.version;
+          saveObj.binding = this.generateBinding(this.segmentStructure);
+          saveObj.children = [];
+
+          for(let child of this.segmentStructure.children){
+              var clone = __.cloneDeep(child.data);
+              clone.displayData = undefined;
+              saveObj.children.push({"data":clone});
+          }
+
+          console.log(saveObj);
+
+          this.segmentsService.saveSegmentStructure(this.segmentId, saveObj).then(saved => {
+
+          this.backup = __.cloneDeep(this.segmentStructure);
           this.editForm.control.markAsPristine();
           resolve(true);
 
@@ -174,10 +188,82 @@ export class SegmentEditStructureComponent implements WithSave {
       })
     }
 
+    generateBinding(segmentStructure){
+        let result:any = {};
+        result.elementId = segmentStructure.id.id;
+        if(segmentStructure.binding){
+            result.conformanceStatements = segmentStructure.binding.conformanceStatements;
+            result.conformanceStatementCrossRefs = segmentStructure.binding.conformanceStatementCrossRefs;
+        }
+        result.children = [];
+        this.travelSegmentStructure(result.children, segmentStructure.children);
+        return result;
+    }
+
+    travelSegmentStructure(current, children){
+        for(let child of children){
+            var currentData = child.data;
+
+            let elementBinding:any = {};
+            elementBinding.elementId = currentData.id;
+
+            if(currentData.displayData && currentData.displayData.segmentBinding) {
+                if(currentData.displayData.segmentBinding.valuesetBindings && currentData.displayData.segmentBinding.valuesetBindings.length > 0){
+                    elementBinding.valuesetBindings = [];
+
+                    for(let vsBinding of currentData.displayData.segmentBinding.valuesetBindings){
+                        elementBinding.valuesetBindings.push({
+                            "valuesetId": vsBinding.valuesetId,
+                            "strength": vsBinding.strength,
+                            "valuesetLocations": vsBinding.valuesetLocations
+                        });
+                    }
+                }
+
+                if(currentData.displayData.segmentBinding.externalSingleCode){
+                    elementBinding.externalSingleCode = currentData.displayData.segmentBinding.externalSingleCode;
+                }
+
+                if(currentData.displayData.segmentBinding.constantValue){
+                    elementBinding.constantValue = currentData.displayData.segmentBinding.constantValue;
+                }
+
+                if(currentData.displayData.segmentBinding.comments && currentData.displayData.segmentBinding.comments.length > 0){
+                    elementBinding.comments = [];
+
+                    for(let commentBinding of currentData.displayData.segmentBinding.comments){
+                        elementBinding.comments.push({
+                            "description": commentBinding.description,
+                            "dateupdated": commentBinding.dateupdated
+                        });
+                    }
+                }
+
+                if(currentData.displayData.segmentBinding.predicate){
+                    elementBinding.predicate = currentData.displayData.segmentBinding.predicate;
+                    if(!elementBinding.predicate.type) elementBinding.predicate.type = 'FREE';
+                }
+            }
+
+            if(child.children && child.children.length > 0){
+                elementBinding.children = [];
+                this.travelSegmentStructure(elementBinding.children, child.children);
+            }
+
+
+            current.push(elementBinding);
+
+        }
+    }
+
+
     updateDatatype(node, children, currentBinding, parentFieldId, fieldDT, segmentBinding, fieldDTbinding, parentDTId, parentDTName){
         for (let entry of children) {
             if(!entry.data.displayData) entry.data.displayData = {};
             entry.data.displayData.datatype = this.getDatatypeLink(entry.data.ref.id);
+
+            console.log(entry.data.displayData);
+
             entry.data.displayData.valuesetAllowed = this.configService.isValueSetAllow(entry.data.displayData.datatype.name,entry.data.position, parentDTName, this.segmentStructure.name, entry.data.displayData.type);
             entry.data.displayData.valueSetLocationOptions = this.configService.getValuesetLocations(entry.data.displayData.datatype.name, entry.data.displayData.datatype.domainInfo.version);
             if(entry.data.displayData.valuesetAllowed) entry.data.displayData.multipleValuesetAllowed =  this.configService.isMultipleValuseSetAllowed(entry.data.displayData.datatype.name);
@@ -330,6 +416,7 @@ export class SegmentEditStructureComponent implements WithSave {
         if(event.node && !event.node.children) {
             var datatypeId = event.node.data.ref.id;
             this.datatypesService.getDatatypeStructure(datatypeId).then(structure  => {
+                structure.children = _.sortBy(structure.children, function(child){ return child.data.position});
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
@@ -407,6 +494,7 @@ export class SegmentEditStructureComponent implements WithSave {
         node.data.displayData.segmentBinding.externalSingleCode.codeSystem = singleCode.newSingleCodeSystem;
 
         this.singleCodeDialogOpen = false;
+        this.editForm.control.markAsDirty();
     }
 
     makeEditModeForSingleCode(node){
@@ -447,6 +535,8 @@ export class SegmentEditStructureComponent implements WithSave {
         if(!node.data.displayData.segmentBinding) node.data.displayData.segmentBinding = {};
         node.data.displayData.segmentBinding.constantValue = constantValue.newConstantValue;
         this.constantValueDialogOpen = false;
+
+        this.editForm.control.markAsDirty();
     }
 
     submitNewValueSet(node, vs){
@@ -469,6 +559,7 @@ export class SegmentEditStructureComponent implements WithSave {
             node.data.displayData.segmentBinding.valuesetBindings.push(vs);
         }
         this.valuesetDialogOpen = false;
+        this.editForm.control.markAsDirty();
     }
 
     submitNewComment(node, c){
@@ -485,6 +576,7 @@ export class SegmentEditStructureComponent implements WithSave {
         }
 
         this.commentDialogOpen = false;
+        this.editForm.control.markAsDirty();
     }
 
     delValueSetBinding(binding, vs, node){
@@ -543,50 +635,54 @@ export class SegmentEditStructureComponent implements WithSave {
 
     editPredicate(node){
         this.selectedNode = node;
-        if(this.selectedNode.data.displayData.segmentBinding) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
+        if(this.selectedNode.data.displayData.segmentBinding && this.selectedNode.data.displayData.segmentBinding.predicate) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
         if(!this.selectedPredicate) this.selectedPredicate = {};
 
         this.idMap = {};
         this.treeData = [];
 
-        this.segmentsService.getSegmentStructure(this.segmentId).then(segStructure  => {
-            this.idMap[this.segmentId] = {name:segStructure.name};
+        this.idMap[this.segmentId] = {name:this.segmentStructure.name};
 
-            var rootData = {elementId:this.segmentId};
+        var rootData = {elementId:this.segmentId};
 
-            for (let child of segStructure.children) {
-                var childData =  JSON.parse(JSON.stringify(rootData));
-                childData.child = {
-                    elementId: child.data.id,
-                };
+        for (let child of this.segmentStructure.children) {
+            var childData =  JSON.parse(JSON.stringify(rootData));
+            childData.child = {
+                elementId: child.data.id,
+            };
 
-                if(child.data.max === '1'){
-                    childData.child.instanceParameter = '1';
-                }else{
-                    childData.child.instanceParameter = '*';
-                }
-
-                var treeNode = {
-                    label: child.data.name,
-                    data : childData,
-                    expandedIcon: "fa-folder-open",
-                    collapsedIcon: "fa-folder",
-                };
-
-                var data = {
-                    id: child.data.id,
-                    name: child.data.name,
-                    max: child.data.max,
-                    position: child.data.position,
-                    usage: child.data.usage,
-                    dtId: child.data.ref.id
-                };
-
-                this.idMap[this.segmentId + '-' + data.id] = data;
-                this.popChild(this.segmentId + '-' + data.id, data.dtId, treeNode);
-                this.treeData.push(treeNode);
+            if(child.data.max === '1'){
+                childData.child.instanceParameter = '1';
+            }else{
+                childData.child.instanceParameter = '*';
             }
-        });
+
+            var data = {
+                id: child.data.id,
+                name: child.data.name,
+                max: child.data.max,
+                position: child.data.position,
+                usage: child.data.usage,
+                dtId: child.data.ref.id,
+                idPath: this.segmentId + '-' + child.data.id,
+                pathData: childData
+            };
+
+            var treeNode = {
+                label: child.data.position + '. ' + child.data.name + '[max = ' + child.data.max + ']',
+                data : data,
+                expandedIcon: "fa-folder-open",
+                collapsedIcon: "fa-folder",
+                leaf:false
+            };
+
+            if(child.data.displayData.datatype.leaf) treeNode.leaf = true;
+            else treeNode.leaf = false;
+
+            this.idMap[data.idPath] = data;
+            this.treeData.push(treeNode);
+        }
+
         this.preciateEditorOpen = true;
     }
 
@@ -601,6 +697,7 @@ export class SegmentEditStructureComponent implements WithSave {
         this.preciateEditorOpen = false;
         this.selectedPredicate = {};
         this.selectedNode = null;
+        this.editForm.control.markAsDirty();
     }
 
     changeType(){
@@ -619,52 +716,35 @@ export class SegmentEditStructureComponent implements WithSave {
     changeAssertionMode(){
         if(this.selectedPredicate.assertion.mode == 'SIMPLE'){
             this.selectedPredicate.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedPredicate.assertion.mode == 'COMPLEX'){
-            this.selectedPredicate.assertion = {mode:"COMPLEX"};
-        }
-    }
+        }else if(this.selectedPredicate.assertion.mode === 'ANDOR'){
+            this.selectedPredicate.assertion.child = undefined;
+            this.selectedPredicate.assertion.ifAssertion = undefined;
+            this.selectedPredicate.assertion.thenAssertion = undefined;
+            this.selectedPredicate.assertion.operator = 'AND';
+            this.selectedPredicate.assertion.assertions = [];
+            this.selectedPredicate.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
 
-    popChild(id, dtId, parentTreeNode){
-        this.datatypesService.getDatatypeStructure(dtId).then( dtStructure  => {
-            this.idMap[id].dtName = dtStructure.name;
-            if(dtStructure.children){
-                for (let child of dtStructure.children) {
-                    var childData =  JSON.parse(JSON.stringify(parentTreeNode.data));
-
-                    this.makeChild(childData, child.data.id, '1');
-
-                    var treeNode = {
-                        label: child.data.name,
-                        data:childData,
-                        expandedIcon: "fa-folder-open",
-                        collapsedIcon: "fa-folder",
-                    };
-
-                    var data = {
-                        id: child.data.id,
-                        name: child.data.name,
-                        max: "1",
-                        position: child.data.position,
-                        usage: child.data.usage,
-                        dtId: child.data.ref.id
-                    };
-                    this.idMap[id + '-' + data.id] = data;
-
-                    this.popChild(id + '-' + data.id, data.dtId, treeNode);
-
-                    if(!parentTreeNode.children) parentTreeNode.children = [];
-                    parentTreeNode.children.push(treeNode);
-
-                }
-            }
-        });
-    }
-
-    makeChild(data, id, para){
-        if(data.child) this.makeChild(data.child, id, para);
-        else data.child = {
-            elementId: id,
-            instanceParameter: para
+            this.selectedPredicate.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
+        }else if(this.selectedPredicate.assertion.mode === 'NOT'){
+            this.selectedPredicate.assertion.assertions = undefined;
+            this.selectedPredicate.assertion.ifAssertion = undefined;
+            this.selectedPredicate.assertion.thenAssertion = undefined;
+            this.selectedPredicate.assertion.child = {
+                "mode": "SIMPLE"
+            };
+        }else if(this.selectedPredicate.assertion.mode  === 'IFTHEN'){
+            this.selectedPredicate.assertion.assertions = undefined;
+            this.selectedPredicate.assertion.child = undefined;
+            this.selectedPredicate.assertion.ifAssertion = {
+                "mode": "SIMPLE"
+            };
+            this.selectedPredicate.assertion.thenAssertion = {
+                "mode": "SIMPLE"
+            };
         }
     }
 
@@ -682,6 +762,4 @@ export class SegmentEditStructureComponent implements WithSave {
             }
         }
     }
-
-
 }

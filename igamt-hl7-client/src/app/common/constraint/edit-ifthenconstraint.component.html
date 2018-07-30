@@ -3,19 +3,8 @@
         <div class="ui-g-12 ui-md-2">
             <label>IF Assertion Level: </label>
         </div>
-        <div class="ui-g-12 ui-md-4">
+        <div class="ui-g-12 ui-md-10">
             <p-dropdown id="ifAssertionMode" name="ifAssertionMode" required #ifAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.ifAssertion.mode" (onChange)="makeConstraintMode(constraint.ifAssertion)"></p-dropdown>
-        </div>
-        <div *ngIf="constraint.ifAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
-            <label>Complex Type: </label>
-        </div>
-        <div *ngIf="constraint.ifAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
-            <p-dropdown id="ifComplextAssertionType" name="ifComplextAssertionType" required #ifComplextAssertionType="ngModel" [options]="limitedComplexAssertionTypes" [(ngModel)]="constraint.ifAssertion.complexAssertionType" (onChange)="changeComplexAssertionType(constraint.ifAssertion)" placeholder="Select a complex type"></p-dropdown>
-            <div *ngIf="ifComplextAssertionType.invalid && (ifComplextAssertionType.dirty || ifComplextAssertionType.touched)" class="alert alert-danger">
-                <div *ngIf="ifComplextAssertionType.errors.required">
-                    Complex Type is required.
-                </div>
-            </div>
         </div>
     </div>
     <div class="ui-g ui-fluid">
@@ -24,7 +13,7 @@
         </div>
         <div class="ui-g-12 ui-md-10">
             <edit-simple-constraint *ngIf="constraint.ifAssertion.mode === 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [ifVerb]="true" [groupName]="groupName + '-ifSimple'"></edit-simple-constraint>
-            <edit-complex-constraint *ngIf="constraint.ifAssertion.mode === 'COMPLEX'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="true" [groupName]="groupName + '-ifComplex'"></edit-complex-constraint>
+            <edit-complex-constraint *ngIf="constraint.ifAssertion.mode !== 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="true" [groupName]="groupName + '-ifComplex'"></edit-complex-constraint>
         </div>
     </div>
 
@@ -32,19 +21,8 @@
         <div class="ui-g-12 ui-md-2">
             <label>THEN Assertion Level: </label>
         </div>
-        <div class="ui-g-12 ui-md-4">
+        <div class="ui-g-12 ui-md-10">
             <p-dropdown id="thenAssertionMode" name="thenAssertionMode" required #thenAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.thenAssertion.mode" (onChange)="makeConstraintMode(constraint.thenAssertion)"></p-dropdown>
-        </div>
-        <div *ngIf="constraint.thenAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-2">
-            <label>Complex Type: </label>
-        </div>
-        <div *ngIf="constraint.thenAssertion.mode === 'COMPLEX'" class="ui-g-12 ui-md-4">
-            <p-dropdown id="thenComplextAssertionType" name="thenComplextAssertionType" required #thenComplextAssertionType="ngModel" [options]="limitedComplexAssertionTypes" [(ngModel)]="constraint.thenAssertion.complexAssertionType" (onChange)="changeComplexAssertionType(constraint.thenAssertion)" placeholder="Select a complex type"></p-dropdown>
-            <div *ngIf="thenComplextAssertionType.invalid && (thenComplextAssertionType.dirty || thenComplextAssertionType.touched)" class="alert alert-danger">
-                <div *ngIf="thenComplextAssertionType.errors.required">
-                    Complex Type is required.
-                </div>
-            </div>
         </div>
     </div>
 
@@ -54,7 +32,7 @@
         </div>
         <div class="ui-g-12 ui-md-10">
             <edit-simple-constraint *ngIf="constraint.thenAssertion.mode === 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-thenSimple'"></edit-simple-constraint>
-            <edit-complex-constraint *ngIf="constraint.thenAssertion.mode === 'COMPLEX'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [groupName]="groupName + '-thenComplex'"></edit-complex-constraint>
+            <edit-complex-constraint *ngIf="constraint.thenAssertion.mode !== 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [groupName]="groupName + '-thenComplex'"></edit-complex-constraint>
         </div>
     </div>
 </div>

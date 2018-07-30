@@ -18,7 +18,6 @@ export class EditAndOrConstraintComponent {
   @Input() ifVerb: boolean;
   @Input() groupName: string;
 
-  partialComplexAssertionTypes: any[];
   simpleAssertionTypes: any[];
   verbs: any[];
   operators: any[];
@@ -37,7 +36,6 @@ export class EditAndOrConstraintComponent {
     this.operators = this.configService._operators;
     this.formatTypes = this.configService._formatTypes;
     this.simpleAssertionTypes = this.configService._simpleAssertionTypes;
-    this.partialComplexAssertionTypes = this.configService._partialComplexAssertionTypes;
     this.assertionModes = this.configService._assertionModes;
   }
 
@@ -58,17 +56,14 @@ export class EditAndOrConstraintComponent {
   makeConstraintMode(constraint) {
     constraint.complement = undefined;
     constraint.subject = undefined;
-    constraint.complexAssertionType = undefined;
     constraint.assertions = undefined;
     constraint.child = undefined;
     constraint.ifAssertion = undefined;
     constraint.thenAssertion = undefined;
     constraint.operator = undefined;
     constraint.verbKey = undefined;
-  }
 
-  changeComplexAssertionType(constraint){
-    if(constraint.complexAssertionType === 'ANDOR'){
+    if(constraint.mode === 'ANDOR'){
       constraint.child = undefined;
       constraint.ifAssertion = undefined;
       constraint.thenAssertion = undefined;
@@ -81,14 +76,14 @@ export class EditAndOrConstraintComponent {
       constraint.assertions.push({
         "mode": "SIMPLE"
       });
-    }else if(constraint.complexAssertionType === 'NOT'){
+    }else if(constraint.mode === 'NOT'){
       constraint.assertions = undefined;
       constraint.ifAssertion = undefined;
       constraint.thenAssertion = undefined;
       constraint.child = {
         "mode": "SIMPLE"
       };
-    }else if(constraint.complexAssertionType === 'IFTHEN'){
+    }else if(constraint.mode === 'IFTHEN'){
       constraint.assertions = undefined;
       constraint.child = undefined;
       constraint.ifAssertion = {
@@ -99,5 +94,4 @@ export class EditAndOrConstraintComponent {
       };
     }
   }
-
 }

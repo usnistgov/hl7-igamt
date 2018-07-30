@@ -165,11 +165,7 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
     }
 
     changeAssertionMode(){
-        if(this.selectedConformanceStatement.assertion.mode == 'SIMPLE'){
-            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.assertion.mode == 'COMPLEX'){
-            this.selectedConformanceStatement.assertion = {mode:"COMPLEX"};
-        }
+        this.selectedConformanceStatement.assertion = {mode:this.selectedConformanceStatement.assertion.mode};
     }
 
     submitCS(){
