@@ -13,6 +13,7 @@ public class DatatypeStructure {
   private CompositeKey id;
   private String label;
   private Scope scope;
+  private String name;
   private String version;
   private ResourceBinding binding;
 
@@ -70,6 +71,14 @@ public class DatatypeStructure {
 
   public void setBinding(ResourceBinding binding) {
     this.binding = binding;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 

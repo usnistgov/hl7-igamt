@@ -1,6 +1,24 @@
-<h2>Datatype Metadata</h2>
 <div *ngIf="datatypeMetadata">
-    <form #datatypeMetadataForm="ngForm">
+    <form #editForm="ngForm">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    MetaData: {{datatypeMetadata.name}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+                    <span class="ig-list-date" *ngIf="datatypeMetadata.updateDate">
+                        <i class="fa fa-calendar"></i> {{datatypeMetadata.updateDate}}
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+            </div>
+
+        </div>
+
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">
                 Name
@@ -13,38 +31,13 @@
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">
-                Flavor Name (Ext)
+                Flavor Namedddd (Ext)
             </label>
-            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #extension="ngModel" minlength="4" maxlength="4" DatatypeNamingConvention NamingDuplication [existing]="existingNames" [label]="datatypeMetadata.name" [(ngModel)]="datatypeMetadata.ext" required />
-
-
-          <div *ngIf="extension&&extension.errors" class="ui-g-offset-2">
-
-
-            <div *ngIf="extension.errors.required">
-              <p-message severity="error" text="extension is required"></p-message>
-
+            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="datatypeMetadata.ext" required />
+            <div class="ui-g-offset-2" *ngIf="ext.invalid && (ext.dirty || ext.touched)">
+                <p-message severity="error" text="Extension is required"></p-message>
             </div>
-            <div *ngIf="extension.errors.maxlength">
-              <p-message severity="error" text="extension is too long"></p-message>
-
-            </div>
-            <div  *ngIf="extension.errors.minlength">
-              <p-message severity="error" text="extension is too short"></p-message>
-
-            </div>
-            <div  *ngIf="extension.errors.duplicated">
-              <p-message severity="error" text="extension is duplicated"></p-message>
-
-            </div>
-            <div *ngIf="extension.errors.invalidConvention">
-              <p-message severity="error" text="invalid convention"></p-message>
-
-            </div>
-
-          </div>
         </div>
-
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">

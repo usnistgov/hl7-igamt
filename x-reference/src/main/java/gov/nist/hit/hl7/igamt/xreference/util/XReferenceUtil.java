@@ -16,10 +16,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
-
-import com.mongodb.BasicDBObject;
 
 /**
  * @author Harold Affo
@@ -33,10 +32,10 @@ public class XReferenceUtil {
    * @param results
    * @return
    */
-  public static List<BasicDBObject> processSegmentReferences(
-      List<BasicDBObject> conformanceProfiles, String segmentId) {
-    for (BasicDBObject conformanceProfile : conformanceProfiles) {
-      List<BasicDBObject> children = processSegmentReferences(conformanceProfile, segmentId);
+  public static List<Document> processSegmentReferences(List<Document> conformanceProfiles,
+      String segmentId) {
+    for (Document conformanceProfile : conformanceProfiles) {
+      List<Document> children = processSegmentReferences(conformanceProfile, segmentId);
       conformanceProfile.remove("children");
       conformanceProfile.remove("_class");
       conformanceProfile.remove("postDef");
@@ -49,13 +48,13 @@ public class XReferenceUtil {
 
 
 
-  public static List<BasicDBObject> sortDSCByVersion(List<BasicDBObject> objects) {
-    Collections.sort(objects, new Comparator<BasicDBObject>() {
+  public static List<Document> sortDSCByVersion(List<Document> objects) {
+    Collections.sort(objects, new Comparator<Document>() {
       @Override
-      public int compare(BasicDBObject o1, BasicDBObject o2) {
+      public int compare(Document o1, Document o2) {
         // TODO Auto-generated method stub
-        int v1 = ((BasicDBObject) o1.get("_id")).getInt("version");
-        int v2 = ((BasicDBObject) o2.get("_id")).getInt("version");
+        int v1 = ((Document) o1.get("_id")).getInteger("version");
+        int v2 = ((Document) o2.get("_id")).getInteger("version");
         return v2 - v1;
       }
     });
@@ -67,9 +66,10 @@ public class XReferenceUtil {
    * @param object
    * @return
    */
-  public static String getName(BasicDBObject object) {
+  public static String getName(Document object) {
     String ext = object.getString("ext") != null && !object.getString("ext").equals("")
-        ? object.getString("ext") : null;
+        ? object.getString("ext")
+        : null;
     return ext != null ? object.getString("name") + "_" + ext : object.getString("name");
   }
 
@@ -78,9 +78,9 @@ public class XReferenceUtil {
    * @param segment
    * @return
    */
-  public static BasicDBObject filterSegment(BasicDBObject segment) {
-    List<BasicDBObject> children = (List<BasicDBObject>) segment.get("children");
-    for (BasicDBObject child : children) {
+  public static Document filterSegment(Document segment) {
+    List<Document> children = (List<Document>) segment.get("children");
+    for (Document child : children) {
       child.append("path", getName(segment) + "." + child.get("position"));
       child.remove("_class");
       child.remove("text");
@@ -98,9 +98,9 @@ public class XReferenceUtil {
    * @param datatype
    * @return
    */
-  public static BasicDBObject processDatatype(BasicDBObject datatype) {
-    List<BasicDBObject> children = (List<BasicDBObject>) datatype.get("children");
-    for (BasicDBObject child : children) {
+  public static Document processDatatype(Document datatype) {
+    List<Document> children = (List<Document>) datatype.get("children");
+    for (Document child : children) {
       child.append("path", getName(datatype) + "." + child.get("position"));
       child.remove("_class");
       child.remove("text");
@@ -117,8 +117,8 @@ public class XReferenceUtil {
    * @param segments
    * @return
    */
-  public static List<BasicDBObject> processSegments(List<BasicDBObject> segments) {
-    for (BasicDBObject segment : segments) {
+  public static List<Document> processSegments(List<Document> segments) {
+    for (Document segment : segments) {
       filterSegment(segment);
     }
     return segments;
@@ -127,14 +127,14 @@ public class XReferenceUtil {
 
   /**
    * 
-   * @param datatypes
+   * @param list
    * @return
    */
-  public static List<BasicDBObject> processDatatypes(List<BasicDBObject> datatypes) {
-    for (BasicDBObject segment : datatypes) {
+  public static List<Document> processDatatypes(List<Document> list) {
+    for (Document segment : list) {
       processDatatype(segment);
     }
-    return datatypes;
+    return list;
   }
 
   /**
@@ -143,21 +143,21 @@ public class XReferenceUtil {
    * @param segmentId
    * @return
    */
-  public static List<BasicDBObject> processSegmentReferences(BasicDBObject conformanceProfile,
+  public static List<Document> processSegmentReferences(Document conformanceProfile,
       String segmentId) {
-    List<BasicDBObject> tmp = new ArrayList<BasicDBObject>();
-    List<BasicDBObject> children = (List<BasicDBObject>) conformanceProfile.get("children");
+    List<Document> tmp = new ArrayList<Document>();
+    List<Document> children = (List<Document>) conformanceProfile.get("children");
 
     if (children != null) {
-      for (BasicDBObject child : children) {
+      for (Document child : children) {
         child.append("path", child.get("position") + "");
         if (child.get("type").equals("SEGMENTREF")) {
-          BasicDBObject res = processSegmentRef(child, segmentId);
+          Document res = processSegmentRef(child, segmentId);
           if (res != null) {
             tmp.add(res);
           }
         } else {
-          List<BasicDBObject> groupResults = processGroup(child, segmentId);
+          List<Document> groupResults = processGroup(child, segmentId);
           if (groupResults != null && !groupResults.isEmpty()) {
             tmp.addAll(groupResults);
           }
@@ -173,8 +173,8 @@ public class XReferenceUtil {
    * @param segmentId
    * @return
    */
-  public static BasicDBObject processSegmentRef(BasicDBObject segmentRef, String segmentId) {
-    BasicDBObject result = matchSegment(segmentRef, segmentId) ? segmentRef : null;
+  public static Document processSegmentRef(Document segmentRef, String segmentId) {
+    Document result = matchSegment(segmentRef, segmentId) ? segmentRef : null;
     if (result != null) {
       result.remove("_class");
       result.remove("text");
@@ -190,19 +190,19 @@ public class XReferenceUtil {
    * @param segmentId
    * @return
    */
-  public static List<BasicDBObject> processGroup(BasicDBObject group, String segmentId) {
-    List<BasicDBObject> tmp = new ArrayList<BasicDBObject>();
-    List<BasicDBObject> children = (List<BasicDBObject>) group.get("children");
+  public static List<Document> processGroup(Document group, String segmentId) {
+    List<Document> tmp = new ArrayList<Document>();
+    List<Document> children = (List<Document>) group.get("children");
     if (children != null) {
-      for (BasicDBObject child : children) {
-        child.append("path", group.get("path") + "." + child.getInt("position"));
+      for (Document child : children) {
+        child.append("path", group.get("path") + "." + child.getInteger("position"));
         if (child.get("type").equals("SEGMENTREF")) {
-          BasicDBObject res = processSegmentRef(child, segmentId);
+          Document res = processSegmentRef(child, segmentId);
           if (res != null) {
             tmp.add(res);
           }
         } else {
-          List<BasicDBObject> groupResults = processGroup(child, segmentId);
+          List<Document> groupResults = processGroup(child, segmentId);
           if (groupResults != null && !groupResults.isEmpty()) {
             tmp.addAll(groupResults);
           }
@@ -219,8 +219,8 @@ public class XReferenceUtil {
    * @param id
    * @return
    */
-  public static boolean matchSegment(BasicDBObject object, String id) {
-    return ((BasicDBObject) object.get("ref")).get("_id").toString().equals(id);
+  public static boolean matchSegment(Document object, String id) {
+    return ((Document) object.get("ref")).get("_id").toString().equals(id);
   }
 
   /**

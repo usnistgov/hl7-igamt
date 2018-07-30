@@ -29,6 +29,12 @@ import { DatatypeCrossRefComponent } from './datatype-cross-ref/datatype-cross-r
 import {DatatypeCrossRefResolver} from "./datatype-cross-ref/datatype-cross-ref.resolver";
 import {DatatypesService} from "./datatypes.service";
 
+import {DatatypeEditPostdefResolver} from "./datatype-postdef/datatype-edit-postdef.resolver";
+import {DatatypeEditPredefResolver} from "./datatype-predef/datatype-edit-predef.resolver";
+import {DatatypeEditMetadataResolver} from "./datatype-metadata/datatype-edit-metadata.resolver";
+import {DatatypeEditStructureResolver} from "./datatype-structure/datatype-edit-structure.resolver";
+import {DatatypeEditConformanceStatementsResolver} from "./datatype-conformancestatements/datatype-edit-conformancestatements.resolver";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -48,7 +54,7 @@ import {DatatypesService} from "./datatypes.service";
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  providers : [DatatypeCrossRefResolver,DatatypesService],
+  providers : [DatatypeCrossRefResolver,DatatypesService, DatatypeEditPostdefResolver, DatatypeEditPredefResolver, DatatypeEditMetadataResolver, DatatypeEditStructureResolver, DatatypeEditConformanceStatementsResolver],
   declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

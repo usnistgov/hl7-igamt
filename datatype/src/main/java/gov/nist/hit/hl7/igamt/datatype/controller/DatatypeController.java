@@ -131,6 +131,7 @@ public class DatatypeController extends BaseController {
       produces = {"application/json"})
   public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
       Authentication authentication) throws ValidationException, DatatypeNotFoundException {
+    System.out.println(postDef.getPostDef());
     Datatype Datatype = datatypeService.savePostdef(postDef);
     return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, Datatype.getUpdateDate());
   }

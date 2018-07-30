@@ -43,6 +43,8 @@ import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
+import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
+import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
 
 @NgModule({
     imports: [
@@ -71,8 +73,8 @@ import {MessageService} from "primeng/components/common/messageservice";
     ],
   exports:[CoConstraintTableComponent],
 
-    providers : [ SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService],
-    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent],
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService,SegmentCrossRefResolver],
+    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

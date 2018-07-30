@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
-public class SectionNotFoundException extends Exception {
+import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+
+public class SectionNotFoundException extends GenericException {
   private static final long serialVersionUID = 1L;
 
   public SectionNotFoundException(String error) {
