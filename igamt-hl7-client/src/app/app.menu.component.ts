@@ -20,7 +20,7 @@ export class AppMenuComponent implements OnInit {
     this.model = [
       {label: 'Home', icon: 'dashboard', routerLink: ['/']},
       {
-        label: 'IG Documents', icon: 'palette', badge: '6',
+        label: 'IG Documents', icon: 'palette',
         items: [
           {
             label: 'Create New Document', icon: 'plus', routerLink: ['/ig-documents/create'], command: (event) => {
