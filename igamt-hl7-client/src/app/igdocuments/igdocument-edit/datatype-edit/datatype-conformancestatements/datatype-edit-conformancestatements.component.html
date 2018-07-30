@@ -1,19 +1,32 @@
 <div *ngIf="datatypeConformanceStatements">
-    <h1>Conformance Statements</h1>
-    <form #csForm="ngForm">
+    <form #editForm="ngForm">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    <h1>Conformance Statements of {{datatypeConformanceStatements.name}}</h1>
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="datatypeConformanceStatements.updateDate">
+            <i class="fa fa-calendar"></i> {{datatypeConformanceStatements.updateDate}}
+          </span>
+                </div>
+            </div>
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="!editForm.dirty" ></button>
+            </div>
+        </div>
+
         <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
                 <p-table [columns]="cols" [value]="datatypeConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             <th style="width:3em"></th>
-
-
                             <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
                             </th>
-
                             <th style="width:15em" pReorderableColumn>Actions</th>
                         </tr>
                     </ng-template>
@@ -41,10 +54,14 @@
                             </td>
                         </tr>
                     </ng-template>
+                    <ng-template pTemplate="summary" let-rowData>
+                        <div style="text-align:left">
+                            <button type="button" pButton icon="fa fa-plus" (click)="addNewCS()" label="Create New Conformance Statement"></button>
+                        </div>
+                    </ng-template>
                 </p-table>
-
-
             </p-accordionTab>
+
             <p-accordionTab header="Conformance Statement Editor" [(selected)]="editorTab">
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
@@ -74,7 +91,6 @@
                     </div>
                 </div>
 
-
                 <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
                     <div class="ui-g ui-fluid">
                         <div class="ui-g-12 ui-md-2">
@@ -95,8 +111,7 @@
                 <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
                 <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="csForm.invalid"></button>
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="printCS(selectedConformanceStatement)"></button>
+                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
     </form>

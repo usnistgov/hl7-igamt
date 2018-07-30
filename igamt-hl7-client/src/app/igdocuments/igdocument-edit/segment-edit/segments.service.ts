@@ -27,13 +27,10 @@ export class SegmentsService {
     const promise = new Promise<any>((resolve, reject) => {
         this.http.get('api/segments/' + id + '/structure').toPromise().then(serverSegmentStructure => {
           resolve(serverSegmentStructure);
-
         }, error => {
           console.log("Error");
           resolve(null);
           this.igErrorService.redirect(error);
-
-
         });
     });
     return promise;
@@ -84,8 +81,6 @@ export class SegmentsService {
   }
 
   public saveSegmentMetadata(id, metadata): Promise<any> {
-
-
       return this.http.post('api/segments/' + id + '/metadata',metadata).toPromise();
   }
 
@@ -99,7 +94,7 @@ export class SegmentsService {
   }
 
   public saveSegmentPostDef(id, postDef): Promise<any> {
-      return this.http.get('api/segments/' + id + '/postdef').toPromise();
+      return this.http.post('api/segments/' + id + '/postdef', postDef).toPromise();
 
   }
 
@@ -108,7 +103,6 @@ export class SegmentsService {
   }
 
   public saveSegmentConformanceStatements(id, conformanceStatements): Promise<any> {
-
     return this.http.post('api/segments/' + id + '/conformancestatement', conformanceStatements).toPromise();
   }
 

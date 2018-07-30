@@ -215,54 +215,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         return null;
     }
 
-    popChild(id, dtId, parentTreeNode){
-
-        this.datatypesService.getDatatypeStructure(dtId).then( dtStructure  => {
-            this.idMap[id].dtName = dtStructure.name;
-            if(dtStructure.children){
-                for (let child of dtStructure.children) {
-                    var childData =  JSON.parse(JSON.stringify(parentTreeNode.data));
-
-                    this.makeChild(childData, child.data.id, '1');
-
-                    var treeNode = {
-                        label: child.data.name,
-                        data:childData,
-                        expandedIcon: "fa-folder-open",
-                        collapsedIcon: "fa-folder",
-                    };
-
-                    var data = {
-                        id: child.data.id,
-                        name: child.data.name,
-                        max: "1",
-                        position: child.data.position,
-                        usage: child.data.usage,
-                        dtId: child.data.ref.id
-                    };
-                    this.idMap[id + '-' + data.id] = data;
-
-                    this.popChild(id + '-' + data.id, data.dtId, treeNode);
-
-                    if(!parentTreeNode.children) parentTreeNode.children = [];
-                    parentTreeNode.children.push(treeNode);
-
-                }
-            }
-
-
-        });
-
-
-    }
-
-    makeChild(data, id, para){
-        if(data.child) this.makeChild(data.child, id, para);
-        else data.child = {
-            elementId: id,
-            instanceParameter: para
-        }
-    }
 
     changeType(){
         if(this.selectedConformanceStatement.type == 'ASSERTION'){
