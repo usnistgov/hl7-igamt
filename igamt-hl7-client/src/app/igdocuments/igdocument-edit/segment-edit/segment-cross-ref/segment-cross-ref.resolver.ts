@@ -15,16 +15,16 @@ import {forEach} from "@angular/router/src/utils/collection";
 import {TocService} from "../../service/toc.service";
 
 @Injectable()
-export  class DatatypeCrossRefResolver implements Resolve<any>{
+export  class SegmentCrossRefResolver implements Resolve<any>{
   constructor(private http: HttpClient,private router : Router ,private tocService :TocService, private acr:ActivatedRoute) {
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
 
-    let datatypeId= route.params["datatypeId"];
+    let id= route.params["segmentId"];
     let igId= route.parent.parent.params["igId"];
 
-    return this.http.get( "api/igdocuments/"+igId+"/datatypes/"+datatypeId+"/crossref");
+    return this.http.get( "api/igdocuments/"+igId+"/segments/"+id+"/crossref");
 
   }
 }

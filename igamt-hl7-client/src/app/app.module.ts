@@ -112,6 +112,7 @@ import {ExportFontService} from "./service/configuration/export-font/export-font
 import { ErrorComponent } from './error/error.component';
 import {ErrorResolver} from "./error/error.resolver";
 import {ErrorService} from "./error/error.service";
+import { CrossReferenceComponent } from './common/cross-reference/cross-reference.component';
 
 @NgModule({
     imports: [
@@ -227,7 +228,7 @@ import {ErrorService} from "./error/error.service";
     },
 
     // {provide: ErrorHandler, useClass: IgErrorHandler},
-     WorkspaceService,
+    WorkspaceService,
     ErrorResolver,
     ErrorService,
     ResetPasswordService,
@@ -238,7 +239,6 @@ import {ErrorService} from "./error/error.service";
     AuthGuard,
     UserService,
     BreadcrumbService,
-
     ConstraintsService,
     TableOptionsService,
     ExportFontService

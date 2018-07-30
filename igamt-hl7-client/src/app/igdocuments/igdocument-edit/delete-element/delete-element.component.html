@@ -30,7 +30,12 @@
     Cross Reference found
   </p-header>
 
-  {{xreferences|json}}
+<div *ngIf="xreferences">
+
+  <cross-reference [crossReference]="xreferences"></cross-reference>
+
+</div>
+
   <p-footer>
   </p-footer>
 

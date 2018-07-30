@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 
 @Component({
-  selector: 'app-datatype-cross-ref',
-  templateUrl: './datatype-cross-ref.component.html',
-  styleUrls: ['./datatype-cross-ref.component.css']
+  selector: 'app-segment-cross-ref',
+  templateUrl: 'segment-cross-ref.component.html',
+  styleUrls: ['segment-cross-ref.component.css']
 })
-export class DatatypeCrossRefComponent implements OnInit {
+export class SegmentCrossRefComponent implements OnInit {
 
 
   crossRefs:any;
@@ -21,8 +21,6 @@ export class DatatypeCrossRefComponent implements OnInit {
 
 
     });
-
-
 
   }
 

@@ -47,7 +47,6 @@ export class DeleteElementService  {
       return this.deleteConformanceProfile(igId, id);
     }else if(type==Types.TEXT){
 
-
      return Observable.of(id);
     }
     else{
