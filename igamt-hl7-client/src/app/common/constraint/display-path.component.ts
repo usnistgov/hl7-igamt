@@ -3,6 +3,8 @@
  */
 import {Component, Input} from "@angular/core";
 import { ControlContainer, NgForm } from '@angular/forms';
+import {DatatypesService} from "../../igdocuments/igdocument-edit/datatype-edit/datatypes.service";
+import { _ } from 'underscore';
 
 @Component({
   selector : 'display-path',
@@ -22,7 +24,7 @@ export class DisplayPathComponent {
   displayPicker: boolean = false;
 
 
-  constructor(){
+  constructor(private datatypesService : DatatypesService){
   }
   ngOnInit(){
   }
@@ -61,9 +63,59 @@ export class DisplayPathComponent {
   }
 
   nodeSelect(event) {
-
-    this.pathHolder.path = JSON.parse(JSON.stringify(event.node.data));
-
+    this.pathHolder.path = JSON.parse(JSON.stringify(event.node.data.pathData));
     this.displayPicker = false;
   }
+
+  loadNode(event) {
+    if(event.node && !event.node.children) {
+
+      console.log(event.node.data);
+
+      this.datatypesService.getDatatypeStructure(event.node.data.dtId).then(dtStructure  => {
+        dtStructure.children = _.sortBy(dtStructure.children, function(child){ return child.data.position});
+        this.idMap[event.node.data.idPath].dtName = dtStructure.name;
+        if(dtStructure.children){
+          for (let child of dtStructure.children) {
+            var childData =  JSON.parse(JSON.stringify(event.node.data.pathData));
+
+            this.makeChild(childData, child.data.id, '1');
+
+            var data = {
+              id: child.data.id,
+              name: child.data.name,
+              max: "1",
+              position: child.data.position,
+              usage: child.data.usage,
+              dtId: child.data.ref.id,
+              idPath: event.node.data.idPath + '-' + child.data.id,
+              pathData: childData
+            };
+
+            var treeNode = {
+              label: child.data.position + '. ' + child.data.name,
+              data:data,
+              expandedIcon: "fa-folder-open",
+              collapsedIcon: "fa-folder",
+            };
+
+
+            this.idMap[data.idPath] = data;
+            if(!event.node.children) event.node.children = [];
+            event.node.children.push(treeNode);
+
+          }
+        }
+      });
+    }
+  }
+
+  makeChild(data, id, para){
+    if(data.child) this.makeChild(data.child, id, para);
+    else data.child = {
+      elementId: id,
+      instanceParameter: para
+    }
+  }
+
 }

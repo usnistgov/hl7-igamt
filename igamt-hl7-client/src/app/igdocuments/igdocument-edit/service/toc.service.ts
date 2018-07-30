@@ -119,7 +119,6 @@ export  class TocService{
   }
 
   getTreeModel(){
-
     return  this.treeModel;
   }
 

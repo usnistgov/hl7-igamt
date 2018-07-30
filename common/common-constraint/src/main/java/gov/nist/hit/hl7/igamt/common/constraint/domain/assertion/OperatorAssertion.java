@@ -18,7 +18,7 @@ import java.util.Set;
  * @author jungyubw
  *
  */
-public class OperatorAssertion extends MultipleAssertion {
+public class OperatorAssertion extends Assertion {
 
   public enum Operator {
     AND, OR
@@ -26,12 +26,10 @@ public class OperatorAssertion extends MultipleAssertion {
 
   private Operator operator;
   private Set<Assertion> assertions = new HashSet<Assertion>();
-  
-  
 
   public OperatorAssertion() {
     super();
-    this.setMode(AssertionMode.COMPLEX);
+    this.setMode(AssertionMode.ANDOR);
   }
 
   public Set<Assertion> getAssertions() {

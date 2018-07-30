@@ -11,11 +11,19 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author jungyubw
  *
  */
-public class ConformanceStatement extends Constraint {
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(value = FreeTextConformanceStatement.class, name = "FREE"),
+               @JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
+public class ConformanceStatement {
+  private ConstraintType type;
   protected String identifier;
 
   public ConformanceStatement() {
@@ -28,6 +36,14 @@ public class ConformanceStatement extends Constraint {
 
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+
+  public ConstraintType getType() {
+    return type;
+  }
+
+  public void setType(ConstraintType type) {
+    this.type = type;
   }
 
 

@@ -16,8 +16,8 @@ package gov.nist.hit.hl7.igamt.common.base.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+//import org.apache.commons.lang3.StringUtils;
+//import org.apache.commons.lang3.math.NumberUtils;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -68,16 +68,16 @@ public class ValidationUtil {
       throw new ValidationException("Min Length must be NA because Max Length is NA ");
     }
 
-    if (!NumberUtils.isNumber(maxLength)
-        && (!"*".equalsIgnoreCase(maxLength) && !SubStructElement.NA.equals(maxLength))) {
-      throw new ValidationException("Max Length has to be * or a numerical value.");
-    }
-
-    if (!NumberUtils.isNumber(minLength)) {
-      if (!SubStructElement.NA.equals(minLength)) {
-        throw new ValidationException("Min Length has to be NA or a numerical value.");
-      }
-    }
+//    if (!NumberUtils.isNumber(maxLength)
+//        && (!"*".equalsIgnoreCase(maxLength) && !SubStructElement.NA.equals(maxLength))) {
+//      throw new ValidationException("Max Length has to be * or a numerical value.");
+//    }
+//
+//    if (!NumberUtils.isNumber(minLength)) {
+//      if (!SubStructElement.NA.equals(minLength)) {
+//        throw new ValidationException("Min Length has to be NA or a numerical value.");
+//      }
+//    }
 
     int toBeMaxLenT = Integer.valueOf(maxLength.trim());
     int toBeMinLenT = Integer.valueOf(minLength.trim());
@@ -101,9 +101,9 @@ public class ValidationUtil {
     if (min == null) {
       throw new ValidationException("Cardinality Min cannot be empty");
     }
-    if (!NumberUtils.isNumber(max) && !StringUtils.equalsIgnoreCase(max, "*")) {
-      throw new ValidationException("Cardinality Max has to be * or a numerical value.");
-    }
+//    if (!NumberUtils.isNumber(max) && !StringUtils.equalsIgnoreCase(max, "*")) {
+//      throw new ValidationException("Cardinality Max has to be * or a numerical value.");
+//    }
 
     int toBeMax = 0;
     if ("*".equalsIgnoreCase(max)) {

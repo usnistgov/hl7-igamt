@@ -570,11 +570,7 @@ export class ConformanceprofileEditStructureComponent implements WithSave {
     }
 
     changeAssertionMode(){
-        if(this.selectedPredicate.assertion.mode == 'SIMPLE'){
-            this.selectedPredicate.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedPredicate.assertion.mode == 'COMPLEX'){
-            this.selectedPredicate.assertion = {mode:"COMPLEX"};
-        }
+            this.selectedPredicate.assertion = {mode:this.selectedPredicate.assertion.mode};
     }
 
     popChild(id, dtId, parentTreeNode){

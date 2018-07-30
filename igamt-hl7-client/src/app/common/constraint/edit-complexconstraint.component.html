@@ -1,7 +1,7 @@
 <p-panel class="border" header="Complex Assertion" [toggleable]="true" [ngModelGroup]="groupName">
-    <div *ngIf="constraint.complexAssertionType">
-        <edit-ifthen-constraint *ngIf="constraint.complexAssertionType === 'IFTHEN'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-IFTHEN'"></edit-ifthen-constraint>
-        <edit-andor-constraint *ngIf="constraint.complexAssertionType === 'ANDOR'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-ANDOR'"></edit-andor-constraint>
-        <edit-not-constraint *ngIf="constraint.complexAssertionType === 'NOT'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-NOT'"></edit-not-constraint>
+    <div *ngIf="constraint.mode">
+        <edit-ifthen-constraint *ngIf="constraint.mode === 'IFTHEN'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-IFTHEN'"></edit-ifthen-constraint>
+        <edit-andor-constraint *ngIf="constraint.mode === 'ANDOR'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-ANDOR'"></edit-andor-constraint>
+        <edit-not-constraint *ngIf="constraint.mode === 'NOT'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-NOT'"></edit-not-constraint>
     </div>
 </p-panel>

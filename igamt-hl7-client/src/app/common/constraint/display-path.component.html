@@ -2,5 +2,5 @@
 <span *ngIf="!path">(Unselected Node)<i class="fa fa-pencil" (click)="displayPicker = true"></i></span>
 
 <p-dialog header="Select Node" [(visible)]="displayPicker">
-    <p-tree [value]="treeData" selectionMode="single" (onNodeSelect)="nodeSelect($event)"></p-tree>
+    <p-tree [value]="treeData" selectionMode="single" (onNodeSelect)="nodeSelect($event)" (onNodeExpand)="loadNode($event)"></p-tree>
 </p-dialog>
