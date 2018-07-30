@@ -5,6 +5,7 @@ import {Component, Input} from "@angular/core";
 import { ControlContainer, NgForm } from '@angular/forms';
 import {DatatypesService} from "../../igdocuments/igdocument-edit/datatype-edit/datatypes.service";
 import { _ } from 'underscore';
+import {TocService} from "../../igdocuments/igdocument-edit/service/toc.service";
 
 @Component({
   selector : 'display-path',
@@ -23,10 +24,40 @@ export class DisplayPathComponent {
   selectedNode:any;
   displayPicker: boolean = false;
 
+  datatypesLinks :any = [];
+  datatypeOptions:any = [];
 
-  constructor(private datatypesService : DatatypesService){
+
+  constructor(private datatypesService : DatatypesService, private tocService:TocService){
   }
   ngOnInit(){
+    this.tocService.getDataypeList().then((dtTOCdata) => {
+      let listTocDTs: any = dtTOCdata;
+      for (let entry of listTocDTs) {
+        var treeObj = entry.data;
+
+        var dtLink: any = {};
+        dtLink.id = treeObj.key.id;
+        dtLink.label = treeObj.label;
+        dtLink.domainInfo = treeObj.domainInfo;
+        var index = treeObj.label.indexOf("_");
+        if (index > -1) {
+          dtLink.name = treeObj.label.substring(0, index);
+          dtLink.ext = treeObj.label.substring(index);
+          ;
+        } else {
+          dtLink.name = treeObj.label;
+          dtLink.ext = null;
+        }
+
+        if (treeObj.lazyLoading) dtLink.leaf = false;
+        else dtLink.leaf = true;
+        this.datatypesLinks.push(dtLink);
+
+        var dtOption = {label: dtLink.label, value: dtLink.id};
+        this.datatypeOptions.push(dtOption);
+      }
+    });
   }
 
   getIdPath(){
@@ -97,8 +128,13 @@ export class DisplayPathComponent {
               data:data,
               expandedIcon: "fa-folder-open",
               collapsedIcon: "fa-folder",
+              leaf:false
             };
 
+            var dt = this.getDatatypeLink(child.data.ref.id);
+
+            if(dt.leaf) treeNode.leaf = true;
+            else treeNode.leaf = false;
 
             this.idMap[data.idPath] = data;
             if(!event.node.children) event.node.children = [];
@@ -108,6 +144,14 @@ export class DisplayPathComponent {
         }
       });
     }
+  }
+
+  getDatatypeLink(id){
+    for (let dt of this.datatypesLinks) {
+      if(dt.id === id) return JSON.parse(JSON.stringify(dt));
+    }
+    console.log("Missing DT:::" + id);
+    return null;
   }
 
   makeChild(data, id, para){
