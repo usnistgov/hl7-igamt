@@ -113,6 +113,7 @@ import { ErrorComponent } from './error/error.component';
 import {ErrorResolver} from "./error/error.resolver";
 import {ErrorService} from "./error/error.service";
 import { CrossReferenceComponent } from './common/cross-reference/cross-reference.component';
+import {MessageService} from "primeng/components/common/messageservice";
 
 @NgModule({
     imports: [
@@ -241,7 +242,8 @@ import { CrossReferenceComponent } from './common/cross-reference/cross-referenc
     BreadcrumbService,
     ConstraintsService,
     TableOptionsService,
-    ExportFontService
+    ExportFontService,
+    MessageService
   ],
     bootstrap: [AppComponent]
 })
