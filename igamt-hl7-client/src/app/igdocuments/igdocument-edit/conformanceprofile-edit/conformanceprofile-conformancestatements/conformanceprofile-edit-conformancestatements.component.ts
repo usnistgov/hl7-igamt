@@ -26,7 +26,6 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     treeData: any[];
     constraintTypes: any = [];
     assertionModes: any = [];
-    complexAssertionTypes: any[];
     backup:any;
 
     selectedConformanceStatement: any = {};
@@ -60,7 +59,6 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
-        this.complexAssertionTypes = this.configService._complexAssertionTypes;
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
@@ -197,8 +195,35 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     changeAssertionMode(){
         if(this.selectedConformanceStatement.assertion.mode == 'SIMPLE'){
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.assertion.mode == 'COMPLEX'){
-            this.selectedConformanceStatement.assertion = {mode:"COMPLEX"};
+        }else if(this.selectedConformanceStatement.assertion.mode === 'ANDOR'){
+            this.selectedConformanceStatement.assertion.child = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
+            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
+            this.selectedConformanceStatement.assertion.operator = 'AND';
+            this.selectedConformanceStatement.assertion.assertions = [];
+            this.selectedConformanceStatement.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
+
+            this.selectedConformanceStatement.assertion.assertions.push({
+                "mode": "SIMPLE"
+            });
+        }else if(this.selectedConformanceStatement.assertion.mode === 'NOT'){
+            this.selectedConformanceStatement.assertion.assertions = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
+            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
+            this.selectedConformanceStatement.assertion.child = {
+                "mode": "SIMPLE"
+            };
+        }else if(this.selectedConformanceStatement.assertion.mode === 'IFTHEN'){
+            this.selectedConformanceStatement.assertion.assertions = undefined;
+            this.selectedConformanceStatement.assertion.child = undefined;
+            this.selectedConformanceStatement.assertion.ifAssertion = {
+                "mode": "SIMPLE"
+            };
+            this.selectedConformanceStatement.assertion.thenAssertion = {
+                "mode": "SIMPLE"
+            };
         }
     }
 
@@ -228,38 +253,4 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
-
-    changeComplexAssertionType(constraint){
-        if(constraint.complexAssertionType === 'ANDOR'){
-            constraint.child = undefined;
-            constraint.ifAssertion = undefined;
-            constraint.thenAssertion = undefined;
-            constraint.operator = 'AND';
-            constraint.assertions = [];
-            constraint.assertions.push({
-                "mode": "SIMPLE"
-            });
-
-            constraint.assertions.push({
-                "mode": "SIMPLE"
-            });
-        }else if(constraint.complexAssertionType === 'NOT'){
-            constraint.assertions = undefined;
-            constraint.ifAssertion = undefined;
-            constraint.thenAssertion = undefined;
-            constraint.child = {
-                "mode": "SIMPLE"
-            };
-        }else if(constraint.complexAssertionType === 'IFTHEN'){
-            constraint.assertions = undefined;
-            constraint.child = undefined;
-            constraint.ifAssertion = {
-                "mode": "SIMPLE"
-            };
-            constraint.thenAssertion = {
-                "mode": "SIMPLE"
-            };
-        }
-    }
-
 }

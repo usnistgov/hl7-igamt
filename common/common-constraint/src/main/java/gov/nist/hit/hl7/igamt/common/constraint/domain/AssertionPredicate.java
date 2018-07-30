@@ -11,13 +11,19 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
+import java.io.Serializable;
+
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
 
 /**
  * @author jungyubw
  *
  */
-public class AssertionPredicate extends Predicate {
+public class AssertionPredicate extends Predicate implements Serializable{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -8306847581430345712L;
   private Assertion assertion;
 
   public AssertionPredicate() {

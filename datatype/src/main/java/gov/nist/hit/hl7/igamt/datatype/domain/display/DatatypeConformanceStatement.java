@@ -26,6 +26,7 @@ public class DatatypeConformanceStatement {
   private String label;
   private Scope scope;
   private String version;
+  private String name;
   private Set<ConformanceStatement> conformanceStatements;
 
   public CompositeKey getId() {
@@ -66,6 +67,14 @@ public class DatatypeConformanceStatement {
 
   public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
     this.conformanceStatements = conformanceStatements;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 }

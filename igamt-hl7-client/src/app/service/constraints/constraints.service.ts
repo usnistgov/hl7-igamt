@@ -77,69 +77,65 @@ export class ConstraintsService {
                 }
             }
         }
-        else if(assertion.mode === 'COMPLEX'){
-            if(assertion.complexAssertionType){
-                if(assertion.complexAssertionType === 'ANDOR'){
-                    let operator, result:string;
-                    let assertions:any[];
-                    let isReady:boolean = true;
+        else if(assertion.mode === 'ANDOR'){
+            let operator, result:string;
+            let assertions:any[];
+            let isReady:boolean = true;
 
-                    operator = assertion.operator;
-                    assertions = assertion.assertions;
+            operator = assertion.operator;
+            assertions = assertion.assertions;
 
-                    if(operator && assertions && assertions.length > 1){
-                        for (let childAssertion of assertions) {
-                            this.generateDescriptionForSimpleAssertion(childAssertion,idMap);
-                            if(!childAssertion.description) isReady = false;
+            if(operator && assertions && assertions.length > 1){
+                for (let childAssertion of assertions) {
+                    this.generateDescriptionForSimpleAssertion(childAssertion,idMap);
+                    if(!childAssertion.description) isReady = false;
 
-                            if(result){
-                                result = result + ' ' + operator + ' {' + childAssertion.description + '}';
-                            }else {
-                                result = '{' + childAssertion.description + '}';
-                            }
-                        }
-                    }
-                    if(result) result = result;
-                    if(isReady && result){
-                        assertion.description = result;
-                    }
-                }else if(assertion.complexAssertionType === 'NOT'){
-                    let result:string;
-                    let child:any;
-                    let isReady:boolean = true;
-
-                    child = assertion.child;
-
-                    if(assertion){
-                        this.generateDescriptionForSimpleAssertion(child,idMap);
-                        if(!child.description) isReady = false;
-
-                        result = 'NOT{' + child.description + '}';
-                    }
-                    if(isReady && result){
-                        assertion.description = result;
-                    }
-                }else if(assertion.complexAssertionType === 'IFTHEN'){
-                    let result:string;
-                    let ifAssertion,thenAssertion:any;
-                    let isReady:boolean = true;
-
-                    ifAssertion = assertion.ifAssertion;
-                    thenAssertion = assertion.thenAssertion;
-
-                    if(ifAssertion && thenAssertion){
-                        this.generateDescriptionForSimpleAssertion(ifAssertion,idMap);
-                        this.generateDescriptionForSimpleAssertion(thenAssertion,idMap);
-
-                        if(!ifAssertion.description) isReady = false;
-                        if(!thenAssertion.description) isReady = false;
-
-                        result = 'IF {' + ifAssertion.description + '}, then {' + thenAssertion.description + '}';
-                    }
-                    if(isReady && result){
-                        assertion.description = result;
+                    if(result){
+                        result = result + ' ' + operator + ' {' + childAssertion.description + '}';
+                    }else {
+                        result = '{' + childAssertion.description + '}';
                     }
                 }
+            }
+            if(result) result = result;
+            if(isReady && result){
+                assertion.description = result;
+            }
+        }else if(assertion.mode === 'NOT'){
+            let result:string;
+            let child:any;
+            let isReady:boolean = true;
+
+            child = assertion.child;
+
+            if(assertion){
+                this.generateDescriptionForSimpleAssertion(child,idMap);
+                if(!child.description) isReady = false;
+
+                result = 'NOT{' + child.description + '}';
+            }
+            if(isReady && result){
+                assertion.description = result;
+            }
+        }else if(assertion.mode === 'IFTHEN'){
+            let result:string;
+            let ifAssertion,thenAssertion:any;
+            let isReady:boolean = true;
+
+            ifAssertion = assertion.ifAssertion;
+            thenAssertion = assertion.thenAssertion;
+
+            if(ifAssertion && thenAssertion){
+                this.generateDescriptionForSimpleAssertion(ifAssertion,idMap);
+                this.generateDescriptionForSimpleAssertion(thenAssertion,idMap);
+
+                if(!ifAssertion.description) isReady = false;
+                if(!thenAssertion.description) isReady = false;
+
+                result = 'IF {' + ifAssertion.description + '}, then {' + thenAssertion.description + '}';
+            }
+            if(isReady && result){
+                assertion.description = result;
             }
         }
     }

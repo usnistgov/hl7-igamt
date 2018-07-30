@@ -35,7 +35,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
         }
 
       }catch (e){
-        return this.SomthingWrong();
+        return this.somthingWrong();
       }
   }
 
@@ -101,7 +101,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
   }
 
 
-  SomthingWrong() :Promise<any>{
+  somthingWrong() :Promise<any>{
 
     var pr = new Promise<any>((resolve, reject) => {
 

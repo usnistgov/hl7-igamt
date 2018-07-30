@@ -182,10 +182,11 @@ public class DatatypeServiceImpl implements DatatypeService {
       result.setScope(datatype.getDomainInfo().getScope());
       result.setVersion(datatype.getDomainInfo().getVersion());
       if (datatype.getExt() != null) {
-        result.setLabel(datatype.getName() + datatype.getExt());
+        result.setLabel(datatype.getName() + "_" + datatype.getExt());
       } else {
         result.setLabel(datatype.getName());
       }
+      result.setName(datatype.getName());
       result.setBinding(datatype.getBinding());
 
       if (datatype instanceof ComplexDatatype) {
@@ -241,7 +242,7 @@ public class DatatypeServiceImpl implements DatatypeService {
       result.setScope(datatype.getDomainInfo().getScope());
       result.setVersion(datatype.getDomainInfo().getVersion());
       if (datatype.getExt() != null) {
-        result.setLabel(datatype.getName() + datatype.getExt());
+        result.setLabel(datatype.getName() + "_" + datatype.getExt());
       } else {
         result.setLabel(datatype.getName());
       }
@@ -266,11 +267,11 @@ public class DatatypeServiceImpl implements DatatypeService {
       result.setScope(datatype.getDomainInfo().getScope());
       result.setVersion(datatype.getDomainInfo().getVersion());
       if (datatype.getExt() != null) {
-        result.setLabel(datatype.getName() + datatype.getExt());
+        result.setLabel(datatype.getName() + "_" + datatype.getExt());
       } else {
         result.setLabel(datatype.getName());
       }
-      result.setPostDef(datatype.getPreDef());
+      result.setPostDef(datatype.getPostDef());
       return result;
     }
     return null;
@@ -371,7 +372,7 @@ public class DatatypeServiceImpl implements DatatypeService {
       } else {
         result.setLabel(datatype.getName());
       }
-
+      result.setName(datatype.getName());
       result.setConformanceStatements(datatype.getBinding().getConformanceStatements());
       return result;
     }
@@ -479,22 +480,22 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException {
-    Datatype segment = findLatestById(predef.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(predef.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(predef.getId().getId());
     }
-    segment.setPreDef(predef.getPreDef());
-    return save(segment);
+    datatype.setPreDef(predef.getPreDef());
+    return save(datatype);
   }
 
   @Override
   public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException {
-    Datatype segment = findLatestById(postdef.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(postdef.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(postdef.getId().getId());
     }
-    segment.setPostDef(postdef.getPostDef());
-    return save(segment);
+    datatype.setPostDef(postdef.getPostDef());
+    return save(datatype);
   }
 
 

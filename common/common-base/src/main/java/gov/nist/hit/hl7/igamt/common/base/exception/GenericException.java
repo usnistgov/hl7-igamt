@@ -9,12 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
+package gov.nist.hit.hl7.igamt.common.base.exception;
 
 /**
- * @author jungyubw
+ * @author ena3
  *
  */
-public class MultipleAssertion extends Assertion{
+@SuppressWarnings("serial")
+public class GenericException extends Exception {
+  protected ExceptionType type;
+
+  public GenericException(String message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
+
+  /**
+   * @param error
+   */
+  public GenericException(Exception error) {
+    // TODO Auto-generated constructor stub
+    super(error);
+  }
 
 }

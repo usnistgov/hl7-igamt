@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.segment.domain.display;
 
+import java.util.Date;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
@@ -8,6 +9,8 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 public class SegmentConformanceStatement {
   private CompositeKey id;
+  private String name;
+  private Date updateDate;
   private String label;
   private Scope scope;
   private String version;
@@ -51,6 +54,22 @@ public class SegmentConformanceStatement {
 
   public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
     this.conformanceStatements = conformanceStatements;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public Date getUpdateDate() {
+    return updateDate;
+  }
+
+  public void setUpdateDate(Date updateDate) {
+    this.updateDate = updateDate;
   }
 
 
