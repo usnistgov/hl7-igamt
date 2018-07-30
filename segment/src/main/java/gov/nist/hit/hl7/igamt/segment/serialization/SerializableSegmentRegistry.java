@@ -76,7 +76,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
               if (segmentsMap.containsKey(segmentLink.getId().getId())) {
                 Segment segment = segmentsMap.get(segmentLink.getId().getId());
                 SerializableSegment serializableSegment =
-                    new SerializableSegment(segment, super.position, this.getChildLevel(),
+                    new SerializableSegment(segment, String.valueOf(segmentLink.getPosition()), this.getChildLevel(),
                         this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields);
                 if (serializableSegment != null) {
                   Element segmentElement = serializableSegment.serialize();

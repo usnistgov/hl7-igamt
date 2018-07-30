@@ -73,6 +73,8 @@ public class SerializableValueSet extends SerializableResource {
           valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
       valueSetElement.addAttribute(new Attribute("stability",
           valueSet.getStability() != null ? valueSet.getStability().value : ""));
+      valueSetElement.addAttribute(new Attribute("extensibility",
+          valueSet.getExtensibility() != null ? valueSet.getExtensibility().value : ""));
       valueSetElement.addAttribute(new Attribute("contentDefinition",
           valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
       valueSetElement.addAttribute(
@@ -93,7 +95,7 @@ public class SerializableValueSet extends SerializableResource {
           List<DisplayCode> list = new ArrayList<DisplayCode>(displayCodes);
           displayCodes = new LinkedHashSet<DisplayCode>(list.subList(0, maxNumberOfCodes));
         }
-        for (DisplayCode displayCode : this.valuesetStructure.getDisplayCodes()) {
+        for (DisplayCode displayCode : displayCodes) {
           Element codeRefElement = new Element("Code");
           codeRefElement.addAttribute(
               new Attribute("codeId", displayCode.getId() != null ? displayCode.getId() : ""));

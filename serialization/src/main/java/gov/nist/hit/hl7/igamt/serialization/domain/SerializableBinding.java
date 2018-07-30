@@ -218,8 +218,8 @@ public class SerializableBinding extends SerializableElement {
         Element valuesetBindingElement = new Element("ValuesetBinding");
         valuesetBindingElement.addAttribute(new Attribute("bindingIdentifier", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
         valuesetBindingElement.addAttribute(new Attribute("location", location));
-        valuesetBindingElement.addAttribute(
-            new Attribute("name", valuesetLabelMap.get(valuesetBinding.getValuesetId())));
+        String valueSetName = valuesetLabelMap.get(valuesetBinding.getValuesetId());
+        valuesetBindingElement.addAttribute(new Attribute("name", valueSetName != null ? valueSetName : ""));
         valuesetBindingElement.addAttribute(new Attribute("bindingStrength",
             valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
         valuesetBindingElement.addAttribute(new Attribute("bindingLocation",
