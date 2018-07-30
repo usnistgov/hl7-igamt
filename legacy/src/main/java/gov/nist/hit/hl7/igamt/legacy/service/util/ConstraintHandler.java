@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -148,12 +149,15 @@ public class ConstraintHandler {
       return null;
 
 
-    System.out.println(assertionStr);
+    //System.out.println(assertionStr);
     Document doc = this.convertStringToDocument(assertionStr);
-    Node assertionNode = doc.getElementsByTagName(rootName).item(0);
-    Assertion result = constructAssertionObj(this.findFirstChild(assertionNode), o);
-    result.setDescription(description);
-    return result;
+    Node assertionNode =  (doc != null && doc.getElementsByTagName(rootName) != null) ? doc.getElementsByTagName(rootName).item(0) : null;
+    if(assertionNode != null) {
+      Assertion result = constructAssertionObj(this.findFirstChild(assertionNode), o);
+      result.setDescription(description);
+      return result;
+    }
+    return null;
   }
 
   /**
@@ -562,7 +566,11 @@ public class ConstraintHandler {
             pathObj.setChild(iPathObj);
 
             if (splits.length > 1) {
-              Datatype childDt = datatypeRepository.findOne(c.getDatatype().getId());
+              Datatype childDt = null;
+              Optional<Datatype> optional = datatypeRepository.findById(c.getDatatype().getId());
+              if(optional.isPresent()) {
+                childDt = optional.get();
+              }
               List<String> list = new LinkedList<String>(Arrays.asList(splits));
               list.remove(0);
               if (childDt != null && childDt.getComponents() != null
@@ -584,7 +592,11 @@ public class ConstraintHandler {
             pathObj.setChild(iPathObj);
 
             if (splits.length > 1) {
-              Datatype childDt = datatypeRepository.findOne(f.getDatatype().getId());
+              Datatype childDt = null;
+              Optional<Datatype> optional = datatypeRepository.findById(f.getDatatype().getId());
+              if(optional.isPresent()) {
+                childDt = optional.get();
+              }
               List<String> list = new LinkedList<String>(Arrays.asList(splits));
               list.remove(0);
               if (childDt != null && childDt.getComponents() != null
@@ -608,7 +620,11 @@ public class ConstraintHandler {
             if (splits.length > 1) {
               if (srog instanceof SegmentRef) {
                 SegmentRef sr = (SegmentRef) srog;
-                Segment childSeg = segmentRepository.findOne(sr.getRef().getId());
+                Segment childSeg = null;
+                Optional<Segment> optional = segmentRepository.findById(sr.getRef().getId());
+                if(optional.isPresent()) {
+                  childSeg = optional.get();
+                }
                 List<String> list = new LinkedList<String>(Arrays.asList(splits));
                 list.remove(0);
                 if (childSeg != null && childSeg.getFields() != null
@@ -641,7 +657,11 @@ public class ConstraintHandler {
             if (splits.length > 1) {
               if (srog instanceof SegmentRef) {
                 SegmentRef sr = (SegmentRef) srog;
-                Segment childSeg = segmentRepository.findOne(sr.getRef().getId());
+                Segment childSeg = null;
+                Optional<Segment> optional = segmentRepository.findById(sr.getRef().getId());
+                if(optional.isPresent()) {
+                  childSeg = optional.get();
+                }
                 List<String> list = new LinkedList<String>(Arrays.asList(splits));
                 list.remove(0);
                 if (childSeg != null && childSeg.getFields() != null

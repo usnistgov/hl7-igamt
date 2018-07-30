@@ -192,7 +192,7 @@ public class TableConversionServiceImpl implements ConversionService {
 
       if (table.getAccountId() != null) {
         Account acc = accountRepository.findByAccountId(table.getAccountId());
-        if (acc.getAccountId() != null) {
+        if (acc != null && acc.getAccountId() != null) {
           if (acc.getUsername() != null) {
 
             v.setUsername(acc.getUsername());
