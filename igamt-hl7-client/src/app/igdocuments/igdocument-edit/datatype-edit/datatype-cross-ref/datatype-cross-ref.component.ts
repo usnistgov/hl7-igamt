@@ -8,13 +8,22 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class DatatypeCrossRefComponent implements OnInit {
 
+
+  crossRefs:any;
+
   constructor(private activeRoute: ActivatedRoute, private  router : Router) { }
 
   ngOnInit() {
-    this.activeRoute.data.map(data =>data.ref).subscribe( x =>{
+
+    this.activeRoute.data.map(data =>data.refs).subscribe(x=>{
+
+      this.crossRefs=x;
 
 
     });
+
+
+
   }
 
 }

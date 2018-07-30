@@ -59,6 +59,8 @@ import { IgErrorComponent } from './ig-error/ig-error.component';
 import {IgErrorService} from "./ig-error/ig-error.service";
 import {IgErrorResolver} from "./ig-error/ig-error.resolver";
 import {LoadingService} from "./service/loading.service";
+import { DeleteElementComponent } from './delete-element/delete-element.component';
+import {DeleteElementService} from "./delete-element/delete-element.service";
 
 
 @NgModule({
@@ -104,13 +106,13 @@ import {LoadingService} from "./service/loading.service";
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent, DeleteElementComponent
   ],
   entryComponents: [
 
   ],
   providers : [
-   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService
+   TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

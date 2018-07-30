@@ -7,6 +7,8 @@ import {ValuesetEditStructureComponent} from "./valueset-structure/valueset-edit
 import {ValuesetEditMetadataComponent} from "./valueset-metadata/valueset-edit-metadata.component";
 import {ValuesetEditPredefComponent} from "./valueset-predef/valueset-edit-predef.component";
 import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-postdef.component";
+import {ValuesetCrossRefComponent} from "./valueset-cross-ref/valueset-cross-ref.component";
+import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
 // import {ValuesetCrossRefComponent} from "./valueset-cross-ref/valueset-cross-ref.component";
 // import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
 
@@ -28,10 +30,10 @@ import {ValuesetEditPostdefComponent} from "./valueset-postdef/valueset-edit-pos
             {
                 path: ':valuesetId/postDef', component: ValuesetEditPostdefComponent,
             }
-            // ,
-            // {
-            //     path: ':valuesetId/crossRef', component: ValuesetCrossRefComponent,resolve: { refs : ValuesetCrossRefResolver}
-            // }
+            ,
+            {
+                path: ':valuesetId/crossRef', component: ValuesetCrossRefComponent,resolve: { refs : ValuesetCrossRefResolver}
+            }
 
         ])
     ],

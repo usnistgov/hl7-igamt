@@ -28,6 +28,8 @@ import {MessageModule} from "primeng/components/message/message";
 import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
 
 import {ValuesetsService} from "./valueSets.service";
+import {ValuesetCrossRefComponent} from "./valueset-cross-ref/valueset-cross-ref.component";
+import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
 // import {ValuesetCrossRefComponent } from './valueset-cross-ref/valueset-cross-ref.component';
 // import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
 
@@ -51,8 +53,8 @@ import {ValuesetsService} from "./valueSets.service";
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  providers : [ValuesetsService],
-  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent],
+  providers : [ValuesetsService,ValuesetCrossRefResolver],
+  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent, ValuesetCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ValuesetEditModule {}
