@@ -204,7 +204,7 @@
 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
 		<xsl:apply-templates select="./DynamicMapping" />
 		<xsl:if test="$columnDisplay.segment.comment = 'true'">
-			<xsl:apply-templates select="./CommentList" />
+			<xsl:apply-templates select="./Binding/CommentList" />
 		</xsl:if>
 
 		<xsl:call-template name="PostDef" />

@@ -55,17 +55,10 @@
                     </xsl:if>
                     <xsl:if test="$type='pre'">
                         <xsl:element name="td">
-                            <xsl:choose>
-                                <xsl:when test="$displayPeriod='true'">
-                                    <xsl:value-of select="concat(@LocationName,'.', @Location)" />
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:value-of select="concat(@LocationName, @Location)" />
-                                </xsl:otherwise>
-                            </xsl:choose>
+                            <xsl:value-of select="@location"></xsl:value-of>
                         </xsl:element>
                         <xsl:element name="td">
-                            <xsl:value-of select="@Usage" />
+                            <xsl:value-of select="@usage" />
                         </xsl:element>
                     </xsl:if>
                      <xsl:element name="td">

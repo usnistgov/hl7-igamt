@@ -46,10 +46,41 @@
                     <xsl:sort select="@position" data-type="number"></xsl:sort>
                 </xsl:apply-templates>
             </xsl:when>
-            <xsl:when test="count(Constraints) &gt; 0">
-                <xsl:apply-templates select=".">
-                    <xsl:sort select="@position" data-type="number"></xsl:sort>
-                </xsl:apply-templates>
+            <xsl:when test="count(Constraint) &gt; 0">
+                <xsl:if test="count(./Constraint[@Type='cs']) &gt; 0">
+					<xsl:element name="br" />
+					<xsl:call-template name="Constraint">
+						<xsl:with-param name="title">
+							<xsl:text></xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="constraintMode">
+							<xsl:text>standalone</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="type">
+							<xsl:text>cs</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="headerLevel">
+							<xsl:value-of select="@h"/>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
+				<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+					<xsl:element name="br" />
+					<xsl:call-template name="Constraint">
+						<xsl:with-param name="title">
+							<xsl:text></xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="constraintMode">
+							<xsl:text>standalone</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="type">
+							<xsl:text>pre</xsl:text>
+						</xsl:with-param>
+						<xsl:with-param name="headerLevel">
+							<xsl:value-of select="@h"/>
+						</xsl:with-param>
+					</xsl:call-template>
+				</xsl:if>
             </xsl:when>
             <xsl:otherwise>
             </xsl:otherwise>

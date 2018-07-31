@@ -50,6 +50,7 @@ public class SerializableBinding extends SerializableElement {
   private Set<Element> predicates;
   Element bindingElement = new Element("Binding");
   Element valuesetBindingList = new Element("ValueSetBindingList");
+  Element commentListElement = new Element("CommentList");
 
   /**
    * @param binding
@@ -92,6 +93,7 @@ public class SerializableBinding extends SerializableElement {
         }
       }
       bindingElement.appendChild(valuesetBindingList);
+      bindingElement.appendChild(commentListElement);
       return bindingElement;
     } catch (Exception exception) {
       throw new SerializationException(exception, Type.BINDING, "Binding");
@@ -142,11 +144,11 @@ public class SerializableBinding extends SerializableElement {
           }
         }
       }
-      if (structureElementBinding.getComments() != null) {
+      if (structureElementBinding.getComments() != null && !structureElementBinding.getComments().isEmpty()) {
         for (Comment comment : structureElementBinding.getComments()) {
-          Element commentElement = this.serializeComment(comment);
+          Element commentElement = this.serializeComment(location, comment);
           if (commentElement != null) {
-            bindingElement.appendChild(commentElement);
+            commentListElement.appendChild(commentElement);
           }
         }
       }
@@ -194,8 +196,10 @@ public class SerializableBinding extends SerializableElement {
    * @param comment
    * @return
    */
-  private Element serializeComment(Comment comment) {
+  private Element serializeComment(String location, Comment comment) {
     Element commentElement = new Element("Comment");
+    commentElement.addAttribute(new Attribute("location",
+        location != null ? location : ""));
     commentElement.addAttribute(new Attribute("description",
         comment.getDescription() != null ? comment.getDescription() : ""));
     commentElement.addAttribute(new Attribute("date",
@@ -288,7 +292,7 @@ public class SerializableBinding extends SerializableElement {
   private Element serializePredicate(String location, Predicate predicate) {
     Element predicateElement = new Element("Constraint");
     //Attribute type is used in the export to separate conformance statements (cs) from predicates (pre)
-    predicateElement.addAttribute(new Attribute("type","pre"));
+    predicateElement.addAttribute(new Attribute("Type","pre"));
     predicateElement.addAttribute(new Attribute("location", location));
     String usage = (predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : "")+(predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : "");
     predicateElement.addAttribute(new Attribute("usage",
