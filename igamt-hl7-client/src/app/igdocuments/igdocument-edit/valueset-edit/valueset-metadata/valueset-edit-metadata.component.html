@@ -1,11 +1,39 @@
-<h2>Valueset Metadata</h2>
 <div *ngIf="valuesetMetadata">
-    <form #valuesetMetadataForm="ngForm">
+    <form #editForm="ngForm">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    MetaData: {{valuesetMetadata.bindingIdentifier}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+                    <span class="ig-list-date" *ngIf="valuesetMetadata.updateDate">
+                        <i class="fa fa-calendar"></i> {{valuesetMetadata.updateDate}}
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+            </div>
+
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Binding Identifier
+            </label>
+            <input name="bindingIdentifier" id="bindingIdentifier" pInputText type="text" class="ui-g-10" #bindingIdentifier="ngModel" [(ngModel)]="valuesetMetadata.bindingIdentifier" required />
+            <div class="ui-g-offset-1" *ngIf="bindingIdentifier.invalid&& (bindingIdentifier.dirty || bindingIdentifier.touched)">
+                <p-message severity="error" text="BindingIdentifier is required"></p-message>
+            </div>
+        </div>
+
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">
                 Name
             </label>
-            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="valuesetMetadata.name" required />
+            <input name="name" id="name" pInputText type="text" class="ui-g-10" #name="ngModel" [(ngModel)]="valuesetMetadata.name" required />
             <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
                 <p-message severity="error" text="Name is required"></p-message>
             </div>
@@ -13,33 +41,17 @@
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">
-                Binding Identifier
+                OID
             </label>
-            <input name="bindingIdentifier" id="bindingIdentifier" pInputText type="text" class="ui-g-10" #bindingIdentifier="ngModel" minlength="4" maxlength="4" NamingDuplication [existing]="existingNames" [label]="valuesetMetadata.bindingIdentifier" [(ngModel)]="valuesetMetadata.bindingIdentifier" required />
-
-          <div *ngIf="bindingIdentifier&&bindingIdentifier.errors" class="ui-g-offset-2">
-            <div *ngIf="bindingIdentifier.errors.required">
-              <p-message severity="error" text="bindingIdentifier is required"></p-message>
-
-            </div>
-            <div *ngIf="bindingIdentifier.errors.maxlength">
-              <p-message severity="error" text="bindingIdentifier is too long"></p-message>
-
-            </div>
-            <div  *ngIf="bindingIdentifier.errors.minlength">
-              <p-message severity="error" text="bindingIdentifier is too short"></p-message>
-
-            </div>
-            <div  *ngIf="bindingIdentifier.errors.duplicated">
-              <p-message severity="error" text="bindingIdentifier is duplicated"></p-message>
-
-            </div>
-            <!--<div *ngIf="extension.errors.invalidConvention">-->
-              <!--<p-message severity="error" text="invalid convention"></p-message>-->
-            <!--</div>-->
-          </div>
+            <input name="oid" id="oid" pInputText type="text" class="ui-g-10" #oid="ngModel" [(ngModel)]="valuesetMetadata.oid" />
         </div>
 
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                URL
+            </label>
+            <input name="url" id="url" pInputText type="text" class="ui-g-10" #url="ngModel" [(ngModel)]="valuesetMetadata.url" />
+        </div>
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">

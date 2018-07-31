@@ -30,25 +30,19 @@ export class DatatypeEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService,private tocService:TocService,private igErrorService:IgErrorService ){
-
   }
 
   ngOnInit() {
     this.datatypeId = this.route.snapshot.params["datatypeId"];
     this.route.data.map(data =>data.datatypeMetadata).subscribe(x=>{
-
-
       this.backup=x;
       this.datatypeMetadata=_.cloneDeep(this.backup);
-
-
     });
   }
 
   reset(){
     this.datatypeMetadata=_.cloneDeep(this.backup);
     this.editForm.control.markAsPristine();
-
   }
 
   getCurrent(){

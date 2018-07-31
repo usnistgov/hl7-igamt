@@ -1,52 +1,78 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, Input} from "@angular/core";
+import {Component, Input, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {ValuesetsService} from "../valueSets.service";
-import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.service";
 import {TocService} from "../../service/toc.service";
-
-
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import {ValuesetsService} from "../valuesets.service";
+import {IgErrorService} from "../../ig-error/ig-error.service";
+import * as _ from 'lodash';
 
 @Component({
   templateUrl : './valueset-edit-metadata.component.html',
   styleUrls : ['./valueset-edit-metadata.component.css']
 })
-export class ValuesetEditMetadataComponent {
-  currentUrl:any;
-    valuesetId:any;
-  valuesetMetadata:any;
-  existingNames:any;
 
-  constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService,private tocService:TocService  ){
-    router.events.subscribe(event => {
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-      }
-    });
+export class ValuesetEditMetadataComponent implements WithSave {
+  valuesetId:any;
+  valuesetMetadata:any;
+  backup:any;
+  currentNode:any;
+
+  @ViewChild('editForm')
+  private editForm: NgForm;
+
+  constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService,private tocService:TocService,private igErrorService:IgErrorService ){
   }
 
   ngOnInit() {
-    this.tocService.getValuesetBindingIdentifiersList().then( x=>{
-      this.existingNames= x;
-      console.log(this.existingNames);
-        this.valuesetId = this.route.snapshot.params["valuesetId"];
-        this.valuesetsService.getValuesetMetadata(this.valuesetId).then( metadata  => {
-          this.valuesetMetadata = metadata;
-        });
-    },
-    error=>{
-     console.log("Could not load existing names") ;
-    })
+    this.valuesetId = this.route.snapshot.params["valuesetId"];
+    this.route.data.map(data =>data.valuesetMetadata).subscribe(x=>{
+      this.backup=x;
+      this.valuesetMetadata=_.cloneDeep(this.backup);
+    });
   }
 
-  print(obj){
-    console.log(obj);
-
+  reset(){
+    this.valuesetMetadata=_.cloneDeep(this.backup);
+    this.editForm.control.markAsPristine();
   }
 
+  getCurrent(){
 
+    return  this.valuesetMetadata;
+  }
+  getBackup(){
+    return this.backup;
+  }
 
+  isValid(){
+    return !this.editForm.invalid;
+  }
+
+  save(): Promise<any>{
+    return new Promise((resolve, reject)=>{
+          let treeModel=this.tocService.getTreeModel();
+          let node = treeModel.getNodeById(this.valuesetId);
+          node.data.data.label= this.valuesetMetadata.bindingIdentifier;
+          this.tocService.setTreeModelInDB(treeModel).then(x=>{
+            this.valuesetsService.saveValuesetMetadata(this.valuesetId,this.valuesetMetadata).then( saved => {
+                  this.backup = _.cloneDeep(this.valuesetMetadata);
+                  this.editForm.control.markAsPristine();
+                  resolve(true);
+                }, error => {
+                  console.log("Error Saving");
+                  this.igErrorService.showError(error);
+                }
+            );
+          }, tocError=>{
+            console.log("TOC NOT SAVED")
+            this.igErrorService.showError(tocError);
+          })
+        }
+    )
+  };
 }
