@@ -133,9 +133,9 @@
                 <xsl:text>pre</xsl:text>
             </xsl:with-param>
         </xsl:call-template>
-        <xsl:apply-templates select="./ValueSetBindingList"/>
+        <xsl:apply-templates select="./Binding/ValueSetBindingList"/>
         <xsl:if test="$columnDisplay.compositeProfile.comment = 'true'">
-            <xsl:apply-templates select="./CommentList"/>
+            <xsl:apply-templates select="./Binding/CommentList"/>
         </xsl:if>
         <xsl:if test="count(./Text[@Type='DefPostText']) &gt; 0">
             <xsl:element name="br"/>

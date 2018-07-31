@@ -13,7 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,11 +20,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import nu.xom.Element;
 
@@ -35,19 +32,19 @@ import nu.xom.Element;
  */
 public class SerializableValuesetRegistry extends SerializableRegistry {
 
-  private Map<String, Valueset> valuesetsMap;
+  private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Set<String> bindedValueSets;
-  private Set<SerializableValueSet> serializableValueSets;
+  private int maxNumberOfCodes;
 
   /**
    * @param section
    */
   public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
-      Map<String, Valueset> valuesetsMap, Set<String> bindedValueSets) {
+      Map<String, SerializableValuesetStructure> valuesetsMap, Set<String> bindedValueSets, int maxNumberOfCodes) {
     super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
     this.bindedValueSets = bindedValueSets;
-    this.serializableValueSets = new HashSet<>();
+    this.maxNumberOfCodes = maxNumberOfCodes;
   }
 
   /*
@@ -65,9 +62,9 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
             if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
               if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-                Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-                SerializableValueSet serializableValueSet = new SerializableValueSet(valueset,
-                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel());
+                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId().getId());
+                SerializableValueSet serializableValueSet = new SerializableValueSet(serializableValuesetStructure,
+                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel(), maxNumberOfCodes);
                 Element valuesetElement = serializableValueSet.serialize();
                 if (valuesetElement != null) {
                   valuesetRegistryElement.appendChild(valuesetElement);
@@ -85,22 +82,20 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
     }
   }
   
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getConformanceStatements(int)
+   */
   @Override
-  public Set<SerializableConstraints> getConformanceStatements(int level) {
-    Set<SerializableConstraints> conformanceStatements = new HashSet<>();
-    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
-      conformanceStatements.add(serializableValueSet.getConformanceStatements(level));
-    }
-    return conformanceStatements;
+  public Element getConformanceStatements(int level) {
+    return null;
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getPredicates(int)
+   */
   @Override
-  public Set<SerializableConstraints> getPredicates(int level) {
-    Set<SerializableConstraints> predicates = new HashSet<>();
-    for(SerializableValueSet serializableValueSet : this.serializableValueSets) {
-      predicates.add(serializableValueSet.getPredicates(level));
-    }
-    return predicates;
+  public Element getPredicates(int level) {
+    return null;
   }
 
 }

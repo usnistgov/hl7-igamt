@@ -3,7 +3,7 @@
 
     <xsl:template name="MessageConstraint">
         <xsl:param name="constraintType"/>
-        <xsl:if test="count(./Constraints/Constraint[@Type=$constraintType])+count(./MessageGroup/Constraint[@Type=$constraintType]) &gt; 0">
+        <xsl:if test="count(./Binding/Constraint[@Type=$constraintType])+count(./Group/Binding/Constraint[@Type=$constraintType]) &gt; 0">
             <xsl:element name="br"/>
             <xsl:element name="span">
                 <xsl:element name="b">
@@ -17,7 +17,7 @@
                     </xsl:choose>
                 </xsl:element>
             </xsl:element>
-            <xsl:for-each select="Constraints">
+            <xsl:for-each select="Binding">
                 <xsl:if test="count(./Constraint[@Type=$constraintType]) &gt; 0">
                     <xsl:element name="br"/>
                     <xsl:call-template name="Constraint">
@@ -46,8 +46,8 @@
     
     <xsl:template name="MessageGroupConstraint">
     	<xsl:param name="constraintType"/>
-    	<xsl:for-each select="MessageGroup">
-            <xsl:if test="count(./Constraint[@Type=$constraintType]) &gt; 0">
+    	<xsl:for-each select="Group">
+            <xsl:if test="count(./Binding/Constraint[@Type=$constraintType]) &gt; 0">
                 <xsl:element name="br"/>
                 <xsl:call-template name="Constraint">
                     <xsl:with-param name="title">

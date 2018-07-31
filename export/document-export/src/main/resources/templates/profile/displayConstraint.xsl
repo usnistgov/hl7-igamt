@@ -25,7 +25,7 @@
                         <xsl:call-template name="conformanceStatementHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="./Constraint[@Type='cs']">
-                                <xsl:sort select="@Id" data-type="text" order="ascending" />
+                                <xsl:sort select="@identifier" data-type="text" order="ascending" />
                                 <xsl:call-template name="ConstraintContent">
                                     <xsl:with-param name="mode" select="$constraintMode"/>
                                     <xsl:with-param name="type" select="$type"/>
@@ -40,7 +40,7 @@
                         <xsl:call-template name="predicateHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="./Constraint[@Type='pre']">
-                                <xsl:sort select="@Id" data-type="text" order="ascending" />
+                                <xsl:sort select="@identifier" data-type="text" order="ascending" />
                                 <xsl:call-template name="ConstraintContent">
                                     <xsl:with-param name="mode" select="$constraintMode"/>
                                     <xsl:with-param name="type" select="$type"/>
