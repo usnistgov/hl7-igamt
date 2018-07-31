@@ -15,6 +15,7 @@ import {ValuesetEditPostdefResolver} from "./valueset-postdef/valueset-edit-post
 import {ValuesetEditPredefResolver} from "./valueset-predef/valueset-edit-predef.resolver";
 import {ValuesetEditStructureResolver} from "./valueset-structure/valueset-edit-structure.resolver";
 
+
 @NgModule({
     imports: [
         RouterModule.forChild([
@@ -51,7 +52,6 @@ import {ValuesetEditStructureResolver} from "./valueset-structure/valueset-edit-
             {
                 path: ':valuesetId/crossRef', component: ValuesetCrossRefComponent,resolve: { refs : ValuesetCrossRefResolver}
             }
-
         ])
     ],
     exports: [

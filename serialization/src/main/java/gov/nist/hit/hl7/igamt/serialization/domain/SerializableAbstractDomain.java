@@ -81,9 +81,9 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
    * @throws SerializationException
    */
   public Element serializeResourceBinding(ResourceBinding binding,
-      Map<String, String> valuesetNamesMap) throws SerializationException {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap) throws SerializationException {
     Map<String, String> pathLocationMap = this.getIdPathMap();
-    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap);
+    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap, valuesetLabelMap);
     return this.serializableBinding.serialize();
   }
   
@@ -98,11 +98,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   }
 
   public SerializableConstraints getConformanceStatements(int level) {
-    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getConformanceStatements());
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getConformanceStatements() : null);
   }
 
   public SerializableConstraints getPredicates(int level) {
-    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding.getPredicates());
+    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getPredicates() : null);
   }
 
 }

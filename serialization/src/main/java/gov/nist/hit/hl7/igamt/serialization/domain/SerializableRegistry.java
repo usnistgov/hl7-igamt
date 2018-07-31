@@ -13,8 +13,6 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import java.util.Set;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import nu.xom.Element;
@@ -40,8 +38,9 @@ public abstract class SerializableRegistry extends SerializableSection {
   public Registry getRegistry() {
     return registry;
   }
-  
-  public abstract Set<SerializableConstraints> getConformanceStatements(int level);
-  public abstract Set<SerializableConstraints> getPredicates(int level);
+
+  public abstract Element getPredicates(int level);
+
+  public abstract Element getConformanceStatements(int level);
 
 }

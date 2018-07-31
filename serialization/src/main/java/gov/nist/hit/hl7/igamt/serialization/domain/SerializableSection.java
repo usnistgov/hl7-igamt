@@ -41,8 +41,11 @@ public abstract class SerializableSection extends SerializableElement {
 
   public Element getElement() throws SerializationException {
     Element sectionElement = super.getElement(Type.SECTION);
-    sectionElement.addAttribute(new Attribute("description",
-        section.getDescription() != null ? section.getDescription() : ""));
+    if(section.getDescription() != null && !section.getDescription().isEmpty()) {
+      Element sectionContentElement = new Element("SectionContent");
+      sectionContentElement.appendChild(section.getDescription());
+      sectionElement.appendChild(sectionContentElement);
+    }
     sectionElement.addAttribute(
         new Attribute("type", section.getType() != null ? section.getType().name() : ""));
     sectionElement.addAttribute(new Attribute("h", String.valueOf(this.level)));

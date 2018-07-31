@@ -15,6 +15,8 @@ import {SegmentEditPostdefResolver} from './segment-postdef/segment-edit-postdef
 import {SegmentEditConformanceStatementsResolver} from './segment-conformancestatements/segment-edit-conformancestatements.resolver';
 import {SaveFormsGuard} from '../../../guards/save.guard';
 import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
+import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
+import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
 
 @NgModule({
   imports: [
@@ -60,6 +62,9 @@ import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-tabl
         component: SegmentEditConformanceStatementsComponent,
         canDeactivate: [SaveFormsGuard],
         resolve: {segmentConformanceStatements: SegmentEditConformanceStatementsResolver}
+      },
+      {
+        path: ':segmentId/crossRef', component: SegmentCrossRefComponent,resolve: { refs : SegmentCrossRefResolver}
       }
     ])
   ],

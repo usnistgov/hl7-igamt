@@ -31,6 +31,7 @@ import {TreeModule} from 'primeng/tree';
 import {DialogModule} from 'primeng/dialog';
 import {PanelModule} from 'primeng/panel';
 import {FieldsetModule} from 'primeng/fieldset';
+import {CrossReferenceComponent} from "../common/cross-reference/cross-reference.component";
 
 @NgModule({
   imports: [
@@ -60,7 +61,9 @@ import {FieldsetModule} from 'primeng/fieldset';
     DisplayPathComponent,
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
-    EditIfThenConstraintComponent
+    EditIfThenConstraintComponent,
+    CrossReferenceComponent
+
   ],
 
   exports: [
@@ -78,7 +81,8 @@ import {FieldsetModule} from 'primeng/fieldset';
     DisplayPathComponent,
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
-    EditIfThenConstraintComponent
+    EditIfThenConstraintComponent,
+    CrossReferenceComponent
   ]
 })
 export class UtilsModule {}

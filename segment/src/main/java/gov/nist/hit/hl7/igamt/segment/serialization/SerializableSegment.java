@@ -39,6 +39,7 @@ public class SerializableSegment extends SerializableResource {
 
   private Map<String, String> datatypesMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private int level;
   private Set<String> bindedFields;
 
@@ -47,10 +48,11 @@ public class SerializableSegment extends SerializableResource {
    * @param position
    */
   public SerializableSegment(Segment segment, String position, int level,
-      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap, Set<String> bindedFields) {
+      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap,Set<String> bindedFields) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.level = level;
     this.bindedFields = bindedFields;
   }
@@ -76,7 +78,7 @@ public class SerializableSegment extends SerializableResource {
       }
       if (segment.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
+            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap, this.valuesetLabelMap);
         if (bindingElement != null) {
           segmentElement.appendChild(bindingElement);
         }

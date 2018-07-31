@@ -13,6 +13,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,10 +28,12 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
+import nu.xom.Attribute;
 import nu.xom.Element;
 
 /**
@@ -41,8 +44,9 @@ public class SerializableProfile extends SerializableSection {
 
   private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
-  private Map<String, Valueset> valuesetsMap;
+  private Map<String, SerializableValuesetStructure> valuesetsMap;
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
   private ValueSetRegistry valueSetRegistry;
@@ -58,13 +62,15 @@ public class SerializableProfile extends SerializableSection {
   private Set<String> bindedComponents;
   private Set<String> bindedValueSets;
   private ExportConfiguration exportConfiguration;
+  private Set<Element> conformanceStatements = new HashSet<>();
+  private Set<Element> predicates = new HashSet<>();
 
   /**
    * @param section
    */
   public SerializableProfile(Section section, int level, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valuesetsMap,
-      Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap,
+      Map<String, String> datatypeNamesMap, Map<String, SerializableValuesetStructure> valuesetsMap,
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Map<String, Segment> segmentsMap,
       Map<String, ConformanceProfile> conformanceProfilesMap, ValueSetRegistry valueSetRegistry,
       DatatypeRegistry datatypeRegistry, SegmentRegistry segmentRegistry,
       ConformanceProfileRegistry conformanceProfileRegistry,
@@ -77,6 +83,7 @@ public class SerializableProfile extends SerializableSection {
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetsMap = valuesetsMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valueSetRegistry = valueSetRegistry;
@@ -106,7 +113,7 @@ public class SerializableProfile extends SerializableSection {
       for (Section section : ((TextSection) super.getSection()).getChildren()) {
         SerializableSection childSection =
             SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(),
-                datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, segmentsMap,
+                datatypesMap, datatypeNamesMap, valuesetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap,
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
@@ -116,10 +123,54 @@ public class SerializableProfile extends SerializableSection {
           if (childSectionElement != null) {
             profileElement.appendChild(childSectionElement);
           }
+          if(childSection instanceof SerializableRegistry) {
+            Element childConformanceStatements = ((SerializableRegistry) childSection).getConformanceStatements(super.getLevel() + 3);
+            if(childConformanceStatements != null) {
+              this.conformanceStatements.add(childConformanceStatements);
+            }
+            Element childPredicates = ((SerializableRegistry) childSection).getPredicates(super.getLevel() + 3);
+            if(childPredicates != null) {
+              this.predicates.add(childPredicates);
+            }
+          }
         }
+      }
+      Element conformanceInformationSection = this.serializeConformanceInformation(String.valueOf(((TextSection) super.getSection()).getChildren().size()+1));
+      if(conformanceInformationSection != null) {
+        profileElement.appendChild(conformanceInformationSection);
       }
     }
     return profileElement;
+  }
+
+  /**
+   * @return
+   */
+  private Element serializeConformanceInformation(String position) {
+    Element conformanceInformationSection = new Element("Section");
+    conformanceInformationSection.addAttribute(new Attribute("id","conformance_information"));
+    conformanceInformationSection.addAttribute(new Attribute("position",position));
+    conformanceInformationSection.addAttribute(new Attribute("title","Conformance information"));
+    conformanceInformationSection.addAttribute(new Attribute("h",String.valueOf(super.getLevel()+1)));
+    Element conformanceStatementsSection = new Element("Section");
+    conformanceStatementsSection.addAttribute(new Attribute("id","conformance_information_conformance_statements"));
+    conformanceStatementsSection.addAttribute(new Attribute("position","1"));
+    conformanceStatementsSection.addAttribute(new Attribute("title","Conformance statements"));
+    conformanceStatementsSection.addAttribute(new Attribute("h",String.valueOf(super.getLevel()+2)));
+    for(Element conformanceStatement : this.conformanceStatements) {
+      conformanceStatementsSection.appendChild(conformanceStatement);
+    }
+    conformanceInformationSection.appendChild(conformanceStatementsSection);
+    Element predicatesSection = new Element("Section");
+    predicatesSection.addAttribute(new Attribute("id","conformance_information_predicates"));
+    predicatesSection.addAttribute(new Attribute("position","2"));
+    predicatesSection.addAttribute(new Attribute("title","Predicates"));
+    predicatesSection.addAttribute(new Attribute("h",String.valueOf(super.getLevel()+2)));
+    for(Element predicate : this.predicates) {
+      predicatesSection.appendChild(predicate);
+    }
+    conformanceInformationSection.appendChild(predicatesSection);
+    return conformanceInformationSection;
   }
 
 }

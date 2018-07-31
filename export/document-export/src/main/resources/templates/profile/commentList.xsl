@@ -9,14 +9,14 @@
         </xsl:element>
         <xsl:element name="br"/>
         <xsl:for-each select="Comment">
-        	<xsl:sort select="@Location" data-type="number" order="ascending" />
+        	<xsl:sort select="@location" data-type="number" order="ascending" />
         	<xsl:element name="span">
                 <xsl:element name="br"/>
                 <xsl:element name="b">
-            		<xsl:value-of select="concat(@Location,': ')"/>
+            		<xsl:value-of select="concat(@location,': ')"/>
            		</xsl:element>
             </xsl:element>
-            <xsl:value-of disable-output-escaping="yes" select="@Description"/>
+            <xsl:value-of disable-output-escaping="yes" select="@description"/>
         </xsl:for-each>
     </xsl:template>
 

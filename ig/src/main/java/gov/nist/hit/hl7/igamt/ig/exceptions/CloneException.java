@@ -11,11 +11,13 @@
  */
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+
 /**
  * @author Harold Affo
  *
  */
-public class CloneException extends Exception {
+public class CloneException extends GenericException {
   private static final long serialVersionUID = 1L;
 
   public CloneException(String string) {

@@ -95,7 +95,7 @@ public class SerializationException extends Exception {
 
   @Override
   public String getMessage() {
-    return message;
+    return this.printError();
   }
 
   public void setMessage(String message) {

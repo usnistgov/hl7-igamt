@@ -25,11 +25,15 @@ public class ExportException extends Exception {
   private static final long serialVersionUID = 2531849434075776303L;
   
   public ExportException(Throwable cause) {
-    super(cause);
+    super(cause.getMessage(), cause);
   }
   
   public ExportException(Throwable cause, String message) {
-    super(message, cause);
+    super(message + "\n" + cause.getMessage(), cause);
+  }
+  
+  public String printError() {
+    return this.getMessage() + "/n" + super.getCause().getMessage();
   }
 
 }

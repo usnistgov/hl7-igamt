@@ -39,13 +39,16 @@ export abstract class PrimeDialogAdapter {
         }
     }
 
+
     protected dismissWithNoData(){
         this.result$.complete();
     }
 
     protected dismissWithData(result){
-        this.result$.next(result);
-        this.result$.complete();
+
+      this.result$.next(result);
+
+      this.result$.complete();
     }
 
 }
