@@ -1,23 +1,31 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {ValuesetsService} from "../valueSets.service";
-
-
+import {HttpClient} from "@angular/common/http";
+import {ValuesetsService} from "../valuesets.service";
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import * as _ from 'lodash';
+import {IgErrorService} from "../../ig-error/ig-error.service";
 
 @Component({
   templateUrl : './valueset-edit-postdef.component.html',
   styleUrls : ['./valueset-edit-postdef.component.css']
 })
-export class ValuesetEditPostdefComponent {
+
+export class ValuesetEditPostdefComponent implements WithSave  {
     currentUrl:any;
     valuesetId:any;
     valuesetPostdef:any;
+    backup:any;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService){
+    @ViewChild('editForm')
+    private editForm: NgForm;
+
+    constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService, private http:HttpClient, private igErrorService:IgErrorService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -27,8 +35,43 @@ export class ValuesetEditPostdefComponent {
 
     ngOnInit() {
         this.valuesetId = this.route.snapshot.params["valuesetId"];
-        this.valuesetsService.getValuesetPostDef(this.valuesetId).then( data  => {
-            this.valuesetPostdef = data;
+        this.route.data.map(data =>data.valuesetPostdef).subscribe(x=>{
+            this.backup=x;
+            this.valuesetPostdef=_.cloneDeep(this.backup);
         });
+    }
+
+    reset(){
+        this.valuesetPostdef=_.cloneDeep(this.backup);
+        this.editForm.control.markAsPristine();
+
+    }
+
+    getCurrent(){
+        return  this.valuesetPostdef;
+    }
+
+    getBackup(){
+        return this.backup;
+    }
+
+    isValid(){
+        return !this.editForm.invalid;
+    }
+
+    save(): Promise<any>{
+        return new Promise((resolve, reject)=> {
+            this.valuesetsService.saveValuesetPostDef(this.valuesetId, this.valuesetPostdef).then(saved => {
+                    this.backup = _.cloneDeep(this.valuesetPostdef);
+                    this.editForm.control.markAsPristine();
+                    resolve(true);
+                }, error => {
+                    console.log("error saving");
+                    reject();
+                    this.igErrorService.showError(error);
+                }
+
+            );
+        })
     }
 }

@@ -102,8 +102,9 @@ public interface ValuesetService {
   /**
    * @param structure
    * @return
+   * @throws ValuesetNotFoundException 
    */
-  public Valueset convertToValueset(ValuesetStructure structure);
+  public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException;
 
   /**
    * @param preDef

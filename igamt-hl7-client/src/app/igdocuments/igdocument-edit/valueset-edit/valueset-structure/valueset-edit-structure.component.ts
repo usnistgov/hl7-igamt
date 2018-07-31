@@ -1,19 +1,23 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component} from "@angular/core";
+import {Component, ViewChild} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
-import {ValuesetsService} from "../valueSets.service";
+import {ValuesetsService} from "../valuesets.service";
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import { _ } from 'underscore';
+import * as __ from 'lodash';
+import {WithSave} from "../../../../guards/with.save.interface";
+import {NgForm} from "@angular/forms";
+import {IgErrorService} from "../../ig-error/ig-error.service";
 
 @Component({
   selector : 'valueset-edit',
   templateUrl : './valueset-edit-structure.component.html',
   styleUrls : ['./valueset-edit-structure.component.css']
 })
-export class ValuesetEditStructureComponent {
+export class ValuesetEditStructureComponent implements WithSave{
     currentUrl:any;
     valuesetId:any;
     valuesetStructure:any;
@@ -29,7 +33,12 @@ export class ValuesetEditStructureComponent {
     newCode :any = {};
     newCodeSys:any = {};
 
-    constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService, private configService : GeneralConfigurationService){
+    backup:any;
+
+    @ViewChild('editForm')
+    private editForm: NgForm;
+
+    constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService, private configService : GeneralConfigurationService, private igErrorService:IgErrorService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -38,20 +47,50 @@ export class ValuesetEditStructureComponent {
     }
 
     ngOnInit() {
-        this.valuesetId = this.route.snapshot.params["valuesetId"];
-        this.valuesetsService.getValuesetStructure(this.valuesetId).then(data  => {
-            this.valuesetStructure = data;
-
-
-            this.valuesetStructure.displayCodeSystems;
-
-            this.genCodeSysOption();
-        });
-
         this.extensibilityOptions = this.configService._extensibilityOptions;
         this.stabilityOptions = this.configService._stabilityOptions;
         this.contentDefinitionOptions = this.configService._contentDefinitionOptions;
         this.codeUsageOptions = this.configService._codeUsageOptions;
+
+        this.valuesetId = this.route.snapshot.params["valuesetId"];
+        this.route.data.map(data =>data.valuesetStructure).subscribe(x=>{
+            this.valuesetStructure = x;
+            this.genCodeSysOption();
+            this.backup=__.cloneDeep(this.valuesetStructure);
+        });
+    }
+
+    reset(){
+        this.valuesetStructure=__.cloneDeep(this.backup);
+        this.editForm.control.markAsPristine();
+
+    }
+
+    getCurrent(){
+        return  this.valuesetStructure;
+    }
+
+    getBackup(){
+        return this.backup;
+    }
+
+    isValid(){
+        return true;
+    }
+
+    save(): Promise<any>{
+        return new Promise((resolve, reject)=> {
+            this.valuesetsService.saveValuesetStructure(this.valuesetId, this.valuesetStructure).then(saved => {
+                    this.backup = __.cloneDeep(this.valuesetStructure);
+                    this.editForm.control.markAsPristine();
+                    resolve(true);
+                }, error => {
+                    console.log("error saving");
+                    reject();
+                    this.igErrorService.showError(error);
+                }
+            );
+        })
     }
 
     findCodeSysIdentifier(codesys){
@@ -60,7 +99,6 @@ export class ValuesetEditStructureComponent {
                 if(entry.codeSysRef === codesys.ref) return entry.identifier;
             }
         }
-
         return null;
     }
 
