@@ -53,7 +53,7 @@ public class AuthenticationController {
       response.setContentType("application/json");
       response.addCookie(authCookie);
     } catch (AuthenticationException e) {
-      response.sendError(403);
+      throw e;
     }
     return userResponse;
 
@@ -74,7 +74,7 @@ public class AuthenticationController {
       return response;
 
     } catch (AuthenticationException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
+      throw e;
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
 
@@ -117,10 +117,13 @@ public class AuthenticationController {
   @ResponseBody
   public void resetPaswordRequest(HttpServletRequest req, HttpServletResponse res,
       @RequestBody String email) throws AuthenticationException {
-    getUrl(req);
+    try {
+      getUrl(req);
 
-    authService.requestPasswordChange(email, getUrl(req));
-
+      authService.requestPasswordChange(email, getUrl(req));
+    } catch (AuthenticationException e) {
+      throw e;
+    }
   }
 
   @RequestMapping(value = "api/password/validatetoken", method = RequestMethod.POST)
@@ -136,7 +139,12 @@ public class AuthenticationController {
   @ResponseBody
   public void confirmPasswordReset(HttpServletRequest req, HttpServletResponse res,
       @RequestBody ChangePasswordConfirmRequest requestObject) throws AuthenticationException {
-    authService.confirmChangePassword(requestObject);
+    try {
+      getUrl(req);
+      authService.confirmChangePassword(requestObject);
+    } catch (AuthenticationException e) {
+      throw e;
+    }
 
   }
 
@@ -144,6 +152,7 @@ public class AuthenticationController {
   private String getUrl(HttpServletRequest request) {
     String scheme = request.getScheme();
     String host = request.getHeader("Host");
+
     return scheme + "://" + host + "/#/reset-password-confirm";
   }
 

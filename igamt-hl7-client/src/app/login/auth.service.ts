@@ -117,7 +117,9 @@ export class AuthService {
 
   showError(error:any) {
     console.log(error);
-    this.messageService.add({severity:'error', summary:error.error.error, detail:error.error.message, id:'LOGINERROR'});
+    error =JSON.parse(error.error.message);
+    console.log(error);
+    this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.message, id:'LOGINERROR'});
   }
 
 

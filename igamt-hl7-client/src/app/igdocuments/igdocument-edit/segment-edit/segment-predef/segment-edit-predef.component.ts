@@ -10,6 +10,7 @@ import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 import {SegmentsService} from "../segments.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 
@@ -18,7 +19,7 @@ import {IgErrorService} from "../../ig-error/ig-error.service";
   templateUrl : './segment-edit-predef.component.html',
   styleUrls : ['./segment-edit-predef.component.css']
 })
-export class SegmentEditPredefComponent implements WithSave {
+export class SegmentEditPredefComponent extends HasFroala implements WithSave {
     currentUrl:any;
     segmentId:any;
     segmentPredef:any;
@@ -28,6 +29,8 @@ export class SegmentEditPredefComponent implements WithSave {
     private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient,private igErrorService:IgErrorService){
+
+      super();
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;

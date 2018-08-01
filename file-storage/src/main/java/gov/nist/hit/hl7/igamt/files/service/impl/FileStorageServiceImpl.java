@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,7 +13,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import gov.nist.hit.hl7.igamt.files.service.FileStorageService;
@@ -30,7 +30,7 @@ public class FileStorageServiceImpl implements FileStorageService {
 
   @Override
   public ObjectId store(InputStream inputStream, String fileName, String contentType,
-      DBObject metaData) {
+      Document metaData) {
     return this.gridFsTemplate.store(inputStream, fileName, contentType, metaData);
   }
 
