@@ -61,7 +61,7 @@
     <label class="metadata-label ui-g-2">
       Author Notes
     </label>
-    <div  class="ui-g-10" [froalaEditor] [(froalaModel)]="metaData.implementationNotes"></div>
+    <div  class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="metaData.implementationNotes"></div>
   </div>
   </div>
 </form>

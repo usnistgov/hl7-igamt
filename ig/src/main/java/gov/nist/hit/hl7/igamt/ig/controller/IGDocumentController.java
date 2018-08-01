@@ -50,6 +50,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
@@ -278,12 +279,13 @@ public class IGDocumentController extends BaseController {
    * @throws JsonMappingException
    * @throws FileNotFoundException
    * @throws IOException
+   * @throws AddingException
    */
   @RequestMapping(value = "/api/igdocuments/create", method = RequestMethod.POST,
       produces = {"application/json"})
   public @ResponseBody CompositeKey create(@RequestBody CreationWrapper wrapper,
-      Authentication authentication)
-      throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
+      Authentication authentication) throws JsonParseException, JsonMappingException,
+      FileNotFoundException, IOException, AddingException {
 
     String username = authentication.getPrincipal().toString();
     Ig empty = igService.CreateEmptyIg();
@@ -674,7 +676,7 @@ public class IGDocumentController extends BaseController {
       method = RequestMethod.POST, produces = {"application/json"})
   public AddMessageResponseDisplay addConforanceProfile(@PathVariable("id") String id,
       @RequestBody AddingMessagesWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -699,7 +701,7 @@ public class IGDocumentController extends BaseController {
       produces = {"application/json"})
   public AddSegmentResponseDisplay addSegments(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException, ValidationException {
+      throws IGNotFoundException, ValidationException, AddingException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -729,7 +731,7 @@ public class IGDocumentController extends BaseController {
       produces = {"application/json"})
   public AddDatatypeResponseDisplay addDatatypes(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();
@@ -759,7 +761,7 @@ public class IGDocumentController extends BaseController {
       produces = {"application/json"})
   public AddValueSetsResponseDisplay addValueSets(@PathVariable("id") String id,
       @RequestBody AddingWrapper wrapper, Authentication authentication)
-      throws IGNotFoundException {
+      throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     Set<String> savedIds = new HashSet<String>();

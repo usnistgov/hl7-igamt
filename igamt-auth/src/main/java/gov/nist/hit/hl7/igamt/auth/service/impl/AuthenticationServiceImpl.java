@@ -83,8 +83,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         throw new AuthenticationException("Unautorized");
       }
     } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(e.getMessage());
+      throw new AuthenticationException(message);
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
@@ -105,8 +106,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
           restTemplate.exchange(env.getProperty(AUTH_URL) + "register", HttpMethod.POST, request,
               RegistrationRequest.class);
     } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(e.getMessage());
+      throw new AuthenticationException(message);
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
@@ -130,8 +132,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
           restTemplate.exchange(env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST,
               request, ChangePasswordRequest.class);
     } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(e.getMessage());
+      throw new AuthenticationException(message);
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
@@ -152,8 +155,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
               HttpMethod.POST, request, Boolean.class);
       return response.getBody();
     } catch (HttpClientErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(e.getMessage());
+      throw new AuthenticationException(message);
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
@@ -176,7 +180,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       return response.getBody();
 
     } catch (HttpClientErrorException e) {
-      throw new AuthenticationException(e.getMessage());
+      String message = e.getResponseBodyAsString();
+      throw new AuthenticationException(message);
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());

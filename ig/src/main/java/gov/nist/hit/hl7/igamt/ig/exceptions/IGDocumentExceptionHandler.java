@@ -38,6 +38,13 @@ public class IGDocumentExceptionHandler {
     return exception;
   }
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({AddingException.class})
+  public AddingException handleXReferenceFoundException(AddingException exception) {
+    return exception;
+  }
+
 
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)

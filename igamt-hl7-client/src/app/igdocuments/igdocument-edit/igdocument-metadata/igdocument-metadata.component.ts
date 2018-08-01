@@ -6,11 +6,12 @@ import * as _ from 'lodash';
 
 import {TocService} from "../service/toc.service";
 import {MessageService} from "primeng/components/common/messageservice";
+import {HasFroala} from "../../../configuration/has-froala";
 @Component({
   templateUrl: './igdocument-metadata.component.html'
 })
 
-export class IgDocumentMetadataComponent implements OnInit ,WithSave{
+export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,WithSave{
 
   metaData:any;
   backup:any;
@@ -21,7 +22,9 @@ export class IgDocumentMetadataComponent implements OnInit ,WithSave{
   private editForm: NgForm;
 
 
-  constructor(private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private messageService:MessageService) { }
+  constructor(private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private messageService:MessageService) {
+    super();
+  }
 
   ngOnInit() {
     this.sp.data.map(data =>data.metadata).subscribe(x=>{

@@ -21,11 +21,7 @@ export class ValuesetEditMetadataComponent {
   existingNames:any;
 
   constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService,private tocService:TocService  ){
-    router.events.subscribe(event => {
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-      }
-    });
+
   }
 
   ngOnInit() {

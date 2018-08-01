@@ -13,6 +13,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {SegmentsService} from "../segments.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 
@@ -21,7 +22,7 @@ import {IgErrorService} from "../../ig-error/ig-error.service";
   templateUrl : './segment-edit-metadata.component.html',
   styleUrls : ['./segment-edit-metadata.component.css']
 })
-export class SegmentEditMetadataComponent implements WithSave {
+export class SegmentEditMetadataComponent extends HasFroala implements WithSave {
   segmentId:any;
   segmentMetadata:any;
   backup:any;
@@ -31,6 +32,7 @@ export class SegmentEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService,private tocService:TocService,private igErrorService:IgErrorService ){
+          super();
 
   }
 

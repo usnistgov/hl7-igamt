@@ -47,9 +47,14 @@
    <strong>Content</strong>
   </label>
 
-  <div class="ui-g-11" [froalaEditor] [(froalaModel)]="section.description">{{section.description}}</div>
+  <div class="ui-g-11" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="section.description">{{section.description}}</div>
+
 
 </div>
-</form>
 
+
+
+
+
+</form>
 
