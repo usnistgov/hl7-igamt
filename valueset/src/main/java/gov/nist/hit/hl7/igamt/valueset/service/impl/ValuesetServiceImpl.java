@@ -31,11 +31,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.util.compositeKey.CompositeKeyUtil;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.InternalCodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -90,7 +90,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset save(Valueset valueset) {
-    valueset.setId(CompositeKeyUtil.updateVersion(valueset.getId()));
+//    valueset.setId(CompositeKeyUtil.updateVersion(valueset.getId()));
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
@@ -349,7 +349,7 @@ public class ValuesetServiceImpl implements ValuesetService {
       if(valueset.getInternalCodeSystems() != null){
         for(InternalCodeSystem iCodeSystem:valueset.getInternalCodeSystems()){
           DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
-          displayCodeSystem.setCodeSysRef(iCodeSystem.getIdentifier());
+          displayCodeSystem.setCodeSysRef(iCodeSystem.getId());
           displayCodeSystem.setCodeSystemType(CodeSystemType.INTERNAL);
           displayCodeSystem.setDescription(iCodeSystem.getDescription());
           displayCodeSystem.setIdentifier(iCodeSystem.getIdentifier());
@@ -365,5 +365,117 @@ public class ValuesetServiceImpl implements ValuesetService {
       return result;
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertToValueset(gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure)
+   */
+  @Override
+  public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(structure.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(structure.getId().getId());
+    }
+    valueset.setExtensibility(structure.getExtensibility());
+    valueset.setStability(structure.getStability());
+    valueset.setContentDefinition(structure.getContentDefinition());
+    Set<CodeRef> codeRefs = new HashSet<CodeRef>();
+    Set<InternalCode> internalCodes = new HashSet<InternalCode>();
+    Set<String> codeSystemIds = new HashSet<String>();
+    Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
+    
+    if(structure.getDisplayCodes() != null){
+      for (DisplayCode dCode :structure.getDisplayCodes()){
+        if(dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.EXTERNAL)){
+          CodeRef codeRef = new CodeRef();
+          codeRef.setCodeId(dCode.getId());
+          codeRef.setCodeSystemId(dCode.getCodeSysRef().getRef());
+          codeRef.setUsage(dCode.getUsage());
+          codeRefs.add(codeRef);
+          if(!exist(codeRef.getCodeSystemId(), codeSystemIds)) codeSystemIds.add(codeRef.getCodeSystemId());
+        }else if(dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.INTERNAL)){
+          InternalCode internalCode = new InternalCode();
+          internalCode.setCodeSystemId(dCode.getCodeSysRef().getRef());
+          internalCode.setComments(dCode.getComments());
+          internalCode.setDescription(dCode.getDescription());
+          internalCode.setId(dCode.getId());
+          internalCode.setUsage(dCode.getUsage());
+          internalCode.setValue(dCode.getValue());
+          internalCodes.add(internalCode);
+          
+          DisplayCodeSystem displayCodeSystem = this.findDisplayCodeSystem(dCode.getCodeSysRef().getRef(), structure.getDisplayCodeSystems());
+          if(displayCodeSystem != null){
+            InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
+            internalCodeSystem.setDescription(displayCodeSystem.getDescription());
+            internalCodeSystem.setIdentifier(displayCodeSystem.getIdentifier());
+            internalCodeSystem.setUrl(displayCodeSystem.getUrl());
+            internalCodeSystem.setId(displayCodeSystem.getCodeSysRef());
+            if(!exist(internalCodeSystem, internalCodeSystems)) internalCodeSystems.add(internalCodeSystem);            
+          }
+        }
+      }      
+    }
+    valueset.setCodeRefs(codeRefs);
+    valueset.setCodes(internalCodes);
+    valueset.setCodeSystemIds(codeSystemIds);
+    valueset.setInternalCodeSystems(internalCodeSystems);
+    return save(valueset);
+  }
+
+
+  private boolean exist(String codeSystemId, Set<String> codeSystemIds) {
+    for(String csId :codeSystemIds){
+      if(csId.equals(codeSystemId)) return true;
+    }
+    return false;
+  }
+
+  private boolean exist(InternalCodeSystem internalCodeSystem, Set<InternalCodeSystem> internalCodeSystems) {
+    for(InternalCodeSystem ics:internalCodeSystems){
+      if(ics.getIdentifier().equals(internalCodeSystem.getIdentifier())) return true;
+    }
+    return false;
+  }
+
+  private DisplayCodeSystem findDisplayCodeSystem(String ref, Set<DisplayCodeSystem> displayCodeSystems) {
+    for(DisplayCodeSystem displayCodeSystem:displayCodeSystems){
+      if(displayCodeSystem.getCodeSysRef().equals(ref)) return displayCodeSystem;
+    }
+    return null;
+  }
+
+  @Override
+  public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(preDef.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(preDef.getId().getId());
+    }
+    valueset.setPreDef(preDef.getPreDef());
+    return save(valueset);
+  }
+
+
+  @Override
+  public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(displayMetadata.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(displayMetadata.getId().getId());
+    }
+    valueset.setBindingIdentifier(displayMetadata.getBindingIdentifier());
+    valueset.setName(displayMetadata.getName());
+    valueset.setOid(displayMetadata.getOid());
+    valueset.setUrl(displayMetadata.getUrl());
+    valueset.setComment(displayMetadata.getAuthorNotes());
+    return save(valueset);
+  }
+
+  @Override
+  public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException {
+    Valueset valueset = findLatestById(postDef.getId().getId());
+    if (valueset == null) {
+      throw new ValuesetNotFoundException(postDef.getId().getId());
+    }
+    valueset.setPostDef(postDef.getPostDef());
+    return save(valueset);
   }
 }

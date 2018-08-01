@@ -36,12 +36,22 @@ public class SerializableConstraints extends SerializableSection {
   @Override
   public Element serialize() throws SerializationException {
     Element constraintsElement = this.getElement();
-    for(Element element : constraints) {
-      if(element != null) {
-        constraintsElement.appendChild(element);
+    if(constraints != null) {
+      for(Element element : constraints) {
+        if(element != null) {
+          constraintsElement.appendChild(element.copy());
+        }
       }
     }
     return constraintsElement;
+  }
+  
+  public int getConstraintsCount() {
+    if(this.constraints != null) {
+      return this.constraints.size();
+    } else {
+      return 0;
+    }
   }
   
 }

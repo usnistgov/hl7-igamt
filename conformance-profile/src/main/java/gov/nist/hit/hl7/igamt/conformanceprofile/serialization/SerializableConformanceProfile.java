@@ -42,6 +42,7 @@ import nu.xom.Element;
 public class SerializableConformanceProfile extends SerializableResource {
 
   private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Set<String> bindedGroupsAndSegmentRefs;
   private int level;
@@ -51,7 +52,7 @@ public class SerializableConformanceProfile extends SerializableResource {
    * @param position
    */
   public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
-      int level, Map<String, String> valuesetNamesMap, Map<String, Segment> segmentsMap, Set<String> bindedGroupsAndSegmentRefs) {
+      int level, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Map<String, Segment> segmentsMap, Set<String> bindedGroupsAndSegmentRefs) {
     super(conformanceProfile, position);
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
@@ -74,6 +75,10 @@ public class SerializableConformanceProfile extends SerializableResource {
             conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
         conformanceProfileElement.addAttribute(new Attribute("structID",
             conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
+        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap, valuesetLabelMap);
+        if (bindingElement != null) {
+          conformanceProfileElement.appendChild(bindingElement);
+        }
         if (conformanceProfile.getChildren() != null
             && conformanceProfile.getChildren().size() > 0) {
           for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {
@@ -177,7 +182,7 @@ public class SerializableConformanceProfile extends SerializableResource {
     if (group.getBinding() != null) {
       Element binding;
       try {
-        binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap);
+        binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap, this.valuesetLabelMap);
       } catch (SerializationException exception) {
         throw new MsgStructElementSerializationException(exception, group);
       }

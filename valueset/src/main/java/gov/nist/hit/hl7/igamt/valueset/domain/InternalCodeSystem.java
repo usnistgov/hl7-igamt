@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.valueset.domain;
 import java.net.URL;
 
 public class InternalCodeSystem {
+  private String id;
   private String identifier;
   private String description;
   private URL url;
@@ -43,5 +44,12 @@ public class InternalCodeSystem {
     this.description = description;
   }
 
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
 }

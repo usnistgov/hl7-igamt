@@ -11,36 +11,32 @@
  * that they have been modified.
  * 
  */
-package gov.nist.hit.hl7.igamt.serialization.domain;
+package gov.nist.hit.hl7.igamt.valueset.serialization;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
-import gov.nist.hit.hl7.igamt.common.base.domain.Section;
-import nu.xom.Element;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 
 /**
  *
- * @author Maxence Lefort on May 11, 2018.
+ * @author Maxence Lefort on Jul 23, 2018.
  */
-public abstract class SerializableRegistry extends SerializableSection {
+public class SerializableValuesetStructure {
 
-  private Registry registry;
-
-  /**
-   * @param id
-   * @param position
-   * @param title
-   */
-  public SerializableRegistry(Section section, int level, Registry registry) {
-    super(section, level);
-    this.registry = registry;
+  private ValuesetStructure valuesetStructure;
+  private Valueset valueset;
+  
+  public SerializableValuesetStructure(ValuesetStructure valuesetStructure, Valueset valueset) {
+    super();
+    this.valuesetStructure = valuesetStructure;
+    this.valueset = valueset;
   }
-
-  public Registry getRegistry() {
-    return registry;
+  
+  public ValuesetStructure getValuesetStructure() {
+    return valuesetStructure;
   }
-
-  public abstract Element getPredicates(int level);
-
-  public abstract Element getConformanceStatements(int level);
+  
+  public Valueset getValueset() {
+    return valueset;
+  }
 
 }
