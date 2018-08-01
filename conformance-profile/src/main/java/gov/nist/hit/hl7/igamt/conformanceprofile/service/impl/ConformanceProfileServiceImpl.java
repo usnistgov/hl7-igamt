@@ -231,7 +231,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       ConformanceProfile conformanceProfile) {
     if (conformanceProfile != null) {
       DisplayConformanceProfileMetadata result = new DisplayConformanceProfileMetadata();
-      // result.setAuthorNotes(conformanceProfile.getAuthorNotes());
       result.setDescription(conformanceProfile.getDescription());
       result.setDomainInfo(conformanceProfile.getDomainInfo());
       result.setId(conformanceProfile.getId());
@@ -239,8 +238,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setMessageType(conformanceProfile.getMessageType());
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
-      // result.setUsageNote(conformanceProfile.getUsageNotes());
-
+      result.setAuthorNotes(conformanceProfile.getComment());
       return result;
     }
     return null;
