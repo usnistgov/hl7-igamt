@@ -20,7 +20,7 @@
                     <label>[#{{idx + 1}}] Child Assertion Level:</label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
-                    <p-dropdown id="{{groupName}}-Child{{idx}}-mode" name="{{groupName}}-Child{{idx}}-mode" required [options]="assertionModes" [(ngModel)]="child.mode" [group]="true" (onChange)="makeConstraintMode(child)"></p-dropdown>
+                    <p-dropdown id="{{groupName}}-Child{{idx}}-mode" name="{{groupName}}-Child{{idx}}-mode" required [autoWidth]="false" [options]="assertionModes" [(ngModel)]="child.mode" [group]="true" (onChange)="makeConstraintMode(child)"></p-dropdown>
                 </div>
             </div>
 
