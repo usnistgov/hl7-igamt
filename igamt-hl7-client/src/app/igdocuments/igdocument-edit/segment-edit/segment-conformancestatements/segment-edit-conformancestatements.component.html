@@ -97,7 +97,7 @@
                             <label>Assertion Level: </label>
                         </div>
                         <div class="ui-g-12 ui-md-10">
-                            <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
+                            <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [group]="true" [autoWidth]="false" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
                             <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
                                 <div *ngIf="assertionMode.errors.required">
                                     Assertion Type is required.

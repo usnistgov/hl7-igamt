@@ -4,7 +4,7 @@
             <label>IF Assertion Level: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <p-dropdown id="ifAssertionMode" name="ifAssertionMode" required #ifAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.ifAssertion.mode" (onChange)="makeConstraintMode(constraint.ifAssertion)"></p-dropdown>
+            <p-dropdown id="ifAssertionMode" name="ifAssertionMode" required #ifAssertionMode="ngModel" [group]="true" [autoWidth]="false" [options]="assertionModes" [(ngModel)]="constraint.ifAssertion.mode" (onChange)="makeConstraintMode(constraint.ifAssertion)"></p-dropdown>
         </div>
     </div>
     <div class="ui-g ui-fluid">
@@ -22,7 +22,7 @@
             <label>THEN Assertion Level: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <p-dropdown id="thenAssertionMode" name="thenAssertionMode" required #thenAssertionMode="ngModel" [options]="assertionModes" [(ngModel)]="constraint.thenAssertion.mode" (onChange)="makeConstraintMode(constraint.thenAssertion)"></p-dropdown>
+            <p-dropdown id="thenAssertionMode" name="thenAssertionMode" required #thenAssertionMode="ngModel" [group]="true" [autoWidth]="false" [options]="assertionModes" [(ngModel)]="constraint.thenAssertion.mode" (onChange)="makeConstraintMode(constraint.thenAssertion)"></p-dropdown>
         </div>
     </div>
 
