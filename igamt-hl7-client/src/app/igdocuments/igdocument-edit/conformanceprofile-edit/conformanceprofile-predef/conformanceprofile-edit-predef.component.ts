@@ -9,6 +9,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 
@@ -16,7 +17,7 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
   templateUrl : './conformanceprofile-edit-predef.component.html',
   styleUrls : ['./conformanceprofile-edit-predef.component.css']
 })
-export class ConformanceprofileEditPredefComponent implements WithSave {
+export class ConformanceprofileEditPredefComponent  extends  HasFroala implements WithSave {
     currentUrl:any;
     conformanceprofileId:any;
     conformanceprofilePredef:any;
@@ -26,11 +27,7 @@ export class ConformanceprofileEditPredefComponent implements WithSave {
     private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private http:HttpClient){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+        super();
     }
 
     ngOnInit() {

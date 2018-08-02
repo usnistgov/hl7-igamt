@@ -13,14 +13,14 @@ package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
 
-public class IGTocUpdateException extends GenericException {
+public class IGUpdateException extends GenericException {
   private static final long serialVersionUID = 1L;
 
-  public IGTocUpdateException(String id) {
+  public IGUpdateException(String id) {
     super("Could not update IG with=" + id);
   }
 
-  public IGTocUpdateException(Exception error) {
+  public IGUpdateException(Exception error) {
     super(error);
   }
 

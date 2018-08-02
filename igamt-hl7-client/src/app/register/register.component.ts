@@ -93,12 +93,15 @@ export class RegisterComponent{
 
 
 
+
+
+
   showError(error:any) {
     console.log(error);
-    this.messageService.add({severity:'error', summary:error.error.error, detail:error.error.message, id:'REGISTERERROR'});
+    error =JSON.parse(error.error.message);
+    console.log(error);
+    this.messageService.add({severity:'error', summary:"Registration Error", detail:error.message, id:'REGISTERERROR'});
   }
-
-
 
 
 }

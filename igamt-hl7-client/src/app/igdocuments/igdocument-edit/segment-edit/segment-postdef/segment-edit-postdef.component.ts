@@ -10,6 +10,7 @@ import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 import {SegmentsService} from "../segments.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 @Component({
   selector : 'segment-edit',
@@ -17,7 +18,7 @@ import {IgErrorService} from "../../ig-error/ig-error.service";
   styleUrls : ['./segment-edit-postdef.component.css']
 })
 
-export class SegmentEditPostdefComponent implements WithSave {
+export class SegmentEditPostdefComponent extends HasFroala implements WithSave {
     currentUrl:any;
     segmentId:any;
     segmentPostdef:any;
@@ -26,7 +27,8 @@ export class SegmentEditPostdefComponent implements WithSave {
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient, private igErrorService:IgErrorService){
+    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient, private igErrorService:IgErrorService)
+    { super();
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;

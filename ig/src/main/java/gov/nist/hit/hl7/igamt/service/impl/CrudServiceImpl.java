@@ -29,6 +29,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
@@ -59,7 +60,8 @@ public class CrudServiceImpl implements CrudService {
 
 
   @Override
-  public AddMessageResponseObject addConformanceProfiles(Set<String> ids, Ig ig) {
+  public AddMessageResponseObject addConformanceProfiles(Set<String> ids, Ig ig)
+      throws AddingException {
     AddMessageResponseObject ret = new AddMessageResponseObject();
     ConformanceProfileRegistry reg = ig.getConformanceProfileRegistry();
     if (reg != null) {
@@ -70,10 +72,11 @@ public class CrudServiceImpl implements CrudService {
           ConformanceProfile cp = conformanceProfileService.getLatestById(id);
           if (cp != null) {
             ret.getConformanceProfiles().add(cp);
-
             addDependecies(cp, ig, ret);
             Link link = new Link(cp.getId(), cp.getDomainInfo(), cp.getChildren().size() + 1);
             reg.getChildren().add(link);
+          } else {
+            throw new AddingException("Could not find conformance profile with id " + id);
           }
         }
       }
@@ -81,11 +84,12 @@ public class CrudServiceImpl implements CrudService {
     return ret;
   }
 
-  private void addDependecies(ConformanceProfile cp, Ig ig, AddMessageResponseObject ret) {
+  private void addDependecies(ConformanceProfile cp, Ig ig, AddMessageResponseObject ret)
+      throws AddingException {
     Set<String> segmentIds = getConformanceProfileResourceDependenciesIds(cp);
     AddSegmentResponseObject formSegment = addSegments(segmentIds, ig);
-    ret.setSegments(formSegment.getSegments());
-    ret.setDatatypesMap(formSegment.getDatatypesMap());
+    ret.getSegments().addAll((formSegment.getSegments()));
+    ret.getDatatypesMap().addAll(formSegment.getDatatypesMap());
     for (Valueset vs : formSegment.getValueSets()) {
       ret.getValueSets().add(vs);
 
@@ -136,7 +140,7 @@ public class CrudServiceImpl implements CrudService {
   }
 
   @Override
-  public AddSegmentResponseObject addSegments(Set<String> ids, Ig ig) {
+  public AddSegmentResponseObject addSegments(Set<String> ids, Ig ig) throws AddingException {
     AddSegmentResponseObject ret = new AddSegmentResponseObject();
     SegmentRegistry reg = ig.getSegmentRegistry();
     if (reg != null) {
@@ -151,6 +155,11 @@ public class CrudServiceImpl implements CrudService {
                 new Link(segment.getId(), segment.getDomainInfo(), reg.getChildren().size() + 1);
             ret.getSegments().add(segment);
             reg.getChildren().add(link);
+          } else {
+
+            throw new AddingException("Could not find Segment with id" + segment.getId().getId());
+
+
           }
         }
       }
@@ -160,7 +169,8 @@ public class CrudServiceImpl implements CrudService {
 
   }
 
-  private void addDependecies(Segment segment, Ig ig, AddSegmentResponseObject ret) {
+  private void addDependecies(Segment segment, Ig ig, AddSegmentResponseObject ret)
+      throws AddingException {
     // TODO Auto-generated method stub
 
     Set<String> datatypeIds = getSegmentResourceDependenciesIds(segment);
@@ -222,7 +232,7 @@ public class CrudServiceImpl implements CrudService {
   }
 
   @Override
-  public AddDatatypeResponseObject addDatatypes(Set<String> ids, Ig ig) {
+  public AddDatatypeResponseObject addDatatypes(Set<String> ids, Ig ig) throws AddingException {
     // TODO Auto-generated method stub
     DatatypeRegistry reg = ig.getDatatypeRegistry();
     AddDatatypeResponseObject ret = new AddDatatypeResponseObject();
@@ -272,7 +282,8 @@ public class CrudServiceImpl implements CrudService {
   }
 
 
-  public void addDatatypes(Set<String> ids, Ig ig, AddDatatypeResponseObject ret) {
+  public void addDatatypes(Set<String> ids, Ig ig, AddDatatypeResponseObject ret)
+      throws AddingException {
     // TODO Auto-generated method stub
     DatatypeRegistry reg = ig.getDatatypeRegistry();
     if (reg != null) {
@@ -301,6 +312,11 @@ public class CrudServiceImpl implements CrudService {
               System.out.println("putting In Library" + p.getId().getId());
               reg.getChildren().add(link);
             }
+          } else {
+
+
+            throw new AddingException("Could not find Datata type  with id " + id);
+
           }
         }
       }
@@ -324,7 +340,7 @@ public class CrudServiceImpl implements CrudService {
   }
 
   @Override
-  public AddValueSetResponseObject addValueSets(Set<String> ids, Ig ig) {
+  public AddValueSetResponseObject addValueSets(Set<String> ids, Ig ig) throws AddingException {
     // TODO Auto-generated method stub
     ValueSetRegistry reg = ig.getValueSetRegistry();
     AddValueSetResponseObject ret = new AddValueSetResponseObject();
@@ -339,7 +355,12 @@ public class CrudServiceImpl implements CrudService {
                 new Link(valueSet.getId(), valueSet.getDomainInfo(), reg.getChildren().size() + 1);
             reg.getChildren().add(link);
             ret.getValueSets().add(valueSet);
+          } else {
+            throw new AddingException("Could not find Value Set  with id " + id);
+
           }
+
+
         }
       }
     }
@@ -360,7 +381,8 @@ public class CrudServiceImpl implements CrudService {
    * gov.nist.hit.hl7.igamt.ig.domain.Ig)
    */
   @Override
-  public CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) {
+  public CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig)
+      throws AddingException {
     // TODO Auto-generated method stub
     AddMessageResponseObject ret = this.addConformanceProfiles(ids, ig);
 

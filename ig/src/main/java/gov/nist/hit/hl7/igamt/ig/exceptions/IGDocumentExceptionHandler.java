@@ -38,6 +38,13 @@ public class IGDocumentExceptionHandler {
     return exception;
   }
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({AddingException.class})
+  public AddingException handleXReferenceFoundException(AddingException exception) {
+    return exception;
+  }
+
 
   @ResponseBody
   @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -76,8 +83,8 @@ public class IGDocumentExceptionHandler {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({IGTocUpdateException.class})
-  public ResponseMessage handleUpdateTocException(IGTocUpdateException exception) {
+  @ExceptionHandler({IGUpdateException.class})
+  public ResponseMessage handleUpdateTocException(IGUpdateException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }

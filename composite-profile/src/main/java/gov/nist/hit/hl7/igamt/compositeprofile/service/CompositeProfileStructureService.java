@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 public interface CompositeProfileStructureService {
   public CompositeProfileStructure findByKey(CompositeKey key);
 
+
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure);
 
   public CompositeProfileStructure save(CompositeProfileStructure compositeProfileStructure);

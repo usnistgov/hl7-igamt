@@ -10,13 +10,14 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 @Component({
   templateUrl : './datatype-edit-postdef.component.html',
   styleUrls : ['./datatype-edit-postdef.component.css']
 })
-export class DatatypeEditPostdefComponent implements WithSave  {
+export class DatatypeEditPostdefComponent extends HasFroala implements WithSave  {
     currentUrl:any;
     datatypeId:any;
     datatypePostdef:any;
@@ -26,11 +27,7 @@ export class DatatypeEditPostdefComponent implements WithSave  {
     private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private http:HttpClient, private igErrorService:IgErrorService){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+        super();
     }
 
     ngOnInit() {

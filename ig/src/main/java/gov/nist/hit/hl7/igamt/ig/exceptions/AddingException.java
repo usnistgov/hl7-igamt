@@ -9,12 +9,16 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
+package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 /**
- * @author jungyubw
+ * @author ena3
  *
  */
-public enum AssertionMode {
-  SIMPLE, IFTHEN, ANDOR, NOT
+public class AddingException extends Exception {
+  private static final long serialVersionUID = 1L;
+
+  public AddingException(String string) {
+    super(string);
+  }
 }

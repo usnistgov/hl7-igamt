@@ -10,13 +10,14 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as _ from 'lodash';
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 @Component({
     templateUrl : './valueset-edit-predef.component.html',
     styleUrls : ['./valueset-edit-predef.component.css']
 })
 
-export class ValuesetEditPredefComponent implements WithSave  {
+export class ValuesetEditPredefComponent extends HasFroala implements WithSave  {
     currentUrl:any;
     valuesetId:any;
     valuesetPredef:any;
@@ -26,11 +27,7 @@ export class ValuesetEditPredefComponent implements WithSave  {
     private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService, private http:HttpClient, private igErrorService:IgErrorService){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+        super();
     }
 
     ngOnInit() {

@@ -8,9 +8,13 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FilenameUtils;
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
+import org.springframework.data.mongodb.gridfs.GridFsOperations;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,8 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import com.mongodb.client.gridfs.model.GridFSFile;
 
 import gov.nist.hit.hl7.igamt.files.exception.UploadImageFileException;
@@ -39,6 +41,13 @@ public class FileStorageController {
 
   @Autowired
   FileStorageService storageService;
+
+
+  @Autowired
+  private GridFsTemplate template;
+
+  @Autowired
+  private GridFsOperations operations;
 
 
 
@@ -61,8 +70,8 @@ public class FileStorageController {
           throw new UploadImageFileException("fileSizeTooBig");
         }
         InputStream in = part.getInputStream();
-        DBObject metaData = new BasicDBObject();
-        metaData.put("accountId", authentication.getPrincipal().toString());
+        Document metaData = new Document();
+        // metaData.put("accountId", authentication.getPrincipal().toString());
         String generatedName = UUID.randomUUID().toString() + "." + extension;
         ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
         GridFSFile dbFile = storageService.findOne(fsFile.toString());
@@ -84,16 +93,15 @@ public class FileStorageController {
       throws UploadImageFileException {
     try {
       GridFSFile dbFile = storageService.findOneByFilename(filename);
-      if (dbFile != null) {
-        return ResponseEntity.ok().contentLength(dbFile.getLength())
-            .contentType(MediaType.parseMediaType(dbFile.getContentType())).body(null);
-      }
+      GridFsResource resource = template.getResource(dbFile.getFilename());
+      return ResponseEntity.ok().contentLength(dbFile.getLength()).body(resource);
     } catch (RuntimeException e) {
       throw new UploadImageFileException(e);
     } catch (Exception e) {
       throw new UploadImageFileException(e);
     }
-    return null;
   }
+
+
 
 }

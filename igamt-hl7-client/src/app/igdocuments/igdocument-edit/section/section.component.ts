@@ -7,6 +7,7 @@ import {NgForm} from "@angular/forms";
 import {WithSave} from "../../../guards/with.save.interface";
 import {SectionsService} from "../../../service/sections/sections.service";
 import {IgErrorService} from "../ig-error/ig-error.service";
+import {HasFroala} from "../../../configuration/has-froala";
 
 @Component({
   templateUrl: './section.component.html',
@@ -14,9 +15,9 @@ import {IgErrorService} from "../ig-error/ig-error.service";
 
 })
 
-export class SectionComponent implements OnInit, WithSave {
+export class SectionComponent extends HasFroala implements OnInit, WithSave {
   constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private sectionsService:SectionsService, private igErrorService:IgErrorService) {
-
+  super();
   }
   section:any;
   backup:any;
@@ -87,5 +88,9 @@ export class SectionComponent implements OnInit, WithSave {
   isValid(){
     return !this.editForm.invalid;
   }
+
+
+
+
 
 }
