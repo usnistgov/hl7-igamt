@@ -57,7 +57,7 @@
             <label class="metadata-label ui-g-2">
                 Usage Notes
             </label>
-            <div class="ui-g-10" [froalaEditor] [(froalaModel)]="conformanceprofileMetadata.usageNote"></div>
+            <div class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="conformanceprofileMetadata.usageNote"></div>
         </div>
     </form>
 </div>

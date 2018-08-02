@@ -34,6 +34,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -200,11 +201,12 @@ public class IgServiceImpl implements IgService {
    * domain.Ig) >>>>>>> b6d5591cb74490526e1a1758d67d772b946cea99
    */
   @Override
-  public List<Ig> findLatestByUsername(String username) {
+  public List<Ig> findLatestByUsername(String username, Scope scope) {
 
 
 
-    Criteria where = Criteria.where("username").is(username);
+    Criteria where = Criteria.where("username").is(username)
+        .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
 
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 

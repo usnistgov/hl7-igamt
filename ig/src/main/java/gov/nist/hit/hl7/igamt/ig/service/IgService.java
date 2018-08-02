@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -31,7 +32,7 @@ public interface IgService {
 
   public List<Ig> findByUsername(String username);
 
-  public List<Ig> findLatestByUsername(String username);
+  public List<Ig> findLatestByUsername(String username, Scope scope);
 
   public Ig findLatestById(String id);
 
@@ -40,7 +41,7 @@ public interface IgService {
   public Ig CreateEmptyIg()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
 
-  List<Ig> findIgIdsForUser(String username);
+  public List<Ig> findIgIdsForUser(String username);
 
   public List<IgSummary> convertListToDisplayList(List<Ig> igdouments);
 

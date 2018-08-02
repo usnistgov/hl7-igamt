@@ -11,6 +11,7 @@ import {IndexedDbService} from "../../../../service/indexed-db/indexed-db.servic
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {ConformanceProfilesService} from "../conformance-profiles.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 
@@ -18,7 +19,7 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
   templateUrl : './conformanceprofile-edit-metadata.component.html',
   styleUrls : ['./conformanceprofile-edit-metadata.component.css']
 })
-export class ConformanceprofileEditMetadataComponent implements WithSave {
+export class ConformanceprofileEditMetadataComponent extends HasFroala implements WithSave {
     conformanceprofileId:any;
     conformanceprofileMetadata:any;
      backup:any;
@@ -28,10 +29,7 @@ export class ConformanceprofileEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(public indexedDbService: IndexedDbService, private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService,private tocService:TocService){
-    this.tocService.getActiveNode().subscribe(x=>{
-      console.log(x);
-      this.currentNode=x;
-    });
+        super();
   }
 
   ngOnInit() {

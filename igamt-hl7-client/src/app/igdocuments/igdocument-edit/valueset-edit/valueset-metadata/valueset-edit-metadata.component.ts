@@ -10,13 +10,14 @@ import {NgForm} from "@angular/forms";
 import {ValuesetsService} from "../valuesets.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
 import * as _ from 'lodash';
+import {HasFroala} from "../../../../configuration/has-froala";
 
 @Component({
   templateUrl : './valueset-edit-metadata.component.html',
   styleUrls : ['./valueset-edit-metadata.component.css']
 })
 
-export class ValuesetEditMetadataComponent implements WithSave {
+export class ValuesetEditMetadataComponent extends HasFroala implements WithSave  {
   valuesetId:any;
   valuesetMetadata:any;
   backup:any;
@@ -26,6 +27,7 @@ export class ValuesetEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(private route: ActivatedRoute, private  router : Router, private valuesetsService : ValuesetsService,private tocService:TocService,private igErrorService:IgErrorService ){
+    super();
   }
 
   ngOnInit() {

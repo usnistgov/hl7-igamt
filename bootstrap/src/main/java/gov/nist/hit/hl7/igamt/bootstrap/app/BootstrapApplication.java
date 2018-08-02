@@ -11,6 +11,7 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -30,8 +31,8 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
   //
-  // @Autowired
-  // MessageEventFacory messageEventFactory;
+  @Autowired
+  MessageEventFacory messageEventFactory;
   @Autowired
   ConfigService sharedConstantService;
 
@@ -105,11 +106,11 @@ public class BootstrapApplication implements CommandLineRunner {
   // messageEventFactory.createMessageEvent();
   // }
 
-
+  //
   // @PostConstruct
   // void createSharedConstant() {
-  // Config constant= new Config();
-  // List<String> hl7Versions=new ArrayList<String>();
+  // Config constant = new Config();
+  // List<String> hl7Versions = new ArrayList<String>();
   // hl7Versions.add("2.3.1");
   // hl7Versions.add("2.4");
   // hl7Versions.add("2.5");
@@ -121,21 +122,16 @@ public class BootstrapApplication implements CommandLineRunner {
   // hl7Versions.add("2.8.1");
   // hl7Versions.add("2.8.2");
   //
-  // List<String> usages=new ArrayList<String>();
+  // List<String> usages = new ArrayList<String>();
   //
   // usages.add("R");
   // usages.add("RE");
   // usages.add("RC");
   // usages.add("C");
   // usages.add("X");
-  //
   // constant.setHl7Versions(hl7Versions);
   // constant.setUsages(usages);
-  //
-  //
   // sharedConstantService.save(constant);
-  //
-  //
   //
   // }
   // @PostConstruct

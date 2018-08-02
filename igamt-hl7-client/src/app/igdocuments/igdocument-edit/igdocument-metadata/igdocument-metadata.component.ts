@@ -35,7 +35,6 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
 
 
   save(): Promise<any>{
-    this.showError();
     return new Promise((resolve, reject)=>{
 
 
@@ -72,9 +71,6 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
     for(let file of event.files) {
       this.uploadedFiles.push(file);
     }
-  }
-  showError() {
-    this.messageService.add({severity:'success', summary:'Service Message', detail:'Via MessageService'});
   }
 
 

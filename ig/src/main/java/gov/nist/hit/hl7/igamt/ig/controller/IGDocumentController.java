@@ -29,6 +29,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -54,7 +55,7 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
-import gov.nist.hit.hl7.igamt.ig.exceptions.IGTocUpdateException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
@@ -126,6 +127,7 @@ public class IGDocumentController extends BaseController {
   private static final String CONFORMANCE_PROFILE_DELETE = "CONFORMANCE_PROFILE_DELETE";
 
   private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
+  private static final String METATDATA_UPDATED = "METATDATA_UPDATED";
 
 
 
@@ -193,7 +195,7 @@ public class IGDocumentController extends BaseController {
       produces = {"application/json"})
   public @ResponseBody List<IgSummary> getUserIG(Authentication authentication) {
     String username = authentication.getPrincipal().toString();
-    List<Ig> igdouments = igService.findLatestByUsername(username);
+    List<Ig> igdouments = igService.findLatestByUsername(username, Scope.USER);
     return igService.convertListToDisplayList(igdouments);
   }
 
@@ -226,27 +228,40 @@ public class IGDocumentController extends BaseController {
    * @param authentication
    * @return
    * @throws IGNotFoundException
-   * @throws IGTocUpdateException
+   * @throws IGUpdateException
    */
   @RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST,
       produces = {"application/json"})
 
   public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
       @RequestBody List<TreeNode> toc, Authentication authentication)
-      throws IGNotFoundException, IGTocUpdateException {
+      throws IGNotFoundException, IGUpdateException {
 
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
 
     UpdateResult updateResult = igService.updateAttribute(id, "content", content);
     if (!updateResult.wasAcknowledged()) {
-      throw new IGTocUpdateException(id);
+      throw new IGUpdateException(id);
     }
 
     return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
 
 
 
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST,
+      produces = {"application/json"})
+
+  public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
+      @RequestBody DocumentMetadata metadata, Authentication authentication)
+      throws IGNotFoundException, IGUpdateException {
+    UpdateResult updateResult = igService.updateAttribute(id, "metadata", metadata);
+    if (!updateResult.wasAcknowledged()) {
+      throw new IGUpdateException("Could not update IG Metadata ");
+    }
+    return new ResponseMessage(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
   }
 
   /**
