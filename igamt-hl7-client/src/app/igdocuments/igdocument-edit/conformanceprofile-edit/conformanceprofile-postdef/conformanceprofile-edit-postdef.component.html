@@ -2,7 +2,7 @@
 <div *ngIf="conformanceProfilePostdef">
     <form #editForm="ngForm">
         <div class="ui-g input-box">
-            <div class="ui-g-12" [froalaEditor] [(froalaModel)]="conformanceProfilePostdef.postDef"></div>
+            <div class="ui-g-12" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="conformanceProfilePostdef.postDef"></div>
         </div>
     </form>
 </div>

@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfileStructure;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.CompositeProfiles;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DatatypeLibrary;
@@ -196,16 +195,16 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
   private CompositeProfileRegistry createCompositeProfiles(CompositeProfiles compositeProfiles) {
     CompositeProfileRegistry ret = new CompositeProfileRegistry();
-    List<CompositeProfileStructure> ordred = compositeProfiles
-        .getChildren().stream().sorted((CompositeProfileStructure l1,
-            CompositeProfileStructure l2) -> l1.getName().compareTo(l2.getName()))
-        .collect(Collectors.toList());
-    for (int i = 0; i < ordred.size(); i++) {
-      CompositeKey key = new CompositeKey(ordred.get(i).getId());
-      Link link = new Link(key, i + 1);
-      ret.getChildren().add(link);
-
-    }
+    // List<CompositeProfileStructure> ordred = compositeProfiles
+    // .getChildren().stream().sorted((CompositeProfileStructure l1,
+    // CompositeProfileStructure l2) -> l1.getName().compareTo(l2.getName()))
+    // .collect(Collectors.toList());
+    // for (int i = 0; i < ordred.size(); i++) {
+    // CompositeKey key = new CompositeKey(ordred.get(i).getId());
+    // Link link = new Link(key, i + 1);
+    // ret.getChildren().add(link);
+    //
+    // }
     return ret;
   }
 

@@ -102,16 +102,20 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
    * @return
    */
   private void convertProfileComponents(ProfileComponent oldProfileComponent) {
+    gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
+        new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
+    convertedProfileComponent.setId(new CompositeKey(oldProfileComponent.getId()));
+
     for (SubProfileComponent spc : oldProfileComponent.getChildren()) {
-      gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
-          new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
+
       if (spc.getFrom().equals("segment")) {
         convertedProfileComponent.setLevel(Level.SEGMENT);
         convertedProfileComponent.setSourceId(spc.getSource().getSegmentId());
         if (convertedProfileComponent.getSourceId() != null) {
           Segment oldSeg = null;
-          Optional<Segment> optional = oldSegmentRepository.findById(convertedProfileComponent.getSourceId());
-          if(optional.isPresent()) {
+          Optional<Segment> optional =
+              oldSegmentRepository.findById(convertedProfileComponent.getSourceId());
+          if (optional.isPresent()) {
             oldSeg = optional.get();
             convertedProfileComponent.setStructure(oldSeg.getName());
           }
@@ -122,8 +126,9 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
 
         if (convertedProfileComponent.getSourceId() != null) {
           Message oldMsg = null;
-          Optional<Message> optional = oldMessageRepository.findById(convertedProfileComponent.getSourceId());
-          if(optional.isPresent()) {
+          Optional<Message> optional =
+              oldMessageRepository.findById(convertedProfileComponent.getSourceId());
+          if (optional.isPresent()) {
             oldMsg = optional.get();
             convertedProfileComponent.setStructure(oldMsg.getStructID());
           }
@@ -349,20 +354,19 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       }
       convertedProfileComponent.addProfileComponentItem(item);
 
-      DomainInfo domainInfo = new DomainInfo();
-      domainInfo.setScope(ConversionUtil.convertScope(oldProfileComponent.getScope()));
-      PublicationInfo publicationInfo = new PublicationInfo();
-      convertedProfileComponent.setId(new CompositeKey(spc.getId()));
-      convertedProfileComponent.setComment(oldProfileComponent.getComment());
-      convertedProfileComponent.setCreatedFrom(null);
-      convertedProfileComponent.setDescription(oldProfileComponent.getDescription());
-      convertedProfileComponent.setDomainInfo(domainInfo);
-      convertedProfileComponent.setName(oldProfileComponent.getName());
-      convertedProfileComponent.setPostDef(oldProfileComponent.getDefPostText());
-      convertedProfileComponent.setPreDef(oldProfileComponent.getDefPreText());
-      convertedProfileComponent.setPublicationInfo(publicationInfo);
-      convertedProfileComponentService.save(convertedProfileComponent);
     }
+    DomainInfo domainInfo = new DomainInfo();
+    domainInfo.setScope(ConversionUtil.convertScope(oldProfileComponent.getScope()));
+    PublicationInfo publicationInfo = new PublicationInfo();
+    convertedProfileComponent.setComment(oldProfileComponent.getComment());
+    convertedProfileComponent.setCreatedFrom(null);
+    convertedProfileComponent.setDescription(oldProfileComponent.getDescription());
+    convertedProfileComponent.setDomainInfo(domainInfo);
+    convertedProfileComponent.setName(oldProfileComponent.getName());
+    convertedProfileComponent.setPostDef(oldProfileComponent.getDefPostText());
+    convertedProfileComponent.setPreDef(oldProfileComponent.getDefPreText());
+    convertedProfileComponent.setPublicationInfo(publicationInfo);
+    convertedProfileComponentService.save(convertedProfileComponent);
   }
 
   private void init() {

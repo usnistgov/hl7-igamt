@@ -110,7 +110,9 @@ export  class TocService{
       this.dbService.getIgDocument().then(
         x => {
           x.metadata = metadata;
+
           this.dbService.updateIgMetadata(x.id,metadata ).then(saved => {
+            this.saveMetadata(x.id,x.metadata,resolve, reject);
             this.metadata.next(_.cloneDeep(metadata));
             resolve(true);
           });
@@ -325,6 +327,23 @@ export  class TocService{
     );
 
   }
+
+
+  saveMetadata(id,metadata,resolve, reject){
+    this.http.post('/api/igdocuments/'+id+'/updatemetadata',metadata).toPromise().then(result=>{
+        resolve(result);
+        console.log(result);
+
+      },error=>{
+        console.log(error);
+        reject(error);
+
+      }
+    );
+
+  }
+
+
 
 
   deleteNodeById(id){

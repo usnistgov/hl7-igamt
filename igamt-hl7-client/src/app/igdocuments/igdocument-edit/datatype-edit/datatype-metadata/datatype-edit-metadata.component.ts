@@ -12,6 +12,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {DatatypesService} from "../datatypes.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 
 
@@ -20,7 +21,7 @@ import {IgErrorService} from "../../ig-error/ig-error.service";
   templateUrl : './datatype-edit-metadata.component.html',
   styleUrls : ['./datatype-edit-metadata.component.css']
 })
-export class DatatypeEditMetadataComponent implements WithSave {
+export class DatatypeEditMetadataComponent extends HasFroala implements WithSave {
   datatypeId:any;
   datatypeMetadata:any;
   backup:any;
@@ -30,6 +31,7 @@ export class DatatypeEditMetadataComponent implements WithSave {
   private editForm: NgForm;
 
   constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService,private tocService:TocService,private igErrorService:IgErrorService ){
+    super();
   }
 
   ngOnInit() {
