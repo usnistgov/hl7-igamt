@@ -84,8 +84,8 @@ public class ConformanceProfileController extends BaseController {
 
   }
 
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement",
-      method = RequestMethod.GET, produces = {"application/json"})
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement", method = RequestMethod.GET, 
+      produces = {"application/json"})
 
   public ConformanceProfileConformanceStatement getConformanceProfileConformanceStatement(
       @PathVariable("id") String id, Authentication authentication)
@@ -127,7 +127,7 @@ public class ConformanceProfileController extends BaseController {
         conformanceProfile.getUpdateDate());
   }
 
-  @RequestMapping(value = "/api/conformanceProfiles/{id}/postdef", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/postdef", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
       Authentication authentication)

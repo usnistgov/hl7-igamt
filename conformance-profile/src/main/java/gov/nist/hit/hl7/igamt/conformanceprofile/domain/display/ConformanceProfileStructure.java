@@ -1,12 +1,15 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import java.util.TreeSet;
+import java.util.HashMap;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-
-
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 public class ConformanceProfileStructure {
   private CompositeKey id;
@@ -16,8 +19,10 @@ public class ConformanceProfileStructure {
   private String messageType;
   private String structId;
   private ResourceBinding binding;
-
-  private TreeSet<MsgStructElementDisplay> structure;
+  private Set<MsgStructElement> children;
+  private HashMap<String,Segment> segments = new HashMap<String,Segment>();
+  private HashMap<String,Datatype> datatypes = new HashMap<String,Datatype>();
+  private HashMap<String,Valueset> valuesets = new HashMap<String,Valueset>();
 
   public CompositeKey getId() {
     return id;
@@ -25,21 +30,6 @@ public class ConformanceProfileStructure {
 
   public void setId(CompositeKey id) {
     this.id = id;
-  }
-
-  public TreeSet<MsgStructElementDisplay> getStructure() {
-    return structure;
-  }
-
-  public void setStructure(TreeSet<MsgStructElementDisplay> structure) {
-    this.structure = structure;
-  }
-
-  public void addStructure(MsgStructElementDisplay msgStructElementDisplay) {
-    if (this.structure == null)
-      this.structure =
-          new TreeSet<MsgStructElementDisplay>(new PositionCompForMsgStructElementDisplay());
-    this.structure.add(msgStructElementDisplay);
   }
 
   public DomainInfo getDomainInfo() {
@@ -88,5 +78,37 @@ public class ConformanceProfileStructure {
 
   public void setBinding(ResourceBinding binding) {
     this.binding = binding;
+  }
+
+  public Set<MsgStructElement> getChildren() {
+    return children;
+  }
+
+  public void setChildren(Set<MsgStructElement> children) {
+    this.children = children;
+  }
+
+  public HashMap<String,Segment> getSegments() {
+    return segments;
+  }
+
+  public void setSegments(HashMap<String,Segment> segments) {
+    this.segments = segments;
+  }
+
+  public HashMap<String,Datatype> getDatatypes() {
+    return datatypes;
+  }
+
+  public void setDatatypes(HashMap<String,Datatype> datatypes) {
+    this.datatypes = datatypes;
+  }
+
+  public HashMap<String,Valueset> getValuesets() {
+    return valuesets;
+  }
+
+  public void setValuesets(HashMap<String,Valueset> valuesets) {
+    this.valuesets = valuesets;
   }
 }

@@ -31,10 +31,11 @@ public class ConformanceProfile extends Resource {
 
   private String identifier;
   private String messageType; // Message/@Type
-
   private String event; // Message/@Event
-
   private String structID; // Message/@StructID private String identifier;
+  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+  private ResourceBinding binding;
+
 
   public String getMessageType() {
     return messageType;
@@ -59,9 +60,6 @@ public class ConformanceProfile extends Resource {
   public void setStructID(String structID) {
     this.structID = structID;
   }
-
-  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
-  private ResourceBinding binding;
 
   public ConformanceProfile() {
     super();
