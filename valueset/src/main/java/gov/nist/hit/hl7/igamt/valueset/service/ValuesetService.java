@@ -14,10 +14,12 @@
 package gov.nist.hit.hl7.igamt.valueset.service;
 
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
@@ -102,29 +104,35 @@ public interface ValuesetService {
   /**
    * @param structure
    * @return
-   * @throws ValuesetNotFoundException 
+   * @throws ValuesetNotFoundException
    */
   public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException;
 
   /**
    * @param preDef
    * @return
-   * @throws ValuesetNotFoundException 
+   * @throws ValuesetNotFoundException
    */
   public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException;
 
   /**
    * @param displayMetadata
    * @return
-   * @throws ValuesetNotFoundException 
+   * @throws ValuesetNotFoundException
    */
   public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException;
 
   /**
    * @param postDef
    * @return
-   * @throws ValuesetNotFoundException 
+   * @throws ValuesetNotFoundException
    */
   public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException;
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public Set<DisplayCode> getCodeDisplay(Valueset valueset);
 
 }
