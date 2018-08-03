@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.common.util.compositeKey.CompositeKeyUtil;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
@@ -61,10 +60,10 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Autowired
   private ValuesetRepository valuesetRepository;
-  
+
   @Autowired
   private CodeSystemService codeSystemService;
-  
+
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -90,7 +89,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset save(Valueset valueset) {
-//    valueset.setId(CompositeKeyUtil.updateVersion(valueset.getId()));
+    // valueset.setId(CompositeKeyUtil.updateVersion(valueset.getId()));
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
@@ -217,8 +216,12 @@ public class ValuesetServiceImpl implements ValuesetService {
     return valueSets;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToMetadata(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToMetadata(gov.nist.hit.
+   * hl7.igamt.valueset.domain.Valueset)
    */
   @Override
   public ValuesetMetadata convertDomainToMetadata(Valueset valueset) {
@@ -238,8 +241,12 @@ public class ValuesetServiceImpl implements ValuesetService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPredef(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPredef(gov.nist.hit.hl7.
+   * igamt.valueset.domain.Valueset)
    */
   @Override
   public ValuesetPreDef convertDomainToPredef(Valueset valueset) {
@@ -256,8 +263,12 @@ public class ValuesetServiceImpl implements ValuesetService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPostdef(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToPostdef(gov.nist.hit.hl7
+   * .igamt.valueset.domain.Valueset)
    */
   @Override
   public ValuesetPostDef convertDomainToPostdef(Valueset valueset) {
@@ -274,8 +285,12 @@ public class ValuesetServiceImpl implements ValuesetService {
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToStructure(gov.nist.hit.hl7.igamt.valueset.domain.Valueset)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertDomainToStructure(gov.nist.hit.
+   * hl7.igamt.valueset.domain.Valueset)
    */
   @Override
   public ValuesetStructure convertDomainToStructure(Valueset valueset) {
@@ -291,32 +306,32 @@ public class ValuesetServiceImpl implements ValuesetService {
       result.setContentDefinition(valueset.getContentDefinition());
       Set<DisplayCode> displayCodes = new HashSet<DisplayCode>();
       Set<DisplayCodeSystem> displayCodeSystems = new HashSet<DisplayCodeSystem>();
-      
-      if(valueset.getCodeRefs() != null){
-        for(CodeRef codeRef:valueset.getCodeRefs()){
+
+      if (valueset.getCodeRefs() != null) {
+        for (CodeRef codeRef : valueset.getCodeRefs()) {
           CodeSysRef codeSysRef = new CodeSysRef();
           codeSysRef.setCodeSystemType(CodeSystemType.EXTERNAL);
           codeSysRef.setRef(codeRef.getCodeSystemId());
-          
+
           DisplayCode dCode = new DisplayCode();
           dCode.setCodeSysRef(codeSysRef);
           dCode.setId(codeRef.getCodeId());
-          
+
           CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
           Code code = codeSystem.findCode(codeRef.getCodeId());
-          
-          if(code != null){
+
+          if (code != null) {
             dCode.setDescription(code.getDescription());
             dCode.setValue(code.getValue());
             dCode.setUsage(codeRef.getUsage());
             dCode.setComments(code.getComments());
-            displayCodes.add(dCode);            
+            displayCodes.add(dCode);
           }
-        }        
+        }
       }
-      
-      if(valueset.getCodes() != null){
-        for(InternalCode iCode:valueset.getCodes()){
+
+      if (valueset.getCodes() != null) {
+        for (InternalCode iCode : valueset.getCodes()) {
           CodeSysRef codeSysRef = new CodeSysRef();
           codeSysRef.setCodeSystemType(CodeSystemType.INTERNAL);
           codeSysRef.setRef(iCode.getCodeSystemId());
@@ -327,14 +342,14 @@ public class ValuesetServiceImpl implements ValuesetService {
           dCode.setValue(iCode.getValue());
           dCode.setUsage(iCode.getUsage());
           dCode.setComments(iCode.getComments());
-          displayCodes.add(dCode); 
+          displayCodes.add(dCode);
         }
       }
-      
-      if(valueset.getCodeSystemIds() != null){
-        for(String codeSystemId:valueset.getCodeSystemIds()){
+
+      if (valueset.getCodeSystemIds() != null) {
+        for (String codeSystemId : valueset.getCodeSystemIds()) {
           CodeSystem codeSystem = codeSystemService.findLatestById(codeSystemId);
-          if(codeSystem != null){
+          if (codeSystem != null) {
             DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
             displayCodeSystem.setCodeSysRef(codeSystemId);
             displayCodeSystem.setCodeSystemType(CodeSystemType.EXTERNAL);
@@ -345,9 +360,9 @@ public class ValuesetServiceImpl implements ValuesetService {
           }
         }
       }
-      
-      if(valueset.getInternalCodeSystems() != null){
-        for(InternalCodeSystem iCodeSystem:valueset.getInternalCodeSystems()){
+
+      if (valueset.getInternalCodeSystems() != null) {
+        for (InternalCodeSystem iCodeSystem : valueset.getInternalCodeSystems()) {
           DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
           displayCodeSystem.setCodeSysRef(iCodeSystem.getId());
           displayCodeSystem.setCodeSystemType(CodeSystemType.INTERNAL);
@@ -357,18 +372,76 @@ public class ValuesetServiceImpl implements ValuesetService {
           displayCodeSystems.add(displayCodeSystem);
         }
       }
-      
+
       result.setDisplayCodes(displayCodes);
       result.setDisplayCodeSystems(displayCodeSystems);
       result.setNumberOfCodes(displayCodes.size());
-      
+
       return result;
     }
     return null;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertToValueset(gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure)
+
+
+  @Override
+  public Set<DisplayCode> getCodeDisplay(Valueset valueset) {
+
+    Set<DisplayCode> displayCodes = new HashSet<DisplayCode>();
+
+    if (valueset.getCodeRefs() != null) {
+      for (CodeRef codeRef : valueset.getCodeRefs()) {
+        CodeSysRef codeSysRef = new CodeSysRef();
+        codeSysRef.setCodeSystemType(CodeSystemType.EXTERNAL);
+        codeSysRef.setRef(codeRef.getCodeSystemId());
+
+        DisplayCode dCode = new DisplayCode();
+        dCode.setCodeSysRef(codeSysRef);
+        dCode.setId(codeRef.getCodeId());
+
+        CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
+        Code code = codeSystem.findCode(codeRef.getCodeId());
+
+        if (code != null) {
+          dCode.setDescription(code.getDescription());
+          dCode.setValue(code.getValue());
+          dCode.setUsage(codeRef.getUsage());
+          dCode.setComments(code.getComments());
+          displayCodes.add(dCode);
+        }
+      }
+    }
+
+    if (valueset.getCodes() != null) {
+      for (InternalCode iCode : valueset.getCodes()) {
+        CodeSysRef codeSysRef = new CodeSysRef();
+        codeSysRef.setCodeSystemType(CodeSystemType.INTERNAL);
+        codeSysRef.setRef(iCode.getCodeSystemId());
+        DisplayCode dCode = new DisplayCode();
+        dCode.setCodeSysRef(codeSysRef);
+        dCode.setDescription(iCode.getDescription());
+        dCode.setId(iCode.getId());
+        dCode.setValue(iCode.getValue());
+        dCode.setUsage(iCode.getUsage());
+        dCode.setComments(iCode.getComments());
+        displayCodes.add(dCode);
+      }
+    }
+
+
+
+    return displayCodes;
+
+  }
+
+
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.valueset.service.ValuesetService#convertToValueset(gov.nist.hit.hl7.
+   * igamt.valueset.domain.display.ValuesetStructure)
    */
   @Override
   public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException {
@@ -383,17 +456,18 @@ public class ValuesetServiceImpl implements ValuesetService {
     Set<InternalCode> internalCodes = new HashSet<InternalCode>();
     Set<String> codeSystemIds = new HashSet<String>();
     Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
-    
-    if(structure.getDisplayCodes() != null){
-      for (DisplayCode dCode :structure.getDisplayCodes()){
-        if(dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.EXTERNAL)){
+
+    if (structure.getDisplayCodes() != null) {
+      for (DisplayCode dCode : structure.getDisplayCodes()) {
+        if (dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.EXTERNAL)) {
           CodeRef codeRef = new CodeRef();
           codeRef.setCodeId(dCode.getId());
           codeRef.setCodeSystemId(dCode.getCodeSysRef().getRef());
           codeRef.setUsage(dCode.getUsage());
           codeRefs.add(codeRef);
-          if(!exist(codeRef.getCodeSystemId(), codeSystemIds)) codeSystemIds.add(codeRef.getCodeSystemId());
-        }else if(dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.INTERNAL)){
+          if (!exist(codeRef.getCodeSystemId(), codeSystemIds))
+            codeSystemIds.add(codeRef.getCodeSystemId());
+        } else if (dCode.getCodeSysRef().getCodeSystemType().equals(CodeSystemType.INTERNAL)) {
           InternalCode internalCode = new InternalCode();
           internalCode.setCodeSystemId(dCode.getCodeSysRef().getRef());
           internalCode.setComments(dCode.getComments());
@@ -402,18 +476,20 @@ public class ValuesetServiceImpl implements ValuesetService {
           internalCode.setUsage(dCode.getUsage());
           internalCode.setValue(dCode.getValue());
           internalCodes.add(internalCode);
-          
-          DisplayCodeSystem displayCodeSystem = this.findDisplayCodeSystem(dCode.getCodeSysRef().getRef(), structure.getDisplayCodeSystems());
-          if(displayCodeSystem != null){
+
+          DisplayCodeSystem displayCodeSystem = this.findDisplayCodeSystem(
+              dCode.getCodeSysRef().getRef(), structure.getDisplayCodeSystems());
+          if (displayCodeSystem != null) {
             InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
             internalCodeSystem.setDescription(displayCodeSystem.getDescription());
             internalCodeSystem.setIdentifier(displayCodeSystem.getIdentifier());
             internalCodeSystem.setUrl(displayCodeSystem.getUrl());
             internalCodeSystem.setId(displayCodeSystem.getCodeSysRef());
-            if(!exist(internalCodeSystem, internalCodeSystems)) internalCodeSystems.add(internalCodeSystem);            
+            if (!exist(internalCodeSystem, internalCodeSystems))
+              internalCodeSystems.add(internalCodeSystem);
           }
         }
-      }      
+      }
     }
     valueset.setCodeRefs(codeRefs);
     valueset.setCodes(internalCodes);
@@ -424,22 +500,27 @@ public class ValuesetServiceImpl implements ValuesetService {
 
 
   private boolean exist(String codeSystemId, Set<String> codeSystemIds) {
-    for(String csId :codeSystemIds){
-      if(csId.equals(codeSystemId)) return true;
+    for (String csId : codeSystemIds) {
+      if (csId.equals(codeSystemId))
+        return true;
     }
     return false;
   }
 
-  private boolean exist(InternalCodeSystem internalCodeSystem, Set<InternalCodeSystem> internalCodeSystems) {
-    for(InternalCodeSystem ics:internalCodeSystems){
-      if(ics.getIdentifier().equals(internalCodeSystem.getIdentifier())) return true;
+  private boolean exist(InternalCodeSystem internalCodeSystem,
+      Set<InternalCodeSystem> internalCodeSystems) {
+    for (InternalCodeSystem ics : internalCodeSystems) {
+      if (ics.getIdentifier().equals(internalCodeSystem.getIdentifier()))
+        return true;
     }
     return false;
   }
 
-  private DisplayCodeSystem findDisplayCodeSystem(String ref, Set<DisplayCodeSystem> displayCodeSystems) {
-    for(DisplayCodeSystem displayCodeSystem:displayCodeSystems){
-      if(displayCodeSystem.getCodeSysRef().equals(ref)) return displayCodeSystem;
+  private DisplayCodeSystem findDisplayCodeSystem(String ref,
+      Set<DisplayCodeSystem> displayCodeSystems) {
+    for (DisplayCodeSystem displayCodeSystem : displayCodeSystems) {
+      if (displayCodeSystem.getCodeSysRef().equals(ref))
+        return displayCodeSystem;
     }
     return null;
   }

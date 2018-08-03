@@ -57,7 +57,20 @@ export class ValuesetsService {
         return promise;
     }
 
-    public getValuesetPreDef(id): Promise<any> {
+
+  public getValueSetCodes(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      this.http.get('api/valuesets/' + id + '/codes').toPromise().then(codes => {
+        resolve(codes);
+      }, error => {
+        this.igErrorService.redirect(error);
+      });
+    });
+    return promise;
+  }
+
+
+  public getValuesetPreDef(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/valuesets/' + id + '/predef').toPromise().then(serverValuesetPreDef => {
                 resolve(serverValuesetPreDef);

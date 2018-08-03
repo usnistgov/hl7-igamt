@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.valueset.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.xerces.impl.dv.DatatypeException;
 import org.slf4j.Logger;
@@ -22,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
@@ -33,7 +35,7 @@ import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 public class ValuesetController extends BaseController {
 
   Logger log = LoggerFactory.getLogger(ValuesetController.class);
-  
+
   @Autowired
   ValuesetService valuesetService;
 
@@ -41,7 +43,7 @@ public class ValuesetController extends BaseController {
   private static final String PREDEF_SAVED = "PREDEF_SAVED";
   private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
   private static final String METADATA_SAVED = "METADATA_SAVED";
-  
+
   public ValuesetController() {}
 
   @RequestMapping(value = "/api/valuesets/{id}/structure", method = RequestMethod.GET,
@@ -53,7 +55,18 @@ public class ValuesetController extends BaseController {
     return valuesetService.convertDomainToStructure(valueset);
 
   }
-  
+
+
+  @RequestMapping(value = "/api/valuesets/{id}/codes", method = RequestMethod.GET,
+      produces = {"application/json"})
+
+  public Set<DisplayCode> getCodes(@PathVariable("id") String id, Authentication authentication)
+      throws ValuesetNotFoundException {
+    Valueset valueset = findById(id);
+    return valuesetService.getCodeDisplay(valueset);
+
+  }
+
   @RequestMapping(value = "/api/valuesets/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
   public ValuesetMetadata getValueseteMetadata(@PathVariable("id") String id,
@@ -66,8 +79,8 @@ public class ValuesetController extends BaseController {
   @RequestMapping(value = "/api/valuesets/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public ValuesetPreDef getDatatypePredef(@PathVariable("id") String id, Authentication authentication)
-      throws ValuesetNotFoundException {
+  public ValuesetPreDef getDatatypePredef(@PathVariable("id") String id,
+      Authentication authentication) throws ValuesetNotFoundException {
     Valueset valueset = findById(id);
     return valuesetService.convertDomainToPredef(valueset);
 
@@ -76,13 +89,13 @@ public class ValuesetController extends BaseController {
   @RequestMapping(value = "/api/valuesets/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public ValuesetPostDef getDatatypePostdef(@PathVariable("id") String id, Authentication authentication)
-      throws ValuesetNotFoundException {
+  public ValuesetPostDef getDatatypePostdef(@PathVariable("id") String id,
+      Authentication authentication) throws ValuesetNotFoundException {
     Valueset valueset = findById(id);
     return valuesetService.convertDomainToPostdef(valueset);
 
   }
-  
+
   @RequestMapping(value = "/api/valuesets/{id}/structure", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage saveStucture(@PathVariable("id") String id,
@@ -104,16 +117,18 @@ public class ValuesetController extends BaseController {
 
   @RequestMapping(value = "/api/valuesets/{id}/predef", method = RequestMethod.POST,
       produces = {"application/json"})
-  public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody ValuesetPreDef preDef,
-      Authentication authentication) throws ValidationException, ValuesetNotFoundException {
+  public ResponseMessage savePredef(@PathVariable("id") String id,
+      @RequestBody ValuesetPreDef preDef, Authentication authentication)
+      throws ValidationException, ValuesetNotFoundException {
     Valueset valueset = valuesetService.savePredef(preDef);
     return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, valueset.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/valuesets/{id}/postdef", method = RequestMethod.POST,
       produces = {"application/json"})
-  public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody ValuesetPostDef postDef,
-      Authentication authentication) throws ValidationException, ValuesetNotFoundException {
+  public ResponseMessage savePostdef(@PathVariable("id") String id,
+      @RequestBody ValuesetPostDef postDef, Authentication authentication)
+      throws ValidationException, ValuesetNotFoundException {
     Valueset valueset = valuesetService.savePostdef(postDef);
     return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, valueset.getUpdateDate());
   }
@@ -143,5 +158,5 @@ public class ValuesetController extends BaseController {
     }
     return valueset;
   }
-  
+
 }
