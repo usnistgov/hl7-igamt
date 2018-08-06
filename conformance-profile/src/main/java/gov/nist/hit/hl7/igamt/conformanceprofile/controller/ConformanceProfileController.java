@@ -11,13 +11,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
@@ -96,25 +96,23 @@ public class ConformanceProfileController extends BaseController {
   }
 
 
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.POST,
-      produces = {"application/json"})
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage saveStucture(@PathVariable("id") String id,
-      @RequestBody ConformanceProfileStructure structure, Authentication authentication)
+      @RequestBody ConformanceProfileSaveStructure structure, Authentication authentication)
       throws ValidationException, ConformanceProfileException, ForbiddenOperationException,
       ConformanceProfileNotFoundException {
     log.debug("Saving conformanceProfile with id=" + id);
-    if (!Scope.HL7STANDARD.equals(structure.getDomainInfo().getScope())) {
-      ConformanceProfile conformanceProfile =
-          conformanceProfileService.convertToConformanceProfile(structure);
-      if (conformanceProfile == null) {
-        throw new ConformanceProfileNotFoundException(id);
-      }
-      conformanceProfile = conformanceProfileService.save(conformanceProfile);
-      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id,
-          conformanceProfile.getUpdateDate());
-    } else {
-      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+      
+    System.out.println(structure.getChildren().size());
+    ConformanceProfile conformanceProfile =
+        conformanceProfileService.convertToConformanceProfile(structure);
+    if (conformanceProfile == null) {
+      throw new ConformanceProfileNotFoundException(id);
     }
+    conformanceProfile = conformanceProfileService.save(conformanceProfile);
+    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id,
+        conformanceProfile.getUpdateDate());
+    
   }
 
   @RequestMapping(value = "/api/conformanceprofiles/{id}/predef", method = RequestMethod.POST,

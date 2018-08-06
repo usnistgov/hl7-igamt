@@ -14,9 +14,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
@@ -37,8 +35,8 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
@@ -47,13 +45,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNot
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.Component;
-import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
@@ -72,7 +66,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   SegmentService segmentService;
-  
+
   @Autowired
   DatatypeService datatypeService;
 
@@ -205,7 +199,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
       result.setChildren(conformanceProfile.getChildren());
-      
+
       return result;
     }
     return null;
@@ -264,48 +258,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  @Override
-  @Deprecated
-  public ConformanceProfile saveConformanceProfile(
-      ChangedConformanceProfile changedConformanceProfile) {
-    if (changedConformanceProfile != null && changedConformanceProfile.getId() != null) {
-      ConformanceProfile conformanceProfile =
-          this.findLatestById(changedConformanceProfile.getId());
-
-      if (conformanceProfile != null) {
-        if (changedConformanceProfile.getMetadata() != null) {
-          // conformanceProfile.setAuthorNotes(changedConformanceProfile.getMetadata().getAuthorNotes());
-          conformanceProfile
-              .setDescription(changedConformanceProfile.getMetadata().getDescription());
-          conformanceProfile.setDomainInfo(changedConformanceProfile.getMetadata().getDomainInfo());
-          conformanceProfile.setIdentifier(changedConformanceProfile.getMetadata().getIdentifier());
-          conformanceProfile
-              .setMessageType(changedConformanceProfile.getMetadata().getMessageType());
-          conformanceProfile.setName(changedConformanceProfile.getMetadata().getName());
-          conformanceProfile.setStructID(changedConformanceProfile.getMetadata().getStructId());
-          // conformanceProfile.setUsageNotes(changedConformanceProfile.getMetadata().getUsageNote());
-        }
-
-        if (changedConformanceProfile.getPostDef() != null) {
-          conformanceProfile.setPostDef(changedConformanceProfile.getPostDef().getPostDef());
-        }
-
-        if (changedConformanceProfile.getPreDef() != null) {
-          conformanceProfile.setPreDef(changedConformanceProfile.getPreDef().getPreDef());
-        }
-
-        if (changedConformanceProfile.getStructure() != null) {
-          conformanceProfile.setBinding(changedConformanceProfile.getStructure().getBinding());
-          Set<MsgStructElement> msgStructElements = new HashSet<MsgStructElement>();
-          // TODO need to visit MSGElements
-          conformanceProfile.setChildren(msgStructElements);
-        }
-      }
-      return this.save(conformanceProfile);
-    }
-
-    return null;
-  }
 
   @Override
   public ConformanceProfile findDisplayFormat(CompositeKey id) {
@@ -353,17 +305,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * ConformanceProfileStructure)
    */
   @Override
-  public ConformanceProfile convertToConformanceProfile(ConformanceProfileStructure structure) {
+  public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure) {
     ConformanceProfile conformanceProfile = this.findLatestById(structure.getId().getId());
     if (conformanceProfile != null) {
       conformanceProfile.setBinding(structure.getBinding());
-//      if (structure.getStructure() != null) {
-//        Set<MsgStructElement> children = new HashSet<MsgStructElement>();
-//        for (MsgStructElementDisplay child : structure.getStructure()) {
-//          children.add(child.getData());
-//        }
-//        conformanceProfile.setChildren(children);
-//      }
+      conformanceProfile.setChildren(structure.getChildren());
     }
     return conformanceProfile;
   }
@@ -489,18 +435,18 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   public void validate(ConformanceProfileStructure structure)
       throws ConformanceProfileValidationException {
     if (!structure.getDomainInfo().getScope().equals(Scope.HL7STANDARD)) {
-//      if (structure.getStructure() != null) {
-//        for (MsgStructElementDisplay fieldDisplay : structure.getStructure()) {
-//          MsgStructElement f = fieldDisplay.getData().getModelData();
-//          try {
-//            validateMsgStructElement(f);
-//          } catch (ValidationException e) {
-//            String[] message = e.getMessage().split(Pattern.quote(":"));
-//            throw new ConformanceProfileValidationException(
-//                structure.getStructId() + "-" + message[0] + ":" + message[1]);
-//          }
-//        }
-//      }
+      // if (structure.getStructure() != null) {
+      // for (MsgStructElementDisplay fieldDisplay : structure.getStructure()) {
+      // MsgStructElement f = fieldDisplay.getData().getModelData();
+      // try {
+      // validateMsgStructElement(f);
+      // } catch (ValidationException e) {
+      // String[] message = e.getMessage().split(Pattern.quote(":"));
+      // throw new ConformanceProfileValidationException(
+      // structure.getStructId() + "-" + message[0] + ":" + message[1]);
+      // }
+      // }
+      // }
     }
   }
 

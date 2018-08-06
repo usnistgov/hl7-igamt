@@ -179,18 +179,18 @@ public class SerializableConformanceProfile extends SerializableResource {
 
   private Element serializeGroup(Group group, int depth) throws SerializationException {
     Element groupElement = new Element("Group");
-    if (group.getBinding() != null) {
-      Element binding;
-      try {
-        binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap, this.valuesetLabelMap);
-      } catch (SerializationException exception) {
-        throw new MsgStructElementSerializationException(exception, group);
-      }
-      if (binding != null) {
-        groupElement.appendChild(binding);
-      }
-
-    }
+//    if (group.getBinding() != null) {
+//      Element binding;
+//      try {
+//        binding = super.serializeResourceBinding(group.getBinding(), this.valuesetNamesMap, this.valuesetLabelMap);
+//      } catch (SerializationException exception) {
+//        throw new MsgStructElementSerializationException(exception, group);
+//      }
+//      if (binding != null) {
+//        groupElement.appendChild(binding);
+//      }
+//
+//    }
     groupElement.addAttribute(new Attribute("name", group.getName()));
     Element elementGroupBegin = new Element("SegmentRef");
     elementGroupBegin.addAttribute(new Attribute("idGpe", group.getId()));

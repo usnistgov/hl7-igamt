@@ -256,7 +256,7 @@
 
     </form>
 
-    <p-dialog *ngIf="selectedNode" header="Edit Text Definition of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
+    <p-dialog *ngIf="selectedNode" header="Edit Definition Text of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
         <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
     </p-dialog>
 

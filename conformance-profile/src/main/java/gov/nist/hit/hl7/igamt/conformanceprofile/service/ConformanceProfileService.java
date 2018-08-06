@@ -17,8 +17,8 @@ import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ChangedConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
@@ -90,9 +90,6 @@ public interface ConformanceProfileService {
   public DisplayConformanceProfilePostDef convertDomainToPostdef(
       ConformanceProfile conformanceProfile);
 
-  public ConformanceProfile saveConformanceProfile(
-      ChangedConformanceProfile changedConformanceProfile);
-
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
       ConformanceProfile conformanceProfile);
 
@@ -102,7 +99,7 @@ public interface ConformanceProfileService {
    * @param structure
    * @return
    */
-  public ConformanceProfile convertToConformanceProfile(ConformanceProfileStructure structure);
+  public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure);
 
 
 

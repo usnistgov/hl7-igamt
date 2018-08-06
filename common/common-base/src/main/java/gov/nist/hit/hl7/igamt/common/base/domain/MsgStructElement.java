@@ -1,6 +1,11 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+//@JsonSubTypes({@JsonSubTypes.Type(value = Group.class, name = "GROUP"),
+//    @JsonSubTypes.Type(value = SegmentRef.class, name = "SEGMENTREF")})
 public class MsgStructElement extends StructureElement {
 
   private int min;

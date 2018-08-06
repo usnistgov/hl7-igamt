@@ -3,14 +3,12 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 
-public class Group extends MsgStructElement {
+public class Group extends SegmentRefOrGroup {
 
-  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+  private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
 
   public Group() {
 
@@ -18,17 +16,11 @@ public class Group extends MsgStructElement {
     this.setType(Type.GROUP);
   }
 
-  public Group(String id, String name, int position, Usage usage, String text, boolean custom,
-      int min, String max, Set<MsgStructElement> children) {
-    super(id, name, position, usage, Type.GROUP, text, custom, min, max);
-    this.children = children;
-  }
-
-  public Set<MsgStructElement> getChildren() {
+  public Set<SegmentRefOrGroup> getChildren() {
     return children;
   }
 
-  public void setChildren(Set<MsgStructElement> children) {
+  public void setChildren(Set<SegmentRefOrGroup> children) {
     this.children = children;
   }
 

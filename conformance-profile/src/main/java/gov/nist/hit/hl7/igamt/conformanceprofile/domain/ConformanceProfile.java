@@ -33,7 +33,7 @@ public class ConformanceProfile extends Resource {
   private String messageType; // Message/@Type
   private String event; // Message/@Event
   private String structID; // Message/@StructID private String identifier;
-  private Set<MsgStructElement> children = new HashSet<MsgStructElement>();
+  private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private ResourceBinding binding;
 
 
@@ -65,11 +65,11 @@ public class ConformanceProfile extends Resource {
     super();
   }
 
-  public Set<MsgStructElement> getChildren() {
+  public Set<SegmentRefOrGroup> getChildren() {
     return children;
   }
 
-  public void setChildren(Set<MsgStructElement> children) {
+  public void setChildren(Set<SegmentRefOrGroup> children) {
     this.children = children;
   }
 
@@ -92,7 +92,7 @@ public class ConformanceProfile extends Resource {
     this.identifier = identifier;
   }
 
-  public void addChild(MsgStructElement mse) {
+  public void addChild(SegmentRefOrGroup mse) {
     this.children.add(mse);
   }
 
