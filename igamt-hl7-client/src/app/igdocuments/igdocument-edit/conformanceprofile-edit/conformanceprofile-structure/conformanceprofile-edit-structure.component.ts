@@ -21,7 +21,7 @@ import {DatatypesService} from "../../datatype-edit/datatypes.service";
     styleUrls : ['./conformanceprofile-edit-structure.component.css']
 })
 
-export class ConformanceprofileEditStructureComponent extends  HasFroala implements WithSave {
+export class ConformanceprofileEditStructureComponent extends HasFroala implements WithSave {
     currentUrl:any;
     conformanceprofileId:any;
     conformanceprofileStructure:any;

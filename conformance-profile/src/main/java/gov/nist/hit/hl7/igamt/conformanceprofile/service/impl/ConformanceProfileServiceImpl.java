@@ -291,6 +291,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setMessageType(conformanceProfile.getMessageType());
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
+      result.setChildren(conformanceProfile.getChildren());
       result.setConformanceStatements(conformanceProfile.getBinding().getConformanceStatements());
       return result;
     }
@@ -366,8 +367,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     if (conformanceProfile == null) {
       throw new ConformanceProfileNotFoundException(conformanceStatement.getId().getId());
     }
-    conformanceProfile.getBinding()
-        .setConformanceStatements(conformanceStatement.getConformanceStatements());
+    conformanceProfile.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(conformanceProfile);
   }
 

@@ -5,6 +5,7 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 
 
 
@@ -16,6 +17,7 @@ public class ConformanceProfileConformanceStatement {
   private String messageType;
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
+  private Set<SegmentRefOrGroup> children;
 
   public CompositeKey getId() {
     return id;
@@ -71,6 +73,14 @@ public class ConformanceProfileConformanceStatement {
 
   public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
     this.conformanceStatements = conformanceStatements;
+  }
+
+  public Set<SegmentRefOrGroup> getChildren() {
+    return children;
+  }
+
+  public void setChildren(Set<SegmentRefOrGroup> children) {
+    this.children = children;
   }
 }
 

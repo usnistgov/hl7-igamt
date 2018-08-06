@@ -57,7 +57,6 @@ export class ConformanceProfilesService {
 
     public getConformanceProfilePreDef(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
-
             this.http.get('api/conformanceprofiles/' + id + '/predef').toPromise().then(serverConformanceProfilePreDef => {
                 resolve(serverConformanceProfilePreDef);
             }, error => {
@@ -69,7 +68,6 @@ export class ConformanceProfilesService {
 
     public getConformanceProfileConformanceStatements(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
-
             this.http.get('api/conformanceprofiles/' + id + '/conformancestatement').toPromise().then(serverConformanceProfileConformanceStatement => {
                 resolve(serverConformanceProfileConformanceStatement);
             }, error => {

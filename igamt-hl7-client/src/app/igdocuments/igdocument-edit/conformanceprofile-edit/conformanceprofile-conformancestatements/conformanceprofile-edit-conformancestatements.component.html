@@ -1,18 +1,32 @@
-<div *ngIf="segmentConformanceStatements">
+<div *ngIf="conformanceprofileConformanceStatements">
     <form #editForm="ngForm">
-      <p-accordion (onOpen)="onTabOpen($event)">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    <h1>Conformance Statements of {{conformanceprofileConformanceStatements.name}}</h1>
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="conformanceprofileConformanceStatements.updateDate">
+            <i class="fa fa-calendar"></i> {{conformanceprofileConformanceStatements.updateDate}}
+          </span>
+                </div>
+            </div>
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="!editForm.dirty" ></button>
+            </div>
+        </div>
+
+        <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
-                <p-table [columns]="cols" [value]="segmentConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
+                <p-table [columns]="cols" [value]="conformanceprofileConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
                     <ng-template pTemplate="header" let-columns>
                         <tr>
                             <th style="width:3em"></th>
-
-
                             <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
                             </th>
-
                             <th style="width:15em" pReorderableColumn>Actions</th>
                         </tr>
                     </ng-template>
@@ -40,10 +54,14 @@
                             </td>
                         </tr>
                     </ng-template>
+                    <ng-template pTemplate="summary" let-rowData>
+                        <div style="text-align:left">
+                            <button type="button" pButton icon="fa fa-plus" (click)="addNewCS()" label="Create New Conformance Statement"></button>
+                        </div>
+                    </ng-template>
                 </p-table>
-
-
             </p-accordionTab>
+
             <p-accordionTab header="Conformance Statement Editor" [(selected)]="editorTab">
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
@@ -73,14 +91,24 @@
                     </div>
                 </div>
 
+                <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
+                    <div class="ui-g ui-fluid">
+                        <div class="ui-g-12 ui-md-2">
+                            <label>Context Location: </label>
+                        </div>
+                        <div class="ui-g-12 ui-md-10">
+                            {{showContext(selectedConformanceStatement.contextLocation)}} <i class="fa fa-pencil" (click)="openDialogSelectContext()"></i>
+                        </div>
+                    </div>
+                </div>
 
                 <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
                     <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-md-4">
+                        <div class="ui-g-12 ui-md-2">
                             <label>Assertion Level: </label>
                         </div>
-                        <div class="ui-g-12 ui-md-8">
-                            <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [autoWidth]="false" [options]="assertionModes" [group]="true" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
+                        <div class="ui-g-12 ui-md-10">
+                            <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [group]="true" [autoWidth]="false" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
                             <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
                                 <div *ngIf="assertionMode.errors.required">
                                     Assertion Type is required.
@@ -89,14 +117,25 @@
                         </div>
                     </div>
                 </div>
-
                 <edit-free-constraint *ngIf="selectedConformanceStatement.type === 'FREE'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
-                <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
+                <edit-simple-message-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [context]="selectedConformanceStatement.contextLocation" [structure]="conformanceprofileConformanceStatements.children" [groupName]="'rootSimple'" [segmentsLinks]="segmentsLinks" [datatypesLinks]="datatypesLinks"></edit-simple-message-constraint>
                 <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="csForm.invalid"></button>
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="printCS(selectedConformanceStatement)"></button>
+                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
     </form>
+
+    <p-dialog header="Select Context Location (Click Message or Group)" [(visible)]="selectContextDialog" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
+        <p-tree [value]="contextTreeModel">
+            <ng-template let-node  pTemplate="default">
+                <div *ngIf="node.data.type === 'MESSAGE' || node.data.type === 'GROUP'" (click)="selectContext(node.data.idPath)">
+                    <display-badge [type]="node.data.type"></display-badge>{{node.label}}
+                </div>
+                <div *ngIf="node.data.type === 'SEGMENTREF'">
+                    <display-badge [type]="node.data.type"></display-badge>{{node.label}}
+                </div>
+            </ng-template>
+        </p-tree>
+    </p-dialog>
 </div>
