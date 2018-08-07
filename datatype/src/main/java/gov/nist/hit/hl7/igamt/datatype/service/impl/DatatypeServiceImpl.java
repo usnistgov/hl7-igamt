@@ -173,6 +173,36 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
 
+  @Override
+  public List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version) {
+
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    where.andOperator(Criteria.where("domainInfo.version").is(hl7Version));
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Datatype.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
+    return datatypes;
+
+  }
+
+
+  @Override
+  public List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope) {
+    Criteria where =
+        Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
+            .andOperator(Criteria.where("domainInfo.scope").is(scope)));
+    Query query = Query.query(where);
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    List<Datatype> datatypes = mongoTemplate.find(query, Datatype.class);
+    return datatypes;
+  }
 
   @Override
   public DatatypeStructure convertDomainToStructure(Datatype datatype) {

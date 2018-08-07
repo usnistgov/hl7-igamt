@@ -428,8 +428,6 @@ public class ValuesetServiceImpl implements ValuesetService {
       }
     }
 
-
-
     return displayCodes;
 
   }

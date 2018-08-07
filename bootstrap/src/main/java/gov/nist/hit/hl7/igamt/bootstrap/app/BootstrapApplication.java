@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,7 +15,9 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 
 @SpringBootApplication
@@ -39,6 +43,8 @@ public class BootstrapApplication implements CommandLineRunner {
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
 
+  @Autowired
+  DatatypeClassifier datatypeClassifier;
   @Autowired
   DatatypeService dataypeService;
 
@@ -155,6 +161,15 @@ public class BootstrapApplication implements CommandLineRunner {
   // dataypeLibraryService.save(dataypeLibrary);
   //
   // }
+
+  @PostConstruct
+  void classifyDatatypes() throws DatatypeNotFoundException {
+    System.out.println("Classifying dts");
+    datatypeClassifier.classify();
+    System.out.println("ENd of Classifying dts");
+
+  }
+
 
 
 }
