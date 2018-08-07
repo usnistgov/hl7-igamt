@@ -7,6 +7,7 @@ import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
+import {TreeModule} from 'primeng/tree';
 import {ButtonModule} from 'primeng/button';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
@@ -39,6 +40,7 @@ import {ConformanceProfilesService} from "./conformance-profiles.service";
         AccordionModule,
         SelectButtonModule,
         TableModule,
+        TreeModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule

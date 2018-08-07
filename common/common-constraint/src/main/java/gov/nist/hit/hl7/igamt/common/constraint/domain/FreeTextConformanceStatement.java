@@ -18,7 +18,7 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain;
 public class FreeTextConformanceStatement extends ConformanceStatement {
 
   private String freeText;
-  private String assertion;
+  private String assertionScript;
 
   public FreeTextConformanceStatement() {
     super();
@@ -33,11 +33,11 @@ public class FreeTextConformanceStatement extends ConformanceStatement {
     this.freeText = freeText;
   }
 
-  public String getAssertion() {
-    return assertion;
+  public String getAssertionScript() {
+    return assertionScript;
   }
 
-  public void setAssertion(String assertion) {
-    this.assertion = assertion;
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
   }
 }
