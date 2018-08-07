@@ -11,13 +11,12 @@ import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
 import {HasFroala} from "../../../../configuration/has-froala";
 
-
-
 @Component({
-  templateUrl : './conformanceprofile-edit-predef.component.html',
-  styleUrls : ['./conformanceprofile-edit-predef.component.css']
+    templateUrl : './conformanceprofile-edit-predef.component.html',
+    styleUrls : ['./conformanceprofile-edit-predef.component.css']
 })
-export class ConformanceprofileEditPredefComponent  extends  HasFroala implements WithSave {
+
+export class ConformanceprofileEditPredefComponent extends  HasFroala implements WithSave {
     currentUrl:any;
     conformanceprofileId:any;
     conformanceprofilePredef:any;
@@ -40,6 +39,8 @@ export class ConformanceprofileEditPredefComponent  extends  HasFroala implement
 
     reset(){
         this.conformanceprofilePredef=__.cloneDeep(this.backup);
+        this.editForm.control.markAsPristine();
+
     }
 
     getCurrent(){
@@ -54,24 +55,17 @@ export class ConformanceprofileEditPredefComponent  extends  HasFroala implement
         return !this.editForm.invalid;
     }
 
-
-  save(): Promise<any>{
-    return new Promise((resolve, reject)=> {
-        this.conformanceProfilesService.saveConformanceProfilePreDef(this.conformanceprofileId, this.conformanceprofilePredef).then(saved => {
-
-          this.backup = __.cloneDeep(this.conformanceprofilePredef);
-
-          this.editForm.control.markAsPristine();
-          resolve(true);
-
-        }, error => {
-          console.log("error saving");
-          reject();
-
-        }
-
-      );
-
-    })
-  };
+    save(): Promise<any>{
+        return new Promise((resolve, reject)=> {
+            this.conformanceProfilesService.saveConformanceProfilePreDef(this.conformanceprofileId, this.conformanceprofilePredef).then(saved => {
+                    this.backup = __.cloneDeep(this.conformanceprofilePredef);
+                    this.editForm.control.markAsPristine();
+                    resolve(true);
+                }, error => {
+                    console.log("error saving");
+                    reject();
+                }
+            );
+        })
+    }
 }
