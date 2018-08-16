@@ -229,29 +229,30 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private Element serializeValuesetBinding(ValuesetBinding valuesetBinding,
-      Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
-    if (valuesetBinding.getValuesetId() != null && !valuesetBinding.getValuesetId().isEmpty()) {
-      if (valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())) {
-        Element valuesetBindingElement = new Element("ValuesetBinding");
-        valuesetBindingElement.addAttribute(new Attribute("id", valuesetBinding.getValuesetId()));
-        valuesetBindingElement.addAttribute(
-            new Attribute("name", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
-        valuesetBindingElement.addAttribute(new Attribute("strength",
-            valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
-        valuesetBindingElement.addAttribute(new Attribute("strength",
-            valuesetBinding.getValuesetLocations() != null
-                ? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations())
-                : ""));
+	private Element serializeValuesetBinding(ValuesetBinding valuesetBinding, Map<String, String> valuesetNamesMap)
+			throws ValuesetNotFoundException {
+		if (valuesetNamesMap != null) {
+			if (!valuesetBinding.getValuesetId().isEmpty()) {
+				if (valuesetNamesMap != null && valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())) {
+					Element valuesetBindingElement = new Element("ValuesetBinding");
+					valuesetBindingElement.addAttribute(new Attribute("id", valuesetBinding.getValuesetId()));
+					valuesetBindingElement
+							.addAttribute(new Attribute("name", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
+					valuesetBindingElement.addAttribute(new Attribute("strength",
+							valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
+					valuesetBindingElement.addAttribute(new Attribute("strength",
+							valuesetBinding.getValuesetLocations() != null
+									? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations())
+									: ""));
+					return valuesetBindingElement;
+				} else {
+					throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
+				}
 
-        return valuesetBindingElement;
-      } else {
-        throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
-      }
-
-    }
-    return null;
-  }
+			}
+		}
+		return null;
+	}
 
   /**
    * @param valuesetLocations

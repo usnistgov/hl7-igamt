@@ -27,10 +27,10 @@ public class SerializableDatatypeLibrary extends SerializableAbstractDomain {
 	  private Set<String> bindedComponents = new HashSet<>();
 
 
-	public SerializableDatatypeLibrary(DatatypeLibrary datatypeLibrary, String position, Map<String, Datatype> datatypesMap,
+	public SerializableDatatypeLibrary(DatatypeLibrary datatypeLibrary, String position, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
 			Map<String, Valueset> valuesetsMap, Set<String> bindedDatatypes, Set<String> bindedComponents ) {
 		super(datatypeLibrary, position);
-//		this.datatypeNamesMap = datatypeNamesMap;
+		this.datatypeNamesMap = datatypeNamesMap;
 		this.datatypesMap = datatypesMap;
 		this.bindedComponents = bindedComponents;
 		this.bindedDatatypes = bindedDatatypes;
@@ -40,26 +40,29 @@ public class SerializableDatatypeLibrary extends SerializableAbstractDomain {
 	public Element serialize() throws SerializationException {
 		Element datatypeLibraryElement = super.getElement(Type.DATATYPELIBRARY);
 		DatatypeLibrary datatypeLibrary = (DatatypeLibrary) super.getAbstractDomain();
-		SerializableDocumentMetadata serializableDocumentMetadata =
-		        new SerializableDocumentMetadata(datatypeLibrary.getMetadata(),datatypeLibrary.getDomainInfo(),datatypeLibrary.getPublicationInfo());
-		    if (serializableDocumentMetadata != null) {
-		      Element metadataElement = serializableDocumentMetadata.serialize();
-		      if (metadataElement != null) {
-		    	  datatypeLibraryElement.appendChild(metadataElement);
-		      }
-		    }
-		    
-		    for (Section section : datatypeLibrary.getContent()) {
-		        // startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
-		        int startLevel = 1;
-		        Element sectionElement =
-		            SectionSerializationUtil.serializeSection(section, startLevel, datatypeLibrary.getDatatypeRegistry(), datatypesMap, datatypeNamesMap, 
-		            		valuesetNamesMap, bindedDatatypes, bindedComponents);
-		        if (sectionElement != null) {
-		        	datatypeLibraryElement.appendChild(sectionElement);
-		        }
-		      }
-		
+		if (datatypeLibrary.getMetadata() != null) {
+			SerializableDocumentMetadata serializableDocumentMetadata = new SerializableDocumentMetadata(
+					datatypeLibrary.getMetadata(), datatypeLibrary.getDomainInfo(),
+					datatypeLibrary.getPublicationInfo());
+			if (serializableDocumentMetadata != null) {
+				Element metadataElement = serializableDocumentMetadata.serialize();
+				if (metadataElement != null) {
+					datatypeLibraryElement.appendChild(metadataElement);
+				}
+			}
+		}
+
+		for (Section section : datatypeLibrary.getContent()) {
+			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
+			int startLevel = 1;
+			Element sectionElement = SectionSerializationUtil.serializeSection(section, startLevel,
+					datatypeLibrary.getDatatypeRegistry(), datatypesMap, datatypeNamesMap, valuesetNamesMap,
+					bindedDatatypes, bindedComponents);
+			if (sectionElement != null) {
+				datatypeLibraryElement.appendChild(sectionElement);
+			}
+		}
+
 		return datatypeLibraryElement;
 	}
 	

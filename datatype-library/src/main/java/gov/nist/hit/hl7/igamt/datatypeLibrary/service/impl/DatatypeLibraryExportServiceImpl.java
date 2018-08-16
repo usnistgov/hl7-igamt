@@ -2,6 +2,8 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
 
 
+import java.io.IOException;
+
 /**
  * 
  * This software was developed at the National Institute of Standards and Technology by employees of
@@ -17,6 +19,8 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
  */
 
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,8 +29,12 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryExportService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibrarySerializationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.webExport.util.BasicXsl;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.webExport.util.HtmlWriter;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.webExport.util.PageCreator;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportFontConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.NameAndPositionAndPresence;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportConfigurationService;
 import gov.nist.hit.hl7.igamt.export.configuration.service.ExportFontConfigurationService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
@@ -37,6 +45,7 @@ import gov.nist.hit.hl7.igamt.export.service.ExportService;
 import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+
 
 /**
  *
@@ -89,7 +98,7 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
     if (datatypeLibrary != null) {
       ExportedFile htmlFile =
           this.serializeDatatypeLibraryToHtml(username, datatypeLibrary, ExportFormat.WORD);
-      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, datatypeLibrary.getMetadata(), datatypeLibrary.getUpdateDate(), datatypeLibrary.getDomainInfo().getVersion());
+      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, datatypeLibrary.getMetadata(), datatypeLibrary.getUpdateDate(), datatypeLibrary.getDomainInfo() != null ? datatypeLibrary.getDomainInfo().getVersion() : "");
       return wordFile;
     }
     return null;
@@ -108,13 +117,21 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
     try {
       ExportConfiguration exportConfiguration =
           exportConfigurationService.getExportConfiguration(username);
+      List<NameAndPositionAndPresence> columns = new ArrayList<>();
+      for(NameAndPositionAndPresence column : exportConfiguration.getDatatypeColumn().getColumns()) {
+    	  	if(column.getName().equals("Value Set")) {
+    	  		column.setPresent(false);
+    	  	}
+    	  	columns.add(column);
+      }
+      exportConfiguration.getDatatypeColumn().setColumns(columns);
       ExportFontConfiguration exportFontConfiguration =
           exportFontConfigurationService.getExportFontConfiguration(username);
       String xmlContent =
     		  datatypeLibrarySerializationService.serializeDatatypeLibrary(datatypeLibrary, exportConfiguration);
       // TODO add appinfoservice to get app version
       ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
-    		  datatypeLibrary.getName(), datatypeLibrary.getMetadata().getCoverPicture(), exportConfiguration,
+    		  datatypeLibrary.getName() != null ? datatypeLibrary.getName() : "", datatypeLibrary.getMetadata() != null ? datatypeLibrary.getMetadata().getCoverPicture() : "", exportConfiguration,
           exportFontConfiguration, "2.0_beta");
       InputStream htmlContent =
           exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
@@ -125,6 +142,33 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
     }
   }
 
+@Override
+public ExportedFile exportDatatypeLibraryToWeb(String username, String datatypeLibraryId) throws ExportException {
+	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+	    if (datatypeLibrary != null) {
+	      ExportedFile htmlFile =
+	          this.serializeDatatypeLibraryToWeb(username, datatypeLibrary, ExportFormat.WEB);
+	      return htmlFile;
+	    }
+	    return null;
+	  }
+
+private ExportedFile serializeDatatypeLibraryToWeb(String username, DatatypeLibrary datatypeLibrary,
+	      ExportFormat exportFormat) throws ExportException {
+	try {
+	 ExportConfiguration exportConfiguration =
+	          exportConfigurationService.getExportConfiguration(username);
+	ExportFontConfiguration exportFontConfiguration =
+	          exportFontConfigurationService.getExportFontConfiguration(username);
+		String xmlContent =
+			  datatypeLibrarySerializationService.serializeDatatypeLibrary(datatypeLibrary, exportConfiguration);
+	} catch (SerializationException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return null;
+	
+}
 
 
 }

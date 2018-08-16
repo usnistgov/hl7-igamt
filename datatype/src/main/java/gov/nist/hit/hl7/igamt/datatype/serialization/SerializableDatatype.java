@@ -134,7 +134,7 @@ public class SerializableDatatype extends SerializableResource {
               componentElement.addAttribute(
                   new Attribute("datatype", datatypeNamesMap.get(component.getRef().getId())));
             } else {
-              throw new DatatypeNotFoundException(component.getRef().getId());
+              //throw new DatatypeNotFoundException(component.getRef().getId());
             }
           }
           componentElement.addAttribute(new Attribute("usage",

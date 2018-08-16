@@ -23,8 +23,8 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
  *
  * @author Bouij Youssef on July 20, 2018.
  */
-@Service("igExportService")
 public interface DatatypeLibraryExportService {
   public ExportedFile exportDatatypeLibraryToHtml(String username, String datatypeLibraryId) throws ExportException;
   public ExportedFile exportDatatypeLibraryToWord(String username, String datatypeLibraryId) throws ExportException;
+  public ExportedFile exportDatatypeLibraryToWeb(String username, String datatypeLibraryId) throws ExportException;
 }

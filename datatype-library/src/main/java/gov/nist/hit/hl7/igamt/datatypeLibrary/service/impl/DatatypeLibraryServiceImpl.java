@@ -111,7 +111,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     return datatypeLibraryRepository.findByDomainInfoScope(scope);
   }
 
-
   @Override
   public DatatypeLibrary createEmptyDatatypeLibrary()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {

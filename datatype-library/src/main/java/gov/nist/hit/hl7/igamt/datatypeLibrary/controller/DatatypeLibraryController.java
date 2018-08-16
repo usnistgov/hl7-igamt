@@ -86,5 +86,32 @@ public class DatatypeLibraryController extends BaseController {
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
     }
   }
+  
+  /**
+   * 
+   * @param id
+   * @param response
+   * @throws ExportException
+   */
+  @RequestMapping(value = "/api/datatypelibraries/{id}/export/web", method = RequestMethod.GET)
+  public @ResponseBody void exportDatatypeLibraryToWeb(@PathVariable("id") String id,
+      HttpServletResponse response) throws ExportException {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication != null) {
+      String username = authentication.getPrincipal().toString();
+      ExportedFile exportedFile = datatypeLibraryExportService.exportDatatypeLibraryToHtml(username, id);
+      response.setContentType("text/html");
+      response.setHeader("Content-disposition",
+          "attachment;filename=" + exportedFile.getFileName());
+      try {
+        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+      } catch (IOException e) {
+        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+      }
+    } else {
+      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+    }
+  
 
+}
 }

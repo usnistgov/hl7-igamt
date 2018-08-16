@@ -245,7 +245,7 @@ export class IgDocumentEditComponent {
   }
 
   setTreeModel(){
-    this.tocService.setTreeModel(this.tree.treeModel);
+   return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 

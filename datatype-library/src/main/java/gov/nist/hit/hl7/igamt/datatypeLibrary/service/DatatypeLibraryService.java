@@ -14,7 +14,6 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 
 
 
-@Service("DatatypeLibraryService")
 public interface DatatypeLibraryService {
 
 
