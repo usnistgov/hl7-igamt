@@ -9,10 +9,13 @@ import {StepsModule} from 'primeng/steps';
 import {MessagesModule} from "primeng/components/messages/messages";
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {DatatypeLibraryRoutingModule} from "./datatype-library-routing.module";
+import {UtilsModule} from "../utils/utils.module";
+import {DatatypeLibraryAddingService} from "./service/adding.service";
 
 @NgModule({
   imports: [
     CommonModule,
+    UtilsModule,
     FormsModule,
     ButtonModule,
     TabMenuModule,
@@ -23,6 +26,6 @@ import {DatatypeLibraryRoutingModule} from "./datatype-library-routing.module";
     DatatypeLibraryRoutingModule
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
-  declarations: []
+  providers:[DatatypeLibraryAddingService]
 })
 export class DatatypeLibraryModule {}

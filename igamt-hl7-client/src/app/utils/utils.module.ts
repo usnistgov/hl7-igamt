@@ -32,6 +32,12 @@ import {DialogModule} from 'primeng/dialog';
 import {PanelModule} from 'primeng/panel';
 import {FieldsetModule} from 'primeng/fieldset';
 import {CrossReferenceComponent} from "../common/cross-reference/cross-reference.component";
+import {DatatypeListManagerComponent} from "../common/datatype-list-manager/datatype-list-manager.component";
+import {TableModule} from "primeng/components/table/table";
+import {KeyFilterModule} from 'primeng/keyfilter';
+import {MessagesModule} from 'primeng/messages';
+import {MessageModule} from 'primeng/message';
+import {DisplayMenuComponent} from "../common/display-menu/display-menu.component";
 
 @NgModule({
   imports: [
@@ -44,11 +50,15 @@ import {CrossReferenceComponent} from "../common/cross-reference/cross-reference
     TreeModule,
     DialogModule,
     PanelModule,
-    FieldsetModule
+    FieldsetModule,
+    TableModule,
+    KeyFilterModule,MessageModule,MessagesModule
+
   ],
   declarations: [
     DisplayBadgeComponent,
     EntityHeaderComponent,
+    DisplayMenuComponent,
     DtFlavorPipe,
     DisplayLabelComponent,
     DisplayRefComponent,
@@ -62,7 +72,8 @@ import {CrossReferenceComponent} from "../common/cross-reference/cross-reference
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
     EditIfThenConstraintComponent,
-    CrossReferenceComponent
+    CrossReferenceComponent,
+    DatatypeListManagerComponent
 
   ],
 
@@ -82,7 +93,8 @@ import {CrossReferenceComponent} from "../common/cross-reference/cross-reference
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
     EditIfThenConstraintComponent,
-    CrossReferenceComponent
+    CrossReferenceComponent,DatatypeListManagerComponent,
+    DisplayMenuComponent
   ]
 })
 export class UtilsModule {}

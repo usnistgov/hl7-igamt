@@ -34,9 +34,7 @@
 
 
 <p-toolbar class="toc-filter-toolbar">
-
-
-    <div class="multiselect-adapter ui-toolbar-group-left">
+  <div class="multiselect-adapter ui-toolbar-group-left">
 
     <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
     <p-multiSelect defaultLabel="Types"  [style]="{'vertical-align' : 'top' }" [options]="types" [(ngModel)]="selectedTypes" (onChange)="filterFn()" pTooltip="Filter by Type" tooltipPosition="top" ></p-multiSelect>
@@ -45,14 +43,14 @@
     </div>
   <div class="ui-toolbar-group-right">
 
-    <button   pButton type="button" label="verify" class="blue-btn" icon="fa-check"></button>
-    <button   pButton type="button" label="share"  icon="fa-share"></button>
+    <button   pButton type="button" label="verify" class="blue-btn" icon="fa fa-check"></button>
+    <button   pButton type="button" label="share"  icon="fa fa-share"></button>
 
-    <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa-check"></button>
-    <p-splitButton   label="Export"  icon="fa-download" [model]="exportModel"></p-splitButton>
+    <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa fa-check"></button>
+    <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
 
-    <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
-    <button  pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+    <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
+    <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
 
 
   </div>
@@ -62,9 +60,7 @@
 
 </p-toolbar>
   <p-toolbar class="toc-filter-toolbar">
-
-
-  <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
+    <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
   </p-toolbar>
 
 </div>
@@ -83,10 +79,10 @@
   <p-panel [toggleable]="false">
     <p-header class="toc-panel-header">
       Table Of Content
-      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
-      <button style="float: right;padding: 0px" pButton type="button"  icon="fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
-      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
-      <button  style="float: right;padding: 0px" pButton type="button"  icon="fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
+      <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
+      <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
+      <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
 
 
 

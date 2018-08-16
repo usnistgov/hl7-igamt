@@ -25,7 +25,6 @@ import {DropdownModule} from 'primeng/dropdown';
 import {SectionResolver} from "./section/sectionResolver.resolver";
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PanelMenuModule} from 'primeng/panelmenu';
-import {DisplayMenuComponent} from './displayMenu/display-menu.component';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
@@ -106,7 +105,7 @@ import {DeleteElementService} from "./delete-element/delete-element.service";
 
   ],
 	declarations: [
-		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent, DisplayMenuComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent, DeleteElementComponent
+		IgDocumentEditComponent, IgDocumentMetadataComponent, SectionComponent, TocComponent,AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent, DeleteElementComponent
   ],
   entryComponents: [
 

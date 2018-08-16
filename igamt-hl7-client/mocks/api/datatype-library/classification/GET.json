@@ -1,0 +1,1611 @@
+[
+{
+  "id" : "5b68b81f6d6e9596b89d727b",
+  "name" : "PT",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d727c",
+  "name" : "SCV",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d727d",
+  "name" : "GTS",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d727e",
+  "name" : "CN_NIST",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+},
+
+{
+  "id" : "5b68b81f6d6e9596b89d727f",
+  "name" : "DR_NIST",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.4"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7280",
+  "name" : "ID",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7281",
+  "name" : "AD",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7282",
+  "name" : "IS",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7283",
+  "name" : "JCC",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7284",
+  "name" : "VARIES",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7285",
+  "name" : "EIP",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7286",
+  "name" : "-",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7287",
+  "name" : "RCD",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7288",
+  "name" : "XON",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 7,
+      "versions" : [
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7"
+      ]
+    },
+    {
+      "position" : 8,
+      "versions" : [
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1"
+      ]
+    },
+    {
+      "position" : 6,
+      "versions" : [
+        "2.7.1"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7289",
+  "name" : "RI",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.7.1",
+        "2.8.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d728a",
+  "name" : "QIP",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d728b",
+  "name" : "CNE",
+  "classes" : [
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d728c",
+  "name" : "RP",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d728d",
+  "name" : "ERL",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d728e",
+  "name" : "CNN",
+  "classes" : [
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,
+{
+  "id" : "5b68b81f6d6e9596b89d728f",
+  "name" : "CNS",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7290",
+  "name" : "WVI",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.7.1",
+        "2.8.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7291",
+  "name" : "PPN",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7292",
+  "name" : "CWE",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,
+{
+  "id" : "5b68b81f6d6e9596b89d7293",
+  "name" : "SNM",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7294",
+  "name" : "CQ_NIST",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7295",
+  "name" : "WVS",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7296",
+  "name" : "SI",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7297",
+  "name" : "NDL",
+  "classes" : [
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7298",
+  "name" : "XPN",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d7299",
+  "name" : "SN",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729a",
+  "name" : "LA2",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729b",
+  "name" : "LA1",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729c",
+  "name" : "MSG",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729d",
+  "name" : "QSC",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729e",
+  "name" : "CD",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1"
+      ]
+    },
+    {
+      "position" : 6,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d729f",
+  "name" : "ST",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a0",
+  "name" : "CE",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a1",
+  "name" : "CF",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,
+{
+  "id" : "5b68b81f6d6e9596b89d72a2",
+  "name" : "NUL",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.5.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a3",
+  "name" : "CK",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a4",
+  "name" : "DIN",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a5",
+  "name" : "RMC",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a6",
+  "name" : "CN",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a7",
+  "name" : "ICD",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a8",
+  "name" : "CP",
+  "classes" : [
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72a9",
+  "name" : "CQ",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72aa",
+  "name" : "CX",
+  "classes" : [
+    {
+      "position" : 2,
+      "versions" : [
+        "2.4"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.6"
+      ]
+    },
+    {
+      "position" : 6,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    },
+    {
+      "position" : 5,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.5",
+        "2.5.1"
+      ]
+    },
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72ab",
+  "name" : "PIP",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4"
+      ]
+    },
+    {
+      "position" : 3,
+      "versions" : [
+        "2.7",
+        "2.8",
+        "2.8.2"
+      ]
+    },
+    {
+      "position" : 2,
+      "versions" : [
+        "2.5",
+        "2.5.1",
+        "2.6"
+      ]
+    },
+    {
+      "position" : 4,
+      "versions" : [
+        "2.7.1",
+        "2.8.1"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+
+,{
+  "id" : "5b68b81f6d6e9596b89d72ac",
+  "name" : "TM",
+  "classes" : [
+    {
+      "position" : 1,
+      "versions" : [
+        "2.3.1",
+        "2.4",
+        "2.5",
+        "2.5.1",
+        "2.6",
+        "2.7",
+        "2.7.1",
+        "2.8",
+        "2.8.1",
+        "2.8.2"
+      ]
+    }
+  ],
+  "class" : "gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeClassification"
+}
+]

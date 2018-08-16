@@ -12,7 +12,6 @@ import {Types} from "../constants/types";
 })
 export class DisplayLabelComponent {
   _elm : any;
-  _ig : any;
 
   @Input()
   igId : any;
@@ -76,7 +75,7 @@ export class DisplayLabelComponent {
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
-      return elm.label+"_"+elm.ext+elm.description;
+      return elm.label+"_"+elm.ext+"-"+elm.description;
     }
   };
 
@@ -84,7 +83,7 @@ export class DisplayLabelComponent {
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
-      return elm.label+"_"+elm.ext+elm.description;
+      return elm.label+"_"+elm.ext+"-"+elm.description;
     }
   };
   getTableLabel(elm){

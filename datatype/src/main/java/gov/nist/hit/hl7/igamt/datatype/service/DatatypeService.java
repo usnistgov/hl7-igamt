@@ -165,6 +165,7 @@ public interface DatatypeService {
    */
   List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
 
+  Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
 
 }

@@ -12,7 +12,7 @@ import {Observable} from "rxjs";
 
 @Injectable()
 export class SaveFormsGuard implements CanDeactivate<WithSave> {
-  constructor(private confirmationService: ConfirmationService,private igError : IgErrorService) {
+  constructor(private confirmationService: ConfirmationService) {
   }
 
 

@@ -21,4 +21,4 @@ import {DatatypeEvolutionResolver} from "./datatype-evolution.resolver";
 		RouterModule
 	]
 })
-export class IgDocumentListRoutingModule {}
+export class DatatypeEvolutionRoutingModule {}

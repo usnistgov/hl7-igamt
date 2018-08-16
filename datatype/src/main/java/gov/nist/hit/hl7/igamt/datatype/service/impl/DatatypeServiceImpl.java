@@ -205,6 +205,18 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
+  public Datatype findOneByNameAndVersionAndScope(String name, String version, String scope) {
+    Criteria where =
+        Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
+            .andOperator(Criteria.where("domainInfo.scope").is(scope)));
+    Query query = Query.query(where);
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Datatype datatypes = mongoTemplate.findOne(query, Datatype.class);
+    return datatypes;
+  }
+
+  @Override
   public DatatypeStructure convertDomainToStructure(Datatype datatype) {
     if (datatype != null) {
       DatatypeStructure result = new DatatypeStructure();

@@ -1,3 +1,73 @@
-<p>
-  datatype-evolution works!
-</p>
+<div *ngIf="matrix" class="card ui-g-6">
+<p-table  #dt [value]="matrix"  [globalFilterFields]="['#']" [scrollable]="true" scrollHeight="200px">
+  <ng-template pTemplate="caption">
+    <div style="text-align: right; width: 100%">
+      <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+      <input type="text" pInputText  placeholder="Search Data type" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:95%">
+    </div>
+  </ng-template>
+  <ng-template pTemplate="header" let-columns>
+    <tr>
+      <th *ngFor="let col of headers">
+        {{col}}
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-rowData let-columns="columns">
+    <tr>
+      <td *ngFor="let col of headers"  (click)="compareOrSelect(rowData[headers[0]],col)" [ngClass]="{'firstVersion': col == firstVersion&& rowData[headers[0]]==selectedName,'secondVersion' :col==secondVersion&&rowData[headers[0]]==selectedName}">
+        <span>{{rowData[col]}}</span>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+</div>
+
+<div *ngIf="tableValue" class="card ui-g-6">
+  <p-treeTable [value]="tableValue" [scrollable]="true" scrollHeight="200px">
+    <ng-template pTemplate="header">
+      <tr>
+        <th>
+          Position
+        </th>
+        <th *ngFor="let col of criterias">
+          {{col}}
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-rowNode let-rowData="rowData" let-columns="columns">
+      <tr>
+        <td>
+          {{rowData.position}}
+          <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+
+        </td>
+
+
+
+        <td *ngFor="let col of criterias" (click)="print(rowData)">
+          <span *ngIf="rowData.data[col]">
+
+
+            <table>
+              <tbody>
+              <tr class="firstVersion">
+                       {{rowData.data[col]["left"]}}
+              </tr>
+              <tr class="secondVersion">
+                 {{rowData.data[col]["right"]}}
+              </tr>
+              </tbody>
+
+            </table>
+
+
+
+          </span>
+
+
+        </td>
+      </tr>
+    </ng-template>
+  </p-treeTable>
+</div>

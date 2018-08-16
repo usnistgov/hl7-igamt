@@ -23,9 +23,9 @@ public enum EvolutionPropertie {
 
   MINLENGTH("Min Length"), MAXLENGTH("Min Length"),
 
-  CONFLENGTH("Conf. Length"), CPDATATYPE("Component Data Type");
+  CONFLENGTH("Conf. Length"), CPDATATYPE("Component Data Type"),
 
-
+  CPDATATYPENAME("CPDTName");
 
   EvolutionPropertie(String value) {
     this.value = value;

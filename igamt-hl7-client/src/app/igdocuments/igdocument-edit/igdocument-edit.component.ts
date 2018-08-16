@@ -104,30 +104,13 @@ export class IgDocumentEditComponent {
     actionMapping: {
       mouse: {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
-          //console.log("dropping");
-          //console.log(node);
-          //console.log(from);
-          //console.log(to);
-
-
           if(from.data.data.type== Types.TEXT && (!this.isOrphan(to) && to.parent.data.data.type==Types.TEXT||this.isOrphan(to))){
-            //console.log(from);
-
-
-
-              TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
+             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
               this.setTreeModel();
-
-
           }
           if(from.data.data.type== Types.PROFILE && this.isOrphan(to)) {
-            //console.log(from);
-
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
             this.setTreeModel();
-
-
-
           }
         },
         mouse: {

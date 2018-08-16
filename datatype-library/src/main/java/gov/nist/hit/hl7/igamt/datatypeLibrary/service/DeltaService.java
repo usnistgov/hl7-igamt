@@ -9,12 +9,14 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
+package gov.nist.hit.hl7.igamt.datatypeLibrary.service;
 
 import java.util.HashMap;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 
 /**
@@ -22,11 +24,16 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
  *
  */
 public interface DeltaService {
-  boolean compareDatatypes(Datatype d1, Datatype d2,
-      HashMap<EvolutionPropertie, Boolean> criterias);
+  boolean compareDatatypes(Datatype d1, Datatype d2, HashMap<EvolutionPropertie, Boolean> criterias)
+      throws DatatypeNotFoundException;
 
   boolean compareComponent(Component c1, Component c2,
-      HashMap<EvolutionPropertie, Boolean> criterias);
+      HashMap<EvolutionPropertie, Boolean> criterias) throws DatatypeNotFoundException;
+
+
+  DeltaTreeNode getDatatypesDelta(Datatype d1, Datatype d2,
+      HashMap<EvolutionPropertie, Boolean> criterias) throws DatatypeNotFoundException;
+
 
 
 }
