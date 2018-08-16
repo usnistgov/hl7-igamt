@@ -27,9 +27,15 @@ import {FroalaEditorModule, FroalaViewModule} from 'angular-froala-wysiwyg';
 import {MessageModule} from "primeng/components/message/message";
 import {NamingConventionModule} from "../../../common/naming-convention/naming-convention.module";
 
-import {ValuesetsService} from "./valueSets.service";
-// import {ValuesetCrossRefComponent } from './valueset-cross-ref/valueset-cross-ref.component';
-// import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
+
+import {ValuesetsService} from "./valuesets.service";
+import {ValuesetEditMetadataResolver} from "./valueset-metadata/valueset-edit-metadata.resolver";
+import {ValuesetEditPostdefResolver} from "./valueset-postdef/valueset-edit-postdef.resolver";
+import {ValuesetEditPredefResolver} from "./valueset-predef/valueset-edit-predef.resolver";
+import {ValuesetEditStructureResolver} from "./valueset-structure/valueset-edit-structure.resolver";
+import {ValuesetCrossRefComponent} from "./valueset-cross-ref/valueset-cross-ref.component";
+import {ValuesetCrossRefResolver} from "./valueset-cross-ref/valueset-cross-ref.resolver";
+
 
 @NgModule({
   imports: [
@@ -51,8 +57,9 @@ import {ValuesetsService} from "./valueSets.service";
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  providers : [ValuesetsService],
-  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent],
+  providers : [ValuesetsService, ValuesetCrossRefResolver, ValuesetEditMetadataResolver, ValuesetEditPostdefResolver, ValuesetEditPredefResolver, ValuesetEditStructureResolver],
+
+  declarations: [ValuesetEditMetadataComponent, ValuesetEditPostdefComponent, ValuesetEditPredefComponent,ValuesetEditStructureComponent, ValuesetCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ValuesetEditModule {}

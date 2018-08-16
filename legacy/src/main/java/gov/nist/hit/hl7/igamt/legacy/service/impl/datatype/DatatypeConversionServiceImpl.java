@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.legacy.service.impl.datatype;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -75,12 +76,21 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   }
 
   public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
-    Datatype oldDatatype = oldDatatypeRepository.findOne(id);
+    Datatype oldDatatype = null;
+    Optional<Datatype> optional = oldDatatypeRepository.findById(id);
+    if(optional.isPresent()) {
+      oldDatatype = optional.get();
+    }
     return this.convertDatatype(oldDatatype);
   }
 
   public Datatype findOldDatatype(String id) {
-    return oldDatatypeRepository.findOne(id);
+    Datatype oldDatatype = null;
+    Optional<Datatype> optional = oldDatatypeRepository.findById(id);
+    if(optional.isPresent()) {
+      oldDatatype = optional.get();
+    }
+    return oldDatatype;
   }
 
   private gov.nist.hit.hl7.igamt.datatype.domain.Datatype convertDatatype(Datatype oldDatatype) {

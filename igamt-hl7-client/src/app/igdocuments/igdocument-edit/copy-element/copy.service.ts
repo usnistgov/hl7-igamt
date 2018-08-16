@@ -16,7 +16,6 @@ export class CopyService {
 
   copyConformanceProfile(wrapper){
     return this.http.post('/api/igdocuments/'+wrapper.igId+'/conformanceprofiles/'+wrapper.id.id+'/clone', wrapper);
-
   }
   copySegment(wrapper){
     return this.http.post('/api/igdocuments/'+wrapper.igId+'/segments/'+wrapper.id.id+'/clone', wrapper);
@@ -26,8 +25,6 @@ export class CopyService {
   }
   copyValueSet(wrapper){
     return this.http.post('/api/igdocuments/'+wrapper.igId+'/valuesets/'+wrapper.id.id+'/clone', wrapper);
-
-
   }
 
   copySection(sectionWrapper){
@@ -56,23 +53,12 @@ export class CopyService {
   copySectionClient(sectionId){
     return new Promise((resolve, reject)=>{
       this.sectionsService.getSection(sectionId).then( section =>{
-
           let result: any =section;
-
           this.cloneSection(result);
-
-
-
-
-
         },
         error =>{
-
-
         }
-
       );
-
     })
 
   }

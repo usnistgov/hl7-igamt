@@ -4,7 +4,7 @@
 
         <div class="ui-g-8 ui-g-nopad">
           <div class="cp-header-title ui-g-12">
-            Conformance Statement: {{segmentPredef.label}}
+            Conformance Statement {{segmentPredef.label}}
 
           </div>
           <div class="ui-g-12 cp-header-subtitle">
@@ -27,7 +27,7 @@
 
       </div>
         <div class="ui-g input-box">
-            <div class="ui-g-12" [froalaEditor] [(froalaModel)]="segmentPredef.preDef"></div>
+            <div class="ui-g-12" [froalaEditor]="getOptions()" [(froalaModel)]="segmentPredef.preDef"></div>
         </div>
     </form>
 </div>

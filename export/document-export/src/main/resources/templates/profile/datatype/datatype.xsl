@@ -184,7 +184,7 @@
             </xsl:if>
             <xsl:call-template name="PostDef" />
             <xsl:if test="$columnDisplay.dataType.comment = 'true'">
-                <xsl:apply-templates select="./CommentList"/>
+                <xsl:apply-templates select="./Binding/CommentList"/>
             </xsl:if>
             <xsl:if test="count(./Component/Text[@Type='Text']) &gt; 0">
                 <xsl:element name="br"/>

@@ -67,21 +67,6 @@
       "ref": {"id": "mock_ARBITRARY_ST"},
       "min": 1,
       "max": "2"
-    }},
-    {"data": {
-      "id": "59bbdea0abacdea2ee02f39f",
-      "name": "Observation Value",
-      "position": 5,
-      "usage": "C",
-      "type": "FIELD",
-      "text": "",
-      "custom": false,
-      "maxLength": "705",
-      "minLength": "0",
-      "confLength": "NA",
-      "ref": {"id": "VARIES"},
-      "min": 1,
-      "max": "2"
     }}
   ]
 }

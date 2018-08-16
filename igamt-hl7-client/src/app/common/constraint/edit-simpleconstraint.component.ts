@@ -5,6 +5,7 @@ import {Component, Input} from "@angular/core";
 import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
+
 @Component({
   selector : 'edit-simple-constraint',
   templateUrl : './edit-simpleconstraint.component.html',

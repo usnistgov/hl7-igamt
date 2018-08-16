@@ -1,331 +1,313 @@
-<h2>Conformance Profile Structure</h2>
-
 <div *ngIf="conformanceprofileStructure">
-    <p-treeTable [value]="conformanceprofileStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
+    <form #editForm="ngForm">
 
-        <p-column header="Name" [style]="{'width':'350px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type === 'SEGMENT'">
-                    <display-badge [type]="node.data.displayData.type"></display-badge>{{node.data.position}}. {{node.data.displayData.segment.label}}
-                </div>
-                <div *ngIf="node.data.displayData.type !== 'SEGMENT'">
-                    <display-badge [type]="node.data.displayData.type"></display-badge>{{node.data.position}}. {{node.data.name}}
-                </div>
-            </ng-template>
-        </p-column>
+        <div class="ui-g cp-header">
 
-        <p-column header="Usage" [style]="{'width':'190px'}" >
-            <ng-template let-col let-node="rowData" pTemplate="body" >
-                <div *ngIf="node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'">
-                    <p-dropdown *ngIf="node.data.usage !== 'C'" [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '100%'}"></p-dropdown>
-                    <div *ngIf="node.data.usage === 'C'">
-                        <p-dropdown [options]="usages" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '30%'}"></p-dropdown>
-                        (<p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.messageBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
-                        <p-dropdown [options]="cUsages" [(ngModel)]="node.data.displayData.messageBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    Conformance Profile Structure: {{conformanceprofileStructure.name}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="conformanceprofileStructure.updateDate">
+                <i class="fa fa-calendar"></i> {{conformanceprofileStructure.updateDate}}
+            </span>
+                </div>
+            </div>
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+            </div>
+        </div>
+
+        <p-treeTable *ngIf="conformanceprofileStructure.treeModel" [value]="conformanceprofileStructure.treeModel" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event.node)" >
+            <p-column header="Name" [style]="{'width':'350px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <display-badge [type]="node.data.type"></display-badge>{{node.data.position}}. {{node.data.name}}
+                </ng-template>
+            </p-column>
+
+            <p-column header="Usage" [style]="{'width':'190px'}" >
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'">
+                        <p-dropdown *ngIf="node.data.usage !== 'C'" [options]="usages" id="{{node.data.idPath}}-usage" name="{{node.data.idPath}}-usage" required [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '100%'}"></p-dropdown>
+                        <div *ngIf="node.data.usage === 'C'">
+                            <p-dropdown [options]="usages" id="{{node.data.idPath}}-usage" name="{{node.data.idPath}}-usage" [(ngModel)]="node.data.usage" appendTo="body" (onChange)="onUsageChange(node)" [style]="{'width' : '30%'}"></p-dropdown>
+                            (<p-dropdown [options]="cUsages" id="{{node.data.idPath}}-tUsage" name="{{node.data.idPath}}-tUsage" [(ngModel)]="node.data.messageBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
+                            <p-dropdown [options]="cUsages" id="{{node.data.idPath}}-fUsage" name="{{node.data.idPath}}-fUsage" [(ngModel)]="node.data.messageBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
+                        </div>
                     </div>
-                </div>
-                <div *ngIf="node.data.displayData.type === 'FIELD'">
-                    <div *ngIf="node.data.usage !== 'C' || !node.data.displayData.segmentBinding|| !node.data.displayData.segmentBinding.predicate">{{node.data.usage}}</div>
-                    <div *ngIf="node.data.usage === 'C' && node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate">C({{node.data.displayData.segmentBinding.predicate.trueUsage}}/{{node.data.displayData.segmentBinding.predicate.falseUsage}})</div>
-                </div>
-                <div *ngIf="node.data.displayData.type === 'COMPONENT'">
-                    <div *ngIf="node.data.usage !== 'C' || !node.data.displayData.fieldDTbinding|| !node.data.displayData.fieldDTbinding.predicate">{{node.data.usage}}</div>
-                    <div *ngIf="node.data.usage === 'C' && node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate">C({{node.data.displayData.fieldDTbinding.predicate.trueUsage}}/{{node.data.displayData.fieldDTbinding.predicate.falseUsage}})</div>
-                </div>
-                <div *ngIf="node.data.displayData.type === 'SUBCOMPONENT'">
-                    <div *ngIf="node.data.usage !== 'C' || !node.data.displayData.componentDTbinding || !node.data.displayData.componentDTbinding.predicate">{{node.data.usage}}</div>
-                    <div *ngIf="node.data.usage === 'C' && node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate">C({{node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>
-                </div>
-            </ng-template>
-        </p-column>
-
-        <p-column header="Cardinality" [style]="{'width':'100px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type !== 'COMPONENT' && node.data.displayData.type !== 'SUBCOMPONENT'">
-                    <input required id="min" [(ngModel)]="node.data.min" type="number" #min="ngModel" style="width:45%;border-width:0px 0px 1px 0px"/>
-                    <input required id="max" [(ngModel)]="node.data.max" type="text" #max="ngModel" style="width:45%;border-width:0px 0px 1px 0px"/>
-                </div>
-            </ng-template>
-        </p-column>
-
-        <p-column header="Length" [style]="{'width':'150px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'">
-                    [{{node.data.minLength}}..{{node.data.maxLength}}]
-                </div>
-            </ng-template>
-        </p-column>
-
-        <p-column header="Conf. Length" [style]="{'width':'120px'}" >
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'">
-                    {{node.data.confLength}}
-                </div>
-            </ng-template>
-        </p-column>
-
-
-        <p-column header="Datatype" [style]="{'width':'200px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type === 'FIELD' || node.data.displayData.type === 'COMPONENT' || node.data.displayData.type === 'SUBCOMPONENT'">
-                    <display-ref [elm]="node.data.displayData.datatype"></display-ref>
-                </div>
-            </ng-template>
-        </p-column>
-
-        <p-column header="ValueSet" [style]="{'width':valuesetColumnWidth}">
-            <ng-template let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.valuesetAllowed && !node.data.displayData.hasSingleCode">
-                    <div *ngIf="node.data.displayData.messageBinding">
-                        <div *ngFor="let vs of node.data.displayData.messageBinding.valuesetBindings">
-                            <div *ngIf="!vs.edit">
-                                <display-ref [elm]="vs" [from]="'MESSAGE'"></display-ref>
-                                <i class="fa fa-pencil" (click)="makeEditModeForValueSet(vs)" style="width:20%;"></i>
-                                <i class="fa fa-times" (click)="delValueSetBinding(node.data.displayData.messageBinding, vs, node.data.displayData)" style="width:20%;"></i>
+                    <div *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'">
+                        <div *ngIf="node.data.usage === 'C'">
+                            {{node.data.usage}}
+                        </div>
+                        <div *ngIf="node.data.usage !== 'C'">
+                            <div *ngIf="node.data.messageBinding && node.data.messageBinding.predicate">
+                                {{node.data.usage}}
+                                (<p-dropdown [options]="cUsages" id="{{node.data.idPath}}-tUsage" name="{{node.data.idPath}}-tUsage" [(ngModel)]="node.data.messageBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
+                                <p-dropdown [options]="cUsages" id="{{node.data.idPath}}-fUsage" name="{{node.data.idPath}}-fUsage" [(ngModel)]="node.data.messageBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
                             </div>
-                            <div *ngIf="vs.edit">
-                                <p-dropdown [options]="valuesetOptions" [(ngModel)]="vs.newvalue.valuesetId" appendTo="body" [style]="{'width':'150px'}" filter="true">
-                                    <ng-template let-option pTemplate="body">
-                                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                                            <display-ref *ngIf="option.value" [elm]="getValueSetElm(option.value)"></display-ref>
-                                            <span *ngIf="!option.value">{{option.label}}</span>
-                                        </div>
-                                    </ng-template>
-                                </p-dropdown>
-                                <p-dropdown [options]="valuesetStrengthOptions" [(ngModel)]="vs.newvalue.strength" appendTo="body" [style]="{'width':'150px'}">
-                                </p-dropdown>
-                                <p-dropdown *ngIf="node.data.displayData.valueSetLocationOptions" [options]="node.data.displayData.valueSetLocationOptions" [(ngModel)]="vs.newvalue.valuesetLocations" appendTo="body" [style]="{'width':'150px'}">
-                                </p-dropdown>
-                                <button pButton type="button" class="blue-btn" icon="fa-check" (click)="submitNewValueSet(vs); node.data.displayData.hasValueSet = true;" [disabled]="!vs.newvalue.valuesetId"></button>
+                            <div *ngIf="!node.data.messageBinding || !node.data.messageBinding.predicate">
+                                <div *ngIf="node.data.subBinding && node.data.subBinding.predicate">
+                                    {{node.data.usage}}({{node.data.subBinding.predicate.trueUsage}}/{{node.data.subBinding.predicate.trueUsage}})
+                                </div>
+                                <div *ngIf="!node.data.subBinding || !node.data.subBinding.predicate">
+                                    {{node.data.usage}}
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && node.data.displayData.segmentBinding">
-                        <div *ngFor="let vs of node.data.displayData.segmentBinding.valuesetBindings">
-                            <div *ngIf="!vs.edit">
+                </ng-template>
+            </p-column>
+            <p-column header="Cardinality" [style]="{'width':'150px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'">
+                        <input id="{{node.data.idPath}}-min" name="{{node.data.idPath}}-min" required [(ngModel)]="node.data.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"/>
+                        <input id="{{node.data.idPath}}-max" name="{{node.data.idPath}}-max" required [(ngModel)]="node.data.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
+                    </div>
+                    <div *ngIf="node.data.type === 'FIELD'">
+                        [{{node.data.min}},{{node.data.max}}]
+                    </div>
+                </ng-template>
+            </p-column>
+            <p-column header="Length" [style]="{'width':'150px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'">
+                        [{{node.data.minLength}}..{{node.data.maxLength}}]
+                    </div>
+                </ng-template>
+            </p-column>
+
+            <p-column header="Conf. Length" [style]="{'width':'120px'}" >
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'">
+                        {{node.data.confLength}}
+                    </div>
+                </ng-template>
+            </p-column>
+
+            <p-column header="Datatype" [style]="{'width':'200px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.datatype">
+                        <display-ref [elm]="node.data.datatype"></display-ref>
+                    </div>
+                </ng-template>
+            </p-column>
+
+            <p-column header="ValueSet" [style]="{'width':'200px'}">
+                <ng-template let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.valuesetAllowed && !node.data.hasSingleCode">
+                        <div *ngIf="node.data.messageBinding">
+                            <div *ngFor="let vs of node.data.messageBinding.valuesetBindings">
+                                <display-ref [elm]="vs" [from]="'MESSAGE'"></display-ref>
+                                <i class="fa fa-pencil" (click)="makeEditModeForValueSet(node,vs)" style="width:20%;"></i>
+                                <i class="fa fa-times" (click)="delValueSetBinding(node.data.messageBinding, vs, node.data)" style="width:20%;"></i>
+                            </div>
+                        </div>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.valuesetBindings || node.data.messageBinding.valuesetBindings.length === 0) && node.data.segmentBinding">
+                            <div *ngFor="let vs of node.data.segmentBinding.valuesetBindings">
                                 <display-ref [elm]="vs" [from]="'SEGMENT'"></display-ref>
                             </div>
                         </div>
-                    </div>
-
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && node.data.displayData.fieldDTbinding">
-                        <div *ngFor="let vs of node.data.displayData.fieldDTbinding.valuesetBindings">
-                            <div *ngIf="!vs.edit">
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.valuesetBindings || node.data.messageBinding.valuesetBindings.length === 0) && (!node.data.segmentBinding || !node.data.segmentBinding.valuesetBindings || node.data.segmentBinding.valuesetBindings.length === 0) && node.data.fieldDTbinding">
+                            <div *ngFor="let vs of node.data.fieldDTbinding.valuesetBindings">
                                 <display-ref [elm]="vs" [from]="'FIELD'"></display-ref>
                             </div>
                         </div>
-                    </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length === 0) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.valuesetBindings || node.data.displayData.segmentBinding.valuesetBindings.length === 0) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.valuesetBindings || node.data.displayData.fieldDTbinding.valuesetBindings.length === 0) && node.data.displayData.componentDTbinding">
-                        <div *ngFor="let vs of node.data.displayData.componentDTbinding.valuesetBindings">
-                            <div *ngIf="!vs.edit">
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.valuesetBindings || node.data.messageBinding.valuesetBindings.length === 0) && (!node.data.segmentBinding || !node.data.segmentBinding.valuesetBindings || node.data.segmentBinding.valuesetBindings.length === 0) && (!node.data.fieldDTbinding || !node.data.fieldDTbinding.valuesetBindings || node.data.fieldDTbinding.valuesetBindings.length === 0) && node.data.componentDTbinding">
+                            <div *ngFor="let vs of node.data.componentDTbinding.valuesetBindings">
                                 <display-ref [elm]="vs" [from]="'COMPONENT'"></display-ref>
                             </div>
                         </div>
+                        <i class="fa fa-plus" *ngIf="node.data.multipleValuesetAllowed || !node.data.messageBinding || !node.data.messageBinding.valuesetBindings || node.data.messageBinding.valuesetBindings.length == 0" (click)="editValueSetBinding(node)"></i>
                     </div>
-                    <i class="fa fa-plus" *ngIf="node.data.displayData.multipleValuesetAllowed || !node.data.displayData.messageBinding || !node.data.displayData.messageBinding.valuesetBindings || node.data.displayData.messageBinding.valuesetBindings.length == 0" (click)="addNewValueSet(node)"></i>
-                </div>
-            </ng-template>
-        </p-column>
+                </ng-template>
+            </p-column>
 
-        <p-column header="Single Code" [style]="{'width':'200px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.valuesetAllowed && node.data.displayData.datatype.leaf && !node.data.displayData.hasValueSet">
-                    <div *ngIf="node.data.displayData.messageBinding">
-                        <div *ngIf="node.data.displayData.messageBinding.externalSingleCode">
-                            <div *ngIf="!node.data.displayData.messageBinding.externalSingleCode.edit">
-                                <display-singlecode [elm]="node.data.displayData.messageBinding.externalSingleCode" [from]="'MESSAGE'"></display-singlecode>
+            <p-column header="Single Code" [style]="{'width':'200px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.valuesetAllowed && node.data.datatype && node.data.datatype.leaf && !node.data.hasValueSet">
+                        <div *ngIf="node.data.messageBinding">
+                            <div *ngIf="node.data.messageBinding.externalSingleCode">
+                                <display-singlecode [elm]="node.data.messageBinding.externalSingleCode" [from]="'MESSAGE'"></display-singlecode>
                                 <i class="fa fa-pencil" (click)="makeEditModeForSingleCode(node)" style="width:20%;"></i>
                                 <i class="fa fa-times" (click)="deleteSingleCode(node)" style="width:20%;"></i>
                             </div>
-                            <div *ngIf="node.data.displayData.messageBinding.externalSingleCode.edit">
-                                <input [(ngModel)]="node.data.displayData.messageBinding.externalSingleCode.newSingleCode" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
-                                <input [(ngModel)]="node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
-                                <button pButton type="button" class="blue-btn" icon="fa-check" (click)="submitNewSingleCode(node); node.data.displayData.hasSingleCode = true;" [disabled]="node.data.displayData.messageBinding.externalSingleCode.newSingleCode === '' || node.data.displayData.messageBinding.externalSingleCode.newSingleCodeSystem === ''"></button>
+                        </div>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.externalSingleCode) && node.data.segmentBinding">
+                            <div *ngIf="node.data.segmentBinding.externalSingleCode">
+                                <display-singlecode [elm]="node.data.segmentBinding.externalSingleCode" [from]="'SEGMENT'"></display-singlecode>
                             </div>
                         </div>
-                    </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && node.data.displayData.segmentBinding">
-                        <div *ngIf="node.data.displayData.segmentBinding.externalSingleCode">
-                            <display-singlecode [elm]="node.data.displayData.segmentBinding.externalSingleCode" [from]="'SEGMENT'"></display-singlecode>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.externalSingleCode) && (!node.data.segmentBinding || !node.data.segmentBinding.externalSingleCode) && node.data.fieldDTbinding">
+                            <div *ngIf="node.data.fieldDTbinding.externalSingleCode">
+                                <display-singlecode [elm]="node.data.fieldDTbinding.externalSingleCode" [from]="'FIELD'"></display-singlecode>
+                            </div>
                         </div>
-                    </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && node.data.displayData.fieldDTbinding">
-                        <div *ngIf="node.data.displayData.fieldDTbinding.externalSingleCode">
-                            <display-singlecode [elm]="node.data.displayData.fieldDTbinding.externalSingleCode" [from]="'FIELD'"></display-singlecode>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.externalSingleCode) && (!node.data.segmentBinding || !node.data.segmentBinding.externalSingleCode) && (!node.data.fieldDTbinding || !node.data.fieldDTbinding.externalSingleCode) && node.data.componentDTbinding">
+                            <div *ngIf="node.data.componentDTbinding.externalSingleCode">
+                                <display-singlecode [elm]="node.data.componentDTbinding.externalSingleCode" [from]="'COMPONENT'"></display-singlecode>
+                            </div>
                         </div>
+                        <i class="fa fa-plus" *ngIf="!node.data.messageBinding || !node.data.messageBinding.externalSingleCode" (click)="addNewSingleCode(node)"></i>
                     </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.externalSingleCode) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.externalSingleCode) && node.data.displayData.componentDTbinding">
-                        <div *ngIf="node.data.displayData.componentDTbinding.externalSingleCode">
-                            <display-singlecode [elm]="node.data.displayData.componentDTbinding.externalSingleCode" [from]="'COMPONENT'"></display-singlecode>
-                        </div>
-                    </div>
-                    <i class="fa fa-plus" *ngIf="!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.externalSingleCode" (click)="addNewSingleCode(node)"></i>
-                </div>
-            </ng-template>
-        </p-column>
+                </ng-template>
+            </p-column>
 
-        <p-column header="Constant Value" [style]="{'width':'200px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.datatype && node.data.displayData.datatype.leaf && !node.data.displayData.valuesetAllowed">
-                    <div *ngIf="node.data.displayData.messageBinding">
-                        <div *ngIf="!node.data.displayData.messageBinding.editConstantValue">
-                            <div *ngIf="node.data.displayData.messageBinding.constantValue">
-                                <display-constantvalue [elm]="node.data.displayData.messageBinding.constantValue" [from]="'MESSAGE'"></display-constantvalue>
+            <p-column header="Constant Value" [style]="{'width':'200px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.datatype && node.data.datatype.leaf && !node.data.valuesetAllowed">
+                        <div *ngIf="node.data.messageBinding">
+                            <div *ngIf="node.data.messageBinding.constantValue">
+                                <display-constantvalue [elm]="node.data.messageBinding.constantValue" [from]="'MESSAGE'"></display-constantvalue>
                                 <i class="fa fa-pencil" (click)="makeEditModeForConstantValue(node)" style="width:20%;"></i>
                                 <i class="fa fa-times" (click)="deleteConstantValue(node)" style="width:20%;"></i>
                             </div>
                         </div>
-                        <div *ngIf="node.data.displayData.messageBinding.editConstantValue">
-                            <input [(ngModel)]="node.data.displayData.messageBinding.newConstantValue" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
-                            <button pButton type="button" class="blue-btn" icon="fa-check" (click)="submitNewConstantValue(node)" [disabled]="node.data.displayData.messageBinding.newConstantValue === ''"></button>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.constantValue) && node.data.segmentBinding">
+                            <div *ngIf="node.data.segmentBinding.constantValue !== undefined  && node.data.segmentBinding.constantValue !== ''">
+                                <display-constantvalue [elm]="node.data.segmentBinding.constantValue" [from]="'SEGMENT'"></display-constantvalue>
+                            </div>
                         </div>
-                    </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && node.data.displayData.segmentBinding">
-                        <div *ngIf="node.data.displayData.segmentBinding.constantValue !== undefined  && node.data.displayData.segmentBinding.constantValue !== ''">
-                            <display-constantvalue [elm]="node.data.displayData.segmentBinding.constantValue" [from]="'SEGMENT'"></display-constantvalue>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.constantValue) && (!node.data.segmentBinding || !node.data.segmentBinding.constantValue) && node.data.fieldDTbinding">
+                            <div *ngIf="node.data.fieldDTbinding.constantValue !== undefined  && node.data.fieldDTbinding.constantValue !== ''">
+                                <display-constantvalue [elm]="node.data.fieldDTbinding.constantValue" [from]="'FIELD'"></display-constantvalue>
+                            </div>
                         </div>
-                    </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && node.data.displayData.fieldDTbinding">
-                        <div *ngIf="node.data.displayData.fieldDTbinding.constantValue !== undefined  && node.data.displayData.fieldDTbinding.constantValue !== ''">
-                            <display-constantvalue [elm]="node.data.displayData.fieldDTbinding.constantValue" [from]="'FIELD'"></display-constantvalue>
+                        <div *ngIf="(!node.data.messageBinding || !node.data.messageBinding.constantValue) && (!node.data.segmentBinding || !node.data.segmentBinding.constantValue) && (!node.data.fieldDTbinding || !node.data.fieldDTbinding.constantValue) && node.data.componentDTbinding">
+                            <div *ngIf="node.data.componentDTbinding.constantValue  !== undefined && node.data.componentDTbinding.constantValue !== ''">
+                                <display-constantvalue [elm]="node.data.componentDTbinding.constantValue" [from]="'COMPONENT'"></display-constantvalue>
+                            </div>
                         </div>
+                        <i class="fa fa-plus" *ngIf="!node.data.messageBinding || (node.data.messageBinding && !node.data.messageBinding.constantValue)" (click)="addNewConstantValue(node)"></i>
                     </div>
-                    <div *ngIf="(!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.constantValue) && (!node.data.displayData.segmentBinding || !node.data.displayData.segmentBinding.constantValue) && (!node.data.displayData.fieldDTbinding || !node.data.displayData.fieldDTbinding.constantValue) && node.data.displayData.componentDTbinding">
-                        <div *ngIf="node.data.displayData.componentDTbinding.constantValue  !== undefined && node.data.displayData.componentDTbinding.constantValue !== ''">
-                            <display-constantvalue [elm]="node.data.displayData.componentDTbinding.constantValue" [from]="'COMPONENT'"></display-constantvalue>
-                        </div>
-                    </div>
-                    <div *ngIf="!node.data.displayData.messageBinding || !node.data.displayData.messageBinding.editConstantValue">
-                        <i class="fa fa-plus" *ngIf="!node.data.displayData.messageBinding || (node.data.displayData.messageBinding && !node.data.displayData.messageBinding.constantValue)" (click)="addNewConstantValue(node)"></i>
-                    </div>
-                </div>
-            </ng-template>
-        </p-column>
+                </ng-template>
+            </p-column>
 
-        <p-column header="Predicate" [style]="{'width':'150px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.usage === 'C'">
-                    <!--<div *ngIf="node.data.displayData.type === 'GROUP'">-->
-                        <!--<div *ngIf="node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.freeText">-->
-                            <!--{{node.data.displayData.messageBinding.predicate.freeText}}-->
-                        <!--</div>-->
-                        <!--<div *ngIf="node.data.displayData.messageBinding && node.data.displayData.messageBinding.predicate && node.data.displayData.messageBinding.predicate.assertion && node.data.displayData.messageBinding.predicate.assertion.description">-->
-                            <!--{{node.data.displayData.messageBinding.predicate.assertion.description}}-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div *ngIf="node.data.displayData.type === 'FIELD'">-->
-                        <!--<div *ngIf="node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.freeText">-->
-                            <!--{{node.data.displayData.segmentBinding.predicate.freeText}}-->
-                        <!--</div>-->
-                        <!--<div *ngIf="node.data.displayData.segmentBinding && node.data.displayData.segmentBinding.predicate && node.data.displayData.segmentBinding.predicate.assertion && node.data.displayData.segmentBinding.predicate.assertion.description">-->
-                            <!--{{node.data.displayData.segmentBinding.predicate.assertion.description}}-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div *ngIf="node.data.displayData.type === 'COMPONENT'">-->
-                        <!--<div *ngIf="node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.freeText">-->
-                            <!--{{node.data.displayData.fieldDTbinding.predicate.freeText}}-->
-                        <!--</div>-->
-                        <!--<div *ngIf="node.data.displayData.fieldDTbinding && node.data.displayData.fieldDTbinding.predicate && node.data.displayData.fieldDTbinding.predicate.assertion && node.data.displayData.fieldDTbinding.predicate.assertion.description">-->
-                            <!--{{node.data.displayData.fieldDTbinding.predicate.assertion.description}}-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <!--<div *ngIf="node.data.displayData.type === 'SUBCOMPONENT'">-->
-                        <!--<div *ngIf="node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.freeText">-->
-                            <!--{{node.data.displayData.componentDTbinding.predicate.freeText}}-->
-                        <!--</div>-->
-                        <!--<div *ngIf="node.data.displayData.componentDTbinding && node.data.displayData.componentDTbinding.predicate && node.data.displayData.componentDTbinding.predicate.assertion && node.data.displayData.componentDTbinding.predicate.assertion.description">-->
-                            <!--{{node.data.displayData.componentDTbinding.predicate.assertion.description}}-->
-                        <!--</div>-->
-                    <!--</div>-->
-                    <i class="fa fa-pencil" (click)="editPredicate(node)" style="width:20%;"></i>
-                </div>
-            </ng-template>
-        </p-column>
+            <p-column header="Predicate" [style]="{'width':'150px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    {{node.data.idPath}}
+                </ng-template>
+            </p-column>
 
-        <p-column header="Text Definition" [style]="{'width':'150px'}">
-            <ng-template let-col let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.type === 'GROUP' || node.data.displayData.type === 'SEGMENT'">
-                    <ng-container *ngIf="node.data.text">
-                        <span (click)="editTextDefinition(node)">{{truncate(node.data.text)}}</span>
-                        <i class="fa fa-times" (click)="delTextDefinition(node)" style="width:20%;"></i>
-                    </ng-container>
-                    <ng-container *ngIf="!node.data.text">
-                        <i class="fa fa-pencil" (click)="editTextDefinition(node)"></i>
-                    </ng-container>
-                </div>
-            </ng-template>
-        </p-column>
-        <p-column header="Comment" [style]="{'width':'400px'}">
-            <ng-template let-node="rowData" pTemplate="body">
-                <div *ngIf="node.data.displayData.messageBinding">
-                    <div *ngFor="let c of node.data.displayData.messageBinding.comments">
-                        <div *ngIf="!c.edit">
-                            <display-comment [elm]="c" [from]="'MESSAGE'"></display-comment>
-                            <i class="fa fa-pencil" (click)="makeEditModeForComment(c)" style="width:20%;"></i>
-                            <i class="fa fa-times" (click)="delCommentBinding(node.data.displayData.messageBinding, c)" style="width:20%;"></i>
-                        </div>
-                        <div *ngIf="c.edit">
-                            <textarea pInputTextarea [(ngModel)]="c.newComment.description"></textarea>
-                            <button pButton type="button" class="blue-btn" icon="fa-check" (click)="submitNewComment(c);" [disabled]="c.newComment.description === ''"></button>
+            <p-column header="Definition TEXT" [style]="{'width':'150px'}">
+                <ng-template let-col let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'">
+                        <ng-container *ngIf="node.data.text">
+                            <span (click)="editTextDefinition(node)">{{truncate(node.data.text)}}</span>
+                            <i class="fa fa-times" (click)="delTextDefinition(node)" style="width:20%;"></i>
+                        </ng-container>
+                        <ng-container *ngIf="!node.data.text">
+                            <i class="fa fa-pencil" (click)="editTextDefinition(node)"></i>
+                        </ng-container>
+                    </div>
+                </ng-template>
+            </p-column>
+
+            <p-column header="Comment" [style]="{'width':'250px'}">
+                <ng-template let-node="rowData" pTemplate="body">
+                    <div *ngIf="node.data.messageBinding">
+                        <div *ngFor="let c of node.data.messageBinding.comments">
+                            <span>
+                                <display-comment [elm]="c" [from]="'MESSAGE'"></display-comment>
+                                <i class="fa fa-pencil" (click)="makeEditModeForComment(node, c)" style="width:20%;"></i>
+                                <i class="fa fa-times" (click)="delCommentBinding(node.data.messageBinding, c)" style="width:20%;"></i>
+                            </span>
                         </div>
                     </div>
-                </div>
-                <div *ngIf="node.data.displayData.segmentBinding">
-                    <div *ngFor="let c of node.data.displayData.segmentBinding.comments">
-                        <display-comment [elm]="c" [from]="'SEGMENT'"></display-comment>
+                    <div *ngIf="node.data.segmentBinding">
+                        <div *ngFor="let c of node.data.segmentBinding.comments">
+                            <display-comment [elm]="c" [from]="'SEGMENT'"></display-comment>
+                        </div>
                     </div>
-                </div>
-                <div *ngIf="node.data.displayData.fieldDTbinding">
-                    <div *ngFor="let c of node.data.displayData.fieldDTbinding.comments">
-                        <display-comment [elm]="c" [from]="'FIELD'"></display-comment>
+                    <div *ngIf="node.data.fieldDTbinding">
+                        <div *ngFor="let c of node.data.fieldDTbinding.comments">
+                            <display-comment [elm]="c" [from]="'FIELD'"></display-comment>
+                        </div>
                     </div>
-                </div>
-                <div *ngIf="node.data.displayData.componentDTbinding">
-                    <div *ngFor="let c of node.data.displayData.componentDTbinding.comments">
-                        <display-comment [elm]="c" [from]="'COMPONENT'"></display-comment>
+                    <div *ngIf="node.data.componentDTbinding">
+                        <div *ngFor="let c of node.data.componentDTbinding.comments">
+                            <display-comment [elm]="c" [from]="'COMPONENT'"></display-comment>
+                        </div>
                     </div>
-                </div>
-                <i class="fa fa-plus" (click)="addNewComment(node)"></i>
-            </ng-template>
-        </p-column>
-    </p-treeTable>
-    <p-dialog *ngIf="selectedNode" header="Edit Text Definition of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
+                    <i class="fa fa-plus" (click)="addNewComment(node)"></i>
+                </ng-template>
+            </p-column>
+        </p-treeTable>
+    </form>
+
+    <p-dialog *ngIf="selectedNode && selectedVS" header="Edit Valueset binding for {{selectedNode.data.name}}" [(visible)]="valuesetDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-4">
+                <label>Binding Identifier: </label>
+            </div>
+            <div class="ui-g-12 ui-md-8">
+                <p-dropdown [options]="valuesetOptions" [(ngModel)]="selectedVS.newvalue.valuesetId" appendTo="body" [style]="{'width':'150px'}" filter="true">
+                    <ng-template let-option pTemplate="body">
+                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                            <display-ref *ngIf="option.value" [elm]="getValueSetElm(option.value)"></display-ref>
+                            <span *ngIf="!option.value">{{option.label}}</span>
+                        </div>
+                    </ng-template>
+                </p-dropdown>
+            </div>
+        </div>
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-4">
+                <label>Strength: </label>
+            </div>
+            <div class="ui-g-12 ui-md-8">
+                <p-dropdown [options]="valuesetStrengthOptions" [(ngModel)]="selectedVS.newvalue.strength" appendTo="body" [style]="{'width':'150px'}">
+                </p-dropdown>
+            </div>
+        </div>
+
+        <div class="ui-g ui-fluid" *ngIf="selectedNode.data.valueSetLocationOptions">
+            <div class="ui-g-12 ui-md-4">
+                <label>Valueset Location: </label>
+            </div>
+            <div class="ui-g-12 ui-md-8">
+                <p-dropdown [options]="selectedNode.data.valueSetLocationOptions" [(ngModel)]="selectedVS.newvalue.valuesetLocations" appendTo="body" [style]="{'width':'150px'}">
+                </p-dropdown>
+            </div>
+        </div>
+
+        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewValueSet(selectedNode, selectedVS)" [disabled]="!selectedVS.newvalue.valuesetId"></button>
+    </p-dialog>
+
+    <p-dialog *ngIf="selectedNode && selectedSingleCode" header="Edit SingleCode for {{selectedNode.data.name}}" [(visible)]="singleCodeDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-4">
+                <label>Code: </label>
+            </div>
+            <div class="ui-g-12 ui-md-8">
+                <input [(ngModel)]="selectedSingleCode.newSingleCode" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
+            </div>
+        </div>
+
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-4">
+                <label>Code System: </label>
+            </div>
+            <div class="ui-g-12 ui-md-8">
+                <input [(ngModel)]="selectedSingleCode.newSingleCodeSystem" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
+            </div>
+        </div>
+
+        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewSingleCode(selectedNode, selectedSingleCode)" [disabled]="selectedSingleCode.newSingleCode === '' || selectedSingleCode.newSingleCodeSystem === ''"></button>
+    </p-dialog>
+
+    <p-dialog *ngIf="selectedNode && selectedConstantValue" header="Edit Constant Value for {{selectedNode.data.name}}" [(visible)]="constantValueDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
+        <input [(ngModel)]="selectedConstantValue.newConstantValue" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
+        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewConstantValue(selectedNode, selectedConstantValue)" [disabled]="selectedConstantValue.newConstantValue === ''"></button>
+    </p-dialog>
+
+    <p-dialog *ngIf="selectedNode" header="Edit Definition Text of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
         <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
     </p-dialog>
 
-    <p-dialog *ngIf="selectedNode" header="Edit Predicate of {{selectedNode.data.name}}" [(visible)]="preciateEditorOpen" [modal]="true" [responsive]="true" [width]="1200" [minWidth]="800" [minY]="70">
-        <form #cpForm="ngForm">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Editor Type: </label>
-                </div>
-                <div class="ui-g-12 ui-md-10">
-                    <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedPredicate.type" (onChange)="changeType()"></p-selectButton>
-                </div>
-            </div>
-
-            <div *ngIf="selectedPredicate.type && selectedPredicate.type ==='ASSERTION'">
-                <div class="ui-g ui-fluid">
-                    <div class="ui-g-12 ui-md-2">
-                        <label>Assertion Type: </label>
-                    </div>
-                    <div class="ui-g-12 ui-md-10">
-                        <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [(ngModel)]="selectedPredicate.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
-                        <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
-                            <div *ngIf="assertionMode.errors.required">
-                                Assertion Type is required.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <edit-free-constraint *ngIf="selectedPredicate.type === 'FREE'" [constraint]="selectedPredicate"></edit-free-constraint>
-            <edit-simple-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
-            <edit-complex-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'COMPLEX'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
-
-            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCP()" [disabled]="cpForm.invalid"></button>
-            <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-print" label="Print" (click)="print(selectedConformanceStatement)"></button>
-        </form>
+    <p-dialog *ngIf="selectedNode && selectedComment" header="Edit Comment Value for {{selectedNode.data.name}}" [(visible)]="commentDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
+        <input [(ngModel)]="selectedComment.newComment.description" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
+        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewComment(selectedNode, selectedComment)" [disabled]="selectedComment.newComment.description === ''"></button>
     </p-dialog>
 </div>

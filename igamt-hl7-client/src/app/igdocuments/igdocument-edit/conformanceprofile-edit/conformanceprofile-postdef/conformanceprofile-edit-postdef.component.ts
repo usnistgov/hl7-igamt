@@ -9,45 +9,42 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
+import {HasFroala} from "../../../../configuration/has-froala";
 
 @Component({
-  templateUrl : './conformanceprofile-edit-postdef.component.html',
-  styleUrls : ['./conformanceprofile-edit-postdef.component.css']
+    templateUrl : './conformanceprofile-edit-postdef.component.html',
+    styleUrls : ['./conformanceprofile-edit-postdef.component.css']
 })
 
-export class ConformanceprofileEditPostdefComponent implements WithSave {
+export class ConformanceprofileEditPostdefComponent extends  HasFroala implements WithSave {
     currentUrl:any;
     conformanceprofileId:any;
-    conformanceProfilePostdef:any;
+    conformanceprofilePostdef:any;
     backup:any;
 
     @ViewChild('editForm')
     private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private http:HttpClient){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+        super();
     }
 
     ngOnInit() {
         this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
         this.route.data.map(data =>data.conformanceprofilePostdef).subscribe(x=>{
             this.backup=x;
-            this.conformanceProfilePostdef=__.cloneDeep(this.backup);
+            this.conformanceprofilePostdef=__.cloneDeep(this.backup);
         });
     }
 
     reset(){
-        this.conformanceProfilePostdef=__.cloneDeep(this.backup);
+        this.conformanceprofilePostdef=__.cloneDeep(this.backup);
         this.editForm.control.markAsPristine();
 
     }
 
     getCurrent(){
-        return  this.conformanceProfilePostdef;
+        return  this.conformanceprofilePostdef;
     }
 
     getBackup(){
@@ -59,24 +56,16 @@ export class ConformanceprofileEditPostdefComponent implements WithSave {
     }
 
     save(): Promise<any>{
-      return new Promise((resolve, reject)=> {
-
-         this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceProfilePostdef).then(saved => {
-
-             this.backup = __.cloneDeep(this.conformanceProfilePostdef);
-
-             this.editForm.control.markAsPristine();
-             resolve(true);
-
-           }, error => {
-             console.log("error saving");
-             reject();
-
-           }
-
-         );
-
-      })
-
+        return new Promise((resolve, reject)=> {
+            this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceprofilePostdef).then(saved => {
+                    this.backup = __.cloneDeep(this.conformanceprofilePostdef);
+                    this.editForm.control.markAsPristine();
+                    resolve(true);
+                }, error => {
+                    console.log("error saving");
+                    reject();
+                }
+            );
+        })
     }
 }

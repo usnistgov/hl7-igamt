@@ -173,9 +173,14 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment findLatestById(String id) {
-    Segment segment = segmentRepository
-        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
+    Query query = new Query();
+    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Segment segment = mongoTemplate.findOne(query, Segment.class);
     return segment;
+
+
   }
 
   @Override
@@ -322,6 +327,9 @@ public class SegmentServiceImpl implements SegmentService {
       } else {
         result.setLabel(segment.getName());
       }
+
+      result.setName(segment.getName());
+      result.setUpdateDate(segment.getUpdateDate());
 
       result.setConformanceStatements(segment.getBinding().getConformanceStatements());
       return result;

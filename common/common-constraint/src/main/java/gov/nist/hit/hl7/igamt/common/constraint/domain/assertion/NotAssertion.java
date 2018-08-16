@@ -15,15 +15,13 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
  * @author jungyubw
  *
  */
-public class NotAssertion extends MultipleAssertion {
+public class NotAssertion extends Assertion {
   private Assertion child;
-  private String complexAssertionType;
 
   
   public NotAssertion() {
     super();
-    this.setMode(AssertionMode.COMPLEX);
-    this.setComplexAssertionType("NOT");
+    this.setMode(AssertionMode.NOT);
   }
 
   public Assertion getChild() {
@@ -38,14 +36,4 @@ public class NotAssertion extends MultipleAssertion {
   public String toString() {
     return "NotAssertion [child=" + child + "]";
   }
-
-  public String getComplexAssertionType() {
-    return complexAssertionType;
-  }
-
-  public void setComplexAssertionType(String complexAssertionType) {
-    this.complexAssertionType = complexAssertionType;
-  }
-
-
 }

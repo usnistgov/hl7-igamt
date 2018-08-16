@@ -1,7 +1,8 @@
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Comparator;
-import java.util.TreeSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -12,10 +13,11 @@ public class DatatypeStructure {
   private CompositeKey id;
   private String label;
   private Scope scope;
+  private String name;
   private String version;
   private ResourceBinding binding;
 
-  private TreeSet<ComponentDisplay> structure;
+  private Set<ComponentDisplay> structure;
 
   public CompositeKey getId() {
     return id;
@@ -25,17 +27,17 @@ public class DatatypeStructure {
     this.id = id;
   }
 
-  public TreeSet<ComponentDisplay> getChildren() {
+  public Set<ComponentDisplay> getChildren() {
     return structure;
   }
 
-  public void setChildren(TreeSet<ComponentDisplay> structure) {
+  public void setChildren(Set<ComponentDisplay> structure) {
     this.structure = structure;
   }
 
   public void addChild(ComponentDisplay componentDisplay) {
     if (this.structure == null)
-      this.structure = new TreeSet<ComponentDisplay>(new PositionCompForComponentDisplay());
+      this.structure = new HashSet<ComponentDisplay>();
     this.structure.add(componentDisplay);
   }
 
@@ -69,6 +71,14 @@ public class DatatypeStructure {
 
   public void setBinding(ResourceBinding binding) {
     this.binding = binding;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 
 

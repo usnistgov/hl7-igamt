@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Params, Router} from "@angular/router";
 import {ResetPasswordService} from "../reset-password.service";
 import {FormGroup, Validators, FormControl, ValidatorFn, AbstractControl} from "@angular/forms";
+import {MessageService} from "primeng/components/common/messageservice";
 
 @Component({
   selector: 'app-reset-password-confirm',
@@ -14,8 +15,9 @@ export class ResetPasswordConfirmComponent implements OnInit {
   model:any={};
   token : any;
   displayForm=true;
+  alertId="ResetPasswordERROR";
 
-  constructor(private route: ActivatedRoute, private resetPasswordService : ResetPasswordService, private router: Router) {
+  constructor(private route: ActivatedRoute, private resetPasswordService : ResetPasswordService, private router: Router,private messageService:MessageService) {
     this.resetPasswordFrom= new FormGroup({
       'password':new FormControl(this.model.password, [Validators.required,  Validators.minLength(8)]),
       'confirmPasswordForm':new FormControl(
@@ -57,11 +59,24 @@ export class ResetPasswordConfirmComponent implements OnInit {
       this.router.navigate(['/login']);
 
 
-    }
+    },error=>{
+
+      this.showError(error);
+      }
+
     )
 
 
   }
+
+
+  showError(error:any) {
+    console.log(error);
+    error =JSON.parse(error.error.message);
+    console.log(error);
+    this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.message, id:this.alertId});
+  }
+
 
 
 

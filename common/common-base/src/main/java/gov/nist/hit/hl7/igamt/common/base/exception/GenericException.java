@@ -9,16 +9,26 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.ig.exceptions;
+package gov.nist.hit.hl7.igamt.common.base.exception;
 
-public class IGTocUpdateException extends Exception {
-  private static final long serialVersionUID = 1L;
+/**
+ * @author ena3
+ *
+ */
+@SuppressWarnings("serial")
+public class GenericException extends Exception {
+  protected ExceptionType type;
 
-  public IGTocUpdateException(String id) {
-    super("Could not update IG with=" + id);
+  public GenericException(String message) {
+    super(message);
+    // TODO Auto-generated constructor stub
   }
 
-  public IGTocUpdateException(Exception error) {
+  /**
+   * @param error
+   */
+  public GenericException(Exception error) {
+    // TODO Auto-generated constructor stub
     super(error);
   }
 

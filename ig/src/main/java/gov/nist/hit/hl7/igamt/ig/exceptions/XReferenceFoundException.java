@@ -14,33 +14,40 @@ package gov.nist.hit.hl7.igamt.ig.exceptions;
 import java.util.List;
 import java.util.Map;
 
-import com.mongodb.BasicDBObject;
+import org.bson.Document;
+
+import gov.nist.hit.hl7.igamt.common.base.exception.ExceptionType;
+import gov.nist.hit.hl7.igamt.common.base.exception.GenericException;
+
+
 
 /**
  * @author Harold Affo
  *
  */
-public class XReferenceFoundException extends Exception {
+public class XReferenceFoundException extends GenericException {
 
   /**
    * 
    */
   private static final long serialVersionUID = -6887787296077348003L;
 
-  private Map<String, List<BasicDBObject>> xreferences;
+  private Map<String, List<Document>> xreferences;
   private String id;
+  private ExceptionType type;
 
-  public XReferenceFoundException(String id, Map<String, List<BasicDBObject>> xreferences) {
+  public XReferenceFoundException(String id, Map<String, List<Document>> xreferences) {
     super("Cross references found for " + id);
     this.id = id;
     this.xreferences = xreferences;
+    this.setType(ExceptionType.XREFERENCEFOUND);
   }
 
-  public Map<String, List<BasicDBObject>> getXreferences() {
+  public Map<String, List<Document>> getXreferences() {
     return xreferences;
   }
 
-  public void setXreferences(Map<String, List<BasicDBObject>> xreferences) {
+  public void setXreferences(Map<String, List<Document>> xreferences) {
     this.xreferences = xreferences;
   }
 
@@ -52,6 +59,13 @@ public class XReferenceFoundException extends Exception {
     this.id = id;
   }
 
+  public ExceptionType getType() {
+    return type;
+  }
+
+  public void setType(ExceptionType type) {
+    this.type = type;
+  }
 
 
 }

@@ -31,7 +31,7 @@ public class SerializableSectionFactory {
 	    		serializableSection = new SerializableProfile(section, level, datatypeRegistry, datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
 	    } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
 	      serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
-	          datatypesMap, datatypeNamesMap, valuesetNamesMap,bindedDatatypes, bindedComponents);
+	          datatypesMap, datatypeNamesMap, valuesetNamesMap,valuesetNamesMap, bindedDatatypes, bindedComponents);
 	    } 
 	    return serializableSection;
 	  }

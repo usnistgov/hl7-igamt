@@ -38,6 +38,7 @@ public class SerializableDatatype extends SerializableResource {
 
   private Map<String, String> datatypeNamesMap = null;
   private Map<String, String> valuesetNamesMap = null;
+  private Map<String, String> valuesetLabelMap;
   private int level;
   private Map<String, String> componentValuesetMap = new HashMap<>();
   private Set<String> bindedComponents;
@@ -47,10 +48,11 @@ public class SerializableDatatype extends SerializableResource {
    * @param position
    */
   public SerializableDatatype(Datatype datatype, String position, int level,
-      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap, Set<String> bindedComponents) {
+      Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedComponents) {
     super(datatype, position);
     this.datatypeNamesMap = datatypeNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
     this.bindedComponents = bindedComponents;
     this.level = level;
   }

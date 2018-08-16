@@ -14,7 +14,13 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionPredicate;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
 
 
@@ -29,6 +35,7 @@ public class StructureElementBinding extends Binding {
   private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
   private String constantValue;
+
   private Predicate predicate;
   private Set<PredicateCrossRef> predicateCrossRefs;
 

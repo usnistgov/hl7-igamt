@@ -34,11 +34,11 @@ public abstract class SerializableResource extends SerializableAbstractDomain {
     Resource resource = (Resource) super.getAbstractDomain();
     if (resource != null && element != null) {
       element.addAttribute(new Attribute("postDef",
-          resource.getPostDef() != null
+          resource.getPostDef() != null && !resource.getPostDef().isEmpty()
               ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef())
               : ""));
       element.addAttribute(new Attribute("preDef",
-          resource.getPreDef() != null
+          resource.getPreDef() != null && !resource.getPreDef().isEmpty()
               ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef())
               : ""));
       element.addAttribute(new Attribute("type", type.getValue()));

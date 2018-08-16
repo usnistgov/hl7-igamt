@@ -147,7 +147,7 @@ public ExportedFile exportDatatypeLibraryToWeb(String username, String datatypeL
 	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
 	    if (datatypeLibrary != null) {
 	      ExportedFile htmlFile =
-	          this.serializeDatatypeLibraryToWeb(username, datatypeLibrary, ExportFormat.WEB);
+	          this.serializeDatatypeLibraryToWeb(username, datatypeLibrary, ExportFormat.HTML);
 	      return htmlFile;
 	    }
 	    return null;

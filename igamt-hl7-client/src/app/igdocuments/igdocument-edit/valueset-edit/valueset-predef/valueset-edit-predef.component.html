@@ -1,6 +1,26 @@
-<h2>Valueset Pre Definition TEXT</h2>
 <div *ngIf="valuesetPredef">
-    <div class="ui-g input-box">
-        <div class="ui-g-12" [froalaEditor] [(froalaModel)]="valuesetPredef.preDef"></div>
-    </div>
+    <form #editForm="ngForm">
+
+        <div class="ui-g cp-header">
+
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    Valueset Pre Definition: {{valuesetPredef.bindingIdentifier}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="valuesetPredef.updateDate">
+                <i class="fa fa-calendar"></i> {{valuesetPredef.updateDate}}
+            </span>
+                </div>
+            </div>
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <div class="ui-g-12" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="valuesetPredef.preDef"></div>
+        </div>
+    </form>
 </div>

@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.legacy.service.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -206,12 +208,22 @@ public class BindingHandler {
           if (target instanceof Field) {
             Field f = (Field) target;
             if (f.getDatatype() != null && f.getDatatype().getId() != null) {
-              childDatatype = datatypeRepository.findOne(f.getDatatype().getId());
+              Optional<Datatype> optional = datatypeRepository.findById(f.getDatatype().getId());
+              if(optional.isPresent()) {
+                childDatatype = optional.get();
+              } else {
+                System.out.println("Datatype not present: "+f.getDatatype().getId());
+              }
             }
           } else if (target instanceof Component) {
             Component c = (Component) target;
             if (c.getDatatype() != null && c.getDatatype().getId() != null) {
-              childDatatype = datatypeRepository.findOne(c.getDatatype().getId());
+              Optional<Datatype> optional = datatypeRepository.findById(c.getDatatype().getId());
+              if(optional.isPresent()) {
+                childDatatype = optional.get();
+              } else {
+                System.out.println("Datatype not present: "+c.getDatatype().getId());
+              }
             }
           }
 
@@ -260,7 +272,13 @@ public class BindingHandler {
       Field f = (Field) target;
       seb.setElementId(f.getId());
       if (f.getDatatype() != null && f.getDatatype().getId() != null) {
-        Datatype childDatatype = datatypeRepository.findOne(f.getDatatype().getId());
+        Datatype childDatatype = null;
+        Optional<Datatype> optional = datatypeRepository.findById(f.getDatatype().getId());
+        if(optional.isPresent()) {
+          childDatatype = optional.get();
+        } else {
+          System.out.println("Datatype not present: "+f.getDatatype().getId());
+        }
         if (childDatatype != null) {
           if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
             for (Component childC : childDatatype.getComponents()) {
@@ -274,8 +292,13 @@ public class BindingHandler {
     } else if (target instanceof Component) {
       Component c = (Component) target;
       seb.setElementId(c.getId());
-      if (c.getDatatype() != null && c.getDatatype().getId() != null) {
-        Datatype childDatatype = datatypeRepository.findOne(c.getDatatype().getId());
+      if (c != null && c.getDatatype() != null && c.getDatatype().getId() != null) {
+        Datatype childDatatype = null;
+        try{
+          childDatatype = datatypeRepository.findById(c.getDatatype().getId()).get();
+        } catch (NoSuchElementException e) {
+          System.out.println("Datatype not present: "+c.getDatatype().getId());
+        }
         if (childDatatype != null) {
           if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
             for (Component childC : childDatatype.getComponents()) {
@@ -290,7 +313,11 @@ public class BindingHandler {
       SegmentRef sr = (SegmentRef) target;
       seb.setElementId(sr.getId());
       if (sr.getRef() != null && sr.getRef().getId() != null) {
-        Segment childSegment = segmentRepository.findOne(sr.getRef().getId());
+        Segment childSegment = null;
+        Optional<Segment> optional = segmentRepository.findById(sr.getRef().getId());
+        if(optional.isPresent()) {
+          childSegment = optional.get();
+        }
         if (childSegment != null) {
           if (childSegment.getFields() != null && childSegment.getFields().size() > 0) {
             for (Field childF : childSegment.getFields()) {

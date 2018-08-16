@@ -34,7 +34,7 @@ import {ConformanceprofileEditConformancestatementsResolver} from "./conformance
             path: ':conformanceprofileId/structure', component: ConformanceprofileEditStructureComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileStructure : ConformanceprofileEditStructureResolver}
         },
         {
-            path: ':segmentId/conformanceStatement', component: ConformanceprofileEditConformancestatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileConformanceStatements : ConformanceprofileEditConformancestatementsResolver}
+            path: ':conformanceprofileId/conformanceStatement', component: ConformanceprofileEditConformancestatementsComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileConformanceStatements : ConformanceprofileEditConformancestatementsResolver}
         }
     ])
   ],

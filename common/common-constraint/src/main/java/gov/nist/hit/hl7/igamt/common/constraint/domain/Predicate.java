@@ -11,13 +11,21 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  * @author jungyubw
  *
  */
-public class Predicate extends Constraint {
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({@JsonSubTypes.Type(value = FreeTextPredicate.class, name = "FREE"),
+               @JsonSubTypes.Type(value = AssertionPredicate.class, name = "ASSERTION")})
+public abstract class Predicate {
+  protected ConstraintType type;
 
   protected Usage trueUsage;
   protected Usage falseUsage;
@@ -40,6 +48,14 @@ public class Predicate extends Constraint {
 
   public void setFalseUsage(Usage falseUsage) {
     this.falseUsage = falseUsage;
+  }
+
+  public ConstraintType getType() {
+    return type;
+  }
+
+  public void setType(ConstraintType type) {
+    this.type = type;
   }
 
 

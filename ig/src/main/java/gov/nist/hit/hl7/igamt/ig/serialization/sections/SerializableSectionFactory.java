@@ -34,9 +34,9 @@ import gov.nist.hit.hl7.igamt.segment.serialization.SerializableSegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.domain.sections.SerializableTextSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -47,7 +47,7 @@ public class SerializableSectionFactory {
 
   public static SerializableSection getSerializableSection(Section section, int level,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
-      Map<String, Valueset> valuesetsMap, Map<String, String> valuesetNamesMap,
+      Map<String, SerializableValuesetStructure> valuesetsMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap,
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
       ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
       SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
@@ -60,29 +60,29 @@ public class SerializableSectionFactory {
       serializableSection = new SerializableTextSection((TextSection) section, level);
     } else if (Type.PROFILE.equals(section.getType())) {
       serializableSection = new SerializableProfile(section, level, datatypesMap, datatypeNamesMap,
-          valuesetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap, valueSetRegistry,
+          valuesetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap, conformanceProfilesMap, valueSetRegistry,
           datatypeRegistry, segmentRegistry, conformanceProfileRegistry, profileComponentRegistry,
           compositeProfileRegistry, bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
           bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
     } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeDatatypeTable()) {
       serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
-          datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
+          datatypesMap, datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedDatatypes, bindedComponents);
       }
     } else if (Type.VALUESETREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeValuesetsTable()) {
         serializableSection =
-            new SerializableValuesetRegistry(section, level, valueSetRegistry, valuesetsMap, bindedValueSets);
+            new SerializableValuesetRegistry(section, level, valueSetRegistry, valuesetsMap, bindedValueSets, exportConfiguration.getMaxCodeNumber());
       }
     } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeSegmentTable()) {
       serializableSection = new SerializableSegmentRegistry(section, level, segmentRegistry,
-          segmentsMap, datatypeNamesMap, valuesetNamesMap, bindedSegments, bindedFields);
+          segmentsMap, datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedSegments, bindedFields);
       }
     } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeMessageTable()) {
       serializableSection = new SerializableConformanceProfileRegistry(section, level,
-          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, bindedGroupsAndSegmentRefs);
+          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, valuesetLabelMap, bindedGroupsAndSegmentRefs);
       }
     } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeProfileComponentTable()) {

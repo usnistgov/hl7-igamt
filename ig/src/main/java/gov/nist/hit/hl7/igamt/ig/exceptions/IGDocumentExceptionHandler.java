@@ -11,16 +11,11 @@
  */
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
-import java.util.List;
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-
-import com.mongodb.BasicDBObject;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
@@ -38,9 +33,16 @@ public class IGDocumentExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({XReferenceFoundException.class})
-  public Map<String, List<BasicDBObject>> handleXReferenceFoundException(
+  public XReferenceFoundException handleXReferenceFoundException(
       XReferenceFoundException exception) {
-    return exception.getXreferences();
+    return exception;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({AddingException.class})
+  public AddingException handleXReferenceFoundException(AddingException exception) {
+    return exception;
   }
 
 
@@ -81,8 +83,8 @@ public class IGDocumentExceptionHandler {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({IGTocUpdateException.class})
-  public ResponseMessage handleUpdateTocException(IGTocUpdateException exception) {
+  @ExceptionHandler({IGUpdateException.class})
+  public ResponseMessage handleUpdateTocException(IGUpdateException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }

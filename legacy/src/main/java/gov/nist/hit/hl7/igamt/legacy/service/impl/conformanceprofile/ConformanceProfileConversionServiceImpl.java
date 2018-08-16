@@ -135,7 +135,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
             .convertResourceBinding(oldMessage));
     if (oldMessage.getAccountId() != null) {
       Account acc = accountRepository.findByAccountId(oldMessage.getAccountId());
-      if (acc.getAccountId() != null) {
+      if (acc != null && acc.getAccountId() != null) {
         if (acc.getUsername() != null) {
           convertedConformanceProfile.setUsername(acc.getUsername());
         }

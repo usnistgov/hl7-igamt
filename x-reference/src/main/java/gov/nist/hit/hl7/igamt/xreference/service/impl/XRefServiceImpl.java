@@ -25,14 +25,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-
-import com.mongodb.BasicDBObject;
 
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
@@ -49,14 +48,14 @@ public class XRefServiceImpl extends XRefService {
 
 
   @Override
-  public Map<String, List<BasicDBObject>> getDatatypeReferences(String id,
-      Set<String> filterDatatypeIds, Set<String> filterSegmentIds) {
-    Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
-    List<BasicDBObject> datatypes = getDatatypeRefsByDatatypes(id, filterDatatypeIds);
+  public Map<String, List<Document>> getDatatypeReferences(String id, Set<String> filterDatatypeIds,
+      Set<String> filterSegmentIds) {
+    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
+    List<Document> datatypes = getDatatypeRefsByDatatypes(id, filterDatatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }
-    List<BasicDBObject> segments = getDatatypeRefsBySegments(id, filterSegmentIds);
+    List<Document> segments = getDatatypeRefsBySegments(id, filterSegmentIds);
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
@@ -68,7 +67,7 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the datatypes referencing the data type with id at a component level
    */
-  private List<BasicDBObject> getDatatypeRefsByDatatypes(String id, Set<String> filterDatatypeIds) {
+  private List<Document> getDatatypeRefsByDatatypes(String id, Set<String> filterDatatypeIds) {
     Aggregation aggregation = null;
     if (filterDatatypeIds != null) {
       aggregation =
@@ -86,7 +85,7 @@ public class XRefServiceImpl extends XRefService {
     }
 
     return XReferenceUtil.processDatatypes(
-        mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults());
+        mongoTemplate.aggregate(aggregation, "datatype", Document.class).getMappedResults());
   }
 
 
@@ -95,7 +94,7 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the segments referencing a data type at a field level
    */
-  private List<BasicDBObject> getDatatypeRefsBySegments(String id, Set<String> filterSegmentIds) {
+  private List<Document> getDatatypeRefsBySegments(String id, Set<String> filterSegmentIds) {
     Aggregation aggregation = null;
     if (filterSegmentIds != null) {
       aggregation =
@@ -110,16 +109,16 @@ public class XRefServiceImpl extends XRefService {
               .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
     }
     return XReferenceUtil.processSegments(
-        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults());
+        mongoTemplate.aggregate(aggregation, "segment", Document.class).getMappedResults());
   }
 
 
 
   @Override
-  public Map<String, List<BasicDBObject>> getSegmentReferences(String id,
+  public Map<String, List<Document>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds) {
-    Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
-    List<BasicDBObject> conformanceProfiles =
+    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
+    List<Document> conformanceProfiles =
         getSegmentReferencesByConformanceProfiles(id, filterConformanceProfileIds);
     if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
       results.put(CONFORMANCE_PROFILE, conformanceProfiles);
@@ -137,7 +136,7 @@ public class XRefServiceImpl extends XRefService {
    * @param conformanceProfileIds
    * @return
    */
-  public List<BasicDBObject> getSegmentReferencesByConformanceProfiles(String id,
+  public List<Document> getSegmentReferencesByConformanceProfiles(String id,
       Set<String> filterConformanceProfileIds) {
     Aggregation aggregation = null;
     ObjectId objId = new ObjectId(id);
@@ -151,7 +150,7 @@ public class XRefServiceImpl extends XRefService {
     }
 
     return XReferenceUtil.processSegmentReferences(mongoTemplate
-        .aggregate(aggregation, "conformanceProfile", BasicDBObject.class).getMappedResults(), id);
+        .aggregate(aggregation, "conformanceProfile", Document.class).getMappedResults(), id);
   }
 
 
@@ -172,19 +171,19 @@ public class XRefServiceImpl extends XRefService {
    * java.util.Set, java.util.Set)
    */
   @Override
-  public Map<String, List<BasicDBObject>> getValueSetReferences(String id, Set<String> datatypeIds,
+  public Map<String, List<Document>> getValueSetReferences(String id, Set<String> datatypeIds,
       Set<String> segmentIds, Set<String> conformanceProfileIds) throws XReferenceException {
-    Map<String, List<BasicDBObject>> results = new HashMap<String, List<BasicDBObject>>();
-    List<BasicDBObject> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
+    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
+    List<Document> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }
-    List<BasicDBObject> segments = getValueSetRefsBySegments(id, segmentIds);
+    List<Document> segments = getValueSetRefsBySegments(id, segmentIds);
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
 
-    List<BasicDBObject> conformanceProfiles =
+    List<Document> conformanceProfiles =
         getValueSetRefsByConformanceProfiles(id, conformanceProfileIds);
     if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
       results.put(CONFORMANCE_PROFILE, conformanceProfiles);
@@ -202,7 +201,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<BasicDBObject> getValueSetRefsBySegments(String id, Set<String> segmentIds)
+  private List<Document> getValueSetRefsBySegments(String id, Set<String> segmentIds)
       throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
@@ -215,8 +214,8 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<BasicDBObject> results = processValueSetReferences(
-        mongoTemplate.aggregate(aggregation, "segment", BasicDBObject.class).getMappedResults(), id,
+    List<Document> results = processValueSetReferences(
+        mongoTemplate.aggregate(aggregation, "segment", Document.class).getMappedResults(), id,
         "segment");
 
     return results;
@@ -229,7 +228,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<BasicDBObject> getValueSetRefsByConformanceProfiles(String id,
+  private List<Document> getValueSetRefsByConformanceProfiles(String id,
       Set<String> conformanceProfileIds) throws XReferenceException {
     Aggregation aggregation = null;
     if (conformanceProfileIds != null) {
@@ -243,8 +242,8 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<BasicDBObject> results = processValueSetReferences(mongoTemplate
-        .aggregate(aggregation, "conformanceProfile", BasicDBObject.class).getMappedResults(), id,
+    List<Document> results = processValueSetReferences(mongoTemplate
+        .aggregate(aggregation, "conformanceProfile", Document.class).getMappedResults(), id,
         "conformanceProfile");
 
     return results;
@@ -258,7 +257,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<BasicDBObject> getValueSetRefsByDatatypes(String id, Set<String> segmentIds)
+  private List<Document> getValueSetRefsByDatatypes(String id, Set<String> segmentIds)
       throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
@@ -271,9 +270,9 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<BasicDBObject> results = processValueSetReferences(
-        mongoTemplate.aggregate(aggregation, "datatype", BasicDBObject.class).getMappedResults(),
-        id, "datatype");
+    List<Document> results = processValueSetReferences(
+        mongoTemplate.aggregate(aggregation, "datatype", Document.class).getMappedResults(), id,
+        "datatype");
 
     return results;
   }
@@ -288,14 +287,14 @@ public class XRefServiceImpl extends XRefService {
    * @return
    * @throws XReferenceException
    */
-  private BasicDBObject processValueSetReferences(BasicDBObject referenceObject, String valueSetId,
+  private Document processValueSetReferences(Document referenceObject, String valueSetId,
       String referenceType) throws XReferenceException {
-    List<BasicDBObject> children =
-        (List<BasicDBObject>) ((BasicDBObject) referenceObject.get("binding")).get("children");
-    List<BasicDBObject> tmp = new ArrayList<BasicDBObject>();
-    for (BasicDBObject child : children) {
-      List<BasicDBObject> valuesetBindings = (List<BasicDBObject>) child.get("valuesetBindings");
-      List<BasicDBObject> tmpValuesetBinding = new ArrayList<BasicDBObject>();
+    List<Document> children =
+        (List<Document>) ((Document) referenceObject.get("binding")).get("children");
+    List<Document> tmp = new ArrayList<Document>();
+    for (Document child : children) {
+      List<Document> valuesetBindings = (List<Document>) child.get("valuesetBindings");
+      List<Document> tmpValuesetBinding = new ArrayList<Document>();
       String path =
           findElementPath(referenceObject, referenceType, child.get("elementId").toString());
       if (path == null) {
@@ -305,7 +304,7 @@ public class XRefServiceImpl extends XRefService {
       path = XReferenceUtil.getName(referenceObject) + "." + path;
       child.append("path", path);
 
-      for (BasicDBObject valuesetBinding : valuesetBindings) {
+      for (Document valuesetBinding : valuesetBindings) {
         if (valuesetBinding.get("valuesetId").equals(valueSetId)) {
           valuesetBinding.remove("valuesetId"); // no need of extra information
           tmpValuesetBinding.add(valuesetBinding);
@@ -329,12 +328,12 @@ public class XRefServiceImpl extends XRefService {
   }
 
 
-  private List<BasicDBObject> getObjectByIdAndVersion(String id, int version, String type) {
+  private List<Document> getObjectByIdAndVersion(String id, int version, String type) {
     Aggregation aggregation = null;
     aggregation = newAggregation(
         match(Criteria.where("_id._id").is(new ObjectId(id)).and("_id.version").is(version)));
-    List<BasicDBObject> results =
-        mongoTemplate.aggregate(aggregation, type, BasicDBObject.class).getMappedResults();
+    List<Document> results =
+        mongoTemplate.aggregate(aggregation, type, Document.class).getMappedResults();
     return results;
   }
 
@@ -349,88 +348,87 @@ public class XRefServiceImpl extends XRefService {
    * @return
    * @throws XReferenceException
    */
-  public List<BasicDBObject> processValueSetReferences(List<BasicDBObject> references,
-      String valueSetId, String referenceType) throws XReferenceException {
-    for (BasicDBObject reference : references) {
+  public List<Document> processValueSetReferences(List<Document> references, String valueSetId,
+      String referenceType) throws XReferenceException {
+    for (Document reference : references) {
       processValueSetReferences(reference, valueSetId, referenceType);
     }
     return references;
   }
 
 
-  private String getRefId(BasicDBObject element) {
-    String id = ((BasicDBObject) element.get("ref")).get("_id").toString();
+  private String getRefId(Document element) {
+    String id = ((Document) element.get("ref")).get("_id").toString();
     return id;
   }
 
-  private String getId(BasicDBObject element) {
+  private String getId(Document element) {
     String id = element.getString("_id");
     return id;
   }
 
 
 
-  private String findElementPath(BasicDBObject parent, String parentType, String elementId) {
-    int version = parent.getInt("version");
+  private String findElementPath(Document parent, String parentType, String elementId) {
+    int version = parent.getInteger("version");
 
     if (parentType.equals("segment")) {
-      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("children");
-      for (BasicDBObject child : children) {
+      List<Document> children = (List<Document>) parent.get("children");
+      for (Document child : children) {
         String childId = getId(child);
         if (childId.equals(elementId)) {
-          return child.getInt("position") + "";
+          return child.getInteger("position") + "";
         } else {
           String datatypeId = getRefId(child);
-          List<BasicDBObject> datatypes = getObjectByIdAndVersion(datatypeId, version, "datatype");
+          List<Document> datatypes = getObjectByIdAndVersion(datatypeId, version, "datatype");
           if (datatypes != null && !datatypes.isEmpty()) {
-            BasicDBObject datatype = datatypes.get(0);
+            Document datatype = datatypes.get(0);
             String path = getDatatypeChildPath(datatype, elementId);
             if (path != null) { // 2
-              return child.getInt("position") + "." + path; // MSH.1.2
+              return child.getInteger("position") + "." + path; // MSH.1.2
             }
           }
         }
       }
     } else if (parentType.equals("datatype")) {
-      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("components");
+      List<Document> children = (List<Document>) parent.get("components");
       if (children != null) {
-        for (BasicDBObject child : children) {
+        for (Document child : children) {
           String childId = getId(child);
           if (childId.equals(elementId)) {
-            return child.getInt("position") + "";
+            return child.getInteger("position") + "";
           } else {
             String datatypeId = getRefId(child);
-            List<BasicDBObject> datatypes =
-                getObjectByIdAndVersion(datatypeId, version, "datatype");
+            List<Document> datatypes = getObjectByIdAndVersion(datatypeId, version, "datatype");
             if (datatypes != null && !datatypes.isEmpty()) {
-              BasicDBObject datatype = datatypes.get(0);
+              Document datatype = datatypes.get(0);
               String path = getDatatypeChildPath(datatype, elementId);
               if (path != null) { // 2
-                return child.getInt("position") + "." + path; // MSH.1.2
+                return child.getInteger("position") + "." + path; // MSH.1.2
               }
             }
           }
         }
       }
     } else if (parentType.equals("conformanceProfile")) {
-      List<BasicDBObject> children = (List<BasicDBObject>) parent.get("children");
-      for (BasicDBObject child : children) {
+      List<Document> children = (List<Document>) parent.get("children");
+      for (Document child : children) {
         String childId = getId(child);
         if (childId.equals(elementId)) {
           return child.getString("position");
         } else {
           if (child.getString("type").equals("SEGMENTREF")) {
             String segmentId = getRefId(child);
-            List<BasicDBObject> segments = getObjectByIdAndVersion(segmentId, version, "segment");
-            BasicDBObject segment = segments.get(0);
+            List<Document> segments = getObjectByIdAndVersion(segmentId, version, "segment");
+            Document segment = segments.get(0);
             String path = getSegmentChildPath(segment, elementId);
             if (path != null) { // 2
-              return child.getInt("position") + "." + path; // ADMSH.1.2
+              return child.getInteger("position") + "." + path; // ADMSH.1.2
             }
           } else {
             String path = getGroupChildPath(child, version, elementId);
             if (path != null) {
-              return child.getInt("position") + "." + path;
+              return child.getInteger("position") + "." + path;
             }
           }
         }
@@ -443,27 +441,27 @@ public class XRefServiceImpl extends XRefService {
   }
 
 
-  private String getGroupChildPath(BasicDBObject referenceObject, int conformanceProfileVersion,
+  private String getGroupChildPath(Document referenceObject, int conformanceProfileVersion,
       String elementId) {
-    List<BasicDBObject> children = (List<BasicDBObject>) referenceObject.get("children");
-    for (BasicDBObject child : children) {
+    List<Document> children = (List<Document>) referenceObject.get("children");
+    for (Document child : children) {
       String childId = getId(child);
       if (childId.equals(elementId)) {
         return child.getString("position");
       } else {
         if (child.getString("type").equals("SEGMENTREF")) {
           String segmentId = getRefId(child);
-          List<BasicDBObject> segments =
+          List<Document> segments =
               getObjectByIdAndVersion(segmentId, conformanceProfileVersion, "segment");
-          BasicDBObject segment = segments.get(0);
+          Document segment = segments.get(0);
           String path = getSegmentChildPath(segment, elementId);
           if (path != null) { // 2
-            return child.getInt("position") + "." + path; // ADMSH.1.2
+            return child.getInteger("position") + "." + path; // ADMSH.1.2
           }
         } else {
           String path = getGroupChildPath(child, conformanceProfileVersion, elementId);
           if (path != null) {
-            return child.getInt("position") + "." + path;
+            return child.getInteger("position") + "." + path;
           }
         }
       }
@@ -472,19 +470,18 @@ public class XRefServiceImpl extends XRefService {
   }
 
 
-  private String getDatatypeChildPath(BasicDBObject object, String elementId) {
-    List<BasicDBObject> children = (List<BasicDBObject>) object.get("components");
+  private String getDatatypeChildPath(Document object, String elementId) {
+    List<Document> children = (List<Document>) object.get("components");
     if (children != null) {
-      int version = object.getInt("version");
-      for (BasicDBObject child : children) {
+      int version = object.getInteger("version");
+      for (Document child : children) {
         String childId = getId(child);
         if (childId.equals(elementId)) {
           return child.getString("position");
         } else {
           String compDatatypeId = getRefId(child);
-          List<BasicDBObject> datatypes =
-              getObjectByIdAndVersion(compDatatypeId, version, "datatype");
-          BasicDBObject compDatatype = datatypes.get(0);
+          List<Document> datatypes = getObjectByIdAndVersion(compDatatypeId, version, "datatype");
+          Document compDatatype = datatypes.get(0);
           String path = getDatatypeChildPath(compDatatype, elementId);
           if (path != null) {
             return child.getString("position") + "." + path;
@@ -496,18 +493,17 @@ public class XRefServiceImpl extends XRefService {
   }
 
 
-  private String getSegmentChildPath(BasicDBObject object, String elementId) {
-    List<BasicDBObject> children = (List<BasicDBObject>) object.get("children");
-    int version = object.getInt("version");
-    for (BasicDBObject child : children) {
+  private String getSegmentChildPath(Document object, String elementId) {
+    List<Document> children = (List<Document>) object.get("children");
+    int version = object.getInteger("version");
+    for (Document child : children) {
       String childId = getId(child);
       if (childId.equals(elementId)) {
         return child.getString("position");
       } else {
         String compDatatypeId = getRefId(child);
-        List<BasicDBObject> datatypes =
-            getObjectByIdAndVersion(compDatatypeId, version, "datatype");
-        BasicDBObject compDatatype = datatypes.get(0);
+        List<Document> datatypes = getObjectByIdAndVersion(compDatatypeId, version, "datatype");
+        Document compDatatype = datatypes.get(0);
         String path = getDatatypeChildPath(compDatatype, elementId);
         if (path != null) {
           return child.getString("position") + "." + path;

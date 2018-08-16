@@ -1,12 +1,25 @@
-<h2>Valueset Structure</h2>
-
 <div *ngIf="valuesetStructure">
-   {{valuesetStructure|json}}
+    <form #editForm="ngForm">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    Valueset Structure: {{valuesetStructure.bindingIdentifier}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+                    <span class="ig-list-date" *ngIf="valuesetStructure.updateDate">
+                        <i class="fa fa-calendar"></i> {{valuesetStructure.updateDate}}
+                    </span>
+                </div>
+            </div>
 
-    {{codeSystemOptoins|json}}
-    <form #valuesetStructureForm="ngForm">
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+            </div>
+
+        </div>
+
         <p-fieldset legend="Attributes" [toggleable]="true">
-
             <div class="ui-g input-box">
                 <label class="metadata-label ui-g-2">
                     Extensibility:
@@ -23,24 +36,95 @@
                 </label>
                 <p-dropdown [options]="contentDefinitionOptions" [(ngModel)]="valuesetStructure.contentDefinition" name="contentDefinition" id="contentDefinition" #contentDefinition="ngModel" required appendTo="body" class="ui-g-2"></p-dropdown>
             </div>
-
         </p-fieldset>
 
-        <p-fieldset legend="Content" [toggleable]="true">
+        <p-fieldset legend="Code Systems" [toggleable]="true">
+            <p-table [value]="valuesetStructure.displayCodeSystems">
+                <ng-template pTemplate="header">
+                    <tr>
+                        <th>Identifier</th>
+                        <th>Description</th>
+                        <th>URL</th>
+                        <th>CodeSystem Type</th>
+                    </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-codesys>
+                    <tr>
+                        <td *ngIf="codesys.codeSystemType === 'INTERNAL'" pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="identifier" id="identifier" type="text" #identifier="ngModel" [(ngModel)]="codesys.identifier" required />
+                                    <div class="ui-g-offset-1" *ngIf="identifier.invalid&& (identifier.dirty || identifier.touched)">
+                                        <p-message severity="error" text="Identifier is required"></p-message>
+                                    </div>
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{codesys.identifier}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td *ngIf="codesys.codeSystemType === 'EXTERNAL'">
+                            {{codesys.identifier}}
+                        </td>
+
+                        <td *ngIf="codesys.codeSystemType === 'INTERNAL'" pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="codesysDescription" id="codesysDescription" type="text" #codesysDescription="ngModel" [(ngModel)]="codesys.description" />
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{codesys.description}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td *ngIf="codesys.codeSystemType === 'EXTERNAL'">
+                            {{codesys.description}}
+                        </td>
+
+                        <td *ngIf="codesys.codeSystemType === 'INTERNAL'" pEditableColumn>
+                            <p-cellEditor>
+                                <ng-template pTemplate="input">
+                                    <input name="codesysUrl" id="codesysUrl" type="text" #codesysUrl="ngModel" [(ngModel)]="codesys.url" />
+                                </ng-template>
+                                <ng-template pTemplate="output">
+                                    {{codesys.url}}
+                                </ng-template>
+                            </p-cellEditor>
+                        </td>
+                        <td *ngIf="codesys.codeSystemType === 'EXTERNAL'">
+                            {{codesys.url}}
+                        </td>
+
+                        <td>
+                            {{codesys.codeSystemType}}
+                        </td>
+                    </tr>
+
+                </ng-template>
+                <ng-template pTemplate="summary" let-rowData>
+                    <div style="text-align:right">
+                        <button type="button" pButton icon="fa fa-plus" (click)="showDialogToAddCodeSys()" label="Create New Code System"></button>
+                    </div>
+                </ng-template>
+            </p-table>
+        </p-fieldset>
+
+        <p-fieldset legend="Codes" [toggleable]="true">
             <p-table [value]="valuesetStructure.displayCodes">
                 <ng-template pTemplate="header">
                     <tr>
                         <th>Value</th>
                         <th>Description</th>
+                        <th>Type</th>
                         <th>CodeSystem</th>
                         <th>Usage</th>
                         <th>Comments</th>
-                        <th>Actions <i class="fa fa-plus" (click)="addNewCode()"></i></th>
+                        <th>Actions</th>
                     </tr>
                 </ng-template>
                 <ng-template pTemplate="body" let-code>
                     <tr>
-                        <td pEditableColumn>
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'INTERNAL'" pEditableColumn>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <input name="value" id="value" type="text" #value="ngModel" [(ngModel)]="code.value" required />
@@ -53,7 +137,11 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-                        <td pEditableColumn>
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'EXTERNAL'">
+                            {{code.value}}
+                        </td>
+
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'INTERNAL'" pEditableColumn>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
                                     <input name="description" id="description" type="text" #description="ngModel" [(ngModel)]="code.description" required />
@@ -66,10 +154,18 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
-                        <td pEditableColumn>
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'EXTERNAL'">
+                            {{code.description}}
+                        </td>
+
+                        <td>
+                            {{code.codeSysRef.codeSystemType}}
+                        </td>
+
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'INTERNAL'" pEditableColumn>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
-                                    <p-dropdown name="codeSysRef" id="codeSysRef" #codeSysRef="ngModel" [options]="codeSystemOptoins" [(ngModel)]="code.codeSysRef" required appendTo="body">
+                                    <p-dropdown name="codeSysRef" id="codeSysRef" #codeSysRef="ngModel" [options]="codeSystemOptions" [(ngModel)]="code.codeSysRef" required appendTo="body">
                                         <ng-template let-option pTemplate="body">
                                             <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
                                                 {{option.label}}
@@ -85,6 +181,11 @@
                                 </ng-template>
                             </p-cellEditor>
                         </td>
+
+                        <td *ngIf="code.codeSysRef.codeSystemType === 'EXTERNAL'">
+                            {{findCodeSysIdentifier(code.codeSysRef)}}
+                        </td>
+
                         <td pEditableColumn>
                             <p-cellEditor>
                                 <ng-template pTemplate="input">
@@ -113,9 +214,93 @@
                         </td>
                     </tr>
                 </ng-template>
+                <ng-template pTemplate="summary" let-rowData>
+                    <div style="text-align:right">
+                        <button type="button" pButton icon="fa fa-plus" (click)="showDialogToAdd()" label="Create New Code"></button>
+                    </div>
+                </ng-template>
             </p-table>
         </p-fieldset>
-
     </form>
 
+    <p-dialog header="Add New Code for External" [(visible)]="displayDialog" [responsive]="true" showEffect="fade" [modal]="true" [width]="500">
+        <div class="ui-g ui-fluid" *ngIf="newCode">
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newValue">Value: </label>
+                </div>
+                <input pInputText name="newValue" class="ui-g-8" id="newValue" type="text" #newValue="ngModel" [(ngModel)]="newCode.value" />
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newDescription">Description: </label>
+                </div>
+                <input pInputText name="newDescription" class="ui-g-8" id="newDescription" type="text" #newDescription="ngModel" [(ngModel)]="newCode.description" />
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newCodeSysRef">CodeSystem: </label>
+                </div>
+                <div class="ui-g-8">
+                    <p-dropdown name="newCodeSysRef" id="newCodeSysRef" #newCodeSysRef="ngModel" [options]="codeSystemOptions" [(ngModel)]="newCode.codeSysRef" required appendTo="body" [autoWidth]="false">
+                        <ng-template let-option pTemplate="body">
+                            <div class="ui-helper-clearfix">
+                                {{option.label}}
+                            </div>
+                        </ng-template>
+                    </p-dropdown>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newUsage">Usage: </label>
+                </div>
+                <div class="ui-g-8">
+                    <p-dropdown name="newUsage" id="newUsage" #newUsage="ngModel" required [options]="codeUsageOptions" [(ngModel)]="newCode.usage" appendTo="body" [autoWidth]="false"></p-dropdown>
+                    <div class="ui-g-offset-1" *ngIf="newUsage.invalid && (newUsage.dirty || newUsage.touched)">
+                        <p-message severity="error" text="usage is required"></p-message>
+                    </div>
+                </div>
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newComments">Comments: </label>
+                </div>
+                <input name="newComments" class="ui-g-8" id="newComments" type="text" #newComments="ngModel" [(ngModel)]="newCode.comments" />
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-plus" (click)="addNewCode()" label="Add"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
+
+    <p-dialog header="Add New External Code System" [(visible)]="newCodeSysDialog" [responsive]="true" showEffect="fade" [modal]="true" [width]="500">
+        <div class="ui-g ui-fluid" *ngIf="newCodeSys">
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newIdentifier">Identifier: </label>
+                </div>
+                <input pInputText name="newIdentifier" class="ui-g-8" id="newIdentifier" type="text" #newIdentifier="ngModel" [(ngModel)]="newCodeSys.identifier" />
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newCodeSysDescription">Description: </label>
+                </div>
+                <input pInputText name="newCodeSysDescription" class="ui-g-8" id="newCodeSysDescription" type="text" #newCodeSysDescription="ngModel" [(ngModel)]="newCodeSys.description" />
+            </div>
+            <div class="ui-g-12">
+                <div class="ui-g-4">
+                    <label for="newUrl">URL: </label>
+                </div>
+                <input pInputText name="newUrl" class="ui-g-8" id="newUrl" type="text" #newUrl="ngModel" [(ngModel)]="newCodeSys.url" />
+            </div>
+        </div>
+        <p-footer>
+            <div class="ui-dialog-buttonpane ui-helper-clearfix">
+                <button type="button" pButton icon="fa fa-plus" (click)="addNewCodeSys()" label="Add"></button>
+            </div>
+        </p-footer>
+    </p-dialog>
 </div>

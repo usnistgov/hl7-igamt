@@ -10,6 +10,7 @@ import 'rxjs/add/operator/delay';
 import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs";
 import {Router} from "@angular/router";
+import {MessageService} from "primeng/components/common/messageservice";
 
 
 @Injectable()
@@ -24,7 +25,7 @@ export class AuthService {
 
 
 
-  constructor(private  http :HttpClient, private router :Router){
+  constructor(private  http :HttpClient, private router :Router,private messageService: MessageService){
 
   }
 
@@ -38,6 +39,9 @@ export class AuthService {
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
     }, error =>{
+
+
+      this.showError(error);
 
       this.isLoggedIn.next(false);
 
@@ -58,7 +62,9 @@ export class AuthService {
 
 
     }, error=>{
-      console.log("Failed to logout")
+
+      this.showError(error);
+
 
     })
   }
@@ -106,5 +112,17 @@ export class AuthService {
   isAuthenticated(){
     return this.isLoggedIn.getValue();
   }
+
+
+
+  showError(error:any) {
+    console.log(error);
+    error =JSON.parse(error.error.message);
+    console.log(error);
+    this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.message, id:'LOGINERROR'});
+  }
+
+
+
 }
 

@@ -7,6 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
 import {EditFreeConstraintComponent} from "../common/constraint/edit-freeconstraint.component";
 import {EditSimpleConstraintComponent} from "../common/constraint/edit-simpleconstraint.component";
+import {EditSimpleMessageConstraintComponent} from "../common/message-constraint/edit-simplemessageconstraint.component";
 import {EditComplexConstraintComponent} from "../common/constraint/edit-complexconstraint.component";
 import {EditAndOrConstraintComponent} from "../common/constraint/edit-andorconstraint.component";
 import {EditNotConstraintComponent} from "../common/constraint/edit-notconstraint.component";
@@ -31,6 +32,7 @@ import {TreeModule} from 'primeng/tree';
 import {DialogModule} from 'primeng/dialog';
 import {PanelModule} from 'primeng/panel';
 import {FieldsetModule} from 'primeng/fieldset';
+import {CrossReferenceComponent} from "../common/cross-reference/cross-reference.component";
 
 @NgModule({
   imports: [
@@ -56,11 +58,14 @@ import {FieldsetModule} from 'primeng/fieldset';
     DisplayCommentComponent,
     EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
-    EditIfThenConstraintComponent
+    EditIfThenConstraintComponent,
+    CrossReferenceComponent
+
   ],
 
   exports: [
@@ -74,11 +79,13 @@ import {FieldsetModule} from 'primeng/fieldset';
     DisplayCommentComponent,
     EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
     EditAndOrConstraintComponent,
     EditNotConstraintComponent,
-    EditIfThenConstraintComponent
+    EditIfThenConstraintComponent,
+    CrossReferenceComponent
   ]
 })
 export class UtilsModule {}

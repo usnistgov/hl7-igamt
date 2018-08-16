@@ -3,106 +3,101 @@ import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class ConformanceProfilesService {
-  constructor(private http: HttpClient) {
-  }
+    constructor(private http: HttpClient) {
+    }
 
-  public getConformanceProfileMetadata(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-        this.http.get('api/conformanceprofiles/' + id + '/metadata').toPromise().then(serverConformanceProfileMetadata => {
-          resolve(serverConformanceProfileMetadata);
-        }, error => {
-          reject(error);
+    public getConformanceProfileMetadata(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/conformanceprofiles/' + id + '/metadata').toPromise().then(serverConformanceProfileMetadata => {
+                resolve(serverConformanceProfileMetadata);
+            }, error => {
+                reject(error);
+            });
+
         });
+        return promise;
 
-  });
-    return promise;
+    }
 
-  }
+    public getConformanceProfileStructure(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
 
-  public getConformanceProfileStructure(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/conformanceprofiles/' + id + '/structure').toPromise().then(serverConformanceProfileStructure => {
+                resolve(serverConformanceProfileStructure);
+            }, error => {
+                reject(error);
+            });
 
-        this.http.get('api/conformanceprofiles/' + id + '/structure').toPromise().then(serverConformanceProfileStructure => {
-          resolve(serverConformanceProfileStructure);
-        }, error => {
-          reject(error);
         });
+        return promise;
+    }
 
-    });
-    return promise;
-  }
-
-  public getConformanceProfileCrossReference(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-        this.http.get('api/conformanceprofiles/' + id + '/crossReference').toPromise().then(serverConformanceProfileCrossReference => {
-          resolve(serverConformanceProfileCrossReference);
-        }, error => {
-          reject(error);
+    public getConformanceProfileCrossReference(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/conformanceprofiles/' + id + '/crossReference').toPromise().then(serverConformanceProfileCrossReference => {
+                resolve(serverConformanceProfileCrossReference);
+            }, error => {
+                reject(error);
+            });
         });
-      });
-    return promise;
-  }
+        return promise;
+    }
 
-  public getConformanceProfilePostDef(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
+    public getConformanceProfilePostDef(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
 
-        this.http.get('api/conformanceprofiles/' + id + '/postDef').toPromise().then(serverConformanceProfilePostDef => {
-          resolve(serverConformanceProfilePostDef);
-        }, error => {
-          reject(error);
+            this.http.get('api/conformanceprofiles/' + id + '/postdef').toPromise().then(serverConformanceProfilePostDef => {
+                resolve(serverConformanceProfilePostDef);
+            }, error => {
+                reject(error);
+            });
         });
-    });
-    return promise;
-  }
+        return promise;
+    }
 
-  public getConformanceProfilePreDef(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-
-        this.http.get('api/conformanceprofiles/' + id + '/preDef').toPromise().then(serverConformanceProfilePreDef => {
-          resolve(serverConformanceProfilePreDef);
-        }, error => {
-          reject(error);
+    public getConformanceProfilePreDef(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/conformanceprofiles/' + id + '/predef').toPromise().then(serverConformanceProfilePreDef => {
+                resolve(serverConformanceProfilePreDef);
+            }, error => {
+                reject(error);
+            });
         });
-      });
-    return promise;
-  }
+        return promise;
+    }
 
-  public getConformanceProfileConformanceStatements(id): Promise<any> {
-    const promise = new Promise<any>((resolve, reject) => {
-
-        this.http.get('api/conformanceprofiles/' + id + '/conformanceStatement').toPromise().then(serverConformanceProfileConformanceStatement => {
-          resolve(serverConformanceProfileConformanceStatement);
-        }, error => {
-          reject(error);
+    public getConformanceProfileConformanceStatements(id): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/conformanceprofiles/' + id + '/conformancestatement').toPromise().then(serverConformanceProfileConformanceStatement => {
+                resolve(serverConformanceProfileConformanceStatement);
+            }, error => {
+                reject(error);
+            });
         });
-      });
-    return promise;
-  }
+        return promise;
+    }
 
-  public saveConformanceProfileMetadata(id, metadata): Promise<any> {
-    return null;
+    public saveConformanceProfileMetadata(id, metadata): Promise<any> {
+        return this.http.post('api/conformanceprofiles/' + id + '/metadata',metadata).toPromise();
+    }
 
-  }
+    public saveConformanceProfileStructure(id, structure): Promise<any> {
+        return this.http.post('api/conformanceprofiles/' + id + '/structure',structure).toPromise();
+    }
 
-  public saveConformanceProfileStructure(id, structure): Promise<any> {
-  return null;
-  }
+    public saveConformanceProfilePreDef(id, preDef): Promise<any> {
+        return this.http.post('api/conformanceprofiles/' + id + '/predef', preDef).toPromise();
+    }
 
-  public saveConformanceProfilePreDef(id, preDef): Promise<any> {
-    return null;
-  }
+    public saveConformanceProfilePostDef(id, postDef): Promise<any> {
+        return this.http.post('api/conformanceprofiles/' + id + '/postdef', postDef).toPromise();
+    }
 
-  public saveConformanceProfilePostDef(id, postDef): Promise<any> {
+    public saveConformanceProfileCrossReferences(id, crossReference): Promise<any> {
+        return null;
+    }
 
-    return null;
-  }
-
-  public saveConformanceProfileCrossReferences(id, crossReference): Promise<any> {
-  return null;
-  }
-
-  public saveConformanceProfileConformanceStatements(id, conformanceStatements): Promise<any> {
-    return null;
-  }
-
+    public saveConformanceProfileConformanceStatements(id, conformanceStatements): Promise<any> {
+        return this.http.post('api/conformanceprofiles/' + id + '/conformancestatement', conformanceStatements).toPromise();
+    }
 }

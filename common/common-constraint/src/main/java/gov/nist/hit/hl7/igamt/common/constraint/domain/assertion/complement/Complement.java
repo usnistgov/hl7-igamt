@@ -11,10 +11,24 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
 /**
  * @author jungyubw
  *
  */
+
+
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "complementKey")
+@JsonSubTypes({@JsonSubTypes.Type(value = PresenceComplement.class, name = "PRESENCE"),
+               @JsonSubTypes.Type(value = SameValueComplement.class, name = "SAMEVALUE"),
+               @JsonSubTypes.Type(value = CompareValueComplement.class, name = "COMPAREVALUE"),
+               @JsonSubTypes.Type(value = CompareNodeComplement.class, name = "COMPARENODE"),
+               @JsonSubTypes.Type(value = FormattedComplement.class, name = "FORMATTED"),
+               @JsonSubTypes.Type(value = ListValuesComplement.class, name = "LISTVALUE"),
+               @JsonSubTypes.Type(value = ValuesetComplement.class, name = "VALUESET"),
+               @JsonSubTypes.Type(value = GenericComplement.class, name = "GENERIC")})
 public abstract class Complement {
   protected ComplementKey complementKey;
 

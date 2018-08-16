@@ -29,6 +29,9 @@
                     </xsl:element>
                     <xsl:value-of select="@title"/>
                 </xsl:when>
+                <xsl:when test="normalize-space(@description) !='' ">
+                		<xsl:value-of select="concat(@title,' - ',@description)"/>
+                </xsl:when>
                 <xsl:otherwise>
                     <xsl:value-of select="@title"/>
                 </xsl:otherwise>

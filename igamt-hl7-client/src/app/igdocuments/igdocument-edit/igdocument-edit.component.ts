@@ -2,6 +2,7 @@ import {Component, Input} from '@angular/core';
 
 import {SelectItem} from "primeng/components/common/selectitem";
 
+import * as _ from 'lodash'
 
 import {ViewChildren, ViewChild} from "@angular/core";
 import {TocService} from "./service/toc.service";
@@ -22,6 +23,7 @@ import {SectionsService} from "../../service/sections/sections.service";
 import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {LoadingService} from "./service/loading.service";
+import {DeleteElementComponent} from "./delete-element/delete-element.component";
 
 
 @Component({
@@ -37,6 +39,8 @@ export class IgDocumentEditComponent {
   @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
+  @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
+
 
   igId:any;
   exportModel: MenuItem[];
@@ -245,12 +249,12 @@ export class IgDocumentEditComponent {
   }
 
   setTreeModel(){
-   return this.tocService.setTreeModel(this.tree.treeModel);
+    return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 
   initTreeModel(){
-    this.tocService.initTreeModel(this.tree.treeModel);
+    return this.tocService.initTreeModel(this.tree.treeModel);
   }
 
 
@@ -612,7 +616,6 @@ export class IgDocumentEditComponent {
       id:node.id,
       name:node.data.data.label,
       type:node.data.data.type,
-
     })
       .subscribe(
         result => {
@@ -623,11 +626,124 @@ export class IgDocumentEditComponent {
             this.tree.treeModel.update();
 
           }, error=>{
-            
+
           });
         }
       )
   }
+
+
+
+
+  // Delete
+
+  deleteDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      node:node.data.data
+    })
+      .subscribe(
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+
+        }
+      )
+  };
+
+  deleteSegment(node){
+
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      node:node.data.data
+    })
+      .subscribe(
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+
+
+        }
+      )
+  };
+
+  deleteValueSet(node){
+    this.deleteElement.open({
+      igId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      node:node.data.data
+
+    })
+      .subscribe(
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+
+        }
+      )
+
+  };
+
+  deleteConformanceProfile(node){
+
+    this.deleteElement.open({
+      igDocumentId : this.igId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      node:node.data.data
+    })
+      .subscribe(
+        id => {
+
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
+
+        }
+      )
+  }
+
+  deleteSection(node){
+    //console.log( this.tree._options);
+    let ret =  this.tree.treeModel.getNodeById(node.id);
+    this.deleteElement.open({
+      igDocumentId : this.igId,
+      id:node.id,
+      name:node.data.data.label,
+      type:node.data.data.type,
+      node:node.data.data
+
+    })
+      .subscribe(
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.setTreeModel();
+
+        }
+      )
+  }
+
+
+
+
+
 
 
 
