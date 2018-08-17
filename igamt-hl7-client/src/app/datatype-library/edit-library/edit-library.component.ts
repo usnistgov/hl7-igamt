@@ -142,7 +142,7 @@ export class EditLibraryComponent {
 
   ngOnInit() {
     //console.log("Calling on Init");
-    this.libId= this.sp.snapshot.params["igId"];
+    this.libId= this.sp.snapshot.params["libId"];
     this.tocService.setIgId(this.libId);
 
 

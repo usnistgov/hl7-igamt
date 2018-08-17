@@ -74,7 +74,6 @@ import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -104,8 +103,6 @@ public class IGDocumentController extends BaseController {
   CrudService crudService;
 
 
-  @Autowired
-  SaveService saveService;
 
   @Autowired
   private XRefService xRefService;
@@ -336,16 +333,6 @@ public class IGDocumentController extends BaseController {
 
   public void setIgService(IgService igService) {
     this.igService = igService;
-  }
-
-
-  public SaveService getSaveService() {
-    return saveService;
-  }
-
-
-  public void setSaveService(SaveService saveService) {
-    this.saveService = saveService;
   }
 
 
