@@ -45,6 +45,7 @@ import {LibSectionResolver} from "./section/lib-section.resolver";
 import {LibMetaDataResolver} from "./datatype-library-metadata/datatype-library-metadata.resolver";
 import {EditLibraryService} from "./edit-library.service";
 import {LibErrorService} from "./lib-error/lib-error.service";
+import {LibraryExportService} from "./service/lib-export.service";
 
 
 @NgModule({
@@ -94,7 +95,7 @@ import {LibErrorService} from "./lib-error/lib-error.service";
 
   ],
   providers : [
-    TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService
+    TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService,LibraryExportService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

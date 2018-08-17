@@ -1,0 +1,60 @@
+<div class="list-ig" >
+
+
+  <p-dataView [value]="libs" [paginator]="true"  paginatorPosition="both" [rows]="8" [sortField]="sortField" [sortOrder]="sortOrder" [filterBy]="'title,subtitle,username'" #dv >
+    <p-header>
+
+      <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By"
+                  (onChange)="onSortChange($event)" [autoWidth]="false" [style]="{'min-width':'15em','vertical-align' : 'top',    'margin-bottom': '-60px !important' }"></p-dropdown>
+
+      <input type="search" pInputText placeholder="Filter" (keyup)="dv.filter($event.target.value)" style="float: right" >
+
+    </p-header>
+  <ng-template let-ig pTemplate="listItem">
+
+    <div class="ui-g" class="ig-list-border">
+      <div class="ui-g ui-g-9 ui-g-nopad">
+        <div class="ig-list-image-container">
+          <img *ngIf="ig.coverpage!=null"src={{ig.coverpage}}  class="ig-list-image">
+          <img *ngIf="ig.coverpage==null"  src="assets/layout/images/404.png"  class="ig-list-image" >
+        </div>
+        <div class="ui-g-11">
+          <div>
+            <span class="ig-list-title" (click)="open(ig,false)">{{ig.title}} </span>
+
+          </div>
+          <span *ngIf="ig.dateUpdated" class="ig-list-date">
+            <i class="fa fa-calendar"></i> Date Updated:{{ig.dateUpdated|date }}
+          </span>
+          <span *ngIf="ig.username" class="ig-list-user">
+            ,<i class="fa fa-user"></i> Author:  {{ig.username}},
+          </span>
+          <span class="ig-list-date">
+
+            <a (click)="toggleMoreInfo(ig.id)" style="text-decoration: underline; cursor: pointer"> More details...</a>
+
+          </span>
+
+
+
+          <div  *ngIf="moreInfoMap[ig.id.id]==true">
+
+          </div>
+
+        </div>
+
+      </div>
+      <div class="ui-g-3">
+        <div style="float: right">
+        <p-button styleClass="indigo-btn" (click)="open(ig,false)" label="Edit" icon="fa fa-pencil" iconPos="left"></p-button>
+        <p-button styleClass="ui-button-secondary" (click)="open(ig,true)" label="Read" icon="fa fa-eye" iconPos="left"></p-button>
+        <p-button styleClass="purple-btn" label="Copy" icon="fa fa-copy" iconPos="left"></p-button>
+        <p-button styleClass="red-btn"  label="Delete" icon="fa fa-remove" iconPos="left"></p-button>
+        </div>
+      </div>
+    </div>
+
+  </ng-template>
+
+</p-dataView>
+</div>

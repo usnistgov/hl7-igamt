@@ -34,6 +34,7 @@ import {LibDatatypeEditMetadataResolver} from "./datatype-metadata/lib-datatype-
 import {LibDatatypeEditStructureResolver} from "./datatype-structure/lib-datatype-edit-structure.resolver";
 import {LibDatatypeEditConformanceStatementsResolver} from "./datatype-conformancestatements/lib-datatype-edit-conformancestatements.resolver";
 import {TreeTableModule} from 'primeng/primeng';
+import {LibraryExportService} from "../service/lib-export.service";
 
 @NgModule({
   imports: [
@@ -54,7 +55,7 @@ import {TreeTableModule} from 'primeng/primeng';
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],
-  providers : [LibDatatypeCrossRefResolver,LibDatatypesService, LibDatatypeEditPostdefResolver, LibDatatypeEditPredefResolver, LibDatatypeEditMetadataResolver, LibDatatypeEditStructureResolver, LibDatatypeEditConformanceStatementsResolver],
+  providers : [LibDatatypeCrossRefResolver,LibDatatypesService, LibDatatypeEditPostdefResolver, LibDatatypeEditPredefResolver, LibDatatypeEditMetadataResolver, LibDatatypeEditStructureResolver, LibDatatypeEditConformanceStatementsResolver,LibraryExportService],
   declarations: [LibDatatypeEditStructureComponent, LibDatatypeEditConformanceStatementsComponent, LibDatatypeEditMetadataComponent, LibDatatypeEditPostdefComponent, LibDatatypeEditPredefComponent, LibDatatypeCrossRefComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

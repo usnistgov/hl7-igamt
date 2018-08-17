@@ -15,6 +15,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 
 
@@ -43,5 +44,13 @@ public interface DatatypeLibraryService {
       throws AddingException;
 
   UpdateResult updateAttribute(String id, String attributeName, Object value);
+
+  List<DatatypeLibrary> findLatestByUsername(String username);
+
+  /**
+   * @param libs
+   * @return
+   */
+  public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs);
 
 }

@@ -11,9 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service.impl;
 
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -25,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -50,6 +56,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryRepository;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
@@ -275,6 +282,66 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     update.set("updateDate", new Date());
     return mongoTemplate.updateFirst(query, update, DatatypeLibrary.class);
 
+  }
+
+  @Override
+  public List<DatatypeLibrary> findLatestByUsername(String username) {
+
+
+
+    Criteria where = Criteria.where("username").is(username);
+
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("metadata");
+    qry.fields().include("username");
+    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("creationDate");
+    qry.fields().include("updateDate");
+
+    List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
+
+
+
+    return libs;
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#convertListToDisplayList(
+   * java.util.List)
+   */
+  @Override
+  public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs) {
+    // TODO Auto-generated method stub
+
+    // TODO Auto-generated method stub
+
+    List<LibSummary> res = new ArrayList<LibSummary>();
+    for (DatatypeLibrary lib : libs) {
+      LibSummary element = new LibSummary();
+
+      element.setCoverpage(lib.getMetadata().getCoverPicture());
+      element.setDateUpdated(lib.getUpdateDate());
+      element.setTitle(lib.getMetadata().getTitle());
+      element.setSubtitle(lib.getMetadata().getSubTitle());
+      // element.setConfrmanceProfiles(confrmanceProfiles);
+      element.setCoverpage(lib.getMetadata().getCoverPicture());
+      element.setId(lib.getId());
+      element.setUsername(lib.getUsername());
+      res.add(element);
+    }
+    return res;
   }
 
 

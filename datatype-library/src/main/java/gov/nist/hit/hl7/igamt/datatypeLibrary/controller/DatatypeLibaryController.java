@@ -50,6 +50,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryConverte
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryUpdateException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.LibSummary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
@@ -249,6 +250,20 @@ public class DatatypeLibaryController {
       throw new DatatypeLibraryNotFoundException(id);
     }
     return ig;
+  }
+
+
+  /**
+   * 
+   * @param authentication
+   * @return
+   */
+  @RequestMapping(value = "/api/datatype-libraries", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody List<LibSummary> getUserLibs(Authentication authentication) {
+    String username = authentication.getPrincipal().toString();
+    List<DatatypeLibrary> libs = dataypeLibraryService.findLatestByUsername(username);
+    return dataypeLibraryService.convertListToDisplayList(libs);
   }
 
 
