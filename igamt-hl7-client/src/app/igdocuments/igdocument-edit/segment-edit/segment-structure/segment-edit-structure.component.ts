@@ -41,7 +41,6 @@ export class SegmentEditStructureComponent implements WithSave {
     valuesetStrengthOptions:any = [];
 
     preciateEditorOpen:boolean = false;
-
     selectedPredicate: any = {};
     constraintTypes: any = [];
     assertionModes: any = [];
@@ -152,40 +151,31 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     save(): Promise<any>{
-      return new Promise((resolve, reject)=> {
+        return new Promise((resolve, reject)=> {
+            let saveObj:any = {};
+            saveObj.id = this.segmentStructure.id;
+            saveObj.label = this.segmentStructure.label;
+            saveObj.scope = this.segmentStructure.scope;
+            saveObj.version = this.segmentStructure.version;
+            saveObj.binding = this.generateBinding(this.segmentStructure);
+            saveObj.children = [];
 
-          console.log(this.segmentStructure);
+            for(let child of this.segmentStructure.children){
+                var clone = __.cloneDeep(child.data);
+                clone.displayData = undefined;
+                saveObj.children.push({"data":clone});
+            }
+            this.segmentsService.saveSegmentStructure(this.segmentId, saveObj).then(saved => {
 
-          let saveObj:any = {};
-          saveObj.id = this.segmentStructure.id;
-          saveObj.label = this.segmentStructure.label;
-          saveObj.scope = this.segmentStructure.scope;
-          saveObj.version = this.segmentStructure.version;
-          saveObj.binding = this.generateBinding(this.segmentStructure);
-          saveObj.children = [];
+                this.backup = __.cloneDeep(this.segmentStructure);
+                this.editForm.control.markAsPristine();
+                resolve(true);
 
-          for(let child of this.segmentStructure.children){
-              var clone = __.cloneDeep(child.data);
-              clone.displayData = undefined;
-              saveObj.children.push({"data":clone});
-          }
-
-          console.log(saveObj);
-
-          this.segmentsService.saveSegmentStructure(this.segmentId, saveObj).then(saved => {
-
-          this.backup = __.cloneDeep(this.segmentStructure);
-          this.editForm.control.markAsPristine();
-          resolve(true);
-
-        }, error => {
-          console.log("error saving");
-
-
-          reject();
-
-        });
-      })
+            }, error => {
+                console.log("error saving");
+                reject();
+            });
+        })
     }
 
     generateBinding(segmentStructure){
@@ -383,7 +373,6 @@ export class SegmentEditStructureComponent implements WithSave {
                 if(b.elementId === id) return this.updateValueSetBindings(b);
             }
         }
-
         return null;
     }
 

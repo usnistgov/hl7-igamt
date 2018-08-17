@@ -15,12 +15,13 @@ public enum Type {
                           "COMPOSITEPROFILE"), SEGMENTREF("SEGMENTREF"), GROUP("GROUP"), FIELD(
                               "FIELD"), COMPONENT("COMPONENT"), TEXT("TEXT"), PROFILE(
                                   "PROFILE"), CONFORMANCEPROFILEREGISTRY(
-                                      "CONFORMANCEPROFILEREGISTRY"), DISPLAY(
-                                          "DISPLAY"), EVENT("EVENT"), EVENTS("EVENTS"), BINDING(
-                                              "BINDING"), SECTION("SECTION"), DYNAMICMAPPING(
+                                      "CONFORMANCEPROFILEREGISTRY"), DISPLAY("DISPLAY"), EVENT(
+                                          "EVENT"), EVENTS("EVENTS"), BINDING("BINDING"), SECTION(
+                                              "SECTION"), DYNAMICMAPPING(
                                                   "DYNAMICMAPPING"), CONFORMANCESTATEMENT(
                                                       "CONFORMANCESTATEMENT"), PREDICATE(
-                                                          "PREDICATE");
+                                                          "PREDICATE"), DATATYPELIBRARY(
+                                                              "DATATYPELIBRARY");
 
   Type(String value) {
     this.value = value;

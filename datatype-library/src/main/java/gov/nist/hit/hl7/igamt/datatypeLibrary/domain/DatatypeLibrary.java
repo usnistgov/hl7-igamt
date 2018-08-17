@@ -40,7 +40,7 @@ public class DatatypeLibrary extends AbstractDomain {
     return this.metadata;
   }
 
-  public void setMetaData(DocumentMetadata metadata) {
+  public void setMetadata(DocumentMetadata metadata) {
     this.metadata = metadata;
   }
 

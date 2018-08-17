@@ -63,7 +63,7 @@ public abstract class SerializableElement {
     Element element = new Element(elementName);
     element.addAttribute(new Attribute("id", this.id));
     element.addAttribute(new Attribute("position", this.position));
-    element.addAttribute(new Attribute("title", this.title));
+    element.addAttribute(new Attribute("title", this.title != null ? this.title : ""));
     return element;
   }
 
@@ -94,6 +94,9 @@ public abstract class SerializableElement {
       case IGDOCUMENT:
         elementName = "Document";
         break;
+      case DATATYPELIBRARY:
+          elementName = "Document";
+          break;
       default:
         elementName = "Section";
         break;

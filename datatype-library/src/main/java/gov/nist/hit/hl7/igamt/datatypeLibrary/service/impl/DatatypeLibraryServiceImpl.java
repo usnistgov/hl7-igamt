@@ -131,7 +131,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     return datatypeLibraryRepository.findByDomainInfoScope(scope);
   }
 
-
   @Override
   public DatatypeLibrary createEmptyDatatypeLibrary()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
@@ -145,7 +144,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
     emptyLibrary.setId(new CompositeKey());
-    emptyLibrary.setMetaData(new DocumentMetadata());
+    emptyLibrary.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : datatypeLibraryTemplate) {
       content.add(createSectionContent(template));

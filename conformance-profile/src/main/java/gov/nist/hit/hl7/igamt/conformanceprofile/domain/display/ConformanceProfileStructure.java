@@ -1,12 +1,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import java.util.TreeSet;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-
-
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 
 public class ConformanceProfileStructure {
   private CompositeKey id;
@@ -16,8 +15,7 @@ public class ConformanceProfileStructure {
   private String messageType;
   private String structId;
   private ResourceBinding binding;
-
-  private TreeSet<MsgStructElementDisplay> structure;
+  private Set<SegmentRefOrGroup> children;
 
   public CompositeKey getId() {
     return id;
@@ -25,21 +23,6 @@ public class ConformanceProfileStructure {
 
   public void setId(CompositeKey id) {
     this.id = id;
-  }
-
-  public TreeSet<MsgStructElementDisplay> getStructure() {
-    return structure;
-  }
-
-  public void setStructure(TreeSet<MsgStructElementDisplay> structure) {
-    this.structure = structure;
-  }
-
-  public void addStructure(MsgStructElementDisplay msgStructElementDisplay) {
-    if (this.structure == null)
-      this.structure =
-          new TreeSet<MsgStructElementDisplay>(new PositionCompForMsgStructElementDisplay());
-    this.structure.add(msgStructElementDisplay);
   }
 
   public DomainInfo getDomainInfo() {
@@ -88,5 +71,13 @@ public class ConformanceProfileStructure {
 
   public void setBinding(ResourceBinding binding) {
     this.binding = binding;
+  }
+
+  public Set<SegmentRefOrGroup> getChildren() {
+    return children;
+  }
+
+  public void setChildren(Set<SegmentRefOrGroup> children) {
+    this.children = children;
   }
 }

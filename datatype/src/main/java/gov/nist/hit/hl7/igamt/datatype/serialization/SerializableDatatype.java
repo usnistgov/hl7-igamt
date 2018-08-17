@@ -72,7 +72,7 @@ public class SerializableDatatype extends SerializableResource {
           datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
       if (datatype.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap, valuesetLabelMap);
+            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
         if (bindingElement != null) {
           datatypeElement.appendChild(bindingElement);
         }
@@ -136,7 +136,7 @@ public class SerializableDatatype extends SerializableResource {
               componentElement.addAttribute(
                   new Attribute("datatype", datatypeNamesMap.get(component.getRef().getId())));
             } else {
-              throw new DatatypeNotFoundException(component.getRef().getId());
+              //throw new DatatypeNotFoundException(component.getRef().getId());
             }
           }
           componentElement.addAttribute(new Attribute("usage",

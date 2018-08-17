@@ -20,7 +20,6 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject
 
 
 
-@Service("DatatypeLibraryService")
 public interface DatatypeLibraryService {
 
 

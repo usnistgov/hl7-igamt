@@ -44,26 +44,21 @@ public class SerializableBinding extends SerializableElement {
 
   private Binding binding;
   private Map<String, String> valuesetNamesMap;
-  private Map<String, String> valuesetLabelMap;
   private Map<String, String> idPathMap;
   private Set<Element> conformanceStatements;
   private Set<Element> predicates;
-  Element bindingElement = new Element("Binding");
-  Element valuesetBindingList = new Element("ValueSetBindingList");
-  Element commentListElement = new Element("CommentList");
 
   /**
    * @param binding
    */
   public SerializableBinding(Binding binding, Map<String, String> idPathMap,
-      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap) {
+      Map<String, String> valuesetNamesMap) {
     super("binding" + binding.getElementId(), "1", "Bindings");
     this.binding = binding;
     this.valuesetNamesMap = valuesetNamesMap;
     this.idPathMap = idPathMap;
     this.conformanceStatements = new HashSet<>();
     this.predicates = new HashSet<>();
-    this.valuesetLabelMap = valuesetLabelMap;
   }
 
   /*
@@ -74,10 +69,15 @@ public class SerializableBinding extends SerializableElement {
   @Override
   public Element serialize() throws SerializationException {
     try {
+      Element bindingElement = new Element("Binding");
       bindingElement.addAttribute(
           new Attribute("elementId", binding.getElementId() != null ? binding.getElementId() : ""));
       if (binding.getChildren() != null && binding.getChildren().size() > 0) {
-        this.serializeStructureElementBindings(binding.getChildren(), idPathMap, valuesetNamesMap, valuesetLabelMap);
+        Element structureElementBindingsElement = this
+            .serializeStructureElementBindings(binding.getChildren(), idPathMap, valuesetNamesMap);
+        if (structureElementBindingsElement != null) {
+          bindingElement.appendChild(structureElementBindingsElement);
+        }
       }
       if (binding instanceof ResourceBinding) {
         if (((ResourceBinding) binding).getConformanceStatements() != null) {
@@ -92,8 +92,6 @@ public class SerializableBinding extends SerializableElement {
           }
         }
       }
-      bindingElement.appendChild(valuesetBindingList);
-      bindingElement.appendChild(commentListElement);
       return bindingElement;
     } catch (Exception exception) {
       throw new SerializationException(exception, Type.BINDING, "Binding");
@@ -105,17 +103,23 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private void serializeStructureElementBindings(
+  private Element serializeStructureElementBindings(
       Set<StructureElementBinding> structureElementBindings, Map<String, String> idPathMap,
-      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap) throws ValuesetNotFoundException {
+      Map<String, String> valuesetNamesMap) throws ValuesetNotFoundException {
     if (structureElementBindings != null) {
+      Element structureElementBindingsElement = new Element("StructureElementBindings");
       for (StructureElementBinding structureElementBinding : structureElementBindings) {
         if (structureElementBinding != null) {
-          this.serializeStructureElementBinding(
-              structureElementBinding, idPathMap, valuesetNamesMap, valuesetLabelMap);
+          Element structureElementBindingElement = this.serializeStructureElementBinding(
+              structureElementBinding, idPathMap, valuesetNamesMap);
+          if (structureElementBindingElement != null) {
+            structureElementBindingsElement.appendChild(structureElementBindingElement);
+          }
         }
       }
+      return structureElementBindingsElement;
     }
+    return null;
   }
 
   /**
@@ -123,58 +127,70 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private void serializeStructureElementBinding(StructureElementBinding structureElementBinding,
-      Map<String, String> idPathMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap)
+  private Element serializeStructureElementBinding(StructureElementBinding structureElementBinding,
+      Map<String, String> idPathMap, Map<String, String> valuesetNamesMap)
       throws ValuesetNotFoundException {
     if (structureElementBinding != null) {
-      String location = "";
-      if(idPathMap.containsKey(structureElementBinding.getElementId())) {
-          location = idPathMap.get(structureElementBinding.getElementId());
-      }
+      Element structureElementBindingElement = new Element("StructureElementBinding");
+      structureElementBindingElement.addAttribute(new Attribute("elementId",
+          structureElementBinding.getElementId() != null ? structureElementBinding.getElementId()
+              : ""));
+
       if (structureElementBinding.getChildren() != null
           && structureElementBinding.getChildren().size() > 0) {
-        this.serializeStructureElementBindings(structureElementBinding.getChildren(), idPathMap, valuesetNamesMap, valuesetLabelMap);
+        Element structureElementBindingsElement = this.serializeStructureElementBindings(
+            structureElementBinding.getChildren(), idPathMap, valuesetNamesMap);
+        if (structureElementBindingsElement != null) {
+          structureElementBindingElement.appendChild(structureElementBindingsElement);
+        }
       }
-      if (structureElementBinding.getValuesetBindings() != null && !structureElementBinding.getValuesetBindings().isEmpty()) {
+      if (structureElementBinding.getValuesetBindings() != null) {
         for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
           Element valuesetBindingElement =
-              this.serializeValuesetBinding(location, valuesetBinding, valuesetNamesMap, valuesetLabelMap);
+              this.serializeValuesetBinding(valuesetBinding, valuesetNamesMap);
           if (valuesetBindingElement != null) {
-            valuesetBindingList.appendChild(valuesetBindingElement);
+            structureElementBindingElement.appendChild(valuesetBindingElement);
           }
         }
       }
-      if (structureElementBinding.getComments() != null && !structureElementBinding.getComments().isEmpty()) {
+      if (structureElementBinding.getComments() != null) {
         for (Comment comment : structureElementBinding.getComments()) {
-          Element commentElement = this.serializeComment(location, comment);
+          Element commentElement = this.serializeComment(comment);
           if (commentElement != null) {
-            commentListElement.appendChild(commentElement);
+            structureElementBindingElement.appendChild(commentElement);
           }
         }
       }
-//      if (structureElementBinding.getInternalSingleCode() != null) {
-//        structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
-//            structureElementBinding.getInternalSingleCode().getCodeId()));
-//      }
-//      if (structureElementBinding.getConstantValue() != null) {
-//        structureElementBindingElement.addAttribute(
-//            new Attribute("constantValue", structureElementBinding.getConstantValue()));
-//      }
+      if (structureElementBinding.getInternalSingleCode() != null) {
+        structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
+            structureElementBinding.getInternalSingleCode().getCodeId()));
+      }
+      if (structureElementBinding.getConstantValue() != null) {
+        structureElementBindingElement.addAttribute(
+            new Attribute("constantValue", structureElementBinding.getConstantValue()));
+      }
+
+      if (structureElementBinding.getConstantValue() != null) {
+        structureElementBindingElement.addAttribute(
+            new Attribute("constantValue", structureElementBinding.getConstantValue()));
+      }
       if (structureElementBinding.getPredicate() != null) {
-        Element predicateElement = this.serializePredicate(location, structureElementBinding.getPredicate());
+        Element predicateElement = this.serializePredicate(structureElementBinding.getPredicate());
         if (predicateElement != null) {
           this.predicates.add(predicateElement);
-          bindingElement.appendChild(predicateElement);
+          structureElementBindingElement.appendChild(predicateElement);
         }
       }
       if (structureElementBinding.getExternalSingleCode() != null) {
         Element externalSingleCodeElement =
             this.serializeExternalSingleCode(structureElementBinding.getExternalSingleCode());
         if (externalSingleCodeElement != null) {
-          bindingElement.appendChild(externalSingleCodeElement);
+          structureElementBindingElement.appendChild(externalSingleCodeElement);
         }
       }
+      return structureElementBindingElement;
     }
+    return null;
   }
 
   /**
@@ -196,10 +212,8 @@ public class SerializableBinding extends SerializableElement {
    * @param comment
    * @return
    */
-  private Element serializeComment(String location, Comment comment) {
+  private Element serializeComment(Comment comment) {
     Element commentElement = new Element("Comment");
-    commentElement.addAttribute(new Attribute("location",
-        location != null ? location : ""));
     commentElement.addAttribute(new Attribute("description",
         comment.getDescription() != null ? comment.getDescription() : ""));
     commentElement.addAttribute(new Attribute("date",
@@ -215,29 +229,30 @@ public class SerializableBinding extends SerializableElement {
    * @return
    * @throws ValuesetNotFoundException
    */
-  private Element serializeValuesetBinding(String location, ValuesetBinding valuesetBinding,
-      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap) throws ValuesetNotFoundException {
-    if (valuesetBinding.getValuesetId() != null && !valuesetBinding.getValuesetId().isEmpty()) {
-      if (valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())) {
-        Element valuesetBindingElement = new Element("ValuesetBinding");
-        valuesetBindingElement.addAttribute(new Attribute("bindingIdentifier", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
-        valuesetBindingElement.addAttribute(new Attribute("location", location));
-        String valueSetName = valuesetLabelMap.get(valuesetBinding.getValuesetId());
-        valuesetBindingElement.addAttribute(new Attribute("name", valueSetName != null ? valueSetName : ""));
-        valuesetBindingElement.addAttribute(new Attribute("bindingStrength",
-            valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
-        valuesetBindingElement.addAttribute(new Attribute("bindingLocation",
-            valuesetBinding.getValuesetLocations() != null
-                ? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations())
-                : ""));
-        return valuesetBindingElement;
-      } else {
-        throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
-      }
+	private Element serializeValuesetBinding(ValuesetBinding valuesetBinding, Map<String, String> valuesetNamesMap)
+			throws ValuesetNotFoundException {
+		if (valuesetNamesMap != null) {
+			if (!valuesetBinding.getValuesetId().isEmpty()) {
+				if (valuesetNamesMap != null && valuesetNamesMap.containsKey(valuesetBinding.getValuesetId())) {
+					Element valuesetBindingElement = new Element("ValuesetBinding");
+					valuesetBindingElement.addAttribute(new Attribute("id", valuesetBinding.getValuesetId()));
+					valuesetBindingElement
+							.addAttribute(new Attribute("name", valuesetNamesMap.get(valuesetBinding.getValuesetId())));
+					valuesetBindingElement.addAttribute(new Attribute("strength",
+							valuesetBinding.getStrength() != null ? valuesetBinding.getStrength().name() : ""));
+					valuesetBindingElement.addAttribute(new Attribute("strength",
+							valuesetBinding.getValuesetLocations() != null
+									? convertValuesetLocationsToString(valuesetBinding.getValuesetLocations())
+									: ""));
+					return valuesetBindingElement;
+				} else {
+					throw new ValuesetNotFoundException(valuesetBinding.getValuesetId());
+				}
 
-    }
-    return null;
-  }
+			}
+		}
+		return null;
+	}
 
   /**
    * @param valuesetLocations
@@ -264,9 +279,7 @@ public class SerializableBinding extends SerializableElement {
    * @return
    */
   private Element serializeConformanceStatement(ConformanceStatement conformanceStatement) {
-    Element conformanceStatementElement = new Element("Constraint");
-    //Attribute type is used in the export to separate conformance statements (cs) from predicates (pre)
-    conformanceStatementElement.addAttribute(new Attribute("Type","cs"));
+    Element conformanceStatementElement = new Element("ConformanceStatement");
     conformanceStatementElement.addAttribute(new Attribute("identifier",
         conformanceStatement.getIdentifier() != null ? conformanceStatement.getIdentifier() : ""));
     if (conformanceStatement instanceof AssertionConformanceStatement) {
@@ -289,14 +302,12 @@ public class SerializableBinding extends SerializableElement {
    * @param predicate
    * @return
    */
-  private Element serializePredicate(String location, Predicate predicate) {
-    Element predicateElement = new Element("Constraint");
-    //Attribute type is used in the export to separate conformance statements (cs) from predicates (pre)
-    predicateElement.addAttribute(new Attribute("Type","pre"));
-    predicateElement.addAttribute(new Attribute("location", location));
-    String usage = (predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : "")+(predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : "");
-    predicateElement.addAttribute(new Attribute("usage",
-        usage != null ? usage : ""));
+  private Element serializePredicate(Predicate predicate) {
+    Element predicateElement = new Element("Predicate");
+    predicateElement.addAttribute(new Attribute("true",
+        predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
+    predicateElement.addAttribute(new Attribute("codeSystem",
+        predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
     if (predicate instanceof AssertionPredicate) {
       if (((AssertionPredicate) predicate).getAssertion() != null) {
         String description = ((AssertionPredicate) predicate).getAssertion().getDescription();

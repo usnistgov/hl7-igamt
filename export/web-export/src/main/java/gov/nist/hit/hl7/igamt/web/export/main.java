@@ -36,6 +36,11 @@ public class main {
 	
 	@PostConstruct
 	public void postConstruct() throws JSONException {
+		createWebSiteForDatatypeLibraryExport();
+	}
+	
+	public void createWebSiteForDatatypeLibraryExport() {
+
 		System.out.println("DONE");
 		 JSONExtractor je = new JSONExtractor();
 		MyExportObject myExportObject = mds.serializeMasterDatatypeLib((je.extract()));
@@ -56,6 +61,7 @@ public class main {
 		}
 		 System.out.println("END-HT");
 
+	
 	}
 
 }
