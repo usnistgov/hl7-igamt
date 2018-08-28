@@ -73,7 +73,7 @@ public class SaveServiceImpl implements SaveService {
             "Saving " + changedObjects.getConformanceProfiles().size() + " conformance profiles");
         for (ChangedConformanceProfile changedConformanceProfile : changedObjects
             .getConformanceProfiles()) {
-          conformanceProfileService.saveConformanceProfile(changedConformanceProfile);
+          // conformanceProfileService.save(changedConformanceProfile);
         }
       }
     }
