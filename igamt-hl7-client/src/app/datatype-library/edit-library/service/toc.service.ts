@@ -266,7 +266,10 @@ export  class TocService{
       console.log(treeNode);
 
       newData.data.label=newData.data.label+"-copy";
+      newData.data.position=treeNode.parent.data.children.length+1;
+
     }
+
     this.changeIds(newData);
     treeNode.parent.data.children.push(newData);
     console.log(treeNode.parent.treeModel);
