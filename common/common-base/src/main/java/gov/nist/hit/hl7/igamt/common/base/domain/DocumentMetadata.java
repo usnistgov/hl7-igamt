@@ -17,70 +17,95 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
  *
  */
 public class DocumentMetadata {
-  
-	  private String title;
 
-	  private String topics;
-	  private String specificationName;
-	  private String identifier;
-	  private String implementationNotes;
-	  private String orgName;
-	  private String coverPicture;
-	  private String subTitle;
-	  
-	public DocumentMetadata() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-	public String getTopics() {
-		return topics;
-	}
-	public void setTopics(String topics) {
-		this.topics = topics;
-	}
-	public String getSpecificationName() {
-		return specificationName;
-	}
-	public void setSpecificationName(String specificationName) {
-		this.specificationName = specificationName;
-	}
-	public String getIdentifier() {
-		return identifier;
-	}
-	public void setIdentifier(String identifier) {
-		this.identifier = identifier;
-	}
-	public String getImplementationNotes() {
-		return implementationNotes;
-	}
-	public void setImplementationNotes(String implementationNotes) {
-		this.implementationNotes = implementationNotes;
-	}
-	public String getOrgName() {
-		return orgName;
-	}
-	public void setOrgName(String orgName) {
-		this.orgName = orgName;
-	}
-	public String getCoverPicture() {
-		return coverPicture;
-	}
-	public void setCoverPicture(String coverPicture) {
-		this.coverPicture = coverPicture;
-	}
-	public String getSubTitle() {
-		return subTitle;
-	}
-	public void setSubTitle(String subTitle) {
-		this.subTitle = subTitle;
-	}
-	public String getTitle() {
-		return title;
-	}
-	public void setTitle(String title) {
-		this.title = title;
-	}
+  private String title;
 
-	  
+  private String topics;
+  private String specificationName;
+  private String identifier;
+  private String implementationNotes;
+  private String orgName;
+  private String coverPicture;
+  private String subTitle;
+  private Scope scope;
+
+  public DocumentMetadata() {
+    super();
+    // TODO Auto-generated constructor stub
+  }
+
+  public String getTopics() {
+    return topics;
+  }
+
+  public void setTopics(String topics) {
+    this.topics = topics;
+  }
+
+  public String getSpecificationName() {
+    return specificationName;
+  }
+
+  public void setSpecificationName(String specificationName) {
+    this.specificationName = specificationName;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
+  }
+
+  public String getImplementationNotes() {
+    return implementationNotes;
+  }
+
+  public void setImplementationNotes(String implementationNotes) {
+    this.implementationNotes = implementationNotes;
+  }
+
+  public String getOrgName() {
+    return orgName;
+  }
+
+  public void setOrgName(String orgName) {
+    this.orgName = orgName;
+  }
+
+  public String getCoverPicture() {
+    return coverPicture;
+  }
+
+  public void setCoverPicture(String coverPicture) {
+    this.coverPicture = coverPicture;
+  }
+
+  public String getSubTitle() {
+    return subTitle;
+  }
+
+  public void setSubTitle(String subTitle) {
+    this.subTitle = subTitle;
+  }
+
+  public String getTitle() {
+    return title;
+  }
+
+  public void setTitle(String title) {
+    this.title = title;
+  }
+
+  public Scope getScope() {
+    return scope;
+  }
+
+  public void setScope(Scope scope) {
+    this.scope = scope;
+  }
+
+
 
 }

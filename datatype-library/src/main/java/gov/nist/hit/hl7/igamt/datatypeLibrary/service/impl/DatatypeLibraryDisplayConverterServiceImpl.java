@@ -16,11 +16,13 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryConverterException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.ElementTreeData;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TextSectionData;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 
 /**
  * @author ena3
@@ -80,8 +82,13 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     sectionTree.setPosition(s.getPosition());
     sectionTree.setType(s.getType());
     t.setId(s.getId());
+    if (s.getDescription() != null) {
+      sectionTree.setDescription(s.getDescription());
 
-    sectionTree.setDescription(s.getDescription());
+    } else {
+      sectionTree.setDescription("");
+
+    }
     t.setData(sectionTree);
 
     if (s.getChildren() != null && !s.getChildren().isEmpty()) {
@@ -234,10 +241,8 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     s.setPosition(t.getData().getPosition());
     s.setLabel(t.getData().getLabel());
     s.setType(t.getData().getType());
+    s.setDescription((t.getData()).getDescription());
 
-    if (t.getData() instanceof TextSectionData) {
-      s.setDescription(((TextSectionData) t.getData()).getDescription());
-    }
     if (t.getData().getType().equals(Type.TEXT) || t.getData().getType().equals(Type.PROFILE)) {
       if (t.getChildren() != null && !t.getChildren().isEmpty()) {
 
@@ -248,6 +253,35 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     }
     return s;
 
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService#
+   * convertDatatypeResponseToDisplay(gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.
+   * AddDatatypeResponseObject)
+   */
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService#convertDatatypeResponseToDisplay(gov.
+   * nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject)
+   */
+  @Override
+  public AddDatatypeResponseDisplay convertDatatypeResponseToDisplay(
+      AddDatatypeResponseObject objects) {
+    // TODO Auto-generated method stub
+    AddDatatypeResponseDisplay addedNodes = new AddDatatypeResponseDisplay();
+    // TODO Auto-generated method stub
+
+    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypes());
+
+
+    addedNodes.setDatatypes(datatypes);
+
+    return addedNodes;
   }
 
 }

@@ -39,6 +39,8 @@ import {KeyFilterModule} from 'primeng/keyfilter';
 import {MessagesModule} from 'primeng/messages';
 import {MessageModule} from 'primeng/message';
 import {DisplayMenuComponent} from "../common/display-menu/display-menu.component";
+import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
+import {TreeTableModule} from "primeng/components/treetable/treetable";
 
 @NgModule({
   imports: [
@@ -52,7 +54,9 @@ import {DisplayMenuComponent} from "../common/display-menu/display-menu.componen
     DialogModule,
     PanelModule,
     FieldsetModule,
+    RadioButtonModule,
     TableModule,
+    TreeTableModule,
     KeyFilterModule,MessageModule,MessagesModule
 
   ],

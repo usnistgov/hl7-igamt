@@ -61,10 +61,10 @@
           </ng-template>
 
 
-          <ng-template pTemplate="body" let-node="node" let-rowData="rowData" let-columns="columns">
+          <ng-template pTemplate="body" let-node="node" let-rowData="rowData" let-rowNode let-columns="columns">
             <tr>
               <td>
-                <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+                <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
                 <display-badge [type]="node.data.displayData.type"></display-badge>{{node.data.position}}. {{node.data.name}}
               </td>
 

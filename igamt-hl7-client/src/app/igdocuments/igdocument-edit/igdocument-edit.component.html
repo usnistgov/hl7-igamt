@@ -98,7 +98,7 @@
           <ng-container *ngSwitchCase="'TEXT'">
             <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
             <context-menu #textcontextmenu>
-              <ng-template contextMenuItem (execute)="addSection(node)">
+              <ng-template contextMenuItem (execute)="addSectionToNode(node)">
                 <i class="fa fa-plus"></i> Add Section
               </ng-template>
               <ng-template contextMenuItem (execute)="copySection(node)">

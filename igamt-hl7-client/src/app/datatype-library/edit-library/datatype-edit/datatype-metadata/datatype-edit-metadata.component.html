@@ -31,13 +31,37 @@
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">
-                Flavor Namedddd (Ext)
+                Flavor Name (Ext)
             </label>
-            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="datatypeMetadata.ext" required />
-            <div class="ui-g-offset-2" *ngIf="ext.invalid && (ext.dirty || ext.touched)">
-                <p-message severity="error" text="Extension is required"></p-message>
-            </div>
+          <input class="ui-g-10" name="ext" id="ext" #ext="ngModel" DatatypeNamingConvention [scope]="datatypeMetadata.scope" NamingDuplication [existing]="namingIndicators" [label]="datatypeMetadata.name"  type="text" pInputText [(ngModel)]="datatypeMetadata.ext" required/>
         </div>
+      <div class="ui-g-offset-2">
+        <div *ngIf="editForm.controls.ext&& editForm.controls.ext.errors" class="ui-g-offset-5">
+          <div *ngIf="editForm.controls.ext.errors.required">
+            <p-message severity="error" text="extension is required"></p-message>
+          </div>
+          <div *ngIf="editForm.controls.ext.errors.maxlength">
+            <p-message severity="error" text="extension is too long"></p-message>
+          </div>
+          <div *ngIf="editForm.controls.ext.errors.minlength">
+            <p-message severity="error" text="extension is too short"></p-message>
+          </div>
+          <div *ngIf="editForm.controls.ext.errors.duplicated">
+            <p-message severity="error" text="extension is duplicated"></p-message>
+          </div>
+          <div *ngIf="editForm.controls.ext.errors.invalidConvention">
+            <p-message severity="error" text="invalid convention "></p-message>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ui-g input-box">
+        <label class="metadata-label ui-g-2">
+          Compatibility Versions:
+        </label>
+        <input name="versions" id="versions" pInputText type="text" class="ui-g-10" #versions="ngModel" [(ngModel)]="datatypeMetadata.compatibilityVersions" disabled/>
+      </div>
 
         <div class="ui-g input-box">
             <label class="metadata-label ui-g-2">

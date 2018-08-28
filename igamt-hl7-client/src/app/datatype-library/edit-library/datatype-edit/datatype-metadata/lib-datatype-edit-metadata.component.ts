@@ -13,6 +13,7 @@ import {NgForm} from "@angular/forms";
 import {LibDatatypesService} from "../lib-datatypes.service";
 import {HasFroala} from "../../../../configuration/has-froala";
 import {LibErrorService} from "../../lib-error/lib-error.service";
+import {Types} from "../../../../common/constants/types";
 
 
 
@@ -26,6 +27,7 @@ export class LibDatatypeEditMetadataComponent extends HasFroala implements WithS
   datatypeMetadata:any;
   backup:any;
   currentNode:any;
+  namingIndicators : any[];
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -40,6 +42,8 @@ export class LibDatatypeEditMetadataComponent extends HasFroala implements WithS
       this.backup=x;
       this.datatypeMetadata=_.cloneDeep(this.backup);
     });
+   this.namingIndicators=this.tocService.getNodeNames(Types.DATATYPEREGISTRY);
+   console.log(this.namingIndicators);
   }
 
   reset(){

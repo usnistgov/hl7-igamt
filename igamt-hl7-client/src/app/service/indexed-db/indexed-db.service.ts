@@ -17,7 +17,9 @@ export class IndexedDbService {
   igDocumentId?: string;
 
   constructor() {
+    this.datatypeLibraryInfoDataBase = new DatatypeLibraryInfoDatabase();
     this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+
     this.nodeDatabase = new NodeDatabase('NodeDatabase');
   }
 

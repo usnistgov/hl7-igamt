@@ -1,8 +1,8 @@
  <div class="ui-g">
     <div class="ui-g-6">
+Scope: {{scopeTarget}}
 
-
-      <p-table #tt *ngIf="list"  [value]="list" sortField="name" sortMode="single" [scrollable]="true" scrollHeight="200px" [resizableColumns]="true"  [globalFilterFields]="['name','description']" >
+      <p-table #tt *ngIf="list"  [value]="list" sortField="name" sortMode="single" [scrollable]="true" scrollHeight="200px" [resizableColumns]="true"   [virtualScroll]="true" [virtualRowHeight]="28" [rows]="20" scrollHeight="200px"  [globalFilterFields]="['name','description']" >
 
         <ng-template pTemplate="caption">
           <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -10,8 +10,12 @@
         </ng-template>
         <ng-template pTemplate="header">
           <tr>
+            <th pResizableColumn width="75px">
+              Data Type Name
+            </th>
+
             <th pResizableColumn width="250px">
-              Data Type
+              Compatibility Version
             </th>
 
             <th pResizableColumn width="75px">
@@ -21,15 +25,17 @@
         </ng-template>
         <ng-template pTemplate="body" let-rowData>
           <tr>
+            <td class="ui-resizable-column" width="75px">
+                {{rowData.name}}
+            </td>
             <td class="ui-resizable-column" width="250px">
 
-       <span class="badge label-HL7">
+              <p-radioButton  *ngFor="let v of rowData.domainInfo.compatibilityVersion" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="rowData.domainInfo.version"></p-radioButton>
 
-        HL7 {{rowData.domainInfo.version}}
-       </span> {{rowData.name}}--{{rowData.description}}
+
             </td>
             <td class="ui-resizable-column" width="75px">
-              <button type="button" icon="fa fa-plus" pButton (click)="add(rowData)"></button>
+              <button  [disabled]="!rowData.domainInfo.version" type="button" icon="fa fa-plus" pButton (click)="add(rowData)"></button>
             </td>
           </tr>
         </ng-template>
@@ -69,30 +75,30 @@
 
        {{getScopeLabel(rowData)}} {{rowData.domainInfo.version}}
        </span>
-                {{rowData.name}}--{{rowData.description}} --{{i}} xx {{i}}
+                {{rowData.name}}
               </td>
               <td class="ui-resizable-column" width="75px">
-                  <input [name]="rowData.id.id+i"   width="70px" [id]="rowData.id.id+i"  #extension ="ngModel"  type="text" [(ngModel)]="rowData.ext" pInputText [pKeyFilter]="ccRegex" [pValidateOnly]="true" placeholder="01" required minlength="2" maxlength="2">
+                  <input [name]="rowData.name+i"   width="70px" [id]="rowData.name+i"  #extension ="ngModel"  type="text" [(ngModel)]="rowData.ext" pInputText [pKeyFilter]="ccRegex" [pValidateOnly]="true" placeholder="01" required minlength="2" maxlength="2">
 
-                <div *ngIf="addingEditForm.controls[rowData.id.id+i]&&addingEditForm.controls[rowData.id.id+i].errors" style="color:red; font-size: 11px">
-                  <div *ngIf="addingEditForm.controls[rowData.id.id+i].errors.required">
+                <div *ngIf="addingEditForm.controls[rowData.name+i]&&addingEditForm.controls[rowData.name+i].errors" style="color:red; font-size: 11px">
+                  <div *ngIf="addingEditForm.controls[rowData.name+i].errors.required">
                     <span>*extension is required</span>
 
                   </div>
-                  <div *ngIf="addingEditForm.controls[rowData.id.id+i].errors.maxlength">
+                  <div *ngIf="addingEditForm.controls[rowData.name+i].errors.maxlength">
                     <span> *extension is too long</span>
 
                   </div>
-                  <div  *ngIf="addingEditForm.controls[rowData.id.id+i].errors.minlength">
+                  <div  *ngIf="addingEditForm.controls[rowData.name+i].errors.minlength">
                     <span> *extension is too short</span>
 
 
                   </div>
-                  <div  *ngIf="addingEditForm.controls[rowData.id.id+i].errors.duplicated">
+                  <div  *ngIf="addingEditForm.controls[rowData.name+i].errors.duplicated">
                     <span> *extension is duplicated</span>
 
                   </div>
-                  <div *ngIf="!addingEditForm.controls[rowData.id.id+i].errors.validatePattern">
+                  <div *ngIf="!addingEditForm.controls[rowData.name+i].errors.validatePattern">
                     <span> *invalid convention (DD)</span>
                   </div>
 

@@ -22,7 +22,7 @@ export class DatatypeLibraryMetadataComponent extends HasFroala implements OnIni
   private editForm: NgForm;
 
 
-  constructor(private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private messageService:MessageService) {
+  constructor(private sp: ActivatedRoute,private tocService:TocService) {
     super();
   }
 

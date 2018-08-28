@@ -41,6 +41,7 @@ export class DatatypeListManagerComponent implements OnInit {
     x.name = copy.name;
     x.ext = copy.ext;
     x.flavor = true;
+    x.sourceScope=elm.domainInfo.scope;
     x.description = copy.description;
     x.id=copy.id;
     this.dest.push(x);
@@ -69,10 +70,6 @@ export class DatatypeListManagerComponent implements OnInit {
     } else {
       return null ;
     }
-
-  }
-  submit(){
-
 
   }
 

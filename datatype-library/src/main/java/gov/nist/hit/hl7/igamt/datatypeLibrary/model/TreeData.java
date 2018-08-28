@@ -13,6 +13,7 @@ public class TreeData {
   private Date dateUpdated;
   private int position;
   private CompositeKey key;
+  private String description;
 
 
 
@@ -59,6 +60,14 @@ public class TreeData {
 
   public void setKey(CompositeKey key) {
     this.key = key;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
   }
 
 

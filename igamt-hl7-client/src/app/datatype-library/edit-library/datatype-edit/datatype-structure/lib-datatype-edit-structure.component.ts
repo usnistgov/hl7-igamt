@@ -104,10 +104,6 @@ export class LibDatatypeEditStructureComponent implements WithSave{
                     var dtOption = {label: dtLink.label, value : dtLink.id};
                     this.datatypeOptions.push(dtOption);
                 }
-
-
-
-
                     this.datatypeStructure = x;
 
                     this.updateDatatype(this.datatypeStructure, x.children, x.binding, null, null, null, null);
@@ -125,11 +121,15 @@ export class LibDatatypeEditStructureComponent implements WithSave{
     }
 
     getCurrent(){
+      console.log("Current");
+      console.log(this.datatypeStructure);
         return  this.datatypeStructure;
     }
 
     getBackup(){
-        return this.backup;
+      console.log("backup");
+      console.log(this.backup);//temporary
+        return __.cloneDeep(this.datatypeStructure);
     }
 
     isValid(){
@@ -265,6 +265,7 @@ export class LibDatatypeEditStructureComponent implements WithSave{
         }
 
         node.children = children;
+        this.datatypeStructure.children= [...this.datatypeStructure.children];
     }
 
 

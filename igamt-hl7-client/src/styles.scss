@@ -138,3 +138,11 @@ body .ui-breadcrumb {
     endColorstr='#ff7400', GradientType=0); /* IE6-9 */
   font-weight: 400;
 }
+.ui-treetable .ui-treetable-thead>tr>th, .ui-treetable .ui-treetable-tbody>tr>td, .ui-treetable .ui-treetable-tfoot>tr>td {
+  padding: 0px 0px !important;
+  border: 1px solid #d8d8d8 !important;
+}
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active .ui-radiobutton-icon {
+  background-color: #5C6BC0;
+  margin: -5px -5px;
+}

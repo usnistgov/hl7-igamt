@@ -13,11 +13,13 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 
 /**
  * @author ena3
  *
  */
+
 public class AddingInfo {
   public AddingInfo() {
     super();
@@ -83,6 +85,14 @@ public class AddingInfo {
     this.id = id;
   }
 
+  public Scope getSourceScope() {
+    return sourceScope;
+  }
+
+  public void setSourceScope(Scope sourceScope) {
+    this.sourceScope = sourceScope;
+  }
+
   private DomainInfo domainInfo;
   private String name;
 
@@ -90,5 +100,6 @@ public class AddingInfo {
   private String description;
   private boolean flavor;
   private CompositeKey id;
+  private Scope sourceScope;
 
 }

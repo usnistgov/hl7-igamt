@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { DeleteElementService } from './delete-element.service';
 
-describe('DeleteElementService', () => {
+describe('LibDeleteElementService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [DeleteElementService]

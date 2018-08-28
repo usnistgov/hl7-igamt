@@ -114,7 +114,5 @@ public class DatatypeLibraryExportController extends BaseController {
     } else {
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
     }
-
-
   }
 }

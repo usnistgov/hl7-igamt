@@ -9,8 +9,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryConverterException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
 
 /**
  * @author ena3
@@ -33,6 +35,9 @@ public interface DatatypeLibraryDisplayConverterService {
 
 
   public Set<TextSection> convertTocToDomain(List<TreeNode> toc);
+
+  public AddDatatypeResponseDisplay convertDatatypeResponseToDisplay(
+      AddDatatypeResponseObject objects);
 
 
 
