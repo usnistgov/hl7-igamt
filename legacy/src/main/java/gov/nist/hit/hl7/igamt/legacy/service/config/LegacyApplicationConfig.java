@@ -1,33 +1,32 @@
 package gov.nist.hit.hl7.igamt.legacy.service.config;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
+import org.springframework.data.mongodb.config.AbstractMongoConfiguration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 import com.mongodb.MongoClient;
+import com.mongodb.ServerAddress;
 
 @Configuration
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt.legacy.repository")
-public class LegacyApplicationConfig {
+public class LegacyApplicationConfig extends AbstractMongoConfiguration {
 
-  @Bean
-  public MongoDbFactory mongoDbFactory() throws Exception {
 
-    MongoClient mongoClient = new MongoClient("localhost", 27017);
-    return new SimpleMongoDbFactory(mongoClient, "igamt");
 
+
+
+
+  @Override
+  protected String getDatabaseName() {
+    return "igamt";
   }
 
-  @Bean
-  public MongoTemplate mongoTemplate() throws Exception {
-
-    MongoTemplate mongoTemplate = new MongoTemplate(mongoDbFactory());
-    return mongoTemplate;
-
+  @Override
+  public MongoClient mongoClient() {
+    return new MongoClient(new ServerAddress("localhost", 27017));
   }
+
 
 }
+
+

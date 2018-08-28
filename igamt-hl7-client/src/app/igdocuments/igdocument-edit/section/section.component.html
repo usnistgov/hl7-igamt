@@ -1,20 +1,31 @@
-<div>
-    <span style="font-weight: 700; font-size: 16px">
-  {{section.data.label}}
+<form  #editForm="ngForm" novalidate>
+
+  <div class="ui-g cp-header">
+
+    <div class="ui-g-8 ui-g-nopad">
+      <div class="cp-header-title ui-g-12">
+        {{section.label}}
+
+      </div>
+      <div class="ui-g-12 cp-header-subtitle">
+            <span class="ig-list-date" *ngIf="section.updateDate">
+            <i class="fa fa-calendar"></i> {{segmentMetadata.updateDate}}
+          </span>
+      </div>
 
 
-  </span>
-</div>
-  <div>
-<span style="font-weight: 300 ;    font-weight: 300;
-    font-style: italic;
-    font-size: 13px;">
-   <i class="fa fa-calendar"></i> date updated:{{section.data.dateUpdated|date}}
+
+    </div>
+
+    <div class="ui-g-4">
+
+      <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+      <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
 
 
-</span>
+    </div>
+
   </div>
-
 
 
 
@@ -22,8 +33,13 @@
   <label class="ui-g-1">
    <strong> Title </strong>
   </label>
-  <input  class="ui-g-11" type="text" [(ngModel)]="section.data.label" pInputText placeholder="Section Title"  id="filter" #filter (keyup)="filterFn()" pTooltip="section Title"  tooltipPosition="top" >
+  <input name="title" id="title" pInputText placeholder="title"
+         [(ngModel)]="section.label" class="ui-g-11" #title="ngModel"  pTooltip="section Title" required>
 
+  <div class="ui-g-offset-1" *ngIf="title.invalid&&  (title.dirty || title.touched)">
+    <p-message severity="error" text="Title is required"></p-message>
+
+  </div>
 </div>
 
 <div class="ui-g">
@@ -31,8 +47,14 @@
    <strong>Content</strong>
   </label>
 
-  <div class="ui-g-11" [froalaEditor]>{{section.description}}</div>
+  <div class="ui-g-11" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="section.description">{{section.description}}</div>
+
 
 </div>
 
+
+
+
+
+</form>
 

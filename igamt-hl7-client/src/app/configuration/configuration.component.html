@@ -1,19 +1,9 @@
-<div class="content-section introduction">
-    <div>
-        <span class="feature-title">Configuration</span>
-        <span>Configuration Module</span>
-    </div>
+<div class="ui-g-12">
+
+  <div class="ui-g-3">
+    <app-sidebar></app-sidebar>
+  </div>
+  <div class="ui-g-9">
+    <router-outlet></router-outlet>
+  </div>
 </div>
-
-<div class="content-section implementation">
-    <p-growl [value]="msgs"></p-growl>
-
-    <h3 class="first">Configuration page module</h3>
-
-  <h3>Fonts</h3>
-  <ul>
-    <li *ngFor="let font of fonts">{{font.name}}</li>
-  </ul>
-</div>
-
-<app-froala-editor></app-froala-editor>

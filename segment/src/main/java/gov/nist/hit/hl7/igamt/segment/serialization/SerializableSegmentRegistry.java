@@ -13,35 +13,52 @@
  */
 package gov.nist.hit.hl7.igamt.segment.serialization;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.SegmentNotFoundException;
+import nu.xom.Attribute;
 import nu.xom.Element;
+import nu.xom.Elements;
 
 /**
  *
  * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SerializableSegmentRegistry extends SerializableSection {
+public class SerializableSegmentRegistry extends SerializableRegistry {
 
   private Map<String, Segment> segmentsMap;
   private Map<String, String> datatypeNamesMap;
-
+  private Map<String, String> valuesetNamesMap;
+  private Map<String, String> valuesetLabelMap;
+  private Set<String> bindedSegments;
+  private Set<String> bindedFields;
+  private Set<SerializableSegment> serializableSegments;
+  
   /**
    * @param section
    */
-  public SerializableSegmentRegistry(Section section, Map<String, Segment> segmentsMap,
-      Map<String, String> datatypeNamesMap) {
-    super(section);
+  public SerializableSegmentRegistry(Section section, int level, SegmentRegistry segmentRegistry,
+      Map<String, Segment> segmentsMap, Map<String, String> datatypeNamesMap,
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedSegments, Set<String> bindedFields) {
+    super(section, level, segmentRegistry);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
+    this.valuesetNamesMap = valuesetNamesMap;
+    this.valuesetLabelMap = valuesetLabelMap;
+    this.bindedSegments = bindedSegments;
+    this.bindedFields = bindedFields;
+    this.serializableSegments = new HashSet<>();
   }
 
   /*
@@ -51,30 +68,118 @@ public class SerializableSegmentRegistry extends SerializableSection {
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry segmentRegistry = (Registry) super.getSection();
+    Registry segmentRegistry = super.getRegistry();
     try {
       Element segmentRegistryElement = super.getElement();
       if (segmentRegistry != null) {
-        if (!segmentRegistry.getChildren().isEmpty()) {
+        if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
           for (Link segmentLink : segmentRegistry.getChildren()) {
-            if (segmentsMap.containsKey(segmentLink.getId().getId())) {
-              Segment segment = segmentsMap.get(segmentLink.getId().getId());
-              SerializableSegment serializableSegment =
-                  new SerializableSegment(segment, position, datatypeNamesMap);
-              Element segmentElement = serializableSegment.serialize();
-              if (segmentElement != null) {
-                segmentRegistryElement.appendChild(segmentElement);
+            if(bindedSegments.contains(segmentLink.getId().getId())) {
+              if (segmentsMap.containsKey(segmentLink.getId().getId())) {
+                Segment segment = segmentsMap.get(segmentLink.getId().getId());
+                SerializableSegment serializableSegment =
+                    new SerializableSegment(segment, String.valueOf(segmentLink.getPosition()), this.getChildLevel(),
+                        this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields);
+                if (serializableSegment != null) {
+                  Element segmentElement = serializableSegment.serialize();
+                  if (segmentElement != null) {
+                    segmentRegistryElement.appendChild(segmentElement);
+                  }
+                  this.serializableSegments.add(serializableSegment);
+                }
+              } else {
+                throw new SegmentNotFoundException(segmentLink.getId().getId());
               }
-            } else {
-              throw new SegmentNotFoundException(segmentLink.getId().getId());
             }
           }
         }
       }
       return segmentRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, segmentRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), segmentRegistry);
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getConformanceStatements(int)
+   */
+  @Override
+  public Element getConformanceStatements(int level) {
+    Element conformanceStatements = new Element("Section");
+    conformanceStatements.addAttribute(new Attribute("id",super.getId()+"_cs"));
+    conformanceStatements.addAttribute(new Attribute("position",super.getPosition()));
+    conformanceStatements.addAttribute(new Attribute("title","Segment level"));
+    conformanceStatements.addAttribute(new Attribute("h",String.valueOf(level)));
+    try {
+      for(SerializableSegment serializableSegment : this.serializableSegments) {
+        SerializableConstraints serializableConstraints = serializableSegment.getConformanceStatements(level);
+        if(serializableConstraints != null && serializableConstraints.getConstraintsCount() > 0) {
+          Element segmentConstraintsElement = new Element("Section");
+          segmentConstraintsElement.addAttribute(new Attribute("id",serializableSegment.getId()+"_cs"));
+          segmentConstraintsElement.addAttribute(new Attribute("position",serializableSegment.getPosition()));
+          segmentConstraintsElement.addAttribute(new Attribute("title",serializableSegment.getTitle()));
+          segmentConstraintsElement.addAttribute(new Attribute("h",String.valueOf(level+1)));
+          Element serializedConstraints = serializableConstraints.serialize();
+          Elements constraintElements = serializedConstraints.getChildElements("Constraint");
+          if(constraintElements.size() > 0) {
+            for(int i = 0 ; i < constraintElements.size() ; i ++) {
+              Element constraintElement = constraintElements.get(i);
+              if(constraintElement != null) {
+                segmentConstraintsElement.appendChild(constraintElement.copy());
+              }
+            }
+            conformanceStatements.appendChild(segmentConstraintsElement);
+          }
+        }
+      }
+    } catch (SerializationException e) {
+      e.printStackTrace();
+    }
+    if(conformanceStatements.getChildCount() > 0) {
+      return conformanceStatements;
+    }
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getPredicates(int)
+   */
+  @Override
+  public Element getPredicates(int level) {
+    Element predicates = new Element("Section");
+    predicates.addAttribute(new Attribute("id",super.getId()+"_pre"));
+    predicates.addAttribute(new Attribute("position",super.getPosition()));
+    predicates.addAttribute(new Attribute("title","Segment level"));
+    predicates.addAttribute(new Attribute("h",String.valueOf(level)));
+    try {
+      for(SerializableSegment serializableSegment : this.serializableSegments) {
+        SerializableConstraints serializableConstraints = serializableSegment.getPredicates(level);
+        if(serializableConstraints != null && serializableConstraints.getConstraintsCount() > 0) {
+          Element segmentConstraintsElement = new Element("Section");
+          segmentConstraintsElement.addAttribute(new Attribute("id",serializableSegment.getId()+"_pre"));
+          segmentConstraintsElement.addAttribute(new Attribute("position",serializableSegment.getPosition()));
+          segmentConstraintsElement.addAttribute(new Attribute("title",serializableSegment.getTitle()));
+          segmentConstraintsElement.addAttribute(new Attribute("h",String.valueOf(level+1)));
+          Element serializedConstraints = serializableConstraints.serialize();
+          Elements constraintElements = serializedConstraints.getChildElements("Constraint");
+          if(constraintElements.size() > 0) {
+            for(int i = 0 ; i < constraintElements.size() ; i ++) {
+              Element constraintElement = constraintElements.get(i);
+              if(constraintElement != null) {
+                segmentConstraintsElement.appendChild(constraintElement.copy());
+              }
+            }
+            predicates.appendChild(segmentConstraintsElement);
+          }
+        }
+      }
+    } catch (SerializationException e) {
+      e.printStackTrace();
+    }
+    if(predicates.getChildCount() > 0) {
+      return predicates;
+    }
+    return null;
   }
 
 }

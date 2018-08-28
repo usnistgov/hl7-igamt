@@ -14,9 +14,16 @@
 package gov.nist.hit.hl7.igamt.valueset.service;
 
 import java.util.List;
+import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 
 /**
  *
@@ -26,32 +33,106 @@ public interface ValuesetService {
 
   public Valueset findById(CompositeKey id);
 
+  public Valueset findLatestById(String id);
+
   public Valueset create(Valueset valueset);
-  
+
   public Valueset createFromLegacy(Valueset valueset, String legacyId);
 
   public Valueset save(Valueset valueset);
 
   public List<Valueset> findAll();
-  
+
   public void delete(Valueset valueset);
-  
+
   public void delete(CompositeKey id);
-  
+
   public void removeCollection();
-  
+
   public List<Valueset> findByDomainInfoVersion(String version);
-  
+
   public List<Valueset> findByDomainInfoScope(String scope);
-  
+
   public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-  
+
   public List<Valueset> findByBindingIdentifier(String bindingIdentifier);
-  
-  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version, String bindingIdentifier);
-  
-  public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier);
-  
-  public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
+
+
+  public Valueset getLatestById(String id);
+
+
+  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope,
+      String version, String bindingIdentifier);
+
+  public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version,
+      String bindingIdentifier);
+
+  public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope,
+      String bindingIdentifier);
+
+  /**
+   * @param string
+   * @param version
+   * @return
+   */
+  public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetMetadata convertDomainToMetadata(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetPreDef convertDomainToPredef(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetPostDef convertDomainToPostdef(Valueset valueset);
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public ValuesetStructure convertDomainToStructure(Valueset valueset);
+
+  /**
+   * @param structure
+   * @return
+   * @throws ValuesetNotFoundException
+   */
+  public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException;
+
+  /**
+   * @param preDef
+   * @return
+   * @throws ValuesetNotFoundException
+   */
+  public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException;
+
+  /**
+   * @param displayMetadata
+   * @return
+   * @throws ValuesetNotFoundException
+   */
+  public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException;
+
+  /**
+   * @param postDef
+   * @return
+   * @throws ValuesetNotFoundException
+   */
+  public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException;
+
+  /**
+   * @param valueset
+   * @return
+   */
+  public Set<DisplayCode> getCodeDisplay(Valueset valueset);
 
 }

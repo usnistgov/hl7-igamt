@@ -9,8 +9,7 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>profile-component</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>profile-component</name>
+ 	<name>profile-component</name>
 	<url>http://maven.apache.org</url>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -19,12 +18,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>shared-domain</artifactId>
-			<version>${parent.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>datatype</artifactId>
+			<artifactId>segment</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 	</dependencies>

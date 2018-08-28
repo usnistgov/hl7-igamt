@@ -1,194 +1,134 @@
 import {Injectable} from '@angular/core';
-
-import { ObjectsDatabase, IObject } from './objects-database';
-import { ObjectsReferenceDatabase } from './objects-reference-database';
 import Dexie from 'dexie';
+import {NodeDatabase} from './node-database';
+import {IgDocumentInfo, IgDocumentInfoDatabase} from "./ig-document-info-database";
+import {IgDocumentService} from "../../igdocuments/igdocument-edit/ig-document.service";
 
 @Injectable()
 export class IndexedDbService {
-  changedObjectsDatabase;
-  removedObjectsDatabase;
-  createdObjectsDatabase;
-  addedObjectsDatabase;
+  nodeDatabase;
+  tocDataBase;
+  igDocumentInfoDataBase;
+
   igDocumentId?: string;
+
   constructor() {
-    Dexie.delete('ChangedObjectsDatabase').then(() => {
-      console.log('ChangedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete ChangedObjectsDatabase');
-    }).finally(() => {
-      this.changedObjectsDatabase = new ObjectsDatabase('ChangedObjectsDatabase');
-    });
-    Dexie.delete('RemovedObjectsDatabase').then(() => {
-      console.log('RemovedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete RemovedObjectsDatabase');
-    }).finally(() => {
-      this.removedObjectsDatabase = new ObjectsReferenceDatabase('RemovedObjectsDatabase');
-    });
-    Dexie.delete('CreatedObjectsDatabase').then(() => {
-      console.log('CreatedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete CreatedObjectsDatabase');
-    }).finally(() => {
-      this.createdObjectsDatabase = new ObjectsReferenceDatabase('CreatedObjectsDatabase');
-    });
-    Dexie.delete('AddedObjectsDatabase').then(() => {
-      console.log('AddedObjectsDatabase successfully deleted');
-    }).catch((err) => {
-      console.error('Could not delete AddedObjectsDatabase');
-    }).finally(() => {
-      this.addedObjectsDatabase = new ObjectsReferenceDatabase('AddedObjectsDatabase');
-    });
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+    this.nodeDatabase = new NodeDatabase('NodeDatabase');
   }
 
-  public initializeDatabase (igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
-
-  public getDatatype (id, callback) {
-    let datatype;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async() => {
-      datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      callback(datatype);
-    });
-  }
-
-  public getDatatypeMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.metadata);
-      }
-    });
-  }
-
-  public getDatatypeDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.definition);
-      }
-    });
-  }
-
-  public getDatatypeCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.datatypes, async () => {
-      const datatype = await this.changedObjectsDatabase.datatypes.get(id);
-      if (datatype != null) {
-        callback(datatype.crossReference);
-      }
-    });
-  }
-
-  public getValueset (id, callback) {
-    let valueset;
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async() => {
-      valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      callback(valueset);
-    });
-  }
-
-  public getValuesetMetadata (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.metadata);
-      }
-    });
-  }
-
-  public getValuesetDefinition (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.definition);
-      }
-    });
-  }
-
-  public getValuesetCrossReference (id, callback) {
-    this.changedObjectsDatabase.transaction('r', this.changedObjectsDatabase.valueSets, async () => {
-      const valueset = await this.changedObjectsDatabase.valueSets.get(id);
-      if (valueset != null) {
-        callback(valueset.crossReference);
-      }
-    });
-  }
-
-  public saveDatatype(datatype) {
-    this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async() => {
-      let savedDatatype = await this.changedObjectsDatabase.datatypes.get(datatype.id);
-      if (savedDatatype == null) {
-        savedDatatype = new IObject();
-        savedDatatype.id = datatype.id;
-      }
-      let changesToBeSaved = false;
-      if (datatype.metadata != null) {
-        savedDatatype.metadata = datatype.metadata;
-        changesToBeSaved = true;
-      }
-      if (datatype.definition !== undefined) {
-        savedDatatype.definition = datatype.definition;
-        changesToBeSaved = true;
-      }
-      if (datatype.metadata !== undefined) {
-        savedDatatype.crossReference = datatype.crossReference;
-        changesToBeSaved = true;
-      }
-      if (changesToBeSaved) {
-        await this.changedObjectsDatabase.datatypes.put(savedDatatype);
-      }
-    });
-  }
-
-  public persistChanges() {
-    const changedObjects = new ChangedObjects(this.igDocumentId);
+  public initializeDatabase(igDocumentId): Promise<{}> {
+    this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
     const promises = [];
     promises.push(new Promise((resolve, reject) => {
-      console.log('Loading changed segments');
-      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.segments, async () => {
-        changedObjects.segments = await this.changedObjectsDatabase.segments.toArray();
-        console.log('Changed segments successfully loaded');
+      Dexie.delete('IgDocumentInfoDatabase').then(() => {
+        console.log('IgDocumentInfoDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete IgDocumentInfoDatabase');
+      }).finally(() => {
+        this.igDocumentInfoDataBase = new IgDocumentInfoDatabase();
+        this.igDocumentInfoDataBase.igDocument.put(new IgDocumentInfo(igDocumentId)).then(() => {
+          resolve();
+        }).catch((error) => {
+          reject(error);
+        });
+      });
+    }));
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('cachedb').then(() => {
+        console.log('cachedb successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete cachedb');
+      }).finally(() => {
+        resolve();
+      });
+    }));
+
+    promises.push(new Promise((resolve, reject) => {
+      Dexie.delete('NodeDatabase').then(() => {
+        console.log('NodeDatabase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
+        this.nodeDatabase = new NodeDatabase('NodeDatabase');
         resolve();
       });
     }));
     promises.push(new Promise((resolve, reject) => {
-      console.log('Loading changed datatypes');
-      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.datatypes, async () => {
-        changedObjects.datatypes = await this.changedObjectsDatabase.datatypes.toArray();
-        console.log('Changed datatypes successfully loaded');
+      Dexie.delete('tocDataBase').then(() => {
+        console.log('tocDataBase successfully deleted');
+      }).catch((err) => {
+        console.error('Could not delete NodeDatabase');
+      }).finally(() => {
         resolve();
       });
     }));
-    promises.push(new Promise((resolve, reject) => {
-      console.log('Loading changed valuesets');
-      this.changedObjectsDatabase.transaction('rw', this.changedObjectsDatabase.valuesets, async () => {
-        changedObjects.valuesets = await this.changedObjectsDatabase.valuesets.toArray();
-        console.log('Changed valuesets successfully loaded');
-        resolve();
+    return Promise.all(promises);
+  }
+
+  public getIgDocument(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {
+        if (collection != null && collection.length >= 1) {
+          resolve(collection[0]);
+        } else {
+          reject();
+        }
+      }).catch((error) => {
+        reject(error);
       });
-    }));
-    const doPersist = this.doPersist;
-    Promise.all(promises).then(function(){
-      console.log('Persisting all changed objects (' + changedObjects.segments.length + ' segments, '
-        + changedObjects.datatypes.length + ' datatypes, ' + changedObjects.valuesets.length + ' valuesets).');
-      doPersist(changedObjects);
     });
   }
 
-  private doPersist(changedObjects) {
-    console.log(JSON.stringify(changedObjects));
-    // TODO call igService.save
-  }
-}
+  public updateIgToc(id, nodes): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.update(id, {toc: nodes}).then(x => {
+        console.log(x);
+        resolve(x);
 
-class ChangedObjects {
-  igDocumentId?: string;
-  segments?: Array<IObject>;
-  datatypes?: Array<IObject>;
-  valuesets?: Array<IObject>;
-  constructor(igDocumentId) {
-    this.igDocumentId = igDocumentId;
+      }).catch((error) => {
+        reject(error);
+      });
+    })
   }
+  public updateIgMetadata(id, nodes): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.update(id, {metadata: nodes}).then(x => {
+        console.log(x);
+        resolve(x);
+
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  public initIg(ig): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.put(ig).then(x => {
+        console.log("Putting IG ");
+        console.log(x);
+        resolve(ig);
+
+      }).catch((error) => {
+        reject(error);
+      });
+    })
+  }
+
+  public getIgDocumentId(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.igDocumentInfoDataBase.igDocument.toArray().then((collection) => {
+        if (collection != null && collection.length >= 1) {
+          resolve(collection[0].id);
+        } else {
+          reject();
+        }
+      }).catch((error) => {
+        reject(error);
+      });
+    });
+  }
+
+
 }

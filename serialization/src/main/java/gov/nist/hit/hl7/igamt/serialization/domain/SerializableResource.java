@@ -13,7 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.domain;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -24,18 +26,35 @@ import nu.xom.Element;
 public abstract class SerializableResource extends SerializableAbstractDomain {
 
   public SerializableResource(Resource resource, String position) {
-    super(resource, position);
+    super(resource, position, resource.getLabel());
   }
 
-  public Element getElement(String elementName) {
-    Element element = super.getElement(elementName);
+  public Element getElement(Type type) {
+    Element element = super.getElement(type);
     Resource resource = (Resource) super.getAbstractDomain();
-    if(resource != null && element != null) {
+    if (resource != null && element != null) {
       element.addAttribute(new Attribute("postDef",
-          resource.getPostDef() != null ? resource.getPostDef() : ""));
+          resource.getPostDef() != null && !resource.getPostDef().isEmpty()
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPostDef())
+              : ""));
       element.addAttribute(new Attribute("preDef",
-          resource.getPreDef() != null ? resource.getPreDef() : ""));
+          resource.getPreDef() != null && !resource.getPreDef().isEmpty()
+              ? FroalaSerializationUtil.cleanFroalaInput(resource.getPreDef())
+              : ""));
+      element.addAttribute(new Attribute("type", type.getValue()));
     }
+    return element;
+  }
+
+  public Element getSectionElement(Element resourceElement, int level) {
+    Element element = super.getElement(Type.SECTION);
+    element.addAttribute(new Attribute("h", String.valueOf(level)));
+    Resource resource = (Resource) super.getAbstractDomain();
+    element.addAttribute(
+        new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));
+    element.addAttribute(new Attribute("description",
+        resource.getDescription() != null ? resource.getDescription() : ""));
+    element.appendChild(resourceElement);
     return element;
   }
 

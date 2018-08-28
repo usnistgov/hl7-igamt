@@ -1,9 +1,0 @@
-<p-dialog [(visible)]="_visible" modal="modal" [positionTop]="40"  appendTo="body">
-    <p-header>
-        User Column Header
-    </p-header>
-    <input type="text" style="width: 100%;" [(ngModel)]="header">
-    <p-footer>
-        <button type="button" *ngIf="header && header.length > 0" (click)="addHeader()" class="btn btn-success" pButton icon="fa-check" > Select </button>
-    </p-footer>
-</p-dialog>

@@ -10,11 +10,20 @@ export default class IndexedDbUtils {
       if (objectSource.metadata != null) {
         objectTarget.metadata = objectSource.metadata;
       }
-      if (objectSource.definition != null) {
-        objectTarget.definition = objectSource.definition;
-      }
-      if (objectSource.metadata != null) {
+      if (objectSource.crossReference != null) {
         objectTarget.crossReference = objectSource.crossReference;
+      }
+      if (objectSource.structure != null) {
+        objectTarget.structure = objectSource.structure;
+      }
+      if (objectSource.preDef != null) {
+        objectTarget.preDef = objectSource.preDef;
+      }
+      if (objectSource.postDef != null) {
+        objectTarget.postDef = objectSource.postDef;
+      }
+      if (objectSource.conformanceStatements != null) {
+        objectTarget.conformanceStatements = objectSource.conformanceStatements;
       }
     }
     return objectTarget;

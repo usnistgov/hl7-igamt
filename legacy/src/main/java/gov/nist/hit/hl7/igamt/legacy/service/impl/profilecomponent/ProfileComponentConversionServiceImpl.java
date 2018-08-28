@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.legacy.service.impl.profilecomponent;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +33,11 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ValueSetBindingStrengt
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ValueSetOrSingleCodeBinding;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.ConformanceStatement;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.Predicate;
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.legacy.repository.MessageRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
@@ -53,13 +59,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyPredicate
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertySingleCode;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyUsage;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.property.PropertyValueSet;
-import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.PublicationInfo;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ExternalSingleCode;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetStrength;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 
 /**
  *
@@ -72,13 +72,14 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       (ProfileComponentRepository) legacyContext.getBean("profileComponentRepository");
 
   @Autowired
-  private ProfileComponentService convertedProfileComponentService =
-      (ProfileComponentService) context.getBean("profileComponentService");
-  
+  private gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository convertedProfileComponentService =
+      context.getBean(
+          gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository.class);
+
   @Autowired
   private SegmentRepository oldSegmentRepository =
       (SegmentRepository) legacyContext.getBean("segmentRepository");
-  
+
   @Autowired
   private MessageRepository oldMessageRepository =
       (MessageRepository) legacyContext.getBean("messageRepository");
@@ -101,171 +102,178 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
    * @return
    */
   private void convertProfileComponents(ProfileComponent oldProfileComponent) {
-    for(SubProfileComponent spc:oldProfileComponent.getChildren()){
-      gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
-          new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
-      if(spc.getFrom().equals("segment")){
+    gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
+        new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
+    convertedProfileComponent.setId(new CompositeKey(oldProfileComponent.getId()));
+
+    for (SubProfileComponent spc : oldProfileComponent.getChildren()) {
+
+      if (spc.getFrom().equals("segment")) {
         convertedProfileComponent.setLevel(Level.SEGMENT);
         convertedProfileComponent.setSourceId(spc.getSource().getSegmentId());
-        if(convertedProfileComponent.getSourceId() == null){
-          try {
-            throw new Exception();
-          } catch (Exception e) {
-            System.out.println("Source(Segment) ID is missing for " + spc.getId() );
-            e.printStackTrace();
-          } 
-        }else {
-          Segment oldSeg = oldSegmentRepository.findOne(convertedProfileComponent.getSourceId());
-          convertedProfileComponent.setStructure(oldSeg.getName());
+        if (convertedProfileComponent.getSourceId() != null) {
+          Segment oldSeg = null;
+          Optional<Segment> optional =
+              oldSegmentRepository.findById(convertedProfileComponent.getSourceId());
+          if (optional.isPresent()) {
+            oldSeg = optional.get();
+            convertedProfileComponent.setStructure(oldSeg.getName());
+          }
         }
-      }else if(spc.getFrom().equals("message")){
+      } else if (spc.getFrom().equals("message")) {
         convertedProfileComponent.setLevel(Level.MESSAGE);
         convertedProfileComponent.setSourceId(spc.getSource().getMessageId());
-        
-        if(convertedProfileComponent.getSourceId() == null){
-          try {
-            throw new Exception();
-          } catch (Exception e) {
-            System.out.println("Source(Message) ID is missing for " + spc.getId() );
-            e.printStackTrace();
-          } 
-        }else {
-          Message oldMsg = oldMessageRepository.findOne(convertedProfileComponent.getSourceId());
-          convertedProfileComponent.setStructure(oldMsg.getStructID());
+
+        if (convertedProfileComponent.getSourceId() != null) {
+          Message oldMsg = null;
+          Optional<Message> optional =
+              oldMessageRepository.findById(convertedProfileComponent.getSourceId());
+          if (optional.isPresent()) {
+            oldMsg = optional.get();
+            convertedProfileComponent.setStructure(oldMsg.getStructID());
+          }
         }
       }
-      
+
       ProfileComponentItem item = new ProfileComponentItem();
       item.setPath(spc.getPath());
       String newMax = spc.getAttributes().getMax();
-      if(newMax != null){
+      if (newMax != null) {
         PropertyCardinalityMax propertyCardinalityMax = new PropertyCardinalityMax();
         propertyCardinalityMax.setMax(newMax);
         item.addItemProperty(propertyCardinalityMax);
       }
-      
+
       Integer newMin = spc.getAttributes().getMin();
-      if(newMin != null){
+      if (newMin != null) {
         PropertyCardinalityMin propertyCardinalityMin = new PropertyCardinalityMin();
         propertyCardinalityMin.setMin(newMin);
         item.addItemProperty(propertyCardinalityMin);
       }
-      
+
       String maxLength = spc.getAttributes().getMaxLength();
-      if(maxLength != null){
+      if (maxLength != null) {
         PropertyLengthMax propertyLengthMax = new PropertyLengthMax();
         propertyLengthMax.setMax(maxLength);
         item.addItemProperty(propertyLengthMax);
       }
-      
+
       String minLength = spc.getAttributes().getMinLength();
-      if(minLength != null){
+      if (minLength != null) {
         PropertyLengthMin propertyLengthMin = new PropertyLengthMin();
         propertyLengthMin.setMin(minLength);
         item.addItemProperty(propertyLengthMin);
       }
-      
-      
+
+
       String confLength = spc.getAttributes().getConfLength();
-      if(confLength != null){
+      if (confLength != null) {
         PropertyConfLength propertyConfLength = new PropertyConfLength();
         propertyConfLength.setConfLength(confLength);
         item.addItemProperty(propertyConfLength);
       }
-      
+
       DatatypeLink newDatatypeLink = spc.getAttributes().getDatatype();
-      if(newDatatypeLink != null){
+      if (newDatatypeLink != null) {
         PropertyDatatype propertyDatatype = new PropertyDatatype();
         propertyDatatype.setDatatypeId(newDatatypeLink.getId());
         item.addItemProperty(propertyDatatype);
       }
-      
+
       Usage usage = spc.getAttributes().getUsage();
-      if(usage != null){
+      if (usage != null) {
         PropertyUsage propertyUsage = new PropertyUsage();
         propertyUsage.setUsage(ConversionUtil.convertUsage(usage));
         item.addItemProperty(propertyUsage);
       }
-      
-      List<Comment> comments = spc.getComments();
-      if(comments != null && comments.size() > 0){
-        for(Comment c:comments){
-          PropertyComment propertyComment = new PropertyComment();
-          gov.nist.hit.hl7.igamt.shared.domain.binding.Comment newComment = new gov.nist.hit.hl7.igamt.shared.domain.binding.Comment();
-          newComment.setDateupdated(c.getLastUpdatedDate());
-          newComment.setDescription(c.getDescription());
-          propertyComment.setComment(newComment);
-          item.addItemProperty(propertyComment);
-        }
-      }
-      
-      comments = spc.getAttributes().getComments();
-      if(comments != null && comments.size() > 0){
-        for(Comment c:comments){
-          PropertyComment propertyComment = new PropertyComment();
-          gov.nist.hit.hl7.igamt.shared.domain.binding.Comment newComment = new gov.nist.hit.hl7.igamt.shared.domain.binding.Comment();
-          newComment.setDateupdated(c.getLastUpdatedDate());
-          newComment.setDescription(c.getDescription());
-          propertyComment.setComment(newComment);
-          item.addItemProperty(propertyComment);
-        }
-      }
-      
-      //NO singleElementValue Data 
-      //spc.getSingleElementValues();
 
-      //NO Ref data
-      //spc.getAttributes().getRef();
-      
-      //No CoConstraintsTable Data
-      //spc.getAttributes().getCoConstraintsTable();
-      
-      //No Tables Value
-      //spc.getAttributes().getTables();
-      
-      
-      DynamicMappingDefinition oldDynamicMappingDefinition = spc.getAttributes().getDynamicMappingDefinition();
-      if(oldDynamicMappingDefinition != null){
+      List<Comment> comments = spc.getComments();
+      if (comments != null && comments.size() > 0) {
+        for (Comment c : comments) {
+          PropertyComment propertyComment = new PropertyComment();
+          gov.nist.hit.hl7.igamt.common.binding.domain.Comment newComment =
+              new gov.nist.hit.hl7.igamt.common.binding.domain.Comment();
+          newComment.setDateupdated(c.getLastUpdatedDate());
+          newComment.setDescription(c.getDescription());
+          propertyComment.setComment(newComment);
+          item.addItemProperty(propertyComment);
+        }
+      }
+
+      comments = spc.getAttributes().getComments();
+      if (comments != null && comments.size() > 0) {
+        for (Comment c : comments) {
+          PropertyComment propertyComment = new PropertyComment();
+          gov.nist.hit.hl7.igamt.common.binding.domain.Comment newComment =
+              new gov.nist.hit.hl7.igamt.common.binding.domain.Comment();
+          newComment.setDateupdated(c.getLastUpdatedDate());
+          newComment.setDescription(c.getDescription());
+          propertyComment.setComment(newComment);
+          item.addItemProperty(propertyComment);
+        }
+      }
+
+      // NO singleElementValue Data
+      // spc.getSingleElementValues();
+
+      // NO Ref data
+      // spc.getAttributes().getRef();
+
+      // No CoConstraintsTable Data
+      // spc.getAttributes().getCoConstraintsTable();
+
+      // No Tables Value
+      // spc.getAttributes().getTables();
+
+
+      DynamicMappingDefinition oldDynamicMappingDefinition =
+          spc.getAttributes().getDynamicMappingDefinition();
+      if (oldDynamicMappingDefinition != null) {
         PropertyDynamicMapping propertyDynamicMapping = new PropertyDynamicMapping();
         DynamicMappingInfo dynamicMappingInfo = new DynamicMappingInfo();
-        
-        for(DynamicMappingItem oldItem : oldDynamicMappingDefinition.getDynamicMappingItems()){
-          gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem newItem = new gov.nist.hit.hl7.igamt.shared.domain.DynamicMappingItem();
+
+        for (DynamicMappingItem oldItem : oldDynamicMappingDefinition.getDynamicMappingItems()) {
+          gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem newItem =
+              new gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem();
           newItem.setDatatypeId(oldItem.getDatatypeId());
           newItem.setValue(oldItem.getFirstReferenceValue());
           dynamicMappingInfo.addItem(newItem);
         }
-        dynamicMappingInfo.setReferencePath(oldDynamicMappingDefinition.getMappingStructure().getSecondRefereceLocation());
-        dynamicMappingInfo.setVariesDatatypePath(oldDynamicMappingDefinition.getMappingStructure().getTargetLocation());
+        dynamicMappingInfo.setReferencePath(
+            oldDynamicMappingDefinition.getMappingStructure().getSecondRefereceLocation());
+        dynamicMappingInfo.setVariesDatatypePath(
+            oldDynamicMappingDefinition.getMappingStructure().getTargetLocation());
+
         propertyDynamicMapping.setDynamicMappingInfo(dynamicMappingInfo);
         item.addItemProperty(propertyDynamicMapping);
       }
-      
-      
+
+
       String oldText = spc.getAttributes().getText();
-      if(oldText != null){
+      if (oldText != null) {
         PropertyDefinitionText propertyDefinitionText = new PropertyDefinitionText();
         propertyDefinitionText.setDefinitionText(oldText);
         item.addItemProperty(propertyDefinitionText);
       }
-      
+
       PropertyValueSet propertyValueSet = new PropertyValueSet();
       PropertySingleCode propertySingleCode = new PropertySingleCode();
-      
+
       List<ValueSetOrSingleCodeBinding> oldValueSetOrSingleCodeBindings = spc.getValueSetBindings();
-      if(oldValueSetOrSingleCodeBindings != null && oldValueSetOrSingleCodeBindings.size() > 0){
-        for(ValueSetOrSingleCodeBinding vsosc : oldValueSetOrSingleCodeBindings){
-          if(vsosc.getType().equals("valueset")){
-            ValueSetBinding oldValueSetBinding = (ValueSetBinding)vsosc;
-            
-            gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding vb = new gov.nist.hit.hl7.igamt.shared.domain.binding.ValuesetBinding();
-            if(oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.R)){
+      if (oldValueSetOrSingleCodeBindings != null && oldValueSetOrSingleCodeBindings.size() > 0) {
+        for (ValueSetOrSingleCodeBinding vsosc : oldValueSetOrSingleCodeBindings) {
+          if (vsosc.getType().equals("valueset")) {
+            ValueSetBinding oldValueSetBinding = (ValueSetBinding) vsosc;
+
+            gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding vb =
+                new gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding();
+            if (oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.R)) {
               vb.setStrength(ValuesetStrength.R);
-            }else if(oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.S)){
+            } else if (oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.S)) {
               vb.setStrength(ValuesetStrength.S);
-            }else if(oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.U)){
+            } else if (oldValueSetBinding.getBindingStrength().equals(ValueSetBindingStrength.U)) {
               vb.setStrength(ValuesetStrength.U);
-            }else {
+            } else {
               vb.setStrength(ValuesetStrength.R);
             }
             vb.setValuesetId(oldValueSetBinding.getTableId());
@@ -288,34 +296,38 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
               vb.addValuesetLocation(10);
             }
             propertyValueSet.addValuesetBinding(vb);
-          }else if(vsosc.getType().equals("code")){
-            SingleCodeBinding scb = (SingleCodeBinding)vsosc;
+          } else if (vsosc.getType().equals("code")) {
+            SingleCodeBinding scb = (SingleCodeBinding) vsosc;
             ExternalSingleCode externalSingleCode = new ExternalSingleCode();
             externalSingleCode.setCodeSystem(scb.getCode().getCodeSystem());
             externalSingleCode.setValue(scb.getCode().getValue());
             propertySingleCode.setExternalSingleCode(externalSingleCode);
           }
         }
-        
+
       }
-      
-      if(propertyValueSet.getValuesetBindings() != null && propertyValueSet.getValuesetBindings().size() > 0) item.addItemProperty(propertyValueSet);
-      if(propertySingleCode.getExternalSingleCode() != null) item.addItemProperty(propertySingleCode);
-      
+
+      if (propertyValueSet.getValuesetBindings() != null
+          && propertyValueSet.getValuesetBindings().size() > 0)
+        item.addItemProperty(propertyValueSet);
+      if (propertySingleCode.getExternalSingleCode() != null)
+        item.addItemProperty(propertySingleCode);
+
       List<ConformanceStatement> csList = spc.getAttributes().getConformanceStatements();
-      if(csList != null && csList.size() > 0){
-        for(ConformanceStatement oldCS: csList){
-          PropertyConformanceStatement propertyConformanceStatement = new PropertyConformanceStatement();
+      if (csList != null && csList.size() > 0) {
+        for (ConformanceStatement oldCS : csList) {
+          PropertyConformanceStatement propertyConformanceStatement =
+              new PropertyConformanceStatement();
           propertyConformanceStatement.setAssertionScript(oldCS.getAssertion());
           propertyConformanceStatement.setConstraintId(oldCS.getConstraintId());
           propertyConformanceStatement.setDescription(oldCS.getDescription());
           item.addItemProperty(propertyConformanceStatement);
         }
       }
-      
+
       Predicate oldPredicate = spc.getAttributes().getPredicate();
-      if(oldPredicate != null){
-        if(oldPredicate.getContext().getType().equals("segment")){
+      if (oldPredicate != null) {
+        if (oldPredicate.getContext().getType().equals("segment")) {
           ProfileComponentItem pitem = new ProfileComponentItem();
           pitem.setPath(convertedProfileComponent.getStructure());
           PropertyPredicate propertyPredicate = new PropertyPredicate();
@@ -326,9 +338,10 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
           propertyPredicate.setTrueUsage(ConversionUtil.convertUsage(oldPredicate.getFalseUsage()));
           pitem.addItemProperty(propertyPredicate);
           convertedProfileComponent.addProfileComponentItem(pitem);
-        }else if(oldPredicate.getContext().getType().equals("message")){
+        } else if (oldPredicate.getContext().getType().equals("message")) {
           ProfileComponentItem pitem = new ProfileComponentItem();
-          pitem.setPath(convertedProfileComponent.getStructure() + "." + oldPredicate.getContext().getPath());
+          pitem.setPath(
+              convertedProfileComponent.getStructure() + "." + oldPredicate.getContext().getPath());
           PropertyPredicate propertyPredicate = new PropertyPredicate();
           propertyPredicate.setAssertion(oldPredicate.getAssertion());
           propertyPredicate.setConstraintTarget(oldPredicate.getConstraintTarget());
@@ -340,24 +353,23 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
         }
       }
       convertedProfileComponent.addProfileComponentItem(item);
-      
-      DomainInfo domainInfo = new DomainInfo();
-      domainInfo.setScope(ConversionUtil.convertScope(oldProfileComponent.getScope()));
-      PublicationInfo publicationInfo = new PublicationInfo();
-      convertedProfileComponent.setId(new CompositeKey(spc.getId()));
-      convertedProfileComponent.setComment(oldProfileComponent.getComment());
-      convertedProfileComponent.setCreatedFrom(null);
-      convertedProfileComponent.setDescription(oldProfileComponent.getDescription());
-      convertedProfileComponent.setDomainInfo(domainInfo);
-      convertedProfileComponent.setName(oldProfileComponent.getName());
-      convertedProfileComponent.setPostDef(oldProfileComponent.getDefPostText());
-      convertedProfileComponent.setPreDef(oldProfileComponent.getDefPreText());
-      convertedProfileComponent.setPublicationInfo(publicationInfo);
-      convertedProfileComponentService.save(convertedProfileComponent);
+
     }
+    DomainInfo domainInfo = new DomainInfo();
+    domainInfo.setScope(ConversionUtil.convertScope(oldProfileComponent.getScope()));
+    PublicationInfo publicationInfo = new PublicationInfo();
+    convertedProfileComponent.setComment(oldProfileComponent.getComment());
+    convertedProfileComponent.setCreatedFrom(null);
+    convertedProfileComponent.setDescription(oldProfileComponent.getDescription());
+    convertedProfileComponent.setDomainInfo(domainInfo);
+    convertedProfileComponent.setName(oldProfileComponent.getName());
+    convertedProfileComponent.setPostDef(oldProfileComponent.getDefPostText());
+    convertedProfileComponent.setPreDef(oldProfileComponent.getDefPreText());
+    convertedProfileComponent.setPublicationInfo(publicationInfo);
+    convertedProfileComponentService.save(convertedProfileComponent);
   }
 
   private void init() {
-    convertedProfileComponentService.removeCollection();
+    // convertedProfileComponentService.removeCollection();
   }
 }

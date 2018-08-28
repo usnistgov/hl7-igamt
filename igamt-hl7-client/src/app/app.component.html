@@ -32,10 +32,20 @@
       <!--<tree-root [nodes]="nodes" [options]="options"></tree-root>-->
 
         <div class="layout-content-container">
-          <router-outlet></router-outlet>
-        </div>
+          <!--<div class="loader" *ngIf="loading">-->
+          <!--<div>-->
+          <!--<span></span>-->
+          <!--<span></span>-->
+          <!--<span></span>-->
+          <!--</div>-->
+          <!--</div>-->
+         <!--<div *ngIf="!loading">-->
+            <router-outlet></router-outlet>
+          </div>
+        <!--</div>-->
 
         <app-footer></app-footer>
         <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
     </div>
 </div>
+

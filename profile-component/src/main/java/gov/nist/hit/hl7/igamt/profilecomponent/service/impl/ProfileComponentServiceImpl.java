@@ -17,11 +17,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
-import gov.nist.hit.hl7.igamt.shared.util.CompositeKeyUtil;
+
 
 /**
  * 
@@ -32,10 +32,10 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Autowired
   private ProfileComponentRepository profileComponentRepository;
-  
+
   @Override
   public ProfileComponent findByCompositeKey(CompositeKey compositeKey) {
-    return profileComponentRepository.findOne(compositeKey);
+    return profileComponentRepository.findById(compositeKey).get();
   }
 
   @Override
@@ -52,7 +52,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public ProfileComponent save(ProfileComponent profileComponent) {
-    //profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
+    // profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
     profileComponent = profileComponentRepository.save(profileComponent);
     return profileComponent;
   }
@@ -60,7 +60,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   @Override
   public List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents) {
     ArrayList<ProfileComponent> savedProfileComponents = new ArrayList<>();
-    for(ProfileComponent profileComponent : profileComponents) {
+    for (ProfileComponent profileComponent : profileComponents) {
       savedProfileComponents.add(this.save(profileComponent));
     }
     return savedProfileComponents;
@@ -68,7 +68,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public void delete(CompositeKey id) {
-    profileComponentRepository.delete(id);
+    profileComponentRepository.deleteById(id);
   }
 
   @Override

@@ -15,19 +15,21 @@ package gov.nist.hit.hl7.igamt.ig.serialization;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
 import gov.nist.hit.hl7.igamt.ig.serialization.sections.SectionSerializationUtil;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableDocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import nu.xom.Attribute;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -37,24 +39,38 @@ import nu.xom.Element;
 public class SerializableIG extends SerializableAbstractDomain {
 
   private Map<String, Datatype> datatypesMap;
-  private Map<String, Valueset> valueSetsMap;
+  private Map<String, SerializableValuesetStructure> valueSetsMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> datatypeNamesMap;
+  private Map<String, String> valuesetLabelMap;
   private Map<String, Segment> segmentsMap;
   private Map<String, ConformanceProfile> conformanceProfilesMap;
+  private ExportConfiguration exportConfiguration;
+  private Set<String> bindedGroupsAndSegmentRefs;
+  private Set<String> bindedFields;
+  private Set<String> bindedSegments;
+  private Set<String> bindedDatatypes;
+  private Set<String> bindedComponents;
+  private Set<String> bindedValueSets;
 
-  /**
-   * @param abstractDomain
-   * @param position
-   */
-  public SerializableIG(AbstractDomain abstractDomain, String position,
-      Map<String, Datatype> datatypesMap, Map<String, Valueset> valueSetsMap,
-      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap) {
-    super(abstractDomain, position);
+  public SerializableIG(Ig ig, String position,
+      Map<String, Datatype> datatypesMap, Map<String, SerializableValuesetStructure> valueSetsMap,
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
+      ExportConfiguration exportConfiguration, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets) {
+    super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
     this.segmentsMap = segmentsMap;
     this.conformanceProfilesMap = conformanceProfilesMap;
+    this.exportConfiguration = exportConfiguration;
+    this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
+    this.bindedFields = bindedFields;
+    this.bindedSegments = bindedSegments;
+    this.bindedDatatypes = bindedDatatypes;
+    this.bindedComponents = bindedComponents;
+    this.bindedValueSets = bindedValueSets;
     this.populateNamesMap();
   }
 
@@ -66,15 +82,26 @@ public class SerializableIG extends SerializableAbstractDomain {
   @Override
   public Element serialize() throws SerializationException {
     Ig igDocument = (Ig) this.getAbstractDomain();
-    Element igDocumentElement = super.getElement("Document");
-    Element igMetadata = serializeIgMetadata(igDocument.getMetaData());
-    if (igMetadata != null) {
-      igDocumentElement.appendChild(igMetadata);
+    Element igDocumentElement = super.getElement(Type.IGDOCUMENT);
+    SerializableDocumentMetadata serializableDocumentMetadata =
+        new SerializableDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(), igDocument.getPublicationInfo());
+    if (serializableDocumentMetadata != null) {
+      Element metadataElement = serializableDocumentMetadata.serialize();
+      if (metadataElement != null) {
+        igDocumentElement.appendChild(metadataElement);
+      }
     }
-
     for (Section section : igDocument.getContent()) {
-      Element sectionElement = SectionSerializationUtil.serializeSection(section, datatypesMap,
-          datatypeNamesMap, valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
+      // startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
+      int startLevel = 1;
+      Element sectionElement =
+          SectionSerializationUtil.serializeSection(section, startLevel, datatypesMap,
+              datatypeNamesMap, valueSetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap, conformanceProfilesMap,
+              igDocument.getValueSetRegistry(), igDocument.getDatatypeRegistry(),
+              igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
+              igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry(),
+              this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
+              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration);
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }
@@ -93,37 +120,22 @@ public class SerializableIG extends SerializableAbstractDomain {
       }
     }
     valuesetNamesMap = new HashMap<>();
+    valuesetLabelMap = new HashMap<>();
     if (valueSetsMap != null) {
       for (String valuesetId : valueSetsMap.keySet()) {
-        Valueset valueset = valueSetsMap.get(valuesetId);
+        Valueset valueset = valueSetsMap.get(valuesetId).getValueset();
         if (valueset != null) {
-          valuesetNamesMap.put(valuesetId, valueset.getName());
+          valuesetNamesMap.put(valuesetId, valueset.getBindingIdentifier());
+          valuesetLabelMap.put(valuesetId, valueset.getName());
         }
       }
     }
   }
 
-  /**
-   * @param metaData
-   * @return
-   */
-  private Element serializeIgMetadata(IgMetaData metaData) {
-    Element igMetadataElement = new Element("IgMetadata");
-    igMetadataElement.addAttribute(
-        new Attribute("topics", metaData.getTopics() != null ? metaData.getTopics() : ""));
-    igMetadataElement.addAttribute(new Attribute("specificationName",
-        metaData.getSpecificationName() != null ? metaData.getSpecificationName() : ""));
-    igMetadataElement.addAttribute(new Attribute("identifier",
-        metaData.getIdentifier() != null ? metaData.getIdentifier() : ""));
-    igMetadataElement.addAttribute(new Attribute("implementationNotes",
-        metaData.getImplementationNotes() != null ? metaData.getImplementationNotes() : ""));
-    igMetadataElement.addAttribute(
-        new Attribute("orgName", metaData.getOrgName() != null ? metaData.getOrgName() : ""));
-    igMetadataElement.addAttribute(new Attribute("coverPicture",
-        metaData.getCoverPicture() != null ? metaData.getCoverPicture() : ""));
-    igMetadataElement.addAttribute(
-        new Attribute("subTitle", metaData.getSubTitle() != null ? metaData.getSubTitle() : ""));
-    return igMetadataElement;
+  @Override
+  public Map<String, String> getIdPathMap() {
+    // Never used for the IG Document as it doesn't have any binding.
+    return null;
   }
 
 }

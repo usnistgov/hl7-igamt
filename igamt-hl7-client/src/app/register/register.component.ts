@@ -3,6 +3,7 @@ import {Router} from "@angular/router";
 import {UserService} from "../service/userService/user.service";
 import {FormControl, FormGroup, Validators, ValidatorFn, AbstractControl} from '@angular/forms';
 import { equalValidator} from "../formValidators/equal-validator.directive";
+import {MessageService} from "primeng/components/common/messageservice";
 
 
 @Component({
@@ -18,7 +19,7 @@ export class RegisterComponent{
   registrationForm:FormGroup;
 
   constructor(
-    private router: Router,
+    private router: Router,private messageService: MessageService,
     private userService: UserService) {
     this.registrationForm= new FormGroup({
       'fullname': new FormControl(this.model.fullname,[Validators.required] ),
@@ -77,8 +78,8 @@ export class RegisterComponent{
         },
         error => {
           console.log("error");
-
-            this.loading = false;
+          this.showError(error);
+          this.loading = false;
         });
   }
 
@@ -90,6 +91,17 @@ export class RegisterComponent{
 }
 
 
+
+
+
+
+
+  showError(error:any) {
+    console.log(error);
+    error =JSON.parse(error.error.message);
+    console.log(error);
+    this.messageService.add({severity:'error', summary:"Registration Error", detail:error.message, id:'REGISTERERROR'});
+  }
 
 
 }

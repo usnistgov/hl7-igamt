@@ -2,15 +2,34 @@ import Dexie from 'dexie';
 
 export class IObject {
   id?: string;
-  metadata?: object;
-  definition?: object;
-  crossReference?: object;
+  metadata?: any;
+  structure?: any;
+  preDef?: any;
+  postDef?: any;
+  crossReference?: any;
+  conformanceStatements?: any;
+  changeType?:ChangeType
 }
 
-interface ISection {
-  id?: string;
-  content?: object;
+export class dndObject{
+  from:any;
+  to:any;
+  position:any;
+
 }
+export class Section {
+  id?: string;
+  section:any;
+
+}
+
+export enum ChangeType{
+  UPDATED="UPDATED",
+  DELETED="DELETED",
+  ADDED="ADDED"
+}
+
+
 
 export class ObjectsDatabase extends Dexie {
 

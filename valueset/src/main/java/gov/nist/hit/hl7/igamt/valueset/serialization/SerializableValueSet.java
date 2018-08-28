@@ -13,15 +13,22 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.Type;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
-import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
-import gov.nist.hit.hl7.igamt.valueset.domain.InternalCodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -31,70 +38,112 @@ import nu.xom.Element;
  */
 public class SerializableValueSet extends SerializableResource {
 
+  private int level;
+  
+  private ValuesetStructure valuesetStructure;
+  private int maxNumberOfCodes;
+
   /**
    * @param valueSet
    * @param position
    */
-  public SerializableValueSet(Valueset valueSet, String position) {
-    super(valueSet, position);
+  public SerializableValueSet(SerializableValuesetStructure serializableValuesetStructure, String position, int level, int maxNumberOfCodes) {
+    super(serializableValuesetStructure.getValueset(), position);
+    this.level = level;
+    this.valuesetStructure = serializableValuesetStructure.getValuesetStructure();
+    this.maxNumberOfCodes = maxNumberOfCodes;
   }
 
   @Override
   public Element serialize() throws SerializationException {
     try {
-      Element valueSetElement = super.getElement("Valueset");
+      Element valueSetElement = super.getElement(Type.VALUESET);
       Valueset valueSet = (Valueset) this.getAbstractDomain();
-      valueSetElement.addAttribute(new Attribute("bindingIdentifier",valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
-      valueSetElement.addAttribute(new Attribute("oid",valueSet.getOid() != null ? valueSet.getOid() : ""));
-      valueSetElement.addAttribute(new Attribute("intensionalComment",valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
-      valueSetElement.addAttribute(new Attribute("url",valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));
-      valueSetElement.addAttribute(new Attribute("managedBy",valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
-      valueSetElement.addAttribute(new Attribute("stability",valueSet.getStability() != null ? valueSet.getStability().value : ""));
-      valueSetElement.addAttribute(new Attribute("contentDefinition",valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
-      valueSetElement.addAttribute(new Attribute("numberOfCodes",String.valueOf(valueSet.getNumberOfCodes())));
-      valueSetElement.addAttribute(new Attribute("codeSystemIds",valueSet.getCodeSystemIds().size()>0 ? String.join(",", valueSet.getCodeSystemIds()):""));
-      if(valueSet.getCodeRefs().size()>0) {
-        Element codeRefsElement = new Element("CodeRefs");
-        for(CodeRef codeRef : valueSet.getCodeRefs()) {
-          Element codeRefElement = new Element("CodeRef");
-          codeRefElement.addAttribute(new Attribute("codeId",codeRef.getCodeId() != null ? codeRef.getCodeId() : ""));
-          codeRefElement.addAttribute(new Attribute("codeSystemId",codeRef.getCodeSystemId() != null ? codeRef.getCodeSystemId() : ""));
-          codeRefElement.addAttribute(new Attribute("position",String.valueOf(codeRef.getPosition())));
-          codeRefElement.addAttribute(new Attribute("usage",codeRef.getUsage() != null ? codeRef.getUsage().name() : ""));
-          codeRefsElement.appendChild(codeRefElement);
+      valueSetElement.addAttribute(new Attribute("bindingIdentifier",
+          valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
+      valueSetElement
+          .addAttribute(new Attribute("oid", valueSet.getOid() != null ? valueSet.getOid() : ""));
+      valueSetElement.addAttribute(new Attribute("sourceType",
+          valueSet.getSourceType() != null ? valueSet.getSourceType().getValue() : ""));
+      valueSetElement.addAttribute(new Attribute("intensionalComment",
+          valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
+      valueSetElement.addAttribute(
+          new Attribute("url", valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));
+      valueSetElement.addAttribute(new Attribute("managedBy",
+          valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
+      valueSetElement.addAttribute(new Attribute("stability",
+          valueSet.getStability() != null ? valueSet.getStability().value : ""));
+      valueSetElement.addAttribute(new Attribute("extensibility",
+          valueSet.getExtensibility() != null ? valueSet.getExtensibility().value : ""));
+      valueSetElement.addAttribute(new Attribute("contentDefinition",
+          valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
+      valueSetElement.addAttribute(
+          new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
+      valueSetElement.addAttribute(new Attribute("codeSystemIds",
+          valueSet.getCodeSystemIds().size() > 0 ? String.join(",", valueSet.getCodeSystemIds())
+              : ""));
+      Map<String,String> displayCodeSystemNameMap = new HashMap<>();
+      for(DisplayCodeSystem displayCodeSystem : this.valuesetStructure.getDisplayCodeSystems()) {
+        if(!displayCodeSystemNameMap.containsKey(displayCodeSystem.getCodeSysRef())) {
+          displayCodeSystemNameMap.put(displayCodeSystem.getCodeSysRef(), displayCodeSystem.getIdentifier());
         }
-        valueSetElement.appendChild(codeRefsElement);
       }
-      if(valueSet.getInternalCodeSystems().size()>0) {
-        Element internalCodeSystemsElement = new Element("InternalCodeSystems");
-        for(InternalCodeSystem internalCodeSystem : valueSet.getInternalCodeSystems()) {
-          Element internalCodeSystemElement = new Element("InternalCodeSystem");
-          internalCodeSystemElement.addAttribute(new Attribute("identifier",internalCodeSystem.getIdentifier() != null ? internalCodeSystem.getIdentifier() : ""));
-          internalCodeSystemElement.addAttribute(new Attribute("description",internalCodeSystem.getDescription() != null ? internalCodeSystem.getDescription() : ""));
-          internalCodeSystemElement.addAttribute(new Attribute("url",internalCodeSystem.getUrl() != null ? internalCodeSystem.getUrl().toString() : ""));
-          internalCodeSystemsElement.appendChild(internalCodeSystemElement);
+      Element codesElement = new Element("Codes");
+      Set<DisplayCode> displayCodes = this.valuesetStructure.getDisplayCodes();
+      if (displayCodes.size() > 0) {
+        if(displayCodes.size() > maxNumberOfCodes) {
+          List<DisplayCode> list = new ArrayList<DisplayCode>(displayCodes);
+          displayCodes = new LinkedHashSet<DisplayCode>(list.subList(0, maxNumberOfCodes));
         }
-        valueSetElement.appendChild(internalCodeSystemsElement);
-      }
-      if(valueSet.getCodes().size()>0) {
-        Element internalCodesElement = new Element("InternalCodes");
-        for(InternalCode internalCode : valueSet.getCodes()) {
-          Element internalCodeElement = new Element("InternalCode");
-          internalCodeElement.addAttribute(new Attribute("codeSystemId",internalCode.getCodeSystemId() != null ? internalCode.getCodeSystemId() : ""));
-          internalCodeElement.addAttribute(new Attribute("description",internalCode.getDescription() != null ? internalCode.getDescription() : ""));
-          internalCodeElement.addAttribute(new Attribute("id",internalCode.getId() != null ? internalCode.getId() : ""));
-          internalCodeElement.addAttribute(new Attribute("value",internalCode.getValue() != null ? internalCode.getValue() : ""));
-          internalCodeElement.addAttribute(new Attribute("usage",internalCode.getUsage() != null ? internalCode.getUsage().name() : ""));
-          internalCodesElement.appendChild(internalCodeElement);
+        for (DisplayCode displayCode : displayCodes) {
+          Element codeRefElement = new Element("Code");
+          codeRefElement.addAttribute(
+              new Attribute("codeId", displayCode.getId() != null ? displayCode.getId() : ""));
+          codeRefElement.addAttribute(new Attribute("value",
+              displayCode.getValue() != null ? displayCode.getValue() : ""));
+          codeRefElement.addAttribute(new Attribute("codeSystem",
+              displayCode.getCodeSysRef() != null && displayCodeSystemNameMap.containsKey(displayCode.getCodeSysRef().getRef()) ? displayCodeSystemNameMap.get(displayCode.getCodeSysRef().getRef()) : ""));
+          codeRefElement.addAttribute(new Attribute("usage",
+              displayCode.getUsage() != null ? displayCode.getUsage().name() : ""));
+          codeRefElement.addAttribute(new Attribute("description",
+              displayCode.getDescription() != null ? displayCode.getDescription() : ""));
+          codeRefElement.addAttribute(new Attribute("comment",
+              displayCode.getComments() != null ? displayCode.getComments() : ""));
+          codesElement.appendChild(codeRefElement);
         }
-        valueSetElement.appendChild(internalCodesElement);
       }
-      return valueSetElement;
+      valueSetElement.appendChild(codesElement);
+      Element codeSystemsElement = new Element("CodeSystems");
+      if (this.valuesetStructure.getDisplayCodes().size() > 0) {
+        for (DisplayCodeSystem displayCodeSystem : this.valuesetStructure.getDisplayCodeSystems()) {
+          Element codeSystemElement = new Element("CodeSystem");
+          codeSystemElement.addAttribute(
+              new Attribute("codeId", displayCodeSystem.getIdentifier() != null ? displayCodeSystem.getIdentifier() : ""));
+          codeSystemElement.addAttribute(new Attribute("codeSysRef",
+              displayCodeSystem.getCodeSysRef() != null ? displayCodeSystem.getCodeSysRef() : ""));
+          codeSystemElement.addAttribute(new Attribute("description",
+              displayCodeSystem.getDescription() != null ? displayCodeSystem.getDescription() : ""));
+          codeSystemElement.addAttribute(new Attribute("url",
+              displayCodeSystem.getUrl() != null ? displayCodeSystem.getUrl().toExternalForm() : ""));
+          codeSystemElement.addAttribute(new Attribute("type",
+              displayCodeSystem.getCodeSystemType() != null ? displayCodeSystem.getCodeSystemType().toString() : ""));
+          codeSystemsElement.appendChild(codeSystemElement);
+        }
+      }
+      valueSetElement.appendChild(codeSystemsElement);
+      return super.getSectionElement(valueSetElement, this.level);
     } catch (Exception exception) {
-      throw new ResourceSerializationException(exception, Type.VALUESET, (Resource) this.getAbstractDomain());
+      throw new ResourceSerializationException(exception, Type.VALUESET,
+          (Resource) this.getAbstractDomain());
     }
   }
-  
-  
+
+  @Override
+  public Map<String, String> getIdPathMap() {
+    // Never used as value sets doesn't have any binding
+    return null;
+  }
+
+
 
 }

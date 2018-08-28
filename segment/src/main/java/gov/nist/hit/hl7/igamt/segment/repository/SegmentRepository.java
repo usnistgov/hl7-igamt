@@ -15,21 +15,38 @@ package gov.nist.hit.hl7.igamt.segment.repository;
 
 import java.util.List;
 
+import org.bson.types.ObjectId;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.stereotype.Repository;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
 
 /**
  *
  * @author Jungyub Woo on Mar 15, 2018.
  */
+@Repository
 public interface SegmentRepository extends MongoRepository<Segment, CompositeKey> {
-	List<Segment> findByDomainInfoVersion(String version);
-	List<Segment> findByDomainInfoScope(String scope);
-	List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
-	List<Segment> findByName(String name);
-	List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
-	List<Segment> findByDomainInfoVersionAndName(String version, String name);
-	List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+  List<Segment> findByDomainInfoVersion(String version);
+
+  List<Segment> findByDomainInfoScope(String scope);
+
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+
+  List<Segment> findByName(String name);
+
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
+      String name);
+
+  List<Segment> findByDomainInfoVersionAndName(String version, String name);
+
+  List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+
+  @Query(value = "{ '_id._id' : ?0 }")
+  List<Segment> findLatestById(ObjectId id, Sort sort);
+
+
 }

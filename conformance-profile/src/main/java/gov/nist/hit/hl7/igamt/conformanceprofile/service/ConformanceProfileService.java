@@ -15,8 +15,18 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
+import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 
 /**
  *
@@ -24,43 +34,140 @@ import gov.nist.hit.hl7.igamt.shared.domain.CompositeKey;
  */
 public interface ConformanceProfileService {
 
-	public ConformanceProfile findByKey(CompositeKey key);
+  public ConformanceProfile findByKey(CompositeKey key);
 
-	public ConformanceProfile create(ConformanceProfile conformanceProfile);
+  public ConformanceProfile findLatestById(String id);
 
-	public ConformanceProfile save(ConformanceProfile conformanceProfile);
+  public ConformanceProfile create(ConformanceProfile conformanceProfile);
 
-	public List<ConformanceProfile> findAll();
+  public ConformanceProfile save(ConformanceProfile conformanceProfile);
 
-	public void delete(ConformanceProfile conformanceProfile);
+  public List<ConformanceProfile> findAll();
 
-	public void delete(CompositeKey key);
+  public void delete(ConformanceProfile conformanceProfile);
 
-	public void removeCollection();
+  public void delete(CompositeKey key);
 
-	public List<ConformanceProfile> findByIdentifier(String identifier);
+  public void removeCollection();
 
-	public List<ConformanceProfile> findByMessageType(String messageType);
+  public List<ConformanceProfile> findByIdentifier(String identifier);
 
-	public List<ConformanceProfile> findByEvent(String messageType);
+  public List<ConformanceProfile> findByMessageType(String messageType);
 
-	public List<ConformanceProfile> findByStructID(String messageType);
+  public List<ConformanceProfile> findByEvent(String messageType);
 
-	public List<ConformanceProfile> findByDomainInfoVersion(String version);
+  public List<ConformanceProfile> findByStructID(String messageType);
 
-	public List<ConformanceProfile> findByDomainInfoScope(String scope);
+  public List<ConformanceProfile> findByDomainInfoVersion(String version);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+  public List<ConformanceProfile> findByDomainInfoScope(String scope);
 
-	public List<ConformanceProfile> findByName(String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersion(String scope,
+      String verion);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
-			String name);
+  public List<ConformanceProfile> findByName(String name);
 
-	public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
+  public List<ConformanceProfile> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
+      String version, String name);
 
-	public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
+  public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
 
-	ConformanceProfile findDisplayFormat(CompositeKey id);
+  ConformanceProfile getLatestById(String id);
+
+  public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
+
+  ConformanceProfile findDisplayFormat(CompositeKey id);
+
+  public ConformanceProfileStructure convertDomainToStructure(
+      ConformanceProfile conformanceProfile);
+
+  public DisplayConformanceProfileMetadata convertDomainToMetadata(
+      ConformanceProfile conformanceProfile);
+
+  public DisplayConformanceProfilePreDef convertDomainToPredef(
+      ConformanceProfile conformanceProfile);
+
+  public DisplayConformanceProfilePostDef convertDomainToPostdef(
+      ConformanceProfile conformanceProfile);
+
+  public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
+      ConformanceProfile conformanceProfile);
+
+
+  /**
+   * 
+   * @param structure
+   * @return
+   */
+  public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure);
+
+
+
+  /**
+   * Validate the structure of the segment
+   * 
+   * @param structure
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(ConformanceProfileStructure structure)
+      throws ConformanceProfileValidationException;
+
+  /**
+   * Validate the metadata information of the segment
+   * 
+   * @param metadata
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileValidationException;
+
+
+  /**
+   * 
+   * @param predef
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   */
+  public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException;
+
+  /**
+   * 
+   * @param postdef
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   */
+  public ConformanceProfile savePostdef(PostDef postdef) throws ConformanceProfileNotFoundException;
+
+  /**
+   * 
+   * @param metadata
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   * @throws ConformanceProfileValidationException
+   */
+  public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
+
+  /**
+   * Validate conformance statements of the segment
+   * 
+   * @param conformanceStatement
+   * @throws ConformanceProfileValidationException
+   */
+  public void validate(ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileValidationException;
+
+
+  /**
+   * Save the conformance statements of the segment
+   * 
+   * @param conformanceStatement
+   * @return
+   * @throws ConformanceProfileNotFoundException
+   * @throws ConformanceProfileValidationException
+   */
+  public ConformanceProfile saveConformanceStatement(
+      ConformanceProfileConformanceStatement conformanceStatement)
+      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
 
 }

@@ -1,0 +1,56 @@
+<div *ngIf="datatypeMetadata">
+    <form #editForm="ngForm">
+        <div class="ui-g cp-header">
+            <div class="ui-g-8 ui-g-nopad">
+                <div class="cp-header-title ui-g-12">
+                    MetaData: {{datatypeMetadata.name}}
+                </div>
+                <div class="ui-g-12 cp-header-subtitle">
+                    <span class="ig-list-date" *ngIf="datatypeMetadata.updateDate">
+                        <i class="fa fa-calendar"></i> {{datatypeMetadata.updateDate}}
+                    </span>
+                </div>
+            </div>
+
+            <div class="ui-g-4">
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+            </div>
+
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Name
+            </label>
+            <input name="name" id="name" pInputText type="text" disabled class="ui-g-10" #name="ngModel" [(ngModel)]="datatypeMetadata.name" required />
+            <div class="ui-g-offset-1" *ngIf="name.invalid&& (name.dirty || name.touched)">
+                <p-message severity="error" text="Name is required"></p-message>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Flavor Namedddd (Ext)
+            </label>
+            <input name="ext" id="ext" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="datatypeMetadata.ext" required />
+            <div class="ui-g-offset-2" *ngIf="ext.invalid && (ext.dirty || ext.touched)">
+                <p-message severity="error" text="Extension is required"></p-message>
+            </div>
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Description
+            </label>
+            <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="datatypeMetadata.description" />
+        </div>
+
+        <div class="ui-g input-box">
+            <label class="metadata-label ui-g-2">
+                Author Notes
+            </label>
+            <div class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="datatypeMetadata.authorNote"></div>
+        </div>
+    </form>
+</div>

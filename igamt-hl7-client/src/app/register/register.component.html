@@ -1,4 +1,6 @@
-  <div class="card">
+<p-messages [(value)]="msgs" id="REGISTERERROR"></p-messages>
+
+<div class="card">
     <h4 class="card-title"> Sign up </h4>
   <form [formGroup]="registrationForm" novalidate>
 
@@ -53,7 +55,7 @@
 
     <div class="ui-g" style="margin-top:30px">
 
-      <input name="confirmPasswordForm" id="confirmPasswordForm" [(ngModel)]="confirmPassword" formControlName="confirmPasswordForm" placeholder="Confirm Password" required  pInputText class="ui-g-9">
+      <input name="confirmPasswordForm" id="confirmPasswordForm" [(ngModel)]="confirmPassword" formControlName="confirmPasswordForm" placeholder="Confirm Password"  type="password" required  pInputText class="ui-g-9">
 
 
       <div *ngIf="confirmPasswordForm.invalid && (confirmPasswordForm.dirty || confirmPasswordForm.touched)">

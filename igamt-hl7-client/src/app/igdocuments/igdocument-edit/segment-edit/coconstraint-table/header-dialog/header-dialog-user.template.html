@@ -1,0 +1,10 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false" appendTo="body">
+    <p-header>
+        {{ 'User Column Header' | uppercase }}
+    </p-header>
+    <input type="text" style="width: 100%;" [(ngModel)]="header" placeholder="Column Label">
+  <p-footer>
+    <button type="button" *ngIf="header && header.length > 0" (click)="addHeader()" class="btn btn-success" > Select </button>
+  </p-footer>
+
+</p-dialog>

@@ -1,0 +1,161 @@
+{
+  "id": {
+    "id": "59ccfa0e84aeb3275ab0be2c",
+    "version": 1
+  },
+  "name": "OBX",
+  "label": "OBXTXT",
+  "scope": "ARCHIVED",
+  "type": "SEGMENT",
+  "conformanceStatements": [
+    {
+      "type": "FREE",
+      "identifier": "Free1",
+      "freeText": "Free Constraint is Free"
+    },
+    {
+      "type": "ASSERTION",
+      "assertion": {
+        "mode": "SIMPLE",
+        "complement": {
+          "complementKey": "SAMEVALUE",
+          "value": "AAAA",
+          "casesensitive": true
+        },
+        "subject": {"path": {
+          "elementId": "mock_ARBITRARY_OBX",
+          "child": {
+            "elementId": "59bbdea0a9acdef2ee04f39c",
+            "instanceParameter": "1"
+          }
+        }},
+        "verbKey": "SHALL",
+        "description": "OBX-1(Set ID - OBX) SHALL contain the constant value 'AAAA'(case-sensitive)."
+      },
+      "identifier": "Simple1"
+    },
+    {
+      "type": "ASSERTION",
+      "assertion": {
+        "mode": "SIMPLE",
+        "complement": {
+          "complementKey": "COMPARENODE",
+          "operator": "equal",
+          "path": {
+            "elementId": "mock_ARBITRARY_OBX",
+            "child": {
+              "elementId": "59bbdea0a9acdef2ee04f39f",
+              "instanceParameter": "*",
+              "child": {
+                "elementId": "59bbe249a9acdef2ee04f3bb",
+                "instanceParameter": "1",
+                "child": {
+                  "elementId": "59bbe249a9acdef2ee04f3ba",
+                  "instanceParameter": "1"
+                }
+              }
+            }
+          }
+        },
+        "subject": {"path": {
+          "elementId": "mock_ARBITRARY_OBX",
+          "child": {
+            "elementId": "59bbdea0a9acdef2ee04f39c",
+            "instanceParameter": "1"
+          }
+        }},
+        "verbKey": "SHALL NOT",
+        "description": "The content of OBX-1(Set ID - OBX) SHALL NOT be identical to the content of OBX-4[*].2.1(Identifier)"
+      },
+      "identifier": "Simple2"
+    },
+    {
+      "type": "ASSERTION",
+      "assertion": {
+        "mode": "COMPLEX",
+        "complexAssertionType": "IFTHEN",
+        "ifAssertion": {
+          "mode": "COMPLEX",
+          "complexAssertionType": "ANDOR",
+          "assertions": [
+            {
+              "mode": "COMPLEX",
+              "complexAssertionType": "NOT",
+              "child": {
+                "mode": "SIMPLE",
+                "complement": {
+                  "complementKey": "SAMEVALUE",
+                  "value": "QQQQ",
+                  "casesensitive": true
+                },
+                "subject": {"path": {
+                  "elementId": "mock_ARBITRARY_OBX",
+                  "child": {
+                    "elementId": "59bbdea0a9acdef2ee04f39f",
+                    "instanceParameter": "*",
+                    "child": {
+                      "elementId": "59bbe249a9acdef2ee04f3bb",
+                      "instanceParameter": "1",
+                      "child": {
+                        "elementId": "59bbe249a9acdef2ee04f3ba",
+                        "instanceParameter": "1"
+                      }
+                    }
+                  }
+                }},
+                "verbKey": "IS",
+                "description": "OBX-4[*].2.1(Identifier) IS contain the constant value 'QQQQ'(case-sensitive)."
+              },
+              "description": "NOT{OBX-4[*].2.1(Identifier) IS contain the constant value 'QQQQ'(case-sensitive).}"
+            },
+            {
+              "mode": "SIMPLE",
+              "complement": {
+                "complementKey": "SAMEVALUE",
+                "value": "WWWW"
+              },
+              "subject": {"path": {
+                "elementId": "mock_ARBITRARY_OBX",
+                "child": {
+                  "elementId": "59bbdea0a9acdef2ee04f39e",
+                  "instanceParameter": "1",
+                  "child": {
+                    "elementId": "59bbe249a9acdef2ee04f3bc",
+                    "instanceParameter": "1"
+                  }
+                }
+              }},
+              "verbKey": "IS",
+              "description": "OBX-3.3(Name of Coding System) IS contain the constant value 'WWWW'(case-insensitive)"
+            }
+          ],
+          "operator": "OR",
+          "description": "{NOT{OBX-4[*].2.1(Identifier) IS contain the constant value 'QQQQ'(case-sensitive).}} OR {OBX-3.3(Name of Coding System) IS contain the constant value 'WWWW'(case-insensitive)}"
+        },
+        "thenAssertion": {
+          "mode": "SIMPLE",
+          "complement": {
+            "complementKey": "SAMEVALUE",
+            "value": "TTTT",
+            "casesensitive": true
+          },
+          "subject": {"path": {
+            "elementId": "mock_ARBITRARY_OBX",
+            "child": {
+              "elementId": "59bbdea0a9acdef2ee04f39e",
+              "instanceParameter": "1",
+              "child": {
+                "elementId": "59bbe249a9acdef2ee04f3bb",
+                "instanceParameter": "1"
+              }
+            }
+          }},
+          "verbKey": "SHALL",
+          "description": "OBX-3.2(Text) SHALL contain the constant value 'TTTT'(case-sensitive)."
+        },
+        "description": "IF {{NOT{OBX-4[*].2.1(Identifier) IS contain the constant value 'QQQQ'(case-sensitive).}} OR {OBX-3.3(Name of Coding System) IS contain the constant value 'WWWW'(case-insensitive)}}, then {OBX-3.2(Text) SHALL contain the constant value 'TTTT'(case-sensitive).}"
+      },
+      "identifier": "Complex1"
+    }
+  ]
+}

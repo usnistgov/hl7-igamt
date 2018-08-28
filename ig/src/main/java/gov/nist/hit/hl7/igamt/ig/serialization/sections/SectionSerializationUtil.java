@@ -14,14 +14,23 @@
 package gov.nist.hit.hl7.igamt.ig.serialization.sections;
 
 import java.util.Map;
+import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationException;
+import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Section;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.serialization.SerializableValuesetStructure;
 import nu.xom.Element;
 
 /**
@@ -30,23 +39,33 @@ import nu.xom.Element;
  */
 public class SectionSerializationUtil {
 
-  public static Element serializeSection(Section section, Map<String, Datatype> datatypesMap,
-      Map<String, String> datatypeNamesMap, Map<String, Valueset> valueSetsMap, Map<String, String> valuesetNamesMap, 
-      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap)
-      throws SerializationException {
+  public static Element serializeSection(Section section, int level,
+      Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
+      Map<String, SerializableValuesetStructure> valueSetsMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap,
+      Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
+      ValueSetRegistry valueSetRegistry, DatatypeRegistry datatypeRegistry,
+      SegmentRegistry segmentRegistry, ConformanceProfileRegistry conformanceProfileRegistry,
+      ProfileComponentRegistry profileComponentRegistry,
+      CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
+      Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) throws SerializationException {
     if (section != null) {
-      SerializableSection serializableSection =
-          SerializableSectionFactory.getSerializableSection(section, datatypesMap, datatypeNamesMap,
-              valueSetsMap, valuesetNamesMap, segmentsMap, conformanceProfilesMap);
-      if (serializableSection != null) {
-        return serializableSection.serialize();
+      try {
+        SerializableSection serializableSection =
+            SerializableSectionFactory.getSerializableSection(section, level, datatypesMap,
+                datatypeNamesMap, valueSetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap,
+                conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
+                conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
+                bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
+                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
+        if (serializableSection != null) {
+          return serializableSection.serialize();
+        }
+      } catch (Exception exception) {
+        throw new SectionSerializationException(exception, section);
       }
     }
     return null;
-  }
-
-  public static Element serializeSection(Section section) throws SerializationException {
-    return serializeSection(section, null, null, null, null, null, null);
   }
 
 }

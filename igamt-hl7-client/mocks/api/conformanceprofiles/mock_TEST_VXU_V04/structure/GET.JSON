@@ -1,0 +1,65 @@
+{
+  "id": {
+    "id": "mock_TEST_VXU_V04",
+    "version": 1
+  },
+  "domainInfo": {
+    "version": "2.8.2",
+    "compatibilityVersion": [],
+    "scope": "USER"
+  },
+  "name": "VXU^V04^VXU_V04",
+  "identifier": "Z22",
+  "messageType": "VXU",
+  "structId": "VXU_V04",
+
+  "binding": null,
+
+  "children": [
+    {
+      "data": {
+        "id": "58c1ad64dffe7ef91ba359f9",
+        "name": null,
+        "position": 1,
+        "usage": "R",
+        "type": "SEGMENTREF",
+        "text": "",
+        "custom": false,
+        "min": 1,
+        "max": "1",
+        "ref": {"id": "mock_ARBITRARY_OBX"}
+      },
+      "children": null
+    },
+    {
+      "data": {
+        "id": "58c1ad64dffe7ef91ba359fc",
+        "name": "MF_CDM",
+        "position": 2,
+        "usage": "R",
+        "type": "GROUP",
+        "text": "",
+        "custom": false,
+        "min": 1,
+        "max": "*"
+      },
+      "children": [
+        {"data": {
+          "id": "58c1ad64dffe7ef91ba359ff",
+          "name": null,
+          "position": 1,
+          "usage": "O",
+          "type": "SEGMENTREF",
+          "text": "",
+          "custom": false,
+          "min": 0,
+          "max": "*",
+          "ref": {
+            "id": "mock_ARBITRARY_OBX"
+          }
+        }
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,6 @@
-import { NgModule } from '@angular/core';
+import {NgModule, ErrorHandler} from '@angular/core';
 import 'rxjs/add/operator/toPromise';
-import {AlertModule} from "ngx-bootstrap";
+import {AlertModule} from 'ngx-bootstrap';
 import { AccordionModule } from 'primeng/primeng';
 import { AutoCompleteModule } from 'primeng/primeng';
 
@@ -71,41 +71,49 @@ import { TooltipModule } from 'primeng/primeng';
 import {KeyFilterModule} from 'primeng/keyfilter';
 import {MessageModule} from 'primeng/message';
 
-// import { TreeModule } from 'primeng/primeng';
 import { TreeTableModule } from 'primeng/primeng';
 import { AppComponent } from './app.component';
 import { AppMenuComponent, AppSubMenuComponent } from './app.menu.component';
 import {BrowserModule} from '@angular/platform-browser';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {LocationStrategy, HashLocationStrategy, CommonModule} from '@angular/common';
+import {LocationStrategy, HashLocationStrategy, CommonModule, APP_BASE_HREF} from '@angular/common';
 import { DocumentationComponent } from './documentation/documentation.component';
-import {WorkspaceService} from "./service/workspace/workspace.service";
+import {WorkspaceService} from './service/workspace/workspace.service';
 import {IndexedDbService} from './service/indexed-db/indexed-db.service';
-import {SegmentsIndexedDbService} from './service/indexed-db/segments/segments-indexed-db.service';
-import {DatatypesIndexedDbService} from './service/indexed-db/datatypes/datatypes-indexed-db.service';
-import {ValuesetsIndexedDbService} from './service/indexed-db/valuesets/valuesets-indexed-db.service';
-// import {DatatypesService} from './service/datatypes/datatypes.service';
-// import {ValueSetsService} from './service/valueSets/valueSets.service';
 import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
-import {GeneralConfigurationService} from "./service/general-configuration/general-configuration.service";
-import {SegmentsService} from './service/segments/segments.service';
-// import {ProfileComponentsService} from "./service/profilecomponents/profilecomponents.service";
-import {AuthService} from "./login/auth.service";
-import {AuthGuard} from "./login/auth-guard.service";
-import {HttpClientModule} from "@angular/common/http";
-import {HTTP_INTERCEPTORS} from "@angular/common/http";
-import {TokenInterceptor} from "./requestInterceptor";
-import {UserService} from "./service/userService/user.service";
-import {HomeComponent} from "./home/home.component";
-import {AboutComponent} from "./about/about.component";
-import {NotFoundComponent} from "./common/404/404.component";
-import {LoginComponent} from "./login/login.component";
-import {RegisterComponent} from "./register/register.component";
+import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
+// import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
+import {AuthService} from './login/auth.service';
+import {AuthGuard} from './login/auth-guard.service';
+import {HttpClientModule} from '@angular/common/http';
+import {HTTP_INTERCEPTORS} from '@angular/common/http';
+import {AuthInterceptor} from './requestInterceptor';
+import {UserService} from './service/userService/user.service';
+import {HomeComponent} from './home/home.component';
+import {AboutComponent} from './about/about.component';
+import {NotFoundComponent} from './common/404/404.component';
+import {LoginComponent} from './login/login.component';
+import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
+import {AppBreadcrumbComponent} from './app.breadcrumb.component';
+import {BreadcrumbService} from './breadcrumb.service';
+import {ConstraintsService} from './service/constraints/constraints.service';
+import {SectionsService} from './service/sections/sections.service';
 
+import {TableOptionsService} from './service/configuration/table-options/table-options.service';
+// import {NgDragDropModule} from 'ng-drag-drop';
+import { ResetPasswordRequestComponent } from './reset-password/reset-password-request/reset-password-request.component';
+import { ResetPasswordConfirmComponent } from './reset-password/reset-password-confirm/reset-password-confirm.component';
+import {ResetPasswordService} from "./reset-password/reset-password.service";
+import {ExportFontService} from "./service/configuration/export-font/export-font.service";
+import { ErrorComponent } from './error/error.component';
+import {ErrorResolver} from "./error/error.resolver";
+import {ErrorService} from "./error/error.service";
+import { CrossReferenceComponent } from './common/cross-reference/cross-reference.component';
+import {MessageService} from "primeng/components/common/messageservice";
 
 @NgModule({
     imports: [
@@ -148,6 +156,7 @@ import { TreeModule } from 'angular-tree-component';
         InputTextModule,
         InputTextareaModule,
         LightboxModule,
+
         ListboxModule,
         MegaMenuModule,
         MessageModule,
@@ -205,27 +214,36 @@ import { TreeModule } from 'angular-tree-component';
         NotFoundComponent,
         LoginComponent,
         RegisterComponent,
-        DocumentationComponent
+        DocumentationComponent,
+      AppBreadcrumbComponent,
+      ResetPasswordRequestComponent,
+      ResetPasswordConfirmComponent,
+      ErrorComponent
+
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: TokenInterceptor,
+      useClass: AuthInterceptor,
       multi: true
     },
-    // WorkspaceService,
-    // GeneralConfigurationService,
-     IndexedDbService,
-     SegmentsIndexedDbService,
-    DatatypesIndexedDbService,
-    ValuesetsIndexedDbService,
-    // DatatypesService,
-    // ValueSetsService,
-     SegmentsService,
-    // ProfileComponentsService,
+
+    // {provide: ErrorHandler, useClass: IgErrorHandler},
+    WorkspaceService,
+    ErrorResolver,
+    ErrorService,
+    ResetPasswordService,
+    GeneralConfigurationService,
+    IndexedDbService,
+    SectionsService,
     AuthService,
     AuthGuard,
-    UserService
+    UserService,
+    BreadcrumbService,
+    ConstraintsService,
+    TableOptionsService,
+    ExportFontService,
+    MessageService
   ],
     bootstrap: [AppComponent]
 })

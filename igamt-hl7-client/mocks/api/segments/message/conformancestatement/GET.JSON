@@ -1,0 +1,33 @@
+{
+  "id": {
+    "id": "59ccfa0e84aeb3275ab0be2c",
+    "version": 1
+  },
+  "name": "MSG",
+  "label": "MSG",
+  "scope": "ARCHIVED",
+  "type": "MESSAGE",
+  "conformanceStatements": [
+    {
+      "type": "ASSERTION",
+      "assertion": {
+        "mode": "SIMPLE",
+        "complement": {
+          "complementKey": "SAMEVALUE",
+          "value": "AAAA",
+          "casesensitive": true
+        },
+        "subject": {"path": {
+          "elementId": "mock_ARBITRARY_OBX",
+          "child": {
+            "elementId": "59bbdea0a9acdef2ee04f39c",
+            "instanceParameter": "1"
+          }
+        }},
+        "verbKey": "SHALL",
+        "description": "MSG.ORDER.OBSERVATION.OBX-4.1(Identifier) in the First occurrence of the repeatable OBX-4 field in the OBSERVATION GROUP in the First ORDER GROUP SHALL contain the constant value 'AAAA'(case-sensitive)."
+      },
+      "identifier": "Simple1"
+    }
+  ]
+}

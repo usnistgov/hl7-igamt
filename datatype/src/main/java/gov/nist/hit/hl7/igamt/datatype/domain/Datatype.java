@@ -14,10 +14,15 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
 
+import java.util.Date;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
-import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+
 
 /**
  *
@@ -25,7 +30,7 @@ import gov.nist.hit.hl7.igamt.shared.domain.binding.ResourceBinding;
  */
 @Document(collection = "datatype")
 public class Datatype extends Resource {
-	
+
 
   private String ext;
   private String purposeAndUse;
@@ -33,15 +38,14 @@ public class Datatype extends Resource {
 
 
   public ResourceBinding getBinding() {
-	return binding;
- }
+    return binding;
+  }
 
   public void setBinding(ResourceBinding binding) {
-  	this.binding = binding;
+    this.binding = binding;
   }
 
-  public Datatype() {
-  }
+  public Datatype() {}
 
   public String getExt() {
     return ext;
@@ -59,5 +63,38 @@ public class Datatype extends Resource {
     this.purposeAndUse = purposeAndUse;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+   */
+  @Override
+  public String getLabel() {
+    if (this.ext != null && !this.ext.isEmpty()) {
+      return this.getName() + "_" + this.ext;
+    }
+    return this.getName();
+  }
+
+  @Override
+  public Datatype clone() {
+
+    Datatype clone = new Datatype();
+    clone.setBinding(this.binding);
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setId(null);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
+  };
 
 }

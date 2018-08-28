@@ -14,30 +14,37 @@
 package gov.nist.hit.hl7.igamt.valueset.serialization;
 
 import java.util.Map;
+import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
+import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
-import gov.nist.hit.hl7.igamt.shared.domain.Link;
-import gov.nist.hit.hl7.igamt.shared.domain.Registry;
-import gov.nist.hit.hl7.igamt.shared.domain.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import nu.xom.Element;
 
 /**
  *
  * @author Maxence Lefort on Apr 9, 2018.
  */
-public class SerializableValuesetRegistry extends SerializableSection {
+public class SerializableValuesetRegistry extends SerializableRegistry {
 
-  private Map<String, Valueset> valuesetsMap;
+  private Map<String, SerializableValuesetStructure> valuesetsMap;
+  private Set<String> bindedValueSets;
+  private int maxNumberOfCodes;
 
   /**
    * @param section
    */
-  public SerializableValuesetRegistry(Registry valuesetRegistry, Map<String, Valueset> valuesetsMap) {
-    super(valuesetRegistry);
+  public SerializableValuesetRegistry(Section section, int level, ValueSetRegistry valueSetRegistry,
+      Map<String, SerializableValuesetStructure> valuesetsMap, Set<String> bindedValueSets, int maxNumberOfCodes) {
+    super(section, level, valueSetRegistry);
     this.valuesetsMap = valuesetsMap;
+    this.bindedValueSets = bindedValueSets;
+    this.maxNumberOfCodes = maxNumberOfCodes;
   }
 
   /*
@@ -47,30 +54,48 @@ public class SerializableValuesetRegistry extends SerializableSection {
    */
   @Override
   public Element serialize() throws SerializationException {
-    Registry valuesetRegistry = (Registry) super.getSection();
+    Registry valuesetRegistry = super.getRegistry();
     try {
       Element valuesetRegistryElement = super.getElement();
       if (valuesetRegistry != null) {
         if (!valuesetRegistry.getChildren().isEmpty()) {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
-            if (valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-              Valueset valueset = valuesetsMap.get(valuesetLink.getId().getId());
-              SerializableValueSet serializableValueSet =
-                  new SerializableValueSet(valueset, String.valueOf(valuesetLink.getPosition()));
-              Element valuesetElement = serializableValueSet.serialize();
-              if (valuesetElement != null) {
-                valuesetRegistryElement.appendChild(valuesetElement);
+            if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
+              if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId().getId());
+                SerializableValueSet serializableValueSet = new SerializableValueSet(serializableValuesetStructure,
+                    String.valueOf(valuesetLink.getPosition()), this.getChildLevel(), maxNumberOfCodes);
+                Element valuesetElement = serializableValueSet.serialize();
+                if (valuesetElement != null) {
+                  valuesetRegistryElement.appendChild(valuesetElement);
+                }
+              } else {
+                throw new ValuesetNotFoundException(valuesetLink.getId().getId());
               }
-            } else {
-              throw new ValuesetNotFoundException(valuesetLink.getId().getId());
             }
           }
         }
       }
       return valuesetRegistryElement;
     } catch (Exception exception) {
-      throw new RegistrySerializationException(exception, valuesetRegistry);
+      throw new RegistrySerializationException(exception, super.getSection(), valuesetRegistry);
     }
+  }
+  
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getConformanceStatements(int)
+   */
+  @Override
+  public Element getConformanceStatements(int level) {
+    return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry#getPredicates(int)
+   */
+  @Override
+  public Element getPredicates(int level) {
+    return null;
   }
 
 }

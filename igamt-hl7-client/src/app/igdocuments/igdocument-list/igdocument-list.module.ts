@@ -10,10 +10,6 @@ import {TabMenuModule} from 'primeng/primeng';
 
 import {OrderListModule} from 'primeng/primeng';
 import {PickListModule} from 'primeng/primeng';
-// import { MatButtonModule } from '@angular/material';
-// import {MatListModule} from '@angular/material/list';
-//
-// import {MatIconModule} from '@angular/material/icon';
 import {NgModel, FormsModule} from '@angular/forms';
 
 import {IgListService} from "./igdocument-list.service";

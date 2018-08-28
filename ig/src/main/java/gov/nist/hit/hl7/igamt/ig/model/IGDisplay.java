@@ -1,50 +1,53 @@
 package gov.nist.hit.hl7.igamt.ig.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
-import gov.nist.hit.hl7.igamt.ig.domain.IgMetaData;
+import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+
 
 public class IGDisplay {
-	
-	private IgMetaData metadata;
-	private IgToc toc;
-	private Date dateUpdated;
-	private String author;
 
-	public IGDisplay() {
-		// TODO Auto-generated constructor stub
-	}
+  private DocumentMetadata metadata;
+  private List<TreeNode> toc = new ArrayList<TreeNode>();
+  private Date dateUpdated;
+  private String author;
 
-	public IgMetaData getMetadata() {
-		return metadata;
-	}
+  public IGDisplay() {
+    // TODO Auto-generated constructor stub
+  }
 
-	public void setMetadata(IgMetaData metadata) {
-		this.metadata = metadata;
-	}
+  public DocumentMetadata getMetadata() {
+    return metadata;
+  }
 
-	public IgToc getToc() {
-		return toc;
-	}
+  public void setMetadata(DocumentMetadata metadata) {
+    this.metadata = metadata;
+  }
 
-	public void setToc(IgToc toc) {
-		this.toc = toc;
-	}
+  public Date getDateUpdated() {
+    return dateUpdated;
+  }
 
-	public Date getDateUpdated() {
-		return dateUpdated;
-	}
+  public void setDateUpdated(Date dateUpdated) {
+    this.dateUpdated = dateUpdated;
+  }
 
-	public void setDateUpdated(Date dateUpdated) {
-		this.dateUpdated = dateUpdated;
-	}
+  public String getAuthor() {
+    return author;
+  }
 
-	public String getAuthor() {
-		return author;
-	}
+  public void setAuthor(String author) {
+    this.author = author;
+  }
 
-	public void setAuthor(String author) {
-		this.author = author;
-	}
+  public List<TreeNode> getToc() {
+    return toc;
+  }
+
+  public void setToc(List<TreeNode> toc) {
+    this.toc = toc;
+  }
 
 }

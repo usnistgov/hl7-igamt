@@ -8,9 +8,7 @@
 		<artifactId>igamt</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>gov.nist.hit.hl7</groupId>
 	<artifactId>ig</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>ig</name>
 	<url>http://maven.apache.org</url>
 	<properties>
@@ -20,13 +18,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>shared-domain</artifactId>
-			<version>${parent.version}</version>
 		</dependency>
 
 		<dependency>
@@ -64,8 +56,26 @@
 			<artifactId>profile-component</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
+		
+		
 
-
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>document-export</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>export-configuration</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>x-reference</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 
 	</dependencies>
 </project>

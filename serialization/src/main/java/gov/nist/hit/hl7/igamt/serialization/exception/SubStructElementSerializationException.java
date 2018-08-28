@@ -13,24 +13,30 @@
  */
 package gov.nist.hit.hl7.igamt.serialization.exception;
 
-import gov.nist.hit.hl7.igamt.shared.domain.SubStructElement;
+import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 
 /**
  *
  * @author Maxence Lefort on Mar 22, 2018.
  */
 public class SubStructElementSerializationException extends SerializationException {
-  
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1706078133141397824L;
+
   public SubStructElementSerializationException(Exception originException,
       SubStructElement subStructElement, String message) {
-    super(originException, subStructElement.getType(), "id="+subStructElement.getId()+",position="+subStructElement.getPosition(), message);
+    super(originException, subStructElement.getType(),
+        "id=" + subStructElement.getId() + ",position=" + subStructElement.getPosition(), message);
   }
 
-  public SubStructElementSerializationException(Exception originException, SubStructElement subStructElement) {
+  public SubStructElementSerializationException(Exception originException,
+      SubStructElement subStructElement) {
     this(originException, subStructElement, null);
   }
 
-  
 
-  
+
 }

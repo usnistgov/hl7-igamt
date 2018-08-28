@@ -1,0 +1,16 @@
+<p-dialog [(visible)]="_visible" modal="modal" [responsive]="true" [resizable]="false" [draggable]="false"  appendTo="body">
+    <p-header>
+        {{ 'Select Data Element For '+header+' Column' | uppercase }}
+    </p-header>
+  <div *ngIf="!validateSelection()" class="alert alert-danger">
+    A header using this element is already defined
+  </div>
+    <p-dropdown [disabled]="fixed" [style]="{'width':'100%'}" placeholder="Value Type" [options]="selectorTypes" [(ngModel)]="type" appendTo="body"></p-dropdown>
+
+    <div style="max-height: 500px; overflow-y : scroll;">
+      <app-segment-tree [excluded]="selectedPaths" [segment]="_segment" (nodeSelect)="setNode($event)"></app-segment-tree>
+    </div>
+    <p-footer>
+        <button type="button" *ngIf="type && node && validateSelection()" (click)="addHeader()" class="btn btn-success" > Select </button>
+    </p-footer>
+</p-dialog>

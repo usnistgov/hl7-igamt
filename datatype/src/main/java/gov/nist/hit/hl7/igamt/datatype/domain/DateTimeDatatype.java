@@ -11,11 +11,18 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
+import java.util.Date;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+
+
+
 /**
  * @author jungyubw
  *
  */
-public class DateTimeDatatype extends PrimitiveDatatype{
+public class DateTimeDatatype extends PrimitiveDatatype {
 
   private DateTimeConstraints dateTimeConstraints;
 
@@ -30,4 +37,25 @@ public class DateTimeDatatype extends PrimitiveDatatype{
   public void setDateTimeConstraints(DateTimeConstraints dateTimeConstraints) {
     this.dateTimeConstraints = dateTimeConstraints;
   }
+
+  @Override
+  public DateTimeDatatype clone() {
+
+    DateTimeDatatype clone = new DateTimeDatatype();
+    clone.setComment(this.getComment());
+    clone.setCreatedFrom(this.getId().getId());
+    clone.setDescription(this.getDescription());
+    DomainInfo domainInfo = this.getDomainInfo();
+    domainInfo.setScope(Scope.USER);
+    clone.setId(null);
+    clone.setPostDef(this.getPostDef());
+    clone.setPreDef(this.getPreDef());
+    clone.setDateTimeConstraints(dateTimeConstraints);
+    clone.setName(this.getName());
+    clone.setDomainInfo(domainInfo);
+    clone.setCreationDate(new Date());
+    clone.setUpdateDate(new Date());
+    return clone;
+
+  };
 }

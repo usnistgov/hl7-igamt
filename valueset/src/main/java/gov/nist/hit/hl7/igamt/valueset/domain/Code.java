@@ -23,18 +23,20 @@ public class Code {
   private String value;
   private String description;
   private String codeSystemId;
+  private String comments;
 
   public Code() {
     super();
     this.id = new ObjectId().toString();
   }
 
-  public Code(String id, String value, String description, String codeSystemId) {
+  public Code(String id, String value, String description, String codeSystemId, String comments) {
     super();
     this.id = id;
     this.value = value;
     this.description = description;
     this.codeSystemId = codeSystemId;
+    this.comments = comments;
   }
 
   public String getId() {
@@ -67,6 +69,14 @@ public class Code {
 
   public void setCodeSystemId(String codeSystemId) {
     this.codeSystemId = codeSystemId;
+  }
+
+  public String getComments() {
+    return comments;
+  }
+
+  public void setComments(String comments) {
+    this.comments = comments;
   }
 
 

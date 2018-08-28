@@ -15,7 +15,8 @@ import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.shared.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+
 
 /**
  * @author jungyubw
@@ -35,6 +36,11 @@ public class CodeSystemLibrary extends Resource {
 
   public void setRefs(Set<CodeSystemLink> refs) {
     this.refs = refs;
+  }
+
+  @Override
+  public String getLabel() {
+    return this.getName();
   }
 
 }

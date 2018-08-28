@@ -4,6 +4,7 @@
 import {Component, Input} from "@angular/core";
 import {Router, ActivatedRoute, ParamMap, ActivatedRouteSnapshot} from '@angular/router';
 import 'rxjs/add/operator/switchMap';
+import {Types} from "../constants/types";
 @Component({
   selector : 'display-label',
   templateUrl : './display-label.component.html',
@@ -38,7 +39,7 @@ export class DisplayLabelComponent {
       return null;
 
     }
-    if (this.elm.domainInfo&& this.elm.domainInfo.scope) {
+    if (this.elm.domainInfo && this.elm.domainInfo.scope) {
       let scope = this.elm.domainInfo.scope;
       if (scope === 'HL7STANDARD') {
         return 'HL7';
@@ -57,32 +58,21 @@ export class DisplayLabelComponent {
   }
 
   getElementLabel(){
-    var type =this.elm.type;
-    if(type){
-      if (type === 'SEGMENT') {
-        return this.getSegmentLabel(this.elm);
-      } else if (type='DATATYPE') {
-        return this.getDatatypeLabel(this.elm);
-      } else if (type==='table') {
-        console.log("Called");
-        return this.getTableLabel(this.elm);
-      } else if (type ==='message') {
-        return this.getMessageLabel(this.elm);
-      } else if (type === 'profilecomponent') {
-        return this.getProfileComponentsLabel(this.elm);
-      } else if(type ==='compositeprofile'){
-        return this.getCompositeProfileLabel(this.elm);
-      }
-      if(type=='TEXT'){
+
+      var type =this.elm.type;
+
+      if(type==Types.TEXT){
         return this.elm.label;
+      }else{
+        return this.getLabel(this.elm);
       }
-    }
+
   }
 
   getVersion(){
     return this.elm.domainInfo.version ? this.elm.domainInfo.version : '';
   };
-  getSegmentLabel(elm){
+  getLabel(elm){
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
@@ -100,14 +90,13 @@ export class DisplayLabelComponent {
   getTableLabel(elm){
     return elm.bindingIdentifier+"-"+elm.label;
 
-
   };
 
   getMessageLabel(elm){
     return elm.label+"-"+elm.description;
   };
   getProfileComponentsLabel(elm){
-    return elm.label+"-"+elm.description;
+    return elm.label+"-"+elm.ext;
 
   };
 
