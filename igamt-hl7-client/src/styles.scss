@@ -7,7 +7,9 @@ body{
   overflow: hidden;
 
 }
-
+html{
+  overflow: hidden;
+}
 span.ig-list-title{
   color: #5c6bc0 !important;
   font-weight: 600;
@@ -136,4 +138,79 @@ body .ui-breadcrumb {
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#ff7400',
     endColorstr='#ff7400', GradientType=0); /* IE6-9 */
   font-weight: 400;
+}
+
+
+.name-col{
+  width: 200px;
+}
+.usage-col{
+  width: 200px;
+
+}
+.card-col{
+  width: 200px;
+
+}
+.length-col{
+  width: 200px;
+
+}
+.conf-col{
+  width: 100px;
+
+}
+.dt-col{
+  width: 180px;
+}
+.vs-col{
+  width: 100px;
+}
+.single-code-col{
+  width: 100px;
+}
+.const-value-col{
+  width: 100px;
+}
+.pred-col{
+  width: 200px;
+}
+.text-col{
+  width: 100px;
+}
+.comment-col{
+  width: 100px;
+}
+.ui-treetable .ui-treetable-tbody > tr > td {
+  background: inherit;
+  border: 1px solid #c8c8c8;
+}
+.ui-treetable .ui-treetable-thead > tr > th {
+  padding: 0.571em 0.857em;
+  border: 1px solid #c8c8c8;
+  font-weight: 700;
+  color: #333333;
+  background-color: #f4f4f4;
+}
+fa-remove:before, .fa-close:before, .fa-times:before {
+  color: red;
+}
+
+.fa-pencil:before {
+  content: "\F040";
+  color: #5c6bc0;
+}
+.fa-plus:before {
+  content: "\F067";
+  color: #50a3f4;
+}
+
+.ui-dropdown .ui-dropdown-label {
+  display: block;
+  /* border: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 900;
+  width: 100%;
+  padding-right: 2.5em;
 }

@@ -16,10 +16,7 @@
   <app-copy-element></app-copy-element>
   <app-delete-element></app-delete-element>
   <div>
-
       <span class="ig-title">{{metadata.title}}</span>
-
-
     <hr style="margin-top: 0rem;
     margin-bottom: 0rem;
     border: 0;
@@ -79,7 +76,7 @@
 </div>
 
 <div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
-  <div class="ui-g-3 no-margin" style="padding : 0; max-height: 800px; overflow: scroll"  *ngIf="!hideToc">
+  <div class="ui-g-3 no-margin" style="padding : 0; "  *ngIf="!hideToc">
   <p-panel [toggleable]="false">
     <p-header class="toc-panel-header">
       Table Of Content
@@ -92,6 +89,8 @@
 
 
     </p-header>
+    <div style="max-height: 800px; overflow: scroll">
+
     <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
     <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
@@ -248,12 +247,13 @@
       </ng-template>
 
     </tree-root>
+    </div>
   </p-panel>
   </div>
 
   <!--ROUTE-->
 
-  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0; max-height: 800px;overflow: scroll" >
+  <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;" >
       <div>
         <router-outlet></router-outlet>
       </div>

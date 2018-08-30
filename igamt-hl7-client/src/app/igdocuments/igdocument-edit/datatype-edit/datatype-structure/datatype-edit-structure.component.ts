@@ -27,7 +27,6 @@ export class DatatypeEditStructureComponent implements WithSave{
     usages:any;
     cUsages:any;
 
-    cols= Columns.columns;
   @ViewChild('name')
   private name: TemplateRef<any>;
   @ViewChild('usage')
@@ -55,7 +54,9 @@ export class DatatypeEditStructureComponent implements WithSave{
   @ViewChild('comment')
   private comment: TemplateRef<any>;
 
-    selectedColumns=Columns.columns;
+
+    cols= Columns.dataTypeColumns;
+    selectedColumns=Columns.dataTypeColumns;
 
     textDefinitionDialogOpen:boolean = false;
     changeDTDialogOpen:boolean = false;
@@ -365,6 +366,8 @@ export class DatatypeEditStructureComponent implements WithSave{
         }
 
         node.children = children;
+        this.datatypeStructure.children= [...this.datatypeStructure.children];
+
     }
 
     setHasSingleCode(displayData){

@@ -18,13 +18,19 @@
     </div>
 
 
-    <p-treeTable [value]="datatypeStructure.children" [columns]="selectedColumns" [value]="datatypeStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
+    <p-treeTable [value]="datatypeStructure.children" (onNodeExpand)="loadNode($event)"  [scrollable]="true" [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="650px">
       <ng-template pTemplate="caption">
         <div style="text-align:right">
           <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
                          selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
         </div>
       </ng-template>
+      <ng-template pTemplate="colgroup" let-columns>
+        <colgroup>
+          <col *ngFor="let col of columns" class="{{col.style}}">
+        </colgroup>
+      </ng-template>
+
       <ng-template pTemplate="header" let-columns>
         <tr>
           <th *ngFor="let col of columns">

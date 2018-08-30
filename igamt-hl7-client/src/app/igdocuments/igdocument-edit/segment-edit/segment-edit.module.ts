@@ -45,6 +45,7 @@ import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
 import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
     imports: [
@@ -64,8 +65,9 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
         SelectButtonModule,
         HttpClientModule,
         HttpModule,
-      DataTableModule,
-      DataListModule,
+        DataTableModule,
+        DataListModule,
+        MultiSelectModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
