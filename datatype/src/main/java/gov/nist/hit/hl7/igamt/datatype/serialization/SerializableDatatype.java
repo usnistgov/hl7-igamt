@@ -100,6 +100,7 @@ public class SerializableDatatype extends SerializableResource {
       }
       return super.getSectionElement(datatypeElement, this.level);
     } catch (Exception exception) {
+    	exception.printStackTrace();
       throw new ResourceSerializationException(exception, Type.DATATYPE,
           (Datatype) this.getAbstractDomain());
     }

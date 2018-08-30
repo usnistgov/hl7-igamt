@@ -19,7 +19,6 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.serialization.SerializableDatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibrarySerializationService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.webExport.util.WebExportObject;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -66,37 +65,17 @@ public class DatatypeLibrarySerializationServiceImpl
         }
       }
     }
+    
   }
 
   @Override
   public String serializeDatatypeLibrary(DatatypeLibrary datatypeLibrary,
       ExportConfiguration exportConfiguration) throws SerializationException {
-    WebExportObject webExportObject = new WebExportObject();
     try {
       this.initializeDatatypesMap(datatypeLibrary.getDatatypeRegistry(),
           exportConfiguration.getDatatypesExport());
-      // // added code starts here
-      // webExportObject.populateMap(this.datatypesMap);
-      // System.out.println("DONE");
-      // HtmlWriter hw = new HtmlWriter();
-      // PageCreator pg = new PageCreator();
-      // BasicXsl bx = new BasicXsl();
-      // hw.generateVersionInIndex(webExportObject);
-      //// bx.BuildXMLfromMap(webExportObject.getDatatypesXMLOneByOne());
-      // pg.generateLeafPageTable(webExportObject);
-      // pg.generateIndex(webExportObject);
-      // try {
-      // hw.generateHtmlNameThenVersion(webExportObject);
-      // hw.generateHtmlVersionsThenName(webExportObject);
-      //
-      // } catch (IOException e) {
-      // // TODO Auto-generated catch block
-      // e.printStackTrace();
-      // }
-      // System.out.println("END-HT");
-      //
-      // //added code ends here
-
+      this.initializeDatatypesMap(datatypeLibrary.getDerivedRegistry(),
+              exportConfiguration.getDatatypesExport());
       this.initializeDatatypeNamesAndBindedComponents();
       SerializableDatatypeLibrary serializableDatatypeLibrary =
           new SerializableDatatypeLibrary(datatypeLibrary, "1", datatypesMap, datatypeNamesMap,

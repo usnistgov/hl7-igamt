@@ -21,18 +21,22 @@ public class SerializableSectionFactory {
 //    Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
 //    Map<String, String> valuesetNamesMap, Set<String> bindedDatatypes, Set<String> bindedComponents
 
-	  public static SerializableSection getSerializableSection(Section section, int level, DatatypeRegistry datatypeRegistry,
-	      Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap,
+	  public static SerializableSection getSerializableSection(Section section, int level, DatatypeRegistry datatypeRegistry, DatatypeRegistry derivedDatatypeRegistry
+	      ,Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap,
 	      Set<String> bindedDatatypes, Set<String> bindedComponents) {
 	    SerializableSection serializableSection = null;
 	    if (Type.TEXT.equals(section.getType())) {
 	      serializableSection = new SerializableTextSection((TextSection) section, level);
 	    } else if (Type.PROFILE.equals(section.getType())) {
-	    		serializableSection = new SerializableProfile(section, level, datatypeRegistry, datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
+	    		serializableSection = new SerializableProfile(section, level, datatypeRegistry, derivedDatatypeRegistry, datatypesMap, datatypeNamesMap, valuesetNamesMap, bindedDatatypes, bindedComponents);
 	    } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
 	      serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
 	          datatypesMap, datatypeNamesMap, valuesetNamesMap,valuesetNamesMap, bindedDatatypes, bindedComponents);
 	    } 
+	    else if (Type.DERIVEDDATATYPEREGISTRY.equals(section.getType())) {
+		      serializableSection = new SerializableDatatypeRegistry(section, level, derivedDatatypeRegistry,
+		          datatypesMap, datatypeNamesMap, valuesetNamesMap,valuesetNamesMap, bindedDatatypes, bindedComponents);
+		    } 
 	    return serializableSection;
 	  }
 

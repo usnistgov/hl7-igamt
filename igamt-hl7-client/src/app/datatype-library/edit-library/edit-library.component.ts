@@ -173,7 +173,7 @@ export class EditLibraryComponent {
 
       }},
       {label: 'As Web', command: () => {
-
+        this.exportAsWeb();
       }}
 
     ];
@@ -189,6 +189,10 @@ export class EditLibraryComponent {
   }
   exportAsHTML(){
     this.exportService.exportAsHtml(this.libId);
+
+  }
+  exportAsWeb(){
+    this.exportService.exportAsWeb(this.libId);
 
   }
   toggleHideToc(){
