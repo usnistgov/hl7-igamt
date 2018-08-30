@@ -1,5 +1,5 @@
 <div *ngIf="matrix" class="card ui-g-6">
-<p-table  #dt [value]="matrix"  [globalFilterFields]="['#']" [scrollable]="true" scrollHeight="200px">
+<p-table  #dt [value]="matrix"  [globalFilterFields]="['#']" [scrollable]="true" >
   <ng-template pTemplate="caption">
     <div style="text-align: right; width: 100%">
       <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
@@ -24,14 +24,14 @@
 </div>
 
 <div *ngIf="tableValue" class="card ui-g-6">
-  <p-treeTable [value]="tableValue" [scrollable]="true" scrollHeight="200px">
+  <p-treeTable [value]="tableValue" [scrollable]="true">
     <ng-template pTemplate="header">
       <tr>
         <th>
           Position
         </th>
         <th *ngFor="let col of criterias">
-          {{col}}
+          {{col.label}}
         </th>
       </tr>
     </ng-template>
@@ -46,16 +46,16 @@
 
 
         <td *ngFor="let col of criterias" (click)="print(rowData)">
-          <span *ngIf="rowData.data[col]">
+          <span *ngIf="rowData.data[col.value]">
 
 
             <table>
               <tbody>
               <tr class="firstVersion">
-                       {{rowData.data[col]["left"]}}
+                       {{rowData.data[col.value]["left"]}}
               </tr>
               <tr class="secondVersion">
-                 {{rowData.data[col]["right"]}}
+                 {{rowData.data[col.value]["right"]}}
               </tr>
               </tbody>
 

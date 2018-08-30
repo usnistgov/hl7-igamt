@@ -294,25 +294,30 @@ export  class TocService{
   cloneNode(treeNode: TreeNode){
     let newData=_.cloneDeep(treeNode.data);
     newData.id = UUID.UUID();
-    if(newData.data.id){
+    if(newData.data){
       newData.id = UUID.UUID();
+      console.log(treeNode);
 
+      newData.data.label=newData.data.label+"-copy";
     }
-    console.log(treeNode);
-
-    newData.data.label=treeNode.data.label+"Copy";
-
-    console.log(newData);
-    if(treeNode.data.children && treeNode.data.children.length>0) {
-      _.forEach(treeNode.data.children, function (child) {
-        newData.children.push(this.cloneNode(child));
-
-      })
-
-    }
+    this.changeIds(newData);
     treeNode.parent.data.children.push(newData);
-    treeNode.parent.treeModel.update();
+    console.log(treeNode.parent.treeModel);
+    this.setTreeModel(treeNode.treeModel);
   };
+
+  changeIds(newData){
+    newData.id= UUID.UUID();
+    if(newData.children && newData.children.length){
+
+        for(let i=0; i< newData.children.length; i++){
+
+          this.changeIds(newData.children[i]);
+
+        }
+    }
+
+  }
 
   saveNodes(id,nodes,resolve, reject){
     this.http.post('/api/igdocuments/'+id+'/updatetoc',nodes).toPromise().then(result=>{

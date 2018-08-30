@@ -15,6 +15,10 @@ import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import {Types} from "../../common/constants/types";
 import {LocationStrategy} from "@angular/common";
 import {LibraryExportService} from "./service/lib-export.service";
+import {LibDatatypeAddComponent} from "./lib-datatype-add/lib-datatype-add.component";
+import {DatatypeLibraryAddingService} from "../service/adding.service";
+import {LibCopyElementComponent} from "./copy-element/lib-copy-element.component";
+import {LibDeleteElementComponent} from "./delete-element/lib-delete-element.component";
 
 
 
@@ -28,9 +32,13 @@ export class EditLibraryComponent {
 
   libId:any;
   exportModel: MenuItem[];
+  @ViewChild(LibDatatypeAddComponent) addDts: LibDatatypeAddComponent;
+  @ViewChild(LibCopyElementComponent) copyElemt: LibCopyElementComponent;
+  @ViewChild(LibDeleteElementComponent) deleteElement: LibDeleteElementComponent;
 
   loading=false;
   metadata:any;
+  scope:any;
 
   lib:any;
   currentUrl:any;
@@ -70,6 +78,7 @@ export class EditLibraryComponent {
   @ViewChild('igcontextmenu') public igcontextmenu: ContextMenuComponent;
   @ViewChild('textcontextmenu') public textcontextmenu: ContextMenuComponent;
   @ViewChild('datatypescontextmenu') public datatypescontextmenu: ContextMenuComponent;
+
   currentNode:TreeNode;
 
 
@@ -108,7 +117,7 @@ export class EditLibraryComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router, private location: LocationStrategy, private exportService: LibraryExportService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router, private location: LocationStrategy, private exportService: LibraryExportService, private datatypeLibraryAddingService : DatatypeLibraryAddingService){
 
     router.events.subscribe(event => {
       //console.log(event);
@@ -143,16 +152,14 @@ export class EditLibraryComponent {
   ngOnInit() {
     //console.log("Calling on Init");
     this.libId= this.sp.snapshot.params["libId"];
-    this.tocService.setIgId(this.libId);
+    this.tocService.setLibId(this.libId);
 
 
 
 
     this.sp.data.map(data =>data.currentLib).subscribe(x=>{
       this.lib= x;
-
-
-
+      this.scope=this.lib.metadata.scope;
       this.nodes=this.lib.toc;
 
     });
@@ -227,8 +234,8 @@ export class EditLibraryComponent {
     if(this.tree) {
 
 
-      var index = this.currentUrl.indexOf("/datatype-library/");
-      var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/datatype-library/") + 4);
+      var index = this.currentUrl.indexOf("/lib/");
+      var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/lib/") + 4);
 
       var paramIndex = fromIg.indexOf('?');
       //console.log(paramIndex);
@@ -349,7 +356,7 @@ export class EditLibraryComponent {
 
 
   activateNode(node){
-    // this.activeNode=node.id;
+     this.activeNode=node.id;
   }
 
 
@@ -380,17 +387,25 @@ export class EditLibraryComponent {
 
 
   distributeResult(object:any){
-
+    console.log(this.scope);
     if(object.datatypes){
-      this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
+      var derived=[];
+      var registry =[];
+      for(let i=0;i<object.datatypes.length;i++){
+
+        if(object.datatypes[i].data&&object.datatypes[i].data.domainInfo.scope==this.scope){
+          registry.push(object.datatypes[i]);
+
+        }else {
+          derived.push(object.datatypes[i]);
+        }
+      }
+
+
+      this.tocService.addNodesByType( registry,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
+      this.tocService.addNodesByType( derived,this.tree.treeModel.nodes, Types.DERIVEDDATATYPEREGISTRY);
 
     }
-    if(object.valueSets){
-      this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
-
-    }
-
-
     this.tree.treeModel.update();
     this.setTreeModel();
 
@@ -409,29 +424,115 @@ export class EditLibraryComponent {
   }
 
 
+  addSectionToNode( node:TreeNode){
+    ////console.log(this.toc);
+
+    let data1 ={
+      label: "new Section",
+      content:"",
+      type:Types.TEXT,
+      position: this.tree.treeModel.nodes.length+1
+    };
+    var newNode = {id : "bla",data:data1, children :[]};
+    node.data.children.push(newNode);
+
+    this.tree.treeModel.update();
+    this.setTreeModel();
+
+  };
+  copySection(node){
+    //console.log( this.tree._options);
+    this.tocService.cloneNode(node);
+  }
+
+  createHl7Datatypes(){
+    this.datatypeLibraryAddingService.getDatatypeClasses().subscribe(x=>{
+
+    let sources=x;
+    console.log(x);
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.addDts.open({
+      id : this.libId,
+      scope:this.scope,
+      sources:sources,
+      namingIndicators:existing
+    })
+      .subscribe(
+        result => {
+          this.distributeResult(result);
+        }
+      );
+    }, error =>{
+    });
+
+  };
 
 
+  createFromMaster(){
+
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.addDts.open({
+      id : this.libId,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+
+          this.distributeResult(result);
+        }
+      )
+
+  };
+
+  copyDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.copyElemt.open({
+      libId : this.libId,
+      id:node.data.data.key,
+      scope:this.scope,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      namingIndicators:existing
+
+    })
+      .subscribe(
+        result => {
+          let toDistribute:any={};
+          let datatypes=[];
+          datatypes.push(result);
+          toDistribute.datatypes=datatypes;
+          this.distributeResult(toDistribute);
+
+        }
+      )
+  };
 
 
+  deleteDatatype(node){
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
+
+    this.deleteElement.open({
+      libId : this.libId,
+      id:node.data.data.key.id,
+      name:node.data.data.label,
+      ext:node.data.data.ext,
+      type:node.data.data.type,
+      node:node.data.data
+    })
+      .subscribe(
+        id => {
+          this.tocService.deleteNodeById(id);
+          this.tocService.setTreeModelInDB(this.tree.treeModel);
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        }
+      )
+  };
 
 
 }

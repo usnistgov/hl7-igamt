@@ -10,21 +10,19 @@
     </p-footer>
   </p-confirmDialog>
 
+  <lib-datatype-add></lib-datatype-add>
+  <lib-copy-element></lib-copy-element>
+  <lib-delete-element></lib-delete-element>
+
   <div>
-
     <span class="ig-title">{{metadata.title}}</span>
-
-
     <hr style="margin-top: 0rem;
     margin-bottom: 0rem;
     border: 0;
     border-top: 1px solid #f5f5f5;"/>
     <span class="ig-date" *ngIf="lib.dateUpdated">
-
             <i class="fa fa-calendar"></i> Date Updated:   {{lib.dateUpdated|date }}
     </span>
-
-
   </div>
 
 
@@ -41,10 +39,9 @@
       <button   pButton type="button" label="verify" class="blue-btn" icon="fa fa-check"></button>
       <button   pButton type="button" label="share"  icon="fa fa-share"></button>
 
-      <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa fa-check"></button>
       <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
 
-      <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
+      <button  (click)="print(igForm)"  pButton type="button" label="Publish" class="green-btn" icon="fa fa-floppy-o"></button>
       <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
 
 
@@ -78,12 +75,8 @@
           <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
           <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
           <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
-
-
-
-
         </p-header>
-        <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
+        <span  style="cursor: pointer" (click)="goToMetaData()">Library Metadata</span>
         <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
           <ng-template #treeNodeTemplate let-node let-index="index">
@@ -93,7 +86,7 @@
               <ng-container *ngSwitchCase="'TEXT'">
                 <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
                 <context-menu #textcontextmenu>
-                  <ng-template contextMenuItem (execute)="addSection(node)">
+                  <ng-template contextMenuItem (execute)="addSectionToNode(node)">
                     <i class="fa fa-plus"></i> Add Section
                   </ng-template>
                   <ng-template contextMenuItem (execute)="copySection(node)">
@@ -116,8 +109,11 @@
                 <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
 
                 <context-menu  #addDatatypeContextMenu>
-                  <ng-template contextMenuItem>
-                    <i class="fa fa-plus"></i>
+                  <ng-template contextMenuItem (execute)="createHl7Datatypes()">
+                    <i class="fa fa-plus"> Add HL7 Data Type</i>
+                  </ng-template>
+                  <ng-template contextMenuItem (execute)="createHl7Datatypes()">
+                    <i class="fa fa-plus"> Add From Existing Master</i>
                   </ng-template>
                 </context-menu>
               </ng-container>
@@ -134,10 +130,10 @@
               <ng-container *ngSwitchCase="'DATATYPE'">
                 <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
                 <context-menu  #datatypeContextMenu>
-                  <ng-template contextMenuItem>
+                  <ng-template contextMenuItem  (execute)="copyDatatype(node)">
                     <i class="fa fa-copy"></i> Copy
                   </ng-template>
-                  <ng-template contextMenuItem>
+                  <ng-template contextMenuItem (execute)="deleteDatatype(node)">
                     <i class="fa fa-remove"></i> Delete
                   </ng-template>
                 </context-menu>

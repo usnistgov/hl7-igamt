@@ -17,4 +17,15 @@ export  class DatatypeLibraryAddingService {
 
   }
 
+  getDatatypeClasses(){
+    return  this.http.get<any[]>('/api/hl7classes');
+
+
+  }
+
+  addDatatypes(wrapper){
+    return this.http.post('api/datatype-library/'+wrapper.id+'/datatypes/add', wrapper);
+
+  }
+
 }

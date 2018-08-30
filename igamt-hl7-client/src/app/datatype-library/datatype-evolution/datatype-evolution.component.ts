@@ -32,13 +32,17 @@ export class DatatypeEvolutionComponent implements OnInit {
     "2.8.2"
   ];
 
-  criterias=["CPNUMBER", "CPNAME",
+  criterias=[
 
-    "MINLENGTH", "MAXLENGTH",
 
-    "CONFLENGTH", "CPDATATYPE",
+    {"label":"Name" ,"value": "CPNUMBER"},
+    {"label":"Min.Length" ,"value": "MINLENGTH"},
 
-    "CPDATATYPENAME"];
+    {"label":"MAXLENGTH" ,"value": "MAXLENGTH"},
+    {"label":"Conf.Length" ,"value": "CONFLENGTH"},
+    {"label":"DATATYPE" ,"value": "CPDATATYPE"}
+
+    ];
 
 
   ngOnInit() {

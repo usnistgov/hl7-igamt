@@ -31,13 +31,10 @@ export class EditLibraryService {
 
             } else {
               this.tocService.metadata.next(x.metadata);
+              this.tocService.treeModel.nodes=x.toc;
 
               resolve(x);                //this.getMergedIg(igId, resolve,reject);
             }
-
-
-
-
           },error =>{
             this.initDatatypeLibrary(libId, resolve);
           }
@@ -56,10 +53,9 @@ export class EditLibraryService {
             let  lib = new DatatypeLibraryInfo(libId);
             lib.metadata=x["metadata"];
             this.tocService.metadata.next(lib.metadata);
+
             lib.toc=x["toc"];
-
-
-
+            this.tocService.treeModel.nodes=lib.toc;
             this.indexedDbService.initDatatypeLibrary(lib).then(
               () => {
                 resolve(lib);
@@ -69,22 +65,16 @@ export class EditLibraryService {
             );
           },
           (error) => {
-
             console.log("Could not load Ig : " + error);
-
           }
         );
-
       }, error=>{
         resolve();
         this.error.redirect("Could not load IG with id "+ libId)
-
-
-
       }
 
     );
-  }
+  };
 
 
 

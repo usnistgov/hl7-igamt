@@ -219,6 +219,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         }
       }
     }
+    datatypeLibraryRepository.save(lib);
     return ret;
 
   }
@@ -253,6 +254,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         }
       }
     }
+
+
 
   }
 

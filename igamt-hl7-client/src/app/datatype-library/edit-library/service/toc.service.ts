@@ -18,13 +18,13 @@ export  class TocService{
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
   metadata :BehaviorSubject<any> =new BehaviorSubject(null);
 
-  treeModel :TreeModel;
+  treeModel :TreeModel=new TreeModel();
   libId:any;
 
 
   constructor(private dbService:IndexedDbService, private http:HttpClient){
   }
-  setIgId(libId){
+  setLibId(libId){
 
     this.libId=libId;
   };
@@ -50,7 +50,7 @@ export  class TocService{
         x => {
           x.toc = treeModel.nodes;
           this.saveNodes(x.id, x.toc,resolve, reject);
-          this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+          this.dbService.updateDatatypeLibraryToc(x.id, x.toc).then(saved => {
             this.treeModel.update();
             resolve(true);
           });
@@ -65,13 +65,13 @@ export  class TocService{
       this.dbService.getDataTypeLibrary().then(
         x => {
           x.toc = treeModel.nodes;
-          this.dbService.updateIgToc(x.id, x.toc).then(saved => {
+          this.dbService.updateDatatypeLibraryToc(x.id, x.toc).then(saved => {
             this.treeModel.update();
             resolve(true);
           });
         });
     })
-  }
+  };
 
 
 
@@ -93,10 +93,9 @@ export  class TocService{
 
 
 
-
   setMetaData(metadata){
     return new Promise((resolve, reject)=> {
-      this.dbService.getIgDocument().then(
+      this.dbService.getDataTypeLibrary().then(
         x => {
           x.metadata = metadata;
 
@@ -114,6 +113,11 @@ export  class TocService{
   }
 
 
+  getNodeNames(type:Types){
+
+   return this.getNameUnicityIndicators(this.getTreeModel().nodes,type);
+  }
+
 
   findDirectChildByType(nodes, type){
 
@@ -129,30 +133,29 @@ export  class TocService{
     var profile= this.findDirectChildByType(toc,Types.PROFILE);
     var registry = this.findDirectChildByType(profile.children,type);
 
-
     let union :any[]=_.union(registry.children,toAdd);
     union= _.sortBy(union, [function(node) { return node.data.label+node.data.ext; }]);
 
     for(let i=0 ; i<union.length; i++){
       union[i].data.position =i+1;
     }
-
     registry.children=union;
-
-
-
-
   }
 
   getNameUnicityIndicators(nodes,type){
 
     var profile= this.findDirectChildByType(nodes,Types.PROFILE);
     var registry = this.findDirectChildByType(profile.children,type);
-    return _.map(registry.children, function (obj) {
+    let ret =_.map(registry.children, function (obj) {
       return obj.data.label+obj.data.ext;
-
     });
+    console.log(ret);
+    return ret;
+
+
   }
+
+
 
 
   getRegistryByType(nodes, type){
@@ -230,16 +233,10 @@ export  class TocService{
 
     var profile = _.find(toc, function(node) { return Types.PROFILE == node.data.type;});
     if(profile&&profile.children){
-
-
-
-
       if(type==Types.DATATYPEREGISTRY) {
         var registry = _.find(profile.children, function (node) {
           return type == node.data.type;
         });
-
-
 
         var derivedRegistry = _.find(profile.children, function (node) {
           return  node.data.type==Types.DERIVEDDATATYPEREGISTRY;
@@ -254,45 +251,44 @@ export  class TocService{
         }
         return children;
       }
-
-
         else {
           return null;
         }
       }
-
-
   }
 
 
   cloneNode(treeNode: TreeNode){
     let newData=_.cloneDeep(treeNode.data);
     newData.id = UUID.UUID();
-    if(newData.data.id){
+    if(newData.data){
       newData.id = UUID.UUID();
+      console.log(treeNode);
+
+      newData.data.label=newData.data.label+"-copy";
+      newData.data.position=treeNode.parent.data.children.length+1;
 
     }
-    console.log(treeNode);
 
-    newData.data.label=treeNode.data.label+"Copy";
-
-    console.log(newData);
-    if(treeNode.data.children && treeNode.data.children.length>0) {
-      _.forEach(treeNode.data.children, function (child) {
-        newData.children.push(this.cloneNode(child));
-
-      })
-
-    }
+    this.changeIds(newData);
     treeNode.parent.data.children.push(newData);
-    treeNode.parent.treeModel.update();
+    console.log(treeNode.parent.treeModel);
+    this.setTreeModel(treeNode.treeModel);
   };
+
+  changeIds(newData){
+    newData.id= UUID.UUID();
+    if(newData.children && newData.children.length){
+      for(let i=0; i< newData.children.length; i++){
+        this.changeIds(newData.children[i]);
+      }
+    }
+  }
 
   saveNodes(id,nodes,resolve, reject){
     this.http.post('/api/datatype-library/'+id+'/updatetoc',nodes).toPromise().then(result=>{
         resolve(result);
         console.log(result);
-
       },error=>{
         console.log(error);
         reject(error);
@@ -300,7 +296,7 @@ export  class TocService{
       }
     );
 
-  }
+  };
 
 
   saveMetadata(id,metadata,resolve, reject){
@@ -315,10 +311,7 @@ export  class TocService{
       }
     );
 
-  }
-
-
-
+  };
 
   deleteNodeById(id){
 
@@ -336,15 +329,6 @@ export  class TocService{
       }
     }
   }
-
-
-
-
-
-
-
-
-
 
 
 

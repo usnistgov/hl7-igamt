@@ -35,7 +35,7 @@ export class AddDatatypeComponent extends PrimeDialogAdapter {
 
   onDialogOpen() {
     // Init code
-    this.sources = []
+    this.sources = [];
     this.dest = [];
   }
 
@@ -125,8 +125,6 @@ export class AddDatatypeComponent extends PrimeDialogAdapter {
         this.igErrorService.showError(error);
       }
     )
-
-
   }
 
   print(obj){

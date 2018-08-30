@@ -2,11 +2,12 @@
 
   background-color: #5c6bc0 !important;
 }
-.ui-treetable .ui-treetable .ui-treetable-tbody>tr>td, .ui-treetable .ui-treetable-tfoot>tr>td {
-  padding: .25em .5em;
-  border: 1px solid #d8d8d8;
-}
+
 .secondVersion{
 
   background-color:#F3C60D !important;
+}
+.ui-treetable .ui-treetable-thead>tr>th, .ui-treetable .ui-treetable-tbody>tr>td, .ui-treetable .ui-treetable-tfoot>tr>td {
+  padding: 0px 0px !important;
+  border: 1px solid #d8d8d8 !important;
 }

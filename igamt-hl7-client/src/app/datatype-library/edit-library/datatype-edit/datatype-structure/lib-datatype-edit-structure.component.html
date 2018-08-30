@@ -3,7 +3,7 @@
     <div class="ui-g cp-header">
       <div class="ui-g-8 ui-g-nopad">
         <div class="cp-header-title ui-g-12">
-          Datatype Structure: {{datatypeStructure.label}}
+          Data Type Structure: {{datatypeStructure.label}}
         </div>
         <div class="ui-g-12 cp-header-subtitle">
                     <span class="ig-list-date" *ngIf="datatypeStructure.updateDate">
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <p-treeTable [value]="datatypeStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)">
+    <p-treeTable [value]="datatypeStructure.children" tableStyleClass="table-condensed table-stripped table-bordered" (onNodeExpand)="loadNode($event)" >
 
       <ng-template pTemplate="header" let-columns>
         <tr>
@@ -52,10 +52,10 @@
       </ng-template>
 
 
-      <ng-template pTemplate="body" let-node="node" let-rowData="rowData" let-columns="columns">
+      <ng-template pTemplate="body" let-node="node" let-rowNode let-rowData="rowData" let-columns="columns" >
         <tr>
           <td>
-            <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
             <display-badge [type]="node.data.displayData.type"></display-badge>{{node.data.position}}. {{node.data.name}}
           </td>
 

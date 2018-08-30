@@ -2,6 +2,7 @@
 
 
 <p-steps [model]="items" [(activeIndex)]="activeIndex" [readonly]="true"></p-steps>
+
 <div *ngIf="activeIndex==1">
   <div>
     <label class="metadata-label"> Select Hl7 Version</label>  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getDatatypes(v)"></p-radioButton>
@@ -16,7 +17,6 @@
 
     <p-button styleClass="green-btn" [disabled]="!isValid()" (onClick)="submit($event)" label="submit"  icon="fa fa-check" iconPos="left"></p-button>
     </div>
-
   </div>
 </div>
 
@@ -55,6 +55,17 @@
 
     </div>
 
+
+    <div class="ui-g input-box">
+      <label class="metadata-label ui-g-1">
+        SCOPE
+      </label>
+
+      <p-dropdown [options]="scopeOptions" [(ngModel)]="metaData.scope" name="scope"></p-dropdown>
+
+
+    </div>
+
     <div class="ui-g input-box">
       <label class="metadata-label ui-g-1">
         Sub-Title
@@ -87,9 +98,6 @@
   <p-button class="ui-g-offset-11" [disabled]= "f.invalid" styleClass="indigo-btn" (onClick)="next($event)" label="Next" icon="fa fa-hand-o-right" iconPos="left"></p-button>
 
 </div>
-
-
-
 <p-blockUI [blocked]="blockUI"></p-blockUI>
 
 

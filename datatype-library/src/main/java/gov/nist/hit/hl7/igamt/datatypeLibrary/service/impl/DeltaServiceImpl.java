@@ -392,9 +392,6 @@ public class DeltaServiceImpl implements DeltaService {
 
       DeltaTreeNode childNode = getDatatypesDelta(d1, d2, criterias);
 
-      if (d1.getName().equals("HD")) {
-        System.out.println(d1);
-      }
       if (childNode.getChildren() != null && !childNode.getChildren().isEmpty()) {
         child.setChildren(childNode.getChildren());
         childData.addCell(EvolutionPropertie.CPDATATYPE, new DeltaCell(d1.getName(), d2.getName()));

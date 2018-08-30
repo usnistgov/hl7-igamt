@@ -9,6 +9,7 @@ import {BreadcrumbService} from "../../breadcrumb.service";
 import {DatatypeLibraryCreateService} from "./datatype-library.service";
 import {DatatypeLibraryAddingService} from "../service/adding.service";
 import {DatatypeListManagerComponent} from "../../common/datatype-list-manager/datatype-list-manager.component";
+import {AuthService} from "../../login/auth.service";
 @Component({
   templateUrl: 'datatype-library-create.component.html'
 })
@@ -18,6 +19,12 @@ export class DatatypeLibraryCreateComponent {
   activeIndex: number = 0;
   blockUI=false;
   scope="MASTER";
+
+  scopeOptions = [
+  {label:'Master', value:"MASTER"},
+  {label:'USER', value:"USER"},
+
+  ];
 
   @ViewChild(DatatypeListManagerComponent) dtManager;
 
@@ -31,15 +38,25 @@ export class DatatypeLibraryCreateComponent {
   selcetedVersion: any =null;
 
   constructor(private createService :DatatypeLibraryCreateService,private  datatypeLibraryAddingService :DatatypeLibraryAddingService,
-              private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
+              private router: Router,private auth:AuthService,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
   ) {
     this.path=[{label:"data type library"},{label:"create new Library"}];
     this.breadCrump.setItems(this.path);
     this.hl7Versions=ws.getAppConstant().hl7Versions;
+
+
   }
 
   ngOnInit() {
 
+
+    this.datatypeLibraryAddingService.getDatatypeClasses().subscribe(x=>{
+      this.list=x;
+
+    }, error=>{
+
+
+    });
     this.items = [
       {
       label: 'Meta Data ',
@@ -65,17 +82,27 @@ export class DatatypeLibraryCreateComponent {
 
     ];
 
+    if(this.isAdmin()){
+      this.metaData.scope="MASTER";
+
+    }else{
+      this.metaData.scope="USER";
+    }
 
 
   }
 
 
 
+ isAdmin(){
+   return this.auth.isAdmin();
+ }
+
 
   goTo(res:any) {
     this.route.queryParams
       .subscribe(params => {
-        var link="/datatype-library/"+res.id.id;
+        var link="datatype-libraries/lib/"+res.id.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
@@ -84,6 +111,9 @@ export class DatatypeLibraryCreateComponent {
   print(obj){
     console.log(obj);
   }
+
+
+
   getDatatypes(version){
     this.list=[];
     this.datatypeLibraryAddingService.getHl7DatatypesByVersion(version).
@@ -133,9 +163,7 @@ export class DatatypeLibraryCreateComponent {
     this.createService.create(wrapper).subscribe(x=>{
       console.log(x);
       this.goTo(x);
-
     } , error=>{
-
 
     });
 
@@ -152,6 +180,8 @@ export class DatatypeLibraryCreateComponent {
     return true;
   }
   }
+
+
 
 
 

@@ -14,6 +14,7 @@ import {MessageModule} from "primeng/components/message/message";
 import {BreadcrumbModule} from "primeng/components/breadcrumb/breadcrumb";
 import {FroalaEditorModule, FroalaViewModule} from "angular-froala-wysiwyg";
 import {UtilsModule} from "../../utils/utils.module";
+import {DropdownModule} from 'primeng/dropdown';
 
 @NgModule({
   imports: [
@@ -29,6 +30,7 @@ import {UtilsModule} from "../../utils/utils.module";
     BlockUIModule,
     FileUploadModule,
     MessageModule,
+    DropdownModule,
     BreadcrumbModule,
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
   ],

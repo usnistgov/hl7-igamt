@@ -294,6 +294,8 @@ export class SegmentEditStructureComponent implements WithSave {
         }
 
         node.children = children;
+
+
     }
 
     setHasSingleCode(displayData){
@@ -409,6 +411,7 @@ export class SegmentEditStructureComponent implements WithSave {
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
+
     }
 
     onDatatypeChange(node){

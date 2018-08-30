@@ -264,6 +264,7 @@ public class DatatypeServiceImpl implements DatatypeService {
       result.setName(datatype.getName());
       result.setScope(datatype.getDomainInfo().getScope());
       result.setVersion(datatype.getDomainInfo().getVersion());
+      result.setCompatibilityVersions(datatype.getDomainInfo().getCompatibilityVersion());
       return result;
     }
     return null;
@@ -438,7 +439,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
   /**
-   * Validate the structure of the segment
+   * Validate the structure of the datatype
    * 
    * @param structure
    * @throws DatatypeValidationException
@@ -496,8 +497,9 @@ public class DatatypeServiceImpl implements DatatypeService {
   /*
    * (non-Javadoc)
    * 
-   * @see gov.nist.hit.hl7.igamt.segment.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
-   * igamt. segment.domain.display.DatatypeStructure)
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
+   * igamt. datatype.domain.display.DatatypeStructure)
    */
   @Override
   public Datatype convertToDatatype(DatatypeStructure structure) {
@@ -545,14 +547,14 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveMetadata(DisplayMetadata metadata)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(metadata);
-    Datatype segment = findLatestById(metadata.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(metadata.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(metadata.getId().getId());
     }
-    segment.setExt(metadata.getExt());
-    segment.setDescription(metadata.getDescription());
-    segment.setComment(metadata.getAuthorNote());
-    return save(segment);
+    datatype.setExt(metadata.getExt());
+    datatype.setDescription(metadata.getDescription());
+    datatype.setComment(metadata.getAuthorNote());
+    return save(datatype);
   }
 
 
@@ -560,12 +562,12 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(conformanceStatement);
-    Datatype segment = findLatestById(conformanceStatement.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(conformanceStatement.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(conformanceStatement.getId().getId());
     }
-    segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
-    return save(segment);
+    datatype.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
+    return save(datatype);
   }
 
 

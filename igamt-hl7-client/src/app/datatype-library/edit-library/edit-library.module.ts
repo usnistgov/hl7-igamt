@@ -46,6 +46,11 @@ import {LibMetaDataResolver} from "./datatype-library-metadata/datatype-library-
 import {EditLibraryService} from "./edit-library.service";
 import {LibErrorService} from "./lib-error/lib-error.service";
 import {LibraryExportService} from "./service/lib-export.service";
+import { LibDatatypeAddComponent } from './lib-datatype-add/lib-datatype-add.component';
+import {LibCopyElementComponent} from "./copy-element/lib-copy-element.component";
+import {LibCopyService} from "./copy-element/lib-copy.service";
+import {LibDeleteElementComponent} from "./delete-element/lib-delete-element.component";
+import {LibDeleteElementService} from "./delete-element/lib-delete-element.service";
 
 
 @NgModule({
@@ -89,13 +94,13 @@ import {LibraryExportService} from "./service/lib-export.service";
 
   ],
   declarations: [
-    EditLibraryComponent, DatatypeLibraryMetadataComponent, LibSectionComponent, LibErrorComponent
+    EditLibraryComponent, DatatypeLibraryMetadataComponent, LibSectionComponent, LibErrorComponent, LibDatatypeAddComponent,LibCopyElementComponent,LibDeleteElementComponent
   ],
   entryComponents: [
 
   ],
   providers : [
-    TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService,LibraryExportService
+    TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService,LibraryExportService,LibCopyService,LibDeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

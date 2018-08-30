@@ -15,7 +15,7 @@ import {LibErrorService} from "../lib-error/lib-error.service";
 })
 
 export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
-  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private igErrorService:LibErrorService) {
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private errorService:LibErrorService) {
   super();
   }
   section:any;
@@ -48,8 +48,9 @@ export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
 
          console.log(node);
 
-         node.data.data.label= this.section.label;
+         node.data.data=this.section;
          this.tocService.setTreeModel(treeModel).then(x=>{
+           console.log(treeModel);
 
            this.backup=_.cloneDeep(this.section);
 
@@ -59,13 +60,9 @@ export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
            resolve(true);
 
          },error=>{
-           this.igErrorService.showError(error);
+           this.errorService.showError(error);
            reject(error.message);
          })
-
-
-
-
        }
      )
 

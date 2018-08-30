@@ -56,7 +56,6 @@ public abstract class XRefService {
   public abstract Map<String, List<Document>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds);
 
-
   /**
    * 
    * @param id: id of the value set
@@ -70,6 +69,14 @@ public abstract class XRefService {
   public abstract Map<String, List<Document>> getValueSetReferences(String id,
       Set<String> datatypeIds, Set<String> segmentIds, Set<String> conformanceProfiles)
       throws XReferenceException;
+
+  /**
+   * @param datatypeId
+   * @param filterDatatypeIds
+   * @return
+   */
+  public abstract Map<String, List<Document>> getDatatypeReferences(String datatypeId,
+      Set<String> filterDatatypeIds);
 
 
 }
