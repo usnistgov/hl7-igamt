@@ -22,7 +22,7 @@
                 </div>
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
-                        The content of {{constraint.subject.path}} <i class="fa fa-pencil" (click)="openPathSelector()"></i>
+                        The content of {{constraint.subject.path}} <i class="fa fa-pencil" (click)="openPathSelector(constraint.subject)"></i>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
@@ -153,7 +153,7 @@
 <p-dialog header="Select Node" [(visible)]="displayPicker" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
     <p-tree [value]="treeModel" (onNodeExpand)="loadNode($event.node)">
         <ng-template let-node  pTemplate="default">
-            <div (click)="selectNode(node.data.idPath)">
+            <div (click)="selectNode(node)">
                 <display-badge [type]="node.data.type"></display-badge>{{node.label}}
             </div>
         </ng-template>
