@@ -9,8 +9,7 @@ export interface WithSave{
   getCurrent():any;
   getBackup():any;
   isValid(): boolean;
-
-
+  hasChanged():boolean;
 }
 
 export class WithNotification{

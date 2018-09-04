@@ -13,6 +13,7 @@ export class HasFroala {
         'froalaEditor.focus': function (e, editor) {
           console.log(form);
           form.form.markAsDirty();
+          form.form.markAsTouched();
         }
       }
     }

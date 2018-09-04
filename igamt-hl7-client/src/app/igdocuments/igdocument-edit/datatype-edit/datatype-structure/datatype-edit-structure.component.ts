@@ -820,4 +820,12 @@ export class DatatypeEditStructureComponent implements WithSave{
         }
     }
 
+
+  reorderCols(){
+    this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
+  }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
+
 }

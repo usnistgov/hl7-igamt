@@ -192,19 +192,6 @@ body .ui-breadcrumb {
   color: #333333;
   background-color: #f4f4f4;
 }
-fa-remove:before, .fa-close:before, .fa-times:before {
-  color: red;
-}
-
-.fa-pencil:before {
-  content: "\F040";
-  color: #5c6bc0;
-}
-.fa-plus:before {
-  content: "\F067";
-  color: #50a3f4;
-}
-
 .ui-dropdown .ui-dropdown-label {
   display: block;
   /* border: 0; */

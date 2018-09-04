@@ -24,17 +24,17 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
           console.log("invalid form");
           return this.getInvalidDataDialog(component);
 
-        }else if (this.compareHash(component.getBackup(), component.getCurrent())) {
+        }else if (!component.hasChanged()) {
 
           return  Promise.resolve(true);
         }else{
 
-
           return  this.getUnsavedDialog(component);
 
         }
-
       }catch (e){
+        console.log("Error");
+        console.log(e);
         return this.somthingWrong();
       }
   }

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class MessageEventTreeNode {
+public class MessageEventTreeNode implements Comparable<MessageEventTreeNode> {
   private MessageEventTreeData data;
   private List<EventTreeNode> children = new ArrayList<EventTreeNode>();
 
@@ -24,6 +24,12 @@ public class MessageEventTreeNode {
 
   public void setChildren(List<EventTreeNode> children) {
     this.children = children;
+  }
+
+  @Override
+  public int compareTo(MessageEventTreeNode o) {
+    // TODO Auto-generated method stub
+    return this.getData().getName().compareTo(o.getData().getName());
   }
 
 

@@ -328,7 +328,10 @@ export class SegmentEditStructureComponent implements WithSave {
         }
 
         node.children = children;
-        this.segmentStructure.children= [...this.segmentStructure.children];
+        if(this.segmentStructure&&this.segmentStructure.children){
+          this.segmentStructure.children= [...this.segmentStructure.children];
+
+        }
 
     }
 
@@ -445,7 +448,6 @@ export class SegmentEditStructureComponent implements WithSave {
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
-    event.node.children=[...event.node.children];
     }
 
     onDatatypeChange(node){
@@ -828,7 +830,6 @@ export class SegmentEditStructureComponent implements WithSave {
       case "comment": {
         return this.comment;
       }
-
       default: {
         //statements;
         break;
@@ -840,5 +841,9 @@ export class SegmentEditStructureComponent implements WithSave {
 
   reorderCols(){
     this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
+  }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
   }
 }

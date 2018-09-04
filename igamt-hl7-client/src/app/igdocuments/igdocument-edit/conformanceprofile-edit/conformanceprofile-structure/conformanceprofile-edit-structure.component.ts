@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, ViewChild} from "@angular/core";
+import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {WithSave} from "../../../../guards/with.save.interface";
@@ -15,6 +15,7 @@ import {TocService} from "../../service/toc.service";
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {SegmentsService} from "../../segment-edit/segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
+import {Columns} from "../../../../common/constants/columns";
 
 @Component({
     templateUrl : './conformanceprofile-edit-structure.component.html',
@@ -29,6 +30,39 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
 
     @ViewChild('editForm')
     private editForm: NgForm;
+
+  @ViewChild('name')
+  private name: TemplateRef<any>;
+  @ViewChild('usage')
+  private usage: TemplateRef<any>;
+  @ViewChild('cardinality')
+  private cardinality: TemplateRef<any>;
+  @ViewChild('length')
+  private length: TemplateRef<any>;
+  @ViewChild('confLength')
+  private confLength: TemplateRef<any>;
+  @ViewChild('datatype')
+  private datatype: TemplateRef<any>;
+  @ViewChild('valueSet')
+  private valueSet: TemplateRef<any>;
+
+  @ViewChild('singleCode')
+  private singleCode: TemplateRef<any>;
+  @ViewChild('constantValue')
+  private constantValue: TemplateRef<any>;
+
+  @ViewChild('predicate')
+  private predicate: TemplateRef<any>;
+
+  @ViewChild('text')
+  private text: TemplateRef<any>;
+
+  @ViewChild('comment')
+  private comment: TemplateRef<any>;
+
+
+  cols= Columns.messageColumns;
+  selectedColumns=Columns.messageColumns;
 
 
     segmentsLinks :any = [];
@@ -149,7 +183,8 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
         });
     }
 
-    loadNode(node) {
+    loadNode(event) {
+      var node=event.node;
         if (node && !node.children) {
             if(node.data.type === 'SEGMENTREF'){
                 this.segmentsService.getSegmentStructure(node.data.ref.id).then(structure  => {
@@ -304,7 +339,14 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
 
                 treeModel.data = data;
                 current.push(treeModel);
+
+
+
             }
+        }
+        if(this.conformanceprofileStructure&&this.conformanceprofileStructure.treeModel){
+          this.conformanceprofileStructure.treeModel=[...this.conformanceprofileStructure.treeModel]
+
         }
     }
 
@@ -772,5 +814,62 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
                 holder.push(group);
             }
         }
+    };
+
+  getTemplateRef(col,readOnly):TemplateRef<any>{
+
+
+    switch(col.field) {
+      case "name": {
+        return this.name;
+      }
+      case "usage": {
+        return this.usage;
+      }
+      case "cardinality":{
+        return this.cardinality;
+      }
+      case "length": {
+        return this.length;
+      }
+      case "confLength": {
+        return this.confLength;
+      }
+      case "datatype": {
+        return this.datatype;
+      }
+      case "valueSet": {
+        return this.valueSet;
+      }
+      case "singleCode": {
+        return this.singleCode;
+      }
+      case "constantValue": {
+        return this.constantValue;
+      }
+      case "predicate": {
+        return this.predicate;
+      }    case "text": {
+      return this.predicate;
     }
+      case "comment": {
+        return this.comment;
+      }
+
+      default: {
+        //statements;
+        break;
+      }
+    }
+
+
+  };
+
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
+  reorderCols(){
+    this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
+  }
 }

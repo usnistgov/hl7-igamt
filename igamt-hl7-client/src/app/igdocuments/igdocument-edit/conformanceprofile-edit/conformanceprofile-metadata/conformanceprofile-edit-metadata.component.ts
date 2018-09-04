@@ -56,6 +56,10 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
     isValid(){
         return !this.editForm.invalid;
     }
+    hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+    }
 
     save(): Promise<any>{
         return new Promise((resolve, reject)=>{
