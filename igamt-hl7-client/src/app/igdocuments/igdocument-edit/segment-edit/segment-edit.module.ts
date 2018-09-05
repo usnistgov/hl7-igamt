@@ -45,6 +45,8 @@ import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
 import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
+import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
+import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
 
 @NgModule({
     imports: [
@@ -73,8 +75,8 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
     ],
   exports:[CoConstraintTableComponent],
 
-    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService,SegmentCrossRefResolver],
-    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent],
+    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
+    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

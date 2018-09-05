@@ -34,8 +34,10 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -45,13 +47,21 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
@@ -74,6 +84,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   ValuesetService valueSetService;
+  
+  @Autowired
+  private CodeSystemService codeSystemService;
 
   @Override
   public Segment findByKey(CompositeKey key) {
@@ -93,8 +106,6 @@ public class SegmentServiceImpl implements SegmentService {
     segment = segmentRepository.save(segment);
     return segment;
   }
-
-
 
   @Override
   public List<Segment> findAll() {
@@ -336,6 +347,68 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+  
+  @Override
+  public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment) {
+    if (segment != null) {
+      SegmentDynamicMapping result = new SegmentDynamicMapping();
+      result.setId(segment.getId());
+      result.setScope(segment.getDomainInfo().getScope());
+      result.setVersion(segment.getDomainInfo().getVersion());
+      if (segment.getExt() != null) {
+        result.setLabel(segment.getName() + segment.getExt());
+      } else {
+        result.setLabel(segment.getName());
+      }
+      result.setName(segment.getName());
+      result.setUpdateDate(segment.getUpdateDate());
+      result.setDynamicMappingInfo(segment.getDynamicMappingInfo());
+      
+      if(segment.getName().equals("OBX")){
+        for(Field field : segment.getChildren()){
+          if(field.getPosition() == 2){
+            result.getDynamicMappingInfo().setReferenceFieldId(field.getId());            
+          }else if(field.getPosition() == 5){
+            result.getDynamicMappingInfo().setVariesFieldId(field.getId());            
+          }
+        }
+        
+        if(segment.getBinding() != null && segment.getBinding().getChildren() != null){
+          for(StructureElementBinding structureElementBinding : segment.getBinding().getChildren()){
+            if(structureElementBinding.getElementId().equals(result.getDynamicMappingInfo().getReferenceFieldId())){
+              if(structureElementBinding.getValuesetBindings() != null){
+                for(ValuesetBinding valuesetBinding: structureElementBinding.getValuesetBindings()){
+                  Valueset vs = valueSetService.findLatestById(valuesetBinding.getValuesetId());
+                  if (vs.getCodeRefs() != null) {
+                    for (CodeRef codeRef : vs.getCodeRefs()) {
+                      CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
+                      Code code = codeSystem.findCode(codeRef.getCodeId());
+                      CodeInfo codeInfo = new CodeInfo();
+                      codeInfo.setCode(code.getValue());
+                      codeInfo.setDescription(code.getDescription());
+                      result.addReferenceCode(codeInfo);
+                    }
+                  }
+                  
+                  if (vs.getCodes() != null) {
+                    for (InternalCode iCode : vs.getCodes()) {
+                      CodeInfo codeInfo = new CodeInfo();
+                      codeInfo.setCode(iCode.getValue());
+                      codeInfo.setDescription(iCode.getDescription());
+                      result.addReferenceCode(codeInfo);
+                    }
+                  }
+                }
+              }
+            }
+          }          
+        }
+      }
+      
+      return result;
+    }
+    return null;
+  }
 
 
   private void validateField(Field f) throws ValidationException {
@@ -405,17 +478,19 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
+  /**
+   * TODO: anything more to validate ??
+   */
+  @Override
+  public void validate(SegmentDynamicMapping dynamicMapping)
+      throws SegmentValidationException {
+    if (dynamicMapping != null) {
+    }
+  }
 
 
   /**
    * TODO
-   */
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#convertToSegment(gov.nist.hit.hl7.igamt.
-   * segment.domain.display.SegmentStructure)
    */
   @Override
   public Segment convertToSegment(SegmentStructure structure) {
@@ -481,5 +556,16 @@ public class SegmentServiceImpl implements SegmentService {
     segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(segment);
   }
-
+  
+  @Override
+  public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+      throws SegmentNotFoundException, SegmentValidationException {
+    validate(dynamicMapping);
+    Segment segment = findLatestById(dynamicMapping.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(dynamicMapping.getId().getId());
+    }
+    segment.setDynamicMappingInfo(dynamicMapping.getDynamicMappingInfo());
+    return save(segment);
+  }
 }

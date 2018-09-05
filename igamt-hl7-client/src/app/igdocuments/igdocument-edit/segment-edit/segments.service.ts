@@ -80,6 +80,17 @@ export class SegmentsService {
   return promise;
   }
 
+  public getSegmentDynamicMapping(id): Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      return this.http.get('api/segments/' + id + '/dynamicmapping').toPromise().then(serverSegmentDynamicMapping=>{
+        resolve(serverSegmentDynamicMapping);
+      }, error => {
+        this.igErrorService.showError(error);
+      });
+    });
+    return promise;
+  }
+
   public saveSegmentMetadata(id, metadata): Promise<any> {
       return this.http.post('api/segments/' + id + '/metadata',metadata).toPromise();
   }
@@ -95,7 +106,10 @@ export class SegmentsService {
 
   public saveSegmentPostDef(id, postDef): Promise<any> {
       return this.http.post('api/segments/' + id + '/postdef', postDef).toPromise();
+  }
 
+  public saveSegmentDynamicMapping(id, dynamicmapping): Promise<any> {
+    return this.http.post('api/segments/' + id + '/dynamicmapping', dynamicmapping).toPromise();
   }
 
   public saveSegmentCrossReferences(id, crossReference): Promise<any> {
