@@ -1,0 +1,14 @@
+
+<p-dialog [(visible)]="_visible">
+  <p-header>
+    Add Data Types
+  </p-header>
+  <div class="ui-g">
+    <datatype-list-manager [scopeTarget]="scope" [list]="sources"></datatype-list-manager>
+  </div>
+
+  <p-footer>
+    <p-button styleClass="green-btn" [disabled]="!isValid()" (onClick)="submit()" label="submit"  icon="fa fa-check" iconPos="left"></p-button>
+  </p-footer>
+
+</p-dialog>

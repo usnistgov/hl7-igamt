@@ -1,28 +1,20 @@
 <div *ngIf="segmentPredef">
     <form #editForm="ngForm">
       <div class="ui-g cp-header">
-
         <div class="ui-g-8 ui-g-nopad">
           <div class="cp-header-title ui-g-12">
             Conformance Statement {{segmentPredef.label}}
-
           </div>
           <div class="ui-g-12 cp-header-subtitle">
             <span class="ig-list-date" *ngIf="segmentPredef.updateDate">
             <i class="fa fa-calendar"></i> {{segmentPredef.updateDate}}
           </span>
           </div>
-
-
-
         </div>
 
         <div class="ui-g-4">
-
-          <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-          <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
-
-
+          <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+          <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
         </div>
 
       </div>

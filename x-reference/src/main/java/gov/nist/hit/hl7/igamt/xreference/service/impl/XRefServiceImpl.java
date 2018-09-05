@@ -513,6 +513,24 @@ public class XRefServiceImpl extends XRefService {
     return null;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.xreference.service.XRefService#getDatatypeReferences(java.lang.String,
+   * java.util.Set)
+   */
+  @Override
+  public Map<String, List<Document>> getDatatypeReferences(String datatypeId,
+      Set<String> filterDatatypeIds) {
+    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
+    List<Document> datatypes = getDatatypeRefsByDatatypes(datatypeId, filterDatatypeIds);
+    if (datatypes != null && !datatypes.isEmpty()) {
+      results.put(DATATYPE, datatypes);
+    }
+    return results;
+  }
+
 
 
 }

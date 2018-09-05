@@ -104,30 +104,13 @@ export class IgDocumentEditComponent {
     actionMapping: {
       mouse: {
         drop: (tree:TreeModel, node:TreeNode, $event:any, {from, to}) => {
-          //console.log("dropping");
-          //console.log(node);
-          //console.log(from);
-          //console.log(to);
-
-
           if(from.data.data.type== Types.TEXT && (!this.isOrphan(to) && to.parent.data.data.type==Types.TEXT||this.isOrphan(to))){
-            //console.log(from);
-
-
-
-              TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
+             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
               this.setTreeModel();
-
-
           }
           if(from.data.data.type== Types.PROFILE && this.isOrphan(to)) {
-            //console.log(from);
-
             TREE_ACTIONS.MOVE_NODE(tree, node,$event, {from, to});
             this.setTreeModel();
-
-
-
           }
         },
         mouse: {
@@ -351,6 +334,21 @@ export class IgDocumentEditComponent {
     this.tree.treeModel.update();
     this.setTreeModel();
 
+  };
+  addSectionToNode( node:TreeNode){
+    ////console.log(this.toc);
+
+    let data1 ={
+      label: "new Section",
+      content:"",
+      type:Types.TEXT,
+      position: this.tree.treeModel.nodes.length+1
+    };
+    var newNode = {id : "bla",data:data1, children :[]};
+    node.data.children.push(newNode);
+
+    this.tree.treeModel.update();
+    this.setTreeModel();
 
   };
 
@@ -610,26 +608,6 @@ export class IgDocumentEditComponent {
   copySection(node){
    //console.log( this.tree._options);
     this.tocService.cloneNode(node);
-   let ret =  this.tree.treeModel.getNodeById(node.id);
-    this.copyElemt.open({
-      igDocumentId : this.igId,
-      id:node.id,
-      name:node.data.data.label,
-      type:node.data.data.type,
-    })
-      .subscribe(
-        result => {
-
-         node.parent.data.children.push(result);
-          this.setTreeModel().then(x=>{
-
-            this.tree.treeModel.update();
-
-          }, error=>{
-
-          });
-        }
-      )
   }
 
 
@@ -721,30 +699,24 @@ export class IgDocumentEditComponent {
   }
 
   deleteSection(node){
-    //console.log( this.tree._options);
-    let ret =  this.tree.treeModel.getNodeById(node.id);
-    this.deleteElement.open({
-      igDocumentId : this.igId,
-      id:node.id,
-      name:node.data.data.label,
-      type:node.data.data.type,
-      node:node.data.data
+  //console.log( this.tree._options);
+  let ret =  this.tree.treeModel.getNodeById(node.id);
+  this.deleteElement.open({
+    igDocumentId : this.igId,
+    id:node.id,
+    name:node.data.data.label,
+    type:node.data.data.type,
+    node:node.data.data
 
-    })
-      .subscribe(
-        id => {
-          this.tocService.deleteNodeById(id);
-          this.setTreeModel();
+  })
+    .subscribe(
+      id => {
+        this.tocService.deleteNodeById(id);
+        this.setTreeModel();
 
-        }
-      )
-  }
-
-
-
-
-
-
+      }
+    )
+}
 
 
 }

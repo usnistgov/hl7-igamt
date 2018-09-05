@@ -339,9 +339,6 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
 
                 treeModel.data = data;
                 current.push(treeModel);
-
-
-
             }
         }
         if(this.conformanceprofileStructure&&this.conformanceprofileStructure.treeModel){

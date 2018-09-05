@@ -16,7 +16,6 @@ import {BreadcrumbService} from "../../breadcrumb.service";
   templateUrl: './igdocument-create.component.html'
 })
 export class IgDocumentCreateComponent {
-  isLinear = true;
   tableValue :any;
   tableValueMap={};
   loading=false;

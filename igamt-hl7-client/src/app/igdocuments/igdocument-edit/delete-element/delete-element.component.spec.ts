@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DeleteElementComponent } from './delete-element.component';
 
-describe('DeleteElementComponent', () => {
+describe('LibDeleteElementComponent', () => {
   let component: DeleteElementComponent;
   let fixture: ComponentFixture<DeleteElementComponent>;
 

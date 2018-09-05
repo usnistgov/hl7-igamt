@@ -7,9 +7,6 @@ body{
   overflow: hidden;
 
 }
-html{
-  overflow: hidden;
-}
 span.ig-list-title{
   color: #5c6bc0 !important;
   font-weight: 600;
@@ -200,4 +197,18 @@ body .ui-breadcrumb {
   font-weight: 900;
   width: 100%;
   padding-right: 2.5em;
+}
+
+body .ui-radiobutton .ui-radiobutton-box.ui-state-active .ui-radiobutton-icon {
+  background-color: #5C6BC0;
+  margin: -5px -5px;
+}
+.cp-header{
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 10px;
+  padding: 4px;
+}
+.cp-header-title{
+  font-size: 16px;
+  font-weight: 800;
 }

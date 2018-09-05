@@ -94,11 +94,7 @@ export class DatatypeEditStructureComponent implements WithSave{
     constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private tocService:TocService){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+
     }
 
     ngOnInit() {

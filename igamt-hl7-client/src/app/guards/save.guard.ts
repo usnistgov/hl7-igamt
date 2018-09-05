@@ -7,12 +7,10 @@ import {WithSave} from "./with.save.interface";
 import {ConfirmationService} from 'primeng/components/common/api';
 
 import {Md5} from 'ts-md5/dist/md5';
-import {IgErrorService} from "../igdocuments/igdocument-edit/ig-error/ig-error.service";
-import {Observable} from "rxjs";
 
 @Injectable()
 export class SaveFormsGuard implements CanDeactivate<WithSave> {
-  constructor(private confirmationService: ConfirmationService,private igError : IgErrorService) {
+  constructor(private confirmationService: ConfirmationService) {
   }
 
 
@@ -121,13 +119,5 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
     return pr;
 
   }
-
-
-
-
-
-
-
-
 
 }

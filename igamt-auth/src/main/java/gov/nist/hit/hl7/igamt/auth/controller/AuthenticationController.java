@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.auth.util.crypto.SecurityConstants;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -48,7 +50,7 @@ public class AuthenticationController {
 
       Cookie authCookie = new Cookie("authCookie", token);
       authCookie.setPath("/api");
-      authCookie.setMaxAge(1111111111);
+      authCookie.setMaxAge(SecurityConstants.EXPIRATION_DATE - 20);
       authCookie.setHttpOnly(true);
       response.setContentType("application/json");
       response.addCookie(authCookie);
@@ -104,6 +106,11 @@ public class AuthenticationController {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
       response.setUsername(authentication.getName());
+      for (GrantedAuthority auth : authentication.getAuthorities()) {
+        response.addAuthority(auth);
+      }
+
+      System.out.println(response);
       return response;
     } else {
       response.setUsername("Guest");

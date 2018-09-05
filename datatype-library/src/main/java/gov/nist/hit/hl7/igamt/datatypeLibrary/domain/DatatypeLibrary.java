@@ -19,6 +19,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 
 
@@ -32,12 +33,14 @@ public class DatatypeLibrary extends AbstractDomain {
   private Set<TextSection> content = new HashSet<TextSection>();
 
   private DatatypeRegistry datatypeRegistry = new DatatypeRegistry();
+  private DatatypeRegistry derivedRegistry = new DatatypeRegistry(Type.DERIVEDDATATYPEREGISTRY);
+
 
   public DocumentMetadata getMetadata() {
     return this.metadata;
   }
 
-  public void setMetaData(DocumentMetadata metadata) {
+  public void setMetadata(DocumentMetadata metadata) {
     this.metadata = metadata;
   }
 
@@ -66,5 +69,13 @@ public class DatatypeLibrary extends AbstractDomain {
   public String getLabel() {
     // TODO Auto-generated method stub
     return null;
+  }
+
+  public DatatypeRegistry getDerivedRegistry() {
+    return derivedRegistry;
+  }
+
+  public void setDerivedRegistry(DatatypeRegistry derivedRegistry) {
+    this.derivedRegistry = derivedRegistry;
   }
 }

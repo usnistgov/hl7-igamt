@@ -12,8 +12,8 @@
                 </div>
             </div>
             <div class="ui-g-4">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="!editForm.dirty" ></button>
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
             </div>
         </div>
 
@@ -49,8 +49,8 @@
                                 </div>
                             </td>
                             <td>
-                                <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa-times" label="Delete" (click)="deleteCS(rowData['identifier'])"></button>
-                                <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
+                                <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'])"></button>
+                                <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
                             </td>
                         </tr>
                     </ng-template>
@@ -111,7 +111,7 @@
                 <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
                 <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
-                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
+                <button pButton style="float: right" type="button"  class="blue-btn" icon="fa fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
     </form>

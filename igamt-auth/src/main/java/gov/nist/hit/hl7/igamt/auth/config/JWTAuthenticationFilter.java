@@ -6,6 +6,7 @@ import java.security.spec.InvalidKeySpecException;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -41,6 +42,13 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         | InvalidKeySpecException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
+      Cookie authCookie = new Cookie("authCookie", "");
+      authCookie.setPath("/api");
+      authCookie.setMaxAge(0);
+      authCookie.setHttpOnly(true);
+      response.addCookie(authCookie);
+      response.sendError(403);
+
     }
   }
 }

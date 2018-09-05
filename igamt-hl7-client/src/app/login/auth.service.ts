@@ -11,12 +11,16 @@ import {HttpClient} from "@angular/common/http";
 import {BehaviorSubject} from "rxjs";
 import {Router} from "@angular/router";
 import {MessageService} from "primeng/components/common/messageservice";
+import * as _ from 'lodash';
 
 
 @Injectable()
 export class AuthService {
   //isLoggedIn = false;
   isLoggedIn:BehaviorSubject<boolean> =new BehaviorSubject<boolean>(false);
+
+  admin:BehaviorSubject<boolean> =new BehaviorSubject<boolean>(false);
+
 
   // store the URL so we can redirect after logging in
   redirectUrl: string;
@@ -72,17 +76,29 @@ export class AuthService {
   getCurrentUser() {
 
 
-    this.http.get('api/authentication').toPromise().then( res =>{
+    this.http.get<any>('api/authentication').toPromise().then( res  =>{
 
       console.log(res);
 
       this.currentUser.next(res);
       this.isLoggedIn.next(true);
 
+      if(res.authorities){
+        if(res.authorities.indexOf("ADMIN")>-1){
+          this.admin.next(true);
+        }else {
+          this.admin.next(false);
+
+        }
+      }else{
+        this.admin.next(false);
+      }
+
 
     }, error=>{
       console.log("error");
       this.isLoggedIn.next(false);
+      this.admin.next(false);
 
       this.currentUser.next(null);
     })
@@ -100,19 +116,14 @@ export class AuthService {
 
   }
 
-  isAdmin(){
-    var token = localStorage.getItem('currentUser');
-    var tokenInfo=  this.getDecodedAccessToken(token);
-
-
-
-  }
-
-
   isAuthenticated(){
     return this.isLoggedIn.getValue();
   }
 
+
+  isAdmin(){
+    return this.admin.getValue();
+  }
 
 
   showError(error:any) {

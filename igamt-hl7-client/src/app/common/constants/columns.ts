@@ -19,6 +19,20 @@ export class Columns{
 
   ];
 
+  public static  dataTypeLibraryColumns =[
+    {field : "name", style:"name-col", header: "Name", position:1 },
+    {field : "usage",style:"usage-col", header: "Usage", position:2 },
+    {field : "length",style:"length-col", header: "Length", position:4 },
+    {field : "confLength",style:"conf-col", header: "Conf.Length", position:5},
+    {field : "datatype",style:"dt-col", header: "Data Type", position:6 },
+    {field : "constantValue",style:"const-value-col", header: "Constant Value", position:7},
+    {field : "predicate",style:"pred-col", header: "Predicate", position:8},
+    {field : "text", style:"text-col",header: "Text Definition", position:9 },
+    {field : "comment",style:"comment-col", header: "Comments", position:10}
+
+  ];
+
+
   public static  segmentColumns =[
 
     {field : "name", style:"name-col", header: "Name", position:1 },
