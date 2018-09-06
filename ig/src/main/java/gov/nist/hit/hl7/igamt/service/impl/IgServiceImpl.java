@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -49,6 +51,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 @Service("igService")
@@ -308,14 +311,8 @@ public class IgServiceImpl implements IgService {
       }
     }
     return null;
-
   }
 
-  /**
-   * @param s
-   * @param sectionId
-   * @return
-   */
   private TextSection findSectionInside(TextSection s, String sectionId) {
     // TODO Auto-generated method stub
     if (s.getId().equals(sectionId)) {
@@ -331,6 +328,57 @@ public class IgServiceImpl implements IgService {
       return null;
     }
     return null;
+  }
+
+  @Override
+  public Ig clone(Ig ig) {
+    Ig newIg = new Ig();
+    newIg.setMetadata(ig.getMetadata().clone());
+    newIg.setContent(ig.getContent());
+    HashMap<String, CompositeKey> conformanceProfilesMap =
+        getNewIdsMap(ig.getCompositeProfileRegistry());
+    HashMap<String, CompositeKey> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
+    HashMap<String, CompositeKey> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
+    HashMap<String, CompositeKey> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
+
+    copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap);
+
+
+    return ig;
+  }
+
+  /**
+   * @param valueSetRegistry
+   * @param valuesetsMap
+   */
+  private void copyValueSetRegistry(ValueSetRegistry reg,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    ValueSetRegistry newReg = new ValueSetRegistry();
+    newReg.setExportConfig(reg.getExportConfig());
+    newReg.setCodesPresence(reg.getCodesPresence());
+    HashSet<Link> children = new HashSet<Link>();
+    for (Link l : reg.getChildren()) {
+      if (l.getDomainInfo().getScope().toString().equals(Scope.HL7STANDARD.toString())
+          || l.getDomainInfo().getScope().toString().equals(Scope.PHINVADS.toString())) {
+        children.add(l);
+      } else {
+
+        children.add(this.valueSetService.cloneValueSet(valuesetsMap));
+      }
+    }
+
+
+  }
+
+  private HashMap<String, CompositeKey> getNewIdsMap(Registry reg) {
+    HashMap<String, CompositeKey> map = new HashMap<String, CompositeKey>();
+    for (Link l : reg.getChildren()) {
+      if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
+        map.put(l.getId().getId(), new CompositeKey());
+      }
+    }
+    return map;
   }
 
 
