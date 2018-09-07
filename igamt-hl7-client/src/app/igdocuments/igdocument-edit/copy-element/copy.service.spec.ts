@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { CopyService } from './copy.service';
 
-describe('CopyService', () => {
+describe('LibCopyService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [CopyService]

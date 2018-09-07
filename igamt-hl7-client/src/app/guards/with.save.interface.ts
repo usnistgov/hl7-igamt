@@ -1,4 +1,5 @@
 import {MessageService} from "primeng/components/common/messageservice";
+import {NgForm} from "@angular/forms";
 /**
  * Created by ena3 on 5/10/18.
  */
@@ -9,8 +10,7 @@ export interface WithSave{
   getCurrent():any;
   getBackup():any;
   isValid(): boolean;
-
-
+  hasChanged():boolean;
 }
 
 export class WithNotification{

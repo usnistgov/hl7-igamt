@@ -47,6 +47,7 @@ import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.res
 import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
 import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
 import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
     imports: [
@@ -66,8 +67,9 @@ import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segmen
         SelectButtonModule,
         HttpClientModule,
         HttpModule,
-      DataTableModule,
-      DataListModule,
+        DataTableModule,
+        DataListModule,
+        MultiSelectModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),

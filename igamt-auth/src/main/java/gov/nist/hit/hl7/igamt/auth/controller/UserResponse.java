@@ -11,12 +11,26 @@
  */
 package gov.nist.hit.hl7.igamt.auth.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+
 /**
  * @author ena3
  *
  */
 public class UserResponse {
+  public List<String> getAuthorities() {
+    return authorities;
+  }
+
+  public void setAuthorities(List<String> authorities) {
+    this.authorities = authorities;
+  }
+
   private String username;
+  private List<String> authorities = new ArrayList<String>();
 
   public String getUsername() {
     return username;
@@ -25,5 +39,14 @@ public class UserResponse {
   public void setUsername(String username) {
     this.username = username;
   }
+
+  /**
+   * @param authorities
+   */
+
+  void addAuthority(GrantedAuthority auth) {
+    authorities.add(auth.getAuthority());
+  }
+
 
 }

@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { AddDatatypeComponent } from './add-datatype.component';
 
-describe('AddDatatypeComponent', () => {
+describe('AddDatatypeLibComponent', () => {
   let component: AddDatatypeComponent;
   let fixture: ComponentFixture<AddDatatypeComponent>;
 

@@ -60,7 +60,7 @@
 	}, 
 	{
 	"label" : "Derived Data Types",
-	"type": "DATATYPEREGISTRY",
+	"type": "DERIVEDDATATYPEREGISTRY",
 	"position":2
 	}
 	]

@@ -54,7 +54,9 @@ export class ConformanceprofileEditPostdefComponent extends  HasFroala implement
     isValid(){
         return !this.editForm.invalid;
     }
-
+    hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+    }
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
             this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceprofilePostdef).then(saved => {

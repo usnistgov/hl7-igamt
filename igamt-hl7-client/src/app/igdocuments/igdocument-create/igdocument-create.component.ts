@@ -16,7 +16,6 @@ import {BreadcrumbService} from "../../breadcrumb.service";
   templateUrl: './igdocument-create.component.html'
 })
 export class IgDocumentCreateComponent {
-  isLinear = true;
   tableValue :any;
   tableValueMap={};
   loading=false;
@@ -260,6 +259,8 @@ export class IgDocumentCreateComponent {
     }else {
       this.unselectdata(node.data);
     }
+    this.tableValue=[...this.tableValue];
+
   };
 
 

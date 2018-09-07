@@ -141,4 +141,8 @@ export class ValuesetEditStructureComponent implements WithSave{
         this.newCodeSys.codeSystemType = "INTERNAL";
         this.newCodeSysDialog = true;
     }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
 }

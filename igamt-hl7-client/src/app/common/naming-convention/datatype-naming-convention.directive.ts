@@ -8,6 +8,11 @@ import {Validator, AbstractControl, ValidatorFn, NG_VALIDATORS} from "@angular/f
 })
 export class DatatypeNamingConventionDirective  implements Validator {
 
+
+
+
+  @Input() scope: string;// without extension
+
   constructor() { }
 
 
@@ -15,10 +20,6 @@ export class DatatypeNamingConventionDirective  implements Validator {
     return !this.validConvention(control.value) ? {'invalidConvention': {value: control.value}} : null;
 
   }
-
-
-
-
   conventionValidator(obj: string): ValidatorFn {
     console.log(obj);
     return (control: AbstractControl): {[key: string]: any}|null => {
@@ -27,16 +28,33 @@ export class DatatypeNamingConventionDirective  implements Validator {
 
   }
 
-  validConvention(ext){
-    if(!ext){
 
+
+  validConvention(obj){
+    console.log(obj);
+    console.log(this.scope);
+    if(this.scope=='MASTER'){
+      return this.validConventionForMASTER(obj);
+
+    }else{
+      return this.validConventionForUser(obj);
+    }
+
+  }
+  validConventionForMASTER(ext){
+    if(!ext){
+      return true;
+    }else{
+      return this.isTowDigets(ext);
+    }
+  }
+
+  validConventionForUser(ext){
+    if(!ext){
       return true;
     }else{
       return ext.length>0 && this.isLetter(ext.substring(0,1))|| !ext.length;
-
     }
-
-
   }
 
   isLetter(str) {
@@ -44,4 +62,15 @@ export class DatatypeNamingConventionDirective  implements Validator {
     return str.length === 1 && str.match(/[a-z]/i);
 
   }
+
+  isTowDigets(str){
+    return str.match(/^[0-9]{1,2}?$/)
+  }
+
+
+
+
+
+
+
 }

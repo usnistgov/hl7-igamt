@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.event.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class MessageEventServiceImpl implements MessageEventService {
       }
       treeNodes.add(treenode);
     }
+    Collections.sort(treeNodes);
     return treeNodes;
   }
 

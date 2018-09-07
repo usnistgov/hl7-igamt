@@ -7,7 +7,6 @@ import {IgdocumentEditResolver} from './igdocument-edit.resolver';
 import {SectionResolver} from './section/sectionResolver.resolver';
 import {IgMetaDataResolver} from './igdocument-metadata/IgMetaDataResolver.resolver';
 import {SaveFormsGuard} from "../../guards/save.guard";
-import {IgErrorService} from "./ig-error/ig-error.service";
 import { IgErrorComponent } from './ig-error/ig-error.component';
 import { IgErrorResolver } from './ig-error/ig-error.resolver';
 

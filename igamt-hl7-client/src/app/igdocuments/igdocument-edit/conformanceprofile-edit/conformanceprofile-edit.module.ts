@@ -25,6 +25,7 @@ import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-str
 import {ConformanceprofileEditConformancestatementsResolver} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver";
 import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
 import {ConformanceProfilesService} from "./conformance-profiles.service";
+import {MultiSelectModule} from 'primeng/multiselect';
 
 @NgModule({
     imports: [
@@ -36,6 +37,7 @@ import {ConformanceProfilesService} from "./conformance-profiles.service";
         ConformanceprofileEditRoutingModule,
         UtilsModule,
         TreeTableModule,
+        MultiSelectModule,
         ButtonModule,
         AccordionModule,
         SelectButtonModule,

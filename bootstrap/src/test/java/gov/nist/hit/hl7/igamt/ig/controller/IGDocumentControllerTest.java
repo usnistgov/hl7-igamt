@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import gov.nist.hit.hl7.TestApplication;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -68,8 +69,6 @@ public class IGDocumentControllerTest {
     DocumentMetadata metaData = new DocumentMetadata();
     ig.setMetadata(metaData);
     TextSection p = new TextSection();
-    // p.setChildren(new HashSet<Section>());
-    // ig.setProfile(p);
     ig.setName("Ig1 name");
     ig.setDescription("Ig1 desc");
     ig.setCreationDate(new Date());
@@ -83,8 +82,6 @@ public class IGDocumentControllerTest {
     metaData = new DocumentMetadata();
     ig.setMetadata(metaData);
     p = new TextSection();
-    // p.setChildren(new HashSet<Section>());
-    // ig.setProfile(p);
     ig.setName("Ig2 name");
     ig.setDescription("Ig2 desc");
     ig.setCreationDate(new Date());
@@ -96,6 +93,7 @@ public class IGDocumentControllerTest {
     return igs;
 
   }
+
 
   private List<IgSummary> summaries(java.util.List<Ig> igdocuments) {
     List<IgSummary> igs = new ArrayList<IgSummary>();
@@ -116,14 +114,14 @@ public class IGDocumentControllerTest {
   }
 
 
-
   @Test
   @WithMockUser(username = "test", password = "test", roles = "USER")
   public void testGetIgDocuments() throws Exception {
 
     List<Ig> igs = igs();
 
-    Mockito.when(mockIgService.findLatestByUsername(Mockito.anyString())).thenReturn(igs);
+    Mockito.when(mockIgService.findLatestByUsername(Mockito.anyString(), Scope.USER))
+        .thenReturn(igs);
     Mockito.when(mockIgService.convertListToDisplayList(Mockito.anyList()))
         .thenReturn(summaries(igs));
     RequestBuilder requestBuilder =

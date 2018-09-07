@@ -14,6 +14,8 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
   @Input()
   id:any;
 
+  selectedSize=0;
+
   tableValue :any;
   tableValueMap={};
   loading=false;
@@ -210,6 +212,7 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
 
   unselect(selected :any){
     console.log(selected);
+    console.log(this.selectdNodeMap[this.selcetedVersion]);
 
     let index = this.selectdNodeMap[this.selcetedVersion].indexOf(selected);
     if(index >-1){
@@ -218,6 +221,7 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
         this.unselectParent(selected.parent);
       }
     }
+    this.tableValue=[...this.tableValue];
   }
 
   unselectParent(parent){
@@ -258,6 +262,7 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
       };
     }
 
+    this.selectedSize= ret.length;
     return ret;
 
 
