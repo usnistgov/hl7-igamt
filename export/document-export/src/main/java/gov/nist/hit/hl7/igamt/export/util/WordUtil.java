@@ -94,9 +94,9 @@ public class WordUtil {
           WordprocessingMLPackage.load(WordUtil.class.getResourceAsStream("/lri_template.dotx"));
       ObjectFactory factory = Context.getWmlObjectFactory();
       SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-      String formattedDateUpdated = simpleDateFormat.format(dateUpdated);
+      String formattedDateUpdated = dateUpdated != null ? simpleDateFormat.format(dateUpdated) : "" ;
       createCoverPageForDocx4j(wordMLPackage, factory, metadata, formattedDateUpdated,
-          metadata.getCoverPicture(), hl7Version);
+         metadata != null && metadata.getCoverPicture() != null ? metadata.getCoverPicture() : "", hl7Version);
       createTableOfContentForDocx4j(wordMLPackage, factory);
       FieldUpdater updater = new FieldUpdater(wordMLPackage);
       updater.update(true);

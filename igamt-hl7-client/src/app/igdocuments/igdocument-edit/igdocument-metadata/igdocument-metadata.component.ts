@@ -73,6 +73,9 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
     }
   }
 
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
 
 
 }

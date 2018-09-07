@@ -94,8 +94,6 @@ public class SegmentServiceImpl implements SegmentService {
     return segment;
   }
 
-
-
   @Override
   public List<Segment> findAll() {
     return segmentRepository.findAll();

@@ -5,7 +5,6 @@ import {NgModule, CUSTOM_ELEMENTS_SCHEMA} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {DatatypeEditRoutingModule} from "./datatype-edit-routing.module";
 import {TabMenuModule} from "primeng/components/tabmenu/tabmenu";
-import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {FormsModule} from "@angular/forms";
 import {DialogModule} from "primeng/components/dialog/dialog";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
@@ -34,6 +33,10 @@ import {DatatypeEditPredefResolver} from "./datatype-predef/datatype-edit-predef
 import {DatatypeEditMetadataResolver} from "./datatype-metadata/datatype-edit-metadata.resolver";
 import {DatatypeEditStructureResolver} from "./datatype-structure/datatype-edit-structure.resolver";
 import {DatatypeEditConformanceStatementsResolver} from "./datatype-conformancestatements/datatype-edit-conformancestatements.resolver";
+import {MultiSelectModule} from 'primeng/multiselect';
+
+
+import {TreeTableModule} from 'primeng/primeng';
 
 @NgModule({
   imports: [
@@ -44,13 +47,15 @@ import {DatatypeEditConformanceStatementsResolver} from "./datatype-conformances
     DropdownModule,
     DatatypeEditRoutingModule,
     UtilsModule,
-    TreeTableModule,
     ButtonModule,
+    TreeTableModule,
     AccordionModule,
     SelectButtonModule,
     TableModule,
     MessageModule,
+
     NamingConventionModule,
+    MultiSelectModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],

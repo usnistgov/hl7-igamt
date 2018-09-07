@@ -150,6 +150,22 @@ public interface DatatypeService {
   public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeNotFoundException, DatatypeValidationException;
 
+  /**
+   * @param scope
+   * @param hl7Version
+   * @return
+   */
+  List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version);
+
+  /**
+   * @param name
+   * @param version
+   * @param scope
+   * @return
+   */
+  List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
+
+  Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
 
 }

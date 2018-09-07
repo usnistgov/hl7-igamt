@@ -26,4 +26,10 @@ public class DatatypeRegistry extends Registry {
     // TODO Auto-generated constructor stub
   }
 
+  public DatatypeRegistry(Type type) {
+    super();
+    this.type = type;
+    // TODO Auto-generated constructor stub
+  }
+
 }

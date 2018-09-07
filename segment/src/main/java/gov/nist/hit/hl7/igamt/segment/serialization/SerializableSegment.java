@@ -78,7 +78,7 @@ public class SerializableSegment extends SerializableResource {
       }
       if (segment.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap, this.valuesetLabelMap);
+            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
         if (bindingElement != null) {
           segmentElement.appendChild(bindingElement);
         }

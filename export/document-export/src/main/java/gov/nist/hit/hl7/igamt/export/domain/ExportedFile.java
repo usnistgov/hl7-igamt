@@ -51,7 +51,7 @@ public class ExportedFile {
 
   public void setFileName(String documentTitle, CompositeKey documentKey,
       ExportFormat exportFormat) {
-    documentTitle = this.cleanDocumentTitle(documentTitle);
+    documentTitle = this.cleanDocumentTitle(documentTitle != null ? documentTitle : "Document");
     this.fileName =
         documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion())
             + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
