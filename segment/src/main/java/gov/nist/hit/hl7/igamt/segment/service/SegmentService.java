@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
@@ -78,6 +79,8 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
   public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
+  
+  public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
   public Segment convertToSegment(SegmentStructure structure);
 
@@ -145,5 +148,18 @@ public interface SegmentService extends ResourceService {
    */
   public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
       throws SegmentNotFoundException, SegmentValidationException;
+
+  /**
+   * @param dynamicMapping
+   * @return
+   */
+  public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+      throws SegmentNotFoundException, SegmentValidationException;
+
+  /**
+   * @param dynamicMapping
+   * @throws SegmentValidationException
+   */
+  void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
 }

@@ -9,20 +9,30 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.base.controller;
+package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 /**
- * @author Harold Affo
+ * @author jungyubw
  *
  */
-public class BaseController {
+public class CodeInfo {
 
-  protected static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
-  protected static final String PREDEF_SAVED = "PREDEF_SAVED";
-  protected static final String POSTDEF_SAVED = "POSTDEF_SAVED";
-  protected static final String METADATA_SAVED = "METADATA_SAVED";
-  protected static final String CONFORMANCESTATEMENT_SAVED = "CONFORMANCESTATEMENT_SAVED";
-  protected static final String DYNAMICMAPPING_SAVED = "DYNAMICMAPPING_SAVED";
-  protected static final String FORBIDDEN = "FORBIDDEN";
+  private String code;
+  private String description;
 
+  public String getCode() {
+    return code;
+  }
+
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }
