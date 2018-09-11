@@ -106,6 +106,21 @@ public class DocumentMetadata {
     this.scope = scope;
   }
 
+  @Override
+  public DocumentMetadata clone() {
 
+    DocumentMetadata clone = new DocumentMetadata();
+    clone.setCoverPicture(coverPicture);
+    clone.setIdentifier(identifier);
+    clone.setImplementationNotes(implementationNotes);
+    clone.setOrgName(orgName);
+    clone.setSpecificationName(specificationName);
+    clone.setScope(scope);
+    clone.setSubTitle(subTitle);
+    clone.setTitle(title);
+    clone.setTopics(topics);
+    return clone;
+
+  }
 
 }

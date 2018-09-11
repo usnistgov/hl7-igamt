@@ -641,7 +641,6 @@ public class IGDocumentController extends BaseController {
     Datatype clone = datatype.clone();
     clone.setUsername(username);
     clone.setId(new CompositeKey());
-    clone.setName(datatype.getName());
     clone.setExt(wrapper.getExt());
     clone = datatypeService.save(clone);
     ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
@@ -783,6 +782,16 @@ public class IGDocumentController extends BaseController {
     }
     AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
     return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody CompositeKey copy(@PathVariable("id") String id,
+      Authentication authentication) throws IGNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    return this.igService.clone(ig, username).getId();
 
   }
 

@@ -18,7 +18,8 @@ import {InputTextModule} from "primeng/components/inputtext/inputtext";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {OrderListModule} from "primeng/components/orderlist/orderlist";
 import {PickListModule} from "primeng/components/picklist/picklist";
-
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
 @NgModule({
   imports: [
     CommonModule,
@@ -37,11 +38,12 @@ import {PickListModule} from "primeng/components/picklist/picklist";
     InputTextModule,
     DataViewModule,
     RadioButtonModule,
+    ConfirmDialogModule,
     DatatypeLibraryRoutingModule
   ],
 
   declarations: [LibraryListComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
-  providers:[DatatypeLibraryAddingService,LibraryListResolver]
+  providers:[DatatypeLibraryAddingService,LibraryListResolver,ConfirmationService]
 })
 export class DatatypeLibraryModule {}

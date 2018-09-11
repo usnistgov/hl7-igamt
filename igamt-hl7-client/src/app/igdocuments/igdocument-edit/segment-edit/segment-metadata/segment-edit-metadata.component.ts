@@ -106,6 +106,11 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
 
   };
 
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
+
 
 
 

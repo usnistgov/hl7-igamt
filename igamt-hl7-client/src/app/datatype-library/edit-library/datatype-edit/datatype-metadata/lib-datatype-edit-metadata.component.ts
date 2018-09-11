@@ -86,4 +86,9 @@ export class LibDatatypeEditMetadataComponent extends HasFroala implements WithS
         }
     )
   };
+
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
 }

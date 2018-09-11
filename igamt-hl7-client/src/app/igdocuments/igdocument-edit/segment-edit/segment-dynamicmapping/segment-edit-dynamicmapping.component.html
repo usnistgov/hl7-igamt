@@ -1,0 +1,78 @@
+<div *ngIf="segmentDynamicMapping">
+  <form #editForm="ngForm">
+    <div class="ui-g cp-header">
+      <div class="ui-g-8 ui-g-nopad">
+        <div class="cp-header-title ui-g-12">
+          Segment DynamicMapping: {{segmentDynamicMapping.label}}
+        </div>
+        <div class="ui-g-12 cp-header-subtitle">
+          <span class="ig-list-date" *ngIf="segmentDynamicMapping.updateDate">
+            <i class="fa fa-calendar"></i> {{segmentDynamicMapping.updateDate}}
+          </span>
+        </div>
+      </div>
+      <div class="ui-g-4">
+        <button style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+        <button style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh" [disabled]="!editForm.dirty" ></button>
+      </div>
+    </div>
+
+
+    <div class="cp-header-title ui-g-12">
+      User DynamicMapping
+    </div>
+
+    <p-table [value]="segmentDynamicMapping.dynamicMappingInfo.items">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Reference Value</th>
+          <th>Datatype</th>
+          <th>
+            <button style="float:right" (click)="addItem()" pButton type="button" label="ADD MAPPING" class="green-btn" icon="fa-plus"></button>
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-item>
+        <tr>
+          <td>
+            <p-dropdown [options]="referenceValueOptions" id="{{item.value}}-mapping" name="{{item.value}}-mapping" required [(ngModel)]="item.value" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
+          </td>
+          <td>
+            <p-dropdown [options]="findDTOptionsByRef(item.value)" id="{{item.value}}-mappingDT" name="{{item.value}}-mappingDT" required [(ngModel)]="item.datatypeId" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
+          </td>
+          <td>
+            <button (click)="delItem(item)" pButton type="button" class="red-btn" icon="fa-trash"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+    <div class="cp-header-title ui-g-12">
+      Default DynamicMapping (OBX-2 ValueSet Codes)
+    </div>
+    <p-table [value]="segmentDynamicMapping.referenceCodes">
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Value</th>
+          <th>Description</th>
+          <th>Status</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-rCode>
+        <tr>
+          <td>{{rCode.code}}</td>
+          <td>{{rCode.description}}</td>
+          <td>
+            <div *ngIf="isActive(rCode.code); else Inactive">
+              <i class="fa fa-bell-o"></i> Active
+            </div>
+
+            <ng-template #Inactive>
+              <i class="fa fa-bell-slash-o"></i> Inactive
+            </ng-template>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+  </form>
+</div>

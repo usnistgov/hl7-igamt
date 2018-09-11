@@ -72,7 +72,9 @@ export class DatatypeLibraryMetadataComponent extends HasFroala implements OnIni
       this.uploadedFiles.push(file);
     }
   }
-
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
 
 
 }

@@ -17,6 +17,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,9 +33,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -237,6 +242,13 @@ public class DatatypeServiceImpl implements DatatypeService {
           for (Component c : cDt.getComponents()) {
             ComponentDisplay componentDisplay = new ComponentDisplay();
             componentDisplay.setData(c);
+            if (datatype.getDomainInfo().getScope().toString()
+                .equals(Scope.HL7STANDARD.toString())) {
+              componentDisplay.setReadOnly(true);
+            } else {
+              componentDisplay.setReadOnly(false);
+
+            }
             result.addChild(componentDisplay);
           }
         }
@@ -569,6 +581,84 @@ public class DatatypeServiceImpl implements DatatypeService {
     datatype.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(datatype);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#cloneDatatype(java.util.HashMap,
+   * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link)
+   */
+  @Override
+  public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+    // TODO Auto-generated method stub
+
+    Datatype elm = this.findByKey(l.getId());
+
+    Link newLink = new Link();
+    if (datatypesMap.containsKey(l.getId().getId())) {
+      newLink.setId(datatypesMap.get(l.getId().getId()));
+    } else {
+      CompositeKey newKey = new CompositeKey();
+      newLink.setId(newKey);
+      datatypesMap.put(l.getId().getId(), newKey);
+    }
+    updateDependencies(elm, datatypesMap, valuesetsMap);
+    elm.setFrom(elm.getId());
+    elm.setId(newLink.getId());
+    this.save(elm);
+    return newLink;
+
+  }
+
+  /**
+   * @param elm
+   * @param datatypesMap
+   * @param valuesetsMap
+   */
+  private void updateDependencies(Datatype elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+
+    if (elm instanceof ComplexDatatype) {
+      for (Component c : ((ComplexDatatype) elm).getComponents()) {
+        if (c.getRef() != null) {
+          if (c.getRef().getId() != null) {
+            if (datatypesMap.containsKey(c.getRef().getId())) {
+              c.getRef().setId(datatypesMap.get(c.getRef().getId()).getId());
+            }
+          }
+        }
+
+      }
+
+    }
+    updateBindings(elm.getBinding(), valuesetsMap);
+
+  }
+
+  /**
+   * @param elm
+   * @param valuesetsMap
+   */
+  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    Set<String> vauleSetIds = new HashSet<String>();
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if (vs.getValuesetId() != null) {
+              if (valuesetsMap.containsKey(vs.getValuesetId())) {
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
 
 
 }

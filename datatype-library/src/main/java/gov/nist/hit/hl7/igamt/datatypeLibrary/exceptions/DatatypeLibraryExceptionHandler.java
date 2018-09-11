@@ -30,6 +30,14 @@ public class DatatypeLibraryExceptionHandler {
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({OperationNotAllowedException.class})
+  public OperationNotAllowedException handleXReferenceFoundException(
+      OperationNotAllowedException exception) {
+    return exception;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({AddingException.class})
   public AddingException handleXReferenceFoundException(AddingException exception) {
     return exception;

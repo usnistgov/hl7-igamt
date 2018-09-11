@@ -71,4 +71,8 @@ export class LibDatatypeEditPostdefComponent extends HasFroala implements WithSa
             );
         })
     }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
 }

@@ -7,29 +7,40 @@ import {WithSave} from "./with.save.interface";
 import {ConfirmationService} from 'primeng/components/common/api';
 
 import {Md5} from 'ts-md5/dist/md5';
+
 @Injectable()
 export class SaveFormsGuard implements CanDeactivate<WithSave> {
-
-
-  constructor(private confirmationService: ConfirmationService){
+  constructor(private confirmationService: ConfirmationService) {
   }
 
+
   canDeactivate(component: WithSave):Promise<any>{
-      console.log("Called Can Deactivate");
+    console.log("Called Can Deactivate");
       try{
+
         if (!component.isValid()) {
           console.log("invalid form");
           return this.getInvalidDataDialog(component);
 
-        }else if (this.compareHash(component.getBackup(), component.getCurrent())) {
+        }else if (!component.hasChanged()) {
+
           return  Promise.resolve(true);
         }else{
+
           return  this.getUnsavedDialog(component);
+
         }
       }catch (e){
-        return this.somethingWrong();
+        console.log("Error");
+        console.log(e);
+        return this.somthingWrong();
       }
   }
+
+
+
+
+
 
   compareHash(obj1:any, obj2:any):boolean{
 
@@ -45,6 +56,8 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
         message: "You have Invalid Data, please fix your data before leaving",
         key: 'INVALIDDATA',
         accept: () => {
+
+
           resolve(false);
         },
         reject: () => {
@@ -56,49 +69,55 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
     return pr;
   }
 
+
+
+
+
+
   getUnsavedDialog(component) :Promise<any>{
 
     var pr = new Promise<any>((resolve, reject) => {
 
       this.confirmationService.confirm({
         header: "Unsaved Data",
-        message: "You have unsaved Data, Do you want to save and continue?",
+        message: "You have Unsaved Data, Do you want to save and continue?",
         key: 'UNSAVEDDATA',
         accept: () => {
           component.save().then(x => {
             resolve(true);
           }, error => {
-
-            resolve(false);
+            reject();
           })
         },
         reject: (cancel: boolean) => {
-          resolve(false);
+          reject(false);
         }
       });
     });
     return pr;
+
   }
 
 
-  somethingWrong() :Promise<any>{
+  somthingWrong() :Promise<any>{
 
     var pr = new Promise<any>((resolve, reject) => {
+
       this.confirmationService.confirm({
         header: "Navigation Error",
-        message: "Something wrong had happened, Do you want to continue? ",
+        message: "Something worng had happened, Do you want to continue? ",
         key: 'UNSAVEDDATA',
         accept: () => {
           resolve(true);
+
         },
         reject: (cancel: boolean) => {
-          resolve(false);
+          reject("navigation error");
         }
       });
     });
     return pr;
+
   }
-
-
 
 }

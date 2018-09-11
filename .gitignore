@@ -9,8 +9,4 @@ domain/.settings
 *.classpath*
 *.metadata
 *public*
-bootstrap/hl7-igamt.log.2018-07-26.0.gz
-bootstrap/hl7-igamt.log.2018-07-27.0.gz
-*.gz
-*.tmp
-*.log
+bootstrap/hl7-igamt.log.*

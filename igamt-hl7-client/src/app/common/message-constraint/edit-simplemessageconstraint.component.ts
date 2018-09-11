@@ -7,6 +7,7 @@ import {GeneralConfigurationService} from "../../service/general-configuration/g
 import {DatatypesService} from "../../igdocuments/igdocument-edit/datatype-edit/datatypes.service";
 import {SegmentsService} from "../../igdocuments/igdocument-edit/segment-edit/segments.service";
 import { _ } from 'underscore';
+import * as __ from 'lodash';
 
 @Component({
   selector : 'edit-simple-message-constraint',
@@ -29,8 +30,8 @@ export class EditSimpleMessageConstraintComponent {
   operators: any[];
   formatTypes:any[];
 
-
   displayPicker:boolean = false;
+  selectedHolder:any;
   treeModel:any[];
 
   constructor(
@@ -64,57 +65,79 @@ export class EditSimpleMessageConstraintComponent {
     constraint.assertionScript = "<PlainText Path=\"4[" + constraint.instanceNum + "].1[1]\" Text=\"AAAA\" IgnoreCase=\"false\"/>";
   }
 
-  openPathSelector(){
+  openPathSelector(selectedHolder){
     if(this.context){
 
     }else{
       this.treeModel = [];
-
-      this.popTreeModel(this.treeModel, this.structure, null);
+      this.popTreeModel(this.treeModel, this.structure, null, []);
     }
+    this.selectedHolder = selectedHolder;
     this.displayPicker = true;
   }
 
-  popTreeModel(holderArray, list, parentId){
+  popTreeModel(holderArray, list, parentId, parentDataArray){
     for(let item of list){
+
       if(item.type === 'SEGMENTREF'){
         let idPath;
         if(parentId) idPath = parentId + ',' + item.id;
         else idPath = item.id;
 
-        holderArray.push({
-          "label": item.position + '. ' + this.getSegmentElm(item.ref.id).name,
+        let maxV;
+        if(item.max && item.max !== 0 && item.max !== 1) maxV = '[*]';
+        else maxV = '';
+
+        let seg:any = {
+          "label": item.position + '. ' + this.getSegmentElm(item.ref.id).name + maxV,
           "data":
               {
+                "id" : item.id,
                 "idPath" : idPath,
                 "type" : 'SEGMENTREF',
                 "ref" : item.ref,
-                "max" : item.max
+                "max" : item.max,
+                "name" : this.getSegmentElm(item.ref.id).name
               },
           "expandedIcon": "fa fa-folder-open",
           "collapsedIcon": "fa fa-folder",
           "leaf" : false
-        });
+        };
+
+        var currentDataArray = __.cloneDeep(parentDataArray);
+        currentDataArray.push(seg.data);
+        seg.dataArray = currentDataArray;
+        holderArray.push(seg);
       }
       else if(item.type === 'GROUP'){
         let idPath;
         if(parentId) idPath = parentId + ',' + item.id;
         else idPath = item.id;
 
+        let maxV;
+        if(item.max && item.max !== 0 && item.max !== 1) maxV = '[*]';
+        else maxV = '';
+
         let group:any = {
-          "label": item.position + '. ' + item.name,
+          "label": item.position + '. ' + item.name + maxV,
           "data":
               {
+                "id" : item.id,
                 "idPath" : idPath,
                 "type" : 'GROUP',
-                "max" : item.max
+                "max" : item.max,
+                "name" : item.name
               },
           "expandedIcon": "fa fa-folder-open",
           "collapsedIcon": "fa fa-folder",
           "children" : [],
           "leaf" : false
         };
-        this.popTreeModel(group.children, item.children, group.data.idPath);
+
+        var currentDataArray = __.cloneDeep(parentDataArray);
+        currentDataArray.push(group.data);
+        group.dataArray = currentDataArray;
+        this.popTreeModel(group.children, item.children, group.data.idPath, group.dataArray);
         holderArray.push(group);
       }
       else if(item.data.type === 'FIELD'){
@@ -122,14 +145,20 @@ export class EditSimpleMessageConstraintComponent {
         if(parentId) idPath = parentId + ',' + item.data.id;
         else idPath = item.data.id;
 
+        let maxV;
+        if(item.data.max && item.data.max !== 0 && item.data.max !== 1) maxV = '[*]';
+        else maxV = '';
+
         let field:any = {
-          "label": item.data.position + '. ' + item.data.name,
+          "label": item.data.position + '. ' + item.data.name + maxV,
           "data":
               {
+                "id" : item.data.id,
                 "idPath" : idPath,
                 "ref" : item.data.ref,
                 "type" : 'FIELD',
-                "max" : item.data.max
+                "max" : item.data.max,
+                "name" : item.data.name
               },
           "expandedIcon": "fa fa-folder-open",
           "collapsedIcon": "fa fa-folder",
@@ -140,6 +169,9 @@ export class EditSimpleMessageConstraintComponent {
         else {
           field.leaf = false;
         }
+        var currentDataArray = __.cloneDeep(parentDataArray);
+        currentDataArray.push(field.data);
+        field.dataArray = currentDataArray;
         holderArray.push(field);
       }
       else if(item.data.type === 'COMPONENT'){
@@ -151,9 +183,11 @@ export class EditSimpleMessageConstraintComponent {
           "label": item.data.position + '. ' + item.data.name,
           "data":
               {
+                "id" : item.data.id,
                 "idPath" : idPath,
                 "ref" : item.data.ref,
-                "type" : 'COMPONENT'
+                "type" : 'COMPONENT',
+                "name" : item.data.name
               },
           "expandedIcon": "fa fa-folder-open",
           "collapsedIcon": "fa fa-folder"
@@ -164,7 +198,9 @@ export class EditSimpleMessageConstraintComponent {
         else {
           component.leaf = false;
         }
-
+        var currentDataArray = __.cloneDeep(parentDataArray);
+        currentDataArray.push(component.data);
+        component.dataArray = currentDataArray;
         holderArray.push(component);
       }
     }
@@ -186,27 +222,31 @@ export class EditSimpleMessageConstraintComponent {
   }
 
   loadNode(node) {
-    console.log(node);
     if (node && !node.children) {
       if(node.data.type === 'SEGMENTREF'){
         this.segmentsService.getSegmentStructure(node.data.ref.id).then(structure  => {
           structure.children = _.sortBy(structure.children, function(child){ return child.data.position});
           node.children = [];
-          this.popTreeModel(node.children, structure.children, node.data.idPath);
+          this.popTreeModel(node.children, structure.children, node.data.idPath, node.dataArray);
         });
       }else if(node.data.type === 'FIELD'){
         this.datatypesService.getDatatypeStructure(node.data.ref.id).then(structure  => {
           structure.children = _.sortBy(structure.children, function(child){ return child.data.position});
           node.children = [];
-          this.popTreeModel(node.children, structure.children, node.data.idPath);
+          this.popTreeModel(node.children, structure.children, node.data.idPath, node.dataArray);
         });
       }else if(node.data.type === 'COMPONENT'){
         this.datatypesService.getDatatypeStructure(node.data.ref.id).then(structure  => {
           structure.children = _.sortBy(structure.children, function(child){ return child.data.position});
           node.children = [];
-          this.popTreeModel(node.children, structure.children, node.data.idPath);
+          this.popTreeModel(node.children, structure.children, node.data.idPath, node.dataArray);
         });
       }
     }
+  }
+
+  selectNode(node){
+    this.selectedHolder.dataArray = node.dataArray;
+    this.displayPicker = false;
   }
 }

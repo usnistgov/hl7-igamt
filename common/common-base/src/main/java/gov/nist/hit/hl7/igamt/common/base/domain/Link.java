@@ -92,5 +92,14 @@ public class Link {
     return true;
   }
 
+  public Link clone(CompositeKey id) {
+
+    Link l = new Link(id, this.position);
+    l.setDomainInfo(l.getDomainInfo());
+    l.setType(this.getType());
+
+    return l;
+  }
+
 
 }

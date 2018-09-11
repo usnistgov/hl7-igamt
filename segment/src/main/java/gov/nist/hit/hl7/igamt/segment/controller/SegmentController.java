@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -55,15 +56,19 @@ public class SegmentController extends BaseController {
 
   }
 
-
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})
-
   public SegmentConformanceStatement getSegmentConformanceStatement(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
     return segmentService.convertDomainToConformanceStatement(segment);
-
+  }
+  
+  @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,  produces = {"application/json"})
+  public SegmentDynamicMapping getSegmentDynamicMapping(@PathVariable("id") String id,
+      Authentication authentication) throws SegmentNotFoundException {
+    Segment segment = findById(id);
+    return segmentService.convertDomainToSegmentDynamicMapping(segment);
   }
 
   @RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.GET,
@@ -148,7 +153,14 @@ public class SegmentController extends BaseController {
     Segment segment = segmentService.saveConformanceStatement(conformanceStatement);
     return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         segment.getUpdateDate());
-
+  }
+  
+  @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST,
+      produces = {"application/json"})
+  public ResponseMessage saveDynamicMapping(@PathVariable("id") String id, Authentication authentication, @RequestBody SegmentDynamicMapping dynamicMapping) throws SegmentValidationException, SegmentNotFoundException {
+    Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
+    return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id,
+        segment.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,

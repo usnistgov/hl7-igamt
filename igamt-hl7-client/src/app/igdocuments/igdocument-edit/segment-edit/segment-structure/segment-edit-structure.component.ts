@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, ViewChild} from "@angular/core";
+import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
@@ -13,6 +13,7 @@ import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
 import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
+import {Columns} from "../../../../common/constants/columns";
 
 @Component({
     selector : 'segment-edit',
@@ -56,6 +57,39 @@ export class SegmentEditStructureComponent implements WithSave {
 
     @ViewChild('editForm')
     private editForm: NgForm;
+
+  @ViewChild('name')
+  private name: TemplateRef<any>;
+  @ViewChild('usage')
+  private usage: TemplateRef<any>;
+  @ViewChild('cardinality')
+  private cardinality: TemplateRef<any>;
+  @ViewChild('length')
+  private length: TemplateRef<any>;
+  @ViewChild('confLength')
+  private confLength: TemplateRef<any>;
+  @ViewChild('datatype')
+  private datatype: TemplateRef<any>;
+  @ViewChild('valueSet')
+  private valueSet: TemplateRef<any>;
+
+  @ViewChild('singleCode')
+  private singleCode: TemplateRef<any>;
+  @ViewChild('constantValue')
+  private constantValue: TemplateRef<any>;
+
+  @ViewChild('predicate')
+  private predicate: TemplateRef<any>;
+
+  @ViewChild('text')
+  private text: TemplateRef<any>;
+
+  @ViewChild('comment')
+  private comment: TemplateRef<any>;
+
+
+  cols= Columns.segmentColumns;
+  selectedColumns=Columns.segmentColumns;
 
     constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
@@ -294,7 +328,10 @@ export class SegmentEditStructureComponent implements WithSave {
         }
 
         node.children = children;
+        if(this.segmentStructure&&this.segmentStructure.children){
+          this.segmentStructure.children= [...this.segmentStructure.children];
 
+        }
 
     }
 
@@ -411,7 +448,6 @@ export class SegmentEditStructureComponent implements WithSave {
                 this.updateDatatype(event.node, structure.children, structure.binding, event.node.data.displayData.idPath, datatypeId, event.node.data.displayData.segmentBinding, event.node.data.displayData.fieldDTBinding, event.node.data.displayData.fieldDT, event.node.data.displayData.datatype.name);
             });
         }
-
     }
 
     onDatatypeChange(node){
@@ -753,5 +789,61 @@ export class SegmentEditStructureComponent implements WithSave {
                 node.data.displayData.segmentBinding.predicate = undefined;
             }
         }
+    };
+
+  getTemplateRef(col,readOnly):TemplateRef<any>{
+
+
+    switch(col.field) {
+      case "name": {
+        return this.name;
+      }
+      case "usage": {
+        return this.usage;
+      }
+      case "cardinality":{
+        return this.cardinality;
+      }
+      case "length": {
+        return this.length;
+      }
+      case "confLength": {
+        return this.confLength;
+      }
+      case "datatype": {
+        return this.datatype;
+      }
+      case "valueSet": {
+        return this.valueSet;
+      }
+      case "singleCode": {
+        return this.singleCode;
+      }
+      case "constantValue": {
+        return this.constantValue;
+      }
+      case "predicate": {
+        return this.predicate;
+      }    case "text": {
+      return this.predicate;
     }
+      case "comment": {
+        return this.comment;
+      }
+      default: {
+        //statements;
+        break;
+      }
+    }
+
+
+  };
+
+  reorderCols(){
+    this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
+  }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+  }
 }

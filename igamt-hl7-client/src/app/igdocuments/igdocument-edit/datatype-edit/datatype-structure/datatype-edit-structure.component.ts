@@ -1,7 +1,7 @@
 /**
  * Created by Jungyub on 10/23/17.
  */
-import {Component, ViewChild} from "@angular/core";
+import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
@@ -12,6 +12,7 @@ import {TocService} from "../../service/toc.service";
 import {DatatypesService} from "../datatypes.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
+import {Columns} from "../../../../common/constants/columns";
 
 @Component({
   selector : 'datatype-edit',
@@ -26,86 +27,36 @@ export class DatatypeEditStructureComponent implements WithSave{
     usages:any;
     cUsages:any;
 
-    files=[
-      {
-        "data":{
-          "name":"Documents",
-          "size":"75kb",
-          "type":"Folder"
-        },
-        "children":[
-          {
-            "data":{
-              "name":"Work",
-              "size":"55kb",
-              "type":"Folder"
-            },
-            "children":[
-              {
-                "data":{
-                  "name":"Expenses.doc",
-                  "size":"30kb",
-                  "type":"Document"
-                }
-              },
-              {
-                "data":{
-                  "name":"Resume.doc",
-                  "size":"25kb",
-                  "type":"Resume"
-                }
-              }
-            ]
-          },
-          {
-            "data":{
-              "name":"Home",
-              "size":"20kb",
-              "type":"Folder"
-            },
-            "children":[
-              {
-                "data":{
-                  "name":"Invoices",
-                  "size":"20kb",
-                  "type":"Text"
-                }
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "data":{
-          "name":"Pictures",
-          "size":"150kb",
-          "type":"Folder"
-        },
-        "children":[
-          {
-            "data":{
-              "name":"barcelona.jpg",
-              "size":"90kb",
-              "type":"Picture"
-            }
-          },
-          {
-            "data":{
-              "name":"primeui.png",
-              "size":"30kb",
-              "type":"Picture"
-            }
-          },
-          {
-            "data":{
-              "name":"optimus.jpg",
-              "size":"30kb",
-              "type":"Picture"
-            }
-          }
-        ]
-      }
-    ];
+  @ViewChild('name')
+  private name: TemplateRef<any>;
+  @ViewChild('usage')
+  private usage: TemplateRef<any>;
+  @ViewChild('length')
+  private length: TemplateRef<any>;
+  @ViewChild('confLength')
+  private confLength: TemplateRef<any>;
+  @ViewChild('datatype')
+  private datatype: TemplateRef<any>;
+  @ViewChild('valueSet')
+  private valueSet: TemplateRef<any>;
+
+  @ViewChild('singleCode')
+  private singleCode: TemplateRef<any>;
+  @ViewChild('constantValue')
+  private constantValue: TemplateRef<any>;
+
+  @ViewChild('predicate')
+  private predicate: TemplateRef<any>;
+
+  @ViewChild('text')
+  private text: TemplateRef<any>;
+
+  @ViewChild('comment')
+  private comment: TemplateRef<any>;
+
+
+    cols= Columns.dataTypeColumns;
+    selectedColumns=Columns.dataTypeColumns;
 
     textDefinitionDialogOpen:boolean = false;
     changeDTDialogOpen:boolean = false;
@@ -143,11 +94,7 @@ export class DatatypeEditStructureComponent implements WithSave{
     constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
                 private tocService:TocService){
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
+
     }
 
     ngOnInit() {
@@ -212,6 +159,52 @@ export class DatatypeEditStructureComponent implements WithSave{
             });
 
         });
+    }
+
+    getTemplateRef(col,readOnly):TemplateRef<any>{
+
+
+      switch(col.field) {
+        case "name": {
+          return this.name;
+        }
+        case "usage": {
+          return this.usage;
+        }
+        case "length": {
+          return this.length;
+        }
+        case "confLength": {
+          return this.confLength;
+        }
+        case "datatype": {
+          return this.datatype;
+        }
+        case "valueSet": {
+          return this.valueSet;
+        }
+        case "singleCode": {
+          return this.singleCode;
+        }
+        case "constantValue": {
+          return this.constantValue;
+        }
+        case "predicate": {
+          return this.predicate;
+        }    case "text": {
+        return this.predicate;
+      }
+        case "comment": {
+          return this.comment;
+        }
+
+        default: {
+          //statements;
+          break;
+        }
+      }
+
+
     }
 
     reset(){
@@ -369,6 +362,8 @@ export class DatatypeEditStructureComponent implements WithSave{
         }
 
         node.children = children;
+        this.datatypeStructure.children= [...this.datatypeStructure.children];
+
     }
 
     setHasSingleCode(displayData){
@@ -820,5 +815,13 @@ export class DatatypeEditStructureComponent implements WithSave{
             }
         }
     }
+
+
+  reorderCols(){
+    this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
+  }
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
 
 }

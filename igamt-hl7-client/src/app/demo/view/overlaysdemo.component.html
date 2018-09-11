@@ -16,7 +16,7 @@
                         <p-table [columns]="cols" [value]="cars" dataKey="vin" [style]="{'width':'500px'}">
                             <ng-template pTemplate="header" let-columns>
                                 <tr>
-                                    <th *ngFor="let col of columns" [pSortableColumn]="col.field">
+                                    <th *ngFor="let col of dataTypeColumns" [pSortableColumn]="col.field">
                                       {{col.header}}
                                       <p-sortIcon [field]="col.field"></p-sortIcon>
                                     </th>
@@ -24,7 +24,7 @@
                             </ng-template>
                             <ng-template pTemplate="body" let-rowData let-columns="columns">
                                 <tr [pSelectableRow]="rowData">
-                                    <td *ngFor="let col of columns">
+                                    <td *ngFor="let col of dataTypeColumns">
                                       {{rowData[col.field]}}
                                     </td>
                                 </tr>

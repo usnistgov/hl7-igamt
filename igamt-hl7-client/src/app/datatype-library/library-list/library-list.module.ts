@@ -10,6 +10,9 @@ import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {FormsModule} from "@angular/forms";
 import {InputTextModule} from "primeng/components/inputtext/inputtext";
 import {DataViewModule} from "primeng/components/dataview/dataview";
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
+
 
 @NgModule({
     imports: [
@@ -20,9 +23,11 @@ import {DataViewModule} from "primeng/components/dataview/dataview";
       DropdownModule,
       FormsModule,
       InputTextModule,
-      DataViewModule
+      DataViewModule,
+      ConfirmDialogModule,
+      ConfirmDialogModule
     ],
-  declarations: [LibraryListComponent],
+  declarations: [LibraryListComponent,ConfirmDialogModule],
   providers:[LibraryListResolver]
 })
 export class LibraryListModule { }

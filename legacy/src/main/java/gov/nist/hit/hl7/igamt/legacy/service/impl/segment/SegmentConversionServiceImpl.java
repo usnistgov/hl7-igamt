@@ -94,22 +94,19 @@ public class SegmentConversionServiceImpl implements ConversionService {
     convertedSegment.setPublicationInfo(publicationInfo);
     convertedSegment.setComment(oldSegment.getComment());
 
-    if (oldSegment.getName().equals("OBX")
-        && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems() != null
-        && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems().size() > 0) {
+    if (oldSegment.getName().equals("OBX")) {
       DynamicMappingInfo dynamicMappingInfo = new DynamicMappingInfo();
-      dynamicMappingInfo.setReferencePath("2");
-      dynamicMappingInfo.setVariesDatatypePath("5");
-
-      for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DynamicMappingItem oldDMItem : oldSegment
-          .getDynamicMappingDefinition().getDynamicMappingItems()) {
-        DynamicMappingItem item = new DynamicMappingItem();
-        item.setDatatypeId(oldDMItem.getDatatypeId());
-        item.setValue(oldDMItem.getFirstReferenceValue());
-        dynamicMappingInfo.addItem(item);
+      
+      if(oldSegment.getDynamicMappingDefinition().getDynamicMappingItems() != null && oldSegment.getDynamicMappingDefinition().getDynamicMappingItems().size() > 0){
+        for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DynamicMappingItem oldDMItem : oldSegment.getDynamicMappingDefinition().getDynamicMappingItems()) {
+          DynamicMappingItem item = new DynamicMappingItem();
+          item.setDatatypeId(oldDMItem.getDatatypeId());
+          item.setValue(oldDMItem.getFirstReferenceValue());
+          dynamicMappingInfo.addItem(item);
+        }        
       }
+      
       convertedSegment.setDynamicMappingInfo(dynamicMappingInfo);
-
     }
 
     if (oldSegment.getAccountId() != null) {
@@ -147,6 +144,14 @@ public class SegmentConversionServiceImpl implements ConversionService {
         newField.setType(Type.FIELD);
         newField.setUsage(ConversionUtil.convertUsage(field.getUsage()));
         fields.add(newField);
+        
+        if(oldSegment.getName().equals("OBX")){
+          if(newField.getPosition() == 2){
+            convertedSegment.getDynamicMappingInfo().setReferenceFieldId(newField.getId());
+          }else if(newField.getPosition() == 5){
+            convertedSegment.getDynamicMappingInfo().setVariesFieldId(newField.getId());
+          }
+        }
       }
       convertedSegment.setChildren(fields);
     }

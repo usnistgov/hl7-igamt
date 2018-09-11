@@ -33,6 +33,7 @@ import {DatatypeEditPredefResolver} from "./datatype-predef/datatype-edit-predef
 import {DatatypeEditMetadataResolver} from "./datatype-metadata/datatype-edit-metadata.resolver";
 import {DatatypeEditStructureResolver} from "./datatype-structure/datatype-edit-structure.resolver";
 import {DatatypeEditConformanceStatementsResolver} from "./datatype-conformancestatements/datatype-edit-conformancestatements.resolver";
+import {MultiSelectModule} from 'primeng/multiselect';
 
 
 import {TreeTableModule} from 'primeng/primeng';
@@ -54,6 +55,7 @@ import {TreeTableModule} from 'primeng/primeng';
     MessageModule,
 
     NamingConventionModule,
+    MultiSelectModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],

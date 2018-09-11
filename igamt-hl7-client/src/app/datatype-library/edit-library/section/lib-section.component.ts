@@ -85,7 +85,10 @@ export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
     return !this.editForm.invalid;
   }
 
+  hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
 
+  }
 
 
 

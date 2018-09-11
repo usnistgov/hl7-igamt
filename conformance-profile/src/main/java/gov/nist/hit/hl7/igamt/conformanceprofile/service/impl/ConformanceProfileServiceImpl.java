@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -27,10 +28,14 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
@@ -367,7 +372,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     if (conformanceProfile == null) {
       throw new ConformanceProfileNotFoundException(conformanceStatement.getId().getId());
     }
-    conformanceProfile.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
+    conformanceProfile.getBinding()
+        .setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(conformanceProfile);
   }
 
@@ -492,6 +498,103 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#
+   * cloneConformanceProfile(java.util.HashMap, java.util.HashMap,
+   * gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
+   */
+  @Override
+  public Link cloneConformanceProfile(CompositeKey key, HashMap<String, CompositeKey> valuesetsMap,
+      HashMap<String, CompositeKey> segmentsMap, Link l, String username) {
+    ConformanceProfile elm = this.findByKey(l.getId());
+    Link newLink = new Link();
+    newLink.setId(key);
+    updateDependencies(elm, segmentsMap, valuesetsMap);
+    elm.setFrom(elm.getId());
+    elm.setId(newLink.getId());
+    elm.setUsername(username);
+    this.save(elm);
+    return newLink;
+
+  }
+
+  /**
+   * @param elm
+   * @param datatypesMap
+   * @param valuesetsMap
+   */
+  private void updateDependencies(ConformanceProfile elm, HashMap<String, CompositeKey> segmentsMap,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+
+    updateBindings(elm.getBinding(), valuesetsMap);
+    processCp(elm, segmentsMap);
+
+  }
+
+  /**
+   * @param elm
+   * @param valuesetsMap
+   */
+  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if (vs.getValuesetId() != null) {
+              if (valuesetsMap.containsKey(vs.getValuesetId())) {
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+
+  private void processCp(ConformanceProfile cp, HashMap<String, CompositeKey> segmentsMap) {
+    // TODO Auto-generated method stub
+    for (MsgStructElement segOrgroup : cp.getChildren()) {
+      if (segOrgroup instanceof SegmentRef) {
+        SegmentRef ref = (SegmentRef) segOrgroup;
+        if (ref.getRef() != null && ref.getRef().getId() != null) {
+          if (segmentsMap.containsKey(ref.getRef().getId())) {
+            ref.setId(segmentsMap.get(ref.getRef().getId()).getId());
+          }
+        }
+      } else {
+        processSegmentorGroup(segOrgroup, segmentsMap);
+      }
+    }
+
+  }
+
+  private void processSegmentorGroup(MsgStructElement segOrgroup,
+      HashMap<String, CompositeKey> segmentsMap) {
+    // TODO Auto-generated method stub
+    if (segOrgroup instanceof SegmentRef) {
+      SegmentRef ref = (SegmentRef) segOrgroup;
+      if (ref.getRef() != null && ref.getRef().getId() != null) {
+        if (segmentsMap.containsKey(ref.getRef().getId())) {
+          ref.setId(segmentsMap.get(ref.getRef().getId()).getId());
+        }
+
+      }
+    } else if (segOrgroup instanceof Group) {
+      Group g = (Group) segOrgroup;
+      for (MsgStructElement child : g.getChildren()) {
+        processSegmentorGroup(child, segmentsMap);
+      }
+    }
+
+  }
+
 
 
 }

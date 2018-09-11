@@ -259,6 +259,8 @@ export class IgDocumentCreateComponent {
     }else {
       this.unselectdata(node.data);
     }
+    this.tableValue=[...this.tableValue];
+
   };
 
 

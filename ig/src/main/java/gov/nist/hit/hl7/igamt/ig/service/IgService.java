@@ -30,6 +30,8 @@ public interface IgService {
 
   public Ig save(Ig ig);
 
+  public Ig clone(Ig ig, String username);
+
   public List<Ig> findByUsername(String username);
 
   public List<Ig> findLatestByUsername(String username, Scope scope);

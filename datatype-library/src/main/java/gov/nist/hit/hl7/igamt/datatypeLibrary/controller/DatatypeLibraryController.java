@@ -56,6 +56,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryConverterException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryNotFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.DatatypeLibraryUpdateException;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.OperationNotAllowedException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.XReferenceFoundException;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.AddDatatypeResponseDisplay;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.model.DatatypeLibraryDisplay;
@@ -107,6 +108,8 @@ public class DatatypeLibraryController {
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
+  private static final String DATATYPE_LIBRARY_DELETED = "DATATYPE_LIBRARY_DELETED";
+
 
   private static final String TABLE_OF_CONTENT_UPDATED = "TABLE_OF_CONTENT_UPDATED";
   private static final String METATDATA_UPDATED = "METATDATA_UPDATED";
@@ -405,6 +408,22 @@ public class DatatypeLibraryController {
     }
     dataypeLibraryService.save(library);
     return new ResponseMessage(Status.SUCCESS, DATATYPE_DELETED, datatypeId, new Date());
+  }
+
+  @RequestMapping(value = "/api/datatype-library/{id}", method = RequestMethod.DELETE,
+      produces = {"application/json"})
+  public ResponseMessage deleteDatatypeLibrary(@PathVariable("id") String id,
+      Authentication authentication)
+      throws DatatypeLibraryNotFoundException, OperationNotAllowedException {
+
+    DatatypeLibrary library = findLibraryById(id);
+    if (library.getUsername().equals(authentication.getPrincipal().toString())) {
+      dataypeLibraryService.delete(library.getId());
+      return new ResponseMessage(Status.SUCCESS, DATATYPE_LIBRARY_DELETED, id, new Date());
+    } else {
+      throw new OperationNotAllowedException("Operation Not allowed");
+    }
+
   }
 
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",

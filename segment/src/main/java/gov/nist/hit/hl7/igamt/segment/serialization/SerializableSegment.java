@@ -48,7 +48,8 @@ public class SerializableSegment extends SerializableResource {
    * @param position
    */
   public SerializableSegment(Segment segment, String position, int level,
-      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap,Set<String> bindedFields) {
+      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap,
+      Map<String, String> valuesetLabelMap, Set<String> bindedFields) {
     super(segment, position);
     this.datatypesMap = datatypesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -99,7 +100,7 @@ public class SerializableSegment extends SerializableResource {
     if (fields.size() > 0) {
       Element fieldsElement = new Element("Fields");
       for (Field field : fields) {
-        if(this.bindedFields.contains(field.getId())) {
+        if (this.bindedFields.contains(field.getId())) {
           try {
             if (field != null) {
               Element fieldElement = new Element("Field");
@@ -144,15 +145,16 @@ public class SerializableSegment extends SerializableResource {
 
   private Element serializeDynamicMapping(DynamicMappingInfo dynamicMappingInfo)
       throws DatatypeNotFoundException {
-    if(dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
+    if (dynamicMappingInfo != null && dynamicMappingInfo.getItems() != null) {
       Element dynamicMappingElement = new Element("DynamicMapping");
       dynamicMappingElement.addAttribute(new Attribute("referencePath",
-          dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
+          dynamicMappingInfo.getReferenceFieldId() != null
+              ? dynamicMappingInfo.getReferenceFieldId()
               : ""));
-      dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
-          dynamicMappingInfo.getVariesDatatypePath() != null
-              ? dynamicMappingInfo.getVariesDatatypePath()
-              : ""));
+      // dynamicMappingElement.addAttribute(new Attribute("variesDatatypePath",
+      // dynamicMappingInfo.getVariesDatatypePath() != null
+      // ? dynamicMappingInfo.getVariesDatatypePath()
+      // : ""));
       for (DynamicMappingItem dynamicMappingItem : dynamicMappingInfo.getItems()) {
         if (dynamicMappingItem != null) {
           Element dynamicMappingItemElement = new Element("DynamicMappingItem");
@@ -178,9 +180,9 @@ public class SerializableSegment extends SerializableResource {
   public Map<String, String> getIdPathMap() {
     Map<String, String> idPathMap = new HashMap<String, String>();
     Segment segment = (Segment) this.getAbstractDomain();
-    for(Field field : segment.getChildren()) {
-      if(!idPathMap.containsKey(field.getId())) {
-        String path = segment.getLabel()+FIELD_PATH_SEPARATOR+field.getPosition();
+    for (Field field : segment.getChildren()) {
+      if (!idPathMap.containsKey(field.getId())) {
+        String path = segment.getLabel() + FIELD_PATH_SEPARATOR + field.getPosition();
         idPathMap.put(field.getId(), path);
       }
     }

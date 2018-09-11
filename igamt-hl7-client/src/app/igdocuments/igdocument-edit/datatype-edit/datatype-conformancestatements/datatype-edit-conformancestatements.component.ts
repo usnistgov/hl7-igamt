@@ -289,4 +289,8 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
+    hasChanged(){
+    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+
+    }
 }
