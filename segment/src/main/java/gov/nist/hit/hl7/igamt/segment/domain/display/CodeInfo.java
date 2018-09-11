@@ -1,5 +1,4 @@
 /**
- * 
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
  * of the United States Code this software is not subject to copyright protection and is in the
@@ -9,31 +8,31 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
- * 
  */
-package gov.nist.hit.hl7.igamt.segment.serialization.exception;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
-import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 /**
+ * @author jungyubw
  *
- * @author Maxence Lefort on Mar 27, 2018.
  */
-public class DynamicMappingSerializationException extends SerializationException {
+public class CodeInfo {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = -6887787296077348003L;
+  private String code;
+  private String description;
 
-  public DynamicMappingSerializationException(Exception exception,
-      DynamicMappingInfo dynamicMappingInfo) {
-    super(exception, Type.DYNAMICMAPPING,
-        "referencePath=" + (dynamicMappingInfo.getReferenceFieldId() != null
-            ? dynamicMappingInfo.getReferenceFieldId()
-            : ""));
+  public String getCode() {
+    return code;
   }
 
+  public void setCode(String code) {
+    this.code = code;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

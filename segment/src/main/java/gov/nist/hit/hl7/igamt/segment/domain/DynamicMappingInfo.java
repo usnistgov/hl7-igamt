@@ -23,12 +23,12 @@ public class DynamicMappingInfo {
   /*
    * OBX-2
    */
-  private String referencePath;
+  private String referenceFieldId;
 
   /*
    * OBX-5
    */
-  private String variesDatatypePath;
+  private String variesFieldId;
 
   private Set<DynamicMappingItem> items;
 
@@ -36,28 +36,12 @@ public class DynamicMappingInfo {
     super();
   }
 
-  public DynamicMappingInfo(String referencePath, String variesDatatypePath,
+  public DynamicMappingInfo(String referenceFieldId, String variesFieldId,
       Set<DynamicMappingItem> items) {
     super();
-    this.referencePath = referencePath;
-    this.variesDatatypePath = variesDatatypePath;
+    this.referenceFieldId = referenceFieldId;
+    this.variesFieldId = variesFieldId;
     this.items = items;
-  }
-
-  public String getReferencePath() {
-    return referencePath;
-  }
-
-  public void setReferencePath(String referencePath) {
-    this.referencePath = referencePath;
-  }
-
-  public String getVariesDatatypePath() {
-    return variesDatatypePath;
-  }
-
-  public void setVariesDatatypePath(String variesDatatypePath) {
-    this.variesDatatypePath = variesDatatypePath;
   }
 
   public Set<DynamicMappingItem> getItems() {
@@ -71,5 +55,21 @@ public class DynamicMappingInfo {
   public void addItem(DynamicMappingItem item){
     if(this.items == null) this.items = new HashSet<DynamicMappingItem>();
     this.items.add(item);
+  }
+
+  public String getReferenceFieldId() {
+    return referenceFieldId;
+  }
+
+  public void setReferenceFieldId(String referenceFieldId) {
+    this.referenceFieldId = referenceFieldId;
+  }
+
+  public String getVariesFieldId() {
+    return variesFieldId;
+  }
+
+  public void setVariesFieldId(String variesFieldId) {
+    this.variesFieldId = variesFieldId;
   }
 }
