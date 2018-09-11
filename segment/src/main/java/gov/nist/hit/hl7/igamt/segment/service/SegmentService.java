@@ -13,9 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -145,5 +147,16 @@ public interface SegmentService extends ResourceService {
    */
   public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
       throws SegmentNotFoundException, SegmentValidationException;
+
+  /**
+   * @param compositeKey
+   * @param datatypesMap
+   * @param valuesetsMap
+   * @param l
+   * @param username
+   * @return
+   */
+  public Link cloneSegment(CompositeKey compositeKey, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
 
 }

@@ -30,7 +30,7 @@ public interface IgService {
 
   public Ig save(Ig ig);
 
-  public Ig clone(Ig ig);
+  public Ig clone(Ig ig, String username);
 
   public List<Ig> findByUsername(String username);
 

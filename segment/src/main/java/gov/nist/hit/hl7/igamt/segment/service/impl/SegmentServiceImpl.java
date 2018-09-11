@@ -18,6 +18,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.matc
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +34,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -478,6 +483,72 @@ public class SegmentServiceImpl implements SegmentService {
     }
     segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(segment);
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#cloneSegment(java.util.HashMap,
+   * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
+   */
+  @Override
+  public Link cloneSegment(CompositeKey key, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+
+    Segment elm = this.findByKey(l.getId());
+
+    Link newLink = new Link();
+    newLink.setId(key);
+    updateDependencies(elm, datatypesMap, valuesetsMap);
+    elm.setFrom(elm.getId());
+    elm.setId(newLink.getId());
+    this.save(elm);
+    return newLink;
+
+  }
+
+  /**
+   * @param elm
+   * @param datatypesMap
+   * @param valuesetsMap
+   */
+  private void updateDependencies(Segment elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+
+    for (Field f : elm.getChildren()) {
+      if (f.getRef() != null) {
+        if (f.getRef().getId() != null) {
+          if (datatypesMap.containsKey(f.getRef().getId())) {
+            f.getRef().setId(datatypesMap.get(f.getRef().getId()).getId());
+          }
+        }
+      }
+
+    }
+    updateBindings(elm.getBinding(), valuesetsMap);
+
+  }
+
+  /**
+   * @param elm
+   * @param valuesetsMap
+   */
+  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if (vs.getValuesetId() != null) {
+              if (valuesetsMap.containsKey(vs.getValuesetId())) {
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
 }

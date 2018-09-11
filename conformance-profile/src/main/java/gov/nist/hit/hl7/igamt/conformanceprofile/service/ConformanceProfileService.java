@@ -13,9 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
@@ -169,5 +171,17 @@ public interface ConformanceProfileService {
   public ConformanceProfile saveConformanceStatement(
       ConformanceProfileConformanceStatement conformanceStatement)
       throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
+
+  /**
+   * @param compositeKey
+   * @param valuesetsMap
+   * @param segmentsMap
+   * @param l
+   * @param username
+   * @return
+   */
+  public Link cloneConformanceProfile(CompositeKey compositeKey,
+      HashMap<String, CompositeKey> valuesetsMap, HashMap<String, CompositeKey> segmentsMap, Link l,
+      String username);
 
 }
