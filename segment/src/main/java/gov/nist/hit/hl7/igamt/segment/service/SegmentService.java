@@ -13,9 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -79,7 +81,7 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
   public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
-  
+
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
   public Segment convertToSegment(SegmentStructure structure);
@@ -149,10 +151,10 @@ public interface SegmentService extends ResourceService {
   public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
       throws SegmentNotFoundException, SegmentValidationException;
 
-  /**
-   * @param dynamicMapping
-   * @return
-   */
+
+  public Link cloneSegment(CompositeKey compositeKey, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
+
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
       throws SegmentNotFoundException, SegmentValidationException;
 

@@ -143,4 +143,8 @@ export class SegmentEditDynamicMappingComponent extends HasFroala implements Wit
 
         return true;
     }
+  hasChanged(){
+      //TO DO
+    return false;
+  }
 }

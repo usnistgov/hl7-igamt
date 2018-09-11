@@ -391,11 +391,7 @@ public class CrudServiceImpl implements CrudService {
         .sorted((Segment t1, Segment t2) -> t1.getName().compareTo(t2.getName()))
         .collect(Collectors.toList());
 
-
     orderRegistry(ig.getSegmentRegistry(), ordredSegment);
-
-
-
     System.out.println(ig.getDatatypeRegistry().getChildren().size());
     List<AbstractDomain> ordredDatatypes = ret.getDatatypesMap().stream()
         .sorted((Datatype t1, Datatype t2) -> t1.getName().compareTo(t2.getName()))
@@ -430,6 +426,7 @@ public class CrudServiceImpl implements CrudService {
     for (Link link : registry.getChildren()) {
       link.setPosition(orderMap.get(link.getId().getId()));
     }
+
   }
 
 
