@@ -52,16 +52,28 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
       if (this.abstractDomain.getComment() != null && !this.abstractDomain.getComment().isEmpty()) {
         Element commentElement = new Element("Comment");
         commentElement.appendChild(
-            FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getComment()));
+            this.formatStringData(this.abstractDomain.getComment()));
         element.appendChild(commentElement);
       }
       element.addAttribute(new Attribute("createdFrom",
           this.abstractDomain.getCreatedFrom() != null ? this.abstractDomain.getCreatedFrom()
               : ""));
+      element.addAttribute(new Attribute("publicationDate",
+    		  this.abstractDomain.getPublicationInfo() != null ? (this.abstractDomain.getPublicationInfo().getPublicationDate() != null
+                  ? this.formatStringData(this.abstractDomain.getPublicationInfo().getPublicationDate().toString())
+                  : "") : ""));
       element.addAttribute(new Attribute("description",
           this.abstractDomain.getDescription() != null
-              ? FroalaSerializationUtil.cleanFroalaInput(this.abstractDomain.getDescription())
+              ? this.formatStringData(this.abstractDomain.getDescription())
               : ""));
+      element.addAttribute(new Attribute("version",
+    		  this.abstractDomain.getDomainInfo() != null ? (this.abstractDomain.getDomainInfo().getVersion() != null
+                  ? this.formatStringData(this.abstractDomain.getDomainInfo().getCompatibilityVersion().toString())
+                  : "") : ""));
+      element.addAttribute(new Attribute("domainCompatibilityVersion",
+    		  this.abstractDomain.getDomainInfo() != null ? (this.abstractDomain.getDomainInfo().getCompatibilityVersion() != null
+                  ? this.formatStringData(this.abstractDomain.getDomainInfo().getCompatibilityVersion().toString())
+                  : "") : ""));
       element.addAttribute(new Attribute("name",
           this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
       element.addAttribute(new Attribute("id",

@@ -1,18 +1,36 @@
-package gov.nist.hit.hl7.igamt.web.export;
+package gov.nist.hit.hl7.igamt.web.export.model;
 
+
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 
 /**
  * @author ynb4
  *
  */
-public class MyExportObject {
+
+@org.springframework.stereotype.Component
+public class MyExportObject  {
+	
+	
 	
 	private 	Map<String,String> datatypesXMLOneByOne;
 	private 	Map<String,String> datatypesXMLByRoot;
@@ -21,6 +39,7 @@ public class MyExportObject {
 	private List<String> allDomainCompatibilityVersions;
 	Map<String,Map<String,List<Datatype>>> datatypesbyVersionThenName = new HashMap<>();
 	Map<String,Map<Set<String>,List<Datatype>>> datatypesbyNameThenVersion = new HashMap<>();
+	Map<String,Datatype> datatypesMap = new HashMap<>();
 	String allDatatypesXml;
 	
 	
@@ -74,7 +93,6 @@ public class MyExportObject {
 	public void setDatatypesXMLByRoot(Map<String, String> datatypesXMLByRoot) {
 		this.datatypesXMLByRoot = datatypesXMLByRoot;
 	}
-	
 	
 
 }

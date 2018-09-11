@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.web.export.model.MyExportObject;
 
 
 @Service
@@ -66,6 +67,7 @@ public class MasterDatatypeLibraryExportService {
 		
 
 
+		System.out.println("Je suis au tout debut");
 
 
 
@@ -75,7 +77,7 @@ public class MasterDatatypeLibraryExportService {
 			Datatype datatype = datatypeService.findByKey(new CompositeKey(datatypeId,2));
 			if(datatypesbyRoot.containsKey(datatype.getName())){
 				datatypesbyRoot.get(datatype.getName()).add(datatype);
-			}else {
+			}else { 
 				List<Datatype> listDataype = new ArrayList<Datatype>();
 				listDataype.add(datatype);
 				datatypesbyRoot.put(datatype.getName(), listDataype);
@@ -104,6 +106,7 @@ public class MasterDatatypeLibraryExportService {
 		
 		
 		myExportObject.setAllDomainCompatibilityVersions(orderedVersionList);
+		System.out.println("Je suis avant la boucle en question");
 
 
 //		System.out.println("size before "+datatypeNamesMap.size());
@@ -127,10 +130,15 @@ public class MasterDatatypeLibraryExportService {
 		for(String key : datatypesMap.keySet()) {
 			Datatype datatype = datatypesMap.get(key);
 			if(!datatype.getName().equals("-")) {
+				System.out.println("Je suis avant serializableDatatype");
 			SerializableDatatype serializableDatatype = new SerializableDatatype(datatype,String.valueOf(position));
+			System.out.println("Je suis avant le try");
+
 			try {
+				System.out.println("Je suis dans le try");
 				String datatypeXmlWhitoutEncoding = serializableDatatype.serialize().toXML();
 				String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
+				System.out.println("ceci est le xml de datatype" +datatypeXml);
 				position++;
 				allDatatypesXml = allDatatypesXml + datatypeXmlWhitoutEncoding;
 				datatypesXMLOneByOne.put(String.valueOf(position), datatypeXml);
@@ -143,6 +151,8 @@ public class MasterDatatypeLibraryExportService {
 			}
 		}
 		System.out.println("sizf of datatypesXMLOneByOne " + datatypesXMLOneByOne.size());
+		System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
+
 		allDatatypesXml = allDatatypesXml + "</Datatypes>";
 
 		myExportObject.setAllDatatypesXml(allDatatypesXml);

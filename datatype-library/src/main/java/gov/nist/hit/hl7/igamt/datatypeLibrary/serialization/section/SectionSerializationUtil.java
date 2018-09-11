@@ -13,14 +13,14 @@ import nu.xom.Element;
 
 public class SectionSerializationUtil {
 
-	public static Element serializeSection(Section section, int level, DatatypeRegistry datatypeRegistry,
-		      Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap,
+	public static Element serializeSection(Section section, int level, DatatypeRegistry datatypeRegistry,DatatypeRegistry derivedDatatypeRegistry
+		      ,Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap,
 		      Set<String> bindedDatatypes, Set<String> bindedComponents) throws SerializationException {
 		    if (section != null) {
 		      try {
 		        SerializableSection serializableSection =
 		            SerializableSectionFactory.getSerializableSection(section, level, datatypeRegistry,
-		      	          datatypesMap, datatypeNamesMap, valuesetNamesMap,bindedDatatypes, bindedComponents);
+		      	          derivedDatatypeRegistry, datatypesMap, datatypeNamesMap, valuesetNamesMap,bindedDatatypes, bindedComponents);
 		        if (serializableSection != null) {
 		          return serializableSection.serialize();
 		        }

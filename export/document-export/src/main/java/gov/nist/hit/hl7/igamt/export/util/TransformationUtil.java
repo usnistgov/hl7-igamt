@@ -27,6 +27,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.xalan.processor.TransformerFactoryImpl;
 
 import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.domain.XSLTIncludeUriResolver;
@@ -46,7 +47,7 @@ public class TransformationUtil {
     // File tmpXmlFile = new File("temp_" + UUID.randomUUID().toString() +
     // ".xml");
     FileUtils.writeStringToFile(tmpXmlFile, xmlContent, Charset.forName("UTF-8"));
-    TransformerFactory factoryTf = TransformerFactory.newInstance();
+    TransformerFactory factoryTf =  TransformerFactory.newInstance("org.apache.xalan.processor.TransformerFactoryImpl", null);
     factoryTf.setURIResolver(new XSLTIncludeUriResolver());
     Source xslt = new StreamSource(TransformationUtil.class.getResourceAsStream(xsltPath));
     Transformer transformer;

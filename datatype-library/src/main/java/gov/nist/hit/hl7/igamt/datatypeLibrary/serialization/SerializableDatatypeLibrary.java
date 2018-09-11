@@ -56,7 +56,7 @@ public class SerializableDatatypeLibrary extends SerializableAbstractDomain {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
 			Element sectionElement = SectionSerializationUtil.serializeSection(section, startLevel,
-					datatypeLibrary.getDatatypeRegistry(), datatypesMap, datatypeNamesMap, valuesetNamesMap,
+					datatypeLibrary.getDatatypeRegistry(), datatypeLibrary.getDerivedRegistry(), datatypesMap, datatypeNamesMap, valuesetNamesMap,
 					bindedDatatypes, bindedComponents);
 			if (sectionElement != null) {
 				datatypeLibraryElement.appendChild(sectionElement);

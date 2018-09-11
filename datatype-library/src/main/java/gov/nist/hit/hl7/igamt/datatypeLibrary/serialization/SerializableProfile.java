@@ -8,6 +8,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.serialization.section.SerializableSectionFactory;
@@ -21,13 +22,14 @@ public class SerializableProfile extends SerializableSection {
 	  private Map<String, String> datatypeNamesMap;
 	  private Map<String, String> valuesetNamesMap;
 	  private DatatypeRegistry datatypeRegistry;
+	  private DatatypeRegistry derivedDatatypeRegistry;
 	  private Set<String> bindedDatatypes;
 	  private Set<String> bindedComponents;
 
 	  /**
 	   * @param section
 	   */
-	  public SerializableProfile(Section section, int level, DatatypeRegistry datatypeRegistry,
+	  public SerializableProfile(Section section, int level, DatatypeRegistry datatypeRegistry, DatatypeRegistry derivedDatatypeRegistry,
 		      Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap, Map<String, String> valuesetNamesMap,
 		      Set<String> bindedDatatypes, Set<String> bindedComponents) {
 	    super(section, level);
@@ -35,6 +37,7 @@ public class SerializableProfile extends SerializableSection {
 	    this.datatypeNamesMap = datatypeNamesMap;
 	    this.valuesetNamesMap = valuesetNamesMap;
 	    this.datatypeRegistry = datatypeRegistry;
+	    this.derivedDatatypeRegistry = derivedDatatypeRegistry;
 	    this.bindedDatatypes = bindedDatatypes;
 	    this.bindedComponents = bindedComponents;
 	  }
@@ -49,14 +52,14 @@ public class SerializableProfile extends SerializableSection {
 	    Element profileElement = super.getElement();
 	    if (((TextSection) super.getSection()).getChildren() != null) {
 	      for (Section section : ((TextSection) super.getSection()).getChildren()) {
-	    	  	if("Derived Data Types".equals(section.getLabel())) {
-	    	  		this.bindedDatatypes = identifyDatatypesByScope(datatypeRegistry, Scope.INTERMASTER);
-	    	  	} else if("Library Flavors".equals(section.getLabel())) {
-	    	  		this.bindedDatatypes = identifyDatatypesByScope(datatypeRegistry, Scope.MASTER);
+	    	  	if(section.getType().equals(Type.DERIVEDDATATYPEREGISTRY)) {
+	    	  		this.bindedDatatypes = identifyDatatypesByScope(derivedDatatypeRegistry);
+	    	  	} if(section.getType().equals(Type.DATATYPEREGISTRY))  {
+	    	  		this.bindedDatatypes = identifyDatatypesByScope(datatypeRegistry);
 	    	  	}
 	        SerializableSection childSection =
 	            SerializableSectionFactory.getSerializableSection(section, this.getChildLevel(), datatypeRegistry,
-	                datatypesMap, datatypeNamesMap, valuesetNamesMap,
+	                derivedDatatypeRegistry, datatypesMap, datatypeNamesMap, valuesetNamesMap,
 	                this.bindedDatatypes, this.bindedComponents);
 	        if (childSection != null) {
 	          Element childSectionElement = childSection.serialize();
@@ -69,12 +72,10 @@ public class SerializableProfile extends SerializableSection {
 	    return profileElement;
 	  }
 
-	private Set<String> identifyDatatypesByScope(DatatypeRegistry datatypeRegistry, Scope scope) {
+	private Set<String> identifyDatatypesByScope(DatatypeRegistry datatypeRegistry) {
 		Set<String> bindedDatatypes = new HashSet<>();
 		for(Link datatypeLink : datatypeRegistry.getChildren()) {
-			if(scope.equals(datatypeLink.getDomainInfo().getScope())) {
 				bindedDatatypes.add(datatypeLink.getId().getId());
-			}
 		}
 		return bindedDatatypes;
 	}

@@ -7,6 +7,8 @@ public class DomainInfo {
   private String version;
   private Set<String> compatibilityVersion=new HashSet<String>();
   private Scope scope;
+  
+  
   public String getVersion() {
     return version;
   }

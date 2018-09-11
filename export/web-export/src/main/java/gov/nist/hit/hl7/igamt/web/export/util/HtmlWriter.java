@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.web.export;
+package gov.nist.hit.hl7.igamt.web.export.util;
 
 
 import static j2html.TagCreator.a;
@@ -35,14 +35,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipOutputStream;
+
+import org.apache.commons.io.FileUtils;
 
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.web.export.model.MyExportObject;
 import j2html.tags.ContainerTag;
 
 
 public class HtmlWriter {
 
-	public void generateHtmlVersionsThenName(MyExportObject myExportObject) throws IOException {
+	public void generateHtmlVersionsThenName(MyExportObject myExportObject, ZipOutputStream zipStream) throws IOException {
 		Map<String,Map<String,List<Datatype>>> datatypesbyVersionThenName = myExportObject.getDatatypesbyVersionThenName();
 		
 		for( String version : datatypesbyVersionThenName.keySet()){
@@ -66,19 +70,21 @@ public class HtmlWriter {
 //	    System.out.println(tableDatatypesByVersion);
 	    
 	    PageCreator pg = new PageCreator();
-	    String resultPage = pg.createPage("/Users/ynb4/ExportV2/ForJava/StructureForTables.html", "<TagToReplace></TagToReplace>", tableDatatypesByVersion);
+	    String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", tableDatatypesByVersion);
 	    
 	    
-	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-	              new FileOutputStream("/Users/ynb4/ExportV2/Pages/DatatypesForVersion_"+version+".html"), "utf-8"))) {
-	   writer.write(resultPage);
-	}
+//	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+//	              new FileOutputStream(webSiteFile.getAbsolutePath()+"/Pages/DatatypesForVersion_"+version+".html"), "utf-8"))) {
+//	   writer.write(resultPage);
+//	}
 	    		
+	    FileUtils.writeStringToFile(new File("DatatypesForVersion_"+version+".html"), resultPage);
+		ZipOutputStreamClass.addFileToZip(zipStream,"Pages/", "DatatypesForVersion_"+version+".html",resultPage);
 
 	}
 	}
 	
-	public void generateHtmlNameThenVersion(MyExportObject myExportObject) throws IOException {
+	public void generateHtmlNameThenVersion(MyExportObject myExportObject, ZipOutputStream zipStream) throws IOException {
 		Map<String,Map<Set<String>,List<Datatype>>> datatypesbyNameThenVersion = myExportObject.getDatatypesbyNameThenVersion();
 //		System.out.println("REGARDE ICI : " +datatypesbyNameThenVersion.keySet().toString());
 		for( String name : datatypesbyNameThenVersion.keySet()){
@@ -120,13 +126,17 @@ public class HtmlWriter {
 
 	    
 	    PageCreator pg = new PageCreator();
-	    String resultPage = pg.createPage("/Users/ynb4/ExportV2/ForJava/StructureForTables.html", "<TagToReplace></TagToReplace>", tableDatatypesByNameThenVersion);
+	    String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", tableDatatypesByNameThenVersion);
 	    
 	    
-	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-	              new FileOutputStream("/Users/ynb4/ExportV2/Pages/Datatype_"+name+".html"), "utf-8"))) {
-	   writer.write(resultPage);
-	}
+//	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+//	              new FileOutputStream(webSiteFile.getAbsolutePath()+"/Pages/Datatype_"+name+".html"), "utf-8"))) {
+//	   writer.write(resultPage);
+//	    }
+	    
+	   FileUtils.writeStringToFile(new File("Datatype_"+name+".html"), resultPage);
+		ZipOutputStreamClass.addFileToZip(zipStream,"Pages/", "Datatype_"+name+".html",resultPage);
+	
 	    		
 	    		
 
