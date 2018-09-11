@@ -40,7 +40,7 @@
          <tr>
             <td>
                <div align="center">
-                  <h2><U><b><xsl:value-of select="concat(@title, ' ',@description)"/></b></U></h2>
+                  <h2><U><b><xsl:value-of select="@description"/></b></U></h2>
                   <p><b>Purpose and Use : </b><xsl:value-of select="@purposeAndUse"/>
                   </p>
                   <table width="600">
@@ -61,7 +61,7 @@
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> HL7 Versions</th>
-                        <td colspan="7"><xsl:value-of select="Metadata/@domainCompatibilityVersions"/></td>
+                        <td colspan="7"><xsl:value-of select="@version"/></td>
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> Status</th>
@@ -69,7 +69,7 @@
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> Publication Date</th>
-                        <td colspan="7"><xsl:value-of select="Metadata/@publicationDate"/></td>
+                        <td colspan="7"><xsl:value-of select="@publicationDate"/></td>
                      </tr>
                      <tr>
                         <th colspan="10" class="grisfonce" style="text-align: center;"><font color="#cc0000">CE_02 Standard Data Type Definition</font></th>

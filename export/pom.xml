@@ -18,14 +18,10 @@
   </properties>
   <dependencies>
   
-  <dependency>
-    <groupId>net.sf.saxon</groupId>
-    <artifactId>Saxon-HE</artifactId>
-    <version>9.8.0-14</version>
-</dependency>
+  
   </dependencies>
-  <modules>
+   <modules>
   	<module>document-export</module>
   	<module>web-export</module>
-  </modules>
+  </modules> 
 </project>

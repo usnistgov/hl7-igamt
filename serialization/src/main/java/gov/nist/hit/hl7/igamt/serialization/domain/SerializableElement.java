@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -35,6 +36,10 @@ public abstract class SerializableElement {
     this.title = title;
   }
 
+  public String formatStringData(String str) {
+	  return FroalaSerializationUtil.cleanFroalaInput(str);
+  }
+  
   public String getId() {
     return id;
   }

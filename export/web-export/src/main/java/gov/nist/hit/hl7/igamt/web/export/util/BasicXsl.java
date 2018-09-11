@@ -20,7 +20,8 @@ import javax.xml.transform.stream.*;
 public class BasicXsl {
     // This method applies the xslFilename to inFilename and writes
     // the output to outFilename.
-    public  File xsl(String inFilename, String xslFilename) throws IOException, TransformerConfigurationException {
+    public  File transformUsingPath(String inFilename, String xslFilename) throws IOException, TransformerConfigurationException {
+    	
     	
 		File 	tmpHtmlFile = File.createTempFile("temp" + UUID.randomUUID().toString(), ".html");
 		
@@ -35,7 +36,7 @@ public class BasicXsl {
 //        Result result = new StreamResult(new FileOutputStream(outFilename));
         
         FileUtils.writeStringToFile(tmpXmlFile, inFilename, Charset.forName("UTF-8"));
-        TransformerFactory factoryTf = new TransformerFactoryImpl();
+        TransformerFactory factoryTf = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
         factoryTf.setURIResolver(new XSLTIncludeUriResolver());
         InputStream stream = TransformationUtil.class.getResourceAsStream(xslFilename);
         Source xslt = new StreamSource(stream);
@@ -49,7 +50,7 @@ public class BasicXsl {
 //          }
 //        }
         try {
-			transformer.transform(new StreamSource(tmpXmlFile), new StreamResult(tmpHtmlFile));
+			transformer.transform(new StreamSource(inFilename), new StreamResult(tmpHtmlFile));
 		} catch (TransformerException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -156,6 +157,47 @@ public class BasicXsl {
 //    }
   
     }
+    
+    
+public  File transformUsingString(String inFilename, String xslFilename) throws IOException, TransformerConfigurationException {
+    	
+    	
+		File 	tmpHtmlFile = File.createTempFile("temp" + UUID.randomUUID().toString(), ".html");
+		
+        // File tmpHtmlFile = new File("temp_" + UUID.randomUUID().toString() +
+        // ".html");
+        // Generate xml file containing profile
+        File tmpXmlFile = File.createTempFile("temp" + UUID.randomUUID().toString(), ".xml");
+        // File tmpXmlFile = new File("temp_" + UUID.randomUUID().toString() +
+        // ".xml");
+        
+//        Source source = new StreamSource(new FileInputStream(inFilename));
+//        Result result = new StreamResult(new FileOutputStream(outFilename));
+        
+        FileUtils.writeStringToFile(tmpXmlFile, inFilename, Charset.forName("UTF-8"));
+        TransformerFactory factoryTf = TransformerFactory.newInstance("net.sf.saxon.TransformerFactoryImpl", null);
+        factoryTf.setURIResolver(new XSLTIncludeUriResolver());
+        InputStream stream = TransformationUtil.class.getResourceAsStream(xslFilename);
+        Source xslt = new StreamSource(stream);
+        Transformer transformer;
+        // Apply XSL transformation on xml file to generate html
+        transformer = factoryTf.newTransformer(xslt);
+        // Set the parameters
+//        for (Map.Entry<String, String> param : exportParameters.toMap().entrySet()) {
+//          if (param != null && param.getKey() != null && param.getValue() != null) {
+//            transformer.setParameter(param.getKey(), param.getValue());
+//          }
+//        }
+        try {
+			transformer.transform(new StreamSource(tmpXmlFile), new StreamResult(tmpHtmlFile));
+		} catch (TransformerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return tmpHtmlFile;
+}
+    
+    
     
     public String BuildXMLfromMap(Map<String,String> allDatatypesExceptTheOne) {
 		String allDatatypes = "<Datatypes>";

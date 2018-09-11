@@ -15,7 +15,7 @@
          <tr>
             <td>
                <div align="center">
-                  <h2><U><b><xsl:value-of select="concat(@title,' ', @ext, ' ',@description)"/></b></U></h2>
+                  <h2><U><b><xsl:value-of select="@description"/></b></U></h2>
                   <p><b>Purpose and Use : </b><xsl:value-of select="@purposeAndUse"/>
                   </p>
                   <table style="width:80%;">
@@ -32,11 +32,11 @@
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> Short Description</th>
-                        <td colspan="7"><xsl:value-of select="concat(@title,' ', @ext)"/></td>
+                        <td colspan="7"><xsl:value-of select="@description"/></td>
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> HL7 Versions</th>
-                        <td colspan="7"><xsl:value-of select="@domainCompatibilityVersions"/></td>
+                        <td colspan="7"><xsl:value-of select="@version"/></td>
                      </tr>
                      <tr>
                         <th colspan="3" class="rose"> Status</th>

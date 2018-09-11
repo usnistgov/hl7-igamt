@@ -3,6 +3,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -13,6 +14,7 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SubStructElementSerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -41,6 +43,11 @@ public class SerializableDatatypeForWeb extends SerializableResource {
 
   public SerializableDatatypeForWeb(Datatype datatype, String position) {
     super(datatype, position);
+  }
+  
+  @Override
+  public String formatStringData(String str) {
+	  return str;
   }
 
   @Override

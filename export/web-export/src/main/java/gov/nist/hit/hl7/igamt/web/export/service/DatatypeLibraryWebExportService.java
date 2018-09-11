@@ -1,6 +1,11 @@
 package gov.nist.hit.hl7.igamt.web.export.service;
 
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.util.zip.ZipOutputStream;
+
 /**
  * 
  * This software was developed at the National Institute of Standards and Technology by employees of
@@ -25,5 +30,5 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
  * @author Bouij Youssef on July 20, 2018.
  */
 public interface DatatypeLibraryWebExportService {
-  public void exportDatatypeLibraryToWeb(String username, String datatypeLibraryId) throws ExportException;
+  public ByteArrayOutputStream exportDatatypeLibraryToWeb(String username, String datatypeLibraryId) throws ExportException;
 }
