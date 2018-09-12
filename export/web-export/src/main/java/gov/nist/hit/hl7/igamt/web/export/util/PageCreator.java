@@ -61,7 +61,7 @@ public class PageCreator {
 			String index = createPage(WritePage(tempPages.getAbsolutePath() + "/temp.html", indexWithVersionsDisplayed),
 					"<ReplaceDatatypeLayer></ReplaceDatatypeLayer>", htmlTableIndex);
 			// WritePage(webSiteFile.getAbsolutePath()+"/index.html", index);
-			FileUtils.writeStringToFile(new File("index.html"), index);
+//			FileUtils.writeStringToFile(new File("index.html"), index);
 			ZipOutputStreamClass.addFileToZip(zipStream, "", "index.html", index);
 
 		} catch (Exception exception) {
@@ -95,9 +95,9 @@ public class PageCreator {
 					InputStream htmlInputStream = FileUtils.openInputStream(htmlFile);
 					// HtmlUtil.cleanHtml(htmlInputStream);
 					String datatypeTransformedToTable = convertStreamToString(htmlInputStream);
-					FileUtils.writeStringToFile(
-							new File("Datatype_" + datatype.getName() + datatype.getExt() + ".html"),
-							datatypeTransformedToTable);
+//					FileUtils.writeStringToFile(
+//							new File("Datatype_" + datatype.getName() + datatype.getExt() + ".html"),
+//							datatypeTransformedToTable);
 					ZipOutputStreamClass.addFileToZip(zipStream, "Pages/",
 							"Datatype_" + datatype.getName() + datatype.getExt() + ".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", datatypeTransformedToTable));
 
@@ -147,8 +147,8 @@ public class PageCreator {
 
 				String pageToWrite = createPage(Tools.getPathFileFromResources("ForJava/AllLeafTableForJava.html"),
 						"<TagToReplaceForAllLeafTable></TagToReplaceForAllLeafTable>", allLeafTableResult);
-				FileUtils.writeStringToFile(new File("AllDatatypesVersion_" + version + "ForRoot_" + name + ".html"),
-						pageToWrite);
+//				FileUtils.writeStringToFile(new File("AllDatatypesVersion_" + version + "ForRoot_" + name + ".html"),
+//						pageToWrite);
 				ZipOutputStreamClass.addFileToZip(zipStream, "Pages/",
 						"AllDatatypesVersion_" + version + "ForRoot_" + name + ".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", pageToWrite));
 
@@ -192,8 +192,8 @@ public class PageCreator {
 
 				String pageToWrite = createPage(Tools.getPathFileFromResources("ForJava/AllLeafTableForJava.html"),
 						"<TagToReplaceForAllLeafTable></TagToReplaceForAllLeafTable>", allLeafTableResult);
-				FileUtils.writeStringToFile(
-						new File("AllDatatypesForRoot_" + name + "Version_" + versionSet + ".html"), pageToWrite);
+//				FileUtils.writeStringToFile(
+//						new File("AllDatatypesForRoot_" + name + "Version_" + versionSet + ".html"), pageToWrite);
 				ZipOutputStreamClass.addFileToZip(zipStream, "Pages/",
 						"AllDatatypesForRoot_" + name + "Version_" + versionSet + ".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", pageToWrite));
 			}
