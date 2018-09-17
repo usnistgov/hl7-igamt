@@ -17,7 +17,8 @@ import {SaveFormsGuard} from '../../../guards/save.guard';
 import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
 import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
 import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
-import {CoConstraintTableResolver} from './coconstraint-table/coconstraint.resolver';
+import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
+import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
 
 @NgModule({
   imports: [
@@ -66,6 +67,12 @@ import {CoConstraintTableResolver} from './coconstraint-table/coconstraint.resol
       },
       {
         path: ':segmentId/crossRef', component: SegmentCrossRefComponent,resolve: { refs : SegmentCrossRefResolver}
+      },
+      {
+        path: ':segmentId/dynamicmapping',
+        component: SegmentEditDynamicMappingComponent,
+        canDeactivate: [SaveFormsGuard],
+        resolve: {segmentDynamicMapping: SegmentEditDynamicMappingResolver}
       }
     ])
   ],

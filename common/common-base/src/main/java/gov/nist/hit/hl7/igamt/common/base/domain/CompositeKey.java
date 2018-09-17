@@ -25,78 +25,80 @@ import org.springframework.data.annotation.Id;
  */
 public class CompositeKey implements Serializable {
 
-	/**
-	  * 
-	  */
-	private static final long serialVersionUID = -5077046386179385282L;
-	@GeneratedValue
-	@Id
-	private String id;
-	private int version;
-	private static final int firstVersion = 1;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -5077046386179385282L;
+  @GeneratedValue
+  @Id
+  private String id;
+  private int version;
+  private static final int firstVersion = 1;
 
-	public String getId() {
-		return id;
-	}
 
-	public CompositeKey() {
-		super();
-		this.id = new ObjectId().toString();
-		this.version = firstVersion;
-	}
+  public String getId() {
+    return id;
+  }
 
-	public CompositeKey(String id) {
-		this(id, firstVersion);
-	}
+  public CompositeKey() {
+    super();
+    this.id = new ObjectId().toString();
+    this.version = firstVersion;
+  }
 
-	public CompositeKey(String id, int version) {
-		super();
-		this.id = id;
-		this.version = version;
-	}
+  public CompositeKey(String id) {
+    this(id, firstVersion);
+  }
 
-	public void setId(String id) {
-		this.id = id;
-	}
+  public CompositeKey(String id, int version) {
+    super();
+    this.id = id;
+    this.version = version;
+  }
 
-	public int getVersion() {
-		return version;
-	}
+  public void setId(String id) {
+    this.id = id;
+  }
 
-	public void setVersion(int version) {
-		this.version = version;
-	}
+  public int getVersion() {
+    return version;
+  }
 
-	@Override
-	public String toString() {
-		return "{id:" + this.id + ",version:" + this.version + "}";
-	}
+  public void setVersion(int version) {
+    this.version = version;
+  }
 
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + version;
-		return result;
-	}
+  @Override
+  public String toString() {
+    return "{id:" + this.id + ",version:" + this.version + "}";
+  }
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		CompositeKey other = (CompositeKey) obj;
-		if (id == null) {
-			if (other.id != null)
-				return false;
-		} else if (!id.toString().equals(other.id.toString()))
-			return false;
-		if (version != other.version)
-			return false;
-		return true;
-	}
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    result = prime * result + version;
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    CompositeKey other = (CompositeKey) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.toString().equals(other.id.toString()))
+      return false;
+    if (version != other.version)
+      return false;
+    return true;
+  }
 
 }

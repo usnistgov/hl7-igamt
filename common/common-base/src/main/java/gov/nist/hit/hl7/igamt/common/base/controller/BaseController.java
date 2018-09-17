@@ -22,6 +22,7 @@ public class BaseController {
   protected static final String POSTDEF_SAVED = "POSTDEF_SAVED";
   protected static final String METADATA_SAVED = "METADATA_SAVED";
   protected static final String CONFORMANCESTATEMENT_SAVED = "CONFORMANCESTATEMENT_SAVED";
+  protected static final String DYNAMICMAPPING_SAVED = "DYNAMICMAPPING_SAVED";
   protected static final String FORBIDDEN = "FORBIDDEN";
 
 }

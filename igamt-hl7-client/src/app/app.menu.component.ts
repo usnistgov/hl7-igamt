@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MenuItem } from 'primeng/primeng';
 import { AppComponent } from './app.component';
+import {Router} from "@angular/router";
 
 @Component({
     selector: 'app-menu',
@@ -15,7 +16,7 @@ export class AppMenuComponent implements OnInit {
 
     model: any[];
 
-    constructor(public app: AppComponent) { }
+    constructor(public app: AppComponent, private router:Router) { }
   ngOnInit() {
     this.model = [
       {label: 'Home', icon: 'dashboard', routerLink: ['/']},
@@ -44,7 +45,33 @@ export class AppMenuComponent implements OnInit {
           }
         ]
       },
-      {label: 'Data type Libraries', icon: 'list', routerLink: ['/datatype-libraries']},
+
+      {
+        label: 'Data Type Libraries', icon: 'palette',
+        items: [
+          {
+            label: 'Create Library', icon: 'plus', routerLink: ['/datatype-libraries/create'], command: (event) => {
+          }
+          },
+          {
+            label: 'My Libraries', icon: 'brush'   , command: (event) => {
+
+            this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'USER'}});
+
+          }
+          },
+          {
+            label: 'Published Libraries', icon: 'brush' , command: (event) => {
+            this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'PUBLISHED'}});
+
+          }
+          },
+          {
+            label: 'Datatype Evolutions', icon: 'brush', routerLink: ['datatype-libraries/evolution'], command: (event) => {
+          }
+          }
+        ]
+      },
       {label: 'Comparator', icon: 'dashboard', routerLink: ['/comparator']},
       {label: 'Documentation', icon: 'dashboard', routerLink: ['/documentation']},
       {label: 'Configuration', icon: 'dashboard', routerLink: ['/configuration']},

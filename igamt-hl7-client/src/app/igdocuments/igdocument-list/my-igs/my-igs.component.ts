@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {IgListService} from "../igdocument-list.service";
 import {Router, ActivatedRoute} from "@angular/router";
 import {SelectItem} from "primeng/components/common/selectitem";
+import {HttpClient} from "@angular/common/http";
 
 @Component({
   templateUrl: './my-igs.component.html'
@@ -19,7 +20,7 @@ export class MyIgsComponent implements OnInit {
 
   sortOrder: number;
 
-  constructor(public activeRoute: ActivatedRoute,public  router:Router) {
+  constructor(public activeRoute: ActivatedRoute,public  router:Router, public http:HttpClient) {
     this.activeRoute.data.map(data =>data.myIgs).subscribe(x=>{
       this.igs=x;
       this.sortOptions = [
@@ -69,5 +70,20 @@ export class MyIgsComponent implements OnInit {
     console.log(this.moreInfoMap);
 
   }
+
+  copy(id){
+    this.http.get<any>("/api/igdocuments/"+id+"/clone").toPromise().then(
+
+      x => {
+        console.log(x);
+
+        this.router.navigate(['/ig/'+x.id],{ queryParams: { readOnly: "true" } });
+
+      }, error =>{
+
+        console.log(error);
+
+      });
+  };
 
 }

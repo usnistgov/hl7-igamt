@@ -31,7 +31,7 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   }
 
   @Override
-  public MongoClient mongo() {
+  public MongoClient mongoClient() {
 
     return new MongoClient(new ServerAddress(DB_HOST, Integer.parseInt(DB_PORT)));
   }

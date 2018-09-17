@@ -25,6 +25,9 @@ export class NamingDuplicationDirective implements Validator {
 
 
   isDuplicated(label){
+    console.log("Duplication Directive");
+    console.log(label);
+    console.log(this.existing);
     let exist= _.filter(this.existing, function(o) { return o==label });
     return exist.length>1;
 

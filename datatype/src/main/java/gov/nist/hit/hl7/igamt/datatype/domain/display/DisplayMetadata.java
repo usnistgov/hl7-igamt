@@ -1,17 +1,20 @@
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import java.util.Set;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 
 public class DisplayMetadata {
+
   private CompositeKey id;
   private Scope scope;
   private String version;
-
   private String name;
   private String ext;
   private String description;
   private String authorNote;
+  private Set<String> compatibilityVersions;
 
   public CompositeKey getId() {
     return id;
@@ -67,6 +70,14 @@ public class DisplayMetadata {
 
   public void setAuthorNote(String authorNote) {
     this.authorNote = authorNote;
+  }
+
+  public Set<String> getCompatibilityVersions() {
+    return compatibilityVersions;
+  }
+
+  public void setCompatibilityVersions(Set<String> compatibilityVersions) {
+    this.compatibilityVersions = compatibilityVersions;
   }
 
 

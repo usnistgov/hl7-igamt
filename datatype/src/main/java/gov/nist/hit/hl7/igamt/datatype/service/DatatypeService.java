@@ -13,9 +13,11 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.service;
 
+import java.util.HashMap;
 import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
@@ -150,6 +152,31 @@ public interface DatatypeService {
   public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeNotFoundException, DatatypeValidationException;
 
+  /**
+   * @param scope
+   * @param hl7Version
+   * @return
+   */
+  List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version);
+
+  /**
+   * @param name
+   * @param version
+   * @param scope
+   * @return
+   */
+  List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
+
+  Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
+
+  /**
+   * @param datatypesMap
+   * @param valuesetsMap
+   * @param l
+   * @return
+   */
+  public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
 
 
 }

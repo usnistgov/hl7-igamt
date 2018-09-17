@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { DatatypeCrossRefComponent } from './datatype-cross-ref.component';
 
-describe('DatatypeCrossRefComponent', () => {
+describe('LibDatatypeCrossRefComponent', () => {
   let component: DatatypeCrossRefComponent;
   let fixture: ComponentFixture<DatatypeCrossRefComponent>;
 

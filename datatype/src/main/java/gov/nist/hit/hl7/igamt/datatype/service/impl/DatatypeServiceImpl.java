@@ -17,6 +17,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,9 +33,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -173,6 +178,48 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
 
+  @Override
+  public List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version) {
+
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    where.andOperator(Criteria.where("domainInfo.version").is(hl7Version));
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, Datatype.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
+    return datatypes;
+
+  }
+
+
+  @Override
+  public List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope) {
+    Criteria where =
+        Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
+            .andOperator(Criteria.where("domainInfo.scope").is(scope)));
+    Query query = Query.query(where);
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    List<Datatype> datatypes = mongoTemplate.find(query, Datatype.class);
+    return datatypes;
+  }
+
+  @Override
+  public Datatype findOneByNameAndVersionAndScope(String name, String version, String scope) {
+    Criteria where =
+        Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
+            .andOperator(Criteria.where("domainInfo.scope").is(scope)));
+    Query query = Query.query(where);
+    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.limit(1);
+    Datatype datatypes = mongoTemplate.findOne(query, Datatype.class);
+    return datatypes;
+  }
 
   @Override
   public DatatypeStructure convertDomainToStructure(Datatype datatype) {
@@ -195,6 +242,13 @@ public class DatatypeServiceImpl implements DatatypeService {
           for (Component c : cDt.getComponents()) {
             ComponentDisplay componentDisplay = new ComponentDisplay();
             componentDisplay.setData(c);
+            if (datatype.getDomainInfo().getScope().toString()
+                .equals(Scope.HL7STANDARD.toString())) {
+              componentDisplay.setReadOnly(true);
+            } else {
+              componentDisplay.setReadOnly(false);
+
+            }
             result.addChild(componentDisplay);
           }
         }
@@ -222,6 +276,7 @@ public class DatatypeServiceImpl implements DatatypeService {
       result.setName(datatype.getName());
       result.setScope(datatype.getDomainInfo().getScope());
       result.setVersion(datatype.getDomainInfo().getVersion());
+      result.setCompatibilityVersions(datatype.getDomainInfo().getCompatibilityVersion());
       return result;
     }
     return null;
@@ -396,7 +451,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
   /**
-   * Validate the structure of the segment
+   * Validate the structure of the datatype
    * 
    * @param structure
    * @throws DatatypeValidationException
@@ -454,8 +509,9 @@ public class DatatypeServiceImpl implements DatatypeService {
   /*
    * (non-Javadoc)
    * 
-   * @see gov.nist.hit.hl7.igamt.segment.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
-   * igamt. segment.domain.display.DatatypeStructure)
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
+   * igamt. datatype.domain.display.DatatypeStructure)
    */
   @Override
   public Datatype convertToDatatype(DatatypeStructure structure) {
@@ -503,14 +559,14 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveMetadata(DisplayMetadata metadata)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(metadata);
-    Datatype segment = findLatestById(metadata.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(metadata.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(metadata.getId().getId());
     }
-    segment.setExt(metadata.getExt());
-    segment.setDescription(metadata.getDescription());
-    segment.setComment(metadata.getAuthorNote());
-    return save(segment);
+    datatype.setExt(metadata.getExt());
+    datatype.setDescription(metadata.getDescription());
+    datatype.setComment(metadata.getAuthorNote());
+    return save(datatype);
   }
 
 
@@ -518,13 +574,91 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(conformanceStatement);
-    Datatype segment = findLatestById(conformanceStatement.getId().getId());
-    if (segment == null) {
+    Datatype datatype = findLatestById(conformanceStatement.getId().getId());
+    if (datatype == null) {
       throw new DatatypeNotFoundException(conformanceStatement.getId().getId());
     }
-    segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
-    return save(segment);
+    datatype.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
+    return save(datatype);
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#cloneDatatype(java.util.HashMap,
+   * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link)
+   */
+  @Override
+  public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+    // TODO Auto-generated method stub
+
+    Datatype elm = this.findByKey(l.getId());
+
+    Link newLink = new Link();
+    if (datatypesMap.containsKey(l.getId().getId())) {
+      newLink.setId(datatypesMap.get(l.getId().getId()));
+    } else {
+      CompositeKey newKey = new CompositeKey();
+      newLink.setId(newKey);
+      datatypesMap.put(l.getId().getId(), newKey);
+    }
+    updateDependencies(elm, datatypesMap, valuesetsMap);
+    elm.setFrom(elm.getId());
+    elm.setId(newLink.getId());
+    this.save(elm);
+    return newLink;
+
+  }
+
+  /**
+   * @param elm
+   * @param datatypesMap
+   * @param valuesetsMap
+   */
+  private void updateDependencies(Datatype elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+
+    if (elm instanceof ComplexDatatype) {
+      for (Component c : ((ComplexDatatype) elm).getComponents()) {
+        if (c.getRef() != null) {
+          if (c.getRef().getId() != null) {
+            if (datatypesMap.containsKey(c.getRef().getId())) {
+              c.getRef().setId(datatypesMap.get(c.getRef().getId()).getId());
+            }
+          }
+        }
+
+      }
+
+    }
+    updateBindings(elm.getBinding(), valuesetsMap);
+
+  }
+
+  /**
+   * @param elm
+   * @param valuesetsMap
+   */
+  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    Set<String> vauleSetIds = new HashSet<String>();
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if (vs.getValuesetId() != null) {
+              if (valuesetsMap.containsKey(vs.getValuesetId())) {
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
 
 
 }

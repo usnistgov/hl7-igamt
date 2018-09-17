@@ -19,7 +19,7 @@ package gov.nist.hit.hl7.igamt.export.domain;
  */
 public enum ExportFormat {
 
-  HTML("html"), WORD("docx"), XML("xml");
+  HTML("html"), WORD("docx"), XML("xml"), WEB("web");
 
   private final String value;
 

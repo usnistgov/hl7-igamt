@@ -2,7 +2,7 @@ import { TestBed, inject } from '@angular/core/testing';
 
 import { DatatypesService } from './datatypes.service';
 
-describe('DatatypesService', () => {
+describe('LibDatatypesService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       providers: [DatatypesService]

@@ -31,6 +31,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
@@ -428,8 +429,6 @@ public class ValuesetServiceImpl implements ValuesetService {
       }
     }
 
-
-
     return displayCodes;
 
   }
@@ -558,5 +557,17 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
     valueset.setPostDef(postDef.getPostDef());
     return save(valueset);
+  }
+
+  @Override
+  public Link cloneValueSet(CompositeKey newkey, Link l, String username) {
+    Valueset elm = this.findById(l.getId());
+    Link newLink = new Link();
+    newLink = l.clone(newkey);
+    elm.setFrom(elm.getId());
+    elm.setId(newkey);
+    elm.setUsername(username);
+    this.save(elm);
+    return newLink;
   }
 }

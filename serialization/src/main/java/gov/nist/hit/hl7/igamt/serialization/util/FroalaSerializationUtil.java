@@ -35,7 +35,7 @@ import com.mongodb.gridfs.GridFSDBFile;
  */
 public class FroalaSerializationUtil {
 
-  public static String cleanFroalaInput(String input) {
+  public static  String cleanFroalaInput(String input) {
     input = input.replace("<br>", "<br />");
     if (input.contains("<pre>")) {
       input = input.replace("\n", "<br />");

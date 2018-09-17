@@ -31,9 +31,9 @@ public class DynamicMappingSerializationException extends SerializationException
   public DynamicMappingSerializationException(Exception exception,
       DynamicMappingInfo dynamicMappingInfo) {
     super(exception, Type.DYNAMICMAPPING,
-        "referencePath="
-            + (dynamicMappingInfo.getReferencePath() != null ? dynamicMappingInfo.getReferencePath()
-                : ""));
+        "referencePath=" + (dynamicMappingInfo.getReferenceFieldId() != null
+            ? dynamicMappingInfo.getReferenceFieldId()
+            : ""));
   }
 
 }

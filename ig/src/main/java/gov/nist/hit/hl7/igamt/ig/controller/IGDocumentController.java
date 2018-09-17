@@ -74,7 +74,6 @@ import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
-import gov.nist.hit.hl7.igamt.ig.service.SaveService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -104,8 +103,6 @@ public class IGDocumentController extends BaseController {
   CrudService crudService;
 
 
-  @Autowired
-  SaveService saveService;
 
   @Autowired
   private XRefService xRefService;
@@ -336,16 +333,6 @@ public class IGDocumentController extends BaseController {
 
   public void setIgService(IgService igService) {
     this.igService = igService;
-  }
-
-
-  public SaveService getSaveService() {
-    return saveService;
-  }
-
-
-  public void setSaveService(SaveService saveService) {
-    this.saveService = saveService;
   }
 
 
@@ -654,7 +641,6 @@ public class IGDocumentController extends BaseController {
     Datatype clone = datatype.clone();
     clone.setUsername(username);
     clone.setId(new CompositeKey());
-    clone.setName(datatype.getName());
     clone.setExt(wrapper.getExt());
     clone = datatypeService.save(clone);
     ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
@@ -771,7 +757,6 @@ public class IGDocumentController extends BaseController {
 
   }
 
-
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST,
       produces = {"application/json"})
   public AddValueSetsResponseDisplay addValueSets(@PathVariable("id") String id,
@@ -797,6 +782,16 @@ public class IGDocumentController extends BaseController {
     }
     AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
     return displayConverter.convertDatatypeResponseToDisplay(objects);
+
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody CompositeKey copy(@PathVariable("id") String id,
+      Authentication authentication) throws IGNotFoundException {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    return this.igService.clone(ig, username).getId();
 
   }
 

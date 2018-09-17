@@ -16,7 +16,7 @@ public abstract class AbstractDomain {
   private String createdFrom;
   private Date creationDate;
   private Date updateDate;
-  
+  private CompositeKey from;
 
 
 
@@ -102,22 +102,31 @@ public abstract class AbstractDomain {
   public void setUsername(String username) {
     this.username = username;
   }
-public Date getCreationDate() {
-	return creationDate;
-}
 
-public void setCreationDate(Date creationDate) {
-	this.creationDate = creationDate;
-}
+  public Date getCreationDate() {
+    return creationDate;
+  }
 
-public Date getUpdateDate() {
-	return updateDate;
-}
+  public void setCreationDate(Date creationDate) {
+    this.creationDate = creationDate;
+  }
 
-public void setUpdateDate(Date updateDate) {
-	this.updateDate = updateDate;
-}
+  public Date getUpdateDate() {
+    return updateDate;
+  }
 
-public abstract String getLabel();
+  public void setUpdateDate(Date updateDate) {
+    this.updateDate = updateDate;
+  }
+
+  public abstract String getLabel();
+
+  public CompositeKey getFrom() {
+    return from;
+  }
+
+  public void setFrom(CompositeKey from) {
+    this.from = from;
+  }
 
 }

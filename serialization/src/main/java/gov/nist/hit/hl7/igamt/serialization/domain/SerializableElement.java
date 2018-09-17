@@ -15,6 +15,7 @@ package gov.nist.hit.hl7.igamt.serialization.domain;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
+import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -35,6 +36,10 @@ public abstract class SerializableElement {
     this.title = title;
   }
 
+  public String formatStringData(String str) {
+	  return FroalaSerializationUtil.cleanFroalaInput(str);
+  }
+  
   public String getId() {
     return id;
   }
@@ -63,7 +68,7 @@ public abstract class SerializableElement {
     Element element = new Element(elementName);
     element.addAttribute(new Attribute("id", this.id));
     element.addAttribute(new Attribute("position", this.position));
-    element.addAttribute(new Attribute("title", this.title));
+    element.addAttribute(new Attribute("title", this.title != null ? this.title : ""));
     return element;
   }
 
@@ -94,6 +99,9 @@ public abstract class SerializableElement {
       case IGDOCUMENT:
         elementName = "Document";
         break;
+      case DATATYPELIBRARY:
+          elementName = "Document";
+          break;
       default:
         elementName = "Section";
         break;

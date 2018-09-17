@@ -21,22 +21,42 @@
 
   <div>
     <p-treeTable *ngIf="selcetedVersion" [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectdNodeMap[selectedVerion]" [style]="{'margin-top':'10px', 'max-height':'400px', 'overflow':'scroll'}">
-      <p-column  header="Name">
-        <ng-template let-node="rowData" pTemplate="body">
-          <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
 
-        </ng-template>
-      </p-column>
-      <p-column  header="Event Types">
-        <ng-template let-node="rowData" pTemplate="body">
-          <span *ngIf="node.data.type=='EVENT' "> {{node.data.name}}</span>
-        </ng-template>
-      </p-column>
-      <p-column  header="Description">
-        <ng-template let-node="rowData" pTemplate="body">
-          {{node.data.description}}
-        </ng-template>
-      </p-column>
+      <ng-template pTemplate="header" let-columns>
+        <tr>
+          <th>
+            Name
+          </th>
+          <th>
+            Event Types
+          </th>
+          <th>
+            Description
+          </th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+        <tr>
+          <td>
+
+            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
+            <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
+
+          </td>
+          <td>
+            <span *ngIf="node.data.type=='EVENT' ">  <p-treeTableCheckbox [value]="rowNode" ></p-treeTableCheckbox> {{node.data.name}}</span>
+
+
+
+
+          </td>
+
+          <td>
+
+            {{node.data.description}}
+          </td>
+        </tr>
+      </ng-template>
     </p-treeTable>
 
 <div class="ui-g-offset-10">

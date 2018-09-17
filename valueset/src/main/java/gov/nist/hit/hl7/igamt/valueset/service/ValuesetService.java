@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
@@ -134,5 +135,12 @@ public interface ValuesetService {
    * @return
    */
   public Set<DisplayCode> getCodeDisplay(Valueset valueset);
+
+  /**
+   * @param newkey
+   * @param l
+   * @return
+   */
+  Link cloneValueSet(CompositeKey newkey, Link l, String username);
 
 }

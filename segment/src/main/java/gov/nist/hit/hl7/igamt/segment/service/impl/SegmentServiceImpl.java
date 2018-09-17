@@ -18,6 +18,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.matc
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -33,9 +34,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -45,13 +50,21 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
@@ -75,6 +88,9 @@ public class SegmentServiceImpl implements SegmentService {
   @Autowired
   ValuesetService valueSetService;
 
+  @Autowired
+  private CodeSystemService codeSystemService;
+
   @Override
   public Segment findByKey(CompositeKey key) {
     return segmentRepository.findById(key).get();
@@ -93,8 +109,6 @@ public class SegmentServiceImpl implements SegmentService {
     segment = segmentRepository.save(segment);
     return segment;
   }
-
-
 
   @Override
   public List<Segment> findAll() {
@@ -337,6 +351,72 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
+  @Override
+  public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment) {
+    if (segment != null) {
+      SegmentDynamicMapping result = new SegmentDynamicMapping();
+      result.setId(segment.getId());
+      result.setScope(segment.getDomainInfo().getScope());
+      result.setVersion(segment.getDomainInfo().getVersion());
+      if (segment.getExt() != null) {
+        result.setLabel(segment.getName() + segment.getExt());
+      } else {
+        result.setLabel(segment.getName());
+      }
+      result.setName(segment.getName());
+      result.setUpdateDate(segment.getUpdateDate());
+      result.setDynamicMappingInfo(segment.getDynamicMappingInfo());
+
+      if (segment.getName().equals("OBX")) {
+        for (Field field : segment.getChildren()) {
+          if (field.getPosition() == 2) {
+            result.getDynamicMappingInfo().setReferenceFieldId(field.getId());
+          } else if (field.getPosition() == 5) {
+            result.getDynamicMappingInfo().setVariesFieldId(field.getId());
+          }
+        }
+
+        if (segment.getBinding() != null && segment.getBinding().getChildren() != null) {
+          for (StructureElementBinding structureElementBinding : segment.getBinding()
+              .getChildren()) {
+            if (structureElementBinding.getElementId()
+                .equals(result.getDynamicMappingInfo().getReferenceFieldId())) {
+              if (structureElementBinding.getValuesetBindings() != null) {
+                for (ValuesetBinding valuesetBinding : structureElementBinding
+                    .getValuesetBindings()) {
+                  Valueset vs = valueSetService.findLatestById(valuesetBinding.getValuesetId());
+                  if (vs.getCodeRefs() != null) {
+                    for (CodeRef codeRef : vs.getCodeRefs()) {
+                      CodeSystem codeSystem =
+                          codeSystemService.findLatestById(codeRef.getCodeSystemId());
+                      Code code = codeSystem.findCode(codeRef.getCodeId());
+                      CodeInfo codeInfo = new CodeInfo();
+                      codeInfo.setCode(code.getValue());
+                      codeInfo.setDescription(code.getDescription());
+                      result.addReferenceCode(codeInfo);
+                    }
+                  }
+
+                  if (vs.getCodes() != null) {
+                    for (InternalCode iCode : vs.getCodes()) {
+                      CodeInfo codeInfo = new CodeInfo();
+                      codeInfo.setCode(iCode.getValue());
+                      codeInfo.setDescription(iCode.getDescription());
+                      result.addReferenceCode(codeInfo);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      return result;
+    }
+    return null;
+  }
+
 
   private void validateField(Field f) throws ValidationException {
     if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
@@ -405,17 +485,18 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
+  /**
+   * TODO: anything more to validate ??
+   */
+  @Override
+  public void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException {
+    if (dynamicMapping != null) {
+    }
+  }
 
 
   /**
    * TODO
-   */
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#convertToSegment(gov.nist.hit.hl7.igamt.
-   * segment.domain.display.SegmentStructure)
    */
   @Override
   public Segment convertToSegment(SegmentStructure structure) {
@@ -482,4 +563,82 @@ public class SegmentServiceImpl implements SegmentService {
     return save(segment);
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#cloneSegment(java.util.HashMap,
+   * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
+   */
+  @Override
+  public Link cloneSegment(CompositeKey key, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+
+    Segment elm = this.findByKey(l.getId());
+
+    Link newLink = new Link();
+    newLink.setId(key);
+    updateDependencies(elm, datatypesMap, valuesetsMap);
+    elm.setFrom(elm.getId());
+    elm.setId(newLink.getId());
+    this.save(elm);
+    return newLink;
+
+  }
+
+  /**
+   * @param elm
+   * @param datatypesMap
+   * @param valuesetsMap
+   */
+  private void updateDependencies(Segment elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+
+    for (Field f : elm.getChildren()) {
+      if (f.getRef() != null) {
+        if (f.getRef().getId() != null) {
+          if (datatypesMap.containsKey(f.getRef().getId())) {
+            f.getRef().setId(datatypesMap.get(f.getRef().getId()).getId());
+          }
+        }
+      }
+
+    }
+    updateBindings(elm.getBinding(), valuesetsMap);
+
+  }
+
+  /**
+   * @param elm
+   * @param valuesetsMap
+   */
+  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+    // TODO Auto-generated method stub
+    if (binding.getChildren() != null) {
+      for (StructureElementBinding child : binding.getChildren()) {
+        if (child.getValuesetBindings() != null) {
+          for (ValuesetBinding vs : child.getValuesetBindings()) {
+            if (vs.getValuesetId() != null) {
+              if (valuesetsMap.containsKey(vs.getValuesetId())) {
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+
+  @Override
+  public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+      throws SegmentNotFoundException, SegmentValidationException {
+    validate(dynamicMapping);
+    Segment segment = findLatestById(dynamicMapping.getId().getId());
+    if (segment == null) {
+      throw new SegmentNotFoundException(dynamicMapping.getId().getId());
+    }
+    segment.setDynamicMappingInfo(dynamicMapping.getDynamicMappingInfo());
+    return save(segment);
+  }
 }
