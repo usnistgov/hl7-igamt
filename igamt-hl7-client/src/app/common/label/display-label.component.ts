@@ -13,7 +13,7 @@ import {Types} from "../constants/types";
 export class DisplayLabelComponent {
   _elm : any;
   _ig : any;
-
+  _redirect : boolean = true;
   @Input()
   igId : any;
 
@@ -21,9 +21,15 @@ export class DisplayLabelComponent {
     private route: ActivatedRoute,
     private router: Router,
   ){
+
   }
+
   ngOnInit(){
 
+  }
+
+  @Input() set redirect(bool){
+    this._redirect = bool;
   }
 
   @Input() set elm(obj){
@@ -105,6 +111,12 @@ export class DisplayLabelComponent {
 
 
   };
+
+  doRedirect() {
+    if (this._redirect) {
+      this.goTo();
+    }
+  }
 
   goTo() {
     console.log(this.elm);

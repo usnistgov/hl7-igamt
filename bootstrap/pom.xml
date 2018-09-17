@@ -120,8 +120,11 @@
 			<artifactId>spring-security-test</artifactId>
 		</dependency>
 
-
-
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>co-constraint</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<finalName>hl7-igamt</finalName>

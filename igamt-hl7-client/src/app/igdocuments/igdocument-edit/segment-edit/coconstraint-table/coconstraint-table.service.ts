@@ -7,6 +7,7 @@ import {Http} from '@angular/http';
 import {UUID} from 'angular2-uuid';
 import * as _ from 'lodash';
 import {TocService} from '../../service/toc.service';
+import {HttpClient} from '@angular/common/http';
 
 /**
  * Created by hnt5 on 10/11/17.
@@ -15,27 +16,30 @@ import {TocService} from '../../service/toc.service';
 @Injectable()
 export class CoConstraintTableService {
 
-    constructor(private $http: Http,
+    constructor(private $http: HttpClient,
                 private tocService: TocService) {}
+
 
     async getCCTableForSegment(segment: any): Promise<CoConstraintTable> {
         if (!segment) {
             return null;
         } else {
-            const table: CoConstraintTable = this.fetch_coconstraint_table(segment.id);
+            const table: CoConstraintTable = await this.fetch_coconstraint_table(segment.id.id);
             if (!table) {
                 if (segment.name === 'OBX') {
                   return await this.generate_obx_table(segment);
-                }
-                else {
+                } else {
                   return this.generate_generic_table(segment.name);
                 }
+            } else {
+              return table;
             }
-            else
-                return table;
-
         }
+    }
 
+    async saveCoConstraintTable(c: CoConstraintTable, segmentId: string) : Promise<CoConstraintTable>  {
+        const table : CoConstraintTable = await this.$http.post<CoConstraintTable>('api/segments/' + segmentId + '/coconstraints', c).toPromise();
+        return table;
     }
 
     generate_generic_table(name: string): CoConstraintTable {
@@ -115,19 +119,48 @@ export class CoConstraintTableService {
         return tmp;
     }
 
-    async get_bound_codes(segment: any){
-        if (segment && segment.valueSetBindings){
-            for (const binding of segment.valueSetBindings){
-                if (binding.location === '2'){
-                    return this.$http.get('api/tables/' + binding.tableId).toPromise();
-                }
+    async get_bound_codes(segment: any) {
+
+      const elm = _.filter(segment.children, function (child) {
+        return child.data.position === 2;
+      });
+
+      if (elm !== null && elm.length === 1) {
+        const bindingsForChild = _.filter(segment.binding.children, function (child) {
+          return child.elementId === elm[0].data.id;
+        });
+
+
+        const bound_codes: any[] = [];
+        const bindings = bindingsForChild[0].valuesetBindings;
+        const compatible = _.filter(bindings, function (o) {
+          return o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0;
+        });
+
+
+
+        for (const binding of compatible){
+          const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
+          for (const code of codes){
+            if (code.usage === 'R' || code.usage === 'P'){
+              bound_codes.push(code);
             }
+          }
         }
+        return bound_codes;
+      }
+      return [];
     }
 
-    fetch_coconstraint_table(id: string)  {
+    async fetch_coconstraint_table(id: string)  {
+      try {
+        const table: CoConstraintTable = await this.$http.get<CoConstraintTable>('api/segments/' + id + '/coconstraints').toPromise();
+        return table;
+      } catch (e) {
         return null;
+      }
     }
+
 
     new_line(selectors: any[], data: any[], user: any[]){
         const row: CCRow = {

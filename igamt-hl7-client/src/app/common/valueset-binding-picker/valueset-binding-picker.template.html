@@ -4,7 +4,7 @@
     </p-header>
     <strong>Pick Value Set Bindings for {{elm}}</strong>
     <div class="g-row">
-      <p-table #tt styleClass="ui-g-6" [(selection)]="selectedTables" selectionMode="multiple" (onRowSelect)="selectRow($event)"  [value]="tables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['name','description']" >
+      <p-table #tt styleClass="ui-g-6" [(selection)]="selectedTables" selectionMode="multiple" (onRowSelect)="selectRow($event)"  [value]="tables" [scrollable]="true" scrollHeight="200px" [globalFilterFields]="['name','description']" dataKey="bindingIdentifier" >
         <ng-template pTemplate="caption">
           <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
           <input type="text" pInputText placeholder="Search" (input)="tt.filterGlobal($event.target.value, 'contains')"  style="width: 70%;">

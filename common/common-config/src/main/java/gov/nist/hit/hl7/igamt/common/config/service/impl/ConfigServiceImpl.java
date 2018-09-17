@@ -32,4 +32,9 @@ public class ConfigServiceImpl implements ConfigService {
     return configRepository.save(shared);
   }
 
+@Override
+public boolean isCodedElement(String name) {
+	return name.matches("^C(W|N)?E$");
+}
+
 }

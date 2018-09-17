@@ -17,6 +17,7 @@ import {SaveFormsGuard} from '../../../guards/save.guard';
 import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
 import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.component";
 import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
+import {CoConstraintTableResolver} from './coconstraint-table/coconstraint.resolver';
 
 @NgModule({
   imports: [
