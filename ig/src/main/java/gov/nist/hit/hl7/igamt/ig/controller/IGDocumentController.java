@@ -243,9 +243,6 @@ public class IGDocumentController extends BaseController {
     }
 
     return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
-
-
-
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST,

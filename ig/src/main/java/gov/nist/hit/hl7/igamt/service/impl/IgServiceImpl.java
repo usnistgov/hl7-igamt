@@ -351,7 +351,6 @@ public class IgServiceImpl implements IgService {
 
     newIg.setValueSetRegistry(
         copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
-
     newIg.setDatatypeRegistry(
         copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
 
@@ -423,9 +422,7 @@ public class IgServiceImpl implements IgService {
       }
     }
     newReg.setChildren(children);
-
     return newReg;
-
   }
 
   /**
