@@ -52,6 +52,7 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -333,7 +334,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Ig clone(Ig ig, String username) {
+  public Ig clone(Ig ig, String username) throws CoConstraintSaveException {
     Ig newIg = new Ig();
     newIg.setId(new CompositeKey());
     newIg.setMetadata(ig.getMetadata().clone());
@@ -406,10 +407,12 @@ public class IgServiceImpl implements IgService {
    * @param segmentsMap
    * @param username
    * @return
+   * @throws CoConstraintSaveException
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
       HashMap<String, CompositeKey> segmentsMap, HashMap<String, CompositeKey> valuesetsMap,
-      HashMap<String, CompositeKey> datatypesMap, String username) {
+      HashMap<String, CompositeKey> datatypesMap, String username)
+      throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();

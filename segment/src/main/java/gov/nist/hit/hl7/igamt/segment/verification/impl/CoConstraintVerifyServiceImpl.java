@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.coconstraints.service.impl;
+package gov.nist.hit.hl7.igamt.segment.verification.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CellType;
@@ -19,25 +18,18 @@ import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTableGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTableHeader;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTableHeaders;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.DataElementHeader;
-import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintRepository;
-import gov.nist.hit.hl7.igamt.coconstraints.service.CoConstraintVerifyService;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.segment.verification.CoConstraintVerifyService;
 
 @Service
 public class CoConstraintVerifyServiceImpl implements CoConstraintVerifyService {
 
-  @Autowired
-  private MongoTemplate mongoTemplate;
-  @Autowired
-  private SegmentService segmentService;
-  @Autowired
-  private CoConstraintRepository repo;
+
   @Autowired
   private DatatypeService datatypeService;
 

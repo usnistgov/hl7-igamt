@@ -75,6 +75,7 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -785,7 +786,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody CompositeKey copy(@PathVariable("id") String id,
-      Authentication authentication) throws IGNotFoundException {
+      Authentication authentication) throws IGNotFoundException, CoConstraintSaveException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     return this.igService.clone(ig, username).getId();

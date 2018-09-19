@@ -33,6 +33,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -47,6 +48,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
@@ -58,6 +60,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
@@ -78,6 +82,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
+
+  @Autowired
+  private CoConstraintService coConstraintService;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -193,8 +200,6 @@ public class SegmentServiceImpl implements SegmentService {
     query.limit(1);
     Segment segment = mongoTemplate.findOne(query, Segment.class);
     return segment;
-
-
   }
 
   @Override
@@ -571,15 +576,18 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public Link cloneSegment(CompositeKey key, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+      HashMap<String, CompositeKey> valuesetsMap, Link l, String username)
+      throws CoConstraintSaveException {
 
-    Segment elm = this.findByKey(l.getId());
+    Segment obj = this.findByKey(l.getId());
+    Segment elm = obj.clone();
 
     Link newLink = new Link();
     newLink.setId(key);
-    updateDependencies(elm, datatypesMap, valuesetsMap);
     elm.setFrom(elm.getId());
     elm.setId(newLink.getId());
+    updateDependencies(elm, datatypesMap, valuesetsMap, username);
+
     this.save(elm);
     return newLink;
 
@@ -589,9 +597,11 @@ public class SegmentServiceImpl implements SegmentService {
    * @param elm
    * @param datatypesMap
    * @param valuesetsMap
+   * @throws CoConstraintSaveException
    */
   private void updateDependencies(Segment elm, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap) {
+      HashMap<String, CompositeKey> valuesetsMap, String username)
+      throws CoConstraintSaveException {
     // TODO Auto-generated method stub
 
     for (Field f : elm.getChildren()) {
@@ -602,11 +612,26 @@ public class SegmentServiceImpl implements SegmentService {
           }
         }
       }
-
     }
     updateBindings(elm.getBinding(), valuesetsMap);
+    updateCoConstraint(elm, datatypesMap, valuesetsMap, username);
+
+
 
   }
+
+  private void updateCoConstraint(Segment elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, String username)
+      throws CoConstraintSaveException {
+    CoConstraintTable cc = coConstraintService.getLatestCoConstraintForSegment(elm.getId().getId());
+    if (cc != null) {
+      CoConstraintTable cc_ =
+          coConstraintService.clone(datatypesMap, valuesetsMap, elm.getId(), cc);
+      coConstraintService.saveCoConstraintForSegment(elm.getId().getId(), cc_, username);
+    }
+
+  }
+
 
   /**
    * @param elm
@@ -629,6 +654,14 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
+  private void updateDynamicMapping(Segment elm, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, CompositeKey> valuesetsMap, String username) {
+
+    DynamicMappingInfo dynmaicMapping = elm.getDynamicMappingInfo();
+
+  }
+
+
 
   @Override
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
@@ -641,4 +674,5 @@ public class SegmentServiceImpl implements SegmentService {
     segment.setDynamicMappingInfo(dynamicMapping.getDynamicMappingInfo());
     return save(segment);
   }
+
 }
