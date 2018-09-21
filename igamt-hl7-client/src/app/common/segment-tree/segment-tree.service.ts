@@ -27,6 +27,9 @@ export class SegmentTreeNodeService {
       const node = await this.lazyNode(field.data, null, segment, exclusion);
       nodes.push(node);
     }
+    nodes.sort((a,b) => {
+      return a.data.index - b.data.index;
+    });
     return nodes;
   }
 
@@ -46,7 +49,8 @@ export class SegmentTreeNodeService {
       node.selectable = true;
       node.data.version = dt.data.domainInfo.version;
       node.data.coded = this.configService.isCodedElement(dt.data.label);
-      node.data.variable = element.ref.id.includes('VARIES');
+      node.data.variable = dt.data.label === 'VARIES';
+      node.data.complex = !node.leaf;
     }
 
     return node;
@@ -59,6 +63,9 @@ export class SegmentTreeNodeService {
       for (const d of data.children) {
         nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
       }
+    });
+    nodes.sort((a,b) => {
+      return a.data.index - b.data.index;
     });
     return nodes;
   }

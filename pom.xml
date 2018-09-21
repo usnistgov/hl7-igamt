@@ -115,7 +115,8 @@
 		<module>file-storage</module>
 		<module>x-reference</module>
 		<module>export-configuration</module>
- 		<module>export</module>
-  </modules>
+		<module>export</module>
+		<module>co-constraint</module>
+	</modules>
   
 </project>

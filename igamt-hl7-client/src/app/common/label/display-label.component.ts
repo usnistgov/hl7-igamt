@@ -12,7 +12,8 @@ import {Types} from "../constants/types";
 })
 export class DisplayLabelComponent {
   _elm : any;
-
+  _ig : any;
+  _redirect : boolean = true;
   @Input()
   igId : any;
 
@@ -20,9 +21,15 @@ export class DisplayLabelComponent {
     private route: ActivatedRoute,
     private router: Router,
   ){
+
   }
+
   ngOnInit(){
 
+  }
+
+  @Input() set redirect(bool){
+    this._redirect = bool;
   }
 
   @Input() set elm(obj){
@@ -75,7 +82,7 @@ export class DisplayLabelComponent {
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
-      return elm.label+"_"+elm.ext+"-"+elm.description;
+      return elm.label+"_"+elm.ext+elm.description;
     }
   };
 
@@ -83,7 +90,7 @@ export class DisplayLabelComponent {
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
-      return elm.label+"_"+elm.ext+"-"+elm.description;
+      return elm.label+"_"+elm.ext+elm.description;
     }
   };
   getTableLabel(elm){
@@ -104,6 +111,12 @@ export class DisplayLabelComponent {
 
 
   };
+
+  doRedirect() {
+    if (this._redirect) {
+      this.goTo();
+    }
+  }
 
   goTo() {
     console.log(this.elm);

@@ -34,7 +34,7 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
 
     selectRow(event) {
       if (!this.complex) {
-        event.data.bindingLocation = '.';
+        event.data.bindingLocation = ['.'];
       }
     }
 

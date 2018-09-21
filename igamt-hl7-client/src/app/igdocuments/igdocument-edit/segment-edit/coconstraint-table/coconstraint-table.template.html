@@ -8,7 +8,7 @@
     <strong>DROP HERE</strong>
   </td>
 </tr>
-<!--<button (click)="main()">DEBUG</button>-->
+
 <table #placeholderGrp class="table table-bordered table-condensed no-margin"
        style="background-color: #b1dbfeba; border: 3px dashed darkgrey; text-align: center;">
   <thead>
@@ -20,6 +20,18 @@
   </tr>
   </thead>
 </table>
+<div class="ui-g cp-header">
+  <div class="ui-g-8 ui-g-nopad">
+    <div class="cp-header-title ui-g-12">
+      CoConstraint Table for Segment : {{_segment.name}}
+    </div>
+  </div>
+  <div class="ui-g-4">
+    <button  style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
+    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+  </div>
+</div>
+
 <div class="cc-div" style="overflow-x: scroll; width: 100%; margin-top: 40px;" *ngIf="table">
   <form #ccForm="ngForm">
     <table class="table table-condensed no-margin">
@@ -247,10 +259,10 @@
       </td>
       <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
         <ng-container
-          *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node.value, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
+          *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
       </td>
       <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
-        <i (click)="clearVariesNodeValue(node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
+        <i (click)="clearVariesNodeValueFromRow(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
            aria-hidden="true"></i>
       </td>
     </tr>
@@ -518,7 +530,7 @@
 </ng-template>
 
 <ng-template #flavor let-node let-cc="obj" let-form="form" let-id="id" let-key="key">
-  <div *ngIf="cc.k2.value">
+  <div *ngIf="cc.k2.value && config.datatypes.length > 0">
     <p-dropdown #flavorM="ngModel"
                 placeholder="Flavor"
                 [options]="config.datatypes | dtFlavor : cc.k2.value"
@@ -531,10 +543,10 @@
                 [(ngModel)]="node.value"
                 [style]="{'width':'100%', 'text-align' : 'center'}">
       <ng-template let-item pTemplate="selectedItem">
-        <display-label [elm]="item.value"></display-label>
+        <display-label [elm]="item.display" [redirect]="false"></display-label>
       </ng-template>
       <ng-template let-item pTemplate="item">
-        <display-label [elm]="item.value"></display-label>
+        <display-label [elm]="item.display" [redirect]="false"></display-label>
       </ng-template>
     </p-dropdown>
     <p *ngIf="flavorM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
