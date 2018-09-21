@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.web.export.util;
 
-
 import static j2html.TagCreator.a;
 import static j2html.TagCreator.attrs;
 import static j2html.TagCreator.body;
@@ -22,7 +21,6 @@ import static j2html.TagCreator.tr;
 import static j2html.TagCreator.br;
 import static j2html.TagCreator.h2;
 
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -43,113 +41,93 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.web.export.model.MyExportObject;
 import j2html.tags.ContainerTag;
 
-
 public class HtmlWriter {
 
-	public void generateHtmlVersionsThenName(MyExportObject myExportObject, ZipOutputStream zipStream) throws IOException {
-		Map<String,Map<String,List<Datatype>>> datatypesbyVersionThenName = myExportObject.getDatatypesbyVersionThenName();
-		
-		for( String version : datatypesbyVersionThenName.keySet()){
+	public void generateHtmlVersionsThenName(MyExportObject myExportObject, ZipOutputStream zipStream)
+			throws IOException {
+		Map<String, Map<String, List<Datatype>>> datatypesbyVersionThenName = myExportObject
+				.getDatatypesbyVersionThenName();
 
-	    String tableDatatypesByVersion = span(h2("Table of Datatypes and their flavors for version_" + version),
-	    		
-	    				
-	    				table( attrs(".greyGridTable1"),
-	    			
-	    						thead(
-	    								tr(
-	    										th("Datatype"), th("Flavors")
-	    										)
-	    								),
-	    						tbody(
-	    								each(datatypesbyVersionThenName.get(version).keySet(), name ->	    								
-	    								tr(
-		        	    						td(a(name).withHref("Datatype_"+name+".html")).attr("bgcolor","#ffcccc"),  td(span(each(datatypesbyVersionThenName.get(version).get(name), datatype -> span(a(datatype.getName() + datatype.getExt()).withHref("Datatype_"+datatype.getName() + datatype.getExt()+".html"), span(", "))),a("See all at once").withHref("AllDatatypesVersion_"+version+"ForRoot_"+name+".html")))
-		        	    				))
-	    								))).render();
-//	    System.out.println(tableDatatypesByVersion);
-	    
-	    PageCreator pg = new PageCreator();
-	    String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", tableDatatypesByVersion);
-	    
-	    
-//	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-//	              new FileOutputStream(webSiteFile.getAbsolutePath()+"/Pages/DatatypesForVersion_"+version+".html"), "utf-8"))) {
-//	   writer.write(resultPage);
-//	}
-	    		
-	    FileUtils.writeStringToFile(new File("DatatypesForVersion_"+version+".html"), resultPage);
-		ZipOutputStreamClass.addFileToZip(zipStream,"Pages/", "DatatypesForVersion_"+version+".html",resultPage);
+		for (String version : datatypesbyVersionThenName.keySet()) {
 
+			String tableDatatypesByVersion = span(h2("Table of Datatypes and their flavors for version_" + version),
+
+					table(attrs(".greyGridTable1"),
+
+							thead(tr(th("Datatype"), th("Flavors"))),
+							tbody(each(datatypesbyVersionThenName.get(version).keySet(), name -> tr(
+									td(a(name).withHref("Datatype_" + name + ".html")).attr("bgcolor", "#ffcccc"),
+									td(span(each(datatypesbyVersionThenName.get(version).get(name),
+											datatype -> span(
+													a(datatype.getName() + datatype.getExt()).withHref("Datatype_"
+															+ datatype.getName() + datatype.getExt() + ".html"),
+													span(", "))),
+											a("See all at once").withHref("AllDatatypesVersion_" + version + "ForRoot_"
+													+ name + ".html")))))))).render();
+			// System.out.println(tableDatatypesByVersion);
+
+			PageCreator pg = new PageCreator();
+			String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"),
+					"<TagToReplace></TagToReplace>", tableDatatypesByVersion);
+
+
+//			FileUtils.writeStringToFile(new File("DatatypesForVersion_" + version + ".html"), resultPage);
+			ZipOutputStreamClass.addFileToZip(zipStream, "Pages/", "DatatypesForVersion_" + version + ".html",
+					resultPage);
+
+		}
 	}
-	}
-	
-	public void generateHtmlNameThenVersion(MyExportObject myExportObject, ZipOutputStream zipStream) throws IOException {
-		Map<String,Map<Set<String>,List<Datatype>>> datatypesbyNameThenVersion = myExportObject.getDatatypesbyNameThenVersion();
-//		System.out.println("REGARDE ICI : " +datatypesbyNameThenVersion.keySet().toString());
-		for( String name : datatypesbyNameThenVersion.keySet()){
-			
+
+	public void generateHtmlNameThenVersion(MyExportObject myExportObject, ZipOutputStream zipStream)
+			throws IOException {
+		Map<String, Map<Set<String>, List<Datatype>>> datatypesbyNameThenVersion = myExportObject
+				.getDatatypesbyNameThenVersion();
+		// System.out.println("REGARDE ICI : "
+		// +datatypesbyNameThenVersion.keySet().toString());
+		for (String name : datatypesbyNameThenVersion.keySet()) {
+
 			String tableDatatypesByNameThenVersion =
-					
-					table( attrs(".greyGridTable2"),
-						thead(
-								tr(
-										th("Datatype"),th("Compatibility Versions And Flavors")
-										
-								),
-						
-						tbody(
-								tr(
-										td(
-												a(name).withHref("Datatype_"+name+".html")
-												).attr("bgcolor","#eee"),
-										td(
-										table( attrs(".greyGridTable"),
-												tbody(
-													each(datatypesbyNameThenVersion.get(name).keySet(), versionSet ->
-														tr(
-																td(
-																		each(versionSet, version -> span(a(version).withHref("DatatypesForVersion_"+version+".html"),br()))
-																		).attr("bgcolor","#ffcccc"),
-																td(span(each(datatypesbyNameThenVersion.get(name).get(versionSet), datatype ->
-																span(a(datatype.getName()+datatype.getExt()).withHref("Datatype_"+datatype.getName()+datatype.getExt()+".html"),br())),a("See all at once").withHref("AllDatatypesForRoot_"+name+"Version_"+versionSet+".html"))
-																		))
-															)	
-														)
-												)))
-										))
-						
-							).render();
-//			System.out.println("XMLL: " +tableDatatypesByNameThenVersion);
-					
 
+					table(attrs(".greyGridTable2"), thead(tr(th("Datatype"), th("Compatibility Versions And Flavors")
 
-	    
-	    PageCreator pg = new PageCreator();
-	    String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", tableDatatypesByNameThenVersion);
-	    
-	    
-//	    try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-//	              new FileOutputStream(webSiteFile.getAbsolutePath()+"/Pages/Datatype_"+name+".html"), "utf-8"))) {
-//	   writer.write(resultPage);
-//	    }
-	    
-	   FileUtils.writeStringToFile(new File("Datatype_"+name+".html"), resultPage);
-		ZipOutputStreamClass.addFileToZip(zipStream,"Pages/", "Datatype_"+name+".html",resultPage);
-	
-	    		
-	    		
+					),
 
+							tbody(tr(td(a(name).withHref("Datatype_" + name + ".html")).attr("bgcolor", "#eee"),
+									td(table(attrs(".greyGridTable"),
+											tbody(each(datatypesbyNameThenVersion.get(name).keySet(), versionSet -> tr(
+													td(each(versionSet,
+															version -> span(
+																	a(version).withHref(
+																			"DatatypesForVersion_" + version + ".html"),
+																	br()))).attr("bgcolor", "#ffcccc"),
+													td(span(each(datatypesbyNameThenVersion.get(name).get(versionSet),
+															datatype -> span(
+																	a(datatype.getName() + datatype.getExt())
+																			.withHref("Datatype_" + datatype.getName()
+																					+ datatype.getExt() + ".html"),
+																	br())),
+															a("See all at once").withHref("AllDatatypesForRoot_" + name
+																	+ "Version_" + versionSet + ".html")))))))))))
+
+					).render();
+			// System.out.println("XMLL: " +tableDatatypesByNameThenVersion);
+
+			PageCreator pg = new PageCreator();
+			String resultPage = pg.createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"),
+					"<TagToReplace></TagToReplace>", tableDatatypesByNameThenVersion);
+			ZipOutputStreamClass.addFileToZip(zipStream, "Pages/", "Datatype_" + name + ".html", resultPage);
+
+		}
 	}
-	}
-	
+
 	public String generateVersionInIndex(MyExportObject myExportObject) {
 		List<String> versionList = myExportObject.getAllDomainCompatibilityVersions();
-		
-		String versionInIndex = span(each(versionList, version -> span(a(version).withHref("Pages/DatatypesForVersion_"+version+".html"),span(","),br()))).render();
-//		System.out.println(versionInIndex);
+
+		String versionInIndex = span(
+				each(versionList, version -> span(a(version).withHref("Pages/DatatypesForVersion_" + version + ".html"),
+						span(","), br()))).render();
+		// System.out.println(versionInIndex);
 		return versionInIndex;
 	}
-	
 
 }
