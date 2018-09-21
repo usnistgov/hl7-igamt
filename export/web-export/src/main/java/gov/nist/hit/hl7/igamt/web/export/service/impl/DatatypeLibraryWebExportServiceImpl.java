@@ -104,9 +104,9 @@ public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebEx
 						Tools.getFileFromResources("assets").getAbsolutePath());
 				String path = IOUtils.toString(exportedFile.getContent());
 				InputStream inputFile = exportedFile.getContent();
-
-				org.apache.commons.io.FileUtils.writeStringToFile(
-						new File(exportedFile.getFileName()), path);
+//
+//				org.apache.commons.io.FileUtils.writeStringToFile(
+//						new File(exportedFile.getFileName()), path);
 				ZipOutputStreamClass.addFileToZip(zipStream,"Pages/", "Narative.html", path);
 			
 				pg.generateLeafPageTable(myExportObject, zipStream);
