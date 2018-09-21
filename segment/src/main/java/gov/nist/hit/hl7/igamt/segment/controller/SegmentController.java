@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
@@ -29,7 +30,10 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import javassist.NotFoundException;
 
 
 @RestController
@@ -40,6 +44,8 @@ public class SegmentController extends BaseController {
 
   @Autowired
   SegmentService segmentService;
+  @Autowired
+  CoConstraintService coconstraintService;
 
 
   public SegmentController() {}
@@ -63,8 +69,9 @@ public class SegmentController extends BaseController {
     Segment segment = findById(id);
     return segmentService.convertDomainToConformanceStatement(segment);
   }
-  
-  @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,  produces = {"application/json"})
+
+  @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,
+      produces = {"application/json"})
   public SegmentDynamicMapping getSegmentDynamicMapping(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
@@ -154,13 +161,34 @@ public class SegmentController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         segment.getUpdateDate());
   }
-  
+
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST,
       produces = {"application/json"})
-  public ResponseMessage saveDynamicMapping(@PathVariable("id") String id, Authentication authentication, @RequestBody SegmentDynamicMapping dynamicMapping) throws SegmentValidationException, SegmentNotFoundException {
+  public ResponseMessage saveDynamicMapping(@PathVariable("id") String id,
+      Authentication authentication, @RequestBody SegmentDynamicMapping dynamicMapping)
+      throws SegmentValidationException, SegmentNotFoundException {
     Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
-    return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id,
-        segment.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
+  }
+
+
+
+  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
+      produces = {"application/json"})
+  @ResponseBody
+  public CoConstraintTable getCoConstraints(@PathVariable("id") String id,
+      Authentication authentication) throws NotFoundException {
+    return this.coconstraintService.getLatestCoConstraintForSegment(id);
+  }
+
+  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
+      produces = {"application/json"})
+  @ResponseBody
+  public CoConstraintTable saveCoConstraints(@PathVariable("id") String id,
+      @RequestBody CoConstraintTable table, Authentication authentication)
+      throws CoConstraintSaveException {
+    return this.coconstraintService.saveCoConstraintForSegment(id, table,
+        authentication.getPrincipal().toString());
   }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,

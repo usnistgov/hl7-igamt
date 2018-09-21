@@ -65,7 +65,6 @@ export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
          })
        }
      )
-
   };
   reset(){
     this.section=_.cloneDeep(this.backup);

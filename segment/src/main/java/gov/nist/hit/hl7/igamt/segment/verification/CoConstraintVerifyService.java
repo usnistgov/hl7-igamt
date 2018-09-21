@@ -1,4 +1,4 @@
-package gov.nist.hit.hl7.igamt.coconstraints.service;
+package gov.nist.hit.hl7.igamt.segment.verification;
 
 import java.util.Map;
 

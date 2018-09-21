@@ -633,8 +633,9 @@ public class DatatypeServiceImpl implements DatatypeService {
       }
 
     }
-    updateBindings(elm.getBinding(), valuesetsMap);
-
+    if (elm.getBinding() != null) {
+      updateBindings(elm.getBinding(), valuesetsMap);
+    }
   }
 
   /**

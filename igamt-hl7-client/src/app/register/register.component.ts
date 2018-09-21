@@ -30,11 +30,6 @@ export class RegisterComponent{
         this.confirmPassword,
         [this.passwordValidator(this.model.password)] )
     });
-
-
-
-
-
   }
 
   get fullname(){

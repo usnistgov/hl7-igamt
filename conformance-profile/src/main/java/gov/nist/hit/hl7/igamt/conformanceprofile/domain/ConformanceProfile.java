@@ -18,7 +18,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
@@ -101,7 +100,7 @@ public class ConformanceProfile extends Resource {
 
     ConformanceProfile clone = new ConformanceProfile();
     clone.setBinding(this.binding);
-    clone.setChildren(children);
+    clone.setChildren(this.getChildren());
     clone.setComment(this.getComment());
     clone.setCreatedFrom(this.getId().getId());
     clone.setDescription(this.getDescription());
@@ -120,7 +119,7 @@ public class ConformanceProfile extends Resource {
     clone.setUpdateDate(new Date());
     return clone;
 
-  };
+  }
 
   /*
    * (non-Javadoc)
