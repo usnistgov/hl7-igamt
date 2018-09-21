@@ -197,7 +197,6 @@ public class IGDocumentController extends BaseController {
     return igService.convertListToDisplayList(igdouments);
   }
 
-
   /**
    * 
    * @param id
@@ -586,7 +585,7 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
     String username = authentication.getName();
-    ConformanceProfile profile = conformanceProfileService.findDisplayFormat(wrapper.getId());
+    ConformanceProfile profile = conformanceProfileService.findByKey(wrapper.getId());
     if (profile == null) {
       throw new CloneException("Failed to build conformance profile tree structure");
     }
@@ -816,12 +815,8 @@ public class IGDocumentController extends BaseController {
         return link;
       }
     }
-
     return null;
-
   }
-
-
 
   /**
    * @param content
@@ -869,7 +864,5 @@ public class IGDocumentController extends BaseController {
     }
     return ig;
   }
-
-
 
 }

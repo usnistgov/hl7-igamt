@@ -49,8 +49,9 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
 
          console.log(node);
 
-         node.data.data.label= this.section.label;
-         this.tocService.setTreeModel(treeModel).then(x=>{
+      node.data.data=this.section;
+
+      this.tocService.setTreeModel(treeModel).then(x=>{
 
            this.backup=_.cloneDeep(this.section);
 
@@ -71,6 +72,7 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
      )
 
   };
+
   reset(){
     this.section=_.cloneDeep(this.backup);
     this.editForm.control.markAsPristine();

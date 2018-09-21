@@ -15,6 +15,7 @@ export class DeleteElementService  {
 
 
   deleteConformanceProfile(igId, id){
+    console.log(igId+"id");
     return this.http.delete('/api/igdocuments/'+igId+'/conformanceprofiles/'+id+'/delete');
 
   }

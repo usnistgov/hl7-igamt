@@ -18,7 +18,7 @@ package gov.nist.hit.hl7.igamt.segment.domain;
 public class DynamicMappingItem {
   private String datatypeId;
   private String value;
-  
+
   public DynamicMappingItem() {
     super();
   }
@@ -44,4 +44,6 @@ public class DynamicMappingItem {
   public void setValue(String value) {
     this.value = value;
   }
+
+
 }

@@ -659,6 +659,8 @@ public class SegmentServiceImpl implements SegmentService {
 
     DynamicMappingInfo dynmaicMapping = elm.getDynamicMappingInfo();
 
+
+
   }
 
 
