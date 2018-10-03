@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.web.export.util;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;

@@ -29,6 +29,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,9 @@ public class HtmlWriter {
 									td(a(name).withHref("Datatype_" + name + ".html")).attr("bgcolor", "#ffcccc"),
 									td(span(each(datatypesbyVersionThenName.get(version).get(name),
 											datatype -> span(
-													a(datatype.getName() + datatype.getExt()).withHref("Datatype_"
-															+ datatype.getName() + datatype.getExt() + ".html"),
-													span(", "))),
+													a(datatype.getName() + datatype.getExt()).withHref("LeafTableForDatatype_"
+															+ datatype.getName() +datatype.getId().getId()+ ".html"),
+													span(", ")).withId("p1")),
 											a("See all at once").withHref("AllDatatypesVersion_" + version + "ForRoot_"
 													+ name + ".html")))))))).render();
 			// System.out.println(tableDatatypesByVersion);
@@ -93,7 +94,7 @@ public class HtmlWriter {
 					),
 
 							tbody(tr(td(a(name).withHref("Datatype_" + name + ".html")).attr("bgcolor", "#eee"),
-									td(table(attrs(".greyGridTable"),
+									td(table(attrs(".greyGridTable2"),
 											tbody(each(datatypesbyNameThenVersion.get(name).keySet(), versionSet -> tr(
 													td(each(versionSet,
 															version -> span(
@@ -103,9 +104,9 @@ public class HtmlWriter {
 													td(span(each(datatypesbyNameThenVersion.get(name).get(versionSet),
 															datatype -> span(
 																	a(datatype.getName() + datatype.getExt())
-																			.withHref("Datatype_" + datatype.getName()
-																					+ datatype.getExt() + ".html"),
-																	br())),
+																			.withHref("LeafTableForDatatype_" + datatype.getName()
+																					+ datatype.getId().getId()+".html"),
+																	br()).withId("p1")),
 															a("See all at once").withHref("AllDatatypesForRoot_" + name
 																	+ "Version_" + versionSet + ".html")))))))))))
 
@@ -122,6 +123,12 @@ public class HtmlWriter {
 
 	public String generateVersionInIndex(MyExportObject myExportObject) {
 		List<String> versionList = myExportObject.getAllDomainCompatibilityVersions();
+		List<String> versionList2 = new ArrayList<String>();
+		
+		for(String version : versionList) {
+			versionList2.add(" " + version);
+		}
+		
 
 		String versionInIndex = span(
 				each(versionList, version -> span(a(version).withHref("Pages/DatatypesForVersion_" + version + ".html"),

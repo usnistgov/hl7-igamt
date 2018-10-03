@@ -85,7 +85,7 @@ public class IgExportServiceImpl implements IgExportService {
     if (igDocument != null) {
       ExportedFile htmlFile =
           this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD);
-      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo().getVersion());
+      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
       return wordFile;
     }
     return null;
@@ -108,7 +108,7 @@ public class IgExportServiceImpl implements IgExportService {
           exportFontConfigurationService.getExportFontConfiguration(username);
       String xmlContent =
           igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
-      // TODO add appinfoservice to get app version
+      // TODO add app infoservice to get app version
       ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
           igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
           exportFontConfiguration, "2.0_beta");

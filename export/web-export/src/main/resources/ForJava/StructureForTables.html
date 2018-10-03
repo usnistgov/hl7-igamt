@@ -1,1030 +1,1053 @@
 <html><head>
-  <title>HL7 - REFACTORED</title>
-  <link rel="SHORTCUT ICON" href="hl7.ico">
-  <link rel="stylesheet" href="hl7.css" type="text/css">
-  <link rel="stylesheet" href="fhir.css" type="text/css">
-  <link rel="stylesheet" href="bootstrap.css">
-  <link rel="stylesheet" href="bootstrap-fhir.css">
-  <link rel="stylesheet" href="project.css">
-  <link rel="stylesheet" href="pygments-manni.css">
-  <link rel="stylesheet" href="jquery-ui.css">
-  <link rel="stylesheet" href="modules.css">
-  <!-- <link rel="stylesheet" href="OtherCssExported.css"> -->
+    <title>HL7 - REFACTORED</title>
+    <link rel="SHORTCUT ICON" href="hl7.ico">
+    <link rel="stylesheet" href="../assets/css/hl7.css" type="text/css">
+    <link rel="stylesheet" href="../assets/css/fhir.css" type="text/css">
+    <link rel="stylesheet" href="../assets/css/bootstrap.css">
+    <link rel="stylesheet" href="../assets/css/bootstrap-fhir.css">
+    <link rel="stylesheet" href="../assets/css/project.css">
+    <link rel="stylesheet" href="../assets/css/pygments-manni.css">
+    <link rel="stylesheet" href="../assets/css/jquery-ui.css">
+    <link rel="stylesheet" href="../assets/css/modules.css">
+    <link rel="stylesheet" href="../assets/css/myTables.css">
+    
+    <!-- <link rel="stylesheet" href="OtherCssExported.css"> -->
+    
+    <meta charset="utf-8">
+    <title>MiniPreview Demo</title>
+  
+    <link href="https://fonts.googleapis.com/css?family=Roboto+Slab" rel="stylesheet">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <link href="https://rawgit.com/shaneapen/Image-Preview-for-Links/master/image_preview_for_links.css" rel="stylesheet"> 
+    <!-- MiniPreview stuff here -->
+    <link href="./jquery.minipreview.css" rel="stylesheet">
+    <script src="./jquery.minipreview.js"></script>
+    <script type="text/javascript">
+      $(function() {
+                  $('#p1 a').miniPreview({ prefetch: 'pageload', width : 500, height:400, scale: .55 });
+                  $('#p2 a').miniPreview({ prefetch: 'parenthover' });
+                  $('#p3 a').miniPreview({ prefetch: 'none' });
+              });
+    </script> <script src="https://rawgit.com/shaneapen/Image-Preview-for-Links/master/image_preview_for_links.js"></script>
 
-  <style type="text/css" media="screen">
-    .navbar-brand {
-      float: left;
-      margin-left: -15px;
-      margin-right: 5px;
-    }
-    .navbar-nav {
-      float: left;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .navbar-nav > li {
-      float: left;
-    }
-    .navbar-nav > li > a {
-      border-radius: 0;
-    }
-    .navbar-nav.pull-right {
-      float: right;
-      width: auto;
-    }
-    .navbar-toggle {
-      position: relative;
-      top: auto;
-      left: auto;
-      display: none;
-    }
-    .nav-collapse.collapse {
-      display: block !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-  
-    .modal-dialog {
-      left: 50%;
-      right: auto;
-      width: 600px;
-      padding-top: 30px;
-      padding-bottom: 30px;
-    }
-    .modal-content {
-      -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    }
-  
-    .carousel-control .glyphicon,
-    .carousel-control .icon-prev,
-    .carousel-control .icon-next {
-      width: 30px;
-      height: 30px;
-      margin-top: -15px;
-      margin-left: -15px;
-      font-size: 30px;
-    }
-    .carousel-caption {
-      left: 20%;
-      right: 20%;
-      padding-bottom: 30px;
-    }
-    .carousel-indicators {
-      bottom: 20px;
-    }
-  
-    .jumbotron {
-      padding: 50px 60px;
-      border-radius: 6px;
-    }
-    .jumbotron h1 {
-      font-size: 63px;
-    }
-  
-    .navbar-brand {
-      float: left;
-      margin-left: -15px;
-      margin-right: 5px;
-    }
-    .navbar-nav {
-      float: left;
-      margin-top: 0;
-      margin-bottom: 0;
-    }
-    .navbar-nav > li {
-      float: left;
-    }
-    .navbar-nav > li > a {
-      border-radius: 0;
-    }
-    .navbar-nav.pull-right {
-      float: right;
-      width: auto;
-    }
-    .navbar-toggle {
-      position: relative;
-      top: auto;
-      left: auto;
-      display: none;
-    }
-    .nav-collapse.collapse {
-      display: block !important;
-      height: auto !important;
-      overflow: visible !important;
-    }
-  
-    .modal-dialog {
-      left: 50%;
-      right: auto;
-      width: 600px;
-      padding-top: 30px;
-      padding-bottom: 30px;
-    }
-    .modal-content {
-      -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    }
-  
-    .carousel-control .glyphicon,
-    .carousel-control .icon-prev,
-    .carousel-control .icon-next {
-      width: 30px;
-      height: 30px;
-      margin-top: -15px;
-      margin-left: -15px;
-      font-size: 30px;
-    }
-    .carousel-caption {
-      left: 20%;
-      right: 20%;
-      padding-bottom: 30px;
-    }
-    .carousel-indicators {
-      bottom: 20px;
-    }
-  
-    .jumbotron {
-      padding: 50px 60px;
-      border-radius: 6px;
-    }
-    .jumbotron h1 {
-      font-size: 63px;
-    }</style><style type="text/css" media="print">
-      .page-break	{ display:block; page-break-before:always; }
-  
-    * {
-      text-shadow: none !important;
-      color: #000 !important;
-      background: transparent !important;
-      box-shadow: none !important;
-    }
-    a,
-    a:visited {
-      text-decoration: underline;
-    }
-    a[href]:after {
-      content: " (" attr(href) ")";
-    }
-    abbr[title]:after {
-      content: " (" attr(title) ")";
-    }
-    .ir a:after,
-    a[href^="javascript:"]:after,
-    a[href^="#"]:after {
-      content: "";
-    }
-    pre,
-    blockquote {
-      border: 1px solid #999;
-      page-break-inside: avoid;
-    }
-    thead {
-      display: table-header-group;
-    }
-    tr,
-    img {
-      page-break-inside: avoid;
-    }
-    img {
-      max-width: 100% !important;
-    }
-    @page  {
-      margin: 2cm .5cm;
-    }
-    p,
-    h2,
-    h3 {
-      orphans: 3;
-      widows: 3;
-    }
-    h2,
-    h3 {
-      page-break-after: avoid;
-    }
-    .navbar {
-      display: none;
-    }
-    .table td,
-    .table th {
-      background-color: #fff !important;
-    }
-    .btn > .caret,
-    .dropup > .btn > .caret {
-      border-top-color: #000 !important;
-    }
-    .label {
-      border: 1px solid #000;
-    }
-    .table {
-      border-collapse: collapse !important;
-    }
-    .table-bordered th,
-    .table-bordered td {
-      border: 1px solid #ddd !important;
-    }
-  
-    .visible-print {
-      display: block !important;
-    }
-    tr.visible-print {
-      display: table-row !important;
-    }
-    th.visible-print,
-    td.visible-print {
-      display: table-cell !important;
-    }
-    .hidden-print {
-      display: none !important;
-    }
-    tr.hidden-print {
-      display: none !important;
-    }
-    th.hidden-print,
-    td.hidden-print {
-      display: none !important;
-    }
-  
-    * {
-      text-shadow: none !important;
-      color: #000 !important;
-      background: transparent !important;
-      box-shadow: none !important;
-    }
-    a,
-    a:visited {
-      text-decoration: underline;
-    }
-    a[href]:after {
-      content: " (" attr(href) ")";
-    }
-    abbr[title]:after {
-      content: " (" attr(title) ")";
-    }
-    .ir a:after,
-    a[href^="javascript:"]:after,
-    a[href^="#"]:after {
-      content: "";
-    }
-    pre,
-    blockquote {
-      border: 1px solid #999;
-      page-break-inside: avoid;
-    }
-    thead {
-      display: table-header-group;
-    }
-    tr,
-    img {
-      page-break-inside: avoid;
-    }
-    img {
-      max-width: 100% !important;
-    }
-    @page  {
-      margin: 2cm .5cm;
-    }
-    p,
-    h2,
-    h3 {
-      orphans: 3;
-      widows: 3;
-    }
-    h2,
-    h3 {
-      page-break-after: avoid;
-    }
-    .navbar {
-      display: none;
-    }
-    .table td,
-    .table th {
-      background-color: #fff !important;
-    }
-    .btn > .caret,
-    .dropup > .btn > .caret {
-      border-top-color: #000 !important;
-    }
-    .label {
-      border: 1px solid #000;
-    }
-    .table {
-      border-collapse: collapse !important;
-    }
-    .table-bordered th,
-    .table-bordered td {
-      border: 1px solid #ddd !important;
-    }
-  
-    .visible-print {
-      display: block !important;
-    }
-    tr.visible-print {
-      display: table-row !important;
-    }
-    th.visible-print,
-    td.visible-print {
-      display: table-cell !important;
-    }
-    .hidden-print {
-      display: none !important;
-    }
-    tr.hidden-print {
-      display: none !important;
-    }
-    th.hidden-print,
-    td.hidden-print {
-      display: none !important;
-    }</style><style type="text/css" media="all">
-      .page-break	{ display:none; }
-  
-    .lead {
-      font-size: 21px;
-    }
-  
-    .row {
-      margin-left: -15px;
-      margin-right: -15px;
-    }
-  
-    .container {
-      max-width: 728px;
-    }
-    .col-sm-1,
-    .col-sm-2,
-    .col-sm-3,
-    .col-sm-4,
-    .col-sm-5,
-    .col-sm-6,
-    .col-sm-7,
-    .col-sm-8,
-    .col-sm-9,
-    .col-sm-10,
-    .col-sm-11,
-    .col-sm-12 {
-      float: left;
-    }
-    .col-sm-1 {
-      width: 8.333333333333332%;
-    }
-    .col-sm-2 {
-      width: 16.666666666666664%;
-    }
-    .col-sm-3 {
-      width: 25%;
-    }
-    .col-sm-4 {
-      width: 33.33333333333333%;
-    }
-    .col-sm-5 {
-      width: 41.66666666666667%;
-    }
-    .col-sm-6 {
-      width: 50%;
-    }
-    .col-sm-7 {
-      width: 58.333333333333336%;
-    }
-    .col-sm-8 {
-      width: 66.66666666666666%;
-    }
-    .col-sm-9 {
-      width: 75%;
-    }
-    .col-sm-10 {
-      width: 83.33333333333334%;
-    }
-    .col-sm-11 {
-      width: 91.66666666666666%;
-    }
-    .col-sm-12 {
-      width: 100%;
-    }
-    .col-push-1 {
-      left: 8.333333333333332%;
-    }
-    .col-push-2 {
-      left: 16.666666666666664%;
-    }
-    .col-push-3 {
-      left: 25%;
-    }
-    .col-push-4 {
-      left: 33.33333333333333%;
-    }
-    .col-push-5 {
-      left: 41.66666666666667%;
-    }
-    .col-push-6 {
-      left: 50%;
-    }
-    .col-push-7 {
-      left: 58.333333333333336%;
-    }
-    .col-push-8 {
-      left: 66.66666666666666%;
-    }
-    .col-push-9 {
-      left: 75%;
-    }
-    .col-push-10 {
-      left: 83.33333333333334%;
-    }
-    .col-push-11 {
-      left: 91.66666666666666%;
-    }
-    .col-pull-1 {
-      right: 8.333333333333332%;
-    }
-    .col-pull-2 {
-      right: 16.666666666666664%;
-    }
-    .col-pull-3 {
-      right: 25%;
-    }
-    .col-pull-4 {
-      right: 33.33333333333333%;
-    }
-    .col-pull-5 {
-      right: 41.66666666666667%;
-    }
-    .col-pull-6 {
-      right: 50%;
-    }
-    .col-pull-7 {
-      right: 58.333333333333336%;
-    }
-    .col-pull-8 {
-      right: 66.66666666666666%;
-    }
-    .col-pull-9 {
-      right: 75%;
-    }
-    .col-pull-10 {
-      right: 83.33333333333334%;
-    }
-    .col-pull-11 {
-      right: 91.66666666666666%;
-    }
-  
-    .container {
-      max-width: 940px;
-    }
-    .col-lg-1,
-    .col-lg-2,
-    .col-lg-3,
-    .col-lg-4,
-    .col-lg-5,
-    .col-lg-6,
-    .col-lg-7,
-    .col-lg-8,
-    .col-lg-9,
-    .col-lg-10,
-    .col-lg-11,
-    .col-lg-12 {
-      float: left;
-    }
-    .col-lg-1 {
-      width: 8.333333333333332%;
-    }
-    .col-lg-2 {
-      width: 16.666666666666664%;
-    }
-    .col-lg-3 {
-      width: 25%;
-    }
-    .col-lg-4 {
-      width: 33.33333333333333%;
-    }
-    .col-lg-5 {
-      width: 41.66666666666667%;
-    }
-    .col-lg-6 {
-      width: 50%;
-    }
-    .col-lg-7 {
-      width: 58.333333333333336%;
-    }
-    .col-lg-8 {
-      width: 66.66666666666666%;
-    }
-    .col-lg-9 {
-      width: 75%;
-    }
-    .col-lg-10 {
-      width: 83.33333333333334%;
-    }
-    .col-lg-11 {
-      width: 91.66666666666666%;
-    }
-    .col-lg-12 {
-      width: 100%;
-    }
-    .col-offset-1 {
-      margin-left: 8.333333333333332%;
-    }
-    .col-offset-2 {
-      margin-left: 16.666666666666664%;
-    }
-    .col-offset-3 {
-      margin-left: 25%;
-    }
-    .col-offset-4 {
-      margin-left: 33.33333333333333%;
-    }
-    .col-offset-5 {
-      margin-left: 41.66666666666667%;
-    }
-    .col-offset-6 {
-      margin-left: 50%;
-    }
-    .col-offset-7 {
-      margin-left: 58.333333333333336%;
-    }
-    .col-offset-8 {
-      margin-left: 66.66666666666666%;
-    }
-    .col-offset-9 {
-      margin-left: 75%;
-    }
-    .col-offset-10 {
-      margin-left: 83.33333333333334%;
-    }
-    .col-offset-11 {
-      margin-left: 91.66666666666666%;
-    }
-  
-    .form-horizontal .form-group {
-      margin-left: -15px;
-      margin-right: -15px;
-    }
-  
-    .form-horizontal .control-label {
-      text-align: right;
-    }
-  
-    .visible-sm {
-      display: none !important;
-    }
-    tr.visible-sm {
-      display: none !important;
-    }
-    th.visible-sm,
-    td.visible-sm {
-      display: none !important;
-    }
-    .visible-md {
-      display: none !important;
-    }
-    tr.visible-md {
-      display: none !important;
-    }
-    th.visible-md,
-    td.visible-md {
-      display: none !important;
-    }
-    .visible-lg {
-      display: block !important;
-    }
-    tr.visible-lg {
-      display: table-row !important;
-    }
-    th.visible-lg,
-    td.visible-lg {
-      display: table-cell !important;
-    }
-    .hidden-sm {
-      display: block !important;
-    }
-    tr.hidden-sm {
-      display: table-row !important;
-    }
-    th.hidden-sm,
-    td.hidden-sm {
-      display: table-cell !important;
-    }
-    .hidden-md {
-      display: block !important;
-    }
-    tr.hidden-md {
-      display: table-row !important;
-    }
-    th.hidden-md,
-    td.hidden-md {
-      display: table-cell !important;
-    }
-    .hidden-lg {
-      display: none !important;
-    }
-    tr.hidden-lg {
-      display: none !important;
-    }
-    th.hidden-lg,
-    td.hidden-lg {
-      display: none !important;
-    }
-  
-    .lead {
-      font-size: 21px;
-    }
-  
-    .row {
-      margin-left: -15px;
-      margin-right: -15px;
-    }
-  
-    .container {
-      max-width: 728px;
-    }
-    .col-sm-1,
-    .col-sm-2,
-    .col-sm-3,
-    .col-sm-4,
-    .col-sm-5,
-    .col-sm-6,
-    .col-sm-7,
-    .col-sm-8,
-    .col-sm-9,
-    .col-sm-10,
-    .col-sm-11,
-    .col-sm-12 {
-      float: left;
-    }
-    .col-sm-1 {
-      width: 8.333333333333332%;
-    }
-    .col-sm-2 {
-      width: 16.666666666666664%;
-    }
-    .col-sm-3 {
-      width: 25%;
-    }
-    .col-sm-4 {
-      width: 33.33333333333333%;
-    }
-    .col-sm-5 {
-      width: 41.66666666666667%;
-    }
-    .col-sm-6 {
-      width: 50%;
-    }
-    .col-sm-7 {
-      width: 58.333333333333336%;
-    }
-    .col-sm-8 {
-      width: 66.66666666666666%;
-    }
-    .col-sm-9 {
-      width: 75%;
-    }
-    .col-sm-10 {
-      width: 83.33333333333334%;
-    }
-    .col-sm-11 {
-      width: 91.66666666666666%;
-    }
-    .col-sm-12 {
-      width: 100%;
-    }
-    .col-push-1 {
-      left: 8.333333333333332%;
-    }
-    .col-push-2 {
-      left: 16.666666666666664%;
-    }
-    .col-push-3 {
-      left: 25%;
-    }
-    .col-push-4 {
-      left: 33.33333333333333%;
-    }
-    .col-push-5 {
-      left: 41.66666666666667%;
-    }
-    .col-push-6 {
-      left: 50%;
-    }
-    .col-push-7 {
-      left: 58.333333333333336%;
-    }
-    .col-push-8 {
-      left: 66.66666666666666%;
-    }
-    .col-push-9 {
-      left: 75%;
-    }
-    .col-push-10 {
-      left: 83.33333333333334%;
-    }
-    .col-push-11 {
-      left: 91.66666666666666%;
-    }
-    .col-pull-1 {
-      right: 8.333333333333332%;
-    }
-    .col-pull-2 {
-      right: 16.666666666666664%;
-    }
-    .col-pull-3 {
-      right: 25%;
-    }
-    .col-pull-4 {
-      right: 33.33333333333333%;
-    }
-    .col-pull-5 {
-      right: 41.66666666666667%;
-    }
-    .col-pull-6 {
-      right: 50%;
-    }
-    .col-pull-7 {
-      right: 58.333333333333336%;
-    }
-    .col-pull-8 {
-      right: 66.66666666666666%;
-    }
-    .col-pull-9 {
-      right: 75%;
-    }
-    .col-pull-10 {
-      right: 83.33333333333334%;
-    }
-    .col-pull-11 {
-      right: 91.66666666666666%;
-    }
-  
-    .container {
-      max-width: 940px;
-    }
-    .col-lg-1,
-    .col-lg-2,
-    .col-lg-3,
-    .col-lg-4,
-    .col-lg-5,
-    .col-lg-6,
-    .col-lg-7,
-    .col-lg-8,
-    .col-lg-9,
-    .col-lg-10,
-    .col-lg-11,
-    .col-lg-12 {
-      float: left;
-    }
-    .col-lg-1 {
-      width: 8.333333333333332%;
-    }
-    .col-lg-2 {
-      width: 16.666666666666664%;
-    }
-    .col-lg-3 {
-      width: 25%;
-    }
-    .col-lg-4 {
-      width: 33.33333333333333%;
-    }
-    .col-lg-5 {
-      width: 41.66666666666667%;
-    }
-    .col-lg-6 {
-      width: 50%;
-    }
-    .col-lg-7 {
-      width: 58.333333333333336%;
-    }
-    .col-lg-8 {
-      width: 66.66666666666666%;
-    }
-    .col-lg-9 {
-      width: 75%;
-    }
-    .col-lg-10 {
-      width: 83.33333333333334%;
-    }
-    .col-lg-11 {
-      width: 91.66666666666666%;
-    }
-    .col-lg-12 {
-      width: 100%;
-    }
-    .col-offset-1 {
-      margin-left: 8.333333333333332%;
-    }
-    .col-offset-2 {
-      margin-left: 16.666666666666664%;
-    }
-    .col-offset-3 {
-      margin-left: 25%;
-    }
-    .col-offset-4 {
-      margin-left: 33.33333333333333%;
-    }
-    .col-offset-5 {
-      margin-left: 41.66666666666667%;
-    }
-    .col-offset-6 {
-      margin-left: 50%;
-    }
-    .col-offset-7 {
-      margin-left: 58.333333333333336%;
-    }
-    .col-offset-8 {
-      margin-left: 66.66666666666666%;
-    }
-    .col-offset-9 {
-      margin-left: 75%;
-    }
-    .col-offset-10 {
-      margin-left: 83.33333333333334%;
-    }
-    .col-offset-11 {
-      margin-left: 91.66666666666666%;
-    }
-  
-    .form-horizontal .form-group {
-      margin-left: -15px;
-      margin-right: -15px;
-    }
-  
-    .form-horizontal .control-label {
-      text-align: right;
-    }
-  
-    .visible-sm {
-      display: none !important;
-    }
-    tr.visible-sm {
-      display: none !important;
-    }
-    th.visible-sm,
-    td.visible-sm {
-      display: none !important;
-    }
-    .visible-md {
-      display: none !important;
-    }
-    tr.visible-md {
-      display: none !important;
-    }
-    th.visible-md,
-    td.visible-md {
-      display: none !important;
-    }
-    .visible-lg {
-      display: block !important;
-    }
-    tr.visible-lg {
-      display: table-row !important;
-    }
-    th.visible-lg,
-    td.visible-lg {
-      display: table-cell !important;
-    }
-    .hidden-sm {
-      display: block !important;
-    }
-    tr.hidden-sm {
-      display: table-row !important;
-    }
-    th.hidden-sm,
-    td.hidden-sm {
-      display: table-cell !important;
-    }
-    .hidden-md {
-      display: block !important;
-    }
-    tr.hidden-md {
-      display: table-row !important;
-    }
-    th.hidden-md,
-    td.hidden-md {
-      display: table-cell !important;
-    }
-    .hidden-lg {
-      display: none !important;
-    }
-    tr.hidden-lg {
-      display: none !important;
-    }
-    th.hidden-lg,
-    td.hidden-lg {
-      display: none !important;
-    }</style>
-  <meta name="COPYRIGHT" content="(C) Health Level Seven, Int. 2018">
-  <meta name="Generator" content="HL7 Comprehensive Database">
-  <meta name="Author" content="Frank Oemig">
-  </head>
-  <body style="">
-  
-  <div id="segment-header" class="segment">  <!-- segment-header -->
-  
-   <div class="container">  <!-- container -->
-    <a id="logo" no-external="true" href="http://hl7.org/hl7v2+"><img alt="logo hl7v2+" width="42" src="hl7logo.jpg"> </a>
-    <div id="hl7-status">
-     <img height="50" alt="visit the hl7 website" src="v2+.png">
+    <style type="text/css" media="screen">
+      .navbar-brand {
+        float: left;
+        margin-left: -15px;
+        margin-right: 5px;
+      }
+      .navbar-nav {
+        float: left;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .navbar-nav > li {
+        float: left;
+      }
+      .navbar-nav > li > a {
+        border-radius: 0;
+      }
+      .navbar-nav.pull-right {
+        float: right;
+        width: auto;
+      }
+      .navbar-toggle {
+        position: relative;
+        top: auto;
+        left: auto;
+        display: none;
+      }
+      .nav-collapse.collapse {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+    
+      .modal-dialog {
+        left: 50%;
+        right: auto;
+        width: 600px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+      }
+      .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+    
+      .carousel-control .glyphicon,
+      .carousel-control .icon-prev,
+      .carousel-control .icon-next {
+        width: 30px;
+        height: 30px;
+        margin-top: -15px;
+        margin-left: -15px;
+        font-size: 30px;
+      }
+      .carousel-caption {
+        left: 20%;
+        right: 20%;
+        padding-bottom: 30px;
+      }
+      .carousel-indicators {
+        bottom: 20px;
+      }
+    
+      .jumbotron {
+        padding: 50px 60px;
+        border-radius: 6px;
+      }
+      .jumbotron h1 {
+        font-size: 63px;
+      }
+    
+      .navbar-brand {
+        float: left;
+        margin-left: -15px;
+        margin-right: 5px;
+      }
+      .navbar-nav {
+        float: left;
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+      .navbar-nav > li {
+        float: left;
+      }
+      .navbar-nav > li > a {
+        border-radius: 0;
+      }
+      .navbar-nav.pull-right {
+        float: right;
+        width: auto;
+      }
+      .navbar-toggle {
+        position: relative;
+        top: auto;
+        left: auto;
+        display: none;
+      }
+      .nav-collapse.collapse {
+        display: block !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+    
+      .modal-dialog {
+        left: 50%;
+        right: auto;
+        width: 600px;
+        padding-top: 30px;
+        padding-bottom: 30px;
+      }
+      .modal-content {
+        -webkit-box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+      }
+    
+      .carousel-control .glyphicon,
+      .carousel-control .icon-prev,
+      .carousel-control .icon-next {
+        width: 30px;
+        height: 30px;
+        margin-top: -15px;
+        margin-left: -15px;
+        font-size: 30px;
+      }
+      .carousel-caption {
+        left: 20%;
+        right: 20%;
+        padding-bottom: 30px;
+      }
+      .carousel-indicators {
+        bottom: 20px;
+      }
+    
+      .jumbotron {
+        padding: 50px 60px;
+        border-radius: 6px;
+      }
+      .jumbotron h1 {
+        font-size: 63px;
+      }</style><style type="text/css" media="print">
+        .page-break	{ display:block; page-break-before:always; }
+    
+      * {
+        text-shadow: none !important;
+        color: #000 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      a,
+      a:visited {
+        text-decoration: underline;
+      }
+      a[href]:after {
+        content: " (" attr(href) ")";
+      }
+      abbr[title]:after {
+        content: " (" attr(title) ")";
+      }
+      .ir a:after,
+      a[href^="javascript:"]:after,
+      a[href^="#"]:after {
+        content: "";
+      }
+      pre,
+      blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+      }
+      thead {
+        display: table-header-group;
+      }
+      tr,
+      img {
+        page-break-inside: avoid;
+      }
+      img {
+        max-width: 100% !important;
+      }
+      @page  {
+        margin: 2cm .5cm;
+      }
+      p,
+      h2,
+      h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2,
+      h3 {
+        page-break-after: avoid;
+      }
+      .navbar {
+        display: none;
+      }
+      .table td,
+      .table th {
+        background-color: #fff !important;
+      }
+      .btn > .caret,
+      .dropup > .btn > .caret {
+        border-top-color: #000 !important;
+      }
+      .label {
+        border: 1px solid #000;
+      }
+      .table {
+        border-collapse: collapse !important;
+      }
+      .table-bordered th,
+      .table-bordered td {
+        border: 1px solid #ddd !important;
+      }
+    
+      .visible-print {
+        display: block !important;
+      }
+      tr.visible-print {
+        display: table-row !important;
+      }
+      th.visible-print,
+      td.visible-print {
+        display: table-cell !important;
+      }
+      .hidden-print {
+        display: none !important;
+      }
+      tr.hidden-print {
+        display: none !important;
+      }
+      th.hidden-print,
+      td.hidden-print {
+        display: none !important;
+      }
+    
+      * {
+        text-shadow: none !important;
+        color: #000 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+      a,
+      a:visited {
+        text-decoration: underline;
+      }
+      a[href]:after {
+        content: " (" attr(href) ")";
+      }
+      abbr[title]:after {
+        content: " (" attr(title) ")";
+      }
+      .ir a:after,
+      a[href^="javascript:"]:after,
+      a[href^="#"]:after {
+        content: "";
+      }
+      pre,
+      blockquote {
+        border: 1px solid #999;
+        page-break-inside: avoid;
+      }
+      thead {
+        display: table-header-group;
+      }
+      tr,
+      img {
+        page-break-inside: avoid;
+      }
+      img {
+        max-width: 100% !important;
+      }
+      @page  {
+        margin: 2cm .5cm;
+      }
+      p,
+      h2,
+      h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2,
+      h3 {
+        page-break-after: avoid;
+      }
+      .navbar {
+        display: none;
+      }
+      .table td,
+      .table th {
+        background-color: #fff !important;
+      }
+      .btn > .caret,
+      .dropup > .btn > .caret {
+        border-top-color: #000 !important;
+      }
+      .label {
+        border: 1px solid #000;
+      }
+      .table {
+        border-collapse: collapse !important;
+      }
+      .table-bordered th,
+      .table-bordered td {
+        border: 1px solid #ddd !important;
+      }
+    
+      .visible-print {
+        display: block !important;
+      }
+      tr.visible-print {
+        display: table-row !important;
+      }
+      th.visible-print,
+      td.visible-print {
+        display: table-cell !important;
+      }
+      .hidden-print {
+        display: none !important;
+      }
+      tr.hidden-print {
+        display: none !important;
+      }
+      th.hidden-print,
+      td.hidden-print {
+        display: none !important;
+      }</style><style type="text/css" media="all">
+        .page-break	{ display:none; }
+    
+      .lead {
+        font-size: 21px;
+      }
+    
+      .row {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+    
+      .container {
+        max-width: 728px;
+      }
+      .col-sm-1,
+      .col-sm-2,
+      .col-sm-3,
+      .col-sm-4,
+      .col-sm-5,
+      .col-sm-6,
+      .col-sm-7,
+      .col-sm-8,
+      .col-sm-9,
+      .col-sm-10,
+      .col-sm-11,
+      .col-sm-12 {
+        float: left;
+      }
+      .col-sm-1 {
+        width: 8.333333333333332%;
+      }
+      .col-sm-2 {
+        width: 16.666666666666664%;
+      }
+      .col-sm-3 {
+        width: 25%;
+      }
+      .col-sm-4 {
+        width: 33.33333333333333%;
+      }
+      .col-sm-5 {
+        width: 41.66666666666667%;
+      }
+      .col-sm-6 {
+        width: 50%;
+      }
+      .col-sm-7 {
+        width: 58.333333333333336%;
+      }
+      .col-sm-8 {
+        width: 66.66666666666666%;
+      }
+      .col-sm-9 {
+        width: 75%;
+      }
+      .col-sm-10 {
+        width: 83.33333333333334%;
+      }
+      .col-sm-11 {
+        width: 91.66666666666666%;
+      }
+      .col-sm-12 {
+        width: 100%;
+      }
+      .col-push-1 {
+        left: 8.333333333333332%;
+      }
+      .col-push-2 {
+        left: 16.666666666666664%;
+      }
+      .col-push-3 {
+        left: 25%;
+      }
+      .col-push-4 {
+        left: 33.33333333333333%;
+      }
+      .col-push-5 {
+        left: 41.66666666666667%;
+      }
+      .col-push-6 {
+        left: 50%;
+      }
+      .col-push-7 {
+        left: 58.333333333333336%;
+      }
+      .col-push-8 {
+        left: 66.66666666666666%;
+      }
+      .col-push-9 {
+        left: 75%;
+      }
+      .col-push-10 {
+        left: 83.33333333333334%;
+      }
+      .col-push-11 {
+        left: 91.66666666666666%;
+      }
+      .col-pull-1 {
+        right: 8.333333333333332%;
+      }
+      .col-pull-2 {
+        right: 16.666666666666664%;
+      }
+      .col-pull-3 {
+        right: 25%;
+      }
+      .col-pull-4 {
+        right: 33.33333333333333%;
+      }
+      .col-pull-5 {
+        right: 41.66666666666667%;
+      }
+      .col-pull-6 {
+        right: 50%;
+      }
+      .col-pull-7 {
+        right: 58.333333333333336%;
+      }
+      .col-pull-8 {
+        right: 66.66666666666666%;
+      }
+      .col-pull-9 {
+        right: 75%;
+      }
+      .col-pull-10 {
+        right: 83.33333333333334%;
+      }
+      .col-pull-11 {
+        right: 91.66666666666666%;
+      }
+    
+      .container {
+        max-width: 940px;
+      }
+      .col-lg-1,
+      .col-lg-2,
+      .col-lg-3,
+      .col-lg-4,
+      .col-lg-5,
+      .col-lg-6,
+      .col-lg-7,
+      .col-lg-8,
+      .col-lg-9,
+      .col-lg-10,
+      .col-lg-11,
+      .col-lg-12 {
+        float: left;
+      }
+      .col-lg-1 {
+        width: 8.333333333333332%;
+      }
+      .col-lg-2 {
+        width: 16.666666666666664%;
+      }
+      .col-lg-3 {
+        width: 25%;
+      }
+      .col-lg-4 {
+        width: 33.33333333333333%;
+      }
+      .col-lg-5 {
+        width: 41.66666666666667%;
+      }
+      .col-lg-6 {
+        width: 50%;
+      }
+      .col-lg-7 {
+        width: 58.333333333333336%;
+      }
+      .col-lg-8 {
+        width: 66.66666666666666%;
+      }
+      .col-lg-9 {
+        width: 75%;
+      }
+      .col-lg-10 {
+        width: 83.33333333333334%;
+      }
+      .col-lg-11 {
+        width: 91.66666666666666%;
+      }
+      .col-lg-12 {
+        width: 100%;
+      }
+      .col-offset-1 {
+        margin-left: 8.333333333333332%;
+      }
+      .col-offset-2 {
+        margin-left: 16.666666666666664%;
+      }
+      .col-offset-3 {
+        margin-left: 25%;
+      }
+      .col-offset-4 {
+        margin-left: 33.33333333333333%;
+      }
+      .col-offset-5 {
+        margin-left: 41.66666666666667%;
+      }
+      .col-offset-6 {
+        margin-left: 50%;
+      }
+      .col-offset-7 {
+        margin-left: 58.333333333333336%;
+      }
+      .col-offset-8 {
+        margin-left: 66.66666666666666%;
+      }
+      .col-offset-9 {
+        margin-left: 75%;
+      }
+      .col-offset-10 {
+        margin-left: 83.33333333333334%;
+      }
+      .col-offset-11 {
+        margin-left: 91.66666666666666%;
+      }
+    
+      .form-horizontal .form-group {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+    
+      .form-horizontal .control-label {
+        text-align: right;
+      }
+    
+      .visible-sm {
+        display: none !important;
+      }
+      tr.visible-sm {
+        display: none !important;
+      }
+      th.visible-sm,
+      td.visible-sm {
+        display: none !important;
+      }
+      .visible-md {
+        display: none !important;
+      }
+      tr.visible-md {
+        display: none !important;
+      }
+      th.visible-md,
+      td.visible-md {
+        display: none !important;
+      }
+      .visible-lg {
+        display: block !important;
+      }
+      tr.visible-lg {
+        display: table-row !important;
+      }
+      th.visible-lg,
+      td.visible-lg {
+        display: table-cell !important;
+      }
+      .hidden-sm {
+        display: block !important;
+      }
+      tr.hidden-sm {
+        display: table-row !important;
+      }
+      th.hidden-sm,
+      td.hidden-sm {
+        display: table-cell !important;
+      }
+      .hidden-md {
+        display: block !important;
+      }
+      tr.hidden-md {
+        display: table-row !important;
+      }
+      th.hidden-md,
+      td.hidden-md {
+        display: table-cell !important;
+      }
+      .hidden-lg {
+        display: none !important;
+      }
+      tr.hidden-lg {
+        display: none !important;
+      }
+      th.hidden-lg,
+      td.hidden-lg {
+        display: none !important;
+      }
+    
+      .lead {
+        font-size: 21px;
+      }
+    
+      .row {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+    
+      .container {
+        max-width: 728px;
+      }
+      .col-sm-1,
+      .col-sm-2,
+      .col-sm-3,
+      .col-sm-4,
+      .col-sm-5,
+      .col-sm-6,
+      .col-sm-7,
+      .col-sm-8,
+      .col-sm-9,
+      .col-sm-10,
+      .col-sm-11,
+      .col-sm-12 {
+        float: left;
+      }
+      .col-sm-1 {
+        width: 8.333333333333332%;
+      }
+      .col-sm-2 {
+        width: 16.666666666666664%;
+      }
+      .col-sm-3 {
+        width: 25%;
+      }
+      .col-sm-4 {
+        width: 33.33333333333333%;
+      }
+      .col-sm-5 {
+        width: 41.66666666666667%;
+      }
+      .col-sm-6 {
+        width: 50%;
+      }
+      .col-sm-7 {
+        width: 58.333333333333336%;
+      }
+      .col-sm-8 {
+        width: 66.66666666666666%;
+      }
+      .col-sm-9 {
+        width: 75%;
+      }
+      .col-sm-10 {
+        width: 83.33333333333334%;
+      }
+      .col-sm-11 {
+        width: 91.66666666666666%;
+      }
+      .col-sm-12 {
+        width: 100%;
+      }
+      .col-push-1 {
+        left: 8.333333333333332%;
+      }
+      .col-push-2 {
+        left: 16.666666666666664%;
+      }
+      .col-push-3 {
+        left: 25%;
+      }
+      .col-push-4 {
+        left: 33.33333333333333%;
+      }
+      .col-push-5 {
+        left: 41.66666666666667%;
+      }
+      .col-push-6 {
+        left: 50%;
+      }
+      .col-push-7 {
+        left: 58.333333333333336%;
+      }
+      .col-push-8 {
+        left: 66.66666666666666%;
+      }
+      .col-push-9 {
+        left: 75%;
+      }
+      .col-push-10 {
+        left: 83.33333333333334%;
+      }
+      .col-push-11 {
+        left: 91.66666666666666%;
+      }
+      .col-pull-1 {
+        right: 8.333333333333332%;
+      }
+      .col-pull-2 {
+        right: 16.666666666666664%;
+      }
+      .col-pull-3 {
+        right: 25%;
+      }
+      .col-pull-4 {
+        right: 33.33333333333333%;
+      }
+      .col-pull-5 {
+        right: 41.66666666666667%;
+      }
+      .col-pull-6 {
+        right: 50%;
+      }
+      .col-pull-7 {
+        right: 58.333333333333336%;
+      }
+      .col-pull-8 {
+        right: 66.66666666666666%;
+      }
+      .col-pull-9 {
+        right: 75%;
+      }
+      .col-pull-10 {
+        right: 83.33333333333334%;
+      }
+      .col-pull-11 {
+        right: 91.66666666666666%;
+      }
+    
+      .container {
+        max-width: 940px;
+      }
+      .col-lg-1,
+      .col-lg-2,
+      .col-lg-3,
+      .col-lg-4,
+      .col-lg-5,
+      .col-lg-6,
+      .col-lg-7,
+      .col-lg-8,
+      .col-lg-9,
+      .col-lg-10,
+      .col-lg-11,
+      .col-lg-12 {
+        float: left;
+      }
+      .col-lg-1 {
+        width: 8.333333333333332%;
+      }
+      .col-lg-2 {
+        width: 16.666666666666664%;
+      }
+      .col-lg-3 {
+        width: 25%;
+      }
+      .col-lg-4 {
+        width: 33.33333333333333%;
+      }
+      .col-lg-5 {
+        width: 41.66666666666667%;
+      }
+      .col-lg-6 {
+        width: 50%;
+      }
+      .col-lg-7 {
+        width: 58.333333333333336%;
+      }
+      .col-lg-8 {
+        width: 66.66666666666666%;
+      }
+      .col-lg-9 {
+        width: 75%;
+      }
+      .col-lg-10 {
+        width: 83.33333333333334%;
+      }
+      .col-lg-11 {
+        width: 91.66666666666666%;
+      }
+      .col-lg-12 {
+        width: 100%;
+      }
+      .col-offset-1 {
+        margin-left: 8.333333333333332%;
+      }
+      .col-offset-2 {
+        margin-left: 16.666666666666664%;
+      }
+      .col-offset-3 {
+        margin-left: 25%;
+      }
+      .col-offset-4 {
+        margin-left: 33.33333333333333%;
+      }
+      .col-offset-5 {
+        margin-left: 41.66666666666667%;
+      }
+      .col-offset-6 {
+        margin-left: 50%;
+      }
+      .col-offset-7 {
+        margin-left: 58.333333333333336%;
+      }
+      .col-offset-8 {
+        margin-left: 66.66666666666666%;
+      }
+      .col-offset-9 {
+        margin-left: 75%;
+      }
+      .col-offset-10 {
+        margin-left: 83.33333333333334%;
+      }
+      .col-offset-11 {
+        margin-left: 91.66666666666666%;
+      }
+    
+      .form-horizontal .form-group {
+        margin-left: -15px;
+        margin-right: -15px;
+      }
+    
+      .form-horizontal .control-label {
+        text-align: right;
+      }
+    
+      .visible-sm {
+        display: none !important;
+      }
+      tr.visible-sm {
+        display: none !important;
+      }
+      th.visible-sm,
+      td.visible-sm {
+        display: none !important;
+      }
+      .visible-md {
+        display: none !important;
+      }
+      tr.visible-md {
+        display: none !important;
+      }
+      th.visible-md,
+      td.visible-md {
+        display: none !important;
+      }
+      .visible-lg {
+        display: block !important;
+      }
+      tr.visible-lg {
+        display: table-row !important;
+      }
+      th.visible-lg,
+      td.visible-lg {
+        display: table-cell !important;
+      }
+      .hidden-sm {
+        display: block !important;
+      }
+      tr.hidden-sm {
+        display: table-row !important;
+      }
+      th.hidden-sm,
+      td.hidden-sm {
+        display: table-cell !important;
+      }
+      .hidden-md {
+        display: block !important;
+      }
+      tr.hidden-md {
+        display: table-row !important;
+      }
+      th.hidden-md,
+      td.hidden-md {
+        display: table-cell !important;
+      }
+      .hidden-lg {
+        display: none !important;
+      }
+      tr.hidden-lg {
+        display: none !important;
+      }
+      th.hidden-lg,
+      td.hidden-lg {
+        display: none !important;
+      }</style>
+    <meta name="COPYRIGHT" content="(C) Health Level Seven, Int. 2018">
+    <meta name="Generator" content="HL7 Comprehensive Database">
+    <meta name="Author" content="Frank Oemig">
+    </head>
+    <body style="">
+    
+    <div id="segment-header" class="segment">  <!-- segment-header -->
+    
+     <div class="container">  <!-- container -->
+      <a id="logo" no-external="true" href="http://hl7.org/hl7v2+"><img alt="logo hl7v2+" width="42" src="../assets/images/hl7logo.jpg"> </a>
+      <div id="hl7-status">
+       <img height="50" alt="visit the hl7 website" src="../assets/images/v2+.png">
+      </div>
+    
+      <div id="hl7-nav">
+       <a id="hl7-logo" no-external="true" href="http://www.hl7.org">
+       <img height="50" alt="visit the hl7 website" src="../assets/images/3dhl7_deu.gif">
+       </a>
+      </div>
+     </div>    <!-- /container -->
+    </div>  <!-- /segment-header -->
+    
+    
+    <div id="segment-navbar" class="segment">  <!-- segment-navbar -->
+      <div id="stripe"> </div>
+      <div class="container">  <!-- container -->
+        <!-- HEADER CONTENT -->
+        <nav class="navbar navbar-inverse">
+            <!-- /.container -->
+        </nav>  <!-- /.navbar -->
+      </div>
     </div>
-  
-    <div id="hl7-nav">
-     <a id="hl7-logo" no-external="true" href="http://www.hl7.org">
-     <img height="50" alt="visit the hl7 website" src="3dhl7_deu.gif">
-     </a>
-    </div>
-   </div>    <!-- /container -->
-  </div>  <!-- /segment-header -->
-  
-  
-  <div id="segment-navbar" class="segment">  <!-- segment-navbar -->
-    <div id="stripe"> </div>
+    <div id="segment-breadcrumb" class="segment">  <!-- segment-breadcrumb -->
+      <div class="container">  <!-- container -->
+        <ul class="breadcrumb">
+          <li><b><a href="hl7.html">Home</a></b></li>
+        </ul>
+      </div>  <!-- /container -->
+    </div>  <!-- /segment-breadcrumb -->
     <div class="container">  <!-- container -->
-      <!-- HEADER CONTENT -->
-      <nav class="navbar navbar-inverse">
-          <!-- /.container -->
-      </nav>  <!-- /.navbar -->
-    </div>
-  </div>
-  <div id="segment-breadcrumb" class="segment">  <!-- segment-breadcrumb -->
-    <div class="container">  <!-- container -->
-      <ul class="breadcrumb">
-        <li><b><a href="hl7.html">Home</a></b></li>
-      </ul>
-    </div>  <!-- /container -->
-  </div>  <!-- /segment-breadcrumb -->
-  <div class="container">  <!-- container -->
-  <h1 class="self-link-parent">
-  <span class="sectioncount">1<a name="1"> </a></span>
-  HL7 v2+ - HL7 v2 refactored - Working Draft! (99.0)
-  </h1>
-  <p style="background-color: gold; border:1px solid maroon; padding: 5px; max-width: 790px;">
- Insert text here
-  </p>
-  <h1 class="self-link-parent">
-  <span class="sectioncount">2<a name="2"> </a></span>
-  Welcome to HL7 v2+ (99.0)
-  </h1>
-  <p>HL7 v2+ is a standard for health care data exchange, built as a successor of HL7 v2.x, and published by HL7®.</p>
-  <p style="padding: 5px; border-radius: 5px; border: 2px solid maroon; background: #ffffe6; max-width: 790px">
-  <b>Edit text here</b><br>And here.
-  </p>
-
-  <TagToReplace></TagToReplace>
-
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+    <!-- <h1 class="self-link-parent">
+    <span class="sectioncount">1<a name="1"> </a></span>
+    HL7 v2+ - HL7 v2 refactored - Working Draft! (99.0)
+    </h1>
+    <p style="background-color: gold; border:1px solid maroon; padding: 5px; max-width: 790px;">
+   Insert text here
+    </p>
+    <h1 class="self-link-parent">
+    <span class="sectioncount">2<a name="2"> </a></span>
+    Welcome to HL7 v2+ (99.0)
+    </h1>
+    <p>HL7 v2+ is a standard for health care data exchange, built as a successor of HL7 v2.x, and published by HL7®.</p>
+    <p style="padding: 5px; border-radius: 5px; border: 2px solid maroon; background: #ffffe6; max-width: 790px">
+    <b>Edit text here</b><br>And here.
+    </p> -->
+    
+    
+    
+      <TagToReplace></TagToReplace>
+       
         
-        <!-- Bootstrap core JavaScript
-  ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-  <script src="assets/jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
-  <script src="bootstrap.min.js"> </script>
-  <script src="respond.min.js"> </script>
-  
-  <script src="fhir.js"> </script>
-  
-    <!-- Analytics Below
-  ================================================== -->
-  <script src="jquery/jquery.js"> </script>
-  <script src="jquery/jquery-ui.min.js"> </script>
-  <script>
-   try {
-     var currentTabIndex = sessionStorage.getItem('fhir-resource-tab-index');
-   } catch(exception){ 
-   }
-   if (!currentTabIndex)
-     currentTabIndex = '0';
-  
-  $( '#tabs-Extension' ).tabs({ 
-  active: currentTabIndex, 
-  activate: function( event, ui ) { store(ui.newTab.index()); } 
-  });
-       
-       
-  function store(currentTab) {
-    document.activeElement.blur();
-    try {
-      sessionStorage.setItem('fhir-resource-tab-index', currentTab);
-    } catch(exception){ 
+       </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+          
+          <!-- Bootstrap core JavaScript
+    ================================================== -->
+      <!-- Placed at the end of the document so the pages load faster -->
+    <script src="assets/jquery.js"> </script>     <!-- note keep space here, otherwise it will be transformed to empty tag -> fails -->
+    <script src="bootstrap.min.js"> </script>
+    <script src="respond.min.js"> </script>
+    
+    <script src="fhir.js"> </script>
+    
+      <!-- Analytics Below
+    ================================================== -->
+    <script src="jquery/jquery.js"> </script>
+    <script src="jquery/jquery-ui.min.js"> </script>
+    <script>
+     try {
+       var currentTabIndex = sessionStorage.getItem('fhir-resource-tab-index');
+     } catch(exception){ 
+     }
+     if (!currentTabIndex)
+       currentTabIndex = '0';
+    
+    $( '#tabs-Extension' ).tabs({ 
+    active: currentTabIndex, 
+    activate: function( event, ui ) { store(ui.newTab.index()); } 
+    });
+         
+         
+    function store(currentTab) {
+      document.activeElement.blur();
+      try {
+        sessionStorage.setItem('fhir-resource-tab-index', currentTab);
+      } catch(exception){ 
+      }
+      $( '#tabs-Extension' ).tabs('option', 'active', currentTab);
     }
-    $( '#tabs-Extension' ).tabs('option', 'active', currentTab);
-  }
-  </script>
-  </div>  <!-- container -->
-  <p>
-  </p><div id="segment-footer" class="segment">  <!-- segment-footer -->
-    <div class="container">  <!-- container -->
-      <div class="inner-wrapper">
-        <p>
-          © HL7.org 2017+. HL7 v2+ (HL7-DB #94) generated on Di, Sep 18, 2018.    <!-- achive note -->
-        </p>
-      </div>  <!-- /inner-wrapper -->
-    </div>  <!-- /container -->
-  </div>  <!-- /segment-footer -->
-  
-  
-  </body></html>
+    </script>
+    </div>  <!-- container -->
+    <p>
+    </p><div id="segment-footer" class="segment">  <!-- segment-footer -->
+      <div class="container">  <!-- container -->
+        <div class="inner-wrapper">
+          <p>
+            © HL7.org 2017+. HL7 v2+ (HL7-DB #94) generated on Di, Sep 18, 2018.    <!-- achive note -->
+          </p>
+        </div>  <!-- /inner-wrapper -->
+      </div>  <!-- /container -->
+    </div>  <!-- /segment-footer -->
+    
+    
+    </body></html>

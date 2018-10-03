@@ -57,6 +57,8 @@ import gov.nist.hit.hl7.igamt.web.export.util.ZipWriter;
 public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebExportService {
 
 	Map<String, Datatype> datatypesMap = new HashMap<>();
+	Map<String, Datatype> derivedDatatypesMap = new HashMap<>();
+
 
 	@Autowired
 	DatatypeLibraryService datatypeLibraryService;
@@ -96,8 +98,11 @@ public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebEx
 				ZipOutputStreamClass zw = new ZipOutputStreamClass();
 
 				datatypesMap = initializeDatatypesMap(datatypeLibrary.getDatatypeRegistry());
-				// datatypesMap = initializeDatatypesMap(datatypeLibrary.getDerivedRegistry());
+				derivedDatatypesMap = initializeDatatypesMap(datatypeLibrary.getDerivedRegistry());
 				datatypeLibraryPopulateObjectService.populateExportObject(datatypesMap);
+
+				System.out.println("Taille de datatypesmap est :" +datatypesMap.size());
+				System.out.println("Taille de derivedDatatypesMap est :" +derivedDatatypesMap.size());
 
 	
 				ZipUtils.ZipTheFile(zipStream, websiteTemp.getAbsolutePath(),

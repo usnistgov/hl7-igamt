@@ -86,7 +86,7 @@ public class PageCreator {
 
 
 		for (Datatype datatype : myExportObject.getMapDatatypeToXML().keySet()) {
-			if (!datatype.getExt().isEmpty()) {
+//			if (!datatype.getExt().isEmpty()) {
 
 				File htmlFile;
 				try {
@@ -99,7 +99,7 @@ public class PageCreator {
 //							new File("Datatype_" + datatype.getName() + datatype.getExt() + ".html"),
 //							datatypeTransformedToTable);
 					ZipOutputStreamClass.addFileToZip(zipStream, "Pages/",
-							"Datatype_" + datatype.getName() + datatype.getExt() + ".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", datatypeTransformedToTable));
+							"LeafTableForDatatype_" + datatype.getName() + datatype.getId().getId()+".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", datatypeTransformedToTable));
 
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -111,7 +111,7 @@ public class PageCreator {
 
 			}
 
-		}
+//		}
 
 		for (String version : myExportObject.getDatatypesbyVersionThenName().keySet()) {
 			for (String name : myExportObject.getDatatypesbyVersionThenName().get(version).keySet()) {
