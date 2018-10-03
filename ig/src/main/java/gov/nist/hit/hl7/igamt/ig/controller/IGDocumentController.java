@@ -75,6 +75,7 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
@@ -196,7 +197,6 @@ public class IGDocumentController extends BaseController {
     return igService.convertListToDisplayList(igdouments);
   }
 
-
   /**
    * 
    * @param id
@@ -243,9 +243,6 @@ public class IGDocumentController extends BaseController {
     }
 
     return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
-
-
-
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST,
@@ -588,7 +585,7 @@ public class IGDocumentController extends BaseController {
       Authentication authentication) throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
     String username = authentication.getName();
-    ConformanceProfile profile = conformanceProfileService.findDisplayFormat(wrapper.getId());
+    ConformanceProfile profile = conformanceProfileService.findByKey(wrapper.getId());
     if (profile == null) {
       throw new CloneException("Failed to build conformance profile tree structure");
     }
@@ -788,7 +785,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody CompositeKey copy(@PathVariable("id") String id,
-      Authentication authentication) throws IGNotFoundException {
+      Authentication authentication) throws IGNotFoundException, CoConstraintSaveException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);
     return this.igService.clone(ig, username).getId();
@@ -818,12 +815,8 @@ public class IGDocumentController extends BaseController {
         return link;
       }
     }
-
     return null;
-
   }
-
-
 
   /**
    * @param content
@@ -871,7 +864,5 @@ public class IGDocumentController extends BaseController {
     }
     return ig;
   }
-
-
 
 }

@@ -53,7 +53,7 @@ export class LibDeleteElementComponent extends PrimeDialogAdapter{
       res => {
         this.dismissWithData(this.id);
 
-      } ,error =>{
+        } , error => {
         if(error.error.type ==ExceptionType.XREFERENCEFOUND){
           this.xreferences=error.error.xreferences;
 

@@ -681,7 +681,7 @@ export class IgDocumentEditComponent {
   deleteConformanceProfile(node){
 
     this.deleteElement.open({
-      igDocumentId : this.igId,
+      igId : this.igId,
       id:node.data.data.key.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
@@ -702,7 +702,7 @@ export class IgDocumentEditComponent {
   //console.log( this.tree._options);
   let ret =  this.tree.treeModel.getNodeById(node.id);
   this.deleteElement.open({
-    igDocumentId : this.igId,
+    igId : this.igId,
     id:node.id,
     name:node.data.data.label,
     type:node.data.data.type,
@@ -716,7 +716,7 @@ export class IgDocumentEditComponent {
 
       }
     )
-}
+  }
 
 
 }

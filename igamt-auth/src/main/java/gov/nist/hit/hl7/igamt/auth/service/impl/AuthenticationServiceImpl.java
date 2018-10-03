@@ -177,9 +177,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       changePasswordRequest.setUrl(url);
       HttpEntity<ChangePasswordRequest> request =
           new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
-      ResponseEntity<ChangePasswordRequest> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST,
-              request, ChangePasswordRequest.class);
+      ResponseEntity<Boolean> response = restTemplate.exchange(
+          env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST, request, Boolean.class);
+
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
 

@@ -37,9 +37,9 @@ export class ResetPasswordRequestComponent implements OnInit {
 
   showError(error:any) {
     console.log(error);
-    error =JSON.parse(error.error.message);
+    error =JSON.parse(error);
     console.log(error);
-    this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.message, id:this.alertId});
+    this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.error.message, id:this.alertId});
   }
 
 

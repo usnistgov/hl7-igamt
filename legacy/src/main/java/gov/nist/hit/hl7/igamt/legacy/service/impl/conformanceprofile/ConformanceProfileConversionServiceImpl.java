@@ -148,7 +148,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
    * @param children
    * @param seog
    */
-  private void constructSegmentGroup(Set<MsgStructElement> children, Group g) {
+  private void constructSegmentGroup(Set<gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup> children, Group g) {
     gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group newGroup =
         new gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group();
 
@@ -175,8 +175,8 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       }
     }
 
-    newGroup.setBinding(
-        new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(g));
+    //TODO need to convert Group binding
+//    newGroup.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository).convertResourceBinding(g));
 
     children.add(newGroup);
 
@@ -186,7 +186,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
    * @param children
    * @param seog
    */
-  private void constructSegmentRef(Set<MsgStructElement> children, SegmentRef sr) {
+  private void constructSegmentRef(Set<gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup> children, SegmentRef sr) {
     gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef newSegmentRef =
         new gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef();
 

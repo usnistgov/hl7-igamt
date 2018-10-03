@@ -239,10 +239,13 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
           newItem.setValue(oldItem.getFirstReferenceValue());
           dynamicMappingInfo.addItem(newItem);
         }
-        dynamicMappingInfo.setReferencePath(
-            oldDynamicMappingDefinition.getMappingStructure().getSecondRefereceLocation());
-        dynamicMappingInfo.setVariesDatatypePath(
-            oldDynamicMappingDefinition.getMappingStructure().getTargetLocation());
+        
+        //TODO need to fixed for Reference ID of DM
+//        dynamicMappingInfo.setReferencePath(
+//            oldDynamicMappingDefinition.getMappingStructure().getSecondRefereceLocation());
+//        dynamicMappingInfo.setVariesDatatypePath(
+//            oldDynamicMappingDefinition.getMappingStructure().getTargetLocation());
+        
 
         propertyDynamicMapping.setDynamicMappingInfo(dynamicMappingInfo);
         item.addItemProperty(propertyDynamicMapping);
