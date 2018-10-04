@@ -25,6 +25,9 @@ export class EditSimpleConstraintComponent {
   operators: any[];
   formatTypes:any[];
 
+  instanceNumberOfFieldSubject : any;
+  instanceNumberOfFieldComplement : any;
+
   constructor(private configService : GeneralConfigurationService){}
 
   ngOnInit(){
@@ -41,6 +44,8 @@ export class EditSimpleConstraintComponent {
     this.formatTypes = this.configService._formatTypes;
     this.simpleAssertionTypes = this.configService._simpleAssertionTypes;
   }
+
+
 
   addValue(){
     if(!this.constraint.complement.values) this.constraint.complement.values = [];

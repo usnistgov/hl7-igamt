@@ -67,4 +67,11 @@ export class Columns{
     {field : "comment",style:"comment-col", header: "Comments", position:12}
 
   ];
+
+  public static  conformanceStatementsColumns =[
+
+    {field : "identifier", style:"name-col", header: "Identifier", position:1 },
+    {field : "description",style:"name-col", header: "Description", position:2 }
+
+  ];
 }
