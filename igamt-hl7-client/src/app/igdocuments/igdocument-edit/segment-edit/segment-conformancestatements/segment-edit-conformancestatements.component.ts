@@ -14,6 +14,7 @@ import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
 import {TocService} from "../../service/toc.service";
+import {ConstraintService} from "../../service/constraint.service";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
@@ -51,7 +52,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
         private igErrorService:IgErrorService,
-        private tocService:TocService
+        private tocService:TocService,
+        private constraintService:ConstraintService
     ){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
@@ -187,22 +189,22 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     save(): Promise<any>{
-      return new Promise((resolve, reject)=> {
+        return new Promise((resolve, reject)=> {
 
-         this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
+            this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
 
-          this.backup = __.cloneDeep(this.segmentConformanceStatements);
+                this.backup = __.cloneDeep(this.segmentConformanceStatements);
 
-          this.editForm.control.markAsPristine();
-          resolve(true);
+                this.editForm.control.markAsPristine();
+                resolve(true);
 
-        }, error=>{
+            }, error=>{
 
-           this.igErrorService.showError(error);
-           reject();
-          console.log("error saving");
+                this.igErrorService.showError(error);
+                reject();
+                console.log("error saving");
 
-        });
+            });
         });
     }
 
@@ -281,12 +283,20 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     selectCS(cs){
         this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+
+
+        if(this.selectedConformanceStatement && this.selectedConformanceStatement.type && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.type === 'ASSERTION'){
+            this.constraintService.generateTreeData(this.selectedConformanceStatement.assertion, this.treeData, this.idMap, this.datatypesLinks);
+        }
+
+
         this.editorTab = true;
         this.listTab = false;
     }
 
     deleteCS(identifier){
         this.segmentConformanceStatements.conformanceStatements = _.without(this.segmentConformanceStatements.conformanceStatements, _.findWhere(this.segmentConformanceStatements.conformanceStatements, {identifier: identifier}));
+        this.editForm.control.markAsDirty();
     }
 
     printCS(cs){
@@ -296,8 +306,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
-  hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
 
-  }
+    hasChanged(){
+        return this.editForm && this.editForm.touched && this.editForm.dirty;
+
+    }
 }

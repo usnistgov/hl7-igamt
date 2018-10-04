@@ -67,7 +67,11 @@ export class DisplayPathComponent {
 
   getDisplayName(){
     if(!this.parentPath) return this.idMap[this.getIdPath()].name;
-    else return this.idMap[this.getIdPath()].position;
+    else {
+      if(this.idMap[this.getIdPath()]) return this.idMap[this.getIdPath()].position;
+    }
+
+    return null;
   }
 
   needInstanceParameter(){
@@ -89,8 +93,10 @@ export class DisplayPathComponent {
     if(!this.parentPath) {
       return null;
     }else {
-      return this.idMap[this.getIdPath()].name;
+      if(this.idMap[this.getIdPath()]) return this.idMap[this.getIdPath()].name;
     }
+
+    return null;
   }
 
   nodeSelect(event) {
