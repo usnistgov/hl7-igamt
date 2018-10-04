@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -184,11 +185,12 @@ public class SegmentController extends BaseController {
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
       produces = {"application/json"})
   @ResponseBody
-  public CoConstraintTable saveCoConstraints(@PathVariable("id") String id,
+  public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
       @RequestBody CoConstraintTable table, Authentication authentication)
       throws CoConstraintSaveException {
-    return this.coconstraintService.saveCoConstraintForSegment(id, table,
-        authentication.getPrincipal().toString());
+	  CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table, authentication.getPrincipal().toString());
+	  System.out.println("NEEEEW");
+    return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table", "Saved Successfully", ccTable.getId().getId(), false, new Date(), ccTable);
   }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,

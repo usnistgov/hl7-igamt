@@ -4,7 +4,7 @@
 
 import {Component, Input, ViewChild, TemplateRef, OnInit, ChangeDetectorRef} from '@angular/core';
 import {
-  CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow
+  CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow, CCGroup
 } from './coconstraint.domain';
 import {CCHeaderDialogDmComponent} from './header-dialog/header-dialog-dm.component';
 import {CoConstraintTableService} from './coconstraint-table.service';
@@ -137,6 +137,15 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     return Validators.required;
   }
 
+  minimum(x: number) {
+    return Validators.min(x);
+  }
+
+
+  maximum(){
+    return Validators.pattern(/^(\*|(0|[1-9]\d*)?)$/);
+  }
+
   found(form: NgForm, value: string, field: string, key: string, exclude: string) {
     for (const control in form.controls) {
       if (control.includes(key) && control.includes(field) && form.controls[control].value === value && control !== exclude) {
@@ -197,16 +206,17 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     return node.type === CCSelectorType.IGNORE;
   }
 
-  setVariesNodeValue(node, value) {
+  setVariesNodeValue(obj, key, node, value) {
+    this.clearVariesNodeValue(obj, key, node);
     switch (value) {
       case 'value' :
-        node.type = CCSelectorType.VALUE;
+        obj[key].type = CCSelectorType.VALUE;
         break;
       case 'vs' :
-        node.type = CCSelectorType.VALUESET;
+        obj[key].type = CCSelectorType.VALUESET;
         break;
       case 'code' :
-        node.type = CCSelectorType.CODE;
+        obj[key].type = CCSelectorType.CODE;
         break;
     }
   }
@@ -289,12 +299,16 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
   delCol(list: any[], i: number, column: string) {
     this.reqDel(this.table, column);
+    if(Object.keys(this.ccFormVar.controls).length === 0){
+      this.ccFormVar.resetForm();
+    }
     list.splice(i, 1);
   }
 
   reqDel(obj, key) {
     if (obj.content.free) {
       for (const cc of obj.content.free) {
+        this.removeControlFromForm(cc.id + '-' + key);
         delete cc[key];
       }
     }
@@ -306,20 +320,51 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   delRow(list: any[], i: number) {
-    this.removeControlFromForm(list[i]);
+    this.removeControlFromForm(list[i].id);
+    if(Object.keys(this.ccFormVar.controls).length === 0){
+      this.ccFormVar.resetForm();
+    }
     list.splice(i, 1);
   }
 
-  removeControlFromForm(row: CCRow) {
+  removeControlFromForm(id: string) {
+
     for (const x in this.ccFormVar.controls) {
-      if ('-' + x.includes(row.id) + '-') {
+
+      if (x.includes(id)) {
         delete this.ccFormVar.controls[x];
+      }
+    }
+  }
+
+  removeControlFromFormGrp(group: CCGroup, i: number) {
+    this.removeControlFromForm('group' + i);
+    if (group.content.free) {
+      for (const cc of group.content.free) {
+        this.removeControlFromForm(cc.id);
+      }
+    }
+    if (group.content.groups) {
+      let i = 0;
+      for (const gr of group.content.groups) {
+        this.removeControlFromFormGrp(gr, i++);
       }
     }
   }
 
   addCc(list: any[]) {
     list.push(this.ccTableService.new_line(this.table.headers.selectors, this.table.headers.data, this.table.headers.user));
+  }
+
+  formStatus(){
+    let bool = true;
+    for(const x in this.ccFormVar.controls) {
+
+      bool = bool && this.ccFormVar.controls[x].valid;
+
+    }
+
+    return bool;
   }
 
   initColumn(obj) {
@@ -359,6 +404,10 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   delGroup(list: any[], i: number) {
+    this.removeControlFromFormGrp(list[i], i);
+    if(Object.keys(this.ccFormVar.controls).length === 0){
+      this.ccFormVar.resetForm();
+    }
     list.splice(i, 1);
   }
 
@@ -416,7 +465,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
       dynCodes: [],
       datatypes: []
     };
+
   }
+
 
   getBackup(): any {
     return this.backUp;
@@ -427,7 +478,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   isValid(): boolean {
-    return true;
+    return this.ccFormVar && this.ccFormVar.valid;
   }
 
   reset(): any {
@@ -441,8 +492,8 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   saveButton() {
     const ctrl = this;
     this.save().then(function (data) {
-      ctrl.table = data;
-      ctrl.backUp = data;
+      ctrl.table = data.data;
+      ctrl.backUp = data.data;
     },
     function (reject) {
 
