@@ -39,7 +39,7 @@ public class ConversionUtil {
       } else if (scope.equals(SCOPE.INTERMASTER)) {
         return Scope.INTERMASTER;
       } else if (scope.equals(SCOPE.MASTER)) {
-        return Scope.MASTER;
+        return Scope.SDTF;
       } else if (scope.equals(SCOPE.PHINVADS)) {
         return Scope.PHINVADS;
       } else if (scope.equals(SCOPE.PRELOADED)) {

@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
@@ -39,6 +40,9 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private DatatypeService datatypeService;
+
+  @Autowired
+  private CommonService commonService;
 
 
 
@@ -107,17 +111,16 @@ public class DatatypeController extends BaseController {
       throws ValidationException, DatatypeException, ForbiddenOperationException,
       DatatypeNotFoundException {
     log.debug("Saving Datatype with id=" + id);
-    if (!Scope.HL7STANDARD.equals(structure.getScope())) {
-      Datatype Datatype = datatypeService.convertToDatatype(structure);
-      if (Datatype == null) {
-        throw new DatatypeNotFoundException(id);
-      }
-      Datatype = datatypeService.save(Datatype);
-      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
-    } else {
-      throw new ForbiddenOperationException("FORBIDDEN_SAVE_Datatype");
+    Datatype datatype = datatypeService.convertToDatatype(structure);
+    if (datatype == null) {
+      throw new DatatypeNotFoundException(id);
     }
+    commonService.checkRight(authentication, datatype);
+    datatype = datatypeService.save(datatype);
+    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
   }
+
+
 
   @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.POST,
       produces = {"application/json"})
@@ -132,8 +135,9 @@ public class DatatypeController extends BaseController {
   public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
       Authentication authentication) throws ValidationException, DatatypeNotFoundException {
     System.out.println(postDef.getPostDef());
-    Datatype Datatype = datatypeService.savePostdef(postDef);
-    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, Datatype.getUpdateDate());
+    Datatype datatype = datatypeService.savePostdef(postDef);
+
+    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, datatype.getUpdateDate());
   }
 
 
@@ -152,6 +156,7 @@ public class DatatypeController extends BaseController {
   public ResponseMessage saveConformanceStatement(@PathVariable("id") String id,
       Authentication authentication, @RequestBody DatatypeConformanceStatement conformanceStatement)
       throws DatatypeValidationException, DatatypeNotFoundException {
+
     Datatype Datatype = datatypeService.saveConformanceStatement(conformanceStatement);
     return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
         Datatype.getUpdateDate());

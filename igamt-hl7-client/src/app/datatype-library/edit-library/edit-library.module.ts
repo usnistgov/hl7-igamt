@@ -80,14 +80,12 @@ import {LibDeleteElementService} from "./delete-element/lib-delete-element.servi
     ToolbarModule,
     FileUploadModule,
     ConfirmDialogModule,
-    MessageModule,
     DialogModule,
     TreeTableModule
     ,SharedModule,
     TableModule,
     RadioButtonModule,
     ButtonModule,
-    BlockUIModule,
     SplitButtonModule,
     NamingConventionModule,
     ModalModule.forRoot()
