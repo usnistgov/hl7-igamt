@@ -23,6 +23,8 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <!--<p-dropdown [options]="instanceNums" [(ngModel)]="instanceNumberOfFieldSubject"></p-dropdown>-->
+
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
@@ -128,8 +130,8 @@
     </div>
 
 
-    <p-fieldset legend="Advanced Fields" [toggleable]="true" collapsed="true" (onAfterToggle)="generateAssertionScript(constraint)">
-        <div class="ui-g ui-fluid">
+    <!--<p-fieldset legend="Advanced Fields" [toggleable]="true" collapsed="true" (onAfterToggle)="generateAssertionScript(constraint)">-->
+        <!--<div class="ui-g ui-fluid">-->
             <!--<div class="ui-g-12 ui-md-2">-->
                 <!--<label for="assertionScript">Path Information: </label>-->
             <!--</div>-->
@@ -145,7 +147,7 @@
             <!--<div class="ui-g-12 ui-md-10">-->
                 <!--<textarea id="assertionScript" name="assertionScript" class="form-control" disabled [(ngModel)]="constraint.assertionScript" pInputTextarea [(ngModel)]="property"></textarea>-->
             <!--</div>-->
-        </div>
-    </p-fieldset>
+        <!--</div>-->
+    <!--</p-fieldset>-->
 
 </div>
