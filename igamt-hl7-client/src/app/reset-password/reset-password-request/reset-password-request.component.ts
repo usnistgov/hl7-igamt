@@ -19,7 +19,7 @@ export class ResetPasswordRequestComponent implements OnInit {
 
 
   sendPasswordResetLink(email){
-    this.resetPasswordService.sendPasswordResetLink(email).then(x=>{
+    this.resetPasswordService.sendPasswordResetLink(email).then( x =>{
 
         this.sent=true;
 

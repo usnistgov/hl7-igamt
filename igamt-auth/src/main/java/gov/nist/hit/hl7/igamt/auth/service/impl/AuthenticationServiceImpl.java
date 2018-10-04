@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.auth.service.impl;
 
+import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -12,6 +13,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustAllStrategy;
@@ -19,6 +22,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -26,14 +30,25 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.nist.hit.hl7.auth.util.crypto.SecurityConstants;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordRequest;
+import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 
@@ -78,6 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       // Create all-trusting host name verifier
       HostnameVerifier allHostsValid = new HostnameVerifier() {
+
         @Override
         public boolean verify(String hostname, SSLSession session) {
           return true;
@@ -86,7 +102,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       // Install the all-trusting host verifier
       HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-    } catch (NoSuchAlgorithmException e) {
+    } catch (
+
+    NoSuchAlgorithmException e) {
       e.printStackTrace();
     } catch (KeyManagementException e) {
       e.printStackTrace();
@@ -114,17 +132,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
   @Override
-  public String connect(LoginRequest user) throws AuthenticationException {
+  public ConnectionResponseMessage<UserResponse> connect(HttpServletResponse response,
+      LoginRequest user) throws AuthenticationException {
     try {
       HttpHeaders headers = new HttpHeaders();
       headers.add("Content-type", "application/json");
       HttpEntity<LoginRequest> request = new HttpEntity<>(user);
       System.out.println(env.getProperty(AUTH_URL));
-      ResponseEntity<LoginRequest> response = restTemplate.exchange(
-          env.getProperty(AUTH_URL) + "/api/login", HttpMethod.POST, request, LoginRequest.class);
-      if (response.getStatusCode() == HttpStatus.OK) {
-        if (response.getHeaders().containsKey("Authorization")) {
-          return response.getHeaders().get("Authorization").get(0);
+      ResponseEntity<ConnectionResponseMessage<UserResponse>> call =
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/login", HttpMethod.POST, request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
+      call.getBody().setHide(true);
+      if (call.getStatusCode() == HttpStatus.OK) {
+        if (call.getHeaders().containsKey("Authorization")) {
+          headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
+          Cookie authCookie =
+              new Cookie("authCookie", call.getHeaders().get("Authorization").get(0));
+          authCookie.setPath("/api");
+          authCookie.setMaxAge(SecurityConstants.EXPIRATION_DATE - 20);
+          response.setContentType("application/json");
+          response.addCookie(authCookie);
+          return call.getBody();
         } else {
           throw new AuthenticationException("Token is missing");
         }
@@ -133,16 +161,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       }
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
+      throw new AuthenticationException(getMessageString(message));
+    } catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(message);
+      throw new AuthenticationException(getMessageString(message));
     } catch (Exception e) {
-      e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
     }
   }
 
   @Override
-  public void register(RegistrationRequest user) throws AuthenticationException {
+  public ConnectionResponseMessage<UserResponse> register(RegistrationRequest user)
+      throws AuthenticationException {
 
     try {
       HttpHeaders headers = new HttpHeaders();
@@ -151,13 +182,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<RegistrationRequest> request = new HttpEntity<>(user);
 
 
-      ResponseEntity<RegistrationRequest> response =
+      ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
           restTemplate.exchange(env.getProperty(AUTH_URL) + "register", HttpMethod.POST, request,
-              RegistrationRequest.class);
+              new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
+
+
+
+      return response.getBody();
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(message);
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+
+    catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
     } catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
@@ -166,7 +208,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
   @Override
-  public void requestPasswordChange(String email, String url) throws AuthenticationException {
+  public ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String email)
+      throws AuthenticationException {
     // TODO Auto-generated method stub
     try {
       HttpHeaders headers = new HttpHeaders();
@@ -174,18 +217,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       RestTemplate restTemplate = new RestTemplate();
       ChangePasswordRequest changePasswordRequest = new ChangePasswordRequest();
       changePasswordRequest.setEmail(email);
-      changePasswordRequest.setUrl(url);
       HttpEntity<ChangePasswordRequest> request =
           new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
-      ResponseEntity<Boolean> response = restTemplate.exchange(
-          env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST, request, Boolean.class);
-
+      ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
+          .exchange(env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST, request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
+      return response.getBody();
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
+      throw new AuthenticationException(getMessageString(message));
+    } catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(message);
+      throw new AuthenticationException(getMessageString(message));
     } catch (Exception e) {
-      e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
     }
   }
@@ -206,16 +251,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
 
-      throw new AuthenticationException(message);
-    } catch (Exception e) {
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+
+    catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+    catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
     }
   }
 
   @Override
-  public boolean confirmChangePassword(ChangePasswordConfirmRequest requestObject)
-      throws AuthenticationException {
+  public ConnectionResponseMessage<PasswordResetTokenResponse> confirmChangePassword(
+      ChangePasswordConfirmRequest requestObject) throws AuthenticationException {
     // TODO Auto-generated method stub
     try {
       HttpHeaders headers = new HttpHeaders();
@@ -223,18 +277,68 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       RestTemplate restTemplate = new RestTemplate();
       HttpEntity<ChangePasswordConfirmRequest> request =
           new HttpEntity<ChangePasswordConfirmRequest>(requestObject);
-      ResponseEntity<Boolean> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "password/reset/confirm",
-              HttpMethod.POST, request, Boolean.class);
+      ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
+          .exchange(env.getProperty(AUTH_URL) + "password/reset/confirm", HttpMethod.POST, request,
+              new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
 
     } catch (HttpClientErrorException e) {
       String message = e.getResponseBodyAsString();
-      throw new AuthenticationException(message);
-    } catch (Exception e) {
+
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+
+    catch (HttpServerErrorException e) {
+      String message = e.getResponseBodyAsString();
+
+      throw new AuthenticationException(getMessageString(message));
+    }
+
+    catch (Exception e) {
       e.printStackTrace();
       throw new AuthenticationException(e.getMessage());
     }
   }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.auth.service.AuthenticationService#getAuthentication(org.springframework
+   * .security.core.Authentication)
+   */
+  @Override
+  public UserResponse getAuthentication(Authentication authentication) {
+    UserResponse response = new UserResponse();
+
+    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
+      response.setUsername(authentication.getName());
+      for (GrantedAuthority auth : authentication.getAuthorities()) {
+        response.addAuthority(auth);
+      }
+    } else {
+      response.setUsername("Guest");
+    }
+    return response;
+  }
+
+  private String getMessageString(String string) throws AuthenticationException {
+
+    ObjectMapper mapper = new ObjectMapper().configure(
+        com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+    try {
+      ConnectionResponseMessage<Object> obj =
+          mapper.readValue(string, new TypeReference<ConnectionResponseMessage<Object>>() {});
+      return obj.getText();
+    } catch (IOException e) {
+      // TODO Auto-generated catch block
+      throw new AuthenticationException("Could not parse the error response");
+    }
+
+
+  }
+
 
 }

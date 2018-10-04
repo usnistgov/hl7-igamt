@@ -1,9 +1,10 @@
 import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
 import {ScrollPanel} from 'primeng/primeng';
-import { TreeModule } from 'angular-tree-component';
 import {HttpClient} from "@angular/common/http";
 import {WorkspaceService} from "./service/workspace/workspace.service";
 import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router} from "@angular/router";
+import {ProgressHandlerService} from "./service/progress-handler.service";
+import {Message} from 'primeng/api';
 
 @Component({
     selector: 'app-root',
@@ -11,39 +12,15 @@ import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Route
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-  options = {};
-  loading: boolean = true;
-
-
-  nodes = [
-    {
-      id: 1,
-      name: 'root1',
-      children: [
-        { id: 2, name: 'child1' },
-        { id: 3, name: 'child2' }
-      ]
-    },
-    {
-      id: 4,
-      name: 'root2',
-      children: [
-        { id: 5, name: 'child2.1' },
-        {
-          id: 6,
-          name: 'child2.2',
-          children: [
-            { id: 7, name: 'subsub' }
-          ]
-        }
-      ]
-    }
-  ];
-
+    options = {};
+    routerLoading: boolean = false;
+    httpLoading: boolean=false;
 
     darkTheme = false;
 
-    //menuMode = 'static';
+    msgs: Message[] = [];
+
+  //menuMode = 'static';
     menuMode = 'horizontal';
 
     topbarMenuActive: boolean;
@@ -65,6 +42,7 @@ export class AppComponent implements AfterViewInit {
     resetMenu: boolean;
 
     menuHoverActive: boolean;
+
 
     @ViewChild('layoutMenuScroller') layoutMenuScrollerViewChild: ScrollPanel;
 
@@ -136,7 +114,6 @@ export class AppComponent implements AfterViewInit {
         } else {
             this.activeTopbarItem = item;
         }
-
         event.preventDefault();
     }
 
@@ -188,18 +165,27 @@ export class AppComponent implements AfterViewInit {
     }
 
 
-    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router ){
+    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router , private progress:ProgressHandlerService){
 
       http.get("api/config").subscribe(data=>{
 
 
         this.ws.setAppConstant(data);
-      })
+      });
+
+
+
 
       router.events.subscribe(event => {
         this.checkRouterEvent(event);
       });
 
+
+      progress.getHttpStatus().subscribe( x =>{
+
+        this.httpLoading= x;
+
+      });
 
     }
 
@@ -208,13 +194,16 @@ export class AppComponent implements AfterViewInit {
       console.log("Navigation Start");
 
       console.log(event);
-      this.loading = true;
+      this.routerLoading = true;
     }
 
     if (event instanceof NavigationEnd ||
       event instanceof NavigationCancel ||
       event instanceof NavigationError) {
-      this.loading = false;
+
+      this.routerLoading = false;
+      this.progress.clear();
+
     }
   }
 

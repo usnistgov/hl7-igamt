@@ -9,44 +9,27 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.auth.controller;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.security.core.GrantedAuthority;
+package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 /**
  * @author ena3
  *
  */
-public class UserResponse {
-  public List<String> getAuthorities() {
-    return authorities;
-  }
-
-  public void setAuthorities(List<String> authorities) {
-    this.authorities = authorities;
-  }
-
-  private String username;
-  private List<String> authorities = new ArrayList<String>();
-
-  public String getUsername() {
-    return username;
-  }
-
-  public void setUsername(String username) {
-    this.username = username;
-  }
+public class IGCreationException extends Exception {
 
   /**
-   * @param authorities
+   * 
    */
+  private static final long serialVersionUID = 1L;
 
-  void addAuthority(GrantedAuthority auth) {
-    authorities.add(auth.getAuthority());
+  public IGCreationException() {
+    super();
+    // TODO Auto-generated constructor stub
   }
 
+  public IGCreationException(String message) {
+    super(message);
+    // TODO Auto-generated constructor stub
+  }
 
 }

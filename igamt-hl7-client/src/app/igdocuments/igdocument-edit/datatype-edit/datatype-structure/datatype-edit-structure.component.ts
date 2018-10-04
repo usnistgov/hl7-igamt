@@ -252,7 +252,7 @@ export class DatatypeEditStructureComponent implements WithSave{
 
             }, error => {
                 console.log("error saving");
-                reject();
+                reject(error);
             });
         })
     }

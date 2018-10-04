@@ -200,10 +200,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
             }, error=>{
 
-                this.igErrorService.showError(error);
-                reject();
-                console.log("error saving");
 
+           reject(error);
+          console.log("error saving");
             });
         });
     }

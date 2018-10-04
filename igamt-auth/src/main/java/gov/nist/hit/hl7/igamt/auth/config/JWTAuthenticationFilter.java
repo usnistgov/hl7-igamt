@@ -45,7 +45,6 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
       Cookie authCookie = new Cookie("authCookie", "");
       authCookie.setPath("/api");
       authCookie.setMaxAge(0);
-      authCookie.setHttpOnly(true);
       response.addCookie(authCookie);
       response.sendError(403);
 

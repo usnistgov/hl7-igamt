@@ -64,8 +64,7 @@ export class ValuesetEditPredefComponent extends HasFroala implements WithSave  
                     resolve(true);
                 }, error => {
                     console.log("error saving");
-                    reject();
-                    this.igErrorService.showError(error);
+                    reject(error);
                 }
 
             );

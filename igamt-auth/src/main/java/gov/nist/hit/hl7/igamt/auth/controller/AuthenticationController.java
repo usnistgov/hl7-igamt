@@ -8,23 +8,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import gov.nist.hit.hl7.auth.util.crypto.SecurityConstants;
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
+import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserResponse;
+import gov.nist.hit.hl7.auth.util.service.AuthenticationConverterService;
+import gov.nist.hit.hl7.igamt.auth.emails.service.AccountManagmenEmailService;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 import gov.nist.hit.hl7.igamt.auth.service.AuthenticationService;
 
@@ -34,52 +32,44 @@ public class AuthenticationController {
   @Autowired
   AuthenticationService authService;
 
+  @Autowired
+  AuthenticationConverterService auth;
+
+  @Autowired
+  AccountManagmenEmailService emailService;
+
 
   @RequestMapping(value = "/api/login", method = RequestMethod.POST)
-  public UserResponse login(@RequestBody LoginRequest user, HttpServletResponse response)
-      throws AuthenticationException, IOException {
+  public ConnectionResponseMessage<UserResponse> login(@RequestBody LoginRequest user,
+      HttpServletResponse response) throws AuthenticationException, IOException {
 
-
-    UserResponse userResponse = new UserResponse();
-    userResponse.setUsername(user.getUsername());
     try {
-      String token = authService.connect(user);
-      HttpHeaders headers = new HttpHeaders();
-      headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-      headers.add("Authorization", token);
 
-      Cookie authCookie = new Cookie("authCookie", token);
-      authCookie.setPath("/api");
-      authCookie.setMaxAge(SecurityConstants.EXPIRATION_DATE - 20);
-      authCookie.setHttpOnly(true);
-      response.setContentType("application/json");
-      response.addCookie(authCookie);
+      ConnectionResponseMessage<UserResponse> resp = authService.connect(response, user);
+      return resp;
+
     } catch (AuthenticationException e) {
       throw e;
+    } catch (Exception e) {
+      throw e;
     }
-    return userResponse;
-
-
   }
 
 
 
   @RequestMapping(value = "/api/register", method = RequestMethod.POST)
-  public ResponseEntity register(@RequestBody RegistrationRequest user)
+  public ConnectionResponseMessage<UserResponse> register(@RequestBody RegistrationRequest user)
       throws AuthenticationException {
     try {
-      authService.register(user);
-      HttpHeaders headers = new HttpHeaders();
-      headers.add(HttpHeaders.CONTENT_TYPE, "application/json; charset=UTF-8");
-      ResponseEntity<String> response =
-          ResponseEntity.ok().headers(headers).body(user.getUsername());
+
+      ConnectionResponseMessage<UserResponse> response = authService.register(user);
+      emailService.sendResgistrationEmail(user.getFullName(), user.getUsername(), user.getEmail());
       return response;
 
     } catch (AuthenticationException e) {
       throw e;
     } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-
+      throw e;
     }
   }
 
@@ -92,7 +82,6 @@ public class AuthenticationController {
     Cookie authCookie = new Cookie("authCookie", "");
     authCookie.setPath("/api");
     authCookie.setMaxAge(0);
-    authCookie.setHttpOnly(true);
     res.addCookie(authCookie);
 
   }
@@ -100,37 +89,34 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/authentication", method = RequestMethod.GET)
   @ResponseBody
-  public UserResponse getCurrentUser(HttpServletResponse res) throws IOException {
-    UserResponse response = new UserResponse();
+  public UserResponse getCurrentUser(HttpServletResponse res, Authentication authentication)
+      throws IOException {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null && !(authentication instanceof AnonymousAuthenticationToken)) {
-      response.setUsername(authentication.getName());
-      for (GrantedAuthority auth : authentication.getAuthorities()) {
-        response.addAuthority(auth);
-      }
-
-      System.out.println(response);
-      return response;
-    } else {
-      response.setUsername("Guest");
-      res.sendError(500);
-      return response;
-    }
-
+    return auth.getAuthentication(authentication);
   }
 
   @RequestMapping(value = "api/password/reset", method = RequestMethod.POST)
   @ResponseBody
-  public void resetPaswordRequest(HttpServletRequest req, HttpServletResponse res,
-      @RequestBody String email) throws AuthenticationException {
+  public ConnectionResponseMessage<PasswordResetTokenResponse> resetPaswordRequest(
+      HttpServletRequest req, HttpServletResponse res, @RequestBody String email)
+      throws AuthenticationException {
     try {
-      getUrl(req);
 
-      authService.requestPasswordChange(email, getUrl(req));
+      ConnectionResponseMessage<PasswordResetTokenResponse> response =
+          authService.requestPasswordChange(email);
+      if (response.getData() instanceof PasswordResetTokenResponse) {
+        PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
+        emailService.sendResetTokenUrl(responseData.getFullname(), responseData.getUsername(),
+            responseData.getEmail(), getUrl(req, responseData.getToken()));
+        return response;
+      } else {
+        throw new AuthenticationException("Invalid Data format");
+      }
+
     } catch (AuthenticationException e) {
       throw e;
     }
+
   }
 
   @RequestMapping(value = "api/password/validatetoken", method = RequestMethod.POST)
@@ -144,11 +130,21 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/password/reset/confirm", method = RequestMethod.POST)
   @ResponseBody
-  public void confirmPasswordReset(HttpServletRequest req, HttpServletResponse res,
+  public ConnectionResponseMessage<PasswordResetTokenResponse> confirmPasswordReset(
+      HttpServletRequest req, HttpServletResponse res,
       @RequestBody ChangePasswordConfirmRequest requestObject) throws AuthenticationException {
     try {
-      getUrl(req);
-      authService.confirmChangePassword(requestObject);
+      ConnectionResponseMessage<PasswordResetTokenResponse> response =
+          authService.confirmChangePassword(requestObject);
+
+      if (response.getData() instanceof PasswordResetTokenResponse) {
+        PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
+        emailService.sendRestPasswordSuccess(responseData.getFullname(), responseData.getUsername(),
+            responseData.getEmail());
+        return response;
+      } else {
+        throw new AuthenticationException("Invalid Data format");
+      }
     } catch (AuthenticationException e) {
       throw e;
     }
@@ -156,12 +152,13 @@ public class AuthenticationController {
   }
 
 
-  private String getUrl(HttpServletRequest request) {
+  private String getUrl(HttpServletRequest request, String token) {
     String scheme = request.getScheme();
     String host = request.getHeader("Host");
 
-    return scheme + "://" + host + "/#/reset-password-confirm";
+    return scheme + "://" + host + "/#/reset-password-confirm/" + token;
   }
+
 
 
 }
