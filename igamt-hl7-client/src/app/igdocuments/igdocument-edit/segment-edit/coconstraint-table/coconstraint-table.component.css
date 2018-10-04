@@ -142,13 +142,13 @@ th {
     background-color: rgb(76, 175, 80);
 }
 
-.ng-valid[required], .ng-valid.required  {
-    /*border-bottom: 1px solid #42A948; !* green *!*/
-}
+/*.ng-valid[required], .ng-valid.required  {*/
+    /*!*border-bottom: 1px solid #42A948; !* green *!*!*/
+/*}*/
 
-.ng-invalid:not(form)  {
-    border-bottom: 2px solid #d82320; /* red */
-}
+/*.ng-invalid:not(form)  {*/
+    /*border-bottom: 2px solid #d82320; !* red *!*/
+/*}*/
 
 input::-webkit-input-placeholder {
     text-align: center;

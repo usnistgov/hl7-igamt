@@ -43,7 +43,11 @@ export class SegmentTreeComponent implements OnInit {
 
     loadNode(event) {
         if (event.node) {
-            return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment, this._excluded).then(nodes => event.node.children = nodes);
+            return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment, this._excluded).then(nodes => {
+              event.node.children = nodes.sort((a,b) => {
+                return a.data.index - b.data.index;
+              });
+            });
         }
     }
 

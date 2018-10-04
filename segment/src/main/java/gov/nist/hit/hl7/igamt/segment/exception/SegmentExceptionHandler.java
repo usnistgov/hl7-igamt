@@ -11,6 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.segment.exception;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,6 +24,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
  * @author Harold Affo
@@ -60,6 +65,19 @@ public class SegmentExceptionHandler {
   @ExceptionHandler({ForbiddenOperationException.class})
   public ResponseMessage handleSegmentNotFoundException(ForbiddenOperationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({CoConstraintSaveException.class})
+  public ResponseMessage handleValidationException(CoConstraintSaveException exception) {
+	Map<String, String> map = exception.getErrors();
+	String errorMessage = "";
+	for(Entry<String, String> entry : map.entrySet()){
+		errorMessage += "Error At ["+entry.getKey()+"] : "+entry.getValue()+".   ";
+	}
+    ResponseMessage message = new ResponseMessage(Status.FAILED, errorMessage);
     return message;
   }
 

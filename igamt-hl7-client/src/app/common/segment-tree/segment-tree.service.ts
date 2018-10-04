@@ -8,6 +8,7 @@ import {TreeNode} from 'primeng/components/common/treenode';
 import {GeneralConfigurationService} from '../../service/general-configuration/general-configuration.service';
 import {TocService} from '../../igdocuments/igdocument-edit/service/toc.service';
 import * as _ from 'lodash';
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class SegmentTreeNodeService {
@@ -15,7 +16,7 @@ export class SegmentTreeNodeService {
   valueSetAllowedDTs: any[];
   valueSetAllowedComponents: any[];
 
-  constructor(private http: Http, private configService: GeneralConfigurationService, private tocService: TocService) {
+  constructor(private http: HttpClient, private configService: GeneralConfigurationService, private tocService: TocService) {
     this.valueSetAllowedDTs = this.configService.valueSetAllowedDTs;
     this.valueSetAllowedComponents = this.configService.valueSetAllowedComponents;
   }
@@ -27,10 +28,9 @@ export class SegmentTreeNodeService {
       const node = await this.lazyNode(field.data, null, segment, exclusion);
       nodes.push(node);
     }
-    nodes.sort((a,b) => {
+    return nodes.sort((a,b) => {
       return a.data.index - b.data.index;
     });
-    return nodes;
   }
 
   async lazyNode(element, parent, segment, exclusion) {
@@ -58,16 +58,15 @@ export class SegmentTreeNodeService {
 
   async getComponentsAsTreeNodes(node, segment, exclusion) {
     const nodes: TreeNode[] = [];
-    this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure')
-    .map(res => res.json()).subscribe(async data => {
+    this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure').subscribe(async result => {
+      const data = result as any;
       for (const d of data.children) {
         nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
       }
     });
-    nodes.sort((a,b) => {
+    return nodes.sort((a,b) => {
       return a.data.index - b.data.index;
     });
-    return nodes;
   }
 
 }

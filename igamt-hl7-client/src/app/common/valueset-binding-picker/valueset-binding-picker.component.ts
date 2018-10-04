@@ -2,7 +2,6 @@
  * Created by hnt5 on 10/4/17.
  */
 import {Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
-import {Http} from '@angular/http';
 import {PrimeDialogAdapter} from '../prime-ng-adapters/prime-dialog-adapter';
 import {VSValue} from './vsvalue.interface';
 import {TocService} from '../../igdocuments/igdocument-edit/service/toc.service';
@@ -24,7 +23,7 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
     varies = false;
     version = '';
 
-    constructor(private $http: Http, private tocService: TocService, private config : GeneralConfigurationService) {
+    constructor(private tocService: TocService, private config : GeneralConfigurationService) {
         super();
     }
 
