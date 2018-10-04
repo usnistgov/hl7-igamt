@@ -75,7 +75,9 @@ export class GeneralConfigurationService {
       }
     ];
 
-    this._instanceNums = [ { label : 'ONE', value : '*' },
+    this._instanceNums = [
+      { label : 'Select #', value : null },
+      { label : 'ONE', value : '*' },
       { label : 'the first', value : '1' },
       { label : 'the second', value : '2' },
       { label : 'the third', value : '3' },

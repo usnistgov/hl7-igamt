@@ -12,6 +12,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {IgErrorService} from "../../ig-error/ig-error.service";
 import {TocService} from "../../service/toc.service";
+import {ConstraintService} from "../../service/constraint.service";
 
 import * as __ from 'lodash';
 
@@ -51,7 +52,8 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
         private igErrorService:IgErrorService,
-        private tocService:TocService
+        private tocService:TocService,
+        private constraintService:ConstraintService
     ){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
@@ -273,12 +275,16 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
 
     selectCS(cs){
         this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        if(this.selectedConformanceStatement && this.selectedConformanceStatement.type && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.type === 'ASSERTION'){
+            this.constraintService.generateTreeData(this.selectedConformanceStatement.assertion, this.treeData, this.idMap, this.datatypesLinks);
+        }
         this.editorTab = true;
         this.listTab = false;
     }
 
     deleteCS(identifier){
         this.datatypeConformanceStatements.conformanceStatements = _.without(this.datatypeConformanceStatements.conformanceStatements, _.findWhere(this.datatypeConformanceStatements.conformanceStatements, {identifier: identifier}));
+        this.editForm.control.markAsDirty();
     }
 
     printCS(cs){
