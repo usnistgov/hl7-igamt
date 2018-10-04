@@ -80,14 +80,17 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
       this.confirmationService.confirm({
         header: "Unsaved Data",
-        message: "You have Unsaved Data, Do you want to save and continue?",
+        message: "You have unsaved changes: If you leave this page,Your changes will be lost, do you want to continue?",
         key: 'UNSAVEDDATA',
         accept: () => {
-          component.save().then(x => {
-            resolve(true);
-          }, error => {
-            reject();
-          })
+          // component.save().then(x => {
+          //   resolve(true);
+          // }, error => {
+          //   console.log("error");
+          //   resolve(false);
+          //
+          // })
+          resolve(true);
         },
         reject: (cancel: boolean) => {
           reject(false);

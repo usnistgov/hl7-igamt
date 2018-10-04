@@ -61,8 +61,7 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
            resolve(true);
 
          },error=>{
-           this.igErrorService.showError(error);
-           reject(error.message);
+           reject(error);
          })
 
 

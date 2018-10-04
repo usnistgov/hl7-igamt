@@ -18,7 +18,7 @@ export  class IgDocumentCreateService {
   }
 
   createIntegrationProfile(wrapper){
-    return this.http.post('api/igdocuments/create/', wrapper);
+    return this.http.post<any>('api/igdocuments/create/', wrapper);
 
   }
 

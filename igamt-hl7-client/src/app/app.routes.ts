@@ -6,7 +6,6 @@ import {DocumentationComponent} from './documentation/documentation.component';
 import {NotFoundComponent} from "./common/404/404.component";
 import {LoginComponent} from "./login/login.component"
 import {RegisterComponent} from "./register/register.component";
-import {ConfigurationComponent} from "./configuration/configuration.component";
 import {ResetPasswordRequestComponent} from "./reset-password/reset-password-request/reset-password-request.component";
 import {ResetPasswordConfirmComponent} from "./reset-password/reset-password-confirm/reset-password-confirm.component";
 import {ErrorComponent} from "./error/error.component";

@@ -184,7 +184,7 @@ export class SegmentEditStructureComponent implements WithSave {
         return true;
     }
 
-    save(): Promise<any>{
+    save(){
         return new Promise((resolve, reject)=> {
             let saveObj:any = {};
             saveObj.id = this.segmentStructure.id;
@@ -206,8 +206,8 @@ export class SegmentEditStructureComponent implements WithSave {
                 resolve(true);
 
             }, error => {
-                console.log("error saving");
-                reject();
+
+               reject(error);
             });
         })
     }

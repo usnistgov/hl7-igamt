@@ -28,7 +28,6 @@ import { FieldsetModule } from 'primeng/primeng';
 import { FileUploadModule } from 'primeng/primeng';
 import { GalleriaModule } from 'primeng/primeng';
 import { GMapModule } from 'primeng/primeng';
-import { GrowlModule } from 'primeng/primeng';
 import { InputMaskModule } from 'primeng/primeng';
 import { InputSwitchModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/primeng';
@@ -48,7 +47,7 @@ import { PanelModule } from 'primeng/primeng';
 import { PanelMenuModule } from 'primeng/primeng';
 import { PasswordModule } from 'primeng/primeng';
 import { PickListModule } from 'primeng/primeng';
-import { ProgressBarModule } from 'primeng/primeng';
+import {ProgressBarModule} from 'primeng/progressbar';
 import { RadioButtonModule } from 'primeng/primeng';
 import { RatingModule } from 'primeng/primeng';
 import { ScheduleModule } from 'primeng/primeng';
@@ -56,7 +55,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SelectButtonModule } from 'primeng/primeng';
 import { SlideMenuModule } from 'primeng/primeng';
 import { SliderModule } from 'primeng/primeng';
-import { SpinnerModule } from 'primeng/primeng';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import { SplitButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/primeng';
 import { TabMenuModule } from 'primeng/primeng';
@@ -114,6 +113,9 @@ import {ErrorResolver} from "./error/error.resolver";
 import {ErrorService} from "./error/error.service";
 import { CrossReferenceComponent } from './common/cross-reference/cross-reference.component';
 import {MessageService} from "primeng/components/common/messageservice";
+import {BlockUIModule} from 'primeng/blockui';
+import {ProgressHandlerService} from "./service/progress-handler.service";
+import {GrowlModule} from 'primeng/growl';
 
 @NgModule({
     imports: [
@@ -156,7 +158,7 @@ import {MessageService} from "primeng/components/common/messageservice";
         InputTextModule,
         InputTextareaModule,
         LightboxModule,
-
+        BlockUIModule,
         ListboxModule,
         MegaMenuModule,
         MessageModule,
@@ -180,7 +182,7 @@ import {MessageService} from "primeng/components/common/messageservice";
         SelectButtonModule,
         SlideMenuModule,
         SliderModule,
-        SpinnerModule,
+        ProgressSpinnerModule,
         SplitButtonModule,
         StepsModule,
         TableModule,
@@ -243,7 +245,8 @@ import {MessageService} from "primeng/components/common/messageservice";
     ConstraintsService,
     TableOptionsService,
     ExportFontService,
-    MessageService
+    MessageService,
+    ProgressHandlerService
   ],
     bootstrap: [AppComponent]
 })

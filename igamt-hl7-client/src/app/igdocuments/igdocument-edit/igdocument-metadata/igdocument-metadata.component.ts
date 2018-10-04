@@ -47,6 +47,8 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
 
           resolve(true);
 
+        }, error=>{
+          reject(error);
         })
 
       }

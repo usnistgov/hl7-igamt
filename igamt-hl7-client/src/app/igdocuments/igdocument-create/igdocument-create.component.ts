@@ -184,8 +184,10 @@ export class IgDocumentCreateComponent {
     for(let i = 0 ; i<versions.length; i++){
       let version = versions[i];
       console.log(this.selectdNodeMap[version]);
-      for(let j =0 ; j<this.selectdNodeMap[version].length; j++){
-        this.selectNode(this.selectdNodeMap[version][j]);
+      if(this.selectdNodeMap[version]) {
+        for (let j = 0; j < this.selectdNodeMap[version].length; j++) {
+          this.selectNode(this.selectdNodeMap[version][j]);
+        }
       }
 
   };
@@ -197,9 +199,7 @@ export class IgDocumentCreateComponent {
 
     this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
-         console.log(res);
          this.goTo(res);
-         this.blockUI=false;
       }
     )
 
@@ -217,7 +217,7 @@ export class IgDocumentCreateComponent {
 
     this.route.queryParams
       .subscribe(params => {
-        var link="/ig/"+res.id;
+        var link="/ig/"+res.data.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });

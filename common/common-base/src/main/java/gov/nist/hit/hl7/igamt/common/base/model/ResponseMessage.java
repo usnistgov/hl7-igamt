@@ -13,24 +13,18 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 import java.util.Date;
 
-/**
- * @author Harold Affo
- *
- */
-public class ResponseMessage {
+public class ResponseMessage<T> {
 
   private Status status;
-
   private String type;
-
   private String text;
   private String resourceId;
   private boolean hide;
   private Date date;
-  private Object data;
+  private T data;
 
   public ResponseMessage(Status status, String type, String text, String resourceId, boolean hide,
-      Date date, Object data) {
+      Date date, T data) {
     super();
     this.status = status;
     this.type = type;
@@ -39,6 +33,11 @@ public class ResponseMessage {
     this.hide = hide;
     this.date = date;
     this.data = data;
+  }
+
+  public ResponseMessage() {
+    super();
+    // TODO Auto-generated constructor stub
   }
 
   /**
@@ -64,6 +63,14 @@ public class ResponseMessage {
     this.text = message;
     this.resourceId = id;
     this.date = date;
+
+  }
+
+  public ResponseMessage(Status status, T data, boolean hide) {
+    // TODO Auto-generated constructor stub
+    this.status = status;
+    this.data = data;
+    this.hide = hide;
 
   }
 
@@ -125,10 +132,9 @@ public class ResponseMessage {
     return data;
   }
 
-  public void setData(Object data) {
+  public void setData(T data) {
     this.data = data;
   }
-
 
 
 }

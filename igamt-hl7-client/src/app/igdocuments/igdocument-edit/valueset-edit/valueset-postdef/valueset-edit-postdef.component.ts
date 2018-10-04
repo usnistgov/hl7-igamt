@@ -62,9 +62,7 @@ export class ValuesetEditPostdefComponent extends HasFroala implements WithSave 
                     this.editForm.control.markAsPristine();
                     resolve(true);
                 }, error => {
-                    console.log("error saving");
-                    reject();
-                    this.igErrorService.showError(error);
+                    reject(error);
                 }
 
             );

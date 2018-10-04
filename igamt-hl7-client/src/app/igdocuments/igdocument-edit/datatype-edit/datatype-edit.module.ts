@@ -53,7 +53,6 @@ import {TreeTableModule} from 'primeng/primeng';
     SelectButtonModule,
     TableModule,
     MessageModule,
-
     NamingConventionModule,
     MultiSelectModule,
     FroalaEditorModule.forRoot(),

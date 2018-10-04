@@ -35,17 +35,17 @@ export class AuthService {
 
   login(username,password): BehaviorSubject<boolean> {
     console.log(username);
-    this.http.post('api/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
+    this.http.post<any>('api/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
       console.log(data);
       let token = data.headers.get('Authorization');
       console.log(token);
-      this.currentUser.next(data.body);
+      this.currentUser.next(data.body.data);
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
     }, error =>{
 
 
-      this.showError(error);
+      // this.showError(error);
 
       this.isLoggedIn.next(false);
 
@@ -127,8 +127,6 @@ export class AuthService {
 
 
   showError(error:any) {
-    console.log(error);
-    error =JSON.parse(error.error.message);
     console.log(error);
     this.messageService.add({severity:'error', summary:"Authentication Error", detail:error.message, id:'LOGINERROR'});
   }

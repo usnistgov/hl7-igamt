@@ -71,13 +71,11 @@ export class DatatypeEditMetadataComponent extends HasFroala implements WithSave
                   this.editForm.control.markAsPristine();
                   resolve(true);
                 }, error => {
-                  console.log("Error Saving");
-                  this.igErrorService.showError(error);
+                    reject(error);
                 }
             );
           }, tocError=>{
-            console.log("TOC NOT SAVED")
-            this.igErrorService.showError(tocError);
+            reject(tocError);
           })
         }
     )

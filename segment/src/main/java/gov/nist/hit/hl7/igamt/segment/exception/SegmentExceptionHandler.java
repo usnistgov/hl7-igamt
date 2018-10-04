@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 
@@ -50,6 +51,14 @@ public class SegmentExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({SegmentNotFoundException.class})
   public ResponseMessage handleSegmentNotFoundException(SegmentNotFoundException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+  @ExceptionHandler({ForbiddenOperationException.class})
+  public ResponseMessage handleSegmentNotFoundException(ForbiddenOperationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
