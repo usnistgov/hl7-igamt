@@ -66,7 +66,6 @@ import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddValueSetsResponseDisplay;
-import gov.nist.hit.hl7.igamt.ig.model.ChangedObjects;
 import gov.nist.hit.hl7.igamt.ig.model.IGDisplay;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
@@ -230,7 +229,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
+  public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
       @RequestBody List<TreeNode> toc, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
 
@@ -242,29 +241,20 @@ public class IGDocumentController extends BaseController {
       throw new IGUpdateException(id);
     }
 
-    return new ResponseMessage(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+    return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST,
       produces = {"application/json"})
 
-  public @ResponseBody ResponseMessage get(@PathVariable("id") String id,
+  public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
       @RequestBody DocumentMetadata metadata, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
     UpdateResult updateResult = igService.updateAttribute(id, "metadata", metadata);
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException("Could not update IG Metadata ");
     }
-    return new ResponseMessage(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
-  }
-
-  /**
-   * 
-   * @param changedObjects
-   */
-  @RequestMapping(value = "api/igdocuments/{id}/save", method = RequestMethod.POST)
-  public void save(@RequestBody ChangedObjects changedObjects) {
-    System.out.println(changedObjects.toString());
+    return new ResponseMessage<Object>(Status.SUCCESS, METATDATA_UPDATED, id, new Date());
   }
 
 
@@ -273,8 +263,13 @@ public class IGDocumentController extends BaseController {
 
   public @ResponseBody List<MessageEventTreeNode> getMessageEvents(
       @PathVariable("version") String version, Authentication authentication) {
+    try {
+      List<MessageEventTreeNode> ret = messageEventService.findByHl7Version(version);
+      return ret;
 
-    return messageEventService.findByHl7Version(version);
+    } catch (Exception e) {
+      throw e;
+    }
 
   }
 
@@ -292,34 +287,41 @@ public class IGDocumentController extends BaseController {
    */
   @RequestMapping(value = "/api/igdocuments/create", method = RequestMethod.POST,
       produces = {"application/json"})
-  public @ResponseBody CompositeKey create(@RequestBody CreationWrapper wrapper,
+  public @ResponseBody ResponseMessage<CompositeKey> create(@RequestBody CreationWrapper wrapper,
       Authentication authentication) throws JsonParseException, JsonMappingException,
       FileNotFoundException, IOException, AddingException {
 
-    String username = authentication.getPrincipal().toString();
-    Ig empty = igService.CreateEmptyIg();
-    Set<String> savedIds = new HashSet<String>();
-    for (Event ev : wrapper.getMsgEvts()) {
-      ConformanceProfile profile = conformanceProfileService.findByKey(ev.getId());
-      if (profile != null) {
-        ConformanceProfile clone = profile.clone();
-        clone.setUsername(username);
-        clone.setEvent(ev.getName());
-        clone.setId(new CompositeKey());
-        clone.setName(profile.getName());
-        clone = conformanceProfileService.save(clone);
-        savedIds.add(clone.getId().getId());
+    try {
+      String username = authentication.getPrincipal().toString();
+      Ig empty = igService.CreateEmptyIg();
+      Set<String> savedIds = new HashSet<String>();
+      for (Event ev : wrapper.getMsgEvts()) {
+        ConformanceProfile profile = conformanceProfileService.findByKey(ev.getId());
+        if (profile != null) {
+          ConformanceProfile clone = profile.clone();
+          clone.setUsername(username);
+          clone.setEvent(ev.getName());
+          clone.setId(new CompositeKey());
+          clone.setName(profile.getName());
+          clone = conformanceProfileService.save(clone);
+          savedIds.add(clone.getId().getId());
+        }
       }
+      empty.setId(new CompositeKey());
+      empty.setUsername(username);
+      Date date = new Date();
+      empty.setCreationDate(date);
+      empty.setUpdateDate(date);
+      empty.setMetadata(wrapper.getMetadata());
+      crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
+      igService.save(empty);
+
+      return new ResponseMessage<CompositeKey>(Status.SUCCESS, empty.getId(), true);
+
+    } catch (Exception e) {
+      throw e;
     }
-    empty.setId(new CompositeKey());
-    empty.setUsername(username);
-    Date date = new Date();
-    empty.setCreationDate(date);
-    empty.setUpdateDate(date);
-    empty.setMetadata(wrapper.getMetadata());
-    crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
-    igService.save(empty);
-    return empty.getId();
+
   }
 
 

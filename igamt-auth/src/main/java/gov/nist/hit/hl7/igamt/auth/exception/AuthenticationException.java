@@ -1,17 +1,22 @@
 package gov.nist.hit.hl7.igamt.auth.exception;
 
-public class AuthenticationException extends Exception{
-	
-	  public  AuthenticationException() {
-		    super();
-		  }
+public class AuthenticationException extends Exception {
 
-		  public  AuthenticationException(String error) {
-		    super(error);
-		  }
+  /**
+  * 
+  */
+  private static final long serialVersionUID = 1L;
 
-		  public  AuthenticationException(Exception error) {
-		    super(error);
-		  }
+  public AuthenticationException() {
+    super();
+  }
+
+  public AuthenticationException(String error) {
+    super(error);
+  }
+
+  public AuthenticationException(Exception error) {
+    super(error);
+  }
 
 }

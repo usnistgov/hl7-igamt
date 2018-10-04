@@ -67,8 +67,7 @@ export class DatatypeEditPredefComponent extends  HasFroala implements WithSave 
                     resolve(true);
                 }, error => {
                     console.log("error saving");
-                    reject();
-                    this.igErrorService.showError(error);
+                    reject(error);
                 }
 
             );

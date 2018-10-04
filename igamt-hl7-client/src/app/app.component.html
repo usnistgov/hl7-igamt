@@ -1,3 +1,13 @@
+<p-blockUI [blocked]="routerLoading || httpLoading">
+
+  <p-progressBar mode="indeterminate"></p-progressBar>
+  <p-progressSpinner [style]="{'position':'absolute','top':'25%','left':'50%'}" strokeWidth="5" fill="#EEEEEE"></p-progressSpinner>
+
+
+</p-blockUI>
+<p-growl [(value)]="msgs" id="topLeft" key="topLeft"></p-growl>
+
+
 <div class="layout-wrapper" (click)="onLayoutClick()"
      [ngClass]="{'layout-horizontal': isHorizontal(),
                  'layout-overlay': isOverlay(),
@@ -29,21 +39,12 @@
     </div>
 
     <div class="layout-content">
-      <!--<tree-root [nodes]="nodes" [options]="options"></tree-root>-->
 
         <div class="layout-content-container">
-          <!--<div class="loader" *ngIf="loading">-->
-          <!--<div>-->
-          <!--<span></span>-->
-          <!--<span></span>-->
-          <!--<span></span>-->
-          <!--</div>-->
-          <!--</div>-->
-         <!--<div *ngIf="!loading">-->
-            <router-outlet></router-outlet>
-          </div>
-        <!--</div>-->
+          <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
 
+          <router-outlet></router-outlet>
+          </div>
         <app-footer></app-footer>
         <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
     </div>

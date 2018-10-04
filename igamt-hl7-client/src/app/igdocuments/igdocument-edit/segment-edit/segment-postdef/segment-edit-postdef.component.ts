@@ -76,8 +76,7 @@ export class SegmentEditPostdefComponent extends HasFroala implements WithSave {
         }, error => {
 
           console.log("error saving");
-          reject();
-           this.igErrorService.showError(error);
+          reject(error);
 
 
          }
