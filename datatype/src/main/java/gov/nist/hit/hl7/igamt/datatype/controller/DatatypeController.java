@@ -117,7 +117,7 @@ public class DatatypeController extends BaseController {
     }
     commonService.checkRight(authentication, datatype);
     datatype = datatypeService.save(datatype);
-    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, datatype.getUpdateDate());
   }
 
 

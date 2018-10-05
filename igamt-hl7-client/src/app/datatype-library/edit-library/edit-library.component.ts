@@ -64,7 +64,7 @@ export class EditLibraryComponent {
 
     {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
-    {label:"HL7 Flavors",value:"MASTER"}
+    {label:"SDTF ",value:"SDTF"}
 
   ];
 
@@ -460,6 +460,7 @@ export class EditLibraryComponent {
     })
       .subscribe(
         result => {
+
           this.distributeResult(result);
         }
       );

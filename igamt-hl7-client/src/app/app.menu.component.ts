@@ -61,7 +61,7 @@ export class AppMenuComponent implements OnInit {
           }
           },
           {
-            label: 'Published Libraries', icon: 'brush' , command: (event) => {
+            label: 'Published Standard Libraries', icon: 'brush' , command: (event) => {
             this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'PUBLISHED'}});
 
           }

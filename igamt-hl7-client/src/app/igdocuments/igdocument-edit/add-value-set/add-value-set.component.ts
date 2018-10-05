@@ -42,8 +42,8 @@ export class AddValueSetComponent extends PrimeDialogAdapter {
     this.dismissWithNoData();
   }
 
-  closeWithData(data: any) {
-    this.dismissWithData(data);
+  closeWithData(res: any) {
+    this.dismissWithData(res.data);
   }
 
   getSource(version) {
@@ -97,8 +97,8 @@ export class AddValueSetComponent extends PrimeDialogAdapter {
       return 'HL7';
     } else if (scope === 'USER') {
       return 'USR';
-    } else if (scope === 'MASTER') {
-      return 'MAS';
+    } else if (scope === 'SDTF') {
+      return 'SDTF';
     } else if (scope=== 'PRELOADED') {
       return 'PRL';
     } else if (scope === 'PHINVADS') {

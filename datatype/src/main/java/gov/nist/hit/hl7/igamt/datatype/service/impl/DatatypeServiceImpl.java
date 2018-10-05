@@ -554,7 +554,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (datatype == null) {
       throw new DatatypeNotFoundException(postdef.getId().getId());
     }
-    commonService.checkRight(authentication, datatype);
 
     datatype.setPostDef(postdef.getPostDef());
     return save(datatype);

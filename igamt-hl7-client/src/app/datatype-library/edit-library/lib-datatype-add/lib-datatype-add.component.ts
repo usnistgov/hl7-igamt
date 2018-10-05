@@ -36,8 +36,8 @@ export class LibDatatypeAddComponent extends  PrimeDialogAdapter {
   close(){
     this.dismissWithNoData();
   }
-  closeWithData(data: any) {
-    this.dismissWithData(data);
+  closeWithData(res: any) {
+    this.dismissWithData(res.data);
   }
   submit(){
     let wrapper:any ={};
@@ -49,7 +49,6 @@ export class LibDatatypeAddComponent extends  PrimeDialogAdapter {
         console.log(res);
         this.closeWithData(res);
       },error=>{
-        this.errorService.showError(error);
       }
     )
   }

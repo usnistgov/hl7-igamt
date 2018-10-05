@@ -78,7 +78,7 @@ export class IgDocumentEditComponent {
 
     {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
-    {label:"HL7 Flavors",value:"MASTER"}
+    {label:"SDTF",value:"SDTF"}
 
   ];
 

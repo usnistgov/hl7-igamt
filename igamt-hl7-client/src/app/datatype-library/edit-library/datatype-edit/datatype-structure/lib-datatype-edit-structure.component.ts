@@ -174,8 +174,6 @@ export class LibDatatypeEditStructureComponent implements WithSave{
         break;
       }
     }
-
-
   }
 
   reset(){
@@ -223,7 +221,7 @@ export class LibDatatypeEditStructureComponent implements WithSave{
 
       }, error => {
         console.log("error saving");
-        reject();
+        reject(error);
       });
     })
   }
