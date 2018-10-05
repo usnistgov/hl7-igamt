@@ -60,6 +60,7 @@ import {IgErrorResolver} from "./ig-error/ig-error.resolver";
 import {LoadingService} from "./service/loading.service";
 import { DeleteElementComponent } from './delete-element/delete-element.component';
 import {DeleteElementService} from "./delete-element/delete-element.service";
+import {ConstraintsService} from "./service/constraints.service";
 
 
 @NgModule({
@@ -111,7 +112,7 @@ import {DeleteElementService} from "./delete-element/delete-element.service";
 
   ],
   providers : [
-      TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
+      ConstraintsService, TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

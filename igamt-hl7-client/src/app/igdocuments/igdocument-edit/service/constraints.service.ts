@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {DatatypesService} from "../../igdocuments/igdocument-edit/datatype-edit/datatypes.service";
-import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
+import {DatatypesService} from "../../igdocument-edit/datatype-edit/datatypes.service";
+import {GeneralConfigurationService} from "../../../service/general-configuration/general-configuration.service";
 import { _ }  from 'underscore';
 
 @Injectable()

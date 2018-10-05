@@ -84,11 +84,7 @@ import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
-import {DatatypesService} from './igdocuments/igdocument-edit/datatype-edit/datatypes.service';
-import {SegmentsService} from './igdocuments/igdocument-edit/segment-edit/segments.service';
-import {IgErrorService} from './igdocuments/igdocument-edit/ig-error/ig-error.service';
-import {TocService} from './igdocuments/igdocument-edit/service/toc.service';
-import {LoadingService} from './igdocuments/igdocument-edit/service/loading.service';
+
 // import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
 import {AuthService} from './login/auth.service';
 import {AuthGuard} from './login/auth-guard.service';
@@ -104,7 +100,6 @@ import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
 import {AppBreadcrumbComponent} from './app.breadcrumb.component';
 import {BreadcrumbService} from './breadcrumb.service';
-import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from './service/sections/sections.service';
 
 import {TableOptionsService} from './service/configuration/table-options/table-options.service';
@@ -247,16 +242,10 @@ import {GrowlModule} from 'primeng/growl';
         AuthGuard,
         UserService,
         BreadcrumbService,
-        ConstraintsService,
         TableOptionsService,
         ExportFontService,
         MessageService,
-        ProgressHandlerService,
-        DatatypesService,
-        SegmentsService,
-        IgErrorService,
-        TocService,
-        LoadingService
+        ProgressHandlerService
   ],
     bootstrap: [AppComponent]
 })

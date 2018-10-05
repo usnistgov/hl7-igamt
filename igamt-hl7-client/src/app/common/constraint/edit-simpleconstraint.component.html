@@ -106,6 +106,8 @@
                     <label>Assertion: </label>
                 </div>
                 <div class="ui-g-12 ui-md-10">
+                    {{constraint|json}}
+
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
                         <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
@@ -129,11 +131,8 @@
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
                         <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
-                    <div class="ui-g-12 ui-md-6">
+                    <div class="ui-g-12 ui-md-8">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown> be presence
                     </div>
                 </div>
             </div>

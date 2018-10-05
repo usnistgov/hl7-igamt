@@ -10,7 +10,7 @@ import { _ } from 'underscore';
 import * as __ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
 import {HasFroala} from "../../../../configuration/has-froala";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {ConstraintsService} from "../../service/constraints.service";
 import {TocService} from "../../service/toc.service";
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {SegmentsService} from "../../segment-edit/segments.service";

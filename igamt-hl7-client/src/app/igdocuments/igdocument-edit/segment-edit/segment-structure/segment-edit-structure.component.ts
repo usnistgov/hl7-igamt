@@ -5,7 +5,7 @@ import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {ConstraintsService} from "../../service/constraints.service";
 import { _ } from 'underscore';
 import {WithSave, WithNotification} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
