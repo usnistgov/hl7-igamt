@@ -88,7 +88,9 @@ export class GeneralConfigurationService {
       { label : 'the eighth', value : '8' },
       { label : 'the ninth', value : '9' },
       { label : 'the tenth', value : '10' }
-      ];
+    ];
+
+
 
     this._assertionModes = [
       {
@@ -207,6 +209,22 @@ export class GeneralConfigurationService {
 
   get usages(){
     return this._usages;
+  }
+
+  getInstancLabelByValue(val){
+    if(val === '*') return 'ONE';
+    if(val === '1') return 'the first';
+    if(val === '2') return 'the second';
+    if(val === '3') return 'the third';
+    if(val === '4') return 'the forth';
+    if(val === '5') return 'the fifth';
+    if(val === '6') return 'the sixth';
+    if(val === '7') return 'the seventh';
+    if(val === '8') return 'the eighth';
+    if(val === '9') return 'the ninth';
+    if(val === '10') return 'the tenth';
+
+    return null;
   }
 
 

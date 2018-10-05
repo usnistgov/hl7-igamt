@@ -25,9 +25,6 @@ export class EditSimpleConstraintComponent {
   operators: any[];
   formatTypes:any[];
 
-  instanceNumberOfFieldSubject : any;
-  instanceNumberOfFieldComplement : any;
-
   constructor(private configService : GeneralConfigurationService){}
 
   ngOnInit(){
@@ -54,9 +51,23 @@ export class EditSimpleConstraintComponent {
     this.constraint.complement.values.push('');
   }
 
-  generateAssertionScript(constraint){
-    constraint.path1 = "OBX-4[" + constraint.instanceNum + "].1[1]";
-    constraint.positionPath1 = "4[" + constraint.instanceNum + "].1[1]";
-    constraint.assertionScript = "<PlainText Path=\"4[" + constraint.instanceNum + "].1[1]\" Text=\"AAAA\" IgnoreCase=\"false\"/>";
+  isRepeatedField(segmentElementId, fieldElementId){
+    var fieldObj = this.idMap[segmentElementId + "-" + fieldElementId];
+
+    if(fieldObj) {
+      if(fieldObj.max !== '0' && fieldObj.max !== '1') return true;
+    }
+
+    return false;
+  }
+
+  getRepeatedFieldName(segmentElementId, fieldElementId){
+    var fieldObj = this.idMap[segmentElementId + "-" + fieldElementId];
+
+    if(fieldObj) {
+      if(fieldObj.max !== '0' && fieldObj.max !== '1') return fieldObj.name;
+    }
+
+    return null;
   }
 }

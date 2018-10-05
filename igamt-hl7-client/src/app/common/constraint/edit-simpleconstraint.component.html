@@ -23,8 +23,7 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <!--<p-dropdown [options]="instanceNums" [(ngModel)]="instanceNumberOfFieldSubject"></p-dropdown>-->
-
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
@@ -43,6 +42,7 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
@@ -62,12 +62,17 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
                     </div>
+                    <div class="ui-g-12 ui-md-2">
+                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown>
+                    </div>
                     <div class="ui-g-12 ui-md-4">
-                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-other'"></display-path>
+                        <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-other'"></display-path>
+                        <li *ngIf="constraint && constraint.complement && constraint.complement.path && constraint.complement.path.child && isRepeatedField(constraint.complement.path.elementId, constraint.complement.path.child.elementId)">in <p-dropdown id="complementathInstance" name="complementathInstance" required #complementathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.complement.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.complement.path.elementId, constraint.complement.path.child.elementId)}})</li>
                     </div>
                 </div>
             </div>
@@ -81,12 +86,16 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
                     </div>
+                    <div class="ui-g-12 ui-md-2">
+                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown>
+                    </div>
                     <div class="ui-g-12 ui-md-4">
-                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown> <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
+                        <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
                     </div>
                 </div>
             </div>
@@ -99,6 +108,7 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-2">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
@@ -117,6 +127,7 @@
                 <div class="ui-g-12 ui-md-10">
                     <div class="ui-g-12 ui-md-4">
                         The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
+                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
                     </div>
                     <div class="ui-g-12 ui-md-6">
                         <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>

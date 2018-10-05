@@ -736,6 +736,10 @@ export class DatatypeEditStructureComponent implements WithSave{
             this.treeData.push(treeNode);
         }
 
+        if(this.selectedPredicate && this.selectedPredicate.type && this.selectedPredicate.assertion && this.selectedPredicate.type === 'ASSERTION'){
+            this.constraintsService.generateTreeData(this.selectedPredicate.assertion, this.treeData, this.idMap, this.datatypesLinks);
+        }
+
         this.preciateEditorOpen = true;
     }
 

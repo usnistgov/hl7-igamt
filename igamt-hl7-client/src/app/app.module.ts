@@ -84,6 +84,11 @@ import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
+import {DatatypesService} from './igdocuments/igdocument-edit/datatype-edit/datatypes.service';
+import {SegmentsService} from './igdocuments/igdocument-edit/segment-edit/segments.service';
+import {IgErrorService} from './igdocuments/igdocument-edit/ig-error/ig-error.service';
+import {TocService} from './igdocuments/igdocument-edit/service/toc.service';
+import {LoadingService} from './igdocuments/igdocument-edit/service/loading.service';
 // import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
 import {AuthService} from './login/auth.service';
 import {AuthGuard} from './login/auth-guard.service';
@@ -217,10 +222,10 @@ import {GrowlModule} from 'primeng/growl';
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent,
-      ResetPasswordRequestComponent,
-      ResetPasswordConfirmComponent,
-      ErrorComponent
+        AppBreadcrumbComponent,
+        ResetPasswordRequestComponent,
+        ResetPasswordConfirmComponent,
+        ErrorComponent
 
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
@@ -231,22 +236,27 @@ import {GrowlModule} from 'primeng/growl';
     },
 
     // {provide: ErrorHandler, useClass: IgErrorHandler},
-    WorkspaceService,
-    ErrorResolver,
-    ErrorService,
-    ResetPasswordService,
-    GeneralConfigurationService,
-    IndexedDbService,
-    SectionsService,
-    AuthService,
-    AuthGuard,
-    UserService,
-    BreadcrumbService,
-    ConstraintsService,
-    TableOptionsService,
-    ExportFontService,
-    MessageService,
-    ProgressHandlerService
+        WorkspaceService,
+        ErrorResolver,
+        ErrorService,
+        ResetPasswordService,
+        GeneralConfigurationService,
+        IndexedDbService,
+        SectionsService,
+        AuthService,
+        AuthGuard,
+        UserService,
+        BreadcrumbService,
+        ConstraintsService,
+        TableOptionsService,
+        ExportFontService,
+        MessageService,
+        ProgressHandlerService,
+        DatatypesService,
+        SegmentsService,
+        IgErrorService,
+        TocService,
+        LoadingService
   ],
     bootstrap: [AppComponent]
 })
