@@ -43,13 +43,7 @@
 
       <button  (click)="print(igForm)"  pButton type="button" label="Publish" class="green-btn" icon="fa fa-floppy-o"></button>
       <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-
-
     </div>
-
-
-
-
   </p-toolbar>
   <p-toolbar class="toc-filter-toolbar">
     <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
@@ -119,13 +113,8 @@
                 </context-menu>
               </ng-container>
               <ng-container *ngSwitchCase="'DERIVEDDATATYPEREGISTRY'">
-                <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+                <span> {{getPath(node)}} {{node.data.data.label}}</span>
 
-                <context-menu  #addDatatypeContextMenu>
-                  <ng-template contextMenuItem>
-                    <i class="fa fa-plus"></i>
-                  </ng-template>
-                </context-menu>
               </ng-container>
 
               <ng-container *ngSwitchCase="'DATATYPE'">

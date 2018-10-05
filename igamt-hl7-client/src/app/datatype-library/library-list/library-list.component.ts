@@ -73,14 +73,16 @@ export class LibraryListComponent implements OnInit {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to Delete this Library',
       accept: () => {
-        this.http.delete('api/datatype-library/'+lib.id.id).toPromise().then( x=>{
+        this.http.delete('api/datatype-library/'+lib.id.id).toPromise().then( x =>{
+
           var i= this.libs.indexOf(lib);
+
+          console.log(lib);
+
           if(i>0){
             this.libs.splice(i,1);
           }
         }, error => {
-
-
         });
       }
     });

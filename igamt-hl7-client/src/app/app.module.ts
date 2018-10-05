@@ -116,6 +116,7 @@ import {MessageService} from "primeng/components/common/messageservice";
 import {BlockUIModule} from 'primeng/blockui';
 import {ProgressHandlerService} from "./service/progress-handler.service";
 import {GrowlModule} from 'primeng/growl';
+import {GlobalErrorHandler} from "./utils/client-error-handler";
 
 @NgModule({
     imports: [
@@ -228,6 +229,10 @@ import {GrowlModule} from 'primeng/growl';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
+    },
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
     },
 
     // {provide: ErrorHandler, useClass: IgErrorHandler},

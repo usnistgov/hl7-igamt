@@ -11,7 +11,7 @@ import {LibraryListResolver} from "./library-list/library-list.resolver";
       { path: 'list', component:LibraryListComponent,    resolve:{
         libList: LibraryListResolver
 
-},runGuardsAndResolvers: "always"  },
+       },runGuardsAndResolvers: "always"},
       { path: 'create', loadChildren: './create-library/create-library.module#CreateLibraryModule'},
       { path: '', loadChildren: './create-library/create-library.module#CreateLibraryModule'},
       {path: 'lib', loadChildren:'./edit-library/edit-library.module#EditLibraryModule'
