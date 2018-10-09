@@ -11,7 +11,6 @@ import {TooltipModule} from "primeng/components/tooltip/tooltip";
 import {TieredMenuModule} from "primeng/components/tieredmenu/tieredmenu";
 import {UtilsModule} from "../../utils/utils.module";
 import {TocService} from "./service/toc.service";
-import {ConstraintService} from "./service/constraint.service";
 import {TreeDragDropService} from "primeng/components/common/treedragdropservice";
 import {DragDropModule} from "primeng/components/dragdrop/dragdrop";
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
@@ -61,6 +60,7 @@ import {IgErrorResolver} from "./ig-error/ig-error.resolver";
 import {LoadingService} from "./service/loading.service";
 import { DeleteElementComponent } from './delete-element/delete-element.component';
 import {DeleteElementService} from "./delete-element/delete-element.service";
+import {ConstraintsService} from "./service/constraints.service";
 
 
 @NgModule({
@@ -112,7 +112,7 @@ import {DeleteElementService} from "./delete-element/delete-element.service";
 
   ],
   providers : [
-      ConstraintService, TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
+      ConstraintsService, TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

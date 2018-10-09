@@ -78,7 +78,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   public gov.nist.hit.hl7.igamt.datatype.domain.Datatype convert(String id) {
     Datatype oldDatatype = null;
     Optional<Datatype> optional = oldDatatypeRepository.findById(id);
-    if(optional.isPresent()) {
+    if (optional.isPresent()) {
       oldDatatype = optional.get();
     }
     return this.convertDatatype(oldDatatype);
@@ -87,7 +87,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
   public Datatype findOldDatatype(String id) {
     Datatype oldDatatype = null;
     Optional<Datatype> optional = oldDatatypeRepository.findById(id);
-    if(optional.isPresent()) {
+    if (optional.isPresent()) {
       oldDatatype = optional.get();
     }
     return oldDatatype;
@@ -158,7 +158,6 @@ public class DatatypeConversionServiceImpl implements ConversionService {
 
     convertedDatatype
         .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
-    convertedDatatype.setUsername("");
     return convertedDatatype;
   }
 

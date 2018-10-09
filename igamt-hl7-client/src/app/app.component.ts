@@ -198,11 +198,15 @@ export class AppComponent implements AfterViewInit {
     }
 
     if (event instanceof NavigationEnd ||
-      event instanceof NavigationCancel ||
-      event instanceof NavigationError) {
+      event instanceof NavigationCancel ) {
 
       this.routerLoading = false;
+
       this.progress.clear();
+
+    }
+    else if(event instanceof NavigationError){
+      this.routerLoading = false;
 
     }
   }

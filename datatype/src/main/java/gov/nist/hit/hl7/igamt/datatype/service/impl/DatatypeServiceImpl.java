@@ -37,6 +37,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -67,6 +68,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
+
+  @Autowired
+  CommonService commonService;
   @Autowired
   private MongoTemplate mongoTemplate;
 
@@ -550,6 +554,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (datatype == null) {
       throw new DatatypeNotFoundException(postdef.getId().getId());
     }
+    commonService.checkRight(authentication, datatype);
+
     datatype.setPostDef(postdef.getPostDef());
     return save(datatype);
   }
