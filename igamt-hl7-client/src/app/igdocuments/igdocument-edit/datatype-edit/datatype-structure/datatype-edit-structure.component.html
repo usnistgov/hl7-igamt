@@ -201,7 +201,7 @@
       </div>
     </ng-template>
 
-    <ng-template #text pTemplate="body" let-node>
+    <ng-template #textDef pTemplate="body" let-node>
       <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
         <ng-container *ngIf="node.node.data.text">
           <span (click)="editTextDefinition(node.node)">{{truncate(node.node.data.text)}}</span>

@@ -14,7 +14,7 @@ export class Columns{
     {field : "singleCode",style:"single-code-col", header: "Single Code", position:8},
     {field : "constantValue",style:"const-value-col", header: "Constant Value", position:9},
     {field : "predicate",style:"pred-col", header: "Predicate", position:10},
-    {field : "text", style:"text-col",header: "Text Definition", position:11 },
+    {field : "textDef", style:"text-col",header: "Text Definition", position:11 },
     {field : "comment",style:"comment-col", header: "Comments", position:12}
 
   ];
@@ -27,7 +27,7 @@ export class Columns{
     {field : "datatype",style:"dt-col", header: "Data Type", position:6 },
     {field : "constantValue",style:"const-value-col", header: "Constant Value", position:7},
     {field : "predicate",style:"pred-col", header: "Predicate", position:8},
-    {field : "text", style:"text-col",header: "Text Definition", position:9 },
+    {field : "textDef", style:"text-col",header: "Text Definition", position:9 },
     {field : "comment",style:"comment-col", header: "Comments", position:10}
 
   ];
@@ -45,7 +45,7 @@ export class Columns{
     {field : "singleCode",style:"single-code-col", header: "Single Code", position:8},
     {field : "constantValue",style:"const-value-col", header: "Constant Value", position:9},
     {field : "predicate",style:"pred-col", header: "Predicate", position:10},
-    {field : "text", style:"text-col",header: "Text Definition", position:11 },
+    {field : "textDef", style:"text-col",header: "Text Definition", position:11 },
     {field : "comment",style:"comment-col", header: "Comments", position:12}
 
 
@@ -63,7 +63,7 @@ export class Columns{
     {field : "singleCode",style:"single-code-col", header: "Single Code", position:8},
     {field : "constantValue",style:"const-value-col", header: "Constant Value", position:9},
     {field : "predicate",style:"pred-col", header: "Predicate", position:10},
-    {field : "text", style:"text-col",header: "Text Definition", position:11 },
+    {field : "textDef", style:"text-col",header: "Text Definition", position:11 },
     {field : "comment",style:"comment-col", header: "Comments", position:12}
 
   ];

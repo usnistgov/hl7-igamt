@@ -244,7 +244,7 @@ export class CoConstraintTableService {
             case CellTemplate.VARIES :
                 row.cells[header.id]  = <VariesCell> {
                     type : header.content.type,
-                    value : <CCCell>{}
+                    value : null
                 };
                 break;
         }

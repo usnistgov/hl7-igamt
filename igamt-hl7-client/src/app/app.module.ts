@@ -84,6 +84,7 @@ import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
+
 // import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
 import {AuthService} from './login/auth.service';
 import {AuthGuard} from './login/auth-guard.service';
@@ -99,7 +100,6 @@ import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
 import {AppBreadcrumbComponent} from './app.breadcrumb.component';
 import {BreadcrumbService} from './breadcrumb.service';
-import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from './service/sections/sections.service';
 
 import {TableOptionsService} from './service/configuration/table-options/table-options.service';
@@ -218,10 +218,10 @@ import {GlobalErrorHandler} from "./utils/client-error-handler";
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent,
-      ResetPasswordRequestComponent,
-      ResetPasswordConfirmComponent,
-      ErrorComponent
+        AppBreadcrumbComponent,
+        ResetPasswordRequestComponent,
+        ResetPasswordConfirmComponent,
+        ErrorComponent
 
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
@@ -236,22 +236,21 @@ import {GlobalErrorHandler} from "./utils/client-error-handler";
     },
 
     // {provide: ErrorHandler, useClass: IgErrorHandler},
-    WorkspaceService,
-    ErrorResolver,
-    ErrorService,
-    ResetPasswordService,
-    GeneralConfigurationService,
-    IndexedDbService,
-    SectionsService,
-    AuthService,
-    AuthGuard,
-    UserService,
-    BreadcrumbService,
-    ConstraintsService,
-    TableOptionsService,
-    ExportFontService,
-    MessageService,
-    ProgressHandlerService
+        WorkspaceService,
+        ErrorResolver,
+        ErrorService,
+        ResetPasswordService,
+        GeneralConfigurationService,
+        IndexedDbService,
+        SectionsService,
+        AuthService,
+        AuthGuard,
+        UserService,
+        BreadcrumbService,
+        TableOptionsService,
+        ExportFontService,
+        MessageService,
+        ProgressHandlerService
   ],
     bootstrap: [AppComponent]
 })

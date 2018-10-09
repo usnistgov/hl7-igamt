@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 
 public class CoConstraintTableRow {
 
+	private String id;
 	private Map<String, CoConstraintTableCell> cells;
 	private CoConstraintTableRequirement requirements;
 
@@ -30,6 +31,14 @@ public class CoConstraintTableRow {
 		this.cells = cells;
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public CoConstraintTableRow clone() throws CloneNotSupportedException{
 		CoConstraintTableRow row = new CoConstraintTableRow();
 		row.requirements = this.requirements.clone();
@@ -38,6 +47,7 @@ public class CoConstraintTableRow {
 			cells.put(entry.getKey(), entry.getValue().cloneCell());
 		}
 		row.cells = cells;
+		row.id = id;
 		return row;
 	}
 	
