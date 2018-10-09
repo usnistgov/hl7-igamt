@@ -39,7 +39,6 @@ export class EditLibraryComponent {
   loading=false;
   metadata:any;
   scope:any;
-
   lib:any;
   currentUrl:any;
   displayMessageAdding: boolean = false;
@@ -231,6 +230,8 @@ export class EditLibraryComponent {
 
 
   parseUrl(){
+
+    console.log("Parsing URL ");
     if(this.tree) {
 
 
@@ -355,9 +356,11 @@ export class EditLibraryComponent {
   }
 
 
-  activateNode(node){
-     this.activeNode=node.id;
-  }
+  // activateNode(node){
+  //
+  //
+  //    this.activeNode=node.id;
+  // }
 
 
 
@@ -490,7 +493,6 @@ export class EditLibraryComponent {
 
   copyDatatype(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
-
     this.copyElemt.open({
       libId : this.libId,
       id:node.data.data.key,
@@ -500,20 +502,16 @@ export class EditLibraryComponent {
       type:node.data.data.type,
       namingIndicators:existing
 
-    })
-      .subscribe(
+    }).subscribe(
         result => {
           let toDistribute:any={};
           let datatypes=[];
           datatypes.push(result);
           toDistribute.datatypes=datatypes;
           this.distributeResult(toDistribute);
-
         }
       )
   };
-
-
   deleteDatatype(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
 
@@ -529,8 +527,6 @@ export class EditLibraryComponent {
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
         }
       )
   };

@@ -15,8 +15,8 @@
   </ng-template>
   <ng-template pTemplate="body" let-rowData let-columns="columns">
     <tr>
-      <td *ngFor="let col of headers"  (click)="compareOrSelect(rowData[headers[0]],col)" [ngClass]="{'firstVersion': col == firstVersion&& rowData[headers[0]]==selectedName,'secondVersion' :col==secondVersion&&rowData[headers[0]]==selectedName}">
-        <span>{{rowData[col]}}</span>
+      <td *ngFor="let col of headers"  (click)="compareOrSelect(rowData[headers[0]],col)" [ngClass]="{'firstVersion': col == firstVersion&& rowData[headers[0]]==selectedName,'secondVersion' :col==secondVersion&&rowData[headers[0]]==selectedName}" style="cursor: pointer">
+        <span [ngStyle]="getStyle(rowData[col])">{{rowData[col]}}</span>
       </td>
     </tr>
   </ng-template>
