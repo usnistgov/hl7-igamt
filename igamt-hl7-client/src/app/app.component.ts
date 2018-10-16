@@ -1,24 +1,34 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, ChangeDetectionStrategy,
+  NgZone
+} from '@angular/core';
 import {ScrollPanel} from 'primeng/primeng';
 import {HttpClient} from "@angular/common/http";
 import {WorkspaceService} from "./service/workspace/workspace.service";
 import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router} from "@angular/router";
 import {ProgressHandlerService} from "./service/progress-handler.service";
 import {Message} from 'primeng/api';
-
+import {ClientErrorHandlerService, ErrorValue} from "./utils/client-error-handler.service";
+import {RoutingStateService} from "./url/routing-state.service";
+import {ChangeDetectorRef} from '@angular/core'
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
+    changeDetection: ChangeDetectionStrategy.Default,
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
     options = {};
     routerLoading: boolean = false;
     httpLoading: boolean=false;
+    showError=false;
 
     darkTheme = false;
+    event:any;
+
 
     msgs: Message[] = [];
+    error:any;
 
   //menuMode = 'static';
     menuMode = 'horizontal';
@@ -47,7 +57,16 @@ export class AppComponent implements AfterViewInit {
     @ViewChild('layoutMenuScroller') layoutMenuScrollerViewChild: ScrollPanel;
 
     ngAfterViewInit() {
-        setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 100);
+
+      console.log("Show Error");
+
+          setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 0);
+
+    }
+
+    show(){
+      console.log("called");
+      this.showError=this.showError||true;
     }
 
     onLayoutClick() {
@@ -85,7 +104,7 @@ export class AppComponent implements AfterViewInit {
             this.staticMenuMobileActive = !this.staticMenuMobileActive;
         }
 
-        event.preventDefault();
+        //event.preventDefault();
     }
 
     onMenuClick($event) {
@@ -96,6 +115,7 @@ export class AppComponent implements AfterViewInit {
             setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 500);
         }
     }
+
 
     onTopbarMenuButtonClick(event) {
         this.topbarItemClick = true;
@@ -151,6 +171,7 @@ export class AppComponent implements AfterViewInit {
         this.staticMenuMobileActive = false;
     }
 
+
     changeTheme(theme) {
         const themeLink: HTMLLinkElement = <HTMLLinkElement>document.getElementById('theme-css');
         themeLink.href = 'assets/theme/theme-' + theme + '.css';
@@ -165,7 +186,10 @@ export class AppComponent implements AfterViewInit {
     }
 
 
-    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router , private progress:ProgressHandlerService){
+    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router , private progress:ProgressHandlerService, private clientErrorHandlerService: ClientErrorHandlerService, private routingStateService:RoutingStateService,private ref: ChangeDetectorRef ){
+      //
+
+
 
       http.get("api/config").subscribe(data=>{
 
@@ -174,10 +198,9 @@ export class AppComponent implements AfterViewInit {
       });
 
 
-
-
       router.events.subscribe(event => {
         this.checkRouterEvent(event);
+
       });
 
 
@@ -187,20 +210,28 @@ export class AppComponent implements AfterViewInit {
 
       });
 
+
+
+
     }
 
-  checkRouterEvent(event): void {
-    if (event instanceof NavigationStart) {
-      console.log("Navigation Start");
+    ngOnInit(){
 
-      console.log(event);
-      this.routerLoading = true;
+     }
+
+    checkRouterEvent(event): void {
+     if (event instanceof NavigationStart) {
+        console.log("Navigation Start");
+
+        console.log(event);
+        this.routerLoading = true;
     }
 
     if (event instanceof NavigationEnd ||
       event instanceof NavigationCancel ) {
 
       this.routerLoading = false;
+
 
       this.progress.clear();
 
@@ -209,9 +240,23 @@ export class AppComponent implements AfterViewInit {
       this.routerLoading = false;
 
     }
+
+
+
+
+
+  }
+
+
+
+  print(obj){
+    console.log(obj);
   }
 
 
 
 
-}
+
+
+
+  }

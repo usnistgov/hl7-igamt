@@ -9,6 +9,6 @@ describe('apollo App', () => {
 
   it('should structure welcome message', () => {
     page.navigateTo();
-    expect(page.getParagraphText()).toEqual('Welcome to app!');
+    expect(page.getParagraphText()).toEqual('Welcome to url!');
   });
 });

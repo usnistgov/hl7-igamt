@@ -79,7 +79,7 @@
 
 
               <ng-container *ngSwitchCase="'TEXT'">
-                <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
+                <span [contextMenu]="textcontextmenu" [routerLink]="getSectionUrl(node.id)" routerLinkActive="active-node"> {{getPath(node)}}{{node.data.data.label}}</span>
                 <context-menu #textcontextmenu>
                   <ng-template contextMenuItem (execute)="addSectionToNode(node)">
                     <i class="fa fa-plus"></i> Add Section
@@ -118,7 +118,7 @@
               </ng-container>
 
               <ng-container *ngSwitchCase="'DATATYPE'">
-                <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+                <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
                 <context-menu  #datatypeContextMenu>
                   <ng-template contextMenuItem  (execute)="copyDatatype(node)">
                     <i class="fa fa-copy"></i> Copy
@@ -127,7 +127,7 @@
                     <i class="fa fa-remove"></i> Delete
                   </ng-template>
                 </context-menu>
-                <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+                <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
               </ng-container>
 
             </ng-container>

@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from '@angular/core';
+import {Component, OnInit,ViewChild} from '@angular/core';
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import * as _ from 'lodash';
 

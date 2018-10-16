@@ -27,7 +27,7 @@
       </span>
 
 
-</div>
+  </div>
 
 
 <p-toolbar class="toc-filter-toolbar">
@@ -91,7 +91,7 @@
 
 
           <ng-container *ngSwitchCase="'TEXT'">
-            <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
+            <span [contextMenu]="textcontextmenu"  [routerLink]="getSectionUrl(node.id)" routerLinkActive="active-node"> {{getPath(node)}}{{node.data.data.label}}</span>
             <context-menu #textcontextmenu>
               <ng-template contextMenuItem (execute)="addSectionToNode(node)">
                 <i class="fa fa-plus"></i> Add Section
@@ -167,7 +167,7 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPE'">
-            <display-label [elm]="node.data.data" [igId]="igId"   [contextMenu]="datatypeContextMenu" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId"   [contextMenu]="datatypeContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #datatypeContextMenu>
               <ng-template contextMenuItem (execute)="copyDatatype(node)">
                 <i class="fa fa-copy"></i> Copy
@@ -176,11 +176,11 @@
                 <i class="fa fa-remove"></i> Delete
               </ng-template>
             </context-menu>
-            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+            <display-menu [elm]="node.data.data"  *ngIf="rla.isActive"></display-menu>
           </ng-container>
 
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-            <display-label [elm]="node.data.data" [contextMenu]="conformanceProfileContextMenu" [igId]="igId" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [contextMenu]="conformanceProfileContextMenu" [igId]="igId" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #conformanceProfileContextMenu>
               <ng-template contextMenuItem (execute)="copyConformanceProfile(node)">
                 <i class="fa fa-copy"></i> Copy
@@ -189,18 +189,18 @@
                 <i class="fa fa-remove"></i> Delete
               </ng-template>
             </context-menu>
-            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+            <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
           </ng-container>
 
 
           <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
             <span>  {{node.data.data.label}}</span>
-            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+            <!--<display-menu [elm]="node.data.data"></display-menu>-->
           </ng-container>
 
 
           <ng-container *ngSwitchCase="'SEGMENT'">
-            <display-label [elm]="node.data.data" [igId]="igId" [contextMenu]="segmentContextMenu" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId" [contextMenu]="segmentContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #segmentContextMenu>
               <ng-template contextMenuItem (execute)="copySegment(node)">
                 <i class="fa fa-copy"></i> Copy
@@ -209,15 +209,14 @@
                 <i class="fa fa-remove"></i> Delete
               </ng-template>
             </context-menu>
-            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+            <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
 
 
 
           </ng-container>
 
           <ng-container *ngSwitchCase="'VALUESET'" >
-            <display-label [elm]="node.data.data" [igId]="igId" [contextMenu]="valueSetContextMenu" (click)="activateNode(node.id)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
-
+            <display-label [elm]="node.data.data" [igId]="igId" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #valueSetContextMenu>
               <ng-template contextMenuItem (execute)="copyValueSet(node)">
                 <i class="fa fa-copy"></i> Copy
@@ -226,11 +225,12 @@
                 <i class="fa fa-remove"></i> Delete
               </ng-template>
             </context-menu>
-            <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>      </ng-container>
+            <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
+          </ng-container>
           <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
 
-            <span>{{node.data.data.label}}</span>
-            <display-menu *ngIf="node.active" [elm]="node.data.data"></display-menu>
+            <!--<span>{{node.data.data.label}}</span>-->
+            <!--<display-menu [elm]="node.data.data"></display-menu>-->
 
           </ng-container>
 

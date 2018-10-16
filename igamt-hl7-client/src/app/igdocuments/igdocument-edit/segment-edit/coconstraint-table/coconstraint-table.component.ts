@@ -2,7 +2,7 @@
  * Created by hnt5 on 10/3/17.
  */
 
-import {Component, Input, ViewChild, TemplateRef, OnInit, ChangeDetectorRef} from '@angular/core';
+import {Component, Input, ViewChild, TemplateRef, OnInit} from '@angular/core';
 import {
   CoConstraintTable, CCSelectorType, CCHeader, CellTemplate, VSCell, CCRow, CCGroup
 } from './coconstraint.domain';
@@ -63,8 +63,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
               private configService: GeneralConfigurationService,
               private route: ActivatedRoute,
               private tocService: TocService,
-              private http: HttpClient,
-              private cd: ChangeDetectorRef) {
+              private http: HttpClient) {
 
 
   }

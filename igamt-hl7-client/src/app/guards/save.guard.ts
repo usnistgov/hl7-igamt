@@ -7,15 +7,16 @@ import {WithSave} from "./with.save.interface";
 import {ConfirmationService} from 'primeng/components/common/api';
 
 import {Md5} from 'ts-md5/dist/md5';
+import {ClientErrorHandlerService} from "../utils/client-error-handler.service";
 
 @Injectable()
 export class SaveFormsGuard implements CanDeactivate<WithSave> {
+  move: boolean;
   constructor(private confirmationService: ConfirmationService) {
+
   }
 
-
   canDeactivate(component: WithSave):Promise<any>{
-    console.log("Called Can Deactivate");
       try{
 
         if (!component.isValid()) {
@@ -31,9 +32,8 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
         }
       }catch (e){
-        console.log("Error");
-        console.log(e);
-        return this.somthingWrong();
+
+        return  Promise.resolve(false);
       }
   }
 
@@ -122,5 +122,8 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
     return pr;
 
   }
+
+
+
 
 }

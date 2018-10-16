@@ -34,13 +34,6 @@ export class DisplayMenuComponent {
         }
       }
 
-
-
-
-
-
-
-
   goTo(item:SubMenu){
     let type=this.elm.type.toLowerCase();
     this.activeId=item.id;
@@ -51,6 +44,11 @@ export class DisplayMenuComponent {
 
   }
 
+  getUrl(item:SubMenu){
+
+    let type=this.elm.type.toLowerCase();
+    return "./"+type+"/"+this.elm.key.id+"/"+item.value;
+  }
 
   getMenuItems(){
     let ret :SubMenu[]=[];

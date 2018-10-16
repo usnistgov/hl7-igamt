@@ -729,8 +729,6 @@ public class IGDocumentController extends BaseController {
     }
     AddSegmentResponseObject objects = crudService.addSegments(savedIds, ig);
     return new ResponseMessage<AddSegmentResponseDisplay>(Status.SUCCESS, "", "segment Added Succesfully", ig.getId().getId(), false, ig.getUpdateDate(),  displayConverter.convertSegmentResponseToDisplay(objects));
-
-
   }
 
 

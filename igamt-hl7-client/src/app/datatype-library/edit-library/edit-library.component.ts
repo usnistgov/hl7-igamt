@@ -118,14 +118,6 @@ export class EditLibraryComponent {
 
   constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router, private location: LocationStrategy, private exportService: LibraryExportService, private datatypeLibraryAddingService : DatatypeLibraryAddingService){
 
-    router.events.subscribe(event => {
-      //console.log(event);
-
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-        this.parseUrl();
-      }
-    });
   }
 
   filterFn(){
@@ -214,10 +206,21 @@ export class EditLibraryComponent {
 
     this.initTreeModel();
 
-    this.parseUrl();
+    //this.parseUrl();
 
 
   }
+
+  getSectionUrl(id){
+
+    return "./section/"+id;
+  }
+  getElementUrl(elm){
+    var type=elm.type.toLowerCase();
+
+    return "./"+type+"/"+elm.key.id;
+  }
+
 
   setTreeModel(){
     return this.tocService.setTreeModel(this.tree.treeModel);

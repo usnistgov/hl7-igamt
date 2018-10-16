@@ -41,24 +41,17 @@ export class IgDocumentEditComponent {
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
   @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
 
-
   igId:any;
   exportModel: MenuItem[];
-
   loading=false;
   metadata:any;
-
   ig:any;
   currentUrl:any;
   displayMessageAdding: boolean = false;
-
   hideToc:boolean=false;
-
   activeNode:any;
-
   searchFilter:string="";
   blockUI:false;
-
   types: SelectItem[]=[
 
 
@@ -72,20 +65,13 @@ export class IgDocumentEditComponent {
     {label:"ValueSet",value:"VALUESET"}
   ];
 
-
   scopes: SelectItem[]=[
-
-
     {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
     {label:"SDTF",value:"SDTF"}
-
   ];
 
-
   selectedScopes: SelectItem[];
-
-
   selectedTypes :SelectItem[];
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
@@ -131,31 +117,17 @@ export class IgDocumentEditComponent {
   }
 
   constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService){
-
-    router.events.subscribe(event => {
-      //console.log(event);
-
-      if (event instanceof NavigationEnd ) {
-        this.currentUrl=event.url;
-        this.parseUrl();
-      }
-    });
   }
 
   filterFn(){
     this.hideToc=false; // show the TOC if we filter
     this.tree.treeModel.filterNodes((node) => {
       if(node.data.data.domainInfo) {
-
         if (node.data.data.domainInfo.scope) {
-
           return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1);
         }
-
       }
       return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.length==0);
-
-
     });
 
   }
@@ -166,43 +138,28 @@ export class IgDocumentEditComponent {
     //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
     this.tocService.setIgId(this.igId);
-
-
-
-
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.ig= x;
-
-
-
       this.nodes=this.ig.toc;
 
     });
-
     this.tocService.metadata.subscribe(x=>{
 
       this.metadata=x;
     })
-
     this.loadingService.loading.subscribe(x=>{
       this.loading=x;
 
     })
 
-
     this.exportModel = [
       {label: 'As Word', command: () => {
-
         this.exportAsWord();
-
       }},
       {label: 'As HTML', command: () => {
         this.exportAsHTML();
-
       }}
-
     ];
-
   }
 
   exportAsWord(){
@@ -226,9 +183,6 @@ export class IgDocumentEditComponent {
 
       this.initTreeModel();
 
-      this.parseUrl();
-
-
   }
 
   setTreeModel(){
@@ -240,11 +194,15 @@ export class IgDocumentEditComponent {
     return this.tocService.initTreeModel(this.tree.treeModel);
   }
 
+  getElementUrl(elm){
+    var type=elm.type.toLowerCase();
+
+    return "./"+type+"/"+elm.key.id;
+  }
+
 
   parseUrl(){
     if(this.tree) {
-
-
       var index = this.currentUrl.indexOf("/ig/");
       var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
 
@@ -277,7 +235,6 @@ export class IgDocumentEditComponent {
         }
       }
     }
-
   }
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
@@ -382,13 +339,14 @@ export class IgDocumentEditComponent {
 
 
   activateNode(node){
-   // this.activeNode=node.id;
+    this.activeNode=node.id;
   }
 
 
 
 
   goToSection(id) {
+
 
 
     this.sp.queryParams
@@ -400,6 +358,11 @@ export class IgDocumentEditComponent {
 
 
 
+  }
+
+  getSectionUrl(id){
+
+    return "./section/"+id;
   }
   goToMetaData(){
   this.sp.queryParams
@@ -459,8 +422,6 @@ export class IgDocumentEditComponent {
 
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
-
-    //console.log(existing);
     this.addSegs.open({
       id : this.igId,
       namingIndicators:existing
@@ -679,7 +640,6 @@ export class IgDocumentEditComponent {
   };
 
   deleteConformanceProfile(node){
-
     this.deleteElement.open({
       igId : this.igId,
       id:node.data.data.key.id,
@@ -699,7 +659,6 @@ export class IgDocumentEditComponent {
   }
 
   deleteSection(node){
-  //console.log( this.tree._options);
   let ret =  this.tree.treeModel.getNodeById(node.id);
   this.deleteElement.open({
     igId : this.igId,
@@ -708,15 +667,12 @@ export class IgDocumentEditComponent {
     type:node.data.data.type,
     node:node.data.data
 
-  })
-    .subscribe(
+  }).subscribe(
       id => {
         this.tocService.deleteNodeById(id);
         this.setTreeModel();
-
       }
     )
   }
-
 
 }

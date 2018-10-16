@@ -46,7 +46,17 @@ public class AuthenticationExceptionHandler {
     return message;
   }
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({ErrorEmailException.class})
+  public ConnectionResponseMessage<Object> ErrorEmailException(ErrorEmailException e) {
+    ConnectionResponseMessage<Object> message =
+        new ConnectionResponseMessage<Object>(Status.FAILED, e.getLocalizedMessage());
+    return message;
+  }
+
 
 }
+
 
 

@@ -5,7 +5,6 @@ import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../igdocuments/igdocument-edit/service/constraints.service";
 import { _ } from 'underscore';
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
@@ -13,6 +12,7 @@ import {LibDatatypesService} from "../lib-datatypes.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {Columns} from "../../../../common/constants/columns";
+import {LibConstraintsService} from "../../service/constraints.service";
 
 @Component({
   selector : 'datatype-edit',
@@ -84,7 +84,7 @@ export class LibDatatypeEditStructureComponent implements WithSave{
 
 
   constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private datatypesService : LibDatatypesService,
-              private constraintsService : ConstraintsService,
+              private constraintsService : LibConstraintsService,
               private tocService:TocService){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {

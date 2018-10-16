@@ -14,6 +14,7 @@ import {TocService} from "../../service/toc.service";
 import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
 import {Columns} from "../../../../common/constants/columns";
+import {ClientErrorHandlerService} from "../../../../utils/client-error-handler.service";
 
 @Component({
     selector : 'segment-edit',
@@ -26,6 +27,7 @@ export class SegmentEditStructureComponent implements WithSave {
     segmentStructure:any;
     usages:any;
     cUsages:any;
+    showError:any;
 
     textDefinitionDialogOpen:boolean = false;
     changeDTDialogOpen:boolean = false;
@@ -93,12 +95,14 @@ export class SegmentEditStructureComponent implements WithSave {
 
     constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
                 private constraintsService : ConstraintsService,
-                private tocService:TocService){
+                private tocService:TocService,
+                private clientErrorHandlerService :ClientErrorHandlerService){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
             }
         });
+
     }
 
     ngOnInit() {

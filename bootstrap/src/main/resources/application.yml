@@ -38,7 +38,8 @@ key:
 auth:
   url: http://localhost:8090
   
-  
-  
+admin:
+  to: abdelghani.elouakili@nist.gov
+  cc: elouakili.abdelghani@gmail.com;abdelghani.el-ouakili@telecomnancy.net
 
   

@@ -1,3 +1,4 @@
+
 <p-blockUI [blocked]="routerLoading || httpLoading">
 
   <p-progressBar mode="indeterminate"></p-progressBar>
@@ -6,6 +7,8 @@
 
 </p-blockUI>
 <p-growl [(value)]="msgs" id="topLeft" key="topLeft"></p-growl>
+<!--<dialog-wrapper [reportError]="showError"></dialog-wrapper>-->
+<dialog-wrapper></dialog-wrapper>
 
 
 <div class="layout-wrapper" (click)="onLayoutClick()"
@@ -42,7 +45,6 @@
 
         <div class="layout-content-container">
           <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
-
           <router-outlet></router-outlet>
           </div>
         <app-footer></app-footer>

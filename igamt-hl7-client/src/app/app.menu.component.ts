@@ -24,7 +24,7 @@ export class AppMenuComponent implements OnInit {
         label: 'IG Documents', icon: 'palette',
         items: [
           {
-            label: 'Create New Document', icon: 'plus', routerLink: ['/ig-documents/create'], command: (event) => {
+            label: 'Create New Document', icon: 'plus', routerLink: ['/ig-documents/create'] ,command: (event) => {
           }
           },
           {

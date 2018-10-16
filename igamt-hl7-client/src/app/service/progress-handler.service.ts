@@ -8,34 +8,48 @@ export class ProgressHandlerService {
 
   private requestInFlight$: BehaviorSubject<boolean>;
 
+
+  private reportableError$: BehaviorSubject<Error>;
+
   constructor(private messageService: MessageService) {
+
     this.requestInFlight$ = new BehaviorSubject(false);
+    this.reportableError$=new BehaviorSubject(null);
+
   }
 
   setHttpStatus(inFlight: boolean) {
     this.requestInFlight$.next(inFlight);
   }
 
+
   getHttpStatus(): Observable<boolean> {
     return this.requestInFlight$.asObservable();
   }
 
-  showNotification(error, id) {
-    if(!error.hide){
-      this.messageService.add(this.convertResponseToMessage(error, id));
-    }
+  setReportableError(error:Error){
 
+    this.reportableError$.next(error);
+  }
+
+  getReportableError(){
+    return this.reportableError$.asObservable();
   }
 
 
-  clear() {
+  showNotification(error, id){
+    if(!error.hide){
+      this.messageService.add(this.convertResponseToMessage(error, id));
+    }
+  }
+
+
+  clear(){
     this.messageService.clear();
   }
 
   convertResponseToMessage(obj : any, id ): any{
-    let m: any ={};
-
-
+     let m: any ={};
       if (obj.status) {
         m.severity = this.convertSeverityToPrimeNg(obj.status);
       }
@@ -50,7 +64,6 @@ export class ProgressHandlerService {
       }
         m.id = id
         m.key=id;
-
       return m;
   }
 
