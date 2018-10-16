@@ -86,7 +86,8 @@ export class AppMenuComponent implements OnInit {
     /* tslint:disable:component-selector */
     selector: '[app-submenu]',
     /* tslint:enable:component-selector */
-    template: `
+    template:
+      `
         <ng-template ngFor let-child let-i="index" [ngForOf]="(root ? item : item.items)">
             <li [ngClass]="{'active-menuitem': isActive(i)}" [class]="child.badgeStyleClass" *ngIf="child.visible === false ? false : true">
                 <a [href]="child.url||'#'" (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)"
@@ -100,7 +101,7 @@ export class AppMenuComponent implements OnInit {
 
                 <a (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)" *ngIf="child.routerLink"
                     [routerLink]="child.routerLink" routerLinkActive="active-menuitem-routerlink"
-                    [routerLinkActiveOptions]="{exact: true}" [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
+                    [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
                     <i [ngClass]="child.icon"></i>
                     <span>{{child.label}}</span>
                     <i class="fa fa-fw fa-angle-down" *ngIf="child.items"></i>

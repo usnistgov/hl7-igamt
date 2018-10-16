@@ -222,41 +222,19 @@ export class AppComponent implements AfterViewInit {
     checkRouterEvent(event): void {
      if (event instanceof NavigationStart) {
         console.log("Navigation Start");
-
-        console.log(event);
         this.routerLoading = true;
     }
-
     if (event instanceof NavigationEnd ||
       event instanceof NavigationCancel ) {
-
       this.routerLoading = false;
-
-
       this.progress.clear();
-
     }
     else if(event instanceof NavigationError){
       this.routerLoading = false;
-
     }
-
-
-
-
-
   }
-
-
 
   print(obj){
     console.log(obj);
   }
-
-
-
-
-
-
-
   }

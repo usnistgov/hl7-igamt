@@ -188,7 +188,17 @@ export class SegmentEditStructureComponent implements WithSave {
         return true;
     }
 
-    save(){
+  ngAfterViewInit() {
+
+
+    console.log("Initining segment structure");
+
+
+
+  }
+
+
+  save(){
         return new Promise((resolve, reject)=> {
             let saveObj:any = {};
             saveObj.id = this.segmentStructure.id;

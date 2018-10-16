@@ -181,7 +181,11 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
+
+    console.log("Initing IG");
       this.initTreeModel();
+
+
 
   }
 
@@ -310,12 +314,14 @@ export class IgDocumentEditComponent {
   };
 
   getPath =function (node) {
-    node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
+
+    //node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
     if(this.isOrphan(node)){
       return  node.data.data.position+".";
     }else{
       return this.getPath(node.parent)+ node.data.data.position+".";
     }
+
   };
 
   path(node){
