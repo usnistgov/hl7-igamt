@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import {Component, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef} from '@angular/core';
 import { AppComponent } from './app.component';
 import { BreadcrumbService } from './breadcrumb.service';
 import { Subscription } from 'rxjs/Subscription';
@@ -7,6 +7,8 @@ import { MenuItem } from 'primeng/primeng';
 @Component({
     selector: 'app-breadcrumb',
     templateUrl: './app.breadcrumb.component.html'
+    // changeDetection: ChangeDetectionStrategy.OnPush,
+
 })
 export class AppBreadcrumbComponent implements OnDestroy {
 
@@ -14,10 +16,15 @@ export class AppBreadcrumbComponent implements OnDestroy {
 
     items: MenuItem[];
 
-    constructor(public breadcrumbService: BreadcrumbService) {
-        this.subscription = breadcrumbService.itemsHandler.subscribe(response => {
-            this.items = response;
-        });
+    constructor(public breadcrumbService: BreadcrumbService,private ref: ChangeDetectorRef) {
+      this.subscription = breadcrumbService.getItemsSource().subscribe(response => {
+
+
+
+        this.items = response;
+        //this.ref.detectChanges();
+
+      });
     }
 
     ngOnDestroy() {
@@ -25,4 +32,6 @@ export class AppBreadcrumbComponent implements OnDestroy {
             this.subscription.unsubscribe();
         }
     }
+
+
 }

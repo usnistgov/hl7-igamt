@@ -122,6 +122,7 @@ import {ConfirmationService} from 'primeng/api';
 import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialog";
 import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.component';
 import {ReportService} from "./dialog-wrapper/report.service";
+import {DisplayService} from "./display/display.service";
 @NgModule({
     imports: [
         BrowserModule,
@@ -258,7 +259,8 @@ import {ReportService} from "./dialog-wrapper/report.service";
         RoutingStateService,
         ClientErrorHandlerService,
         ConfirmationService,
-        ReportService
+        ReportService,
+    DisplayService
   ],
     bootstrap: [AppComponent]
 })

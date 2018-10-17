@@ -27,5 +27,6 @@ export enum Types{
   SECTION="SECTION",
   DYNAMICMAPPING="DYNAMICMAPPING"
 
-
 }
+
+

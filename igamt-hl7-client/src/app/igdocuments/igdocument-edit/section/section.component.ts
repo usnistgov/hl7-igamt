@@ -44,7 +44,7 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
           console.log(x);
           console.log("path for id "+this.sectionId +"====is "+ x[this.sectionId])
           this.path=x[this.backup.id];
-          this.ref.detectChanges();
+         // this.ref.detectChanges();
           console.log(this.path);
 
          // this.ref.detectChanges();

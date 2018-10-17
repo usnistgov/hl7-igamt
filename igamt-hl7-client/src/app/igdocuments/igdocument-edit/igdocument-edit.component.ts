@@ -24,6 +24,8 @@ import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {LoadingService} from "./service/loading.service";
 import {DeleteElementComponent} from "./delete-element/delete-element.component";
+import {BreadcrumbService} from "../../breadcrumb.service";
+import {DisplayService} from "../../display/display.service";
 
 
 @Component({
@@ -43,6 +45,8 @@ export class IgDocumentEditComponent {
 
   igId:any;
   exportModel: MenuItem[];
+  userUrl : MenuItem[]=[];
+
   loading=false;
   metadata:any;
   ig:any;
@@ -116,8 +120,21 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService){
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService, private  breadCrump:BreadcrumbService, private displayService:DisplayService){
+    router.events.subscribe(event => {
+      //console.log(event);
+
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+
+
+        this.parseUrl();
+      }
+    });
+
+
   }
+
 
   filterFn(){
     this.hideToc=false; // show the TOC if we filter
@@ -134,11 +151,15 @@ export class IgDocumentEditComponent {
 
 
 
+
+
   ngOnInit() {
     //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
-    this.tocService.setIgId(this.igId);
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      this.tocService.setIgId(this.igId);
+
+      this.igId=x.id;
       this.ig= x;
       this.nodes=this.ig.toc;
 
@@ -146,12 +167,8 @@ export class IgDocumentEditComponent {
     this.tocService.metadata.subscribe(x=>{
 
       this.metadata=x;
-    })
-    this.loadingService.loading.subscribe(x=>{
-      this.loading=x;
 
     })
-
     this.exportModel = [
       {label: 'As Word', command: () => {
         this.exportAsWord();
@@ -161,6 +178,9 @@ export class IgDocumentEditComponent {
       }}
     ];
   }
+
+
+
 
   exportAsWord(){
   this.exportService.exportAsWord(this.igId);
@@ -182,10 +202,11 @@ export class IgDocumentEditComponent {
   ngAfterViewInit() {
 
 
+
     console.log("Initing IG");
-      this.initTreeModel();
+    this.initTreeModel();
 
-
+    this.parseUrl();
 
   }
 
@@ -201,45 +222,67 @@ export class IgDocumentEditComponent {
   getElementUrl(elm){
     var type=elm.type.toLowerCase();
 
-    return "./"+type+"/"+elm.key.id;
+    return "./"+type+"/"+elm.key.id+"/structure";
   }
 
+
+  parseAfterIg(rest){
+
+
+  }
 
   parseUrl(){
+  this.userUrl=[];
     if(this.tree) {
-      var index = this.currentUrl.indexOf("/ig/");
-      var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
 
-      var paramIndex = fromIg.indexOf('?');
-      //console.log(paramIndex);
-      if (paramIndex > -1) {
-        fromIg = fromIg.substring(0, paramIndex);
+
+      let rest =this.currentUrl;
+
+      let paramsIndex = this.currentUrl.indexOf("?");
+
+      if (paramsIndex > -1) {
+        rest = this.currentUrl.substring(0, paramsIndex);
+
       }
-      var slashIndex = fromIg.indexOf("/");
+      rest = rest.replace("/ig/" + this.igId + "/", "");
 
-      if (slashIndex > 0) {
-        var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
-        var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
-        let childId="";
-        //console.log(child);
-        if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
-          //console.log(childId);
-          childId=child.substring( 0,child.indexOf("/"));
+      console.log("rest");
+      console.log(rest);
+      this.userUrl.push({label: "IG Documents"}, {label: this.metadata.title, icon:"fa fa-folder"});
 
-        }else{
+      let splitted = rest.split("/");
+      if (splitted && splitted.length) {
 
-          childId=child;
+        for (let i = 1; i < splitted.length; i++) {
+
+          this.userUrl.push(this.getDisplay(splitted[i]));
 
         }
-        let node = this.tree.treeModel.getNodeById(childId);
-        if (node) {
-          this.tocService.setActiveNode(node);
-          node.setIsActive(true);
-          this.activeNode=node.id;
-        }
+      } else {
+        this.userUrl.push({label: this.displayService.getLabel(rest), icon:this.displayService.getIcon(rest)});
       }
     }
+
+    this.breadCrump.setItems(this.userUrl);
+
+
   }
+
+  getDisplay(string){
+
+       let node = this.tree.treeModel.getNodeById(string);
+       if(node&&node.data && node.data.data && node.data.data.label) {
+         if(node.data.data.type && node.data.data.type==Types.TEXT){
+           return {label: this.getPath(node)+node.data.data.label}
+         }else{
+           return {label: node.data.data.label, badge:this.displayService.getBadge(node.data.data.type),badgeStyleClass:this.displayService.getBadgeClass(node.data.data.type)}
+         }
+         }
+         else {
+         return {label: this.displayService.getLabel(string), icon: this.displayService.getIcon(string)}
+       }
+  }
+
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
        if(node.data.data.key){
@@ -679,6 +722,12 @@ export class IgDocumentEditComponent {
         this.setTreeModel();
       }
     )
+  }
+  ngOnDestroy() {
+    if (this.tree) {
+      this.tree=null;
+    }
+    this.breadCrump.setItems(null);
   }
 
 }
