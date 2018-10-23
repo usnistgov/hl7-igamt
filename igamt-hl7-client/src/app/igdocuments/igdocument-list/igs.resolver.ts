@@ -12,12 +12,29 @@ import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/rou
 import {Observable} from "rxjs";
 
 @Injectable()
-export  class MyIGsresolver implements Resolve<any>{
+export  class Igsresolver implements Resolve<any>{
   constructor(private http: HttpClient) {
   }
 
   resolve(route: ActivatedRouteSnapshot, rstate : RouterStateSnapshot): Observable<any>{
-    return this.http.get("api/igdocuments");
+    console.log(route);
+    let params= route.queryParams;
+
+    if (params.type && params.type == "USER") {
+
+      return this.http.get("api/igdocuments");
+
+    }else if (params.type && params.type == "ALL") {
+
+      return this.http.get("api/igdocuments/all");
+
+    }else if (params.type && params.type == "PRELOADED") {
+
+      return this.http.get("api/igdocuments/preloaded");
+
+    }
+
+
 
   }
 

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { MenuItem } from 'primeng/primeng';
 import { AppComponent } from './app.component';
-import {Router} from "@angular/router";
+import {Router, NavigationEnd} from "@angular/router";
 
 @Component({
     selector: 'app-menu',
@@ -19,64 +19,66 @@ export class AppMenuComponent implements OnInit {
     constructor(public app: AppComponent, private router:Router) { }
   ngOnInit() {
     this.model = [
-      {label: 'Home', icon: 'dashboard', routerLink: ['/']},
+      {label: 'Home', icon: 'fa fa-home', id:'home',
+        command: (event) => {
+      this.router.navigate(['/'])
+        }},
       {
-        label: 'IG Documents', icon: 'palette',
+        label: 'IG Documents', icon: 'fa fa-book', id:"ig-documents/",
         items: [
           {
-            label: 'Create New Document', icon: 'plus', routerLink: ['/ig-documents/create'] ,command: (event) => {
+            label: 'Create New Document', icon: 'fa fa-plus', routerLink: ['/ig-documents/create'] ,command: (event) => {
           }
           },
           {
-            label: 'My Documents', icon: 'brush', routerLink: ['/ig-documents/my-igs'], command: (event) => {
+            label: 'My Documents', routerLink: ['/ig-documents/list'],icon: 'fa fa-user',  queryParams: {type: "USER"}
+          },
+          {
+            label: 'Shared With Me', routerLink: ['/ig-documents/list'], icon:"fa fa-share-alt",queryParams: {type: "SHARED"}, command: (event) => {
           }
           },
           {
-            label: 'Shared With Me', icon: 'brush', routerLink: ['/ig-documents/shared-igs'], command: (event) => {
+            label: 'Pre-loaded Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-history', queryParams: {type: "PRELOADED"}, command: (event) => {
           }
           },
           {
-            label: 'Pre-loaded Documents', icon: 'brush', routerLink: ['/ig-documents/preloaded-igs'], command: (event) => {
-          }
-          },
-          {
-            label: 'All IG Documents', icon: 'brush', routerLink: ['/ig-documents/all'], command: (event) => {
+            label: 'All IG Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-list',queryParams: {type: "ALL"}, command: (event) => {
           }
           }
         ]
       },
 
       {
-        label: 'Data Type Libraries', icon: 'palette',
+        label: 'Data Type Libraries', icon: 'fa fa-file-text',id:"datatype-libraries/",
         items: [
           {
-            label: 'Create Library', icon: 'plus', routerLink: ['/datatype-libraries/create'], command: (event) => {
+            label: 'Create Library', icon: 'fa fa-plus', routerLink: ['/datatype-libraries/create'], command: (event) => {
           }
           },
           {
-            label: 'My Libraries', icon: 'brush'   , command: (event) => {
+            label: 'My Libraries',icon: 'fa fa-list' , command: (event) => {
 
             this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'USER'}});
 
           }
           },
           {
-            label: 'Published Standard Libraries', icon: 'brush' , command: (event) => {
+            label: 'Published Standard Libraries', icon: 'fa fa-history' , command: (event) => {
             this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'PUBLISHED'}});
 
           }
           },
           {
-            label: 'Datatype Evolutions', icon: 'brush', routerLink: ['datatype-libraries/evolution'], command: (event) => {
+            label: 'Datatype Evolutions', icon: 'fa fa-line-chart custom', routerLink: ['datatype-libraries/evolution'], command: (event) => {
           }
           }
         ]
       },
       {label: 'Comparator', icon: 'dashboard', routerLink: ['/comparator']},
-      {label: 'Documentation', icon: 'dashboard', routerLink: ['/documentation']},
-      {label: 'Configuration', icon: 'dashboard', routerLink: ['/configuration']},
-      {label: 'Search', icon: 'search', routerLink: ['/search']},
-      {label: 'About', icon: 'info', routerLink: ['/about']}
+      {label: 'Documentation', icon: 'fa fa-file-text', routerLink: ['/documentation']},
+      {label: 'Configuration', icon: 'fa fa-cog', routerLink: ['/configuration']},
+      {label: 'Search', icon: 'fa fa-search', routerLink: ['/search']},
+      {label: 'About', icon: 'fa fa-info', routerLink: ['/about']}
     ];
   }
 
@@ -89,20 +91,25 @@ export class AppMenuComponent implements OnInit {
     template:
       `
         <ng-template ngFor let-child let-i="index" [ngForOf]="(root ? item : item.items)">
-            <li [ngClass]="{'active-menuitem': isActive(i)}" [class]="child.badgeStyleClass" *ngIf="child.visible === false ? false : true">
-                <a [href]="child.url||'#'" (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)"
-                   *ngIf="!child.routerLink" [ngClass]="child.styleClass"
+            <li [ngClass]="{'active-menuitem': isActive(i)}" *ngIf="child.visible === false ? false : true">
+                <a (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)"
+                   *ngIf="!child.routerLink"
                    [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
+                    <span [ngClass]="{'parentMenu': isActiveParent(child)}">
                     <i [ngClass]="child.icon"></i>
-                    <span>{{child.label}}</span>
-                    <i class="fa fa-fw fa-angle-down layout-menuitem-toggler" *ngIf="child.items"></i>
+
+                    {{child.label}}
+                     <i class="fa fa-fw fa-angle-down layout-menuitem-toggler" *ngIf="child.items"></i>
                     <span class="menuitem-badge" *ngIf="child.badge">{{child.badge}}</span>
+                    </span> 
+                    
+            
                 </a>
 
                 <a (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)" *ngIf="child.routerLink"
-                    [routerLink]="child.routerLink" routerLinkActive="active-menuitem-routerlink"
+                    [routerLink]="child.routerLink||(child.id && child.id=='home')" [queryParams]="child.queryParams" routerLinkActive="active-menuitem-routerlink"
                     [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
-                    <i [ngClass]="child.icon"></i>
+                    <i *ngIf="child.icon" [ngClass]="child.icon"></i>
                     <span>{{child.label}}</span>
                     <i class="fa fa-fw fa-angle-down" *ngIf="child.items"></i>
                     <span class="menuitem-badge" *ngIf="child.badge">{{child.badge}}</span>
@@ -111,9 +118,7 @@ export class AppMenuComponent implements OnInit {
                   <div class="layout-menu-tooltip-arrow"></div>
                   <div class="layout-menu-tooltip-text">{{child.label}}</div>
                 </div>
-                <ul app-submenu [item]="child" *ngIf="child.items" [visible]="isActive(i)" [reset]="reset"
-                    [@children]="(app.isSlim()||app.isHorizontal())&&root ? isActive(i) ?
-                    'visible' : 'hidden' : isActive(i) ? 'visibleAnimated' : 'hiddenAnimated'"></ul>
+                <ul app-submenu [item]="child" *ngIf="child.items" [visible]="isActive(i)" [reset]="reset"></ul>
             </li>
         </ng-template>
     `,
@@ -149,8 +154,26 @@ export class AppSubMenuComponent {
     _reset: boolean;
 
     activeIndex: number;
+    currentUrl:string="";
 
-    constructor(public app: AppComponent) { }
+    constructor(public app: AppComponent, private router :Router) {
+
+      router.events.subscribe(event => {
+        if (event instanceof NavigationEnd ) {
+          this.currentUrl=event.url;
+        }
+      });
+
+    }
+
+    isActiveParent(item) {
+      if(item.id&&this.currentUrl){
+
+        return this.currentUrl.indexOf(item.id)>-1;
+      }
+    }
+
+
 
     itemClick(event: Event, item: MenuItem, index: number)  {
         if (this.root) {
@@ -200,6 +223,7 @@ export class AppSubMenuComponent {
     }
 
     isActive(index: number): boolean {
+
         return this.activeIndex === index;
     }
 

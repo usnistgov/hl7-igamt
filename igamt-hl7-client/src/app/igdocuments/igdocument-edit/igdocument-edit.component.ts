@@ -126,8 +126,6 @@ export class IgDocumentEditComponent {
 
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
-
-
         this.parseUrl();
       }
     });
@@ -206,16 +204,19 @@ export class IgDocumentEditComponent {
     console.log("Initing IG");
     this.initTreeModel();
 
-    this.parseUrl();
+    //this.parseUrl();
 
   }
 
   setTreeModel(){
+    this.parseUrl();
     return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 
   initTreeModel(){
+    this.parseUrl();
+
     return this.tocService.initTreeModel(this.tree.treeModel);
   }
 
@@ -249,11 +250,10 @@ export class IgDocumentEditComponent {
       console.log("rest");
       console.log(rest);
       this.userUrl.push({label: "IG Documents"}, {label: this.metadata.title, icon:"fa fa-folder"});
-
       let splitted = rest.split("/");
       if (splitted && splitted.length) {
-
         for (let i = 1; i < splitted.length; i++) {
+
 
           this.userUrl.push(this.getDisplay(splitted[i]));
 

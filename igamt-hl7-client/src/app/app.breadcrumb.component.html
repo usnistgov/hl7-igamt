@@ -1,4 +1,5 @@
 <div class="layout-breadcrumb">
+
     <ul>
         <li>
             <a routerLink="">
@@ -17,17 +18,17 @@
             <li *ngIf="!last">/</li>
         </ng-template>
     </ul>
-
     <!--<div class="layout-breadcrumb-options">-->
-        <!--<a routerLink="/" title="Backup">-->
-          <!--<i class="fa fa-cloud-upload"></i>-->
+        <!--<a (click)="previous()" title="go back">-->
+          <!--<i class="fa fa-arrow-left"></i>-->
         <!--</a>-->
-        <!--<a routerLink="/" title="Bookmark">-->
-          <!--<i class="fa fa-bookmark"></i>-->
+
+        <!--<a (click)="forward()" title="go forward">-->
+          <!--<i class="fa fa-arrow-right"></i>-->
         <!--</a>-->
-        <!--<a routerLink="/" title="Logout">-->
-          <!--<i class="fa fa-sign-out"></i>-->
-        <!--</a>-->
+      <!--<a routerLink="/" title="Bookmark">-->
+        <!--<i class="fa fa-bookmark"></i>-->
+      <!--</a>-->
     <!--</div>-->
 </div>
 

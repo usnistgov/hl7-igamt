@@ -6,6 +6,13 @@ export class UrlParserServiceService {
   constructor() { }
 
 
+  parseUrl(url){
+
+  let paramIndex=url.indexOf('?');
+
+
+  }
+
 
 
 }

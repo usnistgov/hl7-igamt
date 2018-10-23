@@ -8,8 +8,15 @@ import {MessageModule} from 'primeng/message';
 
 import {StepsModule} from 'primeng/steps';
 import {MessagesModule} from "primeng/components/messages/messages";
-import { AddConformanceProfileComponent } from './add-conformance-profile/add-conformance-profile.component';
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
+import {IgDocumentListComponent} from "./igdocument-list/igdocument-list.component";
+import {Igsresolver} from "./igdocument-list/igs.resolver";
+import {UtilsModule} from "../utils/utils.module";
+import {OrderListModule} from "primeng/components/orderlist/orderlist";
+import {PickListModule} from "primeng/components/picklist/picklist";
+import {DropdownModule} from "primeng/components/dropdown/dropdown";
+import {InputTextModule} from "primeng/components/inputtext/inputtext";
+import {DataViewModule} from "primeng/components/dataview/dataview";
 
 @NgModule({
 	imports: [
@@ -21,12 +28,28 @@ import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
     MessageModule,
     MessagesModule,
     RadioButtonModule,
-
-
-
+    CommonModule,
+    UtilsModule,
+    FormsModule,
+    ButtonModule,
+    TabMenuModule,
+    StepsModule,
+    MessageModule,
+    MessagesModule,
+    CommonModule,
+    ButtonModule,
+    TabMenuModule,
+    OrderListModule,PickListModule,
+    DropdownModule,
+    InputTextModule,
+    DataViewModule,
+    RadioButtonModule,
     IgDocumentRoutingModule
+
 	],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
-	declarations: []
+	declarations: [IgDocumentListComponent],
+  providers:[Igsresolver]
+
 })
 export class IgDocumentModule {}

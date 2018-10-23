@@ -24,7 +24,6 @@ export const routes: Routes = [
   {path: 'search', loadChildren: './search/search.module#SearchModule'},
   {path: 'about', component: AboutComponent},
   {path: 'documentation', component: DocumentationComponent},
-  {path: '', component: DocumentationComponent},
   {path: 'login', component: LoginComponent},
   {path: 'register', component: RegisterComponent},
   {path: 'reset-password', component: ResetPasswordRequestComponent},

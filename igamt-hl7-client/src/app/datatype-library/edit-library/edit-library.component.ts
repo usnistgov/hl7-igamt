@@ -27,8 +27,9 @@ import {LibDeleteElementComponent} from "./delete-element/lib-delete-element.com
   styleUrls : ['./edit-library.component.css'],
 
 })
-export class EditLibraryComponent {
 
+
+export class EditLibraryComponent {
 
   libId:any;
   exportModel: MenuItem[];
@@ -41,14 +42,9 @@ export class EditLibraryComponent {
   scope:any;
   lib:any;
   currentUrl:any;
-  displayMessageAdding: boolean = false;
-
   hideToc:boolean=false;
-
   activeNode:any;
-
   searchFilter:string="";
-  blockUI:false;
 
   types: SelectItem[]=[
 
@@ -59,12 +55,9 @@ export class EditLibraryComponent {
 
 
   scopes: SelectItem[]=[
-
-
     {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
     {label:"SDTF ",value:"SDTF"}
-
   ];
 
 
@@ -141,20 +134,14 @@ export class EditLibraryComponent {
 
 
   ngOnInit() {
-    //console.log("Calling on Init");
+
     this.libId= this.sp.snapshot.params["libId"];
     this.tocService.setLibId(this.libId);
-
-
-
-
     this.sp.data.map(data =>data.currentLib).subscribe(x=>{
       this.lib= x;
       this.scope=this.lib.metadata.scope;
       this.nodes=this.lib.toc;
-
     });
-
     this.tocService.metadata.subscribe(x=>{
 
       this.metadata=x;
@@ -173,12 +160,7 @@ export class EditLibraryComponent {
       {label: 'As Web', command: () => {
         this.exportAsWeb();
       }}
-
     ];
-
-
-
-
   }
 
 
@@ -187,21 +169,18 @@ export class EditLibraryComponent {
   }
   exportAsHTML(){
     this.exportService.exportAsHtml(this.libId);
-
   }
   exportAsWeb(){
     this.exportService.exportAsWeb(this.libId);
-
   }
   toggleHideToc(){
-
-
     this.hideToc=!this.hideToc;
-
   }
+
   print(node){
     console.log(node);
   }
+
   ngAfterViewInit() {
 
     this.initTreeModel();
@@ -258,9 +237,7 @@ export class EditLibraryComponent {
           childId=child.substring( 0,child.indexOf("/"));
 
         }else{
-
           childId=child;
-
         }
         let node = this.tree.treeModel.getNodeById(childId);
         if (node) {
@@ -270,7 +247,6 @@ export class EditLibraryComponent {
         }
       }
     }
-
   }
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
