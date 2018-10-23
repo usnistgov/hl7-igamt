@@ -27,23 +27,19 @@ export class AppMenuComponent implements OnInit {
         label: 'IG Documents', icon: 'fa fa-book', id:"ig-documents/",
         items: [
           {
-            label: 'Create New Document', icon: 'fa fa-plus', routerLink: ['/ig-documents/create'] ,command: (event) => {
-          }
+            label: 'Create New Document', icon: 'fa fa-plus', routerLink: ['/ig-documents/create']
           },
           {
             label: 'My Documents', routerLink: ['/ig-documents/list'],icon: 'fa fa-user',  queryParams: {type: "USER"}
           },
           {
-            label: 'Shared With Me', routerLink: ['/ig-documents/list'], icon:"fa fa-share-alt",queryParams: {type: "SHARED"}, command: (event) => {
-          }
+            label: 'Shared With Me', routerLink: ['/ig-documents/list'], icon:"fa fa-share-alt",queryParams: {type: "SHARED"}
           },
           {
-            label: 'Pre-loaded Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-history', queryParams: {type: "PRELOADED"}, command: (event) => {
-          }
+            label: 'Pre-loaded Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-history', queryParams: {type: "PRELOADED"}
           },
           {
-            label: 'All IG Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-list',queryParams: {type: "ALL"}, command: (event) => {
-          }
+            label: 'All IG Documents', routerLink: ['/ig-documents/list'], icon: 'fa fa-list',queryParams: {type: "ALL"}
           }
         ]
       },
@@ -52,25 +48,17 @@ export class AppMenuComponent implements OnInit {
         label: 'Data Type Libraries', icon: 'fa fa-file-text',id:"datatype-libraries/",
         items: [
           {
-            label: 'Create Library', icon: 'fa fa-plus', routerLink: ['/datatype-libraries/create'], command: (event) => {
-          }
+            label: 'Create Library', icon: 'fa fa-plus', routerLink: ['/datatype-libraries/create']
           },
           {
-            label: 'My Libraries',icon: 'fa fa-list' , command: (event) => {
-
-            this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'USER'}});
-
-          }
+            label: 'My Libraries',icon: 'fa fa-list' , routerLink: ['/datatype-libraries/list'],queryParams: {libType: 'USER'}
           },
           {
-            label: 'Published Standard Libraries', icon: 'fa fa-history' , command: (event) => {
-            this.router.navigate(['datatype-libraries/list'],{  queryParams: {libType: 'PUBLISHED'}});
+            label: 'Published Standard Libraries', icon: 'fa fa-history' , routerLink: ['/datatype-libraries/list'],queryParams: {libType: 'PUBLISHED'}
 
-          }
           },
           {
-            label: 'Datatype Evolutions', icon: 'fa fa-line-chart custom', routerLink: ['datatype-libraries/evolution'], command: (event) => {
-          }
+            label: 'Data Type Evolutions', icon: 'fa fa-line-chart custom', routerLink: ['/datatype-libraries/evolution']
           }
         ]
       },
@@ -107,7 +95,7 @@ export class AppMenuComponent implements OnInit {
                 </a>
 
                 <a (click)="itemClick($event,child,i)" (mouseenter)="onMouseEnter(i)" *ngIf="child.routerLink"
-                    [routerLink]="child.routerLink||(child.id && child.id=='home')" [queryParams]="child.queryParams" routerLinkActive="active-menuitem-routerlink"
+                    [routerLink]="child.routerLink" [queryParams]="child.queryParams" routerLinkActive="active-menuitem-routerlink"
                     [attr.tabindex]="!visible ? '-1' : null" [attr.target]="child.target">
                     <i *ngIf="child.icon" [ngClass]="child.icon"></i>
                     <span>{{child.label}}</span>
@@ -189,9 +177,9 @@ export class AppSubMenuComponent {
         this.activeIndex = (this.activeIndex === index) ? null : index;
 
         // execute command
-        if (item.command) {
-            item.command({ originalEvent: event, item: item });
-        }
+        // if (item.command) {
+        //     item.command({ originalEvent: event, item: item });
+        // }
 
         // prevent hash change
         if (item.items || (!item.url && !item.routerLink)) {

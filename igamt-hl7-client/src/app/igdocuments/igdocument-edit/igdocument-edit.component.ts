@@ -26,6 +26,7 @@ import {LoadingService} from "./service/loading.service";
 import {DeleteElementComponent} from "./delete-element/delete-element.component";
 import {BreadcrumbService} from "../../breadcrumb.service";
 import {DisplayService} from "../../display/display.service";
+import {UUID} from "angular2-uuid";
 
 
 @Component({
@@ -332,7 +333,7 @@ export class IgDocumentEditComponent {
       type:Types.TEXT,
       position: this.tree.treeModel.nodes.length+1
     };
-    var newNode = {id : "bla",data:data1, children :[]};
+    var newNode = {id : UUID.UUID(),data:data1, children :[]};
     this.tree.treeModel.nodes.push(newNode);
 
     this.tree.treeModel.update();
@@ -348,7 +349,7 @@ export class IgDocumentEditComponent {
       type:Types.TEXT,
       position: this.tree.treeModel.nodes.length+1
     };
-    var newNode = {id : "bla",data:data1, children :[]};
+    var newNode = {id : UUID.UUID(),data:data1, children :[]};
     node.data.children.push(newNode);
 
     this.tree.treeModel.update();
