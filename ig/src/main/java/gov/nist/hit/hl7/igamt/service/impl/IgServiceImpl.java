@@ -231,9 +231,6 @@ public class IgServiceImpl implements IgService {
     qry.fields().include("updateDate");
 
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
-
-
-
     return igs;
   }
 

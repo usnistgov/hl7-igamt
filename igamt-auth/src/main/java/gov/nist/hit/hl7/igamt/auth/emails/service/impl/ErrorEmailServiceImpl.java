@@ -1,16 +1,10 @@
 package gov.nist.hit.hl7.igamt.auth.emails.service.impl;
-
-import static org.assertj.core.api.Assertions.catchThrowableOfType;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
-import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.emails.service.ErrorEmailService;
 import gov.nist.hit.hl7.igamt.auth.exception.ErrorEmailException;
 @Service
@@ -48,25 +42,17 @@ public class ErrorEmailServiceImpl implements ErrorEmailService {
 	    try {
 	      this.mailSender.send(msg);
 	    } catch (MailException e) {
-	    	throw new  	ErrorEmailException(e.getMessage());
+	    	throw new ErrorEmailException(e.getMessage());
 	    } catch (RuntimeException e) {
-	    	throw new  ErrorEmailException(e.getMessage());
-
+	    	throw new ErrorEmailException(e.getMessage());
 	    } catch (Exception e) {
-	    	throw new  	ErrorEmailException(e.getMessage());
-
-	    }
-		
-		
-
-	
+	    	throw new ErrorEmailException(e.getMessage());
+	    }	
 	}
 	
 	
 	public String[] parseCC(String s){
-		
 		return s.split(";");
-	
 	}
 
 }

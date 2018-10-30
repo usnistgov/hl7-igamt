@@ -31,9 +31,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRef;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsLabel;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 import gov.nist.hit.hl7.igamt.xreference.util.XReferenceUtil;
 
@@ -48,14 +56,14 @@ public class XRefServiceImpl extends XRefService {
 
 
   @Override
-  public Map<String, List<Document>> getDatatypeReferences(String id, Set<String> filterDatatypeIds,
+  public Map<String, List<CrossRefsNode>> getDatatypeReferences(String id, Set<String> filterDatatypeIds,
       Set<String> filterSegmentIds) {
-    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
-    List<Document> datatypes = getDatatypeRefsByDatatypes(id, filterDatatypeIds);
+    Map<String, List<CrossRefsNode>> results = new HashMap<String, List<CrossRefsNode>>();
+    List<CrossRefsNode> datatypes = getDatatypeRefsByDatatypes(id, filterDatatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }
-    List<Document> segments = getDatatypeRefsBySegments(id, filterSegmentIds);
+    List<CrossRefsNode> segments = getDatatypeRefsBySegments(id, filterSegmentIds);
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
@@ -67,25 +75,25 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the datatypes referencing the data type with id at a component level
    */
-  private List<Document> getDatatypeRefsByDatatypes(String id, Set<String> filterDatatypeIds) {
+  private List<CrossRefsNode> getDatatypeRefsByDatatypes(String id, Set<String> filterDatatypeIds) {
     Aggregation aggregation = null;
     if (filterDatatypeIds != null) {
       aggregation =
           newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterDatatypeIds))),
-              match(Criteria.where("components.ref._id").is(new ObjectId(id))),
-              project(fields("name", "ext", "domainInfo", "position"))
-                  .and(filter("components").as("component")
-                      .by(valueOf("component.ref._id").equalToValue(new ObjectId(id))))
-                  .as("children"));
+              match(Criteria.where("components.ref._id").is(new ObjectId(id))));
     } else {
-      aggregation = newAggregation(match(Criteria.where("components.ref._id").is(new ObjectId(id))),
-          project(fields("name", "ext", "domainInfo", "position")).and(filter("components")
-              .as("component").by(valueOf("component.ref._id").equalToValue(new ObjectId(id))))
-              .as("children"));
+      aggregation = newAggregation(match(Criteria.where("components.ref._id").is(new ObjectId(id))));
     }
+    
+    	
+    List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "datatype", CompositeKey.class).getMappedResults();
+    
+    Criteria where2 = Criteria.where("id").in(cpIds);
+    Query qry = Query.query(where2);
+    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
 
     return XReferenceUtil.processDatatypes(
-        mongoTemplate.aggregate(aggregation, "datatype", Document.class).getMappedResults());
+    		datatypes, id);
   }
 
 
@@ -94,31 +102,38 @@ public class XRefServiceImpl extends XRefService {
    * @param id
    * @return the segments referencing a data type at a field level
    */
-  private List<Document> getDatatypeRefsBySegments(String id, Set<String> filterSegmentIds) {
+  private List<CrossRefsNode> getDatatypeRefsBySegments(String id, Set<String> filterSegmentIds) {
     Aggregation aggregation = null;
     if (filterSegmentIds != null) {
       aggregation =
           newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterSegmentIds))),
-              match(Criteria.where("children.ref._id").is(new ObjectId(id))),
-              project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
-                  .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
+              match(Criteria.where("children.ref._id").is(new ObjectId(id))));
+           
 
     } else {
-      aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))),
-          project(fields("name", "ext", "domainInfo")).and(filter("children").as("field")
-              .by(valueOf("field.ref._id").equalToValue(new ObjectId(id)))).as("children"));
+      aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))));
     }
-    return XReferenceUtil.processSegments(
-        mongoTemplate.aggregate(aggregation, "segment", Document.class).getMappedResults());
+    
+    
+	
+List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "segment", CompositeKey.class).getMappedResults();
+
+Criteria where2 = Criteria.where("id").in(cpIds);
+Query qry = Query.query(where2);
+List<Segment> segments = mongoTemplate.find(qry, Segment.class);
+
+return XReferenceUtil.processSegments(
+		segments, id);
+
   }
 
 
 
   @Override
-  public Map<String, List<Document>> getSegmentReferences(String id,
+  public Map<String, List<CrossRefsNode>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds) {
-    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
-    List<Document> conformanceProfiles =
+    Map<String, List<CrossRefsNode>> results = new HashMap<String, List<CrossRefsNode>>();
+    List<CrossRefsNode> conformanceProfiles =
         getSegmentReferencesByConformanceProfiles(id, filterConformanceProfileIds);
     if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
       results.put(CONFORMANCE_PROFILE, conformanceProfiles);
@@ -136,7 +151,7 @@ public class XRefServiceImpl extends XRefService {
    * @param conformanceProfileIds
    * @return
    */
-  public List<Document> getSegmentReferencesByConformanceProfiles(String id,
+  public List<CrossRefsNode> getSegmentReferencesByConformanceProfiles(String id,
       Set<String> filterConformanceProfileIds) {
     Aggregation aggregation = null;
     ObjectId objId = new ObjectId(id);
@@ -149,8 +164,15 @@ public class XRefServiceImpl extends XRefService {
           newAggregation(match(XReferenceUtil.getConformanceProfileMultiLevelCriteria(10, objId)));
     }
 
-    return XReferenceUtil.processSegmentReferences(mongoTemplate
-        .aggregate(aggregation, "conformanceProfile", Document.class).getMappedResults(), id);
+
+    List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "conformanceProfile", CompositeKey.class).getMappedResults();
+    
+    Criteria where2 = Criteria.where("id").in(cpIds);
+    Query qry = Query.query(where2);
+    List<ConformanceProfile> conformanceProfiles = mongoTemplate.find(qry, ConformanceProfile.class);
+    
+    
+    return XReferenceUtil.processSegmentRefs(conformanceProfiles, id);
   }
 
 
@@ -171,26 +193,23 @@ public class XRefServiceImpl extends XRefService {
    * java.util.Set, java.util.Set)
    */
   @Override
-  public Map<String, List<Document>> getValueSetReferences(String id, Set<String> datatypeIds,
+  public Map<String, List<CrossRefsNode>> getValueSetReferences(String id, Set<String> datatypeIds,
       Set<String> segmentIds, Set<String> conformanceProfileIds) throws XReferenceException {
-    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
-    List<Document> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
+    Map<String, List<CrossRefsNode>> results = new HashMap<String, List<CrossRefsNode>>();
+    List<CrossRefsNode> datatypes = getValueSetRefsByDatatypes(id, datatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }
-    List<Document> segments = getValueSetRefsBySegments(id, segmentIds);
+    List<CrossRefsNode> segments = getValueSetRefsBySegments(id, segmentIds);
     if (segments != null && !segments.isEmpty()) {
       results.put(SEGMENT, segments);
     }
 
-    List<Document> conformanceProfiles =
+    List<CrossRefsNode> conformanceProfiles =
         getValueSetRefsByConformanceProfiles(id, conformanceProfileIds);
     if (conformanceProfiles != null && !conformanceProfiles.isEmpty()) {
       results.put(CONFORMANCE_PROFILE, conformanceProfiles);
     }
-
-    System.out.println(segments);
-
     return results;
   }
 
@@ -201,7 +220,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<Document> getValueSetRefsBySegments(String id, Set<String> segmentIds)
+  private List<CrossRefsNode> getValueSetRefsBySegments(String id, Set<String> segmentIds)
       throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
@@ -214,7 +233,7 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<Document> results = processValueSetReferences(
+    List<CrossRefsNode> results = processValueSetReferences(
         mongoTemplate.aggregate(aggregation, "segment", Document.class).getMappedResults(), id,
         "segment");
 
@@ -228,7 +247,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<Document> getValueSetRefsByConformanceProfiles(String id,
+  private List<CrossRefsNode> getValueSetRefsByConformanceProfiles(String id,
       Set<String> conformanceProfileIds) throws XReferenceException {
     Aggregation aggregation = null;
     if (conformanceProfileIds != null) {
@@ -242,7 +261,7 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<Document> results = processValueSetReferences(mongoTemplate
+    List<CrossRefsNode> results = processValueSetReferences(mongoTemplate
         .aggregate(aggregation, "conformanceProfile", Document.class).getMappedResults(), id,
         "conformanceProfile");
 
@@ -257,7 +276,7 @@ public class XRefServiceImpl extends XRefService {
    * @return the segments referencing a data type at a field level
    * @throws XReferenceException
    */
-  private List<Document> getValueSetRefsByDatatypes(String id, Set<String> segmentIds)
+  private List<CrossRefsNode> getValueSetRefsByDatatypes(String id, Set<String> segmentIds)
       throws XReferenceException {
     Aggregation aggregation = null;
     if (segmentIds != null) {
@@ -270,7 +289,7 @@ public class XRefServiceImpl extends XRefService {
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
 
-    List<Document> results = processValueSetReferences(
+    List<CrossRefsNode> results = processValueSetReferences(
         mongoTemplate.aggregate(aggregation, "datatype", Document.class).getMappedResults(), id,
         "datatype");
 
@@ -287,44 +306,60 @@ public class XRefServiceImpl extends XRefService {
    * @return
    * @throws XReferenceException
    */
-  private Document processValueSetReferences(Document referenceObject, String valueSetId,
+  private  CrossRefsNode processValueSetReferences(Document referenceObject, String valueSetId,
       String referenceType) throws XReferenceException {
+	  
+	  
+	  
+	  
+	  
     List<Document> children =
         (List<Document>) ((Document) referenceObject.get("binding")).get("children");
+    
+    
     List<Document> tmp = new ArrayList<Document>();
     for (Document child : children) {
       List<Document> valuesetBindings = (List<Document>) child.get("valuesetBindings");
       List<Document> tmpValuesetBinding = new ArrayList<Document>();
-      String path =
-          findElementPath(referenceObject, referenceType, child.get("elementId").toString());
-      if (path == null) {
-        throw new XReferenceException(child.get("elementId").toString() + " Not found in "
-            + referenceType + " with id= " + referenceObject.getString("_id"));
-      }
-      path = XReferenceUtil.getName(referenceObject) + "." + path;
-      child.append("path", path);
-
-      for (Document valuesetBinding : valuesetBindings) {
-        if (valuesetBinding.get("valuesetId").equals(valueSetId)) {
-          valuesetBinding.remove("valuesetId"); // no need of extra information
-          tmpValuesetBinding.add(valuesetBinding);
-        }
-      }
-      if (!tmpValuesetBinding.isEmpty()) {
-        child.remove("valuesetBindings");
-        child.append("valuesetBindings", tmpValuesetBinding);
-        tmp.add(child);
-      }
+      
+//      
+//      CrossRefsNode node = new CrossRefsNode();
+//      CrossRefsLabel label = new CrossRefsLabel();   
+//      CrossRef data = new CrossRef();
+//      
+//      
+//      
+//      String path =
+//          findElementPath(referenceObject, referenceType, child.get("elementId").toString());
+//      
+//      if (path == null) {
+//    	  
+//        throw new XReferenceException(child.get("elementId").toString() + " Not found in "
+//            + referenceType + " with id= " + referenceObject.getString("_id"));
+//      }
+//      
+//      path = XReferenceUtil.getName(referenceObject) + "." + path;
+//      data.setLocation(path);
+//      
+//      
+//      for (Document valuesetBinding : valuesetBindings) {
+//        if (valuesetBinding.get("valuesetId").equals(valueSetId)) {
+//          valuesetBinding.remove("valuesetId"); // no need of extra information
+//          
+//          tmpValuesetBinding.add(valuesetBinding);
+//        }
+//      }
+//      if (!tmpValuesetBinding.isEmpty()) {
+//        child.remove("valuesetBindings");
+//        child.append("valuesetBindings", tmpValuesetBinding);
+//        tmp.add(child);
+//      }
+//    }
     }
-    referenceObject.remove("_class");
-    referenceObject.remove("children");
-    referenceObject.remove("preDef");
-    referenceObject.remove("postDef");
-    referenceObject.remove("description");
-    referenceObject.remove("comment");
-    referenceObject.remove("binding");
-    referenceObject.append("children", tmp);
-    return referenceObject;
+    CrossRefsNode node = new CrossRefsNode();
+    CrossRefsLabel label = new CrossRefsLabel();   
+    CrossRef data = new CrossRef();
+    return node;
   }
 
 
@@ -348,12 +383,14 @@ public class XRefServiceImpl extends XRefService {
    * @return
    * @throws XReferenceException
    */
-  public List<Document> processValueSetReferences(List<Document> references, String valueSetId,
+  public List<CrossRefsNode> processValueSetReferences(List<Document> references, String valueSetId,
       String referenceType) throws XReferenceException {
+	  List<CrossRefsNode> ret = new ArrayList<CrossRefsNode>();
+	  
     for (Document reference : references) {
-      processValueSetReferences(reference, valueSetId, referenceType);
+      ret.add(processValueSetReferences(reference, valueSetId, referenceType));
     }
-    return references;
+    return ret;
   }
 
 
@@ -521,10 +558,10 @@ public class XRefServiceImpl extends XRefService {
    * java.util.Set)
    */
   @Override
-  public Map<String, List<Document>> getDatatypeReferences(String datatypeId,
+  public Map<String, List<CrossRefsNode>> getDatatypeReferences(String datatypeId,
       Set<String> filterDatatypeIds) {
-    Map<String, List<Document>> results = new HashMap<String, List<Document>>();
-    List<Document> datatypes = getDatatypeRefsByDatatypes(datatypeId, filterDatatypeIds);
+    Map<String, List<CrossRefsNode>> results = new HashMap<String, List<CrossRefsNode>>();
+    List<CrossRefsNode> datatypes = getDatatypeRefsByDatatypes(datatypeId, filterDatatypeIds);
     if (datatypes != null && !datatypes.isEmpty()) {
       results.put(DATATYPE, datatypes);
     }

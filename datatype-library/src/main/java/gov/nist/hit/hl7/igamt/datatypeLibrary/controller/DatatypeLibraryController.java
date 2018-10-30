@@ -75,6 +75,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CreatingWrapper;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 
 
@@ -407,7 +408,7 @@ public class DatatypeLibraryController {
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException,
       DatatypeLibraryNotFoundException {
-    Map<String, List<Document>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
+    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
     if (xreferences != null && !xreferences.isEmpty()) {
       throw new XReferenceFoundException(datatypeId, xreferences);
     }
@@ -444,14 +445,14 @@ public class DatatypeLibraryController {
 
   @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",
       method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody Map<String, List<Document>> findDatatypeCrossRef(
+  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
       @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication)
       throws IGNotFoundException, XReferenceException, DatatypeLibraryNotFoundException {
     DatatypeLibrary library = findLibraryById(id);
     if (library != null) {
       Set<String> filterDatatypeIds = gatherIds(library);
-      Map<String, List<Document>> results =
+      Map<String, List<CrossRefsNode>> results =
           xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds);
       return results;
     } else {

@@ -223,15 +223,9 @@ export class IgDocumentEditComponent {
 
   getElementUrl(elm){
     var type=elm.type.toLowerCase();
-
-    return "./"+type+"/"+elm.key.id+"/structure";
+    return "./"+type+"/"+elm.key.id;
   }
 
-
-  parseAfterIg(rest){
-
-
-  }
 
   parseUrl(){
   this.userUrl=[];

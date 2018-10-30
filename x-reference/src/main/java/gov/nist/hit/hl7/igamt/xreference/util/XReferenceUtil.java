@@ -11,14 +11,34 @@
  */
 package gov.nist.hit.hl7.igamt.xreference.util;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.query.Criteria;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Component;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRef;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsLabel;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 
 /**
  * @author Harold Affo
@@ -32,18 +52,22 @@ public class XReferenceUtil {
    * @param results
    * @return
    */
-  public static List<Document> processSegmentReferences(List<Document> conformanceProfiles,
+  public static List<CrossRefsNode> processSegmentRefs(List<ConformanceProfile> conformanceProfiles,
       String segmentId) {
-    for (Document conformanceProfile : conformanceProfiles) {
-      List<Document> children = processSegmentReferences(conformanceProfile, segmentId);
-      conformanceProfile.remove("children");
-      conformanceProfile.remove("_class");
-      conformanceProfile.remove("postDef");
-      conformanceProfile.remove("preDef");
-      conformanceProfile.remove("comment");
-      conformanceProfile.append("children", children);
+	  List<CrossRefsNode> ret = new ArrayList<CrossRefsNode>();
+    for (ConformanceProfile conformanceProfile : conformanceProfiles) {
+      List<CrossRefsNode> children = processSegmentReferences(conformanceProfile, segmentId);
+      	if(children !=null&& !children.isEmpty()) {
+      		CrossRefsNode node = new CrossRefsNode();
+      		node.setChildren(ret);
+      		CrossRefsLabel label = getLabel(conformanceProfile);
+      	    node.setLabel(label);
+      	    node.setChildren(children);
+          	ret.add(node);
+
+      	}
     }
-    return conformanceProfiles;
+    return ret;
   }
 
 
@@ -78,17 +102,31 @@ public class XReferenceUtil {
    * @param segment
    * @return
    */
-  public static Document filterSegment(Document segment) {
-    List<Document> children = (List<Document>) segment.get("children");
-    for (Document child : children) {
-      child.append("path", getName(segment) + "." + child.get("position"));
-      child.remove("_class");
-      child.remove("text");
-      child.remove("comment");
-      child.remove("ref");
-    }
-    segment.remove("_class");
-    return segment;
+  public static CrossRefsNode filterSegment(Segment segment, String id) {
+		CrossRefsNode ret = new CrossRefsNode ();
+	    List<CrossRefsNode> refNodes=new ArrayList<CrossRefsNode>();
+
+	    CrossRefsLabel parent = getLabel(segment);
+	    for (Field child : segment.getChildren()) {
+	    	
+	    	if(child.getRef().getId().equals(id)) {
+	    	
+	    	
+	    	
+	    		CrossRef ref = new CrossRef();
+	    		CrossRefsNode node = new CrossRefsNode ();
+	    		ref.setLocation(child.getPosition()+"");
+	    		ref.setLabel(child.getName());
+	    		ref.setNamePath(segment.getLabel() + "." + child.getPosition());
+	    		ref.setType(Type.FIELD);
+	    		ref.setParent(parent);
+	    		node.setData(ref);
+	    		refNodes.add(node);
+	    		}
+	    	}
+	    	ret.setChildren(refNodes);
+	    	ret.setLabel(parent);
+	    return ret;
   }
 
 
@@ -98,17 +136,29 @@ public class XReferenceUtil {
    * @param datatype
    * @return
    */
-  public static Document processDatatype(Document datatype) {
-    List<Document> children = (List<Document>) datatype.get("children");
-    for (Document child : children) {
-      child.append("path", getName(datatype) + "." + child.get("position"));
-      child.remove("_class");
-      child.remove("text");
-      child.remove("comment");
-      child.remove("ref");
+  public static CrossRefsNode processDatatype(Datatype datatype,String id) {
+	CrossRefsNode ret = new CrossRefsNode ();
+    List<CrossRefsNode> refNodes=new ArrayList<CrossRefsNode>();
+
+    CrossRefsLabel parent = getLabel(datatype);    
+    if(datatype instanceof ComplexDatatype) {
+    for (Component child :((ComplexDatatype)datatype).getComponents()) {
+    	if(child.getRef().getId().equals(id)) {
+    		CrossRef ref = new CrossRef();
+    		CrossRefsNode node = new CrossRefsNode();
+    		ref.setLocation(child.getPosition()+"");
+    		ref.setLabel(child.getName());
+    		ref.setNamePath(child.getName());
+    		ref.setType(Type.COMPONENT);
+    		ref.setParent(parent);
+    		node.setData(ref);
+    		refNodes.add(node);
+    		}
+    		}
     }
-    datatype.remove("_class");
-    return datatype;
+    	ret.setChildren(refNodes);
+    	ret.setLabel(parent);
+    return ret;
   }
 
 
@@ -117,11 +167,13 @@ public class XReferenceUtil {
    * @param segments
    * @return
    */
-  public static List<Document> processSegments(List<Document> segments) {
-    for (Document segment : segments) {
-      filterSegment(segment);
+  public static List<CrossRefsNode> processSegments(List<Segment> segments , String id) {
+	  List<CrossRefsNode> ret = new ArrayList<CrossRefsNode>();
+
+    for (Segment segment : segments) {
+    		ret.add(filterSegment(segment, id));
     }
-    return segments;
+    return ret;
   }
 
 
@@ -130,11 +182,12 @@ public class XReferenceUtil {
    * @param list
    * @return
    */
-  public static List<Document> processDatatypes(List<Document> list) {
-    for (Document segment : list) {
-      processDatatype(segment);
+  public static List<CrossRefsNode> processDatatypes(List<Datatype> list, String id) {
+	  List<CrossRefsNode> ret = new ArrayList<CrossRefsNode>();
+    for (Datatype dt : list) {
+      ret.add(processDatatype( dt, id));
     }
-    return list;
+    return ret;
   }
 
   /**
@@ -143,46 +196,200 @@ public class XReferenceUtil {
    * @param segmentId
    * @return
    */
-  public static List<Document> processSegmentReferences(Document conformanceProfile,
-      String segmentId) {
-    List<Document> tmp = new ArrayList<Document>();
-    List<Document> children = (List<Document>) conformanceProfile.get("children");
+//  public static List<CrossRefsNode> processSegmentReferences(Document conformanceProfile,
+//      String segmentId) {
+//    List<CrossRefsNode> tmp = new ArrayList<CrossRefsNode>();
+//    List<Document> children = (List<Document>) conformanceProfile.get("children");
+//
+//    CrossRefsLabel parent =  getLabel(conformanceProfile);
+//   
+//    if (children != null) {
+//      for (Document child : children) {
+//
+//    	   if (child.get("type").equals("SEGMENTREF")) {
+//    	       child.append("path", child.getString("position"));
+//    		   CrossRefsNode res = processSegmentRef(child, segmentId);
+//          if (res != null) {
+//   		   res.getData().setParent(parent);
+//   		   tmp.add(res);
+//          }
+//        } else {        	
+//          List<CrossRefsNode> groupResults = processGroup(child, segmentId);
+//          if (groupResults != null && !groupResults.isEmpty()) {
+//            tmp.addAll(groupResults);
+//          }
+//        }
+//      }
+//    }
+//    return tmp;
+//  }
+  
+  
+  public static List<CrossRefsNode> processSegmentReferences(ConformanceProfile conformanceProfile,
+	      String segmentId) {
+	    List<CrossRefsNode> tmp = new ArrayList<CrossRefsNode>();
+	    Set<SegmentRefOrGroup> children =  conformanceProfile.getChildren();
 
-    if (children != null) {
-      for (Document child : children) {
-        child.append("path", child.get("position") + "");
-        if (child.get("type").equals("SEGMENTREF")) {
-          Document res = processSegmentRef(child, segmentId);
-          if (res != null) {
-            tmp.add(res);
-          }
-        } else {
-          List<Document> groupResults = processGroup(child, segmentId);
-          if (groupResults != null && !groupResults.isEmpty()) {
-            tmp.addAll(groupResults);
-          }
-        }
-      }
-    }
-    return tmp;
+	    CrossRefsLabel parent =  getLabel(conformanceProfile);
+	   
+	    if (children != null) {
+	      for (SegmentRefOrGroup child : children) {
+
+	    	   if (child instanceof SegmentRef) {
+	    		   
+	    		   
+	    		   SegmentRef segRef=(SegmentRef)child;
+	    		   if(segRef.getRef() != null && segRef.getRef().getId().equals(segmentId)) {
+	    			   
+	    			   CrossRefsNode ref = createSegmentCrossRefNode(segRef, null,"", parent);
+	    			   tmp.add(ref);
+	    		   }
+
+	        } else if( child instanceof Group) {
+	        	
+	        	 Group  gr=(Group)child;
+	        	 
+	        	 
+	        	 
+	        	    List<CrossRefsNode> groupResults = processGroup(gr, segmentId,"","", parent);
+	    	        if (groupResults != null && !groupResults.isEmpty()) {
+	    	          tmp.addAll(groupResults);
+	    	        		}
+	        		}
+	      	}
+	      }
+	    return tmp;
+}
+  
+
+  
+  
+  
+
+  private static CrossRefsNode createSegmentCrossRefNode(SegmentRef segRef, String path, String namePath, CrossRefsLabel parent) {
+	// TODO Auto-generated method stub
+	  CrossRefsNode node = new CrossRefsNode();
+	  CrossRefsLabel label = new CrossRefsLabel();
+	  label.setType(Type.SEGMENTREF);
+	  CrossRef data = new CrossRef();
+	  data.setType(Type.SEGMENTREF);
+	  data.setNamePath(adjustPath(namePath));
+	  if(path!=null) {
+	  data.setLocation(adjustPath(path +"."+ segRef.getPosition()));
+	  
+	  }else {
+		  data.setLocation(segRef.getPosition()+"");
+  
+	  }
+	  node.setData(data);
+	  node.setLabel(label);
+	  
+	 
+	return node;
+}
+
+  private static List<CrossRefsNode> processGroup(Group group,String segmentId, String path, String namePath, CrossRefsLabel parent) {
+	// TODO Auto-generated method stub
+
+	  
+	  List<CrossRefsNode> tmp = new ArrayList<CrossRefsNode>();
+	  	  
+	  if (group.getChildren() != null) {
+	    for (SegmentRefOrGroup child : group.getChildren()) {
+
+	      if (child instanceof SegmentRef) {
+	    	  SegmentRef ref = (SegmentRef)child;
+	    	  
+	    	  if(ref.getRef().getId().equals(segmentId)) {
+	    		  
+	    		  tmp.add(createSegmentCrossRefNode( ref, path+"."+group.getPosition(),namePath+"."+group.getName(),  parent));
+	    		  
+	    	  
+	    	  } else if(child instanceof Group ){
+	    		  
+	    		  Group gr= (Group) child;
+	    	  
+	        List<CrossRefsNode> groupResults = processGroup(gr, segmentId,path+"."+group.getPosition(), namePath+"."+group.getName(), parent);
+	        if (groupResults != null && !groupResults.isEmpty()) {
+	          tmp.addAll(groupResults);
+	        }
+	      }
+	    }
+	    }
+	  }
+	  return tmp;
+}
+
+  private static String  adjustPath(String path) {
+	  if(path.startsWith(".")) {
+		  path = path.substring(1);
+	  }
+	  return path;
+	  
   }
 
-  /**
+private static  CrossRefsLabel getLabel(Document doc) {
+	  
+	// TODO Auto-generated method stub
+	  CrossRefsLabel label = new CrossRefsLabel();
+	  DomainInfo info=new DomainInfo();
+	  label.setName(doc.getString("name"));
+	  Document domainInfo = (Document) doc.get("domainInfo");
+	  if(domainInfo !=null) {
+		String  scope = domainInfo.getString("scope");
+		  if(scope !=null) {
+			 Scope sc= Scope.fromString(scope);
+			 info.setScope(sc);
+		String  version = domainInfo.getString("version");
+		if(version !=null)
+		info.setVersion(version);
+		
+		  }
+	  }
+	  
+	  label.setDomainInfo(info);
+	  label.setName(getName(doc));
+	  return label;
+	    
+	  
+  }
+  
+  
+  private static  CrossRefsLabel getLabel(AbstractDomain doc) {
+	  
+	// TODO Auto-generated method stub
+	  CrossRefsLabel label = new CrossRefsLabel();
+	  label.setDomainInfo(doc.getDomainInfo());
+	  label.setName(doc.getLabel());
+	 
+	  return label;
+	    
+	  
+  }
+
+
+
+/**
    * 
    * @param segmentRef
    * @param segmentId
    * @return
    */
-  public static Document processSegmentRef(Document segmentRef, String segmentId) {
-    Document result = matchSegment(segmentRef, segmentId) ? segmentRef : null;
-    if (result != null) {
-      result.remove("_class");
-      result.remove("text");
-      result.remove("custom");
-      result.remove("ref");
-    }
-    return result;
-  }
+//  public static CrossRefsNode processSegmentRef(SegmentRef ref, String segmentId) {
+//	  if(matchSegment(ref,segmentId)) {
+//	  CrossRefsNode ref = new CrossRefsNode();
+//	  CrossRef data= new CrossRef();
+//	  data.setLocation(doc.getString("path"));
+//	  ref.setData(data);
+//	  data.setType(Type.SEGMENTREF);
+//	  return ref;
+//	  }else {
+//		  return null;
+//		  
+//	  }
+//	  
+//			
+//  }
 
   /**
    * 
@@ -190,27 +397,28 @@ public class XReferenceUtil {
    * @param segmentId
    * @return
    */
-  public static List<Document> processGroup(Document group, String segmentId) {
-    List<Document> tmp = new ArrayList<Document>();
-    List<Document> children = (List<Document>) group.get("children");
-    if (children != null) {
-      for (Document child : children) {
-        child.append("path", group.get("path") + "." + child.getInteger("position"));
-        if (child.get("type").equals("SEGMENTREF")) {
-          Document res = processSegmentRef(child, segmentId);
-          if (res != null) {
-            tmp.add(res);
-          }
-        } else {
-          List<Document> groupResults = processGroup(child, segmentId);
-          if (groupResults != null && !groupResults.isEmpty()) {
-            tmp.addAll(groupResults);
-          }
-        }
-      }
-    }
-    return tmp;
-  }
+//  public static List<CrossRefsNode> processGroup(Document group, String segmentId) {
+//    List<CrossRefsNode> tmp = new ArrayList<CrossRefsNode>();
+//    List<Document> children = (List<Document>) group.get("children");
+//    if (children != null) {
+//      for (Document child : children) {
+//        child.append("path", group.get("path") + "." + child.getInteger("position"));
+//        child.append("name", group.get("name")+"."+child.get("name"));
+//        if (child.get("type").equals("SEGMENTREF")) {
+//        		CrossRefsNode res = processSegmentRef(child, segmentId);
+//          if (res != null) {
+//            tmp.add(res);
+//          }
+//        } else {
+//          List<CrossRefsNode> groupResults = processGroup(child, segmentId);
+//          if (groupResults != null && !groupResults.isEmpty()) {
+//            tmp.addAll(groupResults);
+//          }
+//        }
+//      }
+//    }
+//    return tmp;
+//  }
 
 
   /**
@@ -231,20 +439,17 @@ public class XReferenceUtil {
    */
   public static Criteria getConformanceProfileMultiLevelCriteria(int level, ObjectId objId) {
     List<Criteria> tmp = new ArrayList<Criteria>();
-    if (level > 1) {
+    String query = "ref._id";
+    tmp.add(Criteria.where(query).is(objId));
       for (int i = 1; i <= level; i++) {
-        String query = "children";
-        for (int j = 1; j <= i; j++) {
-          query = query + ".children";
-        }
-        query = query + ".ref._id";
+
+        query = "children."+query;
         tmp.add(Criteria.where(query).is(objId));
       }
-    } else {
-      String query = "children.ref._id";
-      tmp.add(Criteria.where(query).is(objId));
-    }
     Criteria criteria = new Criteria().orOperator(tmp.toArray(new Criteria[] {}));
     return criteria;
   }
+  
+  
+  
 }

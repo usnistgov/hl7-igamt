@@ -51,6 +51,8 @@ export class DialogWrapperComponent implements OnInit, AfterViewInit {
           this.reportError=false;
         }
         this.error=x;
+        this.reported=false;
+
         //this.parseError(x);
         this.ref.detectChanges();
       }

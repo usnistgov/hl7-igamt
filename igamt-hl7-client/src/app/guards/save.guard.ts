@@ -17,11 +17,25 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
   }
 
   canDeactivate(component: WithSave):Promise<any>{
-      try{
 
         if (!component.isValid()) {
           console.log("invalid form");
-          return this.getInvalidDataDialog(component);
+
+
+          this.confirmationService.confirm({
+            header: "Invalid Data",
+            message: "You have Invalid Data, please fix your data before leaving",
+            key: 'INVALIDDATA',
+            accept: () => {
+
+
+              Promise.resolve(false);
+            },
+            reject: () => {
+              Promise.resolve(false);
+            }
+          });
+         // return this.getInvalidDataDialog(component);
 
         }else if (!component.hasChanged()) {
 
@@ -31,10 +45,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
           return  this.getUnsavedDialog(component);
 
         }
-      }catch (e){
 
-        return  Promise.resolve(false);
-      }
   }
 
 
@@ -58,10 +69,10 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
         accept: () => {
 
 
-          resolve(false);
+          Promise.resolve(false);
         },
         reject: () => {
-          reject();
+          Promise.resolve(false);
         }
       });
     });

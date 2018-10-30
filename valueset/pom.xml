@@ -42,11 +42,11 @@
 			<version>${parent.version}</version>
 		</dependency>
 		
-		<dependency>
+<!-- 		<dependency>
 		 <groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>x-reference</artifactId>
 			<version>${parent.version}</version>
-		</dependency>
+		</dependency> -->
 		
 	</dependencies>
 </project>

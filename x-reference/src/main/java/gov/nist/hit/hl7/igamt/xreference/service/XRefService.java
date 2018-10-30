@@ -18,6 +18,7 @@ import java.util.Set;
 import org.bson.Document;
 
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
 
 /**
  * 
@@ -43,7 +44,7 @@ public abstract class XRefService {
    *        segments referencing the datatype will be returned
    * @return
    */
-  public abstract Map<String, List<Document>> getDatatypeReferences(String id,
+  public abstract Map<String, List<CrossRefsNode>> getDatatypeReferences(String id,
       Set<String> filterDatatypeIds, Set<String> filterSegmentIds);
 
   /**
@@ -53,7 +54,7 @@ public abstract class XRefService {
    *        filtering which means all conformance profiles referencing the segment will be returned
    * @return the references a segment from a collection of conformance profile ids
    */
-  public abstract Map<String, List<Document>> getSegmentReferences(String id,
+  public abstract Map<String, List<CrossRefsNode>> getSegmentReferences(String id,
       Set<String> filterConformanceProfileIds);
 
   /**
@@ -66,7 +67,7 @@ public abstract class XRefService {
    * @return
    * @throws XReferenceException
    */
-  public abstract Map<String, List<Document>> getValueSetReferences(String id,
+  public abstract Map<String,List<CrossRefsNode>> getValueSetReferences(String id,
       Set<String> datatypeIds, Set<String> segmentIds, Set<String> conformanceProfiles)
       throws XReferenceException;
 
@@ -75,7 +76,7 @@ public abstract class XRefService {
    * @param filterDatatypeIds
    * @return
    */
-  public abstract Map<String, List<Document>> getDatatypeReferences(String datatypeId,
+  public abstract Map<String, List<CrossRefsNode>> getDatatypeReferences(String datatypeId,
       Set<String> filterDatatypeIds);
 
 
