@@ -28,6 +28,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
@@ -165,5 +166,11 @@ public interface SegmentService extends ResourceService {
    * @throws SegmentValidationException
    */
   void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
+
+  /**
+   * @param segment
+   * @return
+   */
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment);
 
 }

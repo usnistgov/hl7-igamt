@@ -6,9 +6,7 @@ import {LoadingService} from "../service/loading.service";
 
 @Injectable()
 export class DatatypesService {
-    constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService) {
-
-    }
+    constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService) {}
 
     public getDatatypeMetadata(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
@@ -26,6 +24,19 @@ export class DatatypesService {
     public getDatatypeStructure(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/datatypes/' + id + '/structure').toPromise().then(serverDatatypeStructure => {
+                resolve(serverDatatypeStructure);
+            }, error => {
+                console.log("Error");
+                resolve(null);
+                this.igErrorService.redirect(error);
+            });
+        });
+        return promise;
+    }
+
+    public getDatatypeStructureByRef(id, idPath, path, viewScope) : Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/datatypes/' + id + '/' + idPath + '/' + path + '/' + viewScope +'/structure-by-ref').toPromise().then(serverDatatypeStructure => {
                 resolve(serverDatatypeStructure);
             }, error => {
                 console.log("Error");

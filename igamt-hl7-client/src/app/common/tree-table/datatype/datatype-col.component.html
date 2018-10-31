@@ -1,0 +1,33 @@
+<div *ngIf="!edit">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-3">
+            <span class="badge" [ngClass]="{'label-HL7' : datatypeLabel.domainInfo.scope === 'HL7STANDARD', 'label-USER': datatypeLabel.domainInfo.scope === 'USER'}">{{datatypeLabel.domainInfo.version}}</span>
+        </div>
+        <div class="ui-g-12 ui-md-7">
+            {{datatypeLabel.label}}
+        </div>
+        <div class="ui-g-12 ui-md-2">
+            <i class="fa fa-pencil" (click)="makeEditModeForDatatype()"></i>
+        </div>
+    </div>
+</div>
+<div *ngIf="edit">
+    <p-dropdown id="{{idPath}}-datatype" name="{{idPath}}-datatype" [options]="relatedDatatypeLabels" (onChange)="onDatatypeChange()" [(ngModel)]="ref.id" appendTo="body" [style]="{'width':'100%'}">
+        <ng-template let-option pTemplate="body">
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                <span class="badge" *ngIf="option.id" [ngClass]="{'label-HL7' : option.domainInfo.scope === 'HL7STANDARD', 'label-USER': option.domainInfo.scope === 'USER'}">{{option.domainInfo.version}}</span>{{option.label}}
+                <span *ngIf="!option.id" (click)="editDatatype()">Change Datatype root</span>
+            </div>
+        </ng-template>
+    </p-dropdown>
+</div>
+
+<p-dialog header="Change Datatype root" [(visible)]="changeDTDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
+    <p-dropdown [options]="datatypeLabels" [(ngModel)]="ref.id" (onChange)="onDatatypeChangeForDialog()" appendTo="body" [style]="{'width':'100%'}">
+        <ng-template let-option pTemplate="body">
+            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
+                <span class="badge" *ngIf="option.id" [ngClass]="{'label-HL7' : option.domainInfo.scope === 'HL7STANDARD', 'label-USER': option.domainInfo.scope === 'USER'}">{{option.domainInfo.version}}</span>{{option.label}}
+            </div>
+        </ng-template>
+    </p-dropdown>
+</p-dialog>

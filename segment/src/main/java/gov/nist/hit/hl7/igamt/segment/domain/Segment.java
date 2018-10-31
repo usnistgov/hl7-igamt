@@ -1,7 +1,11 @@
 package gov.nist.hit.hl7.igamt.segment.domain;
 
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -10,6 +14,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.segment.domain.changes.SegmentChange;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 
@@ -22,6 +27,8 @@ public class Segment extends Resource {
   private ResourceBinding binding;
 
   private Set<Field> children;
+  
+  private List<SegmentChange> changes;
 
   public Segment() {
     super();
@@ -129,5 +136,17 @@ public class Segment extends Resource {
     return result;
   }
 
+  public List<SegmentChange> getChanges() {
+    return changes;
+  }
+
+  public void setChanges(List<SegmentChange> changes) {
+    this.changes = changes;
+  }
+  
+  public void addChange(SegmentChange change){
+    if(this.changes == null) this.changes = new ArrayList<SegmentChange>();
+    this.changes.add(change);
+  }
 
 }

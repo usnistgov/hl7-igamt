@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.xerces.impl.dv.DatatypeException;
 import org.slf4j.Logger;
@@ -16,12 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -65,13 +68,21 @@ public class DatatypeController extends BaseController {
 
   }
 
+  @RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public Set<?> getComponentStructure(@PathVariable("id") String id,
+      @PathVariable("idPath") String idPath, @PathVariable("path") String path, @PathVariable("viewscope") String viewScope,
+      Authentication authentication) throws DatatypeNotFoundException {
+    Datatype datatype = findById(id);
+    return datatypeService.convertComponentStructure(datatype, idPath, path, viewScope);
+  }
+
   @RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
   public DisplayMetadata getDatatypeMetadata(@PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype Datatype = findById(id);
     return datatypeService.convertDomainToMetadata(Datatype);
-
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.GET,
@@ -117,7 +128,7 @@ public class DatatypeController extends BaseController {
     }
     commonService.checkRight(authentication, datatype);
     datatype = datatypeService.save(datatype);
-    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, Datatype.getUpdateDate());
+    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, datatype.getUpdateDate());
   }
 
 
@@ -126,8 +137,8 @@ public class DatatypeController extends BaseController {
       produces = {"application/json"})
   public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
       Authentication authentication) throws ValidationException, DatatypeNotFoundException {
-    Datatype Datatype = datatypeService.savePredef(preDef);
-    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, Datatype.getUpdateDate());
+    Datatype datatype = datatypeService.savePredef(preDef);
+    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, datatype.getUpdateDate());
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.POST,

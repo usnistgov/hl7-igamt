@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
@@ -51,16 +52,24 @@ public class SegmentController extends BaseController {
   public SegmentController() {}
 
 
-
   @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public SegmentStructure getSegmentStructure(@PathVariable("id") String id,
+  public SegmentStructureDisplay getSegmenDisplayStructure(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    return segmentService.convertDomainToStructure(segment);
-
+    return segmentService.convertDomainToDisplayStructure(segment);
   }
+  
+//  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.GET,
+//      produces = {"application/json"})
+//
+//  public SegmentStructure getSegmentStructure(@PathVariable("id") String id,
+//      Authentication authentication) throws SegmentNotFoundException {
+//    Segment segment = findById(id);
+//    return segmentService.convertDomainToStructure(segment);
+//
+//  }
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})

@@ -1,0 +1,47 @@
+.label-sub-component {
+  background-color: rgba(99, 187, 236, 0.91);
+}
+
+.label-datatype {
+  color: white;
+  background-color: rgba(52, 242, 101, 0.91);
+}
+
+.label-message {
+  color: white;
+  background-color: rgba(212, 0, 212, 0.91);
+}
+
+.label-group {
+  color: white;
+  background-color: #34f230;
+}
+
+.label-segment {
+  color: white;
+  background-color: #0f44f2;
+}
+
+.label-field {
+  color: white;
+  background-color: #f24a08;
+}
+
+.label-component {
+  color: white;
+  background-color: #f2c60d;
+}
+
+.label-dynamicCase {
+  color: white;
+  background-color: #ff43d8;
+}
+
+.label-gray {
+  color: white;
+  background-color: gray;
+}
+
+.label-ig {
+  background-color: purple;
+}

@@ -2,6 +2,8 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from '@angular/core';
+import { _ } from 'underscore';
+
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -311,5 +313,15 @@ export class GeneralConfigurationService {
       }
     }
     return null;
+  }
+
+  arraySortByPosition(objectArray){
+    objectArray = _.sortBy(objectArray, function(item){ return item.data.position});
+    for(let child of objectArray){
+      if(child.children){
+        child.children = this.arraySortByPosition(child.children);
+      }
+    }
+    return objectArray;
   }
 }

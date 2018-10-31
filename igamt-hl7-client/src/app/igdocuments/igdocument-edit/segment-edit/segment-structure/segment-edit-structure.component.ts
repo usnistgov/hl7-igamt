@@ -13,6 +13,7 @@ import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
 import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
+import {IgDocumentService} from "../../ig-document.service";
 import {Columns} from "../../../../common/constants/columns";
 
 @Component({
@@ -23,9 +24,10 @@ import {Columns} from "../../../../common/constants/columns";
 export class SegmentEditStructureComponent implements WithSave {
     currentUrl:any;
     segmentId:any;
+    igId:any;
     segmentStructure:any;
-    usages:any;
-    cUsages:any;
+
+    datatypeLabels:any[];
 
     textDefinitionDialogOpen:boolean = false;
     changeDTDialogOpen:boolean = false;
@@ -91,7 +93,12 @@ export class SegmentEditStructureComponent implements WithSave {
   cols= Columns.segmentColumns;
   selectedColumns=Columns.segmentColumns;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private configService : GeneralConfigurationService, private segmentsService : SegmentsService, private datatypesService : DatatypesService,
+    constructor(private route: ActivatedRoute,
+                private router : Router,
+                private configService : GeneralConfigurationService,
+                private segmentsService : SegmentsService,
+                private datatypesService : DatatypesService,
+                private igDocumentService : IgDocumentService,
                 private constraintsService : ConstraintsService,
                 private tocService:TocService){
         router.events.subscribe(event => {
@@ -103,12 +110,22 @@ export class SegmentEditStructureComponent implements WithSave {
 
     ngOnInit() {
         this.segmentId = this.route.snapshot.params["segmentId"];
+        this.igId = this.router.url.split("/")[2];
 
-        this.usages = this.configService._usages;
-        this.cUsages = this.configService._cUsages;
         this.valuesetStrengthOptions = this.configService._valuesetStrengthOptions;
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
+
+        this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
+            this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
+                this.datatypeLabels = data;
+                x.structure = this.configService.arraySortByPosition(x.structure);
+                this.segmentStructure = {};
+                this.segmentStructure = x;
+                this.backup=__.cloneDeep(this.segmentStructure);
+            });
+        });
+        /*
 
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
             x.children = _.sortBy(x.children, function(child){ return child.data.position});
@@ -163,6 +180,7 @@ export class SegmentEditStructureComponent implements WithSave {
             });
 
         });
+        */
     }
 
     reset(){
@@ -170,20 +188,16 @@ export class SegmentEditStructureComponent implements WithSave {
       this.editForm.control.markAsPristine();
 
     }
-
     getCurrent(){
         return  this.segmentStructure;
     }
-
     getBackup(){
         return this.backup;
     }
-
     isValid(){
         // return !this.editForm.invalid;
         return true;
     }
-
     save(){
         return new Promise((resolve, reject)=> {
             let saveObj:any = {};
@@ -661,6 +675,10 @@ export class SegmentEditStructureComponent implements WithSave {
         console.log(data);
     }
 
+    refreshTree(){
+        this.segmentStructure.structure = [...this.segmentStructure.structure];
+    }
+
     editPredicate(node){
         this.selectedNode = node;
         if(this.selectedNode.data.displayData.segmentBinding && this.selectedNode.data.displayData.segmentBinding.predicate) this.selectedPredicate = JSON.parse(JSON.stringify(this.selectedNode.data.displayData.segmentBinding.predicate));
@@ -794,54 +812,6 @@ export class SegmentEditStructureComponent implements WithSave {
             }
         }
     };
-
-  getTemplateRef(col,readOnly):TemplateRef<any>{
-
-
-    switch(col.field) {
-      case "name": {
-        return this.name;
-      }
-      case "usage": {
-        return this.usage;
-      }
-      case "cardinality":{
-        return this.cardinality;
-      }
-      case "length": {
-        return this.length;
-      }
-      case "confLength": {
-        return this.confLength;
-      }
-      case "datatype": {
-        return this.datatype;
-      }
-      case "valueSet": {
-        return this.valueSet;
-      }
-      case "singleCode": {
-        return this.singleCode;
-      }
-      case "constantValue": {
-        return this.constantValue;
-      }
-      case "predicate": {
-        return this.predicate;
-      }    case "text": {
-      return this.predicate;
-    }
-      case "comment": {
-        return this.comment;
-      }
-      default: {
-        //statements;
-        break;
-      }
-    }
-
-
-  };
 
   reorderCols(){
     this.selectedColumns= __.sortBy(this.selectedColumns,['position']);

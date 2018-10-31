@@ -1,0 +1,5 @@
+<div *ngIf="maxLength !== 'NA' && leaf">
+    <input id="{{idPath}}-minLength" name="{{idPath}}-minLength" required [(ngModel)]="minLength" (ngModelChange)="onMinLengthChange()" type="number" style="width:40%;border-width:0px 0px 1px 0px"/>
+    <input id="{{idPath}}-maxLength" name="{{idPath}}-maxLength" required [(ngModel)]="maxLength" (ngModelChange)="onMaxLengthChange()" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
+    <i class="fa fa-times" (click)="delLength()" style="width:15%;"></i>
+</div>

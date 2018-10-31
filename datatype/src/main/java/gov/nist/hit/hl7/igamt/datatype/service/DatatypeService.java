@@ -15,12 +15,15 @@ package gov.nist.hit.hl7.igamt.datatype.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
@@ -177,6 +180,14 @@ public interface DatatypeService {
    */
   public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
       HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
+
+  /**
+   * @param datatype
+   * @param idPath
+   * @param path
+   * @return
+   */
+  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
 
 }

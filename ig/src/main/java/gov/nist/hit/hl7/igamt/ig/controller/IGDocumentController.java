@@ -41,7 +41,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
@@ -129,7 +131,29 @@ public class IGDocumentController extends BaseController {
 
 
   public IGDocumentController() {}
+  
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/datatypeLabels", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody Set<DatatypeLabel> getDatatypeLabels(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    Set<DatatypeLabel> result = new HashSet<DatatypeLabel>();
 
+    for(Link link :igdoument.getDatatypeRegistry().getChildren()){
+      Datatype dt = this.datatypeService.findLatestById(link.getId().getId());
+      if(dt != null){
+        DatatypeLabel label = new DatatypeLabel();
+        label.setDomainInfo(dt.getDomainInfo());
+        label.setExt(dt.getExt());
+        label.setId(dt.getId().getId());
+        label.setLabel(dt.getLabel());
+        if(dt instanceof ComplexDatatype) label.setLeaf(false);    
+        else label.setLeaf(true);
+        label.setName(dt.getName());
+        result.add(label);
+      }
+    }
+    return result;  
+  }
   /**
    * 
    * @param id

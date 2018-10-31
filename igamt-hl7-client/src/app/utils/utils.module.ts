@@ -42,6 +42,19 @@ import {DisplayMenuComponent} from "../common/display-menu/display-menu.componen
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
 
+import {NameColComponent} from "../common/tree-table/name/name-col.component";
+import {UsageColComponent} from "../common/tree-table/usage/usage-col.component";
+import {UsageReadonlyColComponent} from "../common/tree-table/usage/usage-readonly-col.component";
+import {CardinalityColComponent} from "../common/tree-table/cardinality/cardinality-col.component";
+import {CardinalityReadonlyColComponent} from "../common/tree-table/cardinality/cardinality-readonly-col.component";
+import {LengthColComponent} from "../common/tree-table/length/length-col.component";
+import {LengthReadonlyColComponent} from "../common/tree-table/length/length-readonly-col.component";
+import {ConfLengthColComponent} from "../common/tree-table/conflength/conflength-col.component";
+import {ConfLengthReadonlyColComponent} from "../common/tree-table/conflength/conflength-readonly-col.component";
+import {DatatypeColComponent} from "../common/tree-table/datatype/datatype-col.component";
+import {DatatypeReadonlyColComponent} from "../common/tree-table/datatype/datatype-readonly-col.component";
+import {ValuesetColComponent} from "../common/tree-table/valueset/valueset-col.component";
+
 @NgModule({
   imports: [
     CommonModule,
@@ -79,7 +92,20 @@ import {TreeTableModule} from "primeng/components/treetable/treetable";
     EditNotConstraintComponent,
     EditIfThenConstraintComponent,
     CrossReferenceComponent,
-    DatatypeListManagerComponent
+    DatatypeListManagerComponent,
+
+    NameColComponent,
+    UsageColComponent,
+    UsageReadonlyColComponent,
+    CardinalityColComponent,
+    CardinalityReadonlyColComponent,
+    LengthColComponent,
+    LengthReadonlyColComponent,
+    ConfLengthColComponent,
+    ConfLengthReadonlyColComponent,
+    DatatypeColComponent,
+    DatatypeReadonlyColComponent,
+    ValuesetColComponent
 
   ],
 
@@ -101,7 +127,20 @@ import {TreeTableModule} from "primeng/components/treetable/treetable";
     EditNotConstraintComponent,
     EditIfThenConstraintComponent,
     CrossReferenceComponent,DatatypeListManagerComponent,
-    DisplayMenuComponent
+    DisplayMenuComponent,
+
+    NameColComponent,
+    UsageColComponent,
+    UsageReadonlyColComponent,
+    CardinalityColComponent,
+    CardinalityReadonlyColComponent,
+    LengthColComponent,
+    LengthReadonlyColComponent,
+    ConfLengthColComponent,
+    ConfLengthReadonlyColComponent,
+    DatatypeColComponent,
+    DatatypeReadonlyColComponent,
+    ValuesetColComponent
   ]
 })
 export class UtilsModule {}
