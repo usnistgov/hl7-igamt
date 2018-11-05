@@ -504,11 +504,9 @@ export class IgDocumentEditComponent {
       namingIndicators:existing
     }).subscribe(
         result => {
-
           this.distributeResult(result);
         }
       )
-
   }
 
   copyDatatype(node){

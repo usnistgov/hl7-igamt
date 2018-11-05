@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.xreference.util;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -81,7 +80,8 @@ public class XReferenceUtil {
         int v2 = ((Document) o2.get("_id")).getInteger("version");
         return v2 - v1;
       }
-    });
+    }
+    );
     return objects;
   }
 
@@ -110,9 +110,7 @@ public class XReferenceUtil {
 	    for (Field child : segment.getChildren()) {
 	    	
 	    	if(child.getRef().getId().equals(id)) {
-	    	
-	    	
-	    	
+	    		
 	    		CrossRef ref = new CrossRef();
 	    		CrossRefsNode node = new CrossRefsNode ();
 	    		ref.setLocation(child.getPosition()+"");
@@ -122,6 +120,7 @@ public class XReferenceUtil {
 	    		ref.setParent(parent);
 	    		node.setData(ref);
 	    		refNodes.add(node);
+	    		
 	    		}
 	    	}
 	    	ret.setChildren(refNodes);
@@ -142,6 +141,7 @@ public class XReferenceUtil {
 
     CrossRefsLabel parent = getLabel(datatype);    
     if(datatype instanceof ComplexDatatype) {
+    	
     for (Component child :((ComplexDatatype)datatype).getComponents()) {
     	if(child.getRef().getId().equals(id)) {
     		CrossRef ref = new CrossRef();
@@ -154,7 +154,7 @@ public class XReferenceUtil {
     		node.setData(ref);
     		refNodes.add(node);
     		}
-    		}
+    	  }
     }
     	ret.setChildren(refNodes);
     	ret.setLabel(parent);
@@ -240,7 +240,6 @@ public class XReferenceUtil {
 	    		   
 	    		   SegmentRef segRef=(SegmentRef)child;
 	    		   if(segRef.getRef() != null && segRef.getRef().getId().equals(segmentId)) {
-	    			   
 	    			   CrossRefsNode ref = createSegmentCrossRefNode(segRef, null,"", parent);
 	    			   tmp.add(ref);
 	    		   }
@@ -248,10 +247,7 @@ public class XReferenceUtil {
 	        } else if( child instanceof Group) {
 	        	
 	        	 Group  gr=(Group)child;
-	        	 
-	        	 
-	        	 
-	        	    List<CrossRefsNode> groupResults = processGroup(gr, segmentId,"","", parent);
+	        	 List<CrossRefsNode> groupResults = processGroup(gr, segmentId,"","", parent);
 	    	        if (groupResults != null && !groupResults.isEmpty()) {
 	    	          tmp.addAll(groupResults);
 	    	        		}

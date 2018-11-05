@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.xreference.service.impl;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.fields;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -25,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.el.ResourceBundleELResolver;
+
+import org.assertj.core.internal.bytebuddy.agent.builder.AgentBuilder.Default.Transformation.Simple;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +38,20 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.IfThenAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.NotAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.OperatorAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.SingleAssertion;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.ValuesetComplement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -92,8 +109,7 @@ public class XRefServiceImpl extends XRefService {
     Query qry = Query.query(where2);
     List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
 
-    return XReferenceUtil.processDatatypes(
-    		datatypes, id);
+    return XReferenceUtil.processDatatypes(datatypes, id);
   }
 
 
@@ -108,8 +124,6 @@ public class XRefServiceImpl extends XRefService {
       aggregation =
           newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterSegmentIds))),
               match(Criteria.where("children.ref._id").is(new ObjectId(id))));
-           
-
     } else {
       aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))));
     }
@@ -122,8 +136,7 @@ Criteria where2 = Criteria.where("id").in(cpIds);
 Query qry = Query.query(where2);
 List<Segment> segments = mongoTemplate.find(qry, Segment.class);
 
-return XReferenceUtil.processSegments(
-		segments, id);
+return XReferenceUtil.processSegments(segments, id);
 
   }
 
@@ -163,19 +176,12 @@ return XReferenceUtil.processSegments(
       aggregation =
           newAggregation(match(XReferenceUtil.getConformanceProfileMultiLevelCriteria(10, objId)));
     }
-
-
     List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "conformanceProfile", CompositeKey.class).getMappedResults();
-    
     Criteria where2 = Criteria.where("id").in(cpIds);
     Query qry = Query.query(where2);
     List<ConformanceProfile> conformanceProfiles = mongoTemplate.find(qry, ConformanceProfile.class);
-    
-    
     return XReferenceUtil.processSegmentRefs(conformanceProfiles, id);
   }
-
-
 
   private Set<ObjectId> toObjectIds(Set<String> ids) {
     Set<ObjectId> objIds = new HashSet<ObjectId>();
@@ -288,11 +294,10 @@ return XReferenceUtil.processSegments(
       aggregation = newAggregation(
           match(Criteria.where("binding.children.valuesetBindings.valuesetId").is(id)));
     }
-
+    
     List<CrossRefsNode> results = processValueSetReferences(
         mongoTemplate.aggregate(aggregation, "datatype", Document.class).getMappedResults(), id,
         "datatype");
-
     return results;
   }
 
@@ -309,13 +314,7 @@ return XReferenceUtil.processSegments(
   private  CrossRefsNode processValueSetReferences(Document referenceObject, String valueSetId,
       String referenceType) throws XReferenceException {
 	  
-	  
-	  
-	  
-	  
-    List<Document> children =
-        (List<Document>) ((Document) referenceObject.get("binding")).get("children");
-    
+    List<Document> children = (List<Document>) ((Document) referenceObject.get("binding")).get("children");
     
     List<Document> tmp = new ArrayList<Document>();
     for (Document child : children) {
@@ -568,6 +567,103 @@ return XReferenceUtil.processSegments(
     return results;
   }
 
+  
+  public List<CrossRefsNode> processResourceBindingCrossReference(ResourceBinding binding, String id , CrossRefsLabel parent){
+	  
+	  
+	  Set<ConformanceStatement> conformanceStatements = binding.getConformanceStatements();
+	  List<CrossRefsNode> nodes=new ArrayList<CrossRefsNode>();
+	  for(ConformanceStatement cf : conformanceStatements) {
+		  CrossRefsNode node= processConformanceStatement(cf, id, parent);
+		  if(node!=null) {
+			  nodes.add(node);
+		  }
+	  }
+	return nodes;
+  }
+  
+  public List<CrossRefsNode> processStructureBinding(Binding binding, String id , CrossRefsLabel parent){
+	 
+	  if(binding.getChildren()!=null && !binding.getChildren().isEmpty()) {
+		  
+	  }
+	  
+  }
+  
+  
+  
+  
+  
 
+  private CrossRefsNode processConformanceStatement(ConformanceStatement cf, String id,CrossRefsLabel parent) {
+	if( cf instanceof AssertionConformanceStatement) {
+		Assertion asrt = ((AssertionConformanceStatement)cf).getAssertion();
+		boolean contain=false;
+		processAssertion(asrt, id, contain);
+		if(contain) {
+			CrossRefsNode node = new  CrossRefsNode();
+			CrossRef data = new CrossRef();
+			CrossRefsLabel label = new CrossRefsLabel();
+			label.setName(cf.getIdentifier());
+			data.setLabel(cf.getIdentifier());
+			data.setType(Type.CONFORMANCESTATEMENT);
+			data.setLocation(cf.getIdentifier());
+			data.setNamePath(cf.getIdentifier());
+			data.setParent(parent);
+			label.setType(Type.CONFORMANCESTATEMENT);
+			node.setData(data);
+			node.setLabel(label);
+			return node;
+		} else {
+			return null;
+		}
+	}	
+}
+
+private void processAssertion(Assertion asrt, String id, boolean contain) {
+
+if(!contain) {
+	if(asrt instanceof SingleAssertion) {
+		
+		processSingleAssertion((SingleAssertion)asrt, id, contain);
+		
+	}else if(asrt instanceof IfThenAssertion) {
+
+		IfThenAssertion ifAssert=(IfThenAssertion)asrt;
+		
+		if(ifAssert.getIfAssertion()!=null) {
+			
+			 processAssertion(asrt, id, contain);
+			
+		}if(ifAssert.getThenAssertion()!=null) {
+			
+			 processAssertion(asrt, id, contain);
+		}
+		
+	}else if(asrt instanceof OperatorAssertion) {
+		OperatorAssertion opAssert=(OperatorAssertion)asrt;
+		if(opAssert.getAssertions() != null) {
+			for(Assertion subAssert : opAssert.getAssertions()) {
+			processAssertion(subAssert, id, contain);
+			}
+		}
+	}else if(asrt instanceof NotAssertion) {
+		NotAssertion notAssertion=(NotAssertion)asrt;
+		if(notAssertion.getChild() != null) {
+			 processAssertion(notAssertion.getChild(), id, contain);
+		}
+	  }
+	}
+}
+
+private void processSingleAssertion(SingleAssertion asrt, String id, boolean contain) {
+	
+	if(asrt.getComplement() instanceof ValuesetComplement) {
+		ValuesetComplement cmp = (ValuesetComplement)asrt.getComplement();	
+		if(cmp.getBinding() !=null && cmp.getBinding().getValuesetId()!=null &&cmp.getBinding().getValuesetId().equals(id) ) {
+			contain =true;	
+	  }
+	}
+}
 
 }
