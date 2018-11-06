@@ -70,7 +70,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'valueSet'">
-                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [valuesetLabels]="valuesetLabels"  [(changeItems)]="changeItems"></valueset-col>
+                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [valuesetLabels]="valuesetLabels"  [(changeItems)]="changeItems"></valueset-col>
                         </ng-container>
                     </td>
                 </tr>
