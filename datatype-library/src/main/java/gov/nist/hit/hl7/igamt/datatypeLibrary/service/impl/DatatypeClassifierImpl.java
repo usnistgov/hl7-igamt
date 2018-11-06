@@ -125,6 +125,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
     visited = new HashMap<String, Integer>();
     List<Datatype> datatypesToAdd =
         datatypeService.getLatestByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
+
     for (Datatype dt : datatypesToAdd) {
       if (!datatypeMap.containsKey(dt.getName())) {
         ArrayList<List<String>> temp = new ArrayList<List<String>>();
@@ -165,6 +166,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
 
   @Override
   public void classify() throws DatatypeNotFoundException {
+    System.out.println("Called Classifier");
     List<String> hl7Versions = configService.findOne().getHl7Versions();
     HashMap<EvolutionPropertie, Boolean> criterias1 = new HashMap<EvolutionPropertie, Boolean>();
     criterias1.put(EvolutionPropertie.CONFLENGTH, true);

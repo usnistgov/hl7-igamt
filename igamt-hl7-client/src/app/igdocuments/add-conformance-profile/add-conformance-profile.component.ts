@@ -56,8 +56,8 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
     this.dismissWithNoData();
   }
 
-  closeWithData(data : any){
-    this.dismissWithData(data);
+  closeWithData(res : any){
+    this.dismissWithData(res.data);
   }
 
   getMessages(v){

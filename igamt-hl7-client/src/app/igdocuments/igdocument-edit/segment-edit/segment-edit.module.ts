@@ -74,7 +74,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
     ],
   exports:[CoConstraintTableComponent],
 
-    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
+    providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
     declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

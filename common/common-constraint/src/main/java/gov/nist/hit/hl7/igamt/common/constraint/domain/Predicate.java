@@ -26,7 +26,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
                @JsonSubTypes.Type(value = AssertionPredicate.class, name = "ASSERTION")})
 public abstract class Predicate {
   protected ConstraintType type;
-
   protected Usage trueUsage;
   protected Usage falseUsage;
 

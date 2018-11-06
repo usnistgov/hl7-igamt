@@ -14,6 +14,6 @@ export  class DatatypeLibraryCreateService {
   }
 
   create(creationWrapper){
-  return this.http.post("/api/datatype-library/create", creationWrapper);
+  return this.http.post<any>("/api/datatype-library/create", creationWrapper);
   }
 }

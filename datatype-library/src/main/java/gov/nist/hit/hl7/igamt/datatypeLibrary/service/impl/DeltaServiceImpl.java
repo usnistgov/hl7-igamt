@@ -215,36 +215,22 @@ public class DeltaServiceImpl implements DeltaService {
       deltaNode.getData().addCell(EvolutionPropertie.CPNUMBER, new DeltaCell(
           String.valueOf(d1.getComponents().size()), String.valueOf(d2.getComponents().size())));
       for (int i = 0; i < min; i++) {
-
         compareComponent(cps1.get(i), cps2.get(i), criterias, deltaNode);
-
       }
-
       if (cps1.size() > min) {
         for (int i = min; i < cps1.size(); i++) {
-
           AddNewComponent(cps1.get(i), criterias, deltaNode);
-
         }
       } else {
         for (int i = min; i < cps2.size(); i++) {
-
           AddNewComponent(cps2.get(i), criterias, deltaNode);
-
         }
       }
-
-
     } else {
-
       for (int i = 0; i < min; i++) {
-
         compareComponent(cps1.get(i), cps2.get(i), criterias, deltaNode);
-
       }
     }
-
-
   }
 
 
@@ -395,6 +381,8 @@ public class DeltaServiceImpl implements DeltaService {
       if (childNode.getChildren() != null && !childNode.getChildren().isEmpty()) {
         child.setChildren(childNode.getChildren());
         childData.addCell(EvolutionPropertie.CPDATATYPE, new DeltaCell(d1.getName(), d2.getName()));
+      }else if(!d2.getName().equals(d1.getName())) {
+          childData.addCell(EvolutionPropertie.CPDATATYPE, new DeltaCell(d1.getName(), d2.getName()));
       }
       if (childNode.getData().getData().containsKey(EvolutionPropertie.CPDATATYPENAME)) {
         childData.addCell(EvolutionPropertie.CPDATATYPENAME,

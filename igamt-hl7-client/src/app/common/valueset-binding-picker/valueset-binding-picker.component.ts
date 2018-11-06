@@ -95,8 +95,8 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
                 return 'HL7';
             } else if (leaf.scope === 'USER') {
                 return 'USR';
-            } else if (leaf.scope === 'MASTER') {
-                return 'MAS';
+            } else if (leaf.scope === 'SDTF') {
+                return 'SDTF';
             } else if (leaf.scope === 'PRELOADED') {
                 return 'PRL';
             } else if (leaf.scope === 'PHINVADS') {

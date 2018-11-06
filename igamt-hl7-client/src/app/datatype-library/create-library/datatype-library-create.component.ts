@@ -101,7 +101,7 @@ export class DatatypeLibraryCreateComponent {
   goTo(res:any) {
     this.route.queryParams
       .subscribe(params => {
-        var link="datatype-libraries/lib/"+res.id.id;
+        var link="datatype-libraries/lib/"+res.data.id.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });

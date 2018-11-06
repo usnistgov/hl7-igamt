@@ -29,7 +29,7 @@
             </div>
         </div>
 
-        <div class="ui-g input-box">
+        <div class="ui-g input-box" *ngIf="datatypeMetadata.scope!=='HL7STANDARD'">
             <label class="metadata-label ui-g-2">
                 Flavor Name (Ext)
             </label>

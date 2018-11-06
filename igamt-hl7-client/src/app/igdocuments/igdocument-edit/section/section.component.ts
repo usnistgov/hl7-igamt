@@ -1,4 +1,4 @@
-import {Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild, ChangeDetectorRef} from '@angular/core';
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
 import * as _ from 'lodash';
 
@@ -16,13 +16,14 @@ import {HasFroala} from "../../../configuration/has-froala";
 })
 
 export class SectionComponent extends HasFroala implements OnInit, WithSave {
-  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService, private sectionsService:SectionsService, private igErrorService:IgErrorService) {
+  constructor( private sp: ActivatedRoute, private  router : Router,private tocService:TocService,private ref: ChangeDetectorRef, private sectionsService:SectionsService, private igErrorService:IgErrorService) {
   super();
   }
   section:any;
   backup:any;
   currentNode:any;
-  sectionId:any
+  sectionId:any;
+  path:any;
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -30,13 +31,37 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
   ngOnInit() {
 
     this.sectionId= this.sp.snapshot.params["sectionId"];
+    console.log("======================this.sectionId");
 
+    console.log(this.sectionId);
 
     this.sp.data.map(data =>data.currentSection).subscribe(x=>{
       this.backup=x;
+      console.log("xxxxxx=====");
+      this.tocService.getPathTree().subscribe(x=>{
+
+        if(x){
+          console.log(x);
+          console.log("path for id "+this.sectionId +"====is "+ x[this.sectionId])
+          this.path=x[this.backup.id];
+         // this.ref.detectChanges();
+          console.log(this.path);
+
+         // this.ref.detectChanges();
+        }
+
+      });
+
+
+
       this.section=_.cloneDeep(this.backup);
+
+
       //console.log(this.section);
     });
+
+
+
 
 
   }
@@ -52,31 +77,20 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
       node.data.data=this.section;
 
       this.tocService.setTreeModel(treeModel).then(x=>{
-
-           this.backup=_.cloneDeep(this.section);
-
-           this.editForm.control.markAsPristine();
-
-
+        this.backup=_.cloneDeep(this.section);
+        this.editForm.control.markAsPristine();
            resolve(true);
 
          },error=>{
            reject(error);
          })
-
-
-
-
        }
      )
-
   };
 
   reset(){
     this.section=_.cloneDeep(this.backup);
     this.editForm.control.markAsPristine();
-
-
   }
 
   getCurrent(){
@@ -94,6 +108,15 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
     return this.editForm&& this.editForm.touched&&this.editForm.dirty;
   }
 
+  ngAfterViewInit() {
+
+
+
+
+
+
+
+  }
 
 
 }

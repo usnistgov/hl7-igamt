@@ -55,7 +55,7 @@ export class LibCopyElementComponent extends PrimeDialogAdapter{
   }
 
   closeWithData(data: any) {
-    this.dismissWithData(data);
+    this.dismissWithData(data.data);
   }
 
 
@@ -108,8 +108,6 @@ export class LibCopyElementComponent extends PrimeDialogAdapter{
       res => {
         console.log(res);
         this.closeWithData(res);
-      } , error => {
-        this.errorService.showError(error);
       }
     )
   }

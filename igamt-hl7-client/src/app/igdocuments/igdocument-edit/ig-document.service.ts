@@ -80,9 +80,6 @@ export class IgDocumentService {
             ig.metadata=x["metadata"];
             this.tocService.metadata.next(ig.metadata);
             ig.toc=x["toc"];
-
-
-
             this.indexedDbService.initIg(ig).then(
               () => {
                 resolve(ig);
@@ -92,18 +89,13 @@ export class IgDocumentService {
             );
           },
           (error) => {
-
             console.log("Could not load Ig : " + error);
-
           }
         );
 
       }, error=>{
           resolve();
-          this.error.redirect("Could not load IG with id "+ igId)
-
-
-
+          this.error.redirect("Could not load IG with id "+ igId);
       }
 
     );

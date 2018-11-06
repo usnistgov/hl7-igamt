@@ -22,7 +22,7 @@ export  class LibraryListResolver implements Resolve<any> {
 
 
     console.log(route);
-    let params= route.queryParams;
+      let params= route.queryParams;
         if (params.libType && params.libType == "USER") {
 
             return this.http.get('/api/datatype-libraries');

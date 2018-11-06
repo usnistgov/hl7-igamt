@@ -17,7 +17,7 @@ export  class TocService{
 
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
   metadata :BehaviorSubject<any> =new BehaviorSubject(null);
-
+  pathTree :BehaviorSubject<any> =new BehaviorSubject(null);
   treeModel :TreeModel;
   igId:any;
 
@@ -44,6 +44,7 @@ export  class TocService{
   }
   setTreeModel(treeModel){
     console.log("Setting tree model");
+    this.distributePath();
     return new Promise((resolve, reject)=> {
     this.treeModel=treeModel;
     this.dbService.getIgDocument().then(
@@ -57,6 +58,45 @@ export  class TocService{
       });
   })
   };
+
+  getPathTree(){
+    return this.pathTree.asObservable();
+  }
+
+  distributePath(){
+    let map={}
+
+    console.log("this.treeModel.nodes");
+    console.log(this.treeModel.nodes);
+
+    for(let i=0; i<this.treeModel.nodes.length;i++){
+      this.treeModel.nodes[i].data.position=i+1;
+      this.distributePathForChildren("", this.treeModel.nodes[i], map);
+    }
+    this.pathTree.next(map);
+  }
+
+  distributePathForChildren(path, node, map){
+    map[node.id]= path+node.data.position+".";
+    for(let i=0; i<node.children.length;i++){
+      node.children[i].data.position=i+1;
+      this.distributePathForChildren(map[node.id], node.children[i], map);
+
+    }
+
+
+  }
+
+
+
+
+
+
+
+
+
+
+
 
   async getDatatypeById(id: string) {
     const list = await this.getDataypeList();
@@ -92,6 +132,7 @@ export  class TocService{
 
     return new Promise((resolve, reject)=> {
       this.treeModel=treeModel;
+      this.distributePath();
       this.dbService.getIgDocument().then(
         x => {
           x.toc = treeModel.nodes;
@@ -372,7 +413,21 @@ export  class TocService{
 
 
 
+  getPath =function (node) {
 
+    node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
+    if(this.isOrphan(node)){
+      return  node.data.data.position+".";
+    }else{
+      return this.getPath(node.parent)+ node.data.data.position+".";
+    }
+
+  };
+
+  isOrphan(node:any){
+
+    return node.parent&&!node.parent.parent;
+  }
 
 
 

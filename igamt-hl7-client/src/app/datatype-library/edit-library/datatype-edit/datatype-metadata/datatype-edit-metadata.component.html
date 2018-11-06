@@ -29,14 +29,14 @@
             </div>
         </div>
 
-        <div class="ui-g input-box">
+        <div class="ui-g input-box" *ngIf="datatypeMetadata.scope!=='HL7STANDARD'">
             <label class="metadata-label ui-g-2">
                 Flavor Name (Ext)
             </label>
           <input class="ui-g-10" name="ext" id="ext" #ext="ngModel" DatatypeNamingConvention [scope]="datatypeMetadata.scope" NamingDuplication [existing]="namingIndicators" [label]="datatypeMetadata.name"  type="text" pInputText [(ngModel)]="datatypeMetadata.ext" required/>
         </div>
       <div class="ui-g-offset-2">
-        <div *ngIf="editForm.controls.ext&& editForm.controls.ext.errors" class="ui-g-offset-5">
+        <div *ngIf="editForm.controls.ext&& editForm.controls.ext.errors">
           <div *ngIf="editForm.controls.ext.errors.required">
             <p-message severity="error" text="extension is required"></p-message>
           </div>
