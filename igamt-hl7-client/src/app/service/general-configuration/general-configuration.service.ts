@@ -238,7 +238,7 @@ export class GeneralConfigurationService {
     return this._valueSetAllowedComponents;
   }
 
-  isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
+  isValueSetAllow(dtName, position, parrentNode, SegmentName, type){
     if (this._valueSetAllowedDTs.includes(dtName)) return true;
     if (this._valueSetAllowedFields.includes({
         'segmentName': SegmentName,
@@ -246,8 +246,8 @@ export class GeneralConfigurationService {
         'type': type
     })) return true;
 
-    if (this._valueSetAllowedComponents.includes({
-          'dtName': parrentDT,
+    if (parrentNode && this._valueSetAllowedComponents.includes({
+          'dtName': parrentNode.data.datatypeLabel.name,
           'location': position
     })) return true;
     return false;

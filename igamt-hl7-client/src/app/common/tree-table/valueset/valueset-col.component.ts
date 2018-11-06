@@ -8,87 +8,58 @@ import {GeneralConfigurationService} from "../../../service/general-configuratio
 })
 
 export class ValuesetColComponent {
-  @Input() usage: string;
-  @Input() viewScope: string;
-  @Input() sourceId: string;
-  @Output() usageChange = new EventEmitter<string>();
-
   @Input() bindings: any[];
   @Output() bindingsChange = new EventEmitter<any[]>();
 
   @Input() idPath : string;
+  @Input() viewScope: string;
 
-  usages:any;
-  cUsages:any;
+  @Input() valuesetLabels : any[];
 
-  currentPredicate:any;
-  currentPredicatePriority:number = 100;
-  currentPredicateSourceId:any;
-  currentPredicateSourceType:any;
+  @Input() changeItems: any[];
+  @Output() changeItemsChange = new EventEmitter<any[]>();
 
-  onUsageChange() {
-    this.usageChange.emit(this.usage);
-    if(this.usage === 'C') this.setPredicate();
-    else if(this.usage !== 'C') this.deletePredicate();
-    this.bindingsChange.emit(this.bindings);
-  }
+  currentBindings: any;
+
+  valuesetEditDialogOpen:boolean = false;
 
   constructor(private configService : GeneralConfigurationService){}
 
   ngOnInit(){
-    this.usages = this.configService._usages;
-    this.cUsages = this.configService._cUsages;
     if(this.bindings){
       for (var i in this.bindings) {
-        if(this.bindings[i].predicate){
-          if(this.bindings[i].priority < this.currentPredicatePriority){
-            this.currentPredicatePriority = this.bindings[i].priority;
-            this.currentPredicate = this.bindings[i].predicate;
-            this.currentPredicateSourceId = this.bindings[i].sourceId;
-            this.currentPredicateSourceType = this.bindings[i].sourceType;
+        if(this.bindings[i].valuesetBindings && this.bindings[i].valuesetBindings.length > 0){
+          if(!this.currentBindings) this.currentBindings = this.bindings[i];
+          else {
+            if(this.currentBindings.priority > this.bindings[i].priority) this.currentBindings = this.bindings[i];
           }
         }
       }
     }
   }
 
-  setPredicate(){
-    if(!this.bindings) this.bindings = [];
-
-    var binding:any = this.findBindingByViewScope();
-    if(!binding) {
-      binding = {};
-      binding.priority = 1;
-      binding.sourceId = this.sourceId;
-      binding.sourceType = this.viewScope;
-      this.bindings.push(binding);
-    }
-
-    if(!binding.predicate) binding.predicate = {};
-
-    this.currentPredicate = binding.predicate;
-    this.currentPredicatePriority = 1;
-    this.currentPredicateSourceId = this.sourceId;
-    this.currentPredicateSourceType = this.viewScope;
-  }
-
-  deletePredicate(){
-    if(this.bindings){
-      var binding:any = this.findBindingByViewScope();
-      if(binding) {
-        binding.predicate = null;
-        this.currentPredicate = binding.predicate;
-        this.currentPredicatePriority = null;
-        this.currentPredicateSourceId = null;
-        this.currentPredicateSourceType = null;
-      }
-    }
-  }
-
-  findBindingByViewScope(){
-    for (var i in this.bindings) {
-      if(this.bindings[i].sourceType === this.viewScope) return this.bindings[i];
+  getBindingIdentifier(id){
+    for (let vs of this.valuesetLabels) {
+      if(id === vs.id.id) return vs.label;
     }
     return null;
+  }
+
+  getVSName(id){
+    for (let vs of this.valuesetLabels) {
+      if(id === vs.id.id) return vs.name;
+    }
+    return null;
+  }
+
+  getVS(id){
+    for (let vs of this.valuesetLabels) {
+      if(id === vs.id.id) return vs;
+    }
+    return null;
+  }
+
+  editValuesetBindings(){
+    this.valuesetEditDialogOpen = true;
   }
 }

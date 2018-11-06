@@ -17,6 +17,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.grou
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -33,10 +34,15 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
@@ -44,6 +50,8 @@ import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -927,4 +935,96 @@ public class SegmentServiceImpl implements SegmentService {
     return save(segment);
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#updateSegmentByChangeItems(gov.nist.hit.hl7.igamt.segment.domain.Segment, java.util.List)
+   */
+  @Override
+  public List<ChangeItemDomain> updateSegmentByChangeItems(Segment s,
+      List<ChangeItemDomain> cItems) throws IOException {
+    for(ChangeItemDomain item:cItems){
+      if(item.getPropertyType().equals(PropertyType.USAGE)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getUsage());
+          f.setUsage(Usage.valueOf((String)item.getPropertyValue())); 
+        }
+      }else if(item.getPropertyType().equals(PropertyType.CARDINALITYMIN)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getMin());
+          if(item.getPropertyValue() == null){
+            f.setMin(0); 
+          }else {
+            f.setMin((Integer)item.getPropertyValue());  
+          }
+        }
+      }else if(item.getPropertyType().equals(PropertyType.CARDINALITYMAX)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getMax());
+          if(item.getPropertyValue() == null){
+            f.setMax("NA"); 
+          }else {
+            f.setMax((String)item.getPropertyValue());  
+          }
+        }
+      }else if(item.getPropertyType().equals(PropertyType.LENGTHMIN)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getMinLength());
+          if(item.getPropertyValue() == null){
+            f.setMinLength("NA"); 
+          }else{
+            f.setMinLength((String)item.getPropertyValue());   
+          }
+          
+        }
+      }else if(item.getPropertyType().equals(PropertyType.LENGTHMAX)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getMaxLength());
+          if(item.getPropertyValue() == null){
+            f.setMaxLength("NA"); 
+          }else {
+            f.setMaxLength((String)item.getPropertyValue());  
+          }
+        }
+      }else if(item.getPropertyType().equals(PropertyType.CONFLENGTH)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getConfLength());
+          if(item.getPropertyValue() == null){
+            f.setConfLength("NA"); 
+          }else {
+            f.setConfLength((String)item.getPropertyValue());  
+          }
+          
+        }
+      }else if(item.getPropertyType().equals(PropertyType.DATATYPE)){
+        Field f = this.findFieldById(s, item.getLocation());
+        if(f != null){
+          item.setOldPropertyValue(f.getRef());
+          ObjectMapper mapper = new ObjectMapper();
+          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+          f.setRef(mapper.readValue(jsonInString, Ref.class)); 
+        }
+      }
+    }
+    this.save(s);
+    return cItems;
+  }
+
+  /**
+   * @param s
+   * @param location
+   * @return
+   */
+  private Field findFieldById(Segment s, String location) {
+    for(Field f:s.getChildren()){
+      if(f.getId().equals(location)) return f;
+    }
+    return null;
+  }
+
+  
 }

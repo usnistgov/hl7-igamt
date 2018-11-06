@@ -13,13 +13,17 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -172,5 +176,14 @@ public interface SegmentService extends ResourceService {
    * @return
    */
   public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment);
+
+  /**
+   * @param s
+   * @param cItems
+   * @return
+   * @throws JsonProcessingException 
+   * @throws IOException 
+   */
+  public List<ChangeItemDomain> updateSegmentByChangeItems(Segment s, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
 }

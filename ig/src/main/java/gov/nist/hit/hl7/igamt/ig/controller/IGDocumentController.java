@@ -79,6 +79,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
@@ -154,6 +156,27 @@ public class IGDocumentController extends BaseController {
     }
     return result;  
   }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesetLabels", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody Set<ValuesetLabel> getValuesetLabels(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    Set<ValuesetLabel> result = new HashSet<ValuesetLabel>();
+
+    for(Link link :igdoument.getValueSetRegistry().getChildren()){
+      Valueset vs = this.valuesetService.findLatestById(link.getId().getId());
+      if(vs != null){
+        ValuesetLabel label = new ValuesetLabel();
+        label.setId(vs.getId());
+        label.setScope(vs.getDomainInfo().getScope());
+        label.setLabel(vs.getBindingIdentifier());
+        label.setName(vs.getName());
+        label.setVersion(vs.getDomainInfo().getVersion());
+        result.add(label);
+      }
+    }
+    return result;  
+  }
+  
   /**
    * 
    * @param id

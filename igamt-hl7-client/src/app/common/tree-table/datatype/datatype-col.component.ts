@@ -27,6 +27,9 @@ export class DatatypeColComponent {
   relatedDatatypeLabels:any[];
   changeDTDialogOpen:boolean;
 
+  @Input() changeItems: any[];
+  @Output() changeItemsChange = new EventEmitter<any[]>();
+
   constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService){}
 
   ngOnInit(){
@@ -61,6 +64,13 @@ export class DatatypeColComponent {
     this.edit = false;
     this.refChange.emit(this.ref);
     this.datatypeLabelChange.emit(this.datatypeLabel);
+    let item:any = {};
+    item.location = this.idPath;
+    item.propertyType = 'DATATYPE';
+    item.propertyValue = this.ref;
+    item.changeType = "UPDATE";
+    this.changeItems.push(item);
+    this.changeItemsChange.emit(this.changeItems);
   }
 
   onDatatypeChange(){
@@ -69,7 +79,13 @@ export class DatatypeColComponent {
     this.refChange.emit(this.ref);
     this.datatypeLabelChange.emit(this.datatypeLabel);
     this.edit = false;
-
+    let item:any = {};
+    item.location = this.idPath;
+    item.propertyType = 'DATATYPE';
+    item.propertyValue = this.ref;
+    item.changeType = "UPDATE";
+    this.changeItems.push(item);
+    this.changeItemsChange.emit(this.changeItems);
   }
 
   private updateChildren(){

@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="ui-g-4">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
                 <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
             </div>
         </div>
@@ -46,56 +46,39 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'usage'">
-                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id.id"></usage-col>
+                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id.id"></usage-col>
                             <usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'cardinality'">
-                            <cardinality-col *ngIf="node.data.type === 'FIELD'" [(min)]="node.data.min" [(max)]="node.data.max" [idPath]="node.data.idPath"></cardinality-col>
+                            <cardinality-col *ngIf="node.data.type === 'FIELD'" [(min)]="node.data.min" [(max)]="node.data.max" [idPath]="node.data.idPath" [(changeItems)]="changeItems"></cardinality-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'length'">
-                            <length-col *ngIf="node.data.type === 'FIELD'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf"></length-col>
+                            <length-col *ngIf="node.data.type === 'FIELD'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></length-col>
                             <length-readonly-col *ngIf="node.data.type !== 'FIELD'" [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'confLength'">
-                            <conflength-col *ngIf="node.data.type === 'FIELD'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf"></conflength-col>
+                            <conflength-col *ngIf="node.data.type === 'FIELD'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></conflength-col>
                             <conflength-readonly-col *ngIf="node.data.type !== 'FIELD'" [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'datatype'">
-                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [viewScope]="node.data.viewScope" [datatypeLabels]="datatypeLabels" [(children)]="node.children"></datatype-col>
+                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [viewScope]="node.data.viewScope" [datatypeLabels]="datatypeLabels" [(children)]="node.children" [(changeItems)]="changeItems"></datatype-col>
                             <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></datatype-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'valueSet'">
+                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [valuesetLabels]="valuesetLabels"  [(changeItems)]="changeItems"></valueset-col>
                         </ng-container>
                     </td>
                 </tr>
             </ng-template>
         </p-treeTable>
 
+        {{this.changeItems|json}}
 
-      <ng-template #valueSet pTemplate="body" let-node>
-        <div *ngIf="node.node.data.displayData.valuesetAllowed && !node.node.data.displayData.hasSingleCode">
-          <div *ngIf="node.node.data.displayData.segmentBinding">
-            <div *ngFor="let vs of node.node.data.displayData.segmentBinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'SEGMENT'"></display-ref>
-              <i class="fa fa-pencil" (click)="makeEditModeForValueSet(node.node,vs)" style="width:20%;"></i>
-              <i class="fa fa-times" (click)="delValueSetBinding(node.node.data.displayData.segmentBinding, vs, node.node.data.displayData)" style="width:20%;"></i>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.displayData.segmentBinding || !node.node.data.displayData.segmentBinding.valuesetBindings || node.node.data.displayData.segmentBinding.valuesetBindings.length === 0) && node.node.data.displayData.fieldDTbinding">
-            <div *ngFor="let vs of node.node.data.displayData.fieldDTbinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'FIELD'"></display-ref>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.displayData.segmentBinding || !node.node.data.displayData.segmentBinding.valuesetBindings || node.node.data.displayData.segmentBinding.valuesetBindings.length === 0) && (!node.node.data.displayData.fieldDTbinding || !node.node.data.displayData.fieldDTbinding.valuesetBindings || node.node.data.displayData.fieldDTbinding.valuesetBindings.length === 0) && node.node.data.displayData.componentDTbinding">
-            <div *ngFor="let vs of node.node.data.displayData.componentDTbinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'COMPONENT'"></display-ref>
-            </div>
-          </div>
-          <i class="fa fa-plus" *ngIf="node.node.data.displayData.multipleValuesetAllowed || !node.node.data.displayData.segmentBinding || !node.node.data.displayData.segmentBinding.valuesetBindings || node.node.data.displayData.segmentBinding.valuesetBindings.length == 0" (click)="editValueSetBinding(node.node)"></i>
-        </div>
-      </ng-template>
       <ng-template #constantValue pTemplate="body" let-node>
         <div *ngIf="node.node.data.displayData.datatype.leaf && !node.node.data.displayData.valuesetAllowed">
           <div *ngIf="node.node.data.displayData.segmentBinding">
@@ -240,46 +223,6 @@
     <p-dialog *ngIf="selectedNode && selectedConstantValue" header="Edit Constant Value for {{selectedNode.data.name}}" [(visible)]="constantValueDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
         <input [(ngModel)]="selectedConstantValue.newConstantValue" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
         <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewConstantValue(selectedNode, selectedConstantValue)" [disabled]="selectedConstantValue.newConstantValue === ''"></button>
-    </p-dialog>
-
-    <p-dialog *ngIf="selectedNode && selectedVS" header="Edit Valueset binding for {{selectedNode.data.name}}" [(visible)]="valuesetDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Binding Identifier: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="valuesetOptions" [(ngModel)]="selectedVS.newvalue.valuesetId" appendTo="body" [style]="{'width':'150px'}" filter="true">
-                    <ng-template let-option pTemplate="body">
-                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                            <display-ref *ngIf="option.value" [elm]="getValueSetElm(option.value)"></display-ref>
-                            <span *ngIf="!option.value">{{option.label}}</span>
-                        </div>
-                    </ng-template>
-                </p-dropdown>
-            </div>
-        </div>
-
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Strength: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="valuesetStrengthOptions" [(ngModel)]="selectedVS.newvalue.strength" appendTo="body" [style]="{'width':'150px'}">
-                </p-dropdown>
-            </div>
-        </div>
-
-        <div class="ui-g ui-fluid" *ngIf="selectedNode.data.displayData.valueSetLocationOptions">
-            <div class="ui-g-12 ui-md-4">
-                <label>Valueset Location: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="selectedNode.data.displayData.valueSetLocationOptions" [(ngModel)]="selectedVS.newvalue.valuesetLocations" appendTo="body" [style]="{'width':'150px'}">
-                </p-dropdown>
-            </div>
-        </div>
-
-        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewValueSet(selectedNode, selectedVS)" [disabled]="!selectedVS.newvalue.valuesetId"></button>
     </p-dialog>
 
     <p-dialog *ngIf="selectedNode" header="Edit Predicate of {{selectedNode.data.name}}" [(visible)]="preciateEditorOpen" [modal]="true" [responsive]="true" [width]="1800" [minWidth]="1200" [minY]="70">

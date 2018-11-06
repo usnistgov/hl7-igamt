@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -20,6 +24,11 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
+import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -47,6 +56,8 @@ public class SegmentController extends BaseController {
   SegmentService segmentService;
   @Autowired
   CoConstraintService coconstraintService;
+  @Autowired
+  EntityChangeService entityChangeService;
 
 
   public SegmentController() {}
@@ -60,16 +71,6 @@ public class SegmentController extends BaseController {
     Segment segment = findById(id);
     return segmentService.convertDomainToDisplayStructure(segment);
   }
-  
-//  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.GET,
-//      produces = {"application/json"})
-//
-//  public SegmentStructure getSegmentStructure(@PathVariable("id") String id,
-//      Authentication authentication) throws SegmentNotFoundException {
-//    Segment segment = findById(id);
-//    return segmentService.convertDomainToStructure(segment);
-//
-//  }
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -217,6 +218,25 @@ public class SegmentController extends BaseController {
     return segment;
   }
 
+  @RequestMapping(value = "/api/segments/{id}/document/{dId}/save", method = RequestMethod.POST,
+      produces = {"application/json"})
+  @ResponseBody
+  public void saveSegment(@PathVariable("id") String id, @PathVariable("dId") String documentId,
+      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
+      throws SegmentException, IOException {
+    Segment s = this.segmentService.findLatestById(id);
+    cItems = this.segmentService.updateSegmentByChangeItems(s,cItems);
+    
+    EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+    entityChangeDomain.setDocumentId(documentId);
+    entityChangeDomain.setDocumentType(DocumentType.IG);
+    entityChangeDomain.setTargetId(id);
+    entityChangeDomain.setTargetType(EntityType.SEGMENT);
+    entityChangeDomain.setUpdateDate(new Date());
+    entityChangeDomain.setChangeItems(cItems);
+    entityChangeDomain.setTargetVersion(s.getId().getVersion());
+    entityChangeService.save(entityChangeDomain);
+  }
 
 
 }

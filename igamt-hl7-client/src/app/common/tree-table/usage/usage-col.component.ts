@@ -16,6 +16,9 @@ export class UsageColComponent {
   @Input() bindings: any[];
   @Output() bindingsChange = new EventEmitter<any[]>();
 
+  @Input() changeItems: any[];
+  @Output() changeItemsChange = new EventEmitter<any[]>();
+
   @Input() idPath : string;
 
   usages:any;
@@ -27,10 +30,18 @@ export class UsageColComponent {
   currentPredicateSourceType:any;
 
   onUsageChange() {
+    let item:any = {};
+    item.location = this.idPath;
+    item.propertyType = 'USAGE';
+    item.propertyValue = this.usage;
+    item.changeType = "UPDATE";
+    this.changeItems.push(item);
+
     this.usageChange.emit(this.usage);
     if(this.usage === 'C') this.setPredicate();
     else if(this.usage !== 'C') this.deletePredicate();
     this.bindingsChange.emit(this.bindings);
+    this.changeItemsChange.emit(this.changeItems);
   }
 
   constructor(private configService : GeneralConfigurationService){}

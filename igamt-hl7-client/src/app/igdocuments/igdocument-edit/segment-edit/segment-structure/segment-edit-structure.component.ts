@@ -28,6 +28,7 @@ export class SegmentEditStructureComponent implements WithSave {
     segmentStructure:any;
 
     datatypeLabels:any[];
+    valuesetLabels:any[];
 
     textDefinitionDialogOpen:boolean = false;
     changeDTDialogOpen:boolean = false;
@@ -54,6 +55,8 @@ export class SegmentEditStructureComponent implements WithSave {
     datatypesLinks :any = [];
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
+
+    changeItems:any[];
 
     backup:any;
 
@@ -109,6 +112,8 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     ngOnInit() {
+        this.changeItems = [];
+
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.igId = this.router.url.split("/")[2];
 
@@ -119,10 +124,14 @@ export class SegmentEditStructureComponent implements WithSave {
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
             this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
                 this.datatypeLabels = data;
-                x.structure = this.configService.arraySortByPosition(x.structure);
-                this.segmentStructure = {};
-                this.segmentStructure = x;
-                this.backup=__.cloneDeep(this.segmentStructure);
+                this.igDocumentService.getValuesetLabels(this.igId).then((vData) => {
+                    this.valuesetLabels = vData;
+
+                    x.structure = this.configService.arraySortByPosition(x.structure);
+                    this.segmentStructure = {};
+                    this.segmentStructure = x;
+                    this.backup=__.cloneDeep(this.segmentStructure);
+                });
             });
         });
         /*
@@ -200,22 +209,9 @@ export class SegmentEditStructureComponent implements WithSave {
     }
     save(){
         return new Promise((resolve, reject)=> {
-            let saveObj:any = {};
-            saveObj.id = this.segmentStructure.id;
-            saveObj.label = this.segmentStructure.label;
-            saveObj.scope = this.segmentStructure.scope;
-            saveObj.version = this.segmentStructure.version;
-            saveObj.binding = this.generateBinding(this.segmentStructure);
-            saveObj.children = [];
-
-            for(let child of this.segmentStructure.children){
-                var clone = __.cloneDeep(child.data);
-                clone.displayData = undefined;
-                saveObj.children.push({"data":clone});
-            }
-            this.segmentsService.saveSegmentStructure(this.segmentId, saveObj).then(saved => {
-
+            this.segmentsService.saveSegment(this.segmentId, this.igId, this.changeItems).then(saved => {
                 this.backup = __.cloneDeep(this.segmentStructure);
+                this.changeItems = [];
                 this.editForm.control.markAsPristine();
                 resolve(true);
 

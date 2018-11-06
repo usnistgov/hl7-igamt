@@ -120,4 +120,9 @@ export class SegmentsService {
     return this.http.post('api/segments/' + id + '/conformancestatement', conformanceStatements).toPromise();
   }
 
+
+  public saveSegment(id, dId, cItem): Promise<any> {
+    return  this.http.post('api/segments/' + id + '/document/' + dId + '/save',cItem).toPromise();
+  }
+
 }

@@ -81,6 +81,17 @@ export class IgDocumentService {
         return promise;
     }
 
+    public getValuesetLabels(igid): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/igdocuments/' + igid + '/valuesetLabels').toPromise().then(serverValuesetLabels => {
+                resolve(serverValuesetLabels);
+            }, error => {
+                this.igErrorService.redirect(error);
+            });
+        });
+        return promise;
+    }
+
     initIgDocument(igId:any,resolve){
         console.log("Calling Init")
         this.http.get("api/igdocuments/" + igId + "/display").toPromise().then(x => {
