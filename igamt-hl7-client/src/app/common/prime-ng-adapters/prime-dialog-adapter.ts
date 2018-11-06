@@ -13,6 +13,9 @@ export abstract class PrimeDialogAdapter {
     }
 
     open(data){
+      console.log("Oppening");
+
+      console.log(data);
         this.initResolvedData(data);
         this.onDialogOpen();
         this._visible  = true;

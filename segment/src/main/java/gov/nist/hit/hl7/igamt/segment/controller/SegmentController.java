@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -194,11 +192,14 @@ public class SegmentController extends BaseController {
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
       produces = {"application/json"})
   @ResponseBody
-  public CoConstraintTable saveCoConstraints(@PathVariable("id") String id,
+  public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
       @RequestBody CoConstraintTable table, Authentication authentication)
       throws CoConstraintSaveException {
-    return this.coconstraintService.saveCoConstraintForSegment(id, table,
+    CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
         authentication.getPrincipal().toString());
+    System.out.println("NEEEEW");
+    return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
+        "Saved Successfully", ccTable.getId().getId(), false, new Date(), ccTable);
   }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
@@ -225,8 +226,8 @@ public class SegmentController extends BaseController {
       @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
       throws SegmentException, IOException {
     Segment s = this.segmentService.findLatestById(id);
-    cItems = this.segmentService.updateSegmentByChangeItems(s,cItems);
-    
+    cItems = this.segmentService.updateSegmentByChangeItems(s, cItems);
+
     EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
     entityChangeDomain.setDocumentId(documentId);
     entityChangeDomain.setDocumentType(DocumentType.IG);

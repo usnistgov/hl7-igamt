@@ -75,7 +75,6 @@
     </ng-template>
 
     <ng-template #length pTemplate="body" let-node>
-      <ng-template let-col let-node="rowData" pTemplate="body">
         <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
           <div *ngIf="node.node.data.minLength !== 'NA' && node.node.data.displayData.datatype.leaf">
             <input id="{{node.node.data.displayData.idPath}}-minLength" name="{{node.node.data.displayData.idPath}}-minLength"  [(ngModel)]="node.node.data.minLength" type="number" style="width:40%;border-width:0px 0px 1px 0px"/>
@@ -86,13 +85,11 @@
         <div *ngIf="node.node.data.displayData.type !== 'COMPONENT'">
           [{{node.node.data.minLength}}..{{node.node.data.maxLength}}]
         </div>
-      </ng-template>
 
     </ng-template>
 
     <ng-template #confLength pTemplate="body" let-node>
 
-      <ng-template let-col let-node="rowData" pTemplate="body">
         <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
           <ng-container *ngIf="node.node.data.confLength !== 'NA' && node.node.data.displayData.datatype.leaf">
             <input [(ngModel)]="node.node.data.confLength" id="{{node.node.data.displayData.idPath}}-confLength" name="{{node.node.data.displayData.idPath}}-confLength"  type="text" style="width: 80%;border-width:0px 0px 1px 0px"/>
@@ -102,7 +99,6 @@
         <div *ngIf="node.node.data.displayData.type !== 'COMPONENT'">
           {{node.node.data.confLength}}
         </div>
-      </ng-template>
 
     </ng-template>
 

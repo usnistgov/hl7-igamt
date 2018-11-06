@@ -7,12 +7,12 @@ import {Types} from "../../common/constants/types";
 import {IgDocumentInfo} from "../../service/indexed-db/ig-document-info-database";
 import {TocService} from "./service/toc.service";
 import {ErrorService} from "../../error/error.service";
-import {IgErrorService} from "./ig-error/ig-error.service";
+
 
 
 @Injectable()
 export class IgDocumentService {
-    constructor(private http: HttpClient,public indexedDbService: IndexedDbService, private igErrorService:IgErrorService, private tocService:TocService, private error: ErrorService) {
+    constructor(private http: HttpClient,public indexedDbService: IndexedDbService, private tocService:TocService, private error: ErrorService) {
     }
 
     public save(changedObjects): Promise<any> {
@@ -70,28 +70,6 @@ export class IgDocumentService {
 
     };
 
-    public getDatatypeLabels(igid): Promise<any> {
-        const promise = new Promise<any>((resolve, reject) => {
-            this.http.get('api/igdocuments/' + igid + '/datatypeLabels').toPromise().then(serverDatatypeLabels => {
-                resolve(serverDatatypeLabels);
-            }, error => {
-                this.igErrorService.redirect(error);
-            });
-        });
-        return promise;
-    }
-
-    public getValuesetLabels(igid): Promise<any> {
-        const promise = new Promise<any>((resolve, reject) => {
-            this.http.get('api/igdocuments/' + igid + '/valuesetLabels').toPromise().then(serverValuesetLabels => {
-                resolve(serverValuesetLabels);
-            }, error => {
-                this.igErrorService.redirect(error);
-            });
-        });
-        return promise;
-    }
-
     initIgDocument(igId:any,resolve){
         console.log("Calling Init")
         this.http.get("api/igdocuments/" + igId + "/display").toPromise().then(x => {
@@ -102,9 +80,6 @@ export class IgDocumentService {
                         ig.metadata=x["metadata"];
                         this.tocService.metadata.next(ig.metadata);
                         ig.toc=x["toc"];
-
-
-
                         this.indexedDbService.initIg(ig).then(
                             () => {
                                 resolve(ig);
@@ -114,29 +89,35 @@ export class IgDocumentService {
                         );
                     },
                     (error) => {
-
                         console.log("Could not load Ig : " + error);
-
                     }
                 );
 
             }, error=>{
                 resolve();
-                this.error.redirect("Could not load IG with id "+ igId)
-
-
-
+                this.error.redirect("Could not load IG with id "+ igId);
             }
 
         );
     }
 
+    public getDatatypeLabels(igid): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/igdocuments/' + igid + '/datatypeLabels').toPromise().then(serverDatatypeLabels => {
+                resolve(serverDatatypeLabels);
+            }, error => {
+            });
+        });
+        return promise;
+    }
 
-
-
-
-
-
-
-
+    public getValuesetLabels(igid): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/igdocuments/' + igid + '/valuesetLabels').toPromise().then(serverValuesetLabels => {
+                resolve(serverValuesetLabels);
+            }, error => {
+            });
+        });
+        return promise;
+    }
 }

@@ -13,13 +13,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
-import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 
 /**
  * @author Harold Affo
  *
  */
+
 @ControllerAdvice
 public class DatatypeLibraryExceptionHandler {
 
@@ -31,6 +31,14 @@ public class DatatypeLibraryExceptionHandler {
       XReferenceFoundException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     message.setData(exception.getXreferences());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage generalException(Exception exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
@@ -68,14 +76,6 @@ public class DatatypeLibraryExceptionHandler {
     return message;
   }
 
-
-  @ResponseBody
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler({IGNotFoundException.class})
-  public ResponseMessage handleIGNotFoundException(IGNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
-    return message;
-  }
 
 
   @ResponseBody

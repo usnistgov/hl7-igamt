@@ -29,7 +29,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
                @JsonSubTypes.Type(value = ListValuesComplement.class, name = "LISTVALUE"),
                @JsonSubTypes.Type(value = ValuesetComplement.class, name = "VALUESET"),
                @JsonSubTypes.Type(value = GenericComplement.class, name = "GENERIC")})
+
 public abstract class Complement {
+	
   protected ComplementKey complementKey;
 
   public ComplementKey getComplementKey() {

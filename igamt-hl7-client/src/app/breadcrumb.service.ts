@@ -12,4 +12,11 @@ export class BreadcrumbService {
     setItems(items: MenuItem[]) {
         this.itemsSource.next(items);
     }
+
+    getItemsSource(){
+      return this.itemsSource.asObservable();
+    }
+
+
+
 }

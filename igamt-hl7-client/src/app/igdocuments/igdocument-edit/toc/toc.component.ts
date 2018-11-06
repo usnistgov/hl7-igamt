@@ -45,7 +45,7 @@ export class TocComponent {
 
     {label:"HL7STANARD",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
-    {label:"HL7 FLAVORS",value:"MASTER"}
+    {label:"SDTF",value:"SDTF"}
 
   ];
 

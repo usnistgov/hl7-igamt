@@ -43,13 +43,7 @@
 
       <button  (click)="print(igForm)"  pButton type="button" label="Publish" class="green-btn" icon="fa fa-floppy-o"></button>
       <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-
-
     </div>
-
-
-
-
   </p-toolbar>
   <p-toolbar class="toc-filter-toolbar">
     <p-messages [(value)]="msgs" id="IGERROR"></p-messages>
@@ -67,7 +61,7 @@
   </div>
 
   <div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
-    <div class="ui-g-3 no-margin" style="padding : 0; max-height: 800px; overflow: scroll"  *ngIf="!hideToc">
+    <div class="ui-g-3 no-margin"   *ngIf="!hideToc">
       <p-panel [toggleable]="false">
         <p-header class="toc-panel-header">
           Table Of Content
@@ -77,14 +71,15 @@
           <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
         </p-header>
         <span  style="cursor: pointer" (click)="goToMetaData()">Library Metadata</span>
-        <tree-root [nodes]="nodes"  #treeroot [options]="options">
+        <div style="padding : 0; max-height: 800px; overflow: scroll">
+          <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
           <ng-template #treeNodeTemplate let-node let-index="index">
             <ng-container [ngSwitch]="node.data.data.type">
 
 
               <ng-container *ngSwitchCase="'TEXT'">
-                <span [contextMenu]="textcontextmenu" (click)="goToSection(node.id)" [ngClass]="{'active-node':activeNode==node.id}"> {{getPath(node)}}{{node.data.data.label}}</span>
+                <span [contextMenu]="textcontextmenu" [routerLink]="getSectionUrl(node.id)" routerLinkActive="active-node"> {{getPath(node)}}{{node.data.data.label}}</span>
                 <context-menu #textcontextmenu>
                   <ng-template contextMenuItem (execute)="addSectionToNode(node)">
                     <i class="fa fa-plus"></i> Add Section
@@ -113,22 +108,17 @@
                     <i class="fa fa-plus"> Add HL7 Data Type</i>
                   </ng-template>
                   <ng-template contextMenuItem (execute)="createHl7Datatypes()">
-                    <i class="fa fa-plus"> Add From Existing Master</i>
+                    <i class="fa fa-plus"> Add From Existing Librairies</i>
                   </ng-template>
                 </context-menu>
               </ng-container>
               <ng-container *ngSwitchCase="'DERIVEDDATATYPEREGISTRY'">
-                <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+                <span> {{getPath(node)}} {{node.data.data.label}}</span>
 
-                <context-menu  #addDatatypeContextMenu>
-                  <ng-template contextMenuItem>
-                    <i class="fa fa-plus"></i>
-                  </ng-template>
-                </context-menu>
               </ng-container>
 
               <ng-container *ngSwitchCase="'DATATYPE'">
-                <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" (click)="activateNode(node)" [ngClass]="{'active-node':activeNode==node.id}"></display-label>
+                <display-label [elm]="node.data.data" [igId]="libId"   [contextMenu]="datatypeContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
                 <context-menu  #datatypeContextMenu>
                   <ng-template contextMenuItem  (execute)="copyDatatype(node)">
                     <i class="fa fa-copy"></i> Copy
@@ -137,7 +127,7 @@
                     <i class="fa fa-remove"></i> Delete
                   </ng-template>
                 </context-menu>
-                <display-menu [elm]="node.data.data" *ngIf="activeNode==node.id"></display-menu>
+                <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
               </ng-container>
 
             </ng-container>
@@ -145,6 +135,7 @@
           </ng-template>
 
         </tree-root>
+        </div>
       </p-panel>
     </div>
 
@@ -155,11 +146,5 @@
         <router-outlet></router-outlet>
       </div>
     </div>
-
-
-
-
   </div>
 </div>
-
-<p-blockUI [blocked]="blockUI"></p-blockUI>

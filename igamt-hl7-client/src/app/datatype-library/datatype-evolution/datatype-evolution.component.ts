@@ -35,10 +35,10 @@ export class DatatypeEvolutionComponent implements OnInit {
   criterias=[
 
 
-    {"label":"Name" ,"value": "CPNUMBER"},
+    {"label":"Name" ,"value": "CPNAME"},
     {"label":"Min.Length" ,"value": "MINLENGTH"},
 
-    {"label":"MAXLENGTH" ,"value": "MAXLENGTH"},
+    {"label":"Max.Length" ,"value": "MAXLENGTH"},
     {"label":"Conf.Length" ,"value": "CONFLENGTH"},
     {"label":"DATATYPE" ,"value": "CPDATATYPE"}
 
@@ -133,6 +133,37 @@ export class DatatypeEvolutionComponent implements OnInit {
     console.log(col);
 
   }
+
+  getStyle(index){
+
+    if(index==0){
+      return {"color" :"#008B8B"};
+    }else if (index ===1){
+      return {"color":"#B8860B"};
+    }else if (index ===2){
+      return {"color":"#6495ED"};
+    }else if (index ===3){
+      return {"color":"#9932CC"};
+    }else if (index ===4){
+      return {"color":"#8FBC8F"};
+    }else if (index ===5){
+      return {"color":"#2F4F4F"};
+    }else if (index ===6){
+      return {"color":"#FF1493"};
+    }else if (index ===7){
+      return {"color":"#FFD700"};
+    }else if (index ===8){
+      return {"color":"#4B0082"};
+    }else if (index ===9){
+      return {"color":"#FFB6C1"};
+    }else if (index ===10){
+      return {"color":"#778899"};
+    }
+
+
+  }
+
+
 
 
 

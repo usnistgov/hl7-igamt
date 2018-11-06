@@ -46,13 +46,9 @@ export class AppTopBarComponent {
   ngAfterViewInit() {
     this.auth.currentUser.subscribe(x=> {
       this.currentUser = x;
-
-
     },error=>{
       this.currentUser = "Guest";
-
     });
-
   }
   isAuthenticated(){
    return  this.auth.isAuthenticated();

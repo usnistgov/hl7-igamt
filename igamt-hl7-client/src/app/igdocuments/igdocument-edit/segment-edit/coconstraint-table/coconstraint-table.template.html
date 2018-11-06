@@ -27,8 +27,8 @@
     </div>
   </div>
   <div class="ui-g-4">
-    <button  style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa-floppy-o"></button>
-    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa-refresh"></button>
+    <button  [disabled]="!ccFormVar || !formStatus()" style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
+    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
   </div>
 </div>
 
@@ -220,7 +220,7 @@
               [registerModel]="loc"
               [style]="{'width': '95%' , 'border' : '1px solid'}"
               [placeholder]="'Location'"
-              [required]="req"
+              [required]="true"
               [options]="varies ? ceBindingLocations['2.8'] : ceBindingLocations[field.content.version]"
               [(ngModel)]="node.location">
   </p-dropdown>
@@ -237,10 +237,12 @@
          [placeholder]="'Code'">
 
   <p *ngIf="code.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-    {{code.control.errors.required ? 'This field is required' :
+    {{code.control.errors.required ? 'Code is required' :
     code.control.errors.unique ? code.control.errors.unique : ''}}
   </p>
-
+  <p *ngIf="loc.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+    {{loc.control.errors.required ? 'Location is required' : ''}}
+  </p>
 </ng-template>
 
 <ng-template #textArea let-node>
@@ -252,9 +254,9 @@
     <tr>
       <td *ngIf="isIgnore(node)" style="border: 0; text-align: center; vertical-align: middle;">
         <div style="width: 100%; text-align: center; vertical-align: middle;">
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(node,'value')">Value</span>
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(node,'vs')">ValueSet</span>
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(node,'code')">Code</span>
+          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'value')">Value</span>
+          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'vs')">ValueSet</span>
+          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'code')">Code</span>
         </div>
       </td>
       <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
@@ -262,7 +264,7 @@
           *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
       </td>
       <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
-        <i (click)="clearVariesNodeValueFromRow(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
+        <i (click)="clearVariesNodeValue(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
            aria-hidden="true"></i>
       </td>
     </tr>
@@ -273,9 +275,27 @@
   <p-dropdown appendTo="body" [options]="config.usages" [(ngModel)]="node.usage" [style]="{'width':'100%'}"></p-dropdown>
 </ng-template>
 
-<ng-template #cardinality let-node>
-  <input [(ngModel)]="node.cardinality.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"/>
-  <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
+<ng-template #cardinality let-node let-id="id">
+  <input [(ngModel)]="node.cardinality.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"
+         #min="ngModel"
+         [name]="id+'-min'"
+         [id]="id+'-min'"
+         [registerForm]="ccFormVar"
+         min="0"
+         [registerValidators]="[minimum(0), required()]"
+         [ngStyle]="{ 'background-color' : min.control.errors ? 'pink' : 'white' }"
+         [registerModel]="min"
+         [required]="true"
+  />
+  <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"
+         #max="ngModel"
+         [name]="id+'-max'"
+         [id]="id+'-max'"
+         [registerForm]="ccFormVar"
+         [registerValidators]="[maximum(), required()]"
+         [ngStyle]="{ 'background-color' : max.control.errors ? 'pink' : 'white' }"
+         [registerModel]="max"
+         [required]="true"/>
 </ng-template>
 
 <ng-template #valueset let-obj="obj" let-key="key" let-field="field">
@@ -364,13 +384,25 @@
       </td>
       <td class="small">
         <ng-container
-          *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements}"></ng-container>
+          *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements, id : 'group'+index }"></ng-container>
       </td>
       <td [attr.colspan]="groupHeaderSize(table)"
           [ngStyle]="{ 'min-width' : (headWidth(node.content.free.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
         <span style="margin-left: 10px;" class="badge label-gray">Co-Constraints Group</span>
-        <input style="width: 75% !important; font-weight: bold;" [(ngModel)]="node.data.name" type="text" required
-               placeholder="required">
+        <input
+          style="width: 75% !important; font-weight: bold;"
+          [(ngModel)]="node.data.name"
+          type="text"
+          #groupM="ngModel"
+          [name]="'group'+index+'-name'"
+          [id]="'group'+index+'-name'"
+          [registerForm]="ccFormVar"
+          [registerModel]="groupM"
+          [required]="true"
+          placeholder="required">
+        <p *ngIf="groupM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+          {{groupM.control.errors.required ? 'Group name is required' : ''}}
+        </p>
       </td>
 
     </tr>
@@ -411,7 +443,7 @@
       <ng-container *ngTemplateOutlet="usage; context : {$implicit : row.requirements}"></ng-container>
     </td>
     <td class="small">
-      <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements}"></ng-container>
+      <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements, id : row.id}"></ng-container>
     </td>
 
     <!--SELECTORS-->

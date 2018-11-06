@@ -12,7 +12,6 @@ import { ChartModule } from 'primeng/primeng';
 import { CheckboxModule } from 'primeng/primeng';
 import { ChipsModule } from 'primeng/primeng';
 import { CodeHighlighterModule } from 'primeng/primeng';
-import { ConfirmDialogModule } from 'primeng/primeng';
 import { ColorPickerModule } from 'primeng/primeng';
 import { SharedModule } from 'primeng/primeng';
 import { ContextMenuModule } from 'primeng/primeng';
@@ -116,7 +115,14 @@ import {MessageService} from "primeng/components/common/messageservice";
 import {BlockUIModule} from 'primeng/blockui';
 import {ProgressHandlerService} from "./service/progress-handler.service";
 import {GrowlModule} from 'primeng/growl';
-
+import {GlobalErrorHandler} from "./utils/client-error-handler";
+import {RoutingStateService} from "./url/routing-state.service";
+import {ClientErrorHandlerService} from "./utils/client-error-handler.service";
+import {ConfirmationService} from 'primeng/api';
+import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialog";
+import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.component';
+import {ReportService} from "./dialog-wrapper/report.service";
+import {DisplayService} from "./display/display.service";
 @NgModule({
     imports: [
         BrowserModule,
@@ -197,6 +203,7 @@ import {GrowlModule} from 'primeng/growl';
         CommonModule,
         ReactiveFormsModule,
 
+
         AlertModule.forRoot()
 
     ],
@@ -220,8 +227,8 @@ import {GrowlModule} from 'primeng/growl';
         AppBreadcrumbComponent,
         ResetPasswordRequestComponent,
         ResetPasswordConfirmComponent,
-        ErrorComponent
-
+        ErrorComponent,
+        DialogWrapperComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
@@ -229,11 +236,14 @@ import {GrowlModule} from 'primeng/growl';
       useClass: AuthInterceptor,
       multi: true
     },
-
-    // {provide: ErrorHandler, useClass: IgErrorHandler},
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
         WorkspaceService,
         ErrorResolver,
         ErrorService,
+        GlobalErrorHandler,
         ResetPasswordService,
         GeneralConfigurationService,
         IndexedDbService,
@@ -245,7 +255,12 @@ import {GrowlModule} from 'primeng/growl';
         TableOptionsService,
         ExportFontService,
         MessageService,
-        ProgressHandlerService
+        ProgressHandlerService,
+        RoutingStateService,
+        ClientErrorHandlerService,
+        ConfirmationService,
+        ReportService,
+    DisplayService
   ],
     bootstrap: [AppComponent]
 })
