@@ -17,7 +17,6 @@
     <p-table [value]="currentBindings.valuesetBindings">
         <ng-template pTemplate="header">
             <tr>
-                <th>Scope/Version</th>
                 <th>Binding Identifier</th>
                 <th>Name</th>
                 <th>Binding Strength</th>
@@ -29,8 +28,8 @@
             <tr>
                 <td>
                     <span class="badge" [ngClass]="{'label-HL7' : getVS(item.valuesetId).scope === 'HL7STANDARD', 'label-USER': getVS(item.valuesetId).scope === 'USER'}">{{getVS(item.valuesetId).version}}</span>
+                    {{getBindingIdentifier(item.valuesetId)}}
                 </td>
-                <td>{{getBindingIdentifier(item.valuesetId)}}</td>
                 <td>{{getVSName(item.valuesetId)}}</td>
                 <td></td>
                 <td></td>
