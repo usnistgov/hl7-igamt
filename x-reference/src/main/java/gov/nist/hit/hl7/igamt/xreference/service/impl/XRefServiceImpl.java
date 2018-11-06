@@ -28,7 +28,6 @@ import java.util.Set;
 
 import javax.el.ResourceBundleELResolver;
 
-import org.assertj.core.internal.bytebuddy.agent.builder.AgentBuilder.Default.Transformation.Simple;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -582,13 +581,7 @@ return XReferenceUtil.processSegments(segments, id);
 	return nodes;
   }
   
-  public List<CrossRefsNode> processStructureBinding(Binding binding, String id , CrossRefsLabel parent){
-	 
-	  if(binding.getChildren()!=null && !binding.getChildren().isEmpty()) {
-		  
-	  }
-	  
-  }
+
   
   
   
@@ -617,7 +610,8 @@ return XReferenceUtil.processSegments(segments, id);
 		} else {
 			return null;
 		}
-	}	
+	}
+	return null;	
 }
 
 private void processAssertion(Assertion asrt, String id, boolean contain) {
