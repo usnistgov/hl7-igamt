@@ -1,0 +1,8 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-12">
+        <div *ngIf="currentBindings && currentBindings.externalSingleCode">
+            <i class="fa fa-circle" [ngClass]="{'first-priority' : currentBindings.priority === 1, 'second-priority' : currentBindings.priority === 2, 'third-priority' : currentBindings.priority === 3, 'fourth-priority' : currentBindings.priority === 4}"></i>
+            {{currentBindings.externalSingleCode.value}} <== {{currentBindings.externalSingleCode.codeSystem}}
+        </div>
+    </div>
+</div>

@@ -253,6 +253,35 @@ export class GeneralConfigurationService {
     return false;
   }
 
+  isSingleCodeAllow(dtName, position, parrentNode, SegmentName, type, isLeaf, bindings){
+    if(isLeaf){
+      if(this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        if(!this.hasValueSet(bindings)){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isConstantValueAllow(dtName, position, parrentNode, SegmentName, type, isLeaf){
+    if(isLeaf){
+      if(!this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasValueSet(bindings){
+    if(bindings){
+      for(let b of bindings){
+        if(b.valuesetBindings && b.valuesetBindings.length > 0) return true;
+      }
+    }
+    return false;
+  }
+
   isMultipleValuseSetAllowed(dtName){
     if (this._singleValueSetDTs.includes(dtName)) return false;
     return true;

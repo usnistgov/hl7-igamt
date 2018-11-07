@@ -30,6 +30,7 @@ public class Segment extends Resource {
   public ResourceBinding getBinding() {
     if (binding == null) {
       binding = new ResourceBinding();
+      binding.setElementId(this.getId().getId());
     }
     return binding;
   }

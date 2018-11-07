@@ -1,0 +1,28 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-10">
+        <div *ngIf="allComments">
+            <div *ngFor="let c of allComments">
+                <i class="fa fa-circle" [ngClass]="{'first-priority' : c.priority === 1, 'second-priority' : c.priority === 2, 'third-priority' : c.priority === 3, 'fourth-priority' : c.priority === 4}"></i>
+                {{c.description}}
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <i class="fa fa-plus" (click)="openCommentAddDialog()"></i>
+    </div>
+</div>
+
+<p-dialog *ngIf="commentAddDialogOpen" header="Add new Comment" [(visible)]="commentAddDialogOpen" [modal]="true" [closable]="false" [responsive]="true" [width]="1200">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-12">
+            <input [(ngModel)]="newComment" type="text" style="width:100%;border-width:0px 0px 1px 0px"/>
+        </div>
+    </div>
+
+    <p-footer>
+        <button type="button" pButton icon="fa fa-check" (click)="commentAddDialogOpen=false;addComment();" label="Update"></button>
+        <button type="button" pButton icon="fa fa-close" (click)="commentAddDialogOpen=false;" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+
+</p-dialog>
+

@@ -1,0 +1,27 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-8">
+        <div *ngIf="text">
+            {{text}}
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <i *ngIf="text" class="fa fa-times" (click)="deleteTextDef()"></i>
+    </div>
+
+    <div class="ui-g-12 ui-md-2">
+        <i class="fa fa-pencil" (click)="editTextDefBindings()"></i>
+    </div>
+</div>
+
+<p-dialog *ngIf="textdefEditDialogOpen" header="Edit TextDefinition" [(visible)]="textdefEditDialogOpen" [modal]="true" [closable]="false" [responsive]="true" [width]="800">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-12">
+            <input [(ngModel)]="text" type="text" style="width:100%;border-width:0px 0px 1px 0px"/>
+        </div>
+    </div>
+
+    <p-footer>
+        <button type="button" pButton icon="fa fa-check" (click)="textdefEditDialogOpen=false;updateTextDef();" label="Update"></button>
+        <button type="button" pButton icon="fa fa-close" (click)="textdefEditDialogOpen=false;resetTextDef()" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+</p-dialog>

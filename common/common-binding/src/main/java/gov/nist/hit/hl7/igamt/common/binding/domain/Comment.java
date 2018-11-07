@@ -31,6 +31,7 @@ public class Comment {
 
   public Comment() {
     super();
+    this.dateupdated = new Date();
   }
 
   public String getDescription() {
