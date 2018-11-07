@@ -2,6 +2,7 @@ import {Component, Input, Output, EventEmitter} from "@angular/core";
 import {GeneralConfigurationService} from "../../../service/general-configuration/general-configuration.service";
 import { _ } from 'underscore';
 import * as __ from 'lodash';
+import {IgDocumentService} from "../../../igdocuments/igdocument-edit/ig-document.service";
 
 @Component({
   selector : 'valueset-col',
@@ -18,10 +19,12 @@ export class ValuesetColComponent {
   @Input() viewScope: string;
   @Input() sourceId : string;
 
-  @Input() valuesetLabels : any[];
+  valuesetLabels : any[];
 
   @Input() changeItems: any[];
   @Output() changeItemsChange = new EventEmitter<any[]>();
+
+  @Input() igId: string;
 
   currentBindings: any;
   backup:any;
@@ -32,7 +35,7 @@ export class ValuesetColComponent {
 
   cols: any[];
 
-  constructor(private configService : GeneralConfigurationService){}
+  constructor(private configService : GeneralConfigurationService, private igDocumentService : IgDocumentService){}
 
   ngOnInit(){
 
@@ -46,27 +49,6 @@ export class ValuesetColComponent {
     ];
   }
 
-  getBindingIdentifier(id){
-    for (let vs of this.valuesetLabels) {
-      if(id === vs.id.id) return vs.label;
-    }
-    return null;
-  }
-
-  getVSName(id){
-    for (let vs of this.valuesetLabels) {
-      if(id === vs.id.id) return vs.name;
-    }
-    return null;
-  }
-
-  getVS(id){
-    for (let vs of this.valuesetLabels) {
-      if(id === vs.id.id) return vs;
-    }
-    return null;
-  }
-
   editValuesetBindings(){
     this.valuesetEditDialogOpen = true;
     if(this.currentBindings) this.backup = __.cloneDeep(this.currentBindings);
@@ -77,6 +59,10 @@ export class ValuesetColComponent {
       this.currentBindings.sourceId = this.sourceId;
       this.currentBindings.valuesetBindings = [];
     }
+
+    this.igDocumentService.getValuesetLabels(this.igId).then((vData) => {
+      this.valuesetLabels = vData;
+    });
   }
 
   deleteVS(vs){
@@ -99,10 +85,12 @@ export class ValuesetColComponent {
     item.changeType = "UPDATE";
     this.changeItems.push(item);
     this.changeItemsChange.emit(this.changeItems);
+    this.valuesetLabels = null;
   }
 
   resetValuesetBinding(){
     this.currentBindings = this.backup;
+    this.valuesetLabels = null;
   }
 
   initCurrentBinding(){
@@ -132,7 +120,8 @@ export class ValuesetColComponent {
     if(this.currentBindings && this.currentBindings.valuesetBindings){
       let binding:any = {};
       binding.valuesetId = rowData.id.id;
-
+      binding.label = rowData.label;
+      binding.name = rowData.name;
       this.currentBindings.valuesetBindings.push(binding);
     }
   }

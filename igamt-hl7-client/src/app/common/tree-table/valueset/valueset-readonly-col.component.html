@@ -3,7 +3,7 @@
         <div *ngIf="currentBindings">
             <div *ngFor="let vs of currentBindings.valuesetBindings">
                 <i class="fa fa-circle" [ngClass]="{'first-priority' : currentBindings.priority === 1, 'second-priority' : currentBindings.priority === 2, 'third-priority' : currentBindings.priority === 3, 'fourth-priority' : currentBindings.priority === 4}"></i>
-                {{getBindingIdentifier(vs.valuesetId)}}
+                {{vs.label}}
             </div>
         </div>
     </div>

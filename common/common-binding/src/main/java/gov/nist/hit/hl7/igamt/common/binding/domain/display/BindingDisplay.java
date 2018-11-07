@@ -13,7 +13,6 @@ package gov.nist.hit.hl7.igamt.common.binding.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -29,7 +28,7 @@ public class BindingDisplay {
   private String sourceId;
   private int priority;
   private Set<Comment> comments;
-  private Set<ValuesetBinding> valuesetBindings;
+  private Set<DisplayValuesetBinding> valuesetBindings;
   private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
   private String constantValue;
@@ -43,11 +42,11 @@ public class BindingDisplay {
     this.comments = comments;
   }
 
-  public Set<ValuesetBinding> getValuesetBindings() {
+  public Set<DisplayValuesetBinding> getValuesetBindings() {
     return valuesetBindings;
   }
 
-  public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
+  public void setValuesetBindings(Set<DisplayValuesetBinding> valuesetBindings) {
     this.valuesetBindings = valuesetBindings;
   }
 
