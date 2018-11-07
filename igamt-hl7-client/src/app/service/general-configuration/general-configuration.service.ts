@@ -2,6 +2,8 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from '@angular/core';
+import { _ } from 'underscore';
+
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -236,7 +238,7 @@ export class GeneralConfigurationService {
     return this._valueSetAllowedComponents;
   }
 
-  isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
+  isValueSetAllow(dtName, position, parrentNode, SegmentName, type){
     if (this._valueSetAllowedDTs.includes(dtName)) return true;
     if (this._valueSetAllowedFields.includes({
         'segmentName': SegmentName,
@@ -244,10 +246,39 @@ export class GeneralConfigurationService {
         'type': type
     })) return true;
 
-    if (this._valueSetAllowedComponents.includes({
-          'dtName': parrentDT,
+    if (parrentNode && this._valueSetAllowedComponents.includes({
+          'dtName': parrentNode.data.datatypeLabel.name,
           'location': position
     })) return true;
+    return false;
+  }
+
+  isSingleCodeAllow(dtName, position, parrentNode, SegmentName, type, isLeaf, bindings){
+    if(isLeaf){
+      if(this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        if(!this.hasValueSet(bindings)){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isConstantValueAllow(dtName, position, parrentNode, SegmentName, type, isLeaf){
+    if(isLeaf){
+      if(!this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasValueSet(bindings){
+    if(bindings){
+      for(let b of bindings){
+        if(b.valuesetBindings && b.valuesetBindings.length > 0) return true;
+      }
+    }
     return false;
   }
 
@@ -311,5 +342,15 @@ export class GeneralConfigurationService {
       }
     }
     return null;
+  }
+
+  arraySortByPosition(objectArray){
+    objectArray = _.sortBy(objectArray, function(item){ return item.data.position});
+    for(let child of objectArray){
+      if(child.children){
+        child.children = this.arraySortByPosition(child.children);
+      }
+    }
+    return objectArray;
   }
 }

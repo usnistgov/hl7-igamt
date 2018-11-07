@@ -1,0 +1,95 @@
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-10">
+        <div *ngIf="currentBindings">
+            <div *ngFor="let vs of currentBindings.valuesetBindings">
+                <i class="fa fa-circle" [ngClass]="{'first-priority' : currentBindings.priority === 1, 'second-priority' : currentBindings.priority === 2, 'third-priority' : currentBindings.priority === 3, 'fourth-priority' : currentBindings.priority === 4}"></i>
+                {{getBindingIdentifier(vs.valuesetId)}}
+            </div>
+        </div>
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <i class="fa fa-pencil" (click)="editValuesetBindings()"></i>
+    </div>
+</div>
+
+<p-dialog *ngIf="valuesetEditDialogOpen" header="Edit Valueset bindings" [(visible)]="valuesetEditDialogOpen" [modal]="true" [closable]="false" [responsive]="true" [width]="1200">
+    <div class="cp-header-title ui-g-12">
+        Current Valueset Bindings
+    </div>
+    <div *ngIf="currentBindings.valuesetBindings && currentBindings.valuesetBindings.length > 0; else empty_valueset">
+        <p-table [value]="currentBindings.valuesetBindings">
+            <ng-template pTemplate="header">
+                <tr>
+                    <th>Binding Identifier</th>
+                    <th>Name</th>
+                    <th>Binding Strength</th>
+                    <th>Binding Location</th>
+                    <th></th>
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-item>
+                <tr>
+                    <td>
+                        <span class="badge" [ngClass]="{'label-HL7' : getVS(item.valuesetId).scope === 'HL7STANDARD', 'label-USER': getVS(item.valuesetId).scope === 'USER'}">{{getVS(item.valuesetId).version}}</span>
+                        {{getBindingIdentifier(item.valuesetId)}}
+                    </td>
+                    <td>{{getVSName(item.valuesetId)}}</td>
+                    <td>
+                        <p-dropdown [options]="valuesetStrengthOptions" [(ngModel)]="item.strength" appendTo="body" [style]="{'width':'100%'}"> </p-dropdown>
+                    </td>
+                    <td>
+                        <p-dropdown *ngIf="valueSetLocationOptions" [options]="valueSetLocationOptions" [(ngModel)]="item.valuesetLocations" appendTo="body" [style]="{'width':'100%'}"></p-dropdown>
+                    </td>
+                    <td>
+                        <i class="fa fa-times" (click)="deleteVS(item)"></i>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    <ng-template #empty_valueset>
+        <p>No Valueset binding</p>
+    </ng-template>
+
+
+    <div class="cp-header-title ui-g-12">
+        Current Valueset Library
+    </div>
+
+    <div class="ui-g-12">
+        <p-table #dt [columns]="cols" [value]="valuesetLabels" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="caption">
+                <div style="text-align: right">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns">
+                        {{col.header}}
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr [pSelectableRow]="rowData">
+                    <td *ngFor="let col of columns">
+                        {{rowData[col.field]}}
+                    </td>
+                    <td>
+                        <i class="fa fa-plus" (click)="addVS(rowData)"></i>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <p-footer>
+        <button type="button" pButton icon="fa fa-check" (click)="valuesetEditDialogOpen=false;updateValuesetBinding();" label="Update"></button>
+        <button type="button" pButton icon="fa fa-close" (click)="valuesetEditDialogOpen=false;resetValuesetBinding()" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+
+</p-dialog>
+

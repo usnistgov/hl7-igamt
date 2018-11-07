@@ -19,6 +19,11 @@ public class Ref {
   public void setId(String id) {
     this.id = id;
   }
+
+  @Override
+  public String toString() {
+    return "Ref [id=" + id + "]";
+  }
   
 
 }

@@ -34,7 +34,6 @@ export class Columns{
 
 
   public static  segmentColumns =[
-
     {field : "name", style:"name-col", header: "Name", position:1 },
     {field : "usage",style:"usage-col", header: "Usage", position:2 },
     {field : "cardinality",style:"card-col", header: "Cardinality", position:3},
@@ -45,10 +44,8 @@ export class Columns{
     {field : "singleCode",style:"single-code-col", header: "Single Code", position:8},
     {field : "constantValue",style:"const-value-col", header: "Constant Value", position:9},
     {field : "predicate",style:"pred-col", header: "Predicate", position:10},
-    {field : "textDef", style:"text-col",header: "Text Definition", position:11 },
+    {field : "textDef", style:"text-col",header: "Text Definition", position:11},
     {field : "comment",style:"comment-col", header: "Comments", position:12}
-
-
   ];
 
   public static  messageColumns =[

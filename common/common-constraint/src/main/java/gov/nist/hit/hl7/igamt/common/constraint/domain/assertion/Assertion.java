@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class Assertion {
   private AssertionMode mode;
   private String description;
+  
 
   public Assertion() {
     super();
