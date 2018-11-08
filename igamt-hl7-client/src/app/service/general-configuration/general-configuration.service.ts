@@ -240,13 +240,19 @@ export class GeneralConfigurationService {
 
   isValueSetAllow(dtName, position, parrentNode, SegmentName, type){
     if (this._valueSetAllowedDTs.includes(dtName)) return true;
-    if (this._valueSetAllowedFields.includes({
+    if (SegmentName && this._valueSetAllowedFields.includes({
         'segmentName': SegmentName,
         'location': position,
         'type': type
     })) return true;
 
-    if (parrentNode && this._valueSetAllowedComponents.includes({
+    if (parrentNode && parrentNode.data.segmentLabel && this._valueSetAllowedFields.includes({
+          'segmentName': parrentNode.data.segmentLabel.name,
+          'location': position,
+          'type': type
+        })) return true;
+
+    if (parrentNode && parrentNode.data.datatypeLabel && this._valueSetAllowedComponents.includes({
           'dtName': parrentNode.data.datatypeLabel.name,
           'location': position
     })) return true;
