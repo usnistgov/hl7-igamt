@@ -65,12 +65,12 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'datatype'">
-                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [viewScope]="node.data.viewScope" [datatypeLabels]="datatypeLabels" [(children)]="node.children" [(changeItems)]="changeItems"></datatype-col>
+                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems"></datatype-col>
                             <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></datatype-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'valueSet'">
-                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [valuesetLabels]="valuesetLabels"  [(changeItems)]="changeItems"></valueset-col>
+                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'singleCode'">

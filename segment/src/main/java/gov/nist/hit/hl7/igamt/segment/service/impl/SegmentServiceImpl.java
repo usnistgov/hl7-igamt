@@ -52,6 +52,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
@@ -219,7 +220,9 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment) {
-    System.out.println("START!");
+    HashMap<String,Valueset> valueSetsMap = new HashMap<String,Valueset>();
+    HashMap<String,Datatype> datatypesMap = new HashMap<String,Datatype>();
+    
     SegmentStructureDisplay result = new SegmentStructureDisplay();
     result.setId(segment.getId());
     result.setScope(segment.getDomainInfo().getScope());
@@ -233,7 +236,7 @@ public class SegmentServiceImpl implements SegmentService {
 
     if (segment.getChildren() != null && segment.getChildren().size() > 0) {
       for (Field f : segment.getChildren()) {
-        Datatype childDt = this.datatypeService.findLatestById(f.getRef().getId());
+        Datatype childDt = this.findDatatype(f.getRef().getId(), datatypesMap);
         if (childDt != null) {
           FieldStructureTreeModel fieldStructureTreeModel = new FieldStructureTreeModel();
           FieldDisplayDataModel fModel = new FieldDisplayDataModel(f);
@@ -263,7 +266,7 @@ public class SegmentServiceImpl implements SegmentService {
             bindingDisplay.setExternalSingleCode(fSeb.getExternalSingleCode());
             bindingDisplay.setInternalSingleCode(fSeb.getInternalSingleCode());
             bindingDisplay.setPredicate(fSeb.getPredicate());
-            bindingDisplay.setValuesetBindings(fSeb.getValuesetBindings());
+            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(fSeb.getValuesetBindings(), valueSetsMap));
             fModel.addBinding(bindingDisplay);
           }
           fieldStructureTreeModel.setData(fModel);
@@ -272,7 +275,7 @@ public class SegmentServiceImpl implements SegmentService {
             ComplexDatatype fieldDatatype = (ComplexDatatype) childDt;
             if (fieldDatatype.getComponents() != null && fieldDatatype.getComponents().size() > 0) {
               for (Component c : fieldDatatype.getComponents()) {
-                Datatype childChildDt = this.datatypeService.findLatestById(c.getRef().getId());
+                Datatype childChildDt = this.findDatatype(c.getRef().getId(), datatypesMap);
                 if (childChildDt != null) {
                   ComponentStructureTreeModel componentStructureTreeModel =
                       new ComponentStructureTreeModel();
@@ -303,7 +306,7 @@ public class SegmentServiceImpl implements SegmentService {
                     bindingDisplay.setExternalSingleCode(childSeb.getExternalSingleCode());
                     bindingDisplay.setInternalSingleCode(childSeb.getInternalSingleCode());
                     bindingDisplay.setPredicate(childSeb.getPredicate());
-                    bindingDisplay.setValuesetBindings(childSeb.getValuesetBindings());
+                    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childSeb.getValuesetBindings(), valueSetsMap));
                     cModel.addBinding(bindingDisplay);
                   }
 
@@ -319,7 +322,7 @@ public class SegmentServiceImpl implements SegmentService {
                     bindingDisplay.setExternalSingleCode(cSeb.getExternalSingleCode());
                     bindingDisplay.setInternalSingleCode(cSeb.getInternalSingleCode());
                     bindingDisplay.setPredicate(cSeb.getPredicate());
-                    bindingDisplay.setValuesetBindings(cSeb.getValuesetBindings());
+                    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(cSeb.getValuesetBindings(), valueSetsMap));
                     cModel.addBinding(bindingDisplay);
                   }
                   componentStructureTreeModel.setData(cModel);
@@ -328,8 +331,7 @@ public class SegmentServiceImpl implements SegmentService {
                     if (componentDatatype.getComponents() != null
                         && componentDatatype.getComponents().size() > 0) {
                       for (Component sc : componentDatatype.getComponents()) {
-                        Datatype childChildChildDt =
-                            this.datatypeService.findLatestById(sc.getRef().getId());
+                        Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                         if (childChildChildDt != null) {
                           SubComponentStructureTreeModel subComponentStructureTreeModel =
                               new SubComponentStructureTreeModel();
@@ -367,7 +369,7 @@ public class SegmentServiceImpl implements SegmentService {
                             bindingDisplay
                                 .setInternalSingleCode(childChildSeb.getInternalSingleCode());
                             bindingDisplay.setPredicate(childChildSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(childChildSeb.getValuesetBindings());
+                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childChildSeb.getValuesetBindings(),valueSetsMap));
                             scModel.addBinding(bindingDisplay);
                           }
 
@@ -384,7 +386,7 @@ public class SegmentServiceImpl implements SegmentService {
                             bindingDisplay.setExternalSingleCode(childCSeb.getExternalSingleCode());
                             bindingDisplay.setInternalSingleCode(childCSeb.getInternalSingleCode());
                             bindingDisplay.setPredicate(childCSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(childCSeb.getValuesetBindings());
+                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childCSeb.getValuesetBindings(),valueSetsMap));
                             scModel.addBinding(bindingDisplay);
                           }
 
@@ -401,7 +403,7 @@ public class SegmentServiceImpl implements SegmentService {
                             bindingDisplay.setExternalSingleCode(scSeb.getExternalSingleCode());
                             bindingDisplay.setInternalSingleCode(scSeb.getInternalSingleCode());
                             bindingDisplay.setPredicate(scSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(scSeb.getValuesetBindings());
+                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(scSeb.getValuesetBindings(),valueSetsMap));
                             scModel.addBinding(bindingDisplay);
                           }
                           subComponentStructureTreeModel.setData(scModel);
@@ -432,6 +434,48 @@ public class SegmentServiceImpl implements SegmentService {
       }
     }
     return result;
+  }
+
+  /**
+   * @param id
+   * @param datatypesMap
+   * @return
+   */
+  private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
+    Datatype dt = datatypesMap.get(id);
+    if(dt == null) {
+      dt = this.datatypeService.findLatestById(id);
+      datatypesMap.put(id, dt);
+    }
+    return dt;
+  }
+
+  /**
+   * @param valuesetBindings
+   * @return
+   */
+  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings, HashMap<String, Valueset> valueSetsMap) {
+    if(valuesetBindings != null){
+      Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+      for(ValuesetBinding vb:valuesetBindings){
+        Valueset vs = valueSetsMap.get(vb.getValuesetId());
+        if(vs == null){
+          vs = this.valueSetService.findLatestById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId().getId(), vs);
+        }
+        if(vs != null){
+          DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+          dvb.setLabel(vs.getBindingIdentifier());
+          dvb.setName(vs.getName());
+          dvb.setStrength(vb.getStrength());
+          dvb.setValuesetId(vb.getValuesetId());
+          dvb.setValuesetLocations(vb.getValuesetLocations()); 
+          result.add(dvb);
+        }
+      }
+      return result;
+    }
+    return null;
   }
 
   /**
@@ -1049,8 +1093,7 @@ public class SegmentServiceImpl implements SegmentService {
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(new HashSet<ValuesetBinding>(
-            Arrays.asList(mapper.readValue(jsonInString, ValuesetBinding[].class))));
+        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
       } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1085,6 +1128,25 @@ public class SegmentServiceImpl implements SegmentService {
     }
     this.save(s);
     return cItems;
+  }
+
+  /**
+   * @param hashSet
+   * @return
+   */
+  private Set<ValuesetBinding> convertDisplayValuesetBinding(HashSet<DisplayValuesetBinding> displayValuesetBindings) {
+    if(displayValuesetBindings != null){
+      Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+      for(DisplayValuesetBinding dvb:displayValuesetBindings){
+        ValuesetBinding vb = new ValuesetBinding();
+        vb.setStrength(dvb.getStrength());
+        vb.setValuesetId(dvb.getValuesetId());
+        vb.setValuesetLocations(dvb.getValuesetLocations());
+        result.add(vb);
+      }
+      return result;
+    }
+    return null;
   }
 
   /**

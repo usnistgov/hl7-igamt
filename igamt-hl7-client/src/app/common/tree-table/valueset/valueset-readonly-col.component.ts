@@ -8,7 +8,6 @@ import * as __ from 'lodash';
 })
 export class ValuesetReadonlyColComponent {
   @Input() bindings: any[];
-  @Input() valuesetLabels: any[];
 
   currentBindings: any;
 
@@ -18,14 +17,6 @@ export class ValuesetReadonlyColComponent {
   ngOnInit() {
     this.initCurrentBinding();
   }
-
-  getBindingIdentifier(id) {
-    for (let vs of this.valuesetLabels) {
-      if (id === vs.id.id) return vs.label;
-    }
-    return null;
-  }
-
 
   initCurrentBinding() {
     this.currentBindings = null;

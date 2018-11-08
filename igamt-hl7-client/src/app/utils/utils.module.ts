@@ -19,7 +19,7 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule} from 'primeng/primeng';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
 import {DisplayConstantValueComponent} from "../common/tree-table-label/display-constantvalue.component";
@@ -78,6 +78,7 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     FieldsetModule,
     RadioButtonModule,
     TableModule,
+    ProgressSpinnerModule,
     TreeTableModule,
     KeyFilterModule,MessageModule,MessagesModule
 

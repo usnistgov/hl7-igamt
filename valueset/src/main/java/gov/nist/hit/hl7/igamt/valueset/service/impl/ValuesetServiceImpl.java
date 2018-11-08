@@ -169,7 +169,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     return valueset;
   }
 
-
   @Override
   public Valueset getLatestById(String id) {
     // TODO Auto-generated method stub Query query = new Query();

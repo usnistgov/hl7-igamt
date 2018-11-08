@@ -23,8 +23,6 @@ export class SegmentEditStructureComponent implements WithSave {
     segmentId:any;
     igId:any;
     segmentStructure:any;
-    datatypeLabels:any[];
-    valuesetLabels:any[];
     changeItems:any[];
     backup:any;
 
@@ -51,17 +49,10 @@ export class SegmentEditStructureComponent implements WithSave {
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.igId = this.router.url.split("/")[2];
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
-            this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
-                this.datatypeLabels = data;
-                this.igDocumentService.getValuesetLabels(this.igId).then((vData) => {
-                    this.valuesetLabels = vData;
-
-                    x.structure = this.configService.arraySortByPosition(x.structure);
-                    this.segmentStructure = {};
-                    this.segmentStructure = x;
-                    this.backup=__.cloneDeep(this.segmentStructure);
-                });
-            });
+            x.structure = this.configService.arraySortByPosition(x.structure);
+            this.segmentStructure = {};
+            this.segmentStructure = x;
+            this.backup=__.cloneDeep(this.segmentStructure);
         });
     }
 
