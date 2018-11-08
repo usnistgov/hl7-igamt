@@ -43,6 +43,7 @@ import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -63,6 +64,8 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
 /**
@@ -80,6 +83,9 @@ public class DatatypeServiceImpl implements DatatypeService {
   CommonService commonService;
   @Autowired
   private MongoTemplate mongoTemplate;
+  
+  @Autowired
+  ValuesetService valueSetService;
 
 
   @Override
@@ -677,6 +683,9 @@ public class DatatypeServiceImpl implements DatatypeService {
    */
   @Override
   public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
+    HashMap<String,Valueset> valueSetsMap = new HashMap<String,Valueset>();
+    HashMap<String,Datatype> datatypesMap = new HashMap<String,Datatype>();
+    
     if(viewScope.equals("SEGMENT")){
       if(datatype instanceof ComplexDatatype){
         ComplexDatatype childDatatype = (ComplexDatatype)datatype;
@@ -684,7 +693,7 @@ public class DatatypeServiceImpl implements DatatypeService {
           Set<ComponentStructureTreeModel> result = new HashSet<ComponentStructureTreeModel>();
           
           for(Component c : childDatatype.getComponents()){
-            Datatype childChildDt = this.findLatestById(c.getRef().getId());
+            Datatype childChildDt = this.findDatatype(c.getRef().getId(), datatypesMap);
             if(childChildDt != null){
               ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
               ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
@@ -712,7 +721,7 @@ public class DatatypeServiceImpl implements DatatypeService {
                 bindingDisplay.setExternalSingleCode(cSeb.getExternalSingleCode());
                 bindingDisplay.setInternalSingleCode(cSeb.getInternalSingleCode());
                 bindingDisplay.setPredicate(cSeb.getPredicate());
-                bindingDisplay.setValuesetBindings(cSeb.getValuesetBindings());
+                bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(cSeb.getValuesetBindings(), valueSetsMap));
                 cModel.addBinding(bindingDisplay);
               }
               componentStructureTreeModel.setData(cModel);
@@ -720,7 +729,7 @@ public class DatatypeServiceImpl implements DatatypeService {
                 ComplexDatatype componentDatatype = (ComplexDatatype)childChildDt;
                 if(componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0){
                   for(Component sc : componentDatatype.getComponents()){
-                    Datatype childChildChildDt = this.findLatestById(sc.getRef().getId());
+                    Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                     if(childChildChildDt != null){
                       SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
                       SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
@@ -748,7 +757,7 @@ public class DatatypeServiceImpl implements DatatypeService {
                         bindingDisplay.setExternalSingleCode(childCSeb.getExternalSingleCode());
                         bindingDisplay.setInternalSingleCode(childCSeb.getInternalSingleCode());
                         bindingDisplay.setPredicate(childCSeb.getPredicate());
-                        bindingDisplay.setValuesetBindings(childCSeb.getValuesetBindings());
+                        bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childCSeb.getValuesetBindings(), valueSetsMap));
                         scModel.addBinding(bindingDisplay);
                       }
         
@@ -763,7 +772,7 @@ public class DatatypeServiceImpl implements DatatypeService {
                         bindingDisplay.setExternalSingleCode(scSeb.getExternalSingleCode());
                         bindingDisplay.setInternalSingleCode(scSeb.getInternalSingleCode());
                         bindingDisplay.setPredicate(scSeb.getPredicate());
-                        bindingDisplay.setValuesetBindings(scSeb.getValuesetBindings());
+                        bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(scSeb.getValuesetBindings(), valueSetsMap));
                         scModel.addBinding(bindingDisplay);
                       }
                       subComponentStructureTreeModel.setData(scModel);
@@ -788,7 +797,7 @@ public class DatatypeServiceImpl implements DatatypeService {
         if(componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0){
           Set<SubComponentStructureTreeModel> result = new HashSet<SubComponentStructureTreeModel>();
           for(Component sc : componentDatatype.getComponents()){
-            Datatype childChildChildDt = this.findLatestById(sc.getRef().getId());
+            Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
             if(childChildChildDt != null){
               SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
               SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
@@ -816,7 +825,7 @@ public class DatatypeServiceImpl implements DatatypeService {
                 bindingDisplay.setExternalSingleCode(scSeb.getExternalSingleCode());
                 bindingDisplay.setInternalSingleCode(scSeb.getInternalSingleCode());
                 bindingDisplay.setPredicate(scSeb.getPredicate());
-                bindingDisplay.setValuesetBindings(scSeb.getValuesetBindings());
+                bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(scSeb.getValuesetBindings(), valueSetsMap));
                 scModel.addBinding(bindingDisplay);
               }
               subComponentStructureTreeModel.setData(scModel);
@@ -832,6 +841,44 @@ public class DatatypeServiceImpl implements DatatypeService {
     
     
 
+    return null;
+  }
+  
+  /**
+   * @param id
+   * @param datatypesMap
+   * @return
+   */
+  private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
+    Datatype dt = datatypesMap.get(id);
+    if(dt == null) {
+      dt = this.findLatestById(id);
+      datatypesMap.put(id, dt);
+    }
+    return dt;
+  }
+  
+  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings, HashMap<String, Valueset> valueSetsMap) {
+    if(valuesetBindings != null){
+      Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+      for(ValuesetBinding vb:valuesetBindings){
+        Valueset vs = valueSetsMap.get(vb.getValuesetId());
+        if(vs == null){
+          vs = this.valueSetService.findLatestById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId().getId(), vs);
+        }
+        if(vs != null){
+          DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+          dvb.setLabel(vs.getBindingIdentifier());
+          dvb.setName(vs.getName());
+          dvb.setStrength(vb.getStrength());
+          dvb.setValuesetId(vb.getValuesetId());
+          dvb.setValuesetLocations(vb.getValuesetLocations()); 
+          result.add(dvb);
+        }
+      }
+      return result;
+    }
     return null;
   }
 
