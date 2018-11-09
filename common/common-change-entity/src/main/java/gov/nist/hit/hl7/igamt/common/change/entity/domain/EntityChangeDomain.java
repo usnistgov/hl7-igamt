@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.common.change.entity.domain;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -11,12 +12,14 @@ public class EntityChangeDomain {
   @Id
   private String id;
 
-  private String targetId; //segmentId
-  private int targetVersion; //segmentVersion
-  private EntityType targetType; 
+  private String targetId; // segmentId
+  private int targetVersion; // segmentVersion
+  private EntityType targetType;
   private DocumentType documentType;
-  private String documentId; //IgId
+  private String documentId; // IgId
   private List<ChangeItemDomain> changeItems;
+
+  @CreatedDate
   private Date updateDate;
 
   public EntityChangeDomain() {
@@ -82,10 +85,6 @@ public class EntityChangeDomain {
 
   public Date getUpdateDate() {
     return updateDate;
-  }
-
-  public void setUpdateDate(Date updateDate) {
-    this.updateDate = updateDate;
   }
 
 
