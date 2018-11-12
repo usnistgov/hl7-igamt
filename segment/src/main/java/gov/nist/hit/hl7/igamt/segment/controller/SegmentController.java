@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -33,7 +32,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -111,26 +109,6 @@ public class SegmentController extends BaseController {
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
     return segmentService.convertDomainToPostdef(segment);
-  }
-
-
-  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveStucture(@PathVariable("id") String id,
-      @RequestBody SegmentStructure structure, Authentication authentication)
-      throws ValidationException, SegmentException, ForbiddenOperationException,
-      SegmentNotFoundException {
-    log.debug("Saving segment with id=" + id);
-    if (!Scope.HL7STANDARD.equals(structure.getScope())) {
-      Segment segment = segmentService.convertToSegment(structure);
-      if (segment == null) {
-        throw new SegmentNotFoundException(id);
-      }
-      segment = segmentService.save(segment);
-      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
-    } else {
-      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-    }
   }
 
   @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.POST,

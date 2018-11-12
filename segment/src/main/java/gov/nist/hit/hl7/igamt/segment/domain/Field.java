@@ -38,7 +38,4 @@ public class Field extends SubStructElement {
   public void setMax(String max) {
     this.max = max;
   }
-
-
-
 }
