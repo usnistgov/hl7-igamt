@@ -19,6 +19,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.newA
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -209,9 +210,9 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment) {
-    HashMap<String,Valueset> valueSetsMap = new HashMap<String,Valueset>();
-    HashMap<String,Datatype> datatypesMap = new HashMap<String,Datatype>();
-    
+    HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
+    HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
+
     SegmentStructureDisplay result = new SegmentStructureDisplay();
     result.setId(segment.getId());
     result.setScope(segment.getDomainInfo().getScope());
@@ -236,7 +237,6 @@ public class SegmentServiceImpl implements SegmentService {
           StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment, f.getId());
           if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
           fieldStructureTreeModel.setData(fModel);
-
           if (childDt instanceof ComplexDatatype) {
             ComplexDatatype fieldDatatype = (ComplexDatatype) childDt;
             if (fieldDatatype.getComponents() != null && fieldDatatype.getComponents().size() > 0) {
@@ -258,7 +258,8 @@ public class SegmentServiceImpl implements SegmentService {
                     ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
                     if (componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0) {
                       for (Component sc : componentDatatype.getComponents()) {
-                        Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+                        Datatype childChildChildDt =
+                            this.findDatatype(sc.getRef().getId(), datatypesMap);
                         if (childChildChildDt != null) {
                           SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
                           SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
@@ -305,7 +306,7 @@ public class SegmentServiceImpl implements SegmentService {
    */
   private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
     Datatype dt = datatypesMap.get(id);
-    if(dt == null) {
+    if (dt == null) {
       dt = this.datatypeService.findLatestById(id);
       datatypesMap.put(id, dt);
     }
@@ -316,22 +317,23 @@ public class SegmentServiceImpl implements SegmentService {
    * @param valuesetBindings
    * @return
    */
-  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings, HashMap<String, Valueset> valueSetsMap) {
-    if(valuesetBindings != null){
+  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
+      HashMap<String, Valueset> valueSetsMap) {
+    if (valuesetBindings != null) {
       Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-      for(ValuesetBinding vb:valuesetBindings){
+      for (ValuesetBinding vb : valuesetBindings) {
         Valueset vs = valueSetsMap.get(vb.getValuesetId());
-        if(vs == null){
+        if (vs == null) {
           vs = this.valueSetService.findLatestById(vb.getValuesetId());
           valueSetsMap.put(vs.getId().getId(), vs);
         }
-        if(vs != null){
+        if (vs != null) {
           DisplayValuesetBinding dvb = new DisplayValuesetBinding();
           dvb.setLabel(vs.getBindingIdentifier());
           dvb.setName(vs.getName());
           dvb.setStrength(vb.getStrength());
           dvb.setValuesetId(vb.getValuesetId());
-          dvb.setValuesetLocations(vb.getValuesetLocations()); 
+          dvb.setValuesetLocations(vb.getValuesetLocations());
           result.add(dvb);
         }
       }
@@ -794,8 +796,8 @@ public class SegmentServiceImpl implements SegmentService {
    * hl7.igamt.segment.domain.Segment, java.util.List)
    */
   @Override
-  public List<ChangeItemDomain> updateSegmentByChangeItems(Segment s, List<ChangeItemDomain> cItems)
-      throws IOException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
+    Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
       if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -865,22 +867,27 @@ public class SegmentServiceImpl implements SegmentService {
       } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+        seb.setValuesetBindings(
+            this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
+                Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
       } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getExternalSingleCode());
         seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
       } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getConstantValue());
-        if(item.getPropertyValue() == null){
+        if (item.getPropertyValue() == null) {
           seb.setConstantValue(null);
-        }else{
-          seb.setConstantValue((String)item.getPropertyValue());  
+        } else {
+          seb.setConstantValue((String) item.getPropertyValue());
         }
       } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -892,26 +899,28 @@ public class SegmentServiceImpl implements SegmentService {
             f.setText((String) item.getPropertyValue());
           }
         }
-      }else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
+      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getComments());
-        seb.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+        seb.setComments(
+            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
       }
     }
     this.save(s);
-    return cItems;
   }
 
   /**
    * @param hashSet
    * @return
    */
-  private Set<ValuesetBinding> convertDisplayValuesetBinding(HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-    if(displayValuesetBindings != null){
+  private Set<ValuesetBinding> convertDisplayValuesetBinding(
+      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
+    if (displayValuesetBindings != null) {
       Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-      for(DisplayValuesetBinding dvb:displayValuesetBindings){
+      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
         ValuesetBinding vb = new ValuesetBinding();
         vb.setStrength(dvb.getStrength());
         vb.setValuesetId(dvb.getValuesetId());
@@ -928,8 +937,9 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s, String location) {
-    if(s.getBinding() == null){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s,
+      String location) {
+    if (s.getBinding() == null) {
       ResourceBinding binding = new ResourceBinding();
       binding.setElementId(s.getId().getId());
       s.setBinding(binding);
@@ -942,31 +952,37 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(ResourceBinding binding, String location) {
-    if(binding.getChildren() == null){
-      if(location.contains("-")){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      ResourceBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else {
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
         binding.addChild(seb);
         return seb;
       }
-    }else{
-      if(location.contains("-")){
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location.split("\\-")[0])) return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
+    } else {
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else{
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location)) return seb;
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
@@ -981,31 +997,37 @@ public class SegmentServiceImpl implements SegmentService {
    * @param replace
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding, String location) {
-    if(binding.getChildren() == null){
-      if(location.contains("-")){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      StructureElementBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else {
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
         binding.addChild(seb);
         return seb;
       }
-    }else{
-      if(location.contains("-")){
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location.split("\\-")[0])) return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
+    } else {
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else{
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location)) return seb;
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);

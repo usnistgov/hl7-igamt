@@ -15,14 +15,15 @@ package gov.nist.hit.hl7.igamt.common.change.entity.domain;
  * @author jungyubw
  *
  */
-public class ChangeItemDomain {
+public class ChangeItemDomain implements Comparable<ChangeItemDomain> {
 
-  private String location; //FieldId or FieldId-ComponentId
-  private PropertyType propertyType; 
+  private String location; // FieldId or FieldId-ComponentId
+  private PropertyType propertyType;
   private Object propertyValue;
   private Object oldPropertyValue;
   private ChangeType changeType;
-  
+  private int position;
+
   public ChangeItemDomain() {
     super();
   }
@@ -67,15 +68,40 @@ public class ChangeItemDomain {
     this.changeType = changeType;
   }
 
+
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
+  }
+
   public ChangeItemDomain(String location, PropertyType propertyType, Object propertyValue,
-      Object oldPropertyValue, ChangeType changeType) {
+      Object oldPropertyValue, ChangeType changeType, int position) {
     super();
     this.location = location;
     this.propertyType = propertyType;
     this.propertyValue = propertyValue;
     this.oldPropertyValue = oldPropertyValue;
     this.changeType = changeType;
+    this.position = position;
   }
+
+
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see java.lang.Comparable#compareTo(java.lang.Object)
+   */
+  @Override
+  public int compareTo(ChangeItemDomain o) {
+    // TODO Auto-generated method stub
+    return this.getPosition() - o.getPosition();
+  }
+
 
 
 }

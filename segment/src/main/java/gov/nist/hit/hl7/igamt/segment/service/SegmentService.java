@@ -169,7 +169,7 @@ public interface SegmentService extends ResourceService {
    * @throws JsonProcessingException
    * @throws IOException
    */
-  public List<ChangeItemDomain> updateSegmentByChangeItems(Segment s, List<ChangeItemDomain> cItems)
-      throws JsonProcessingException, IOException;
+
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
 }
