@@ -114,6 +114,7 @@ public class SegmentController extends BaseController {
   }
 
 
+
   // @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
   // produces = {"application/json"})
   // public ResponseMessage saveStucture(@PathVariable("id") String id,
