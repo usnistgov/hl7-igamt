@@ -19,6 +19,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.newA
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -71,14 +72,11 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
-import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplayDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
@@ -211,18 +209,10 @@ public class SegmentServiceImpl implements SegmentService {
    * @deprecated. Use segment.toStructure()
    */
   @Override
-  public SegmentStructure convertDomainToStructure(Segment segment) {
-    return segment.toStructure();
-  }
-
-  /**
-   * @deprecated. Use segment.toStructure()
-   */
-  @Override
   public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment) {
-    HashMap<String,Valueset> valueSetsMap = new HashMap<String,Valueset>();
-    HashMap<String,Datatype> datatypesMap = new HashMap<String,Datatype>();
-    
+    HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
+    HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
+
     SegmentStructureDisplay result = new SegmentStructureDisplay();
     result.setId(segment.getId());
     result.setScope(segment.getDomainInfo().getScope());
@@ -243,172 +233,48 @@ public class SegmentServiceImpl implements SegmentService {
           fModel.setViewScope(ViewScope.SEGMENT);
           fModel.setIdPath(f.getId());
           fModel.setPath(f.getPosition() + "");
-          DatatypeLabel fieldDatatypeLabel = new DatatypeLabel();
-          fieldDatatypeLabel.setDomainInfo(childDt.getDomainInfo());
-          fieldDatatypeLabel.setExt(childDt.getExt());
-          fieldDatatypeLabel.setId(childDt.getId().getId());
-          fieldDatatypeLabel.setLabel(childDt.getLabel());
-          if (childDt instanceof ComplexDatatype)
-            fieldDatatypeLabel.setLeaf(false);
-          else
-            fieldDatatypeLabel.setLeaf(true);
-          fieldDatatypeLabel.setName(childDt.getName());
-          fModel.setDatatypeLabel(fieldDatatypeLabel);
-          StructureElementBinding fSeb =
-              this.findStructureElementBindingByFieldIdForSegment(segment, f.getId());
-          if (fSeb != null) {
-            BindingDisplay bindingDisplay = new BindingDisplay();
-            bindingDisplay.setSourceId(segment.getId().getId());
-            bindingDisplay.setSourceType(ViewScope.SEGMENT);
-            bindingDisplay.setPriority(1);
-            bindingDisplay.setComments(fSeb.getComments());
-            bindingDisplay.setConstantValue(fSeb.getConstantValue());
-            bindingDisplay.setExternalSingleCode(fSeb.getExternalSingleCode());
-            bindingDisplay.setInternalSingleCode(fSeb.getInternalSingleCode());
-            bindingDisplay.setPredicate(fSeb.getPredicate());
-            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(fSeb.getValuesetBindings(), valueSetsMap));
-            fModel.addBinding(bindingDisplay);
-          }
+          fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
+          StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment, f.getId());
+          if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
           fieldStructureTreeModel.setData(fModel);
-
           if (childDt instanceof ComplexDatatype) {
             ComplexDatatype fieldDatatype = (ComplexDatatype) childDt;
             if (fieldDatatype.getComponents() != null && fieldDatatype.getComponents().size() > 0) {
               for (Component c : fieldDatatype.getComponents()) {
                 Datatype childChildDt = this.findDatatype(c.getRef().getId(), datatypesMap);
                 if (childChildDt != null) {
-                  ComponentStructureTreeModel componentStructureTreeModel =
-                      new ComponentStructureTreeModel();
+                  ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
                   ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
                   cModel.setViewScope(ViewScope.SEGMENT);
                   cModel.setIdPath(f.getId() + "-" + c.getId());
                   cModel.setPath(f.getPosition() + "-" + c.getPosition());
-                  DatatypeLabel componentDatatypeLabel = new DatatypeLabel();
-                  componentDatatypeLabel.setDomainInfo(childChildDt.getDomainInfo());
-                  componentDatatypeLabel.setExt(childChildDt.getExt());
-                  componentDatatypeLabel.setId(childChildDt.getId().getId());
-                  componentDatatypeLabel.setLabel(childChildDt.getLabel());
-                  if (childChildDt instanceof ComplexDatatype)
-                    componentDatatypeLabel.setLeaf(false);
-                  else
-                    componentDatatypeLabel.setLeaf(true);
-                  componentDatatypeLabel.setName(childChildDt.getName());
-                  cModel.setDatatypeLabel(componentDatatypeLabel);
-
+                  cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                   StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb, c.getId());
-                  if (childSeb != null) {
-                    BindingDisplay bindingDisplay = new BindingDisplay();
-                    bindingDisplay.setSourceId(segment.getId().getId());
-                    bindingDisplay.setSourceType(ViewScope.SEGMENT);
-                    bindingDisplay.setPriority(1);
-                    bindingDisplay.setComments(childSeb.getComments());
-                    bindingDisplay.setConstantValue(childSeb.getConstantValue());
-                    bindingDisplay.setExternalSingleCode(childSeb.getExternalSingleCode());
-                    bindingDisplay.setInternalSingleCode(childSeb.getInternalSingleCode());
-                    bindingDisplay.setPredicate(childSeb.getPredicate());
-                    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childSeb.getValuesetBindings(), valueSetsMap));
-                    cModel.addBinding(bindingDisplay);
-                  }
-
-                  StructureElementBinding cSeb =
-                      this.findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
-                  if (cSeb != null) {
-                    BindingDisplay bindingDisplay = new BindingDisplay();
-                    bindingDisplay.setSourceId(childDt.getId().getId());
-                    bindingDisplay.setSourceType(ViewScope.DATATYPE);
-                    bindingDisplay.setPriority(2);
-                    bindingDisplay.setComments(cSeb.getComments());
-                    bindingDisplay.setConstantValue(cSeb.getConstantValue());
-                    bindingDisplay.setExternalSingleCode(cSeb.getExternalSingleCode());
-                    bindingDisplay.setInternalSingleCode(cSeb.getInternalSingleCode());
-                    bindingDisplay.setPredicate(cSeb.getPredicate());
-                    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(cSeb.getValuesetBindings(), valueSetsMap));
-                    cModel.addBinding(bindingDisplay);
-                  }
+                  if (childSeb != null) cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
+                  StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
+                  if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                   componentStructureTreeModel.setData(cModel);
                   if (childChildDt instanceof ComplexDatatype) {
                     ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
-                    if (componentDatatype.getComponents() != null
-                        && componentDatatype.getComponents().size() > 0) {
+                    if (componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0) {
                       for (Component sc : componentDatatype.getComponents()) {
-                        Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+                        Datatype childChildChildDt =
+                            this.findDatatype(sc.getRef().getId(), datatypesMap);
                         if (childChildChildDt != null) {
-                          SubComponentStructureTreeModel subComponentStructureTreeModel =
-                              new SubComponentStructureTreeModel();
-                          SubComponentDisplayDataModel scModel =
-                              new SubComponentDisplayDataModel(sc);
+                          SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                          SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
                           scModel.setViewScope(ViewScope.SEGMENT);
                           scModel.setIdPath(f.getId() + "-" + c.getId() + "-" + sc.getId());
-                          scModel.setPath(
-                              f.getPosition() + "-" + c.getPosition() + "-" + sc.getPosition());
-                          DatatypeLabel subComponentDatatypeLabel = new DatatypeLabel();
-                          subComponentDatatypeLabel
-                              .setDomainInfo(childChildChildDt.getDomainInfo());
-                          subComponentDatatypeLabel.setExt(childChildChildDt.getExt());
-                          subComponentDatatypeLabel.setId(childChildChildDt.getId().getId());
-                          subComponentDatatypeLabel.setLabel(childChildChildDt.getLabel());
-                          if (childChildChildDt instanceof ComplexDatatype)
-                            subComponentDatatypeLabel.setLeaf(false);
-                          else
-                            subComponentDatatypeLabel.setLeaf(true);
-                          subComponentDatatypeLabel.setName(childChildChildDt.getName());
-                          scModel.setDatatypeLabel(subComponentDatatypeLabel);
-
-                          StructureElementBinding childChildSeb =
-                              this.findStructureElementBindingByComponentIdFromStructureElementBinding(
-                                  childSeb, sc.getId());
-                          if (childChildSeb != null) {
-                            BindingDisplay bindingDisplay = new BindingDisplay();
-                            bindingDisplay.setSourceId(segment.getId().getId());
-                            bindingDisplay.setSourceType(ViewScope.SEGMENT);
-                            bindingDisplay.setPriority(1);
-                            bindingDisplay.setComments(childChildSeb.getComments());
-                            bindingDisplay.setConstantValue(childChildSeb.getConstantValue());
-                            bindingDisplay
-                                .setExternalSingleCode(childChildSeb.getExternalSingleCode());
-                            bindingDisplay
-                                .setInternalSingleCode(childChildSeb.getInternalSingleCode());
-                            bindingDisplay.setPredicate(childChildSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childChildSeb.getValuesetBindings(),valueSetsMap));
-                            scModel.addBinding(bindingDisplay);
-                          }
-
-                          StructureElementBinding childCSeb =
-                              this.findStructureElementBindingByComponentIdFromStructureElementBinding(
-                                  cSeb, sc.getId());
-                          if (childCSeb != null) {
-                            BindingDisplay bindingDisplay = new BindingDisplay();
-                            bindingDisplay.setSourceId(childDt.getId().getId());
-                            bindingDisplay.setSourceType(ViewScope.DATATYPE);
-                            bindingDisplay.setPriority(2);
-                            bindingDisplay.setComments(childCSeb.getComments());
-                            bindingDisplay.setConstantValue(childCSeb.getConstantValue());
-                            bindingDisplay.setExternalSingleCode(childCSeb.getExternalSingleCode());
-                            bindingDisplay.setInternalSingleCode(childCSeb.getInternalSingleCode());
-                            bindingDisplay.setPredicate(childCSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(childCSeb.getValuesetBindings(),valueSetsMap));
-                            scModel.addBinding(bindingDisplay);
-                          }
-
-                          StructureElementBinding scSeb =
-                              this.findStructureElementBindingByComponentIdForDatatype(childChildDt,
-                                  sc.getId());
-                          if (scSeb != null) {
-                            BindingDisplay bindingDisplay = new BindingDisplay();
-                            bindingDisplay.setSourceId(childChildDt.getId().getId());
-                            bindingDisplay.setSourceType(ViewScope.DATATYPE);
-                            bindingDisplay.setPriority(3);
-                            bindingDisplay.setComments(scSeb.getComments());
-                            bindingDisplay.setConstantValue(scSeb.getConstantValue());
-                            bindingDisplay.setExternalSingleCode(scSeb.getExternalSingleCode());
-                            bindingDisplay.setInternalSingleCode(scSeb.getInternalSingleCode());
-                            bindingDisplay.setPredicate(scSeb.getPredicate());
-                            bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(scSeb.getValuesetBindings(),valueSetsMap));
-                            scModel.addBinding(bindingDisplay);
-                          }
+                          scModel.setPath(f.getPosition() + "-" + c.getPosition() + "-" + sc.getPosition());
+                          scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
+                          StructureElementBinding childChildSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(childSeb, sc.getId());
+                          if (childChildSeb != null) scModel.addBinding(this.createBindingDisplay(childChildSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
+                          StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
+                          if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                          StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
+                          if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                           subComponentStructureTreeModel.setData(scModel);
-                          componentStructureTreeModel
-                              .addSubComponent(subComponentStructureTreeModel);
+                          componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                         } else {
                           // TODO need to handle exception
                         }
@@ -416,15 +282,12 @@ public class SegmentServiceImpl implements SegmentService {
 
                     }
                   }
-
-
                   fieldStructureTreeModel.addComponent(componentStructureTreeModel);
                 } else {
                   // TODO need to handle exception
                 }
               }
             }
-
           }
           result.addField(fieldStructureTreeModel);
         } else {
@@ -443,7 +306,7 @@ public class SegmentServiceImpl implements SegmentService {
    */
   private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
     Datatype dt = datatypesMap.get(id);
-    if(dt == null) {
+    if (dt == null) {
       dt = this.datatypeService.findLatestById(id);
       datatypesMap.put(id, dt);
     }
@@ -454,22 +317,23 @@ public class SegmentServiceImpl implements SegmentService {
    * @param valuesetBindings
    * @return
    */
-  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings, HashMap<String, Valueset> valueSetsMap) {
-    if(valuesetBindings != null){
+  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
+      HashMap<String, Valueset> valueSetsMap) {
+    if (valuesetBindings != null) {
       Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-      for(ValuesetBinding vb:valuesetBindings){
+      for (ValuesetBinding vb : valuesetBindings) {
         Valueset vs = valueSetsMap.get(vb.getValuesetId());
-        if(vs == null){
+        if (vs == null) {
           vs = this.valueSetService.findLatestById(vb.getValuesetId());
           valueSetsMap.put(vs.getId().getId(), vs);
         }
-        if(vs != null){
+        if (vs != null) {
           DisplayValuesetBinding dvb = new DisplayValuesetBinding();
           dvb.setLabel(vs.getBindingIdentifier());
           dvb.setName(vs.getName());
           dvb.setStrength(vb.getStrength());
           dvb.setValuesetId(vb.getValuesetId());
-          dvb.setValuesetLocations(vb.getValuesetLocations()); 
+          dvb.setValuesetLocations(vb.getValuesetLocations());
           result.add(dvb);
         }
       }
@@ -586,51 +450,6 @@ public class SegmentServiceImpl implements SegmentService {
       result.setPostDef(segment.getPreDef());
       return result;
     }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#saveMetadata(gov.nist.hit.hl7.igamt.
-   * segment.domain.display.SegmentMetadata)
-   */
-  @Override
-  @Deprecated
-  public Segment saveSegment(ChangedSegment changedSegment) throws ValidationException {
-    if (changedSegment != null && changedSegment.getId() != null) {
-      Segment segment = this.findLatestById(changedSegment.getId());
-
-      if (segment != null) {
-        if (changedSegment.getMetadata() != null) {
-          segment.setDescription(changedSegment.getMetadata().getDescription());
-          segment.setExt(changedSegment.getMetadata().getExt());
-          segment.setName(changedSegment.getMetadata().getName());
-          segment.setComment(changedSegment.getMetadata().getAuthorNote());
-          segment.getDomainInfo().setScope(changedSegment.getMetadata().getScope());
-          segment.getDomainInfo().setVersion(changedSegment.getMetadata().getVersion());
-        }
-
-        if (changedSegment.getPostDef() != null) {
-          segment.setPostDef(changedSegment.getPostDef().getPostDef());
-        }
-
-        if (changedSegment.getPreDef() != null) {
-          segment.setPreDef(changedSegment.getPreDef().getPreDef());
-        }
-
-        if (changedSegment.getStructure() != null) {
-          segment.setBinding(changedSegment.getStructure().getBinding());
-          Set<Field> fields = new HashSet<Field>();
-          for (FieldDisplay fd : changedSegment.getStructure().getChildren()) {
-            fields.add(fd.getData());
-          }
-          segment.setChildren(fields);
-        }
-      }
-      return this.save(segment);
-    }
-
     return null;
   }
 
@@ -773,29 +592,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-
-  /**
-   * Validate the structure of the segment
-   * 
-   * @param structure
-   * @throws SegmentValidationException
-   */
-  @Override
-  public void validate(SegmentStructure structure) throws SegmentValidationException {
-    if (!structure.getScope().equals(Scope.HL7STANDARD)) {
-      if (structure.getChildren() != null) {
-        for (FieldDisplay fieldDisplay : structure.getChildren()) {
-          Field f = fieldDisplay.getData();
-          try {
-            validateField(f);
-          } catch (ValidationException e) {
-            throw new SegmentValidationException(structure.getLabel() + "-" + f.getPosition());
-          }
-        }
-      }
-    }
-  }
-
   @Override
   public void validate(DisplayMetadata metadata) throws SegmentValidationException {
     if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
@@ -832,26 +628,6 @@ public class SegmentServiceImpl implements SegmentService {
   public void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException {
     if (dynamicMapping != null) {
     }
-  }
-
-
-  /**
-   * TODO
-   */
-  @Override
-  public Segment convertToSegment(SegmentStructure structure) {
-    Segment segment = this.findLatestById(structure.getId().getId());
-    if (segment != null) {
-      segment.setBinding(structure.getBinding());
-      if (structure.getChildren() != null) {
-        Set<Field> fields = new HashSet<Field>();
-        for (FieldDisplay fd : structure.getChildren()) {
-          fields.add(fd.getData());
-        }
-        segment.setChildren(fields);
-      }
-    }
-    return segment;
   }
 
 
@@ -1020,8 +796,8 @@ public class SegmentServiceImpl implements SegmentService {
    * hl7.igamt.segment.domain.Segment, java.util.List)
    */
   @Override
-  public List<ChangeItemDomain> updateSegmentByChangeItems(Segment s, List<ChangeItemDomain> cItems)
-      throws IOException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
+    Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
       if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1091,22 +867,27 @@ public class SegmentServiceImpl implements SegmentService {
       } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+        seb.setValuesetBindings(
+            this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
+                Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
       } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getExternalSingleCode());
         seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
       } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getConstantValue());
-        if(item.getPropertyValue() == null){
+        if (item.getPropertyValue() == null) {
           seb.setConstantValue(null);
-        }else{
-          seb.setConstantValue((String)item.getPropertyValue());  
+        } else {
+          seb.setConstantValue((String) item.getPropertyValue());
         }
       } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
         Field f = this.findFieldById(s, item.getLocation());
@@ -1118,26 +899,28 @@ public class SegmentServiceImpl implements SegmentService {
             f.setText((String) item.getPropertyValue());
           }
         }
-      }else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
+      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
         item.setOldPropertyValue(seb.getComments());
-        seb.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+        seb.setComments(
+            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
       }
     }
     this.save(s);
-    return cItems;
   }
 
   /**
    * @param hashSet
    * @return
    */
-  private Set<ValuesetBinding> convertDisplayValuesetBinding(HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-    if(displayValuesetBindings != null){
+  private Set<ValuesetBinding> convertDisplayValuesetBinding(
+      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
+    if (displayValuesetBindings != null) {
       Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-      for(DisplayValuesetBinding dvb:displayValuesetBindings){
+      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
         ValuesetBinding vb = new ValuesetBinding();
         vb.setStrength(dvb.getStrength());
         vb.setValuesetId(dvb.getValuesetId());
@@ -1154,8 +937,9 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s, String location) {
-    if(s.getBinding() == null){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Segment s,
+      String location) {
+    if (s.getBinding() == null) {
       ResourceBinding binding = new ResourceBinding();
       binding.setElementId(s.getId().getId());
       s.setBinding(binding);
@@ -1168,31 +952,37 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(ResourceBinding binding, String location) {
-    if(binding.getChildren() == null){
-      if(location.contains("-")){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      ResourceBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else {
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
         binding.addChild(seb);
         return seb;
       }
-    }else{
-      if(location.contains("-")){
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location.split("\\-")[0])) return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
+    } else {
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else{
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location)) return seb;
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
@@ -1207,31 +997,37 @@ public class SegmentServiceImpl implements SegmentService {
    * @param replace
    * @return
    */
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(StructureElementBinding binding, String location) {
-    if(binding.getChildren() == null){
-      if(location.contains("-")){
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      StructureElementBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else {
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
         binding.addChild(seb);
         return seb;
       }
-    }else{
-      if(location.contains("-")){
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location.split("\\-")[0])) return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
+    } else {
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location.split("\\-")[0]);
         binding.addChild(seb);
-        return this.findAndCreateStructureElementBindingByIdPath(seb, location.replace(location.split("\\-")[0] + "-", ""));
-      }else{
-        for(StructureElementBinding seb : binding.getChildren()){
-          if(seb.getElementId().equals(location)) return seb;
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
         }
         StructureElementBinding seb = new StructureElementBinding();
         seb.setElementId(location);
@@ -1254,5 +1050,33 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
+  private BindingDisplay createBindingDisplay(StructureElementBinding seb, String sourceId,
+      ViewScope sourceType, int priority, HashMap<String, Valueset> valueSetsMap) {
+    BindingDisplay bindingDisplay = new BindingDisplay();
+    bindingDisplay.setSourceId(sourceId);
+    bindingDisplay.setSourceType(sourceType);
+    bindingDisplay.setPriority(priority);
+    bindingDisplay.setComments(seb.getComments());
+    bindingDisplay.setConstantValue(seb.getConstantValue());
+    bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
+    bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+    bindingDisplay.setPredicate(seb.getPredicate());
+    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    return bindingDisplay;
+  }
+  
+  private DatatypeLabel createDatatypeLabel(Datatype dt) {
+    DatatypeLabel label = new DatatypeLabel();
+    label.setDomainInfo(dt.getDomainInfo());
+    label.setExt(dt.getExt());
+    label.setId(dt.getId().getId());
+    label.setLabel(dt.getLabel());
+    if (dt instanceof ComplexDatatype)
+      label.setLeaf(false);
+    else
+      label.setLeaf(true);
+    label.setName(dt.getName());
 
+    return label;
+  }
 }

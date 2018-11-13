@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.datatype.controller;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.xerces.impl.dv.DatatypeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
-import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -46,9 +42,7 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private CommonService commonService;
-
-
-
+  
   private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
   private static final String PREDEF_SAVED = "PREDEF_SAVED";
   private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
@@ -60,19 +54,19 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.GET,
       produces = {"application/json"})
-
-  public DatatypeStructure getDatatypeStructure(@PathVariable("id") String id,
+  public DatatypeStructureDisplay getDatatypeStructure(@PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
-    return datatypeService.convertDomainToStructure(datatype);
+    return datatypeService.convertDomainToStructureDisplay(datatype);
 
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/{idPath}/{path}/{viewscope}/structure-by-ref",
       method = RequestMethod.GET, produces = {"application/json"})
   public Set<?> getComponentStructure(@PathVariable("id") String id,
-      @PathVariable("idPath") String idPath, @PathVariable("path") String path, @PathVariable("viewscope") String viewScope,
-      Authentication authentication) throws DatatypeNotFoundException {
+      @PathVariable("idPath") String idPath, @PathVariable("path") String path,
+      @PathVariable("viewscope") String viewScope, Authentication authentication)
+      throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
     return datatypeService.convertComponentStructure(datatype, idPath, path, viewScope);
   }
@@ -112,25 +106,6 @@ public class DatatypeController extends BaseController {
     Datatype datatype = findById(id);
     return datatypeService.convertDomainToConformanceStatement(datatype);
   }
-
-
-
-  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveStucture(@PathVariable("id") String id,
-      @RequestBody DatatypeStructure structure, Authentication authentication)
-      throws ValidationException, DatatypeException, ForbiddenOperationException,
-      DatatypeNotFoundException {
-    log.debug("Saving Datatype with id=" + id);
-    Datatype datatype = datatypeService.convertToDatatype(structure);
-    if (datatype == null) {
-      throw new DatatypeNotFoundException(id);
-    }
-    commonService.checkRight(authentication, datatype);
-    datatype = datatypeService.save(datatype);
-    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, datatype.getUpdateDate());
-  }
-
 
 
   @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.POST,

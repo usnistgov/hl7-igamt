@@ -21,7 +21,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
@@ -80,9 +80,6 @@ public interface ConformanceProfileService {
 
   ConformanceProfile findDisplayFormat(CompositeKey id);
 
-  public ConformanceProfileStructure convertDomainToStructure(
-      ConformanceProfile conformanceProfile);
-
   public DisplayConformanceProfileMetadata convertDomainToMetadata(
       ConformanceProfile conformanceProfile);
 
@@ -103,16 +100,6 @@ public interface ConformanceProfileService {
    */
   public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure);
 
-
-
-  /**
-   * Validate the structure of the segment
-   * 
-   * @param structure
-   * @throws ConformanceProfileValidationException
-   */
-  public void validate(ConformanceProfileStructure structure)
-      throws ConformanceProfileValidationException;
 
   /**
    * Validate the metadata information of the segment
@@ -183,5 +170,11 @@ public interface ConformanceProfileService {
   public Link cloneConformanceProfile(CompositeKey compositeKey,
       HashMap<String, CompositeKey> valuesetsMap, HashMap<String, CompositeKey> segmentsMap, Link l,
       String username);
+
+  /**
+   * @param conformanceProfile
+   * @return
+   */
+  public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile);
 
 }

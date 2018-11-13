@@ -19,298 +19,83 @@
             </div>
         </div>
 
+        <p-treeTable [value]="conformanceprofileStructure.structure" [scrollable]="true" [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+            <ng-template pTemplate="caption">
+                <div style="text-align:right">
+                    <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+                </div>
+            </ng-template>
 
-      <p-treeTable *ngIf="conformanceprofileStructure.treeModel" [value]="conformanceprofileStructure.treeModel" (onNodeExpand)="loadNode($event)"  [scrollable]="true" [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="650px">
-        <ng-template pTemplate="caption">
-          <div style="text-align:right">
-            <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()"
-                           selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
-          </div>
-        </ng-template>
+            <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                    <col *ngFor="let col of columns" class="{{col.style}}">
+                </colgroup>
+            </ng-template>
 
-        <ng-template pTemplate="colgroup" let-columns>
-          <colgroup>
-            <col *ngFor="let col of columns" class="{{col.style}}">
-          </colgroup>
-        </ng-template>
-        <ng-template pTemplate="header" let-columns>
-          <tr>
-            <th *ngFor="let col of columns">
-              {{col.header}}
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
-          <tr>
-            <td *ngFor="let col of columns; let i = index">
-              <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns">
+                        {{col.header}}
+                    </th>
+                </tr>
+            </ng-template>
 
-              <ng-container
-                *ngTemplateOutlet="getTemplateRef(col,readOnly); context:{$implicit:{node:node, col:col}}">
+            <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+                <tr>
+                    <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+                        <ng-container *ngSwitchCase="'name'">
+                            <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
+                        </ng-container>
 
-              </ng-container>
-            </td>
-          </tr>
-        </ng-template>
-      </p-treeTable>
+                        <ng-container *ngSwitchCase="'usage'">
+                            <usage-col *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="conformanceprofileStructure.id.id"></usage-col>
+                            <usage-readonly-col *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+                        </ng-container>
 
-      <ng-template #name pTemplate="body" let-node>
-        <display-badge [type]="node.node.data.type"></display-badge>{{node.node.data.position}}. {{node.node.data.name}}
-      </ng-template>
-      <ng-template #usage pTemplate="body" let-node>
-        <div *ngIf="node.node.data.type === 'GROUP' || node.node.data.type === 'SEGMENTREF'">
-          <p-dropdown *ngIf="node.node.data.usage !== 'C'" [options]="usages" id="{{node.node.data.idPath}}-usage" name="{{node.node.data.idPath}}-usage" required [(ngModel)]="node.node.data.usage" appendTo="body" (onChange)="onUsageChange(node.node)" [style]="{'width' : '100%'}"></p-dropdown>
-          <div *ngIf="node.node.data.usage === 'C'">
-            <p-dropdown [options]="usages" id="{{node.node.data.idPath}}-usage" name="{{node.node.data.idPath}}-usage" [(ngModel)]="node.node.data.usage" appendTo="body" (onChange)="onUsageChange(node.node)" [style]="{'width' : '30%'}"></p-dropdown>
-            (<p-dropdown [options]="cUsages" id="{{node.node.data.idPath}}-tUsage" name="{{node.node.data.idPath}}-tUsage" [(ngModel)]="node.node.data.messageBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
-            <p-dropdown [options]="cUsages" id="{{node.node.data.idPath}}-fUsage" name="{{node.node.data.idPath}}-fUsage" [(ngModel)]="node.node.data.messageBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
-          </div>
-        </div>
-        <div *ngIf="node.node.data.type !== 'GROUP' && node.node.data.type !== 'SEGMENTREF'">
-          <div *ngIf="node.node.data.usage === 'C'">
-            {{node.node.data.usage}}
-          </div>
-          <div *ngIf="node.node.data.usage !== 'C'">
-            <div *ngIf="node.node.data.messageBinding && node.node.data.messageBinding.predicate">
-              {{node.node.data.usage}}
-              (<p-dropdown [options]="cUsages" id="{{node.node.data.idPath}}-tUsage" name="{{node.node.data.idPath}}-tUsage" [(ngModel)]="node.node.data.messageBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
-              <p-dropdown [options]="cUsages" id="{{node.node.data.idPath}}-fUsage" name="{{node.node.data.idPath}}-fUsage" [(ngModel)]="node.node.data.messageBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
-            </div>
-            <div *ngIf="!node.node.data.messageBinding || !node.node.data.messageBinding.predicate">
-              <div *ngIf="node.node.data.subBinding && node.node.data.subBinding.predicate">
-                {{node.node.data.usage}}({{node.node.data.subBinding.predicate.trueUsage}}/{{node.node.data.subBinding.predicate.trueUsage}})
-              </div>
-              <div *ngIf="!node.node.data.subBinding || !node.node.data.subBinding.predicate">
-                {{node.node.data.usage}}
-              </div>
-            </div>
-          </div>
-        </div>
-      </ng-template>
-      <ng-template #cardinality pTemplate="body" let-node>
-        <div *ngIf="node.node.data.type === 'GROUP' || node.node.data.type === 'SEGMENTREF'">
-          <input id="{{node.node.data.idPath}}-min" name="{{node.node.data.idPath}}-min" required [(ngModel)]="node.node.data.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"/>
-          <input id="{{node.node.data.idPath}}-max" name="{{node.node.data.idPath}}-max" required [(ngModel)]="node.node.data.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
-        </div>
-        <div *ngIf="node.node.data.type === 'FIELD'">
-          [{{node.node.data.min}},{{node.node.data.max}}]
-        </div>
-      </ng-template>
-      <ng-template #length pTemplate="body" let-node>
-        <div *ngIf="node.node.data.type !== 'GROUP' && node.node.data.type !== 'SEGMENTREF'">
-          [{{node.node.data.minLength}}..{{node.node.data.maxLength}}]
-        </div>
-      </ng-template>
-      <ng-template #confLength pTemplate="body" let-node>
-        <div *ngIf="node.node.data.type !== 'GROUP' && node.node.data.type !== 'SEGMENTREF'">
-          {{node.node.data.confLength}}
-        </div>
-      </ng-template>
-      <ng-template #datatype pTemplate="body" let-node>
-        <div *ngIf="node.node.data.datatype">
-          <display-ref [elm]="node.node.data.datatype"></display-ref>
-        </div>
-      </ng-template>
-      <ng-template #valueSet pTemplate="body" let-node>
-        <div *ngIf="node.node.data.valuesetAllowed && !node.node.data.hasSingleCode">
-          <div *ngIf="node.node.data.messageBinding">
-            <div *ngFor="let vs of node.node.data.messageBinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'MESSAGE'"></display-ref>
-              <i class="fa fa-pencil" (click)="makeEditModeForValueSet(node.node,vs)" style="width:20%;"></i>
-              <i class="fa fa-times" (click)="delValueSetBinding(node.node.data.messageBinding, vs, node.node.data)" style="width:20%;"></i>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.valuesetBindings || node.node.data.messageBinding.valuesetBindings.length === 0) && node.node.data.segmentBinding">
-            <div *ngFor="let vs of node.node.data.segmentBinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'SEGMENT'"></display-ref>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.valuesetBindings || node.node.data.messageBinding.valuesetBindings.length === 0) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.valuesetBindings || node.node.data.segmentBinding.valuesetBindings.length === 0) && node.node.data.fieldDTbinding">
-            <div *ngFor="let vs of node.node.data.fieldDTbinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'FIELD'"></display-ref>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.valuesetBindings || node.node.data.messageBinding.valuesetBindings.length === 0) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.valuesetBindings || node.node.data.segmentBinding.valuesetBindings.length === 0) && (!node.node.data.fieldDTbinding || !node.node.data.fieldDTbinding.valuesetBindings || node.node.data.fieldDTbinding.valuesetBindings.length === 0) && node.node.data.componentDTbinding">
-            <div *ngFor="let vs of node.node.data.componentDTbinding.valuesetBindings">
-              <display-ref [elm]="vs" [from]="'COMPONENT'"></display-ref>
-            </div>
-          </div>
-          <i class="fa fa-plus" *ngIf="node.node.data.multipleValuesetAllowed || !node.node.data.messageBinding || !node.node.data.messageBinding.valuesetBindings || node.node.data.messageBinding.valuesetBindings.length == 0" (click)="editValueSetBinding(node.node)"></i>
-        </div>
-      </ng-template>
-      <ng-template #constantValue pTemplate="body" let-node>
-        <div *ngIf="node.node.data.datatype && node.node.data.datatype.leaf && !node.node.data.valuesetAllowed">
-          <div *ngIf="node.node.data.messageBinding">
-            <div *ngIf="node.node.data.messageBinding.constantValue">
-              <display-constantvalue [elm]="node.node.data.messageBinding.constantValue" [from]="'MESSAGE'"></display-constantvalue>
-              <i class="fa fa-pencil" (click)="makeEditModeForConstantValue(node.node)" style="width:20%;"></i>
-              <i class="fa fa-times" (click)="deleteConstantValue(node.node)" style="width:20%;"></i>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.constantValue) && node.node.data.segmentBinding">
-            <div *ngIf="node.node.data.segmentBinding.constantValue !== undefined  && node.node.data.segmentBinding.constantValue !== ''">
-              <display-constantvalue [elm]="node.node.data.segmentBinding.constantValue" [from]="'SEGMENT'"></display-constantvalue>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.constantValue) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.constantValue) && node.node.data.fieldDTbinding">
-            <div *ngIf="node.node.data.fieldDTbinding.constantValue !== undefined  && node.node.data.fieldDTbinding.constantValue !== ''">
-              <display-constantvalue [elm]="node.node.data.fieldDTbinding.constantValue" [from]="'FIELD'"></display-constantvalue>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.constantValue) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.constantValue) && (!node.node.data.fieldDTbinding || !node.node.data.fieldDTbinding.constantValue) && node.node.data.componentDTbinding">
-            <div *ngIf="node.node.data.componentDTbinding.constantValue  !== undefined && node.node.data.componentDTbinding.constantValue !== ''">
-              <display-constantvalue [elm]="node.node.data.componentDTbinding.constantValue" [from]="'COMPONENT'"></display-constantvalue>
-            </div>
-          </div>
-          <i class="fa fa-plus" *ngIf="!node.node.data.messageBinding || (node.node.data.messageBinding && !node.node.data.messageBinding.constantValue)" (click)="addNewConstantValue(node.node)"></i>
-        </div>
+                        <ng-container *ngSwitchCase="'cardinality'">
+                            <cardinality-col *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'" [(min)]="node.data.min" [(max)]="node.data.max" [idPath]="node.data.idPath" [(changeItems)]="changeItems"></cardinality-col>
+                            <cardinality-readonly-col *ngIf="node.data.type === 'FIELD'" [(min)]="node.data.min" [(max)]="node.data.max"></cardinality-readonly-col>
+                        </ng-container>
 
-      </ng-template>
-      <ng-template #singlecode pTemplate="body" let-node>
-        <div *ngIf="node.node.data.valuesetAllowed && node.node.data.datatype && node.node.data.datatype.leaf && !node.node.data.hasValueSet">
-          <div *ngIf="node.node.data.messageBinding">
-            <div *ngIf="node.node.data.messageBinding.externalSingleCode">
-              <display-singlecode [elm]="node.node.data.messageBinding.externalSingleCode" [from]="'MESSAGE'"></display-singlecode>
-              <i class="fa fa-pencil" (click)="makeEditModeForSingleCode(node.node)" style="width:20%;"></i>
-              <i class="fa fa-times" (click)="deleteSingleCode(node.node)" style="width:20%;"></i>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.externalSingleCode) && node.node.data.segmentBinding">
-            <div *ngIf="node.node.data.segmentBinding.externalSingleCode">
-              <display-singlecode [elm]="node.node.data.segmentBinding.externalSingleCode" [from]="'SEGMENT'"></display-singlecode>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.externalSingleCode) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.externalSingleCode) && node.node.data.fieldDTbinding">
-            <div *ngIf="node.node.data.fieldDTbinding.externalSingleCode">
-              <display-singlecode [elm]="node.node.data.fieldDTbinding.externalSingleCode" [from]="'FIELD'"></display-singlecode>
-            </div>
-          </div>
-          <div *ngIf="(!node.node.data.messageBinding || !node.node.data.messageBinding.externalSingleCode) && (!node.node.data.segmentBinding || !node.node.data.segmentBinding.externalSingleCode) && (!node.node.data.fieldDTbinding || !node.node.data.fieldDTbinding.externalSingleCode) && node.node.data.componentDTbinding">
-            <div *ngIf="node.node.data.componentDTbinding.externalSingleCode">
-              <display-singlecode [elm]="node.node.data.componentDTbinding.externalSingleCode" [from]="'COMPONENT'"></display-singlecode>
-            </div>
-          </div>
-          <i class="fa fa-plus" *ngIf="!node.node.data.messageBinding || !node.node.data.messageBinding.externalSingleCode" (click)="addNewSingleCode(node.node)"></i>
-        </div>
-      </ng-template>
-      <ng-template #predicate pTemplate="body" let-node>
-        {{node.node.data.idPath}}
-      </ng-template>
-      <ng-template #textDef pTemplate="body" let-node>
-        <div *ngIf="node.node.data.type === 'GROUP' || node.node.data.type === 'SEGMENTREF'">
-          <ng-container *ngIf="node.node.data.text">
-            <span (click)="editTextDefinition(node.node)">{{truncate(node.node.data.text)}}</span>
-            <i class="fa fa-times" (click)="delTextDefinition(node.node)" style="width:20%;"></i>
-          </ng-container>
-          <ng-container *ngIf="!node.node.data.text">
-            <i class="fa fa-pencil" (click)="editTextDefinition(node.node)"></i>
-          </ng-container>
-        </div>
-      </ng-template>
-      <ng-template #comment pTemplate="body" let-node>
-        <div *ngIf="node.node.data.messageBinding">
-          <div *ngFor="let c of node.node.data.messageBinding.comments">
-                            <span>
-                                <display-comment [elm]="c" [from]="'MESSAGE'"></display-comment>
-                                <i class="fa fa-pencil" (click)="makeEditModeForComment(node.node, c)" style="width:20%;"></i>
-                                <i class="fa fa-times" (click)="delCommentBinding(node.node.data.messageBinding, c)" style="width:20%;"></i>
-                            </span>
-          </div>
-        </div>
-        <div *ngIf="node.node.data.segmentBinding">
-          <div *ngFor="let c of node.node.data.segmentBinding.comments">
-            <display-comment [elm]="c" [from]="'SEGMENT'"></display-comment>
-          </div>
-        </div>
-        <div *ngIf="node.node.data.fieldDTbinding">
-          <div *ngFor="let c of node.node.data.fieldDTbinding.comments">
-            <display-comment [elm]="c" [from]="'FIELD'"></display-comment>
-          </div>
-        </div>
-        <div *ngIf="node.node.data.componentDTbinding">
-          <div *ngFor="let c of node.node.data.componentDTbinding.comments">
-            <display-comment [elm]="c" [from]="'COMPONENT'"></display-comment>
-          </div>
-        </div>
-        <i class="fa fa-plus" (click)="addNewComment(node.node)"></i>
-      </ng-template>
+                        <ng-container *ngSwitchCase="'length'">
+                            <length-readonly-col *ngIf="node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT'" [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'confLength'">
+                            <conflength-readonly-col *ngIf="node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT'" [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'datatype'">
+                            <datatype-readonly-col *ngIf="node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></datatype-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'valueSet'">
+                            <valueset-col *ngIf="(node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT') && configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, null, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "conformanceprofileStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'singleCode'">
+                            <singlecode-col *ngIf="(node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT') && configService.isSingleCodeAllow(node.data.datatypeLabel.name, node.data.position, node.parent, null, node.data.type,node.data.datatypeLabel.leaf, node.data.bindings)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "conformanceprofileStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></singlecode-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'constantValue'">
+                            <constantvalue-col *ngIf="(node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT') && configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, null, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "conformanceprofileStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'textDef'">
+                            <textdef-col *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'" [(text)]="node.data.text" [(changeItems)] = "changeItems" [idPath]="node.data.idPath"></textdef-col>
+                            <textdef-readonly-col *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'" [text]="node.data.text"></textdef-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'comment'">
+                            <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "conformanceprofileStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
+                        </ng-container>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-treeTable>
 
 
     </form>
 
-    <p-dialog *ngIf="selectedNode && selectedVS" header="Edit Valueset binding for {{selectedNode.data.name}}" [(visible)]="valuesetDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Binding Identifier: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="valuesetOptions" [(ngModel)]="selectedVS.newvalue.valuesetId" appendTo="body" [style]="{'width':'150px'}" filter="true">
-                    <ng-template let-option pTemplate="body">
-                        <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                            <display-ref *ngIf="option.value" [elm]="getValueSetElm(option.value)"></display-ref>
-                            <span *ngIf="!option.value">{{option.label}}</span>
-                        </div>
-                    </ng-template>
-                </p-dropdown>
-            </div>
-        </div>
 
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Strength: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="valuesetStrengthOptions" [(ngModel)]="selectedVS.newvalue.strength" appendTo="body" [style]="{'width':'150px'}">
-                </p-dropdown>
-            </div>
-        </div>
-
-        <div class="ui-g ui-fluid" *ngIf="selectedNode.data.valueSetLocationOptions">
-            <div class="ui-g-12 ui-md-4">
-                <label>Valueset Location: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <p-dropdown [options]="selectedNode.data.valueSetLocationOptions" [(ngModel)]="selectedVS.newvalue.valuesetLocations" appendTo="body" [style]="{'width':'150px'}">
-                </p-dropdown>
-            </div>
-        </div>
-
-        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewValueSet(selectedNode, selectedVS)" [disabled]="!selectedVS.newvalue.valuesetId"></button>
-    </p-dialog>
-
-    <p-dialog *ngIf="selectedNode && selectedSingleCode" header="Edit SingleCode for {{selectedNode.data.name}}" [(visible)]="singleCodeDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Code: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <input [(ngModel)]="selectedSingleCode.newSingleCode" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
-            </div>
-        </div>
-
-        <div class="ui-g ui-fluid">
-            <div class="ui-g-12 ui-md-4">
-                <label>Code System: </label>
-            </div>
-            <div class="ui-g-12 ui-md-8">
-                <input [(ngModel)]="selectedSingleCode.newSingleCodeSystem" type="text" style="width:45%;border-width:0px 0px 1px 0px"/>
-            </div>
-        </div>
-
-        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewSingleCode(selectedNode, selectedSingleCode)" [disabled]="selectedSingleCode.newSingleCode === '' || selectedSingleCode.newSingleCodeSystem === ''"></button>
-    </p-dialog>
-
-    <p-dialog *ngIf="selectedNode && selectedConstantValue" header="Edit Constant Value for {{selectedNode.data.name}}" [(visible)]="constantValueDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
-        <input [(ngModel)]="selectedConstantValue.newConstantValue" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
-        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewConstantValue(selectedNode, selectedConstantValue)" [disabled]="selectedConstantValue.newConstantValue === ''"></button>
-    </p-dialog>
-
-    <p-dialog *ngIf="selectedNode" header="Edit Definition Text of {{selectedNode.data.name}}" [(visible)]="textDefinitionDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
-        <textarea pInputTextarea [(ngModel)]="selectedNode.data.text"></textarea>
-    </p-dialog>
-
-    <p-dialog *ngIf="selectedNode && selectedComment" header="Edit Comment Value for {{selectedNode.data.name}}" [(visible)]="commentDialogOpen" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
-        <input [(ngModel)]="selectedComment.newComment.description" type="text" style="width:90%;border-width:0px 0px 1px 0px"/>
-        <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitNewComment(selectedNode, selectedComment)" [disabled]="selectedComment.newComment.description === ''"></button>
-    </p-dialog>
 </div>

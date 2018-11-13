@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -100,5 +101,13 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
 
   public void setBindings(Set<BindingDisplay> bindings) {
     this.bindings = bindings;
+  }
+
+  /**
+   * @param createBindingDisplay
+   */
+  public void addBinding(BindingDisplay binding) {
+    if (this.bindings == null) this.bindings = new HashSet<BindingDisplay>();
+    this.bindings.add(binding);
   }
 }
