@@ -1,33 +1,79 @@
-<div *ngIf="!edit">
-    <div class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-3">
-            <span class="badge" [ngClass]="{'label-HL7' : datatypeLabel.domainInfo.scope === 'HL7STANDARD', 'label-USER': datatypeLabel.domainInfo.scope === 'USER'}">{{datatypeLabel.domainInfo.version}}</span>
-        </div>
-        <div class="ui-g-12 ui-md-7">
-            {{datatypeLabel.label}}
-        </div>
-        <div class="ui-g-12 ui-md-2">
-            <i class="fa fa-pencil" (click)="makeEditModeForDatatype()"></i>
-        </div>
+<div class="ui-g ui-fluid">
+    <div class="ui-g-12 ui-md-3">
+        <span class="badge" [ngClass]="{'label-HL7' : datatypeLabel.domainInfo.scope === 'HL7STANDARD', 'label-USER': datatypeLabel.domainInfo.scope === 'USER'}">{{datatypeLabel.domainInfo.version}}</span>
+    </div>
+    <div class="ui-g-12 ui-md-7">
+        {{datatypeLabel.label}}
+    </div>
+    <div class="ui-g-12 ui-md-2">
+        <i class="fa fa-pencil" (click)="makeEditModeForDatatype()"></i>
     </div>
 </div>
-<div *ngIf="edit">
-    <p-dropdown id="{{idPath}}-datatype" name="{{idPath}}-datatype" [options]="relatedDatatypeLabels" (onChange)="onDatatypeChange()" [(ngModel)]="ref.id" appendTo="body" [style]="{'width':'100%'}">
-        <ng-template let-option pTemplate="body">
-            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                <span class="badge" *ngIf="option.id" [ngClass]="{'label-HL7' : option.domainInfo.scope === 'HL7STANDARD', 'label-USER': option.domainInfo.scope === 'USER'}">{{option.domainInfo.version}}</span>{{option.label}}
-                <span *ngIf="!option.id" (click)="editDatatype()">Change Datatype root</span>
-            </div>
-        </ng-template>
-    </p-dropdown>
-</div>
 
-<p-dialog header="Change Datatype root" [(visible)]="changeDTDialogOpen" [modal]="true" [responsive]="true" [width]="350" [minWidth]="200" [minY]="70">
-    <p-dropdown [options]="datatypeLabels" [(ngModel)]="ref.id" (onChange)="onDatatypeChangeForDialog()" appendTo="body" [style]="{'width':'100%'}">
-        <ng-template let-option pTemplate="body">
-            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-                <span class="badge" *ngIf="option.id" [ngClass]="{'label-HL7' : option.domainInfo.scope === 'HL7STANDARD', 'label-USER': option.domainInfo.scope === 'USER'}">{{option.domainInfo.version}}</span>{{option.label}}
-            </div>
-        </ng-template>
-    </p-dropdown>
+<p-dialog *ngIf="changeDTDialogOpen" header="Change Datatype" [(visible)]="changeDTDialogOpen" [modal]="true" [closable]="false" [responsive]="true" [width]="1200">
+    <div class="ui-g ui-fluid">
+        <div class="cp-header-title ui-g-6">
+            Current Datatype:
+        </div>
+        <div class="ui-g-12 ui-g-6">
+            <span class="badge" [ngClass]="{'label-HL7' : currentDTLabel.domainInfo.scope === 'HL7STANDARD', 'label-USER': currentDTLabel.domainInfo.scope === 'USER'}">{{currentDTLabel.domainInfo.version}}</span> {{currentDTLabel.label}}
+        </div>
+    </div>
+
+    <br/>
+
+    <div class="cp-header-title ui-g-12">
+        Current Datatype Library
+    </div>
+
+    <div class="ui-g-12" *ngIf="datatypeLabels">
+        <p-table #dt [columns]="cols" [value]="datatypeLabels" [paginator]="true" [rows]="10">
+            <ng-template pTemplate="caption">
+                <div style="text-align: right">
+                    <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+                    <input type="text" pInputText size="50" placeholder="Global Filter" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns">
+                        {{col.header}}
+                    </th>
+                    <th></th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body" let-rowData let-columns="columns">
+                <tr [pSelectableRow]="rowData">
+                    <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+                        <ng-container *ngSwitchCase="'scopeversion'">
+                            <span class="badge" [ngClass]="{'label-HL7' : rowData.domainInfo.scope === 'HL7STANDARD', 'label-USER': rowData.domainInfo.scope === 'USER'}">{{rowData.domainInfo.version}}</span>
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'label'">
+                            {{rowData.label}}
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'name'">
+                            {{rowData.name}}
+                        </ng-container>
+                        <ng-container *ngSwitchCase="'ext'">
+                            {{rowData.ext}}
+                        </ng-container>
+                    </td>
+                    <td>
+                        <button  style="float:right" (click)="useThis(rowData)"  pButton type="button" label="use" class="green-btn" icon="fa fa-check"></button>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+
+    <div class="ui-g-12" *ngIf="!datatypeLabels">
+        <p-progressSpinner [style]="{'left': '45%'}"></p-progressSpinner>
+    </div>
+
+    <p-footer>
+        <button type="button" pButton icon="fa fa-check" (click)="changeDTDialogOpen=false;update();" label="Update"></button>
+        <button type="button" pButton icon="fa fa-close" (click)="changeDTDialogOpen=false;cancel();" label="Cancel" class="ui-button-secondary"></button>
+    </p-footer>
+
 </p-dialog>

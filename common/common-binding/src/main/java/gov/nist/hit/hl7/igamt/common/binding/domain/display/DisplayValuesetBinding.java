@@ -9,22 +9,40 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.segment.domain.changes;
+package gov.nist.hit.hl7.igamt.common.binding.domain.display;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 
 /**
  * @author jungyubw
- * @param <T>
  *
  */
-public class PropertyValue<T> {
+public class DisplayValuesetBinding extends ValuesetBinding {
 
-  private T value;
+  private String label;
+  private String name;
 
-  public T getValue() {
-    return value;
+
+
+  public DisplayValuesetBinding() {
+    super();
   }
 
-  public void setValue(T value) {
-    this.value = value;
+  public String getLabel() {
+    return label;
   }
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
 }

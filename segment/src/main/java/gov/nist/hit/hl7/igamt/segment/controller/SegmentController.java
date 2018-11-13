@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,7 +34,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -114,24 +114,25 @@ public class SegmentController extends BaseController {
   }
 
 
-  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveStucture(@PathVariable("id") String id,
-      @RequestBody SegmentStructure structure, Authentication authentication)
-      throws ValidationException, SegmentException, ForbiddenOperationException,
-      SegmentNotFoundException {
-    log.debug("Saving segment with id=" + id);
-    if (!Scope.HL7STANDARD.equals(structure.getScope())) {
-      Segment segment = segmentService.convertToSegment(structure);
-      if (segment == null) {
-        throw new SegmentNotFoundException(id);
-      }
-      segment = segmentService.save(segment);
-      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
-    } else {
-      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-    }
-  }
+
+  // @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
+  // produces = {"application/json"})
+  // public ResponseMessage saveStucture(@PathVariable("id") String id,
+  // @RequestBody SegmentStructure structure, Authentication authentication)
+  // throws ValidationException, SegmentException, ForbiddenOperationException,
+  // SegmentNotFoundException {
+  // log.debug("Saving segment with id=" + id);
+  // if (!Scope.HL7STANDARD.equals(structure.getScope())) {
+  // Segment segment = segmentService.convertToSegment(structure);
+  // if (segment == null) {
+  // throw new SegmentNotFoundException(id);
+  // }
+  // segment = segmentService.save(segment);
+  // return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
+  // } else {
+  // throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+  // }
+  // }
 
   @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.POST,
       produces = {"application/json"})
@@ -197,7 +198,6 @@ public class SegmentController extends BaseController {
       throws CoConstraintSaveException {
     CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
         authentication.getPrincipal().toString());
-    System.out.println("NEEEEW");
     return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
         "Saved Successfully", ccTable.getId().getId(), false, new Date(), ccTable);
   }
@@ -219,24 +219,36 @@ public class SegmentController extends BaseController {
     return segment;
   }
 
-  @RequestMapping(value = "/api/segments/{id}/document/{dId}/save", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
       produces = {"application/json"})
   @ResponseBody
-  public void saveSegment(@PathVariable("id") String id, @PathVariable("dId") String documentId,
+  public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,
+      @RequestParam(name = "dId", required = true) String documentId,
       @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
       throws SegmentException, IOException {
-    Segment s = this.segmentService.findLatestById(id);
-    cItems = this.segmentService.updateSegmentByChangeItems(s, cItems);
+    try {
+      Segment s = this.segmentService.findLatestById(id);
+      validateSaveOperation(s);
+      this.segmentService.applyChanges(s, cItems);
+      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+      entityChangeDomain.setDocumentId(documentId);
+      entityChangeDomain.setDocumentType(DocumentType.IG);
+      entityChangeDomain.setTargetId(id);
+      entityChangeDomain.setTargetType(EntityType.SEGMENT);
+      entityChangeDomain.setChangeItems(cItems);
+      entityChangeDomain.setTargetVersion(s.getVersion());
+      entityChangeService.save(entityChangeDomain);
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId().getId(), new Date());
+    } catch (ForbiddenOperationException e) {
+      throw new SegmentException(e);
+    }
+  }
 
-    EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-    entityChangeDomain.setDocumentId(documentId);
-    entityChangeDomain.setDocumentType(DocumentType.IG);
-    entityChangeDomain.setTargetId(id);
-    entityChangeDomain.setTargetType(EntityType.SEGMENT);
-    entityChangeDomain.setUpdateDate(new Date());
-    entityChangeDomain.setChangeItems(cItems);
-    entityChangeDomain.setTargetVersion(s.getId().getVersion());
-    entityChangeService.save(entityChangeDomain);
+
+  private void validateSaveOperation(Segment s) throws ForbiddenOperationException {
+    if (Scope.HL7STANDARD.equals(s.getDomainInfo().getScope())) {
+      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+    }
   }
 
 

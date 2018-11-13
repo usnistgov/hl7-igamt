@@ -240,16 +240,51 @@ export class GeneralConfigurationService {
 
   isValueSetAllow(dtName, position, parrentNode, SegmentName, type){
     if (this._valueSetAllowedDTs.includes(dtName)) return true;
-    if (this._valueSetAllowedFields.includes({
+    if (SegmentName && this._valueSetAllowedFields.includes({
         'segmentName': SegmentName,
         'location': position,
         'type': type
     })) return true;
 
-    if (parrentNode && this._valueSetAllowedComponents.includes({
+    if (parrentNode && parrentNode.data.segmentLabel && this._valueSetAllowedFields.includes({
+          'segmentName': parrentNode.data.segmentLabel.name,
+          'location': position,
+          'type': type
+        })) return true;
+
+    if (parrentNode && parrentNode.data.datatypeLabel && this._valueSetAllowedComponents.includes({
           'dtName': parrentNode.data.datatypeLabel.name,
           'location': position
     })) return true;
+    return false;
+  }
+
+  isSingleCodeAllow(dtName, position, parrentNode, SegmentName, type, isLeaf, bindings){
+    if(isLeaf){
+      if(this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        if(!this.hasValueSet(bindings)){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isConstantValueAllow(dtName, position, parrentNode, SegmentName, type, isLeaf){
+    if(isLeaf){
+      if(!this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasValueSet(bindings){
+    if(bindings){
+      for(let b of bindings){
+        if(b.valuesetBindings && b.valuesetBindings.length > 0) return true;
+      }
+    }
     return false;
   }
 

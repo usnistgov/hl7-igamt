@@ -19,7 +19,7 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule} from 'primeng/primeng';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
 import {DisplayConstantValueComponent} from "../common/tree-table-label/display-constantvalue.component";
@@ -54,6 +54,15 @@ import {ConfLengthReadonlyColComponent} from "../common/tree-table/conflength/co
 import {DatatypeColComponent} from "../common/tree-table/datatype/datatype-col.component";
 import {DatatypeReadonlyColComponent} from "../common/tree-table/datatype/datatype-readonly-col.component";
 import {ValuesetColComponent} from "../common/tree-table/valueset/valueset-col.component";
+import {ValuesetReadonlyColComponent} from "../common/tree-table/valueset/valueset-readonly-col.component";
+import {SingleCodeColComponent} from "../common/tree-table/singlecode/singlecode-col.component";
+import {SingleCodeReadonlyColComponent} from "../common/tree-table/singlecode/singlecode-readonly-col.component";
+import {ConstantValueColComponent} from "../common/tree-table/constantvalue/constantvalue-col.component";
+import {ConstantValueReadonlyColComponent} from "../common/tree-table/constantvalue/constantvalue-readonly-col.component";
+import {TextdefColComponent} from "../common/tree-table/textdef/textdef-col.component";
+import {TextdefReadonlyColComponent} from "../common/tree-table/textdef/textdef-readonly-col.component";
+import {CommentColComponent} from "../common/tree-table/comment/comment-col.component";
+import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
 
 @NgModule({
   imports: [
@@ -69,6 +78,7 @@ import {ValuesetColComponent} from "../common/tree-table/valueset/valueset-col.c
     FieldsetModule,
     RadioButtonModule,
     TableModule,
+    ProgressSpinnerModule,
     TreeTableModule,
     KeyFilterModule,MessageModule,MessagesModule
 
@@ -105,8 +115,16 @@ import {ValuesetColComponent} from "../common/tree-table/valueset/valueset-col.c
     ConfLengthReadonlyColComponent,
     DatatypeColComponent,
     DatatypeReadonlyColComponent,
-    ValuesetColComponent
-
+    ValuesetColComponent,
+    ValuesetReadonlyColComponent,
+    SingleCodeColComponent,
+    SingleCodeReadonlyColComponent,
+    ConstantValueColComponent,
+    ConstantValueReadonlyColComponent,
+    TextdefColComponent,
+    TextdefReadonlyColComponent,
+    CommentColComponent,
+    CommentReadonlyColComponent
   ],
 
   exports: [
@@ -140,7 +158,16 @@ import {ValuesetColComponent} from "../common/tree-table/valueset/valueset-col.c
     ConfLengthReadonlyColComponent,
     DatatypeColComponent,
     DatatypeReadonlyColComponent,
-    ValuesetColComponent
+    ValuesetColComponent,
+    ValuesetReadonlyColComponent,
+    SingleCodeColComponent,
+    SingleCodeReadonlyColComponent,
+    ConstantValueColComponent,
+    ConstantValueReadonlyColComponent,
+    TextdefColComponent,
+    TextdefReadonlyColComponent,
+    CommentColComponent,
+    CommentReadonlyColComponent
   ]
 })
 export class UtilsModule {}

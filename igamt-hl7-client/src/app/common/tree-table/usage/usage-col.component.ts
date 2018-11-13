@@ -49,18 +49,7 @@ export class UsageColComponent {
   ngOnInit(){
     this.usages = this.configService._usages;
     this.cUsages = this.configService._cUsages;
-    if(this.bindings){
-      for (var i in this.bindings) {
-        if(this.bindings[i].predicate){
-          if(this.bindings[i].priority < this.currentPredicatePriority){
-            this.currentPredicatePriority = this.bindings[i].priority;
-            this.currentPredicate = this.bindings[i].predicate;
-            this.currentPredicateSourceId = this.bindings[i].sourceId;
-            this.currentPredicateSourceType = this.bindings[i].sourceType;
-          }
-        }
-      }
-    }
+    if(this.usage === 'C') this.setPredicate();
   }
 
   setPredicate(){

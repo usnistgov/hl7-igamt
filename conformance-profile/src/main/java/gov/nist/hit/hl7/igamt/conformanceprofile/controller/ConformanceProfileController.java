@@ -18,7 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructure;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
@@ -45,10 +45,10 @@ public class ConformanceProfileController extends BaseController {
   @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public ConformanceProfileStructure getConformanceProfileStructure(@PathVariable("id") String id,
+  public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
       Authentication authentication) {
     ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
-    return conformanceProfileService.convertDomainToStructure(conformanceProfile);
+    return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile);
 
   }
 
