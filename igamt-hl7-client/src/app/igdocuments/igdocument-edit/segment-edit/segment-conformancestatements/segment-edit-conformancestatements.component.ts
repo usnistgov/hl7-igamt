@@ -31,7 +31,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     backup:any;
 
     selectedConformanceStatement: any = {};
-
+    segmentStructure : any;
     listTab: boolean = true;
     editorTab: boolean = false;
 
@@ -65,6 +65,10 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         ];
     }
 
+    output(x){
+      console.log(x);
+    }
+
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
@@ -72,7 +76,10 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
 
-        this.route.data.map(data =>data.segmentConformanceStatements).subscribe(x=>{
+        this.route.data.subscribe(data => {
+          this.segmentStructure = data.segmentStructure;
+          const x = data.segmentConformanceStatements;
+
             this.tocService.getDataypeList().then((dtTOCdata) => {
                 let listTocDTs:any = dtTOCdata;
                 for(let entry of listTocDTs){

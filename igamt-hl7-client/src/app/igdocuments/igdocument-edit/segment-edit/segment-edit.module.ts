@@ -38,7 +38,7 @@ import {SegmentTreeNodeService} from '../../../common/segment-tree/segment-tree.
 import {TreeModule} from 'primeng/tree';
 import {TocService} from '../service/toc.service';
 import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
-import {DataListModule, DataTableModule, PickListModule} from 'primeng/primeng';
+import {DataListModule, DataTableModule, DragDropModule, OrganizationChartModule, PickListModule, RadioButtonModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
@@ -47,6 +47,9 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
 import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
 import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
 import {MultiSelectModule} from 'primeng/multiselect';
+import {CsSegmentTreeComponent} from '../../../common/cs-segment-tree/cs-segment-tree.component';
+import {PatternEditorDemoComponent} from '../../../common/pattern-editor-demo/pattern-editor-demo.component';
+import {PatternDialogComponent} from '../../../common/pattern-dialog/pattern-dialog.component';
 
 @NgModule({
     imports: [
@@ -67,15 +70,18 @@ import {MultiSelectModule} from 'primeng/multiselect';
         DataTableModule,
         DataListModule,
         MultiSelectModule,
+        RadioButtonModule,
+      DragDropModule,
+      OrganizationChartModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-  exports:[CoConstraintTableComponent],
+  exports:[CoConstraintTableComponent, PatternDialogComponent, PatternEditorDemoComponent],
 
     providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
-    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
+    declarations: [CsSegmentTreeComponent, PatternEditorDemoComponent, PatternDialogComponent, ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}
