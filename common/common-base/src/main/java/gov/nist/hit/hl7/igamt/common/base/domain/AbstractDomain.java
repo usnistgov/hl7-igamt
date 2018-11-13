@@ -2,10 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.annotation.Version;
 
 public abstract class AbstractDomain {
   @Id
@@ -17,16 +14,10 @@ public abstract class AbstractDomain {
   private String comment;
   private String description;
   private String createdFrom;
-
-  @CreatedDate
   private Date creationDate;
-
-  @LastModifiedDate
   private Date updateDate;
   private CompositeKey from;
-
-  @Version
-  private int version;
+  
 
 
 
@@ -138,15 +129,5 @@ public abstract class AbstractDomain {
   public void setFrom(CompositeKey from) {
     this.from = from;
   }
-
-  public int getVersion() {
-    return version;
-  }
-
-  public void setVersion(int version) {
-    this.version = version;
-  }
-
-
 
 }

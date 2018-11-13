@@ -117,4 +117,7 @@ export class DatatypesService {
     public saveDatatypeConformanceStatements(id, conformanceStatements): Promise<any> {
         return this.http.post('api/datatypes/' + id + '/conformancestatement', conformanceStatements).toPromise();
     }
+    public saveDatatype(id, dId, cItem): Promise<any> {
+    return  this.http.post('api/datatypes/' + id + '/document/' + dId + '/save',cItem).toPromise();
+    }
 }

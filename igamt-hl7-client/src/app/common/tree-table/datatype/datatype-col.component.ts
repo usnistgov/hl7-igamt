@@ -63,7 +63,7 @@ export class DatatypeColComponent {
 
   makeEditModeForDatatype(){
     //this.changeDTDialogOpen = true;
-console.log("On show ?")
+    console.log("On show ?")
     this.currentDTLabel = __.cloneDeep(this.datatypeLabel);
     this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
 
@@ -102,24 +102,56 @@ console.log("On show ?")
   }
 
   update(){
-
-
     this.ref.id = this.currentDTLabel.id;
-    this.updateChildren();
-    this.changeDTDialogOpen = false;
-    this.refChange.emit(this.ref);
-    this.datatypeLabelChange.emit(this.datatypeLabel);
-    let item:any = {};
-    item.location = this.idPath;
-    item.propertyType = 'DATATYPE';
-    item.propertyValue = this.ref;
-    item.changeType = "UPDATE";
-    this.changeItems.push(item);
-    this.changeItemsChange.emit(this.changeItems);
 
-    this.datatypeLabels = null;
-    this.currentDTLabel = null;
-    this.resetDropDown();
+
+    if(!this.datatypeLabel.leaf){
+      this.datatypesService.getDatatypeStructureByRef(this.ref.id, this.idPath, this.path, this.viewScope).then((children) => {
+
+        console.log("this children");
+        console.log(children);
+        children = this.configService.arraySortByPosition(children);
+        this.children = children;
+        this.ref.id = this.currentDTLabel.id;
+        this.refChange.emit(this.ref);
+        this.datatypeLabelChange.emit(this.datatypeLabel);
+        let item:any = {};
+        item.location = this.idPath;
+        item.propertyType = 'DATATYPE';
+        item.propertyValue = this.ref;
+        item.changeType = "UPDATE";
+        this.changeItems.push(item);
+        this.changeItemsChange.emit(this.changeItems);
+
+        this.datatypeLabels = null;
+        this.currentDTLabel = null;
+        this.resetDropDown();
+        console.log("children called ");
+        this.childrenChange.emit(this.children);
+        this.refresh.emit(true);
+      });
+    }else {
+      this.children = null;
+      this.ref.id = this.currentDTLabel.id;
+      this.refChange.emit(this.ref);
+      this.datatypeLabelChange.emit(this.datatypeLabel);
+      let item:any = {};
+      item.location = this.idPath;
+      item.propertyType = 'DATATYPE';
+      item.propertyValue = this.ref;
+      item.changeType = "UPDATE";
+      this.changeItems.push(item);
+      this.changeItemsChange.emit(this.changeItems);
+
+      this.datatypeLabels = null;
+      this.currentDTLabel = null;
+      this.resetDropDown();
+      this.childrenChange.emit(this.children);
+      this.refresh.emit(true);
+    }
+
+
+
 
   }
 

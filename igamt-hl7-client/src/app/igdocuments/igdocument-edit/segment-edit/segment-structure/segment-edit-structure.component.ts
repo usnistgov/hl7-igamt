@@ -93,6 +93,7 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     refreshTree(){
+        console.log("Refreshing tree");
         this.segmentStructure.structure = [...this.segmentStructure.structure];
     }
 

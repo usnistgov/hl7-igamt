@@ -16,15 +16,13 @@
         <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
       </div>
     </div>
-
-
-    <p-treeTable [value]="datatypeStructure.children" (onNodeExpand)="loadNode($event)"  [scrollable]="true" [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="650px">
+    <p-treeTable [value]="datatypeStructure.structure" [scrollable]="true" [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
       <ng-template pTemplate="caption">
         <div style="text-align:right">
-          <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header"
-                         selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns" (onChange)="reorderCols()"></p-multiSelect>
+          <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
         </div>
       </ng-template>
+
       <ng-template pTemplate="colgroup" let-columns>
         <colgroup>
           <col *ngFor="let col of columns" class="{{col.style}}">
@@ -35,205 +33,69 @@
         <tr>
           <th *ngFor="let col of columns">
             {{col.header}}
+
           </th>
+
+
+
         </tr>
       </ng-template>
+
       <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
         <tr>
-          <td *ngFor="let col of columns; let i = index">
-            <p-treeTableToggler [rowNode]="rowNode" *ngIf="i == 0"></p-treeTableToggler>
+          <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+            <ng-container *ngSwitchCase="'name'">
+              <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
+            </ng-container>
 
-            <ng-container
-              *ngTemplateOutlet="getTemplateRef(col,readOnly); context:{$implicit:{node:node, col:col}}">
+            <ng-container *ngSwitchCase="'usage'">
+              <usage-col *ngIf="node.data.type === 'COMPONENT'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id.id"></usage-col>
+              <usage-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+            </ng-container>
 
+            <ng-container *ngSwitchCase="'cardinality'">
+              <cardinality-col *ngIf="node.data.type === 'COMPONENT'" [(min)]="node.data.min" [(max)]="node.data.max" [idPath]="node.data.idPath" [(changeItems)]="changeItems"></cardinality-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'length'">
+              <length-col *ngIf="node.data.type === 'COMPONENT'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></length-col>
+              <length-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'confLength'">
+              <conflength-col *ngIf="node.data.type === 'COMPONENT'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></conflength-col>
+              <conflength-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'datatype'">
+              <datatype-col *ngIf="node.data.type === 'COMPONENT'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
+              <datatype-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'valueSet'">
+              <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'singleCode'">
+              <singlecode-col *ngIf="configService.isSingleCodeAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type,node.data.datatypeLabel.leaf, node.data.bindings)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></singlecode-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'constantValue'">
+              <constantvalue-col *ngIf="configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'textDef'">
+              <textdef-col *ngIf="node.data.type === 'COMPONENT'" [(text)]="node.data.text" [(changeItems)] = "changeItems" [idPath]="node.data.idPath"></textdef-col>
+              <textdef-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [text]="node.data.text"></textdef-readonly-col>
+            </ng-container>
+
+            <ng-container *ngSwitchCase="'comment'">
+              <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
             </ng-container>
           </td>
         </tr>
       </ng-template>
     </p-treeTable>
-
-
-    <ng-template #name pTemplate="body" let-node>
-
-      <display-badge [type]="node.node.data.displayData.type"></display-badge>{{node.node.data.position}}. {{node.node.data.name}}
-    </ng-template>
-
-    <ng-template #usage pTemplate="body" let-node>
-
-      <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
-        <p-dropdown *ngIf="node.node.data.usage !== 'C'" [options]="usages" id="{{node.node.data.displayData.idPath}}-usage" name="{{node.node.data.displayData.idPath}}-usage" required [(ngModel)]="node.node.data.usage" appendTo="body" (onChange)="onUsageChange(node.node)" [style]="{'width' : '100%'}"></p-dropdown>
-        <div *ngIf="node.node.data.usage === 'C'">
-          <p-dropdown [options]="usages" id="{{node.node.data.displayData.idPath}}-usage" name="{{node.node.data.displayData.idPath}}-usage" [(ngModel)]="node.node.data.usage" appendTo="body" (onChange)="onUsageChange(node.node)" [style]="{'width' : '30%'}"></p-dropdown>
-          (<p-dropdown [options]="cUsages" id="{{node.node.data.displayData.idPath}}-tUsage" name="{{node.node.data.displayData.idPath}}-tUsage" [(ngModel)]="node.node.data.displayData.datatypeBinding.predicate.trueUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>/
-          <p-dropdown [options]="cUsages" id="{{node.node.data.displayData.idPath}}-fUsage" name="{{node.node.data.displayData.idPath}}-fUsage" [(ngModel)]="node.node.data.displayData.datatypeBinding.predicate.falseUsage" appendTo="body" [style]="{'width' : '30%'}"></p-dropdown>)
-        </div>
-      </div>
-      <div *ngIf="node.node.data.displayData.type === 'SUBCOMPONENT'">
-        <div *ngIf="node.node.data.usage !== 'C' || !node.node.data.displayData.componentDTbinding || !node.node.data.displayData.componentDTbinding.predicate">{{node.node.data.usage}}</div>
-        <div *ngIf="node.node.data.usage === 'C' && node.node.data.displayData.componentDTbinding && node.node.data.displayData.componentDTbinding.predicate">C({{node.node.data.displayData.componentDTbinding.predicate.trueUsage}}/{{node.node.data.displayData.componentDTbinding.predicate.falseUsage}})</div>
-      </div>
-    </ng-template>
-
-    <ng-template #length pTemplate="body" let-node>
-        <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
-          <div *ngIf="node.node.data.minLength !== 'NA' && node.node.data.displayData.datatype.leaf">
-            <input id="{{node.node.data.displayData.idPath}}-minLength" name="{{node.node.data.displayData.idPath}}-minLength"  [(ngModel)]="node.node.data.minLength" type="number" style="width:40%;border-width:0px 0px 1px 0px"/>
-            <input id="{{node.node.data.displayData.idPath}}-maxLength" name="{{node.node.data.displayData.idPath}}-maxLength"  [(ngModel)]="node.node.data.maxLength" type="text" style="width:40%;border-width:0px 0px 1px 0px"/>
-            <i class="fa fa-times" (click)="delLength(node.node)" style="width:20%;"></i>
-          </div>
-        </div>
-        <div *ngIf="node.node.data.displayData.type !== 'COMPONENT'">
-          [{{node.node.data.minLength}}..{{node.node.data.maxLength}}]
-        </div>
-
-    </ng-template>
-
-    <ng-template #confLength pTemplate="body" let-node>
-
-        <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
-          <ng-container *ngIf="node.node.data.confLength !== 'NA' && node.node.data.displayData.datatype.leaf">
-            <input [(ngModel)]="node.node.data.confLength" id="{{node.node.data.displayData.idPath}}-confLength" name="{{node.node.data.displayData.idPath}}-confLength"  type="text" style="width: 80%;border-width:0px 0px 1px 0px"/>
-            <i class="fa fa-times" (click)="delConfLength(node.node)" style="width:20%;"></i>
-          </ng-container>
-        </div>
-        <div *ngIf="node.node.data.displayData.type !== 'COMPONENT'">
-          {{node.node.data.confLength}}
-        </div>
-
-    </ng-template>
-
-    <ng-template #datatype pTemplate="body" let-node>
-      <div *ngIf="!node.node.data.displayData.datatype.edit">
-        <display-ref [elm]="node.node.data.displayData.datatype"></display-ref>
-        <i class="fa fa-pencil" *ngIf="node.node.data.displayData.type === 'COMPONENT'" (click)="makeEditModeForDatatype(node.node)"></i>
-      </div>
-      <div *ngIf="node.node.data.displayData.datatype.edit">
-        <p-dropdown id="{{node.node.data.displayData.idPath}}-datatype" name="{{node.node.data.displayData.idPath}}-datatype" [options]="node.node.data.displayData.datatype.dtOptions" [(ngModel)]="node.node.data.displayData.datatype.id" (onChange)="onDatatypeChange(node.node)" appendTo="body" [style]="{'width':'100%'}">
-          <ng-template let-option pTemplate="body">
-            <div class="ui-helper-clearfix" style="position: relative;height: 25px;">
-              <display-ref *ngIf="option.value" [elm]="getDatatypeElm(option.value)"></display-ref>
-              <span *ngIf="!option.value" (click)="editDatatypeForComponent(node.node)">{{option.label}}</span>
-            </div>
-          </ng-template>
-        </p-dropdown>
-      </div>
-
-    </ng-template>
-    <ng-template #valueSet pTemplate="body" let-node>
-
-      <div *ngIf="node.node.data.displayData.valuesetAllowed && !node.node.data.displayData.hasSingleCode">
-        <div *ngIf="node.node.data.displayData.datatypeBinding">
-          <div *ngFor="let vs of node.node.data.displayData.datatypeBinding.valuesetBindings">
-            <display-ref [elm]="vs" [from]="'DATATYPE'"></display-ref>
-            <i class="fa fa-pencil" (click)="makeEditModeForValueSet(node.node,vs)" style="width:20%;"></i>
-            <i class="fa fa-times" (click)="delValueSetBinding(node.node.data.displayData.datatypeBinding, vs, node.node.data.displayData)" style="width:20%;"></i>
-          </div>
-        </div>
-        <div *ngIf="(!node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.valuesetBindings || node.node.data.displayData.datatypeBinding.valuesetBindings.length === 0) && node.node.data.displayData.componentDTbinding">
-          <div *ngFor="let vs of node.node.data.displayData.componentDTbinding.valuesetBindings">
-            <div *ngIf="!vs.edit">
-              <display-ref [elm]="vs" [from]="'COMPONENT'"></display-ref>
-            </div>
-          </div>
-        </div>
-        <i class="fa fa-plus" *ngIf="node.node.data.displayData.multipleValuesetAllowed || !node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.valuesetBindings || node.node.data.displayData.datatypeBinding.valuesetBindings.length == 0" (click)="editValueSetBinding(node.node)"></i>
-      </div>
-    </ng-template>
-
-    <ng-template #constantValue pTemplate="body" let-node>
-      <div *ngIf="node.node.data.displayData.datatype.leaf && !node.node.data.displayData.valuesetAllowed">
-        <div *ngIf="node.node.data.displayData.datatypeBinding">
-          <div *ngIf="node.node.data.displayData.datatypeBinding.constantValue">
-            <display-constantvalue [elm]="node.node.data.displayData.datatypeBinding.constantValue" [from]="'DATATYPE'"></display-constantvalue>
-            <i class="fa fa-pencil" (click)="makeEditModeForConstantValue(node.node)" style="width:20%;"></i>
-            <i class="fa fa-times" (click)="deleteConstantValue(node.node)" style="width:20%;"></i>
-          </div>
-        </div>
-        <div *ngIf="(!node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.constantValue) && node.node.data.displayData.componentDTbinding">
-          <div *ngIf="node.node.data.displayData.componentDTbinding.constantValue  !== undefined && node.node.data.displayData.componentDTbinding.constantValue !== ''">
-            <display-constantvalue [elm]="node.node.data.displayData.componentDTbinding.constantValue" [from]="'COMPONENT'"></display-constantvalue>
-          </div>
-        </div>
-        <div *ngIf="!node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.editConstantValue">
-          <i class="fa fa-plus" *ngIf="!node.node.data.displayData.datatypeBinding || (node.node.data.displayData.datatypeBinding && !node.node.data.displayData.datatypeBinding.constantValue)" (click)="addNewConstantValue(node.node)"></i>
-        </div>
-      </div>
-
-    </ng-template>
-    <ng-template #singlecode pTemplate="body" let-node>
-
-      <div *ngIf="node.node.data.displayData.valuesetAllowed && node.node.data.displayData.datatype.leaf && !node.node.data.displayData.hasValueSet">
-        <div *ngIf="node.node.data.displayData.datatypeBinding">
-          <div *ngIf="node.node.data.displayData.datatypeBinding.externalSingleCode">
-            <display-singlecode [elm]="node.node.data.displayData.datatypeBinding.externalSingleCode" [from]="'DATATYPE'"></display-singlecode>
-            <i class="fa fa-pencil" (click)="makeEditModeForSingleCode(node.node)" style="width:20%;"></i>
-            <i class="fa fa-times" (click)="deleteSingleCode(node.node)" style="width:20%;"></i>
-          </div>
-        </div>
-        <div *ngIf="(!node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.externalSingleCode) && node.node.data.displayData.componentDTbinding">
-          <div *ngIf="node.node.data.displayData.componentDTbinding.externalSingleCode">
-            <display-singlecode [elm]="node.node.data.displayData.componentDTbinding.externalSingleCode" [from]="'COMPONENT'"></display-singlecode>
-          </div>
-        </div>
-        <i class="fa fa-plus" *ngIf="!node.node.data.displayData.datatypeBinding || !node.node.data.displayData.datatypeBinding.externalSingleCode" (click)="addNewSingleCode(node.node)"></i>
-      </div>
-
-    </ng-template>
-    <ng-template #predicate pTemplate="body" let-node>
-      <div *ngIf="node.node.data.usage === 'C'">
-        <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
-          <div *ngIf="node.node.data.displayData.datatypeBinding && node.node.data.displayData.datatypeBinding.predicate && node.node.data.displayData.datatypeBinding.predicate.freeText">
-            {{node.node.data.displayData.datatypeBinding.predicate.freeText}}
-          </div>
-          <div *ngIf="node.node.data.displayData.datatypeBinding && node.node.data.displayData.datatypeBinding.predicate && node.node.data.displayData.datatypeBinding.predicate.assertion && node.node.data.displayData.datatypeBinding.predicate.assertion.description">
-            {{node.node.data.displayData.datatypeBinding.predicate.assertion.description}}
-          </div>
-          <i class="fa fa-pencil" (click)="editPredicate(node.node)" style="width:20%;"></i>
-        </div>
-        <div *ngIf="node.node.data.displayData.type === 'SUBCOMPONENT'">
-          <div *ngIf="node.node.data.displayData.componentDTbinding && node.node.data.displayData.componentDTbinding.predicate && node.node.data.displayData.componentDTbinding.predicate.freeText">
-            {{node.node.data.displayData.componentDTbinding.predicate.freeText}}
-          </div>
-          <div *ngIf="node.node.data.displayData.componentDTbinding && node.node.data.displayData.componentDTbinding.predicate && node.node.data.displayData.componentDTbinding.predicate.assertion && node.node.data.displayData.componentDTbinding.predicate.assertion.description">
-            {{node.node.data.displayData.componentDTbinding.predicate.assertion.description}}
-          </div>
-        </div>
-      </div>
-    </ng-template>
-
-    <ng-template #textDef pTemplate="body" let-node>
-      <div *ngIf="node.node.data.displayData.type === 'COMPONENT'">
-        <ng-container *ngIf="node.node.data.text">
-          <span (click)="editTextDefinition(node.node)">{{truncate(node.node.data.text)}}</span>
-          <i class="fa fa-times" (click)="delTextDefinition(node.node)" style="width:20%;"></i>
-        </ng-container>
-        <ng-container *ngIf="!node.node.data.text">
-          <i class="fa fa-pencil" (click)="editTextDefinition(node.node)"></i>
-        </ng-container>
-      </div>
-
-    </ng-template>
-
-    <ng-template #comment pTemplate="body" let-node>
-
-      <div *ngIf="node.node.data.displayData.datatypeBinding">
-        <div *ngFor="let c of node.node.data.displayData.datatypeBinding.comments">
-                            <span>
-                                <display-comment [elm]="c" [from]="'DATATYPE'"></display-comment>
-                                <i class="fa fa-pencil" (click)="makeEditModeForComment(node.node, c)" style="width:20%;"></i>
-                                <i class="fa fa-times" (click)="delCommentBinding(node.node.data.displayData.datatypeBinding, c)" style="width:20%;"></i>
-                            </span>
-        </div>
-      </div>
-      <div *ngIf="node.node.data.displayData.componentDTbinding">
-        <div *ngFor="let c of node.node.data.displayData.componentDTbinding.comments">
-          <display-comment [elm]="c" [from]="'COMPONENT'"></display-comment>
-        </div>
-      </div>
-      <i class="fa fa-plus" (click)="addNewComment(node.node)"></i>
-
-    </ng-template>
-
 
   </form>
 
