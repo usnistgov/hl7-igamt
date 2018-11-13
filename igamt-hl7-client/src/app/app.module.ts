@@ -123,6 +123,9 @@ import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialo
 import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.component';
 import {ReportService} from "./dialog-wrapper/report.service";
 import {DisplayService} from "./display/display.service";
+import {PatternDialogComponent} from './common/pattern-dialog/pattern-dialog.component';
+import { PatternEditorDemoComponent } from './common/pattern-editor-demo/pattern-editor-demo.component';
+
 @NgModule({
     imports: [
         BrowserModule,
@@ -202,7 +205,7 @@ import {DisplayService} from "./display/display.service";
         TreeTableModule,
         CommonModule,
         ReactiveFormsModule,
-
+      OrganizationChartModule,
 
         AlertModule.forRoot()
 
@@ -220,6 +223,7 @@ import {DisplayService} from "./display/display.service";
         AppMenuComponent,
         AppTopBarComponent,
         AppFooterComponent,
+        PatternDialogComponent,
         NotFoundComponent,
         LoginComponent,
         RegisterComponent,
@@ -228,7 +232,8 @@ import {DisplayService} from "./display/display.service";
         ResetPasswordRequestComponent,
         ResetPasswordConfirmComponent,
         ErrorComponent,
-        DialogWrapperComponent
+        DialogWrapperComponent,
+        PatternEditorDemoComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
