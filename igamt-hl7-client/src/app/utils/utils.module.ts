@@ -63,6 +63,7 @@ import {TextdefColComponent} from "../common/tree-table/textdef/textdef-col.comp
 import {TextdefReadonlyColComponent} from "../common/tree-table/textdef/textdef-readonly-col.component";
 import {CommentColComponent} from "../common/tree-table/comment/comment-col.component";
 import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
+import {ElementLabelComponent} from "../common/element-label/element-label.component";
 
 @NgModule({
   imports: [
@@ -124,7 +125,7 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     TextdefColComponent,
     TextdefReadonlyColComponent,
     CommentColComponent,
-    CommentReadonlyColComponent
+    CommentReadonlyColComponent,ElementLabelComponent
   ],
 
   exports: [
@@ -167,7 +168,8 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     TextdefColComponent,
     TextdefReadonlyColComponent,
     CommentColComponent,
-    CommentReadonlyColComponent
+    CommentReadonlyColComponent,
+    ElementLabelComponent
   ]
 })
 export class UtilsModule {}

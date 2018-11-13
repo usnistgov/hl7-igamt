@@ -4,6 +4,8 @@ import {GeneralConfigurationService} from "../../../service/general-configuratio
 import {IgDocumentService} from "../../../igdocuments/igdocument-edit/ig-document.service";
 import { _ } from 'underscore';
 import * as __ from 'lodash';
+import {SelectItemGroup} from "primeng/components/common/selectitemgroup";
+import {Types} from "../../constants/types";
 
 @Component({
   selector : 'datatype-col',
@@ -22,9 +24,13 @@ export class DatatypeColComponent {
 
   @Output() refresh = new EventEmitter<any>();
 
+  @Input() documentType: Types;
+
+
   @Input() idPath : string;
   @Input() path : string;
   @Input() viewScope : string;
+  editing=false;
 
   changeDTDialogOpen:boolean;
   currentDTLabel:any;
@@ -34,6 +40,10 @@ export class DatatypeColComponent {
   @Output() changeItemsChange = new EventEmitter<any[]>();
 
   cols: any[];
+
+
+  groupedLabels :SelectItemGroup[]= [];
+
 
   constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService, private igDocumentService : IgDocumentService){}
 
@@ -46,19 +56,55 @@ export class DatatypeColComponent {
       { field: 'ext', header: 'Ext' },
       { field: 'label', header: 'Label' }
     ];
+
+
+
   }
 
   makeEditModeForDatatype(){
-    this.changeDTDialogOpen = true;
+    //this.changeDTDialogOpen = true;
+console.log("On show ?")
     this.currentDTLabel = __.cloneDeep(this.datatypeLabel);
     this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
-      this.datatypeLabels = data;
+
+      this.groupLabels(data);
+      this.editing=true;
     });
+  }
+  groupLabels(datatypeLabels)
+  {
+    this.initOptions();
+
+
+    for(let i=0;i<datatypeLabels.length;i++){
+      if(datatypeLabels[i].name==this.currentDTLabel.name){
+        this.groupedLabels[0].items.push({label:datatypeLabels[i].label,value:datatypeLabels[i]});
+      }else{
+        this.groupedLabels[1].items.push({label:datatypeLabels[i].label,value:datatypeLabels[i]});
+      }
+    }
+  }
+
+  initOptions=function () {
+
+    this.groupedLabels =[
+      {
+        label: 'Flavors',
+        items: [
+        ]
+      },
+      {
+        label: 'Others',
+        items: [
+        ]
+      }
+    ];
   }
 
   update(){
+
+
     this.ref.id = this.currentDTLabel.id;
-    this.datatypeLabel = __.cloneDeep(this.currentDTLabel);
     this.updateChildren();
     this.changeDTDialogOpen = false;
     this.refChange.emit(this.ref);
@@ -73,6 +119,14 @@ export class DatatypeColComponent {
 
     this.datatypeLabels = null;
     this.currentDTLabel = null;
+    this.resetDropDown();
+
+  }
+
+  resetDropDown(){
+    console.log("Closing");
+    this.initOptions();
+    this.editing=false;
   }
 
   cancel(){

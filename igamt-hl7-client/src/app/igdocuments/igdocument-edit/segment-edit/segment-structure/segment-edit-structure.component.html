@@ -34,7 +34,11 @@
                 <tr>
                     <th *ngFor="let col of columns">
                         {{col.header}}
+
                     </th>
+
+
+
                 </tr>
             </ng-template>
 
@@ -65,8 +69,8 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'datatype'">
-                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems"></datatype-col>
-                            <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></datatype-readonly-col>
+                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
+                            <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'valueSet'">
