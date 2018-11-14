@@ -6,6 +6,7 @@ import { _ } from 'underscore';
 import * as __ from 'lodash';
 import {SelectItemGroup} from "primeng/components/common/selectitemgroup";
 import {Types} from "../../constants/types";
+import {DatatypeColService} from "./datatype-col.service";
 
 @Component({
   selector : 'datatype-col',
@@ -14,7 +15,7 @@ import {Types} from "../../constants/types";
 })
 
 export class DatatypeColComponent {
-  @Input() igId: any;
+  @Input() documentId: any;
   @Input() ref: any;
   @Output() refChange = new EventEmitter<any>();
   @Input() datatypeLabel: any;
@@ -41,11 +42,9 @@ export class DatatypeColComponent {
 
   cols: any[];
 
-
   groupedLabels :SelectItemGroup[]= [];
 
-
-  constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService, private igDocumentService : IgDocumentService){}
+  constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService, private datatypeColService:DatatypeColService){}
 
   ngOnInit(){
     this.changeDTDialogOpen = false;
@@ -65,9 +64,9 @@ export class DatatypeColComponent {
     //this.changeDTDialogOpen = true;
     console.log("On show ?")
     this.currentDTLabel = __.cloneDeep(this.datatypeLabel);
-    this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
-
-      this.groupLabels(data);
+    this.datatypeColService.getDatatypeFlavorsOptions(this.documentId,this.documentType, this.viewScope,this.ref.id ).then((data) => {
+      this.groupedLabels=data;
+    //  this.groupLabels(data);
       this.editing=true;
     });
   }
@@ -99,60 +98,34 @@ export class DatatypeColComponent {
         ]
       }
     ];
-  }
+  };
 
   update(){
-    this.ref.id = this.currentDTLabel.id;
+    this.ref.id = this.datatypeLabel.id;
+    this.refChange.emit(this.ref);
+    this.datatypeLabelChange.emit(this.datatypeLabel);
+    let item:any = {};
+    item.location = this.idPath;
+    item.propertyType = 'DATATYPE';
+    item.propertyValue = this.ref;
+    item.changeType = "UPDATE";
+    this.changeItems.push(item);
+    this.changeItemsChange.emit(this.changeItems);
 
-
+    this.datatypeLabels = null;
+    this.resetDropDown();
     if(!this.datatypeLabel.leaf){
       this.datatypesService.getDatatypeStructureByRef(this.ref.id, this.idPath, this.path, this.viewScope).then((children) => {
-
-        console.log("this children");
-        console.log(children);
         children = this.configService.arraySortByPosition(children);
         this.children = children;
-        this.ref.id = this.currentDTLabel.id;
-        this.refChange.emit(this.ref);
-        this.datatypeLabelChange.emit(this.datatypeLabel);
-        let item:any = {};
-        item.location = this.idPath;
-        item.propertyType = 'DATATYPE';
-        item.propertyValue = this.ref;
-        item.changeType = "UPDATE";
-        this.changeItems.push(item);
-        this.changeItemsChange.emit(this.changeItems);
-
-        this.datatypeLabels = null;
-        this.currentDTLabel = null;
-        this.resetDropDown();
-        console.log("children called ");
         this.childrenChange.emit(this.children);
         this.refresh.emit(true);
       });
     }else {
       this.children = null;
-      this.ref.id = this.currentDTLabel.id;
-      this.refChange.emit(this.ref);
-      this.datatypeLabelChange.emit(this.datatypeLabel);
-      let item:any = {};
-      item.location = this.idPath;
-      item.propertyType = 'DATATYPE';
-      item.propertyValue = this.ref;
-      item.changeType = "UPDATE";
-      this.changeItems.push(item);
-      this.changeItemsChange.emit(this.changeItems);
-
-      this.datatypeLabels = null;
-      this.currentDTLabel = null;
-      this.resetDropDown();
       this.childrenChange.emit(this.children);
       this.refresh.emit(true);
     }
-
-
-
-
   }
 
   resetDropDown(){
@@ -191,4 +164,5 @@ export class DatatypeColComponent {
     }
     return null;
   }
+
 }

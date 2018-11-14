@@ -58,7 +58,7 @@
             </ng-container>
 
             <ng-container *ngSwitchCase="'length'">
-              <length-col *ngIf="node.data.type === 'COMPONENT'" [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></length-col>
+              <length-col *ngIf="node.data.type === 'COMPONENT'"  [(minLength)]="node.data.minLength" [(maxLength)]="node.data.maxLength" [(confLength)]="node.data.confLength" [idPath]="node.data.idPath" [leaf]="node.data.datatypeLabel.leaf" [(changeItems)]="changeItems"></length-col>
               <length-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
             </ng-container>
 
@@ -68,7 +68,7 @@
             </ng-container>
 
             <ng-container *ngSwitchCase="'datatype'">
-              <datatype-col *ngIf="node.data.type === 'COMPONENT'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
+              <datatype-col *ngIf="node.data.type === 'COMPONENT'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId] ="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
               <datatype-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
             </ng-container>
 

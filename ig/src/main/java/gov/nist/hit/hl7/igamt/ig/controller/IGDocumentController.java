@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.ig.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -44,6 +45,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
@@ -156,6 +158,20 @@ public class IGDocumentController extends BaseController {
       }
     }
     return result;  
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/falvorOptions/{dtId}", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(@PathVariable("id") String id, @PathVariable("viewScope") String viewScope,@PathVariable("dtId") String dtId, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    List<DatatypeSelectItemGroup> result =new ArrayList<DatatypeSelectItemGroup>();
+    Set<String> ids=	this.gatherIds(igdoument.getDatatypeRegistry().getChildren());
+    	
+    Datatype d=this.datatypeService.findLatestById(dtId);
+    
+    result = datatypeService.getDatatypeFlavorsOptions(ids, d, viewScope);
+    return result;
+      
+
   }
   
   @RequestMapping(value = "/api/igdocuments/{id}/valuesetLabels", method = RequestMethod.GET, produces = {"application/json"})
