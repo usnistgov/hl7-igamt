@@ -56,7 +56,7 @@ export class CsSegmentTreeComponent implements OnInit {
 
   processPath(n: TreeNode) {
     return this.pathList(n).reverse().reduce((pV, cV) => {
-      cV.child = [ pV ];
+      cV.child = pV;
       return cV;
     });
   }
@@ -65,7 +65,7 @@ export class CsSegmentTreeComponent implements OnInit {
     if (node.parent) {
       const parentList = this.pathList(node.parent);
       parentList.push({
-        elementId: node.data.idPath,
+        elementId: node.data.id,
         instanceParameter: '*'
       });
       return parentList;

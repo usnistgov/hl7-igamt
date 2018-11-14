@@ -124,6 +124,7 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
   remove(node: any) {
     if (node.parent) {
       node.parent.children.splice(node.data.position);
+      this.removeLeafs(this.pattern, node);
       node.parent.complete(this.pattern.leafs);
     } else {
      this.initPattern();
@@ -140,6 +141,29 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
 
   public html(str: string) {
     return this.sanitizer.bypassSecurityTrustHtml(str);
+  }
+
+  removeLeafs(pattern: Pattern, node: Operator) {
+    const getLeafs = function (op: Operator) {
+      const leafs = [];
+      for (const child of op.children) {
+        if (child instanceof Statement) {
+          leafs.push(child);
+        } else {
+          leafs.push.apply(leafs, getLeafs(child));
+        }
+      }
+      return leafs;
+    };
+    const rmLeafs = getLeafs(node);
+    console.log(rmLeafs);
+    for (const leaf of rmLeafs){
+      const i = pattern.leafs.indexOf(leaf);
+      if (i !== -1) {
+        console.log(i);
+        pattern.leafs.splice(i);
+      }
+    }
   }
 
 }
