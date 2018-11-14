@@ -305,7 +305,7 @@ export class Statement extends Assertion  {
   }
 
   public clone(parent: Operator) {
-    const branch = parent ? parent.data.branch : 'D';
+    const branch = this.data.branch === 'P' ? 'P' : parent ? parent.data.branch : 'D';
     const no: Statement = new Statement(branch, this.data.id, parent, this.data.position);
     return no;
   }

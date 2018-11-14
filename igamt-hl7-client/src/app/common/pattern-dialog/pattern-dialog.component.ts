@@ -46,6 +46,7 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
 
   cancel() {
     this.dismissWithNoData();
+    this.pattern = null;
   }
 
   finish() {

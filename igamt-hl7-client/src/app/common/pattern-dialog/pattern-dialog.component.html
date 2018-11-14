@@ -1,8 +1,8 @@
 <p-dialog header="Assertion Pattern Editor" [(visible)]="_visible"
           styleClass="pattern-dialog"
           [modal]="true" [responsive]="true" [minWidth]="1000" [minHeight]="750"
-          [baseZIndex]="10000">
-  <div style="width: 100%; height: 100%; margin: auto; background-color: white;">
+          [baseZIndex]="10000" [closable]="false" [closeOnEscape]="false" >
+  <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
 
     <div style="width: 100%; border-bottom: 1px solid darkgrey;">
       <div  style="border-bottom: 1px solid #a9a9a9; border-top: 1px solid #a9a9a9; height: 30px; background-color: #f3f0f6;display: flex;
@@ -32,7 +32,6 @@
 
       <ng-template let-node pTemplate="operator" style="background-color: #0c7ed5;">
         <div style="width: 100%; text-align: right; padding-right: 5px;">
-          <!--<i *ngIf="isNary(node)" class="fa fa-plus" style="color: lightgreen; right: 5px; cursor: pointer;" (click)="add(node)"></i>-->
           <i class="fa fa-minus" style="color: red; right: 5px; cursor: pointer;" (click)="remove(node)"></i>
         </div>
         <div class="node-content" >

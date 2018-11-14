@@ -23,17 +23,19 @@ export class PatternEditorDemoComponent implements OnInit {
   constructor() { }
 
   startFrom(pattern: Pattern) {
-
+    const ctrl = this;
     if (pattern && pattern.assertion) {
       const payload = {
         pattern : pattern.clone()
       };
-      this.dialog.open(payload).subscribe(
-        result => {
-          console.log(result);
-          this.assertions.custom.push(result);
+      this.dialog.open(payload).subscribe({
+        next(p) {
+          ctrl.assertions.custom.push(p);
+        },
+        complete() {
+          console.log('COMPLETE');
         }
-      );
+      });
     }
   }
 
@@ -42,7 +44,7 @@ export class PatternEditorDemoComponent implements OnInit {
       const payload = {
         pattern : pattern
       };
-      this.dialog.open(payload).subscribe();
+      this.dialog.open(payload);
     }
   }
 
@@ -53,11 +55,15 @@ export class PatternEditorDemoComponent implements OnInit {
   }
 
   create() {
-    this.dialog.open({ pattern: null}).subscribe(
-      result => {
-        this.assertions.custom.push(result);
+    const ctrl = this;
+    this.dialog.open({ pattern: null}).subscribe({
+      next(p) {
+        ctrl.assertions.custom.push(p);
+      },
+      complete() {
+        console.log('COMPLETE');
       }
-    );
+    });
   }
 
   ngOnInit() {
