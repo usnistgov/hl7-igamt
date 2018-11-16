@@ -2,6 +2,8 @@
  * Created by hnt5 on 11/2/17.
  */
 import {Injectable} from '@angular/core';
+import { _ } from 'underscore';
+
 @Injectable()
 export class GeneralConfigurationService {
 
@@ -75,7 +77,9 @@ export class GeneralConfigurationService {
       }
     ];
 
-    this._instanceNums = [ { label : 'ONE', value : '*' },
+    this._instanceNums = [
+      { label : 'Select #', value : null },
+      { label : 'ONE', value : '*' },
       { label : 'the first', value : '1' },
       { label : 'the second', value : '2' },
       { label : 'the third', value : '3' },
@@ -86,7 +90,9 @@ export class GeneralConfigurationService {
       { label : 'the eighth', value : '8' },
       { label : 'the ninth', value : '9' },
       { label : 'the tenth', value : '10' }
-      ];
+    ];
+
+
 
     this._assertionModes = [
       {
@@ -207,6 +213,22 @@ export class GeneralConfigurationService {
     return this._usages;
   }
 
+  getInstancLabelByValue(val){
+    if(val === '*') return 'ONE';
+    if(val === '1') return 'the first';
+    if(val === '2') return 'the second';
+    if(val === '3') return 'the third';
+    if(val === '4') return 'the forth';
+    if(val === '5') return 'the fifth';
+    if(val === '6') return 'the sixth';
+    if(val === '7') return 'the seventh';
+    if(val === '8') return 'the eighth';
+    if(val === '9') return 'the ninth';
+    if(val === '10') return 'the tenth';
+
+    return null;
+  }
+
 
   get valueSetAllowedDTs(){
     return this._valueSetAllowedDTs;
@@ -216,18 +238,53 @@ export class GeneralConfigurationService {
     return this._valueSetAllowedComponents;
   }
 
-  isValueSetAllow(dtName, position, parrentDT, SegmentName, type){
+  isValueSetAllow(dtName, position, parrentNode, SegmentName, type){
     if (this._valueSetAllowedDTs.includes(dtName)) return true;
-    if (this._valueSetAllowedFields.includes({
+    if (SegmentName && this._valueSetAllowedFields.includes({
         'segmentName': SegmentName,
         'location': position,
         'type': type
     })) return true;
 
-    if (this._valueSetAllowedComponents.includes({
-          'dtName': parrentDT,
+    if (parrentNode && parrentNode.data.segmentLabel && this._valueSetAllowedFields.includes({
+          'segmentName': parrentNode.data.segmentLabel.name,
+          'location': position,
+          'type': type
+        })) return true;
+
+    if (parrentNode && parrentNode.data.datatypeLabel && this._valueSetAllowedComponents.includes({
+          'dtName': parrentNode.data.datatypeLabel.name,
           'location': position
     })) return true;
+    return false;
+  }
+
+  isSingleCodeAllow(dtName, position, parrentNode, SegmentName, type, isLeaf, bindings){
+    if(isLeaf){
+      if(this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        if(!this.hasValueSet(bindings)){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  isConstantValueAllow(dtName, position, parrentNode, SegmentName, type, isLeaf){
+    if(isLeaf){
+      if(!this.isValueSetAllow(dtName, position, parrentNode, SegmentName, type)){
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasValueSet(bindings){
+    if(bindings){
+      for(let b of bindings){
+        if(b.valuesetBindings && b.valuesetBindings.length > 0) return true;
+      }
+    }
     return false;
   }
 
@@ -291,5 +348,15 @@ export class GeneralConfigurationService {
       }
     }
     return null;
+  }
+
+  arraySortByPosition(objectArray){
+    objectArray = _.sortBy(objectArray, function(item){ return item.data.position});
+    for(let child of objectArray){
+      if(child.children){
+        child.children = this.arraySortByPosition(child.children);
+      }
+    }
+    return objectArray;
   }
 }

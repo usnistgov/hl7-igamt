@@ -3,14 +3,12 @@
 
     <ul style="list-style-type: none;">
 
-        <li *ngFor="let item of items">
-         <span [ngClass]="{'active-node':activeId==item.id}"> <i class="{{item.icon}}"></i>
-          <a  (click)="goTo(item)">
+        <li *ngFor="let item of items" [routerLink]="getUrl(item)" routerLinkActive="active-node">
+         <span> <i class="{{item.icon}}"></i>
+          <a>
           {{item.label}}
-
           </a>
          </span>
-
         </li>
 
     </ul>

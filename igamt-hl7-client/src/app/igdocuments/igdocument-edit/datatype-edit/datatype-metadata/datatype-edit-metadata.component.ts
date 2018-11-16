@@ -65,19 +65,19 @@ export class DatatypeEditMetadataComponent extends HasFroala implements WithSave
           let node = treeModel.getNodeById(this.datatypeId);
           node.data.data.label= this.datatypeMetadata.name;
           node.data.data.ext= this.datatypeMetadata.ext;
-          this.tocService.setTreeModelInDB(treeModel).then(x=>{
+          node.data.data.description= this.datatypeMetadata.description;
+
+      this.tocService.setTreeModelInDB(treeModel).then(x=>{
             this.datatypesService.saveDatatypeMetadata(this.datatypeId,this.datatypeMetadata).then( saved => {
                   this.backup = _.cloneDeep(this.datatypeMetadata);
                   this.editForm.control.markAsPristine();
                   resolve(true);
                 }, error => {
-                  console.log("Error Saving");
-                  this.igErrorService.showError(error);
+                    reject(error);
                 }
             );
           }, tocError=>{
-            console.log("TOC NOT SAVED")
-            this.igErrorService.showError(tocError);
+            reject(tocError);
           })
         }
     )

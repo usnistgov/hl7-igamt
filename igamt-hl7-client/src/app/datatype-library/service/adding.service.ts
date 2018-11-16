@@ -24,7 +24,7 @@ export  class DatatypeLibraryAddingService {
   }
 
   addDatatypes(wrapper){
-    return this.http.post('api/datatype-library/'+wrapper.id+'/datatypes/add', wrapper);
+    return this.http.post<any>('api/datatype-library/'+wrapper.id+'/datatypes/add', wrapper);
 
   }
 

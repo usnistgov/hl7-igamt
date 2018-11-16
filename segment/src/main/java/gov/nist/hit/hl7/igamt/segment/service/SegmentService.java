@@ -13,21 +13,24 @@
  */
 package gov.nist.hit.hl7.igamt.segment.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.ChangedSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructure;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
@@ -69,15 +72,11 @@ public interface SegmentService extends ResourceService {
 
   public Segment getLatestById(String id);
 
-  public SegmentStructure convertDomainToStructure(Segment segment);
-
   public DisplayMetadata convertDomainToMetadata(Segment segment);
 
   public PreDef convertDomainToPredef(Segment segment);
 
   public PostDef convertDomainToPostdef(Segment segment);
-
-  public Segment saveSegment(ChangedSegment changedSegment) throws ValidationException;
 
   public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
@@ -85,16 +84,7 @@ public interface SegmentService extends ResourceService {
 
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
-  public Segment convertToSegment(SegmentStructure structure);
 
-
-  /**
-   * Validate the structure of the segment
-   * 
-   * @param structure
-   * @throws SegmentValidationException
-   */
-  public void validate(SegmentStructure structure) throws SegmentValidationException;
 
   /**
    * Validate the metadata information of the segment
@@ -165,5 +155,21 @@ public interface SegmentService extends ResourceService {
    * @throws SegmentValidationException
    */
   void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
+
+  /**
+   * @param segment
+   * @return
+   */
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment);
+
+  /**
+   * @param s
+   * @param cItems
+   * @return
+   * @throws JsonProcessingException
+   * @throws IOException
+   */
+
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
 }

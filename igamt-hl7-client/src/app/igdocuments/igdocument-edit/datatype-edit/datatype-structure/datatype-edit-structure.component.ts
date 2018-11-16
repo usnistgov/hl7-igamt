@@ -5,7 +5,7 @@ import {Component, ViewChild, TemplateRef} from "@angular/core";
 import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {ConstraintsService} from "../../service/constraints.service";
 import { _ } from 'underscore';
 import * as __ from 'lodash';
 import {TocService} from "../../service/toc.service";
@@ -252,7 +252,7 @@ export class DatatypeEditStructureComponent implements WithSave{
 
             }, error => {
                 console.log("error saving");
-                reject();
+                reject(error);
             });
         })
     }
@@ -734,6 +734,10 @@ export class DatatypeEditStructureComponent implements WithSave{
 
             this.idMap[data.idPath] = data;
             this.treeData.push(treeNode);
+        }
+
+        if(this.selectedPredicate && this.selectedPredicate.type && this.selectedPredicate.assertion && this.selectedPredicate.type === 'ASSERTION'){
+            this.constraintsService.generateTreeData(this.selectedPredicate.assertion, this.treeData, this.idMap, this.datatypesLinks);
         }
 
         this.preciateEditorOpen = true;

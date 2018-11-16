@@ -61,6 +61,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.repository.DatatypeLibraryReposito
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.STATUS;
 
 /**
  * @author ena3
@@ -304,6 +305,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
+    qry.fields().include("publicationInfo");
     qry.fields().include("username");
     qry.fields().include("conformanceProfileRegistry");
     qry.fields().include("creationDate");
@@ -346,6 +348,43 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     return res;
   }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#findLatestPublished()
+   */
+  @Override
+  public List<DatatypeLibrary> findLatestPublished() {
+    // TODO Auto-generated method stub
 
 
+    Criteria where = Criteria.where("publicationInfo.status").is(STATUS.PUBLISHED);
+
+    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
+
+    // Convert the aggregation result into a List
+    List<CompositeKey> groupResults =
+        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
+
+    Criteria where2 = Criteria.where("id").in(groupResults);
+    Query qry = Query.query(where2);
+    qry.fields().include("domainInfo");
+    qry.fields().include("publicationInfo");
+
+    qry.fields().include("id");
+    qry.fields().include("metadata");
+    qry.fields().include("username");
+    qry.fields().include("conformanceProfileRegistry");
+    qry.fields().include("creationDate");
+    qry.fields().include("updateDate");
+
+    List<DatatypeLibrary> libs = mongoTemplate.find(qry, DatatypeLibrary.class);
+
+
+
+    return libs;
+  }
 }
+
+

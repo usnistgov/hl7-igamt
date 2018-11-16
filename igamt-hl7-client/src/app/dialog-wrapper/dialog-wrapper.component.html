@@ -1,0 +1,22 @@
+<p-blockUI [(blocked)]="reportError" >
+
+</p-blockUI>
+
+<p-dialog [(visible)]="reportError" [closable]="false">
+  <p-header>
+    Something Wrong Happened
+  </p-header>
+
+  <div *ngIf="reported">
+    <p-message severity="success" text="The Error Has been reported to the tool administrator."></p-message>
+  </div>
+
+
+  <p-footer>
+    <button  pButton type="button" (click)="goToHome()" label="Return To Home" class="green-btn" icon="fa fa-home"></button>
+    <button  pButton type="button" (click)="previous()" label="Reload Previous Url" class="red-btn" icon="fa fa-refresh"></button>
+    <button *ngIf="!reported"  pButton type="button" (click)="parseAndSend()" label="Send Error" class="red-btn" icon="fa fa-refresh"></button>
+  </p-footer>
+</p-dialog>
+
+

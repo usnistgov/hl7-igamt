@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
-import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
@@ -51,5 +49,10 @@ public interface DatatypeLibraryService {
    * @return
    */
   public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs);
+
+  /**
+   * @return
+   */
+  public List<DatatypeLibrary> findLatestPublished();
 
 }

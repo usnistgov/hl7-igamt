@@ -36,25 +36,34 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
+import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
 /**
@@ -67,8 +76,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
+
+  @Autowired
+  CommonService commonService;
   @Autowired
   private MongoTemplate mongoTemplate;
+
+  @Autowired
+  ValuesetService valueSetService;
 
 
   @Override
@@ -221,43 +236,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     return datatypes;
   }
 
-  @Override
-  public DatatypeStructure convertDomainToStructure(Datatype datatype) {
-    if (datatype != null) {
-      DatatypeStructure result = new DatatypeStructure();
-      result.setId(datatype.getId());
-      result.setScope(datatype.getDomainInfo().getScope());
-      result.setVersion(datatype.getDomainInfo().getVersion());
-      if (datatype.getExt() != null) {
-        result.setLabel(datatype.getName() + "_" + datatype.getExt());
-      } else {
-        result.setLabel(datatype.getName());
-      }
-      result.setName(datatype.getName());
-      result.setBinding(datatype.getBinding());
-
-      if (datatype instanceof ComplexDatatype) {
-        ComplexDatatype cDt = (ComplexDatatype) datatype;
-        if (cDt.getComponents() != null && cDt.getComponents().size() > 0) {
-          for (Component c : cDt.getComponents()) {
-            ComponentDisplay componentDisplay = new ComponentDisplay();
-            componentDisplay.setData(c);
-            if (datatype.getDomainInfo().getScope().toString()
-                .equals(Scope.HL7STANDARD.toString())) {
-              componentDisplay.setReadOnly(true);
-            } else {
-              componentDisplay.setReadOnly(false);
-
-            }
-            result.addChild(componentDisplay);
-          }
-        }
-      }
-      return result;
-    }
-    return null;
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -332,54 +310,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#saveDatatype(gov.nist.hit.hl7.igamt.
-   * datatype.domain.display.ChangedDatatype)
-   */
-  @Override
-  public Datatype saveDatatype(ChangedDatatype changedDatatype) {
-    if (changedDatatype != null && changedDatatype.getId() != null) {
-      Datatype datatype = this.findLatestById(changedDatatype.getId());
-
-      if (datatype != null) {
-        if (changedDatatype.getMetadata() != null) {
-          datatype.setDescription(changedDatatype.getMetadata().getDescription());
-          datatype.setExt(changedDatatype.getMetadata().getExt());
-          datatype.setName(changedDatatype.getMetadata().getName());
-          datatype.setComment(changedDatatype.getMetadata().getAuthorNote());
-          datatype.getDomainInfo().setScope(changedDatatype.getMetadata().getScope());
-          datatype.getDomainInfo().setVersion(changedDatatype.getMetadata().getVersion());
-        }
-
-        if (changedDatatype.getPostDef() != null) {
-          datatype.setPostDef(changedDatatype.getPostDef().getPostDef());
-        }
-
-        if (changedDatatype.getPreDef() != null) {
-          datatype.setPreDef(changedDatatype.getPreDef().getPreDef());
-        }
-
-        if (changedDatatype.getStructure() != null) {
-          datatype.setBinding(changedDatatype.getStructure().getBinding());
-          Set<Component> components = new HashSet<Component>();
-          for (ComponentDisplay cd : changedDatatype.getStructure().getChildren()) {
-            components.add(cd.getData());
-          }
-          if (components.size() > 0) {
-            ComplexDatatype cDatatype = (ComplexDatatype) datatype;
-            cDatatype.setComponents(components);
-          }
-        }
-      }
-      return this.save(datatype);
-    }
-
-    return null;
-  }
-
   @Override
   public List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version) {
     // TODO Auto-generated method stub
@@ -449,29 +379,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     ValidationUtil.validateConfLength(f.getConfLength());
   }
 
-
-  /**
-   * Validate the structure of the datatype
-   * 
-   * @param structure
-   * @throws DatatypeValidationException
-   */
-  @Override
-  public void validate(DatatypeStructure structure) throws DatatypeValidationException {
-    if (!structure.getScope().equals(Scope.HL7STANDARD)) {
-      if (structure.getChildren() != null) {
-        for (ComponentDisplay componentDisplay : structure.getChildren()) {
-          Component f = componentDisplay.getData();
-          try {
-            validateComponent(f);
-          } catch (ValidationException e) {
-            throw new DatatypeValidationException(structure.getLabel() + "-" + f.getPosition());
-          }
-        }
-      }
-    }
-  }
-
   @Override
   public void validate(DisplayMetadata metadata) throws DatatypeValidationException {
     if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
@@ -501,39 +408,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     }
   }
 
-
-
-  /**
-   * TODO
-   */
-  /*
-   * (non-Javadoc)
-   * 
-   * @see
-   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertToDatatype(gov.nist.hit.hl7.
-   * igamt. datatype.domain.display.DatatypeStructure)
-   */
-  @Override
-  public Datatype convertToDatatype(DatatypeStructure structure) {
-    Datatype datatype = this.findLatestById(structure.getId().getId());
-    if (datatype != null) {
-      datatype.setBinding(structure.getBinding());
-      if (datatype instanceof ComplexDatatype) {
-        ComplexDatatype complexDatatype = (ComplexDatatype) datatype;
-        if (structure.getChildren() != null && !structure.getChildren().isEmpty()) {
-          Set<Component> components = new HashSet<Component>();
-          for (ComponentDisplay fd : structure.getChildren()) {
-            components.add(fd.getData());
-          }
-          complexDatatype.setComponents(components);
-        }
-        return complexDatatype;
-      }
-    }
-    return datatype;
-  }
-
-
   @Override
   public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException {
     Datatype datatype = findLatestById(predef.getId().getId());
@@ -550,6 +424,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (datatype == null) {
       throw new DatatypeNotFoundException(postdef.getId().getId());
     }
+
     datatype.setPostDef(postdef.getPostDef());
     return save(datatype);
   }
@@ -582,12 +457,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     return save(datatype);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#cloneDatatype(java.util.HashMap,
-   * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link)
-   */
   @Override
   public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
       HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
@@ -611,11 +480,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   }
 
-  /**
-   * @param elm
-   * @param datatypesMap
-   * @param valuesetsMap
-   */
   private void updateDependencies(Datatype elm, HashMap<String, CompositeKey> datatypesMap,
       HashMap<String, CompositeKey> valuesetsMap) {
     // TODO Auto-generated method stub
@@ -638,10 +502,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     }
   }
 
-  /**
-   * @param elm
-   * @param valuesetsMap
-   */
   private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
     // TODO Auto-generated method stub
     Set<String> vauleSetIds = new HashSet<String>();
@@ -660,6 +520,242 @@ public class DatatypeServiceImpl implements DatatypeService {
     }
   }
 
+  @Override
+  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
+    HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
+    HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
+    if (viewScope.equals("SEGMENT")) {
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype childDatatype = (ComplexDatatype) datatype;
+        if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
+          Set<ComponentStructureTreeModel> result = new HashSet<ComponentStructureTreeModel>();
 
+          for (Component c : childDatatype.getComponents()) {
+            Datatype childChildDt = this.findDatatype(c.getRef().getId(), datatypesMap);
+            if (childChildDt != null) {
+              ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
+              ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
+              cModel.setViewScope(ViewScope.SEGMENT);
+              cModel.setIdPath(idPath + "-" + c.getId());
+              cModel.setPath(path + "-" + c.getPosition());
+              cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
+              StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
+              if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+
+              componentStructureTreeModel.setData(cModel);
+              if (childChildDt instanceof ComplexDatatype) {
+                ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
+                if (componentDatatype.getComponents() != null
+                    && componentDatatype.getComponents().size() > 0) {
+                  for (Component sc : componentDatatype.getComponents()) {
+                    Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+                    if (childChildChildDt != null) {
+                      SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                      SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
+                      scModel.setViewScope(ViewScope.SEGMENT);
+                      scModel.setIdPath(idPath + "-" + c.getId() + "-" + sc.getId());
+                      scModel.setPath(path + "-" + c.getPosition() + "-" + sc.getPosition());
+                      scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
+                      StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
+                      if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                      StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
+                      if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                      subComponentStructureTreeModel.setData(scModel);
+                      componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
+                    } else {
+                      // TODO need to handle exception
+                    }
+                  }
+                }
+              }
+              result.add(componentStructureTreeModel);
+            } else {
+              // TODO need to handle exception
+            }
+          }
+          return result;
+        }
+      }
+    } else if (viewScope.equals("DATATYPE")) {
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype componentDatatype = (ComplexDatatype) datatype;
+        if (componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0) {
+          Set<SubComponentStructureTreeModel> result = new HashSet<SubComponentStructureTreeModel>();
+          for (Component sc : componentDatatype.getComponents()) {
+            Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+            if (childChildChildDt != null) {
+              SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+              SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
+              scModel.setViewScope(ViewScope.DATATYPE);
+              scModel.setIdPath(idPath + "-" + sc.getId());
+              scModel.setPath(path + "-" + sc.getPosition());
+              scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
+              StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
+              if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+              subComponentStructureTreeModel.setData(scModel);
+              result.add(subComponentStructureTreeModel);
+            } else {
+              // TODO need to handle exception
+            }
+          }
+          return result;
+        }
+      }
+    }
+    return null;
+  }
+
+  @Override
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype) {
+    HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
+    HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
+
+    DatatypeStructureDisplay result = new DatatypeStructureDisplay();
+    result.setId(datatype.getId());
+    result.setScope(datatype.getDomainInfo().getScope());
+    result.setVersion(datatype.getDomainInfo().getVersion());
+    result.setName(datatype.getName());
+    if (datatype.getExt() != null) {
+      result.setLabel(datatype.getName() + "_" + datatype.getExt());
+    } else {
+      result.setLabel(datatype.getName());
+    }
+
+    if (datatype instanceof ComplexDatatype) {
+      ComplexDatatype dt = (ComplexDatatype) datatype;
+
+      if (dt.getComponents() != null && dt.getComponents().size() > 0) {
+        for (Component c : dt.getComponents()) {
+          Datatype childDt = this.findDatatype(c.getRef().getId(), datatypesMap);
+          if (childDt != null) {
+            ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
+            ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
+            cModel.setViewScope(ViewScope.DATATYPE);
+            cModel.setIdPath(c.getId());
+            cModel.setPath(c.getPosition() + "");
+            cModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
+            StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
+            if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId().getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+            componentStructureTreeModel.setData(cModel);
+
+            if (childDt instanceof ComplexDatatype) {
+              ComplexDatatype childDatatype = (ComplexDatatype) childDt;
+              if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
+                for (Component sc : childDatatype.getComponents()) {
+                  Datatype childChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+                  if (childChildDt != null) {
+                    SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                    SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(c);
+                    scModel.setViewScope(ViewScope.DATATYPE);
+                    scModel.setIdPath(c.getId() + "-" + sc.getId());
+                    scModel.setPath(c.getPosition() + "-" + sc.getPosition());
+                    scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
+                    StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
+                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId().getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+                    StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
+                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                    subComponentStructureTreeModel.setData(scModel);
+                    componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
+                  } else {
+                    // TODO need to handle exception
+                  }
+                }
+              }
+            }
+            result.addComponent(componentStructureTreeModel);
+          } else {
+            // TODO need to handle exception
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private BindingDisplay createBindingDisplay(StructureElementBinding seb, String sourceId,
+      ViewScope sourceType, int priority, HashMap<String, Valueset> valueSetsMap) {
+    BindingDisplay bindingDisplay = new BindingDisplay();
+    bindingDisplay.setSourceId(sourceId);
+    bindingDisplay.setSourceType(sourceType);
+    bindingDisplay.setPriority(priority);
+    bindingDisplay.setComments(seb.getComments());
+    bindingDisplay.setConstantValue(seb.getConstantValue());
+    bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
+    bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
+    bindingDisplay.setPredicate(seb.getPredicate());
+    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    return bindingDisplay;
+  }
+
+  private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
+    Datatype dt = datatypesMap.get(id);
+    if (dt == null) {
+      dt = this.findLatestById(id);
+      datatypesMap.put(id, dt);
+    }
+    return dt;
+  }
+
+  private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
+      HashMap<String, Valueset> valueSetsMap) {
+    if (valuesetBindings != null) {
+      Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+      for (ValuesetBinding vb : valuesetBindings) {
+        Valueset vs = valueSetsMap.get(vb.getValuesetId());
+        if (vs == null) {
+          vs = this.valueSetService.findLatestById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId().getId(), vs);
+        }
+        if (vs != null) {
+          DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+          dvb.setLabel(vs.getBindingIdentifier());
+          dvb.setName(vs.getName());
+          dvb.setStrength(vb.getStrength());
+          dvb.setValuesetId(vb.getValuesetId());
+          dvb.setValuesetLocations(vb.getValuesetLocations());
+          result.add(dvb);
+        }
+      }
+      return result;
+    }
+    return null;
+  }
+
+  private StructureElementBinding findStructureElementBindingByComponentIdForDatatype(Datatype dt,
+      String cid) {
+    if (dt != null && dt.getBinding() != null && dt.getBinding().getChildren() != null) {
+      for (StructureElementBinding seb : dt.getBinding().getChildren()) {
+        if (seb.getElementId().equals(cid))
+          return seb;
+      }
+    }
+    return null;
+  }
+
+  private StructureElementBinding findStructureElementBindingByComponentIdFromStructureElementBinding(
+      StructureElementBinding seb, String cId) {
+    if (seb != null && seb.getChildren() != null) {
+      for (StructureElementBinding child : seb.getChildren()) {
+        if (child.getElementId().equals(cId))
+          return seb;
+      }
+    }
+    return null;
+  }
+
+  private DatatypeLabel createDatatypeLabel(Datatype dt) {
+    DatatypeLabel label = new DatatypeLabel();
+    label.setDomainInfo(dt.getDomainInfo());
+    label.setExt(dt.getExt());
+    label.setId(dt.getId().getId());
+    label.setLabel(dt.getLabel());
+    if (dt instanceof ComplexDatatype)
+      label.setLeaf(false);
+    else
+      label.setLeaf(true);
+    label.setName(dt.getName());
+
+    return label;
+  }
 }

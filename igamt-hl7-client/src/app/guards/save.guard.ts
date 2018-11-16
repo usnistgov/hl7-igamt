@@ -7,20 +7,35 @@ import {WithSave} from "./with.save.interface";
 import {ConfirmationService} from 'primeng/components/common/api';
 
 import {Md5} from 'ts-md5/dist/md5';
+import {ClientErrorHandlerService} from "../utils/client-error-handler.service";
 
 @Injectable()
 export class SaveFormsGuard implements CanDeactivate<WithSave> {
+  move: boolean;
   constructor(private confirmationService: ConfirmationService) {
+
   }
 
-
   canDeactivate(component: WithSave):Promise<any>{
-    console.log("Called Can Deactivate");
-      try{
 
         if (!component.isValid()) {
           console.log("invalid form");
-          return this.getInvalidDataDialog(component);
+
+
+          this.confirmationService.confirm({
+            header: "Invalid Data",
+            message: "You have Invalid Data, please fix your data before leaving",
+            key: 'INVALIDDATA',
+            accept: () => {
+
+
+              Promise.resolve(false);
+            },
+            reject: () => {
+              Promise.resolve(false);
+            }
+          });
+         // return this.getInvalidDataDialog(component);
 
         }else if (!component.hasChanged()) {
 
@@ -30,11 +45,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
           return  this.getUnsavedDialog(component);
 
         }
-      }catch (e){
-        console.log("Error");
-        console.log(e);
-        return this.somthingWrong();
-      }
+
   }
 
 
@@ -58,10 +69,10 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
         accept: () => {
 
 
-          resolve(false);
+          Promise.resolve(false);
         },
         reject: () => {
-          reject();
+          Promise.resolve(false);
         }
       });
     });
@@ -80,14 +91,17 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
       this.confirmationService.confirm({
         header: "Unsaved Data",
-        message: "You have Unsaved Data, Do you want to save and continue?",
+        message: "You have unsaved changes: If you leave this page,Your changes will be lost, do you want to continue?",
         key: 'UNSAVEDDATA',
         accept: () => {
-          component.save().then(x => {
-            resolve(true);
-          }, error => {
-            reject();
-          })
+          // component.save().then(x => {
+          //   resolve(true);
+          // }, error => {
+          //   console.log("error");
+          //   resolve(false);
+          //
+          // })
+          resolve(true);
         },
         reject: (cancel: boolean) => {
           reject(false);
@@ -119,5 +133,8 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
     return pr;
 
   }
+
+
+
 
 }

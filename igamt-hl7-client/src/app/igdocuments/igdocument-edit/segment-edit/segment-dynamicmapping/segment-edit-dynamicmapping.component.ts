@@ -108,9 +108,8 @@ export class SegmentEditDynamicMappingComponent extends HasFroala implements Wit
                 this.editForm.control.markAsPristine();
                 resolve(true);
             }, error => {
-                this.igErrorService.showError(error);
                 console.log("error saving");
-                reject();
+                reject(error);
             });
         });
     }

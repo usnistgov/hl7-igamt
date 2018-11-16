@@ -14,7 +14,7 @@ export class LoginComponent {
   username: string;
   password: string;
 
-  constructor(public authService: AuthService, public router: Router,public sanitizer:DomSanitizer, private hostElement: ElementRef, private messageService: MessageService) {
+  constructor(public authService: AuthService, public router: Router,public sanitizer:DomSanitizer, private hostElement: ElementRef) {
   }
 
 

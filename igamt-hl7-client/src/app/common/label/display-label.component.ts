@@ -51,8 +51,8 @@ export class DisplayLabelComponent {
         return 'HL7';
       } else if (scope === 'USER') {
         return 'USR';
-      } else if (scope === 'MASTER') {
-        return 'MAS';
+      } else if (scope === 'SDTF') {
+        return 'SDTF';
       } else if (scope=== 'PRELOADED') {
         return 'PRL';
       } else if (scope === 'PHINVADS') {
@@ -82,7 +82,7 @@ export class DisplayLabelComponent {
     if(!elm.ext || elm.ext==''){
       return elm.label+"-"+elm.description;
     }else{
-      return elm.label+"_"+elm.ext+elm.description;
+      return elm.label+"_"+elm.ext+"-"+elm.description;
     }
   };
 
@@ -136,10 +136,10 @@ export class DisplayLabelComponent {
         this.router.navigate(["./"+type+"/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
 
       });
-
-
-
   }
+
+
+
 
 
 }

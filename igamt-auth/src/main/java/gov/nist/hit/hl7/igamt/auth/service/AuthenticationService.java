@@ -11,9 +11,16 @@
  */
 package gov.nist.hit.hl7.igamt.auth.service;
 
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.security.core.Authentication;
+
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
+import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
+import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
+import gov.nist.hit.hl7.auth.util.requests.UserResponse;
 import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
 
 /**
@@ -21,20 +28,20 @@ import gov.nist.hit.hl7.igamt.auth.exception.AuthenticationException;
  *
  */
 public interface AuthenticationService {
-  public String connect(LoginRequest user) throws AuthenticationException;
+  public ConnectionResponseMessage<UserResponse> connect(HttpServletResponse response,
+      LoginRequest user) throws AuthenticationException;
 
-  public void register(RegistrationRequest user) throws AuthenticationException;
+  public ConnectionResponseMessage<UserResponse> register(RegistrationRequest user)
+      throws AuthenticationException;
 
-  void requestPasswordChange(String email, String url) throws AuthenticationException;
+  ConnectionResponseMessage<PasswordResetTokenResponse> requestPasswordChange(String email)
+      throws AuthenticationException;
 
   boolean validateToken(String token) throws AuthenticationException;
 
-  boolean confirmChangePassword(ChangePasswordConfirmRequest requestObject)
-      throws AuthenticationException;
+  ConnectionResponseMessage<PasswordResetTokenResponse> confirmChangePassword(
+      ChangePasswordConfirmRequest requestObject) throws AuthenticationException;
 
-  /**
-   * @param email
-   * @param url
-   * @throws AuthenticationException
-   */
+  public UserResponse getAuthentication(Authentication authentiction);
+
 }

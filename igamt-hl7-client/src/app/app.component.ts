@@ -1,49 +1,36 @@
-import { Component, ElementRef, ViewChild, AfterViewInit, OnDestroy } from '@angular/core';
+import {
+  Component, ElementRef, ViewChild, AfterViewInit, OnDestroy, ChangeDetectionStrategy,
+  NgZone
+} from '@angular/core';
 import {ScrollPanel} from 'primeng/primeng';
-import { TreeModule } from 'angular-tree-component';
 import {HttpClient} from "@angular/common/http";
 import {WorkspaceService} from "./service/workspace/workspace.service";
 import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router} from "@angular/router";
-
+import {ProgressHandlerService} from "./service/progress-handler.service";
+import {Message} from 'primeng/api';
+import {ClientErrorHandlerService, ErrorValue} from "./utils/client-error-handler.service";
+import {RoutingStateService} from "./url/routing-state.service";
+import {ChangeDetectorRef} from '@angular/core'
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
+    changeDetection: ChangeDetectionStrategy.Default,
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
-  options = {};
-  loading: boolean = true;
-
-
-  nodes = [
-    {
-      id: 1,
-      name: 'root1',
-      children: [
-        { id: 2, name: 'child1' },
-        { id: 3, name: 'child2' }
-      ]
-    },
-    {
-      id: 4,
-      name: 'root2',
-      children: [
-        { id: 5, name: 'child2.1' },
-        {
-          id: 6,
-          name: 'child2.2',
-          children: [
-            { id: 7, name: 'subsub' }
-          ]
-        }
-      ]
-    }
-  ];
-
+    options = {};
+    routerLoading: boolean = false;
+    httpLoading: boolean=false;
+    showError=false;
 
     darkTheme = false;
+    event:any;
 
-    //menuMode = 'static';
+
+    msgs: Message[] = [];
+    error:any;
+
+  //menuMode = 'static';
     menuMode = 'horizontal';
 
     topbarMenuActive: boolean;
@@ -66,10 +53,20 @@ export class AppComponent implements AfterViewInit {
 
     menuHoverActive: boolean;
 
+
     @ViewChild('layoutMenuScroller') layoutMenuScrollerViewChild: ScrollPanel;
 
     ngAfterViewInit() {
-        setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 100);
+
+      console.log("Show Error");
+
+          setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 0);
+
+    }
+
+    show(){
+      console.log("called");
+      this.showError=this.showError||true;
     }
 
     onLayoutClick() {
@@ -107,7 +104,7 @@ export class AppComponent implements AfterViewInit {
             this.staticMenuMobileActive = !this.staticMenuMobileActive;
         }
 
-        event.preventDefault();
+        //event.preventDefault();
     }
 
     onMenuClick($event) {
@@ -118,6 +115,7 @@ export class AppComponent implements AfterViewInit {
             setTimeout(() => {this.layoutMenuScrollerViewChild.moveBar(); }, 500);
         }
     }
+
 
     onTopbarMenuButtonClick(event) {
         this.topbarItemClick = true;
@@ -136,7 +134,6 @@ export class AppComponent implements AfterViewInit {
         } else {
             this.activeTopbarItem = item;
         }
-
         event.preventDefault();
     }
 
@@ -174,6 +171,7 @@ export class AppComponent implements AfterViewInit {
         this.staticMenuMobileActive = false;
     }
 
+
     changeTheme(theme) {
         const themeLink: HTMLLinkElement = <HTMLLinkElement>document.getElementById('theme-css');
         themeLink.href = 'assets/theme/theme-' + theme + '.css';
@@ -188,37 +186,55 @@ export class AppComponent implements AfterViewInit {
     }
 
 
-    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router ){
+    constructor(private http : HttpClient, private ws :  WorkspaceService,private router: Router , private progress:ProgressHandlerService, private clientErrorHandlerService: ClientErrorHandlerService, private routingStateService:RoutingStateService,private ref: ChangeDetectorRef ){
+      //
+
+
 
       http.get("api/config").subscribe(data=>{
 
 
         this.ws.setAppConstant(data);
-      })
-
-      router.events.subscribe(event => {
-        this.checkRouterEvent(event);
       });
 
 
+      router.events.subscribe(event => {
+        this.checkRouterEvent(event);
+
+      });
+
+
+      progress.getHttpStatus().subscribe( x =>{
+
+        this.httpLoading= x;
+
+      });
+
+
+
+
     }
 
-  checkRouterEvent(event): void {
-    if (event instanceof NavigationStart) {
-      console.log("Navigation Start");
+    ngOnInit(){
 
-      console.log(event);
-      this.loading = true;
+     }
+
+    checkRouterEvent(event): void {
+     if (event instanceof NavigationStart) {
+        console.log("Navigation Start");
+        this.routerLoading = true;
     }
-
     if (event instanceof NavigationEnd ||
-      event instanceof NavigationCancel ||
-      event instanceof NavigationError) {
-      this.loading = false;
+      event instanceof NavigationCancel ) {
+      this.routerLoading = false;
+      this.progress.clear();
+    }
+    else if(event instanceof NavigationError){
+      this.routerLoading = false;
     }
   }
 
-
-
-
-}
+  print(obj){
+    console.log(obj);
+  }
+  }

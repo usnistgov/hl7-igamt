@@ -21,15 +21,9 @@
 		 
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>common-config</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-
-		</dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>common-base</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>		
+			<artifactId>conformance-profile</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>	
 	</dependencies>
 	<build>
 		<pluginManagement>

@@ -33,7 +33,7 @@ export class DatatypeNamingConventionDirective  implements Validator {
   validConvention(obj){
     console.log(obj);
     console.log(this.scope);
-    if(this.scope=='MASTER'){
+    if(this.scope=='SDTF'){
       return this.validConventionForMASTER(obj);
 
     }else{

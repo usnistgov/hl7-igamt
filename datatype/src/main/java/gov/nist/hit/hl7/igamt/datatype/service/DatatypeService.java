@@ -15,14 +15,14 @@ package gov.nist.hit.hl7.igamt.datatype.service;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.ChangedDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructure;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -70,31 +70,15 @@ public interface DatatypeService {
 
   public Datatype getLatestById(String id);
 
-  public DatatypeStructure convertDomainToStructure(Datatype datatype);
-
   public DisplayMetadata convertDomainToMetadata(Datatype datatype);
 
   public PreDef convertDomainToPredef(Datatype datatype);
 
   public PostDef convertDomainToPostdef(Datatype datatype);
 
-  public Datatype saveDatatype(ChangedDatatype changedDatatype);
-
   List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 
   public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
-
-
-  public Datatype convertToDatatype(DatatypeStructure structure);
-
-
-  /**
-   * Validate the structure of the segment
-   * 
-   * @param structure
-   * @throws DatatypeValidationException
-   */
-  public void validate(DatatypeStructure structure) throws DatatypeValidationException;
 
   /**
    * Validate the metadata information of the segment
@@ -177,6 +161,20 @@ public interface DatatypeService {
    */
   public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
       HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
+
+  /**
+   * @param datatype
+   * @param idPath
+   * @param path
+   * @return
+   */
+  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
+
+  /**
+   * @param datatype
+   * @return
+   */
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype);
 
 
 }

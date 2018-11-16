@@ -30,7 +30,6 @@ import {SegmentEditConformanceStatementsResolver} from "./segment-conformancesta
 import {CoConstraintTableComponent} from './coconstraint-table/coconstraint-table.component';
 import {RegisterFormModelDirective} from '../../../common/form-directive/register-form-model.directive';
 import {CoConstraintTableService} from './coconstraint-table/coconstraint-table.service';
-import {HttpClientModule} from '@angular/common/http';
 import {HttpModule} from '@angular/http';
 import {CCHeaderDialogDmComponent} from './coconstraint-table/header-dialog/header-dialog-dm.component';
 import {CCHeaderDialogUserComponent} from './coconstraint-table/header-dialog/header-dialog-user.component';
@@ -65,8 +64,6 @@ import {MultiSelectModule} from 'primeng/multiselect';
         ButtonModule,
         AccordionModule,
         SelectButtonModule,
-        HttpClientModule,
-        HttpModule,
         DataTableModule,
         DataListModule,
         MultiSelectModule,
@@ -77,7 +74,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
     ],
   exports:[CoConstraintTableComponent],
 
-    providers : [TocService, SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,MessageService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
+    providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
     declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

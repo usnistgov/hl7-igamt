@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.bson.Document;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -9,13 +13,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
-import gov.nist.hit.hl7.igamt.common.exception.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 
 /**
  * @author Harold Affo
  *
  */
+
 @ControllerAdvice
 public class DatatypeLibraryExceptionHandler {
 
@@ -23,24 +27,35 @@ public class DatatypeLibraryExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({XReferenceFoundException.class})
-  public XReferenceFoundException handleXReferenceFoundException(
+  public ResponseMessage<Map<String, List<Document>>> handleXReferenceFoundException(
       XReferenceFoundException exception) {
-    return exception;
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    message.setData(exception.getXreferences());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage generalException(Exception exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
   }
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({OperationNotAllowedException.class})
-  public OperationNotAllowedException handleXReferenceFoundException(
-      OperationNotAllowedException exception) {
-    return exception;
+  public ResponseMessage handleXReferenceFoundException(OperationNotAllowedException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
   }
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({AddingException.class})
-  public AddingException handleXReferenceFoundException(AddingException exception) {
-    return exception;
+  public ResponseMessage handleXReferenceFoundException(AddingException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
   }
 
 
@@ -61,14 +76,6 @@ public class DatatypeLibraryExceptionHandler {
     return message;
   }
 
-
-  @ResponseBody
-  @ResponseStatus(HttpStatus.NOT_FOUND)
-  @ExceptionHandler({IGNotFoundException.class})
-  public ResponseMessage handleIGNotFoundException(IGNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
-    return message;
-  }
 
 
   @ResponseBody

@@ -6,7 +6,7 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import { _ }  from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {ConstraintsService} from "../../service/constraints.service";
 import {DatatypesService} from "../datatypes.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
@@ -193,8 +193,7 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
                 this.editForm.control.markAsPristine();
                 resolve(true);
             }, error=>{
-                this.igErrorService.showError(error);
-                reject();
+                reject(error);
                 console.log("error saving");
             });
         });
@@ -274,12 +273,16 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
 
     selectCS(cs){
         this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        if(this.selectedConformanceStatement && this.selectedConformanceStatement.type && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.type === 'ASSERTION'){
+            this.constraintsService.generateTreeData(this.selectedConformanceStatement.assertion, this.treeData, this.idMap, this.datatypesLinks);
+        }
         this.editorTab = true;
         this.listTab = false;
     }
 
     deleteCS(identifier){
         this.datatypeConformanceStatements.conformanceStatements = _.without(this.datatypeConformanceStatements.conformanceStatements, _.findWhere(this.datatypeConformanceStatements.conformanceStatements, {identifier: identifier}));
+        this.editForm.control.markAsDirty();
     }
 
     printCS(cs){

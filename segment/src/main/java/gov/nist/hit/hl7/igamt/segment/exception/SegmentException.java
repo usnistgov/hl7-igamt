@@ -29,6 +29,16 @@ public class SegmentException extends Exception {
     super("Error while processing segment with id=" + id + ", details=" + error);
   }
 
+  public SegmentException(Exception e) {
+    super(e);
+  }
+
+
+
+  public SegmentException(String message) {
+    super(message);
+  }
+
 
 
 }

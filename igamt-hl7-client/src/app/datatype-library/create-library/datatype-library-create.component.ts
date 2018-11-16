@@ -18,12 +18,11 @@ export class DatatypeLibraryCreateComponent {
   uploadedFiles: any[] = [];
   activeIndex: number = 0;
   blockUI=false;
-  scope="MASTER";
+  scope="SDTF";
 
   scopeOptions = [
-  {label:'Master', value:"MASTER"},
-  {label:'USER', value:"USER"},
-
+  {label:'Standard Datatype Flavors Library', value:"SDTF"},
+  {label:'User Data Type Flavor', value:"UDTF"}
   ];
 
   @ViewChild(DatatypeListManagerComponent) dtManager;
@@ -83,10 +82,10 @@ export class DatatypeLibraryCreateComponent {
     ];
 
     if(this.isAdmin()){
-      this.metaData.scope="MASTER";
+      this.metaData.scope="SDTF";
 
     }else{
-      this.metaData.scope="USER";
+      this.metaData.scope="UDTF";
     }
 
 
@@ -102,7 +101,7 @@ export class DatatypeLibraryCreateComponent {
   goTo(res:any) {
     this.route.queryParams
       .subscribe(params => {
-        var link="datatype-libraries/lib/"+res.id.id;
+        var link="datatype-libraries/lib/"+res.data.id.id;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
@@ -172,7 +171,7 @@ export class DatatypeLibraryCreateComponent {
   isValid(){
 
 
-  if(  this.dtManager && this.dtManager.addingForm){
+  if(this.dtManager && this.dtManager.addingForm){
 
     return this.dtManager.addingForm.valid;
   }

@@ -24,6 +24,9 @@ import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {LoadingService} from "./service/loading.service";
 import {DeleteElementComponent} from "./delete-element/delete-element.component";
+import {BreadcrumbService} from "../../breadcrumb.service";
+import {DisplayService} from "../../display/display.service";
+import {UUID} from "angular2-uuid";
 
 
 @Component({
@@ -41,24 +44,19 @@ export class IgDocumentEditComponent {
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
   @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
 
-
   igId:any;
   exportModel: MenuItem[];
+  userUrl : MenuItem[]=[];
 
   loading=false;
   metadata:any;
-
   ig:any;
   currentUrl:any;
   displayMessageAdding: boolean = false;
-
   hideToc:boolean=false;
-
   activeNode:any;
-
   searchFilter:string="";
   blockUI:false;
-
   types: SelectItem[]=[
 
 
@@ -72,20 +70,13 @@ export class IgDocumentEditComponent {
     {label:"ValueSet",value:"VALUESET"}
   ];
 
-
   scopes: SelectItem[]=[
-
-
     {label:"HL7",value:"HL7STANDARD"},
     {label:"USER",value:"USER"},
-    {label:"HL7 Flavors",value:"MASTER"}
-
+    {label:"SDTF",value:"SDTF"}
   ];
 
-
   selectedScopes: SelectItem[];
-
-
   selectedTypes :SelectItem[];
 
   @ViewChild(TreeComponent) private tree: TreeComponent;
@@ -130,8 +121,7 @@ export class IgDocumentEditComponent {
     return node.parent&&!node.parent.parent;
   }
 
-  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService){
-
+  constructor( private  tocService:TocService,    private sp: ActivatedRoute, private  router : Router,public exportService:ExportService, private loadingService:LoadingService, private  breadCrump:BreadcrumbService, private displayService:DisplayService){
     router.events.subscribe(event => {
       //console.log(event);
 
@@ -140,70 +130,56 @@ export class IgDocumentEditComponent {
         this.parseUrl();
       }
     });
+
+
   }
+
 
   filterFn(){
     this.hideToc=false; // show the TOC if we filter
     this.tree.treeModel.filterNodes((node) => {
       if(node.data.data.domainInfo) {
-
         if (node.data.data.domainInfo.scope) {
-
           return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1);
         }
-
       }
       return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.length==0);
-
-
     });
 
   }
+
+
 
 
 
   ngOnInit() {
     //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
-    this.tocService.setIgId(this.igId);
-
-
-
-
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
+      this.tocService.setIgId(this.igId);
+
+      this.igId=x.id;
       this.ig= x;
-
-
-
       this.nodes=this.ig.toc;
 
     });
-
     this.tocService.metadata.subscribe(x=>{
 
       this.metadata=x;
-    })
-
-    this.loadingService.loading.subscribe(x=>{
-      this.loading=x;
 
     })
-
-
     this.exportModel = [
       {label: 'As Word', command: () => {
-
         this.exportAsWord();
-
       }},
       {label: 'As HTML', command: () => {
         this.exportAsHTML();
-
       }}
-
     ];
-
   }
+
+
+
 
   exportAsWord(){
   this.exportService.exportAsWord(this.igId);
@@ -224,61 +200,84 @@ export class IgDocumentEditComponent {
   }
   ngAfterViewInit() {
 
-      this.initTreeModel();
 
-      this.parseUrl();
 
+    console.log("Initing IG");
+    this.initTreeModel();
+
+    //this.parseUrl();
 
   }
 
   setTreeModel(){
+    this.parseUrl();
     return this.tocService.setTreeModel(this.tree.treeModel);
   }
 
 
   initTreeModel(){
+    this.parseUrl();
+
     return this.tocService.initTreeModel(this.tree.treeModel);
+  }
+
+  getElementUrl(elm){
+    var type=elm.type.toLowerCase();
+    return "./"+type+"/"+elm.key.id;
   }
 
 
   parseUrl(){
+  this.userUrl=[];
     if(this.tree) {
 
 
-      var index = this.currentUrl.indexOf("/ig/");
-      var fromIg = this.currentUrl.substring(this.currentUrl.indexOf("/ig/") + 4);
+      let rest =this.currentUrl;
 
-      var paramIndex = fromIg.indexOf('?');
-      //console.log(paramIndex);
-      if (paramIndex > -1) {
-        fromIg = fromIg.substring(0, paramIndex);
+      let paramsIndex = this.currentUrl.indexOf("?");
+
+      if (paramsIndex > -1) {
+        rest = this.currentUrl.substring(0, paramsIndex);
+
       }
-      var slashIndex = fromIg.indexOf("/");
+      rest = rest.replace("/ig/" + this.igId + "/", "");
 
-      if (slashIndex > 0) {
-        var fromChild = fromIg.substring(slashIndex + 1, fromIg.length);
-        var child = fromChild.substring(fromChild.indexOf("/") + 1, fromChild.length);
-        let childId="";
-        //console.log(child);
-        if(child.indexOf("/")>0||child.indexOf("/")==child.length-1){
-          //console.log(childId);
-          childId=child.substring( 0,child.indexOf("/"));
+      console.log("rest");
+      console.log(rest);
+      this.userUrl.push({label: "IG Documents"}, {label: this.metadata.title, icon:"fa fa-folder"});
+      let splitted = rest.split("/");
+      if (splitted && splitted.length) {
+        for (let i = 1; i < splitted.length; i++) {
 
-        }else{
 
-          childId=child;
+          this.userUrl.push(this.getDisplay(splitted[i]));
 
         }
-        let node = this.tree.treeModel.getNodeById(childId);
-        if (node) {
-          this.tocService.setActiveNode(node);
-          node.setIsActive(true);
-          this.activeNode=node.id;
-        }
+      } else {
+        this.userUrl.push({label: this.displayService.getLabel(rest), icon:this.displayService.getIcon(rest)});
       }
     }
 
+    this.breadCrump.setItems(this.userUrl);
+
+
   }
+
+  getDisplay(string){
+
+       let node = this.tree.treeModel.getNodeById(string);
+       if(node&&node.data && node.data.data && node.data.data.label) {
+         if(node.data.data.type && node.data.data.type==Types.TEXT){
+           return {label: this.getPath(node)+node.data.data.label}
+         }else{
+           return {label: node.data.data.label, badge:this.displayService.getBadge(node.data.data.type),badgeStyleClass:this.displayService.getBadgeClass(node.data.data.type)}
+         }
+         }
+         else {
+         return {label: this.displayService.getLabel(string), icon: this.displayService.getIcon(string)}
+       }
+  }
+
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
        if(node.data.data.key){
@@ -328,7 +327,7 @@ export class IgDocumentEditComponent {
       type:Types.TEXT,
       position: this.tree.treeModel.nodes.length+1
     };
-    var newNode = {id : "bla",data:data1, children :[]};
+    var newNode = {id : UUID.UUID(),data:data1, children :[]};
     this.tree.treeModel.nodes.push(newNode);
 
     this.tree.treeModel.update();
@@ -344,7 +343,7 @@ export class IgDocumentEditComponent {
       type:Types.TEXT,
       position: this.tree.treeModel.nodes.length+1
     };
-    var newNode = {id : "bla",data:data1, children :[]};
+    var newNode = {id : UUID.UUID(),data:data1, children :[]};
     node.data.children.push(newNode);
 
     this.tree.treeModel.update();
@@ -353,12 +352,14 @@ export class IgDocumentEditComponent {
   };
 
   getPath =function (node) {
-    node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
+
+    //node.data.data.position= parseInt(node.index)+1; // temporary to be discussed
     if(this.isOrphan(node)){
       return  node.data.data.position+".";
     }else{
       return this.getPath(node.parent)+ node.data.data.position+".";
     }
+
   };
 
   path(node){
@@ -382,13 +383,14 @@ export class IgDocumentEditComponent {
 
 
   activateNode(node){
-   // this.activeNode=node.id;
+    this.activeNode=node.id;
   }
 
 
 
 
   goToSection(id) {
+
 
 
     this.sp.queryParams
@@ -400,6 +402,11 @@ export class IgDocumentEditComponent {
 
 
 
+  }
+
+  getSectionUrl(id){
+
+    return "./section/"+id;
   }
   goToMetaData(){
   this.sp.queryParams
@@ -459,8 +466,6 @@ export class IgDocumentEditComponent {
 
   addSegments(){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
-
-    //console.log(existing);
     this.addSegs.open({
       id : this.igId,
       namingIndicators:existing
@@ -499,11 +504,9 @@ export class IgDocumentEditComponent {
       namingIndicators:existing
     }).subscribe(
         result => {
-
           this.distributeResult(result);
         }
       )
-
   }
 
   copyDatatype(node){
@@ -679,7 +682,6 @@ export class IgDocumentEditComponent {
   };
 
   deleteConformanceProfile(node){
-
     this.deleteElement.open({
       igId : this.igId,
       id:node.data.data.key.id,
@@ -699,7 +701,6 @@ export class IgDocumentEditComponent {
   }
 
   deleteSection(node){
-  //console.log( this.tree._options);
   let ret =  this.tree.treeModel.getNodeById(node.id);
   this.deleteElement.open({
     igId : this.igId,
@@ -708,15 +709,18 @@ export class IgDocumentEditComponent {
     type:node.data.data.type,
     node:node.data.data
 
-  })
-    .subscribe(
+  }).subscribe(
       id => {
         this.tocService.deleteNodeById(id);
         this.setTreeModel();
-
       }
     )
   }
-
+  ngOnDestroy() {
+    if (this.tree) {
+      this.tree=null;
+    }
+    this.breadCrump.setItems(null);
+  }
 
 }

@@ -12,7 +12,6 @@ import { ChartModule } from 'primeng/primeng';
 import { CheckboxModule } from 'primeng/primeng';
 import { ChipsModule } from 'primeng/primeng';
 import { CodeHighlighterModule } from 'primeng/primeng';
-import { ConfirmDialogModule } from 'primeng/primeng';
 import { ColorPickerModule } from 'primeng/primeng';
 import { SharedModule } from 'primeng/primeng';
 import { ContextMenuModule } from 'primeng/primeng';
@@ -28,7 +27,6 @@ import { FieldsetModule } from 'primeng/primeng';
 import { FileUploadModule } from 'primeng/primeng';
 import { GalleriaModule } from 'primeng/primeng';
 import { GMapModule } from 'primeng/primeng';
-import { GrowlModule } from 'primeng/primeng';
 import { InputMaskModule } from 'primeng/primeng';
 import { InputSwitchModule } from 'primeng/primeng';
 import { InputTextModule } from 'primeng/primeng';
@@ -48,7 +46,7 @@ import { PanelModule } from 'primeng/primeng';
 import { PanelMenuModule } from 'primeng/primeng';
 import { PasswordModule } from 'primeng/primeng';
 import { PickListModule } from 'primeng/primeng';
-import { ProgressBarModule } from 'primeng/primeng';
+import {ProgressBarModule} from 'primeng/progressbar';
 import { RadioButtonModule } from 'primeng/primeng';
 import { RatingModule } from 'primeng/primeng';
 import { ScheduleModule } from 'primeng/primeng';
@@ -56,7 +54,7 @@ import { ScrollPanelModule } from 'primeng/scrollpanel';
 import { SelectButtonModule } from 'primeng/primeng';
 import { SlideMenuModule } from 'primeng/primeng';
 import { SliderModule } from 'primeng/primeng';
-import { SpinnerModule } from 'primeng/primeng';
+import {ProgressSpinnerModule} from 'primeng/progressspinner';
 import { SplitButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/primeng';
 import { TabMenuModule } from 'primeng/primeng';
@@ -85,6 +83,7 @@ import {AppRoutes} from './app.routes';
 import {AppTopBarComponent} from './app.topbar.component';
 import {AppFooterComponent} from './app.footer.component';
 import {GeneralConfigurationService} from './service/general-configuration/general-configuration.service';
+
 // import {ProfileComponentsService} from './service/profilecomponents/profilecomponents.service';
 import {AuthService} from './login/auth.service';
 import {AuthGuard} from './login/auth-guard.service';
@@ -100,7 +99,6 @@ import {RegisterComponent} from './register/register.component';
 import { TreeModule } from 'angular-tree-component';
 import {AppBreadcrumbComponent} from './app.breadcrumb.component';
 import {BreadcrumbService} from './breadcrumb.service';
-import {ConstraintsService} from './service/constraints/constraints.service';
 import {SectionsService} from './service/sections/sections.service';
 
 import {TableOptionsService} from './service/configuration/table-options/table-options.service';
@@ -114,7 +112,17 @@ import {ErrorResolver} from "./error/error.resolver";
 import {ErrorService} from "./error/error.service";
 import { CrossReferenceComponent } from './common/cross-reference/cross-reference.component';
 import {MessageService} from "primeng/components/common/messageservice";
-
+import {BlockUIModule} from 'primeng/blockui';
+import {ProgressHandlerService} from "./service/progress-handler.service";
+import {GrowlModule} from 'primeng/growl';
+import {GlobalErrorHandler} from "./utils/client-error-handler";
+import {RoutingStateService} from "./url/routing-state.service";
+import {ClientErrorHandlerService} from "./utils/client-error-handler.service";
+import {ConfirmationService} from 'primeng/api';
+import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialog";
+import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.component';
+import {ReportService} from "./dialog-wrapper/report.service";
+import {DisplayService} from "./display/display.service";
 @NgModule({
     imports: [
         BrowserModule,
@@ -156,7 +164,7 @@ import {MessageService} from "primeng/components/common/messageservice";
         InputTextModule,
         InputTextareaModule,
         LightboxModule,
-
+        BlockUIModule,
         ListboxModule,
         MegaMenuModule,
         MessageModule,
@@ -180,7 +188,7 @@ import {MessageService} from "primeng/components/common/messageservice";
         SelectButtonModule,
         SlideMenuModule,
         SliderModule,
-        SpinnerModule,
+        ProgressSpinnerModule,
         SplitButtonModule,
         StepsModule,
         TableModule,
@@ -194,6 +202,7 @@ import {MessageService} from "primeng/components/common/messageservice";
         TreeTableModule,
         CommonModule,
         ReactiveFormsModule,
+
 
         AlertModule.forRoot()
 
@@ -215,11 +224,11 @@ import {MessageService} from "primeng/components/common/messageservice";
         LoginComponent,
         RegisterComponent,
         DocumentationComponent,
-      AppBreadcrumbComponent,
-      ResetPasswordRequestComponent,
-      ResetPasswordConfirmComponent,
-      ErrorComponent
-
+        AppBreadcrumbComponent,
+        ResetPasswordRequestComponent,
+        ResetPasswordConfirmComponent,
+        ErrorComponent,
+        DialogWrapperComponent
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {
@@ -227,23 +236,31 @@ import {MessageService} from "primeng/components/common/messageservice";
       useClass: AuthInterceptor,
       multi: true
     },
-
-    // {provide: ErrorHandler, useClass: IgErrorHandler},
-    WorkspaceService,
-    ErrorResolver,
-    ErrorService,
-    ResetPasswordService,
-    GeneralConfigurationService,
-    IndexedDbService,
-    SectionsService,
-    AuthService,
-    AuthGuard,
-    UserService,
-    BreadcrumbService,
-    ConstraintsService,
-    TableOptionsService,
-    ExportFontService,
-    MessageService
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
+        WorkspaceService,
+        ErrorResolver,
+        ErrorService,
+        GlobalErrorHandler,
+        ResetPasswordService,
+        GeneralConfigurationService,
+        IndexedDbService,
+        SectionsService,
+        AuthService,
+        AuthGuard,
+        UserService,
+        BreadcrumbService,
+        TableOptionsService,
+        ExportFontService,
+        MessageService,
+        ProgressHandlerService,
+        RoutingStateService,
+        ClientErrorHandlerService,
+        ConfirmationService,
+        ReportService,
+    DisplayService
   ],
     bootstrap: [AppComponent]
 })

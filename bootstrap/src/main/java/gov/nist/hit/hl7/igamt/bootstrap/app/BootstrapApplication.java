@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
+import java.util.Properties;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -8,11 +12,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 
-import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
@@ -23,7 +29,8 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto"})
+@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto",
+    "gov.nist.hit.hl7.auth.util.service"})
 
 public class BootstrapApplication implements CommandLineRunner {
 
@@ -32,9 +39,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
   }
 
-  //
-  @Autowired
-  MessageEventFacory messageEventFactory;
+
   @Autowired
   ConfigService sharedConstantService;
 
@@ -50,6 +55,29 @@ public class BootstrapApplication implements CommandLineRunner {
   DatatypeClassificationService datatypeClassificationService;
 
 
+
+  @Bean
+  public JavaMailSenderImpl mailSender() {
+    JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+    mailSender.setHost("smtp.nist.gov");
+    mailSender.setPort(25);
+    mailSender.setProtocol("smtp");
+    Properties javaMailProperties = new Properties();
+    javaMailProperties.setProperty("mail.smtp.auth", "false");
+    javaMailProperties.setProperty("mail.debug", "true");
+
+    mailSender.setJavaMailProperties(javaMailProperties);
+    return mailSender;
+  }
+
+  @Bean
+  public org.springframework.mail.SimpleMailMessage templateMessage() {
+    org.springframework.mail.SimpleMailMessage templateMessage =
+        new org.springframework.mail.SimpleMailMessage();
+    templateMessage.setFrom("hl7-auth@nist.gov");
+    templateMessage.setSubject("NIST HL7 Auth Notification");
+    return templateMessage;
+  }
 
   // @Bean(name = "multipartResolver")
   // public CommonsMultipartResolver multipartResolver() {
@@ -87,7 +115,6 @@ public class BootstrapApplication implements CommandLineRunner {
     // System.out.println(versionAndIDen.size());
 
 
-
   }
   // @PostConstruct
   // void converAccounts() {
@@ -109,69 +136,69 @@ public class BootstrapApplication implements CommandLineRunner {
   //
   // @PostConstruct
   // void createMessageEvent() {
-  // System.out.println("creating message Event");
-  // messageEventFactory.createMessageEvent();
+  // // System.out.println("creating message Event");
+  // // messageEventFactory.createMessageEvent();
   // }
-
   //
-  // @PostConstruct
+  // //
+  // // @PostConstruct
   // void createSharedConstant() {
-  // Config constant = new Config();
-  // List<String> hl7Versions = new ArrayList<String>();
-  // hl7Versions.add("2.3.1");
-  // hl7Versions.add("2.4");
-  // hl7Versions.add("2.5");
-  // hl7Versions.add("2.5.1");
-  // hl7Versions.add("2.6");
-  // hl7Versions.add("2.7");
-  // hl7Versions.add("2.7.1");
-  // hl7Versions.add("2.8");
-  // hl7Versions.add("2.8.1");
-  // hl7Versions.add("2.8.2");
-  //
-  // List<String> usages = new ArrayList<String>();
-  //
-  // usages.add("R");
-  // usages.add("RE");
-  // usages.add("RC");
-  // usages.add("C");
-  // usages.add("X");
-  // constant.setHl7Versions(hl7Versions);
-  // constant.setUsages(usages);
-  // sharedConstantService.save(constant);
+  // // Config constant = new Config();
+  // // List<String> hl7Versions = new ArrayList<String>();
+  // // hl7Versions.add("2.3.1");
+  // // hl7Versions.add("2.4");
+  // // hl7Versions.add("2.5");
+  // // hl7Versions.add("2.5.1");
+  // // hl7Versions.add("2.6");
+  // // hl7Versions.add("2.7");
+  // // hl7Versions.add("2.7.1");
+  // // hl7Versions.add("2.8");
+  // // hl7Versions.add("2.8.1");
+  // // hl7Versions.add("2.8.2");
+  // //
+  // // List<String> usages = new ArrayList<String>();
+  // //
+  // // usages.add("R");
+  // // usages.add("RE");
+  // // usages.add("RC");
+  // // usages.add("C");
+  // // usages.add("X");
+  // // constant.setHl7Versions(hl7Versions);
+  // // constant.setUsages(usages);
+  // // sharedConstantService.save(constant);
   //
   // }
-  // @PostConstruct
+  //
+  // // @PostConstruct
   // void generateDatatypeLibrary()
   // throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
-  // DatatypeLibrary dataypeLibrary = dataypeLibraryService.createEmptyDatatypeLibrary();
-  //
-  // List<Datatype> intermasters = dataypeService.findByDomainInfoScope("INTERMASTER");
-  // List<Datatype> masters = dataypeService.findByDomainInfoScope("MASTER");
-  // if (masters.size() > 10 && intermasters.size() > 10)
-  // for (int i = 0; i < 10; i++) {
-  // if (intermasters.get(i) != null) {
-  // Link l = new Link(intermasters.get(i).getId(), intermasters.get(i).getDomainInfo(), i);
-  // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
-  // }
-  // if (masters.get(i) != null) {
-  // Link l = new Link(masters.get(i).getId(), masters.get(i).getDomainInfo(), i);
-  // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
-  // }
-  // }
-  // dataypeLibraryService.save(dataypeLibrary);
-  //
-  // }
-  //
-  // @PostConstruct
-  // void classifyDatatypes() throws DatatypeNotFoundException {
-  // datatypeClassificationService.deleteAll();
-  // System.out.println("Classifying dts");
-  //
-  // datatypeClassifier.classify();
-  // System.out.println("ENd of Classifying dts");
+  // // DatatypeLibrary dataypeLibrary = dataypeLibraryService.createEmptyDatatypeLibrary();
+  // //
+  // // List<Datatype> intermasters = dataypeService.findByDomainInfoScope("INTERMASTER");
+  // // List<Datatype> masters = dataypeService.findByDomainInfoScope("MASTER");
+  // // if (masters.size() > 10 && intermasters.size() > 10)
+  // // for (int i = 0; i < 10; i++) {
+  // // if (intermasters.get(i) != null) {
+  // // Link l = new Link(intermasters.get(i).getId(), intermasters.get(i).getDomainInfo(), i);
+  // // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
+  // // }
+  // // if (masters.get(i) != null) {
+  // // Link l = new Link(masters.get(i).getId(), masters.get(i).getDomainInfo(), i);
+  // // dataypeLibrary.getDatatypeRegistry().getChildren().add(l);
+  // // }
+  // // }
+  // // dataypeLibraryService.save(dataypeLibrary);
   //
   // }
+
+   @PostConstruct
+   void classifyDatatypes() throws DatatypeNotFoundException {
+//   datatypeClassificationService.deleteAll();
+//   System.out.println("Classifying dts");
+//   datatypeClassifier.classify();
+//   System.out.println("ENd of Classifying dts");
+  
+   }
 
 
 

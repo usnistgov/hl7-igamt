@@ -35,6 +35,7 @@ import {LibDatatypeEditStructureResolver} from "./datatype-structure/lib-datatyp
 import {LibDatatypeEditConformanceStatementsResolver} from "./datatype-conformancestatements/lib-datatype-edit-conformancestatements.resolver";
 import {TreeTableModule} from 'primeng/primeng';
 import {LibraryExportService} from "../service/lib-export.service";
+import {MultiSelectModule} from "primeng/components/multiselect/multiselect";
 
 @NgModule({
   imports: [
@@ -52,6 +53,7 @@ import {LibraryExportService} from "../service/lib-export.service";
     TableModule,
     MessageModule,
     NamingConventionModule,
+    MultiSelectModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot()
   ],

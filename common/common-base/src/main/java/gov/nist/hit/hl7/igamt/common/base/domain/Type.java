@@ -13,7 +13,7 @@ public enum Type {
                   "VALUESET"), CONFORMANCEPROFILE("CONFORMANCEPROFILE"), SEGMENT(
                       "SEGMENT"), PROFILECOMPONENT("PROFILECOMPONENT"), COMPOSITEPROFILE(
                           "COMPOSITEPROFILE"), SEGMENTREF("SEGMENTREF"), GROUP("GROUP"), FIELD(
-                              "FIELD"), COMPONENT("COMPONENT"), TEXT("TEXT"), PROFILE(
+                              "FIELD"), COMPONENT("COMPONENT"), SUBCOMPONENT("SUBCOMPONENT"), TEXT("TEXT"), PROFILE(
                                   "PROFILE"), CONFORMANCEPROFILEREGISTRY(
                                       "CONFORMANCEPROFILEREGISTRY"), DISPLAY("DISPLAY"), EVENT(
                                           "EVENT"), EVENTS("EVENTS"), BINDING("BINDING"), SECTION(

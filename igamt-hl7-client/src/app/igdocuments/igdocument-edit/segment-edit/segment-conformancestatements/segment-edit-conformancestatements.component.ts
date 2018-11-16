@@ -6,7 +6,7 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import { _ } from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
+import {ConstraintsService} from "../../service/constraints.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
@@ -187,22 +187,21 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     save(): Promise<any>{
-      return new Promise((resolve, reject)=> {
+        return new Promise((resolve, reject)=> {
 
-         this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
+            this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
 
-          this.backup = __.cloneDeep(this.segmentConformanceStatements);
+                this.backup = __.cloneDeep(this.segmentConformanceStatements);
 
-          this.editForm.control.markAsPristine();
-          resolve(true);
+                this.editForm.control.markAsPristine();
+                resolve(true);
 
-        }, error=>{
+            }, error=>{
 
-           this.igErrorService.showError(error);
-           reject();
+
+           reject(error);
           console.log("error saving");
-
-        });
+            });
         });
     }
 
@@ -281,12 +280,20 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     selectCS(cs){
         this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+
+
+        if(this.selectedConformanceStatement && this.selectedConformanceStatement.type && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.type === 'ASSERTION'){
+            this.constraintsService.generateTreeData(this.selectedConformanceStatement.assertion, this.treeData, this.idMap, this.datatypesLinks);
+        }
+
+
         this.editorTab = true;
         this.listTab = false;
     }
 
     deleteCS(identifier){
         this.segmentConformanceStatements.conformanceStatements = _.without(this.segmentConformanceStatements.conformanceStatements, _.findWhere(this.segmentConformanceStatements.conformanceStatements, {identifier: identifier}));
+        this.editForm.control.markAsDirty();
     }
 
     printCS(cs){
@@ -296,8 +303,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     onTabOpen(e) {
         if(e.index === 0) this.selectedConformanceStatement = {};
     }
-  hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
 
-  }
+    hasChanged(){
+        return this.editForm && this.editForm.touched && this.editForm.dirty;
+
+    }
 }

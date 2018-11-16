@@ -6,7 +6,6 @@ import {ActivatedRoute, NavigationEnd, Router} from "@angular/router";
 import 'rxjs/add/operator/filter';
 import { _ }  from 'underscore';
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {ConstraintsService} from "../../../../service/constraints/constraints.service";
 import {LibDatatypesService} from "../lib-datatypes.service";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
@@ -14,6 +13,7 @@ import {TocService} from "../../service/toc.service";
 
 import * as __ from 'lodash';
 import {LibErrorService} from "../../lib-error/lib-error.service";
+import {LibConstraintsService} from "../../service/constraints.service";
 
 @Component({
     templateUrl : 'lib-datatype-edit-conformancestatements.component.html',
@@ -49,7 +49,7 @@ export class LibDatatypeEditConformanceStatementsComponent implements WithSave{
         private router : Router,
         private datatypesService : LibDatatypesService,
         private configService : GeneralConfigurationService,
-        private constraintsService : ConstraintsService,
+        private constraintsService : LibConstraintsService,
         private errorService:LibErrorService,
         private tocService:TocService
     ){

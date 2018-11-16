@@ -55,8 +55,8 @@ export class CopyElementComponent extends PrimeDialogAdapter{
     this.dismissWithNoData();
   }
 
-  closeWithData(data: any) {
-    this.dismissWithData(data);
+  closeWithData(res: any) {
+    this.dismissWithData(res.data);
   }
 
 
@@ -116,8 +116,6 @@ export class CopyElementComponent extends PrimeDialogAdapter{
         console.log(res);
         this.closeWithData(res);
       } ,error =>{
-        this.igErrorService.showError(error);
-
 
       }
     )

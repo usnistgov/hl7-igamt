@@ -51,7 +51,8 @@ import {LibCopyElementComponent} from "./copy-element/lib-copy-element.component
 import {LibCopyService} from "./copy-element/lib-copy.service";
 import {LibDeleteElementComponent} from "./delete-element/lib-delete-element.component";
 import {LibDeleteElementService} from "./delete-element/lib-delete-element.service";
-
+import {LibConstraintsService} from "./service/constraints.service";
+import {LibDatatypesService} from "./datatype-edit/lib-datatypes.service";
 
 @NgModule({
   imports: [
@@ -80,18 +81,15 @@ import {LibDeleteElementService} from "./delete-element/lib-delete-element.servi
     ToolbarModule,
     FileUploadModule,
     ConfirmDialogModule,
-    MessageModule,
     DialogModule,
-    TreeTableModule
-    ,SharedModule,
+    TreeTableModule,
+    SharedModule,
     TableModule,
     RadioButtonModule,
     ButtonModule,
-    BlockUIModule,
     SplitButtonModule,
     NamingConventionModule,
     ModalModule.forRoot()
-
   ],
   declarations: [
     EditLibraryComponent, DatatypeLibraryMetadataComponent, LibSectionComponent, LibErrorComponent, LibDatatypeAddComponent,LibCopyElementComponent,LibDeleteElementComponent
@@ -100,7 +98,7 @@ import {LibDeleteElementService} from "./delete-element/lib-delete-element.servi
 
   ],
   providers : [
-    TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService,LibraryExportService,LibCopyService,LibDeleteElementService
+    LibConstraintsService,TocService, TreeDragDropService,EditLibraryService, DatatypeLibraryEditResolver,LibErrorService, LibSectionResolver, LibMetaDataResolver,SaveFormsGuard,ConfirmationService,LibraryExportService,LibCopyService,LibDatatypesService,LibDeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

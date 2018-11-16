@@ -61,8 +61,8 @@ export class DatatypeListManagerComponent implements OnInit {
       return 'HL7';
     } else if (scope === 'USER') {
       return 'USR';
-    } else if (scope === 'MASTER') {
-      return 'MAS';
+    } else if (scope === 'SDTF') {
+      return 'SDTF';
     } else if (scope=== 'PRELOADED') {
       return 'PRL';
     } else if (scope === 'PHINVADS') {

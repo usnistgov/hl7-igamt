@@ -12,10 +12,10 @@
 package gov.nist.hit.hl7.igamt.ig.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
@@ -26,7 +26,7 @@ import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
  * @author Harold Affo
  *
  */
-@ControllerAdvice
+@RestControllerAdvice
 public class IGDocumentExceptionHandler {
 
 
@@ -93,6 +93,14 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({IGConverterException.class})
   public ResponseMessage handleUpdateTocException(IGConverterException exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({IGCreationException.class})
+  public ResponseMessage handleIGCreationException(IGCreationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
