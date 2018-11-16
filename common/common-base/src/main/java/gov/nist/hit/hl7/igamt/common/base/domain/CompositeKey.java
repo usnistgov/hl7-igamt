@@ -33,9 +33,7 @@ public class CompositeKey implements Serializable {
   @Id
   private String id;
   
-  //@Deprecated
   private int version;
-  @Deprecated
   private static final int firstVersion = 1;
 
 

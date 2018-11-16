@@ -43,6 +43,7 @@ public class SegmentExceptionHandler {
 
     return message;
   }
+  
 
 
   @ResponseBody
@@ -75,6 +76,17 @@ public class SegmentExceptionHandler {
 
     return message;
   }
+  
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage generalException(Exception exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
+    return message;
+  }
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -91,6 +103,7 @@ public class SegmentExceptionHandler {
     return message;
   }
 
+  
 
 
 }

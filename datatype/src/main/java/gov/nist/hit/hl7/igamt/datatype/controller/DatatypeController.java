@@ -184,7 +184,7 @@ public class DatatypeController extends BaseController {
   }
   
   
-  @RequestMapping(value = "/api/datatype/{id}/structure", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
 	      produces = {"application/json"})
 	  @ResponseBody
 	  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
@@ -192,7 +192,7 @@ public class DatatypeController extends BaseController {
 	      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
 	      throws DatatypeException, IOException, ForbiddenOperationException {
 	      Datatype dt = this.datatypeService.findLatestById(id);
-	      validateSaveOperation(dt);if(dt instanceof ComplexDatatype)
+	      validateSaveOperation(dt);
 	      this.datatypeService.applyChanges(dt, cItems);
 	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
 	      entityChangeDomain.setDocumentId(documentId);
