@@ -109,7 +109,7 @@ public class HtmlWriter {
 																	br()).withId("p1")),
 															a("See all at once").withHref("AllDatatypesForRoot_" + name
 																	+ "Version_" + versionSet + ".html")))))))))))
-
+ 
 					).render();
 			// System.out.println("XMLL: " +tableDatatypesByNameThenVersion);
 

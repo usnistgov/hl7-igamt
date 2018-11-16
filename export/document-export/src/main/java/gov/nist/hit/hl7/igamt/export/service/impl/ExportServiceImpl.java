@@ -13,8 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.export.service.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -42,15 +49,28 @@ public class ExportServiceImpl implements ExportService {
   public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,
       ExportParameters exportParameters) throws ExportException {
     try {
+//        System.out.println("XML cnotent before XSLT :" + serializedElement);
+
       File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,
           xsltPath != null ? xsltPath : GLOBAL_STYLESHEET, exportParameters);
-      InputStream htmlInputStream = FileUtils.openInputStream(htmlFile);
+//      String str = FileUtils.readFileToString(htmlFile);
+//      System.out.println("File String after XSLT is : "+ str);
+
+      InputStream htmlInputStream = FileUtils.openInputStream(htmlFile); 
+//      System.out.println("String content after cleanHTML : " + convert(HtmlUtil.cleanHtml(htmlInputStream),Charset.defaultCharset()));
       return HtmlUtil.cleanHtml(htmlInputStream);
+//      return htmlInputStream;
+
     } catch (Exception exception) {
       throw new ExportException(exception);
     }
   }
 
-
+  public String convert(InputStream inputStream, Charset charset) throws IOException {
+		
+		try (Scanner scanner = new Scanner(inputStream, charset.name())) {
+			return scanner.useDelimiter("\\A").next();
+		}
+	}
 
 }

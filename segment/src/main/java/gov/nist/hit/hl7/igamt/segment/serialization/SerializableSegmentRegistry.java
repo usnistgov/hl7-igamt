@@ -20,9 +20,12 @@ import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
 import gov.nist.hit.hl7.igamt.serialization.exception.RegistrySerializationException;
@@ -38,19 +41,24 @@ import nu.xom.Elements;
 public class SerializableSegmentRegistry extends SerializableRegistry {
 
   private Map<String, Segment> segmentsMap;
+  private Map<String, Datatype> datatypesMap;
   private Map<String, String> datatypeNamesMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> valuesetLabelMap;
   private Set<String> bindedSegments;
   private Set<String> bindedFields;
   private Set<SerializableSegment> serializableSegments;
+  private CoConstraintService coConstraintService;
+  private ExportConfiguration exportConfiguration;
   
   /**
    * @param section
+ * @param datatypesMap 
+ * @param exportConfiguration 
    */
   public SerializableSegmentRegistry(Section section, int level, SegmentRegistry segmentRegistry,
-      Map<String, Segment> segmentsMap, Map<String, String> datatypeNamesMap,
-      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedSegments, Set<String> bindedFields) {
+      Map<String, Segment> segmentsMap, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedSegments, Set<String> bindedFields, CoConstraintService coConstraintService, ExportConfiguration exportConfiguration) {
     super(section, level, segmentRegistry);
     this.segmentsMap = segmentsMap;
     this.datatypeNamesMap = datatypeNamesMap;
@@ -59,6 +67,9 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
     this.bindedSegments = bindedSegments;
     this.bindedFields = bindedFields;
     this.serializableSegments = new HashSet<>();
+    this.datatypesMap=datatypesMap;
+    this.coConstraintService=coConstraintService;
+    this.exportConfiguration=exportConfiguration;
   }
 
   /*
@@ -74,12 +85,13 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
       if (segmentRegistry != null) {
         if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
           for (Link segmentLink : segmentRegistry.getChildren()) {
-            if(bindedSegments.contains(segmentLink.getId().getId())) {
+//            if(bindedSegments.contains(segmentLink.getId().getId())) {
               if (segmentsMap.containsKey(segmentLink.getId().getId())) {
                 Segment segment = segmentsMap.get(segmentLink.getId().getId());
+                System.out.println("Segment name :" + segment.getName() + segment.getExt());
                 SerializableSegment serializableSegment =
                     new SerializableSegment(segment, String.valueOf(segmentLink.getPosition()), this.getChildLevel(),
-                        this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields);
+                        this.datatypesMap, this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields, this.coConstraintService,this.exportConfiguration);
                 if (serializableSegment != null) {
                   Element segmentElement = serializableSegment.serialize();
                   if (segmentElement != null) {
@@ -93,7 +105,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
             }
           }
         }
-      }
+//      }
       return segmentRegistryElement;
     } catch (Exception exception) {
       throw new RegistrySerializationException(exception, super.getSection(), segmentRegistry);

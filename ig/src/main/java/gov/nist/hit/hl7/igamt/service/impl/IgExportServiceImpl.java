@@ -13,8 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.util.Scanner;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -107,18 +114,39 @@ public class IgExportServiceImpl implements IgExportService {
       ExportFontConfiguration exportFontConfiguration =
           exportFontConfigurationService.getExportFontConfiguration(username);
       String xmlContent =
-          igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
-      // TODO add app infoservice to get app version
+          igSerializationService.serializeIgDocument(igDocument, exportConfiguration);  
+//      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+      	// TODO add app infoservice to get app version
       ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
           igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
           exportFontConfiguration, "2.0_beta");
       InputStream htmlContent =
           exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
-      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
-    } catch (SerializationException serializationException) {
+      
+//      try {
+//		System.out.println("html content in IgExport Service is :" + convert(htmlContent,Charset.defaultCharset()));
+//	} catch (IOException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+      
+      ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+//      System.out.println("int = " + exportedFile.getContent().read());
+      exportedFile.setContent(htmlContent);
+//      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+      
+      return exportedFile;
+    } catch (SerializationException  serializationException) {
       throw new ExportException(serializationException,
           "Unable to serialize IG Document with ID " + igDocument.getId().getId());
     }
   }
+  
+  public String convert(InputStream inputStream, Charset charset) throws IOException {
+		
+		try (Scanner scanner = new Scanner(inputStream, charset.name())) {
+			return scanner.useDelimiter("\\A").next();
+		}
+	}
 
 }

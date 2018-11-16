@@ -56,6 +56,7 @@ public class ExportedFile {
         documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion())
             + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
             + exportFormat.getValue();
+    System.out.println("wqlo");
   }
 
   private String cleanDocumentTitle(String documentTitle) {

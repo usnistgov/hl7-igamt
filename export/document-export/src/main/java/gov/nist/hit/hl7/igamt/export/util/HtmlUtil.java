@@ -36,7 +36,7 @@ public class HtmlUtil {
     tidy.setDropEmptyParas(true);
     tidy.setXHTML(true);
     tidy.setShowWarnings(false); // to hide errors
-    tidy.setQuiet(true); // to hide warning
+    tidy.setQuiet(false); // to hide warning
     tidy.setMakeClean(true);
     tidy.setTidyMark(false);
     // tidy.setBreakBeforeBR(true);

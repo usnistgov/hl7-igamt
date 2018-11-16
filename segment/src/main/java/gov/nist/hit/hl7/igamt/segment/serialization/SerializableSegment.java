@@ -17,13 +17,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraints;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
+import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.DynamicMappingSerializationException;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableResource;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -37,25 +44,36 @@ import nu.xom.Element;
  */
 public class SerializableSegment extends SerializableResource {
 
-  private Map<String, String> datatypesMap;
+//	  @Autowired
+//	  CoConstraintService coConstraintService;	
+	
+  private Map<String, Datatype> datatypesMap;
+  private Map<String, String> datatypesNamesMap;
   private Map<String, String> valuesetNamesMap;
   private Map<String, String> valuesetLabelMap;
   private int level;
   private Set<String> bindedFields;
+  private CoConstraintService coConstraintService;
+private ExportConfiguration exportConfiguration;
 
   /**
    * @param segment
    * @param position
+ * @param exportConfiguration 
+ * @param datatypesMap2 
    */
   public SerializableSegment(Segment segment, String position, int level,
-      Map<String, String> datatypesMap, Map<String, String> valuesetNamesMap,
-      Map<String, String> valuesetLabelMap, Set<String> bindedFields) {
+      Map<String, Datatype> datatypesMap, Map<String, String> datatypesNamesMap, Map<String, String> valuesetNamesMap,
+      Map<String, String> valuesetLabelMap, Set<String> bindedFields,CoConstraintService coConstraintService, ExportConfiguration exportConfiguration) {
     super(segment, position);
-    this.datatypesMap = datatypesMap;
+    this.datatypesNamesMap = datatypesNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
     this.valuesetLabelMap = valuesetLabelMap;
     this.level = level;
     this.bindedFields = bindedFields;
+    this.coConstraintService=coConstraintService;
+    this.datatypesMap=datatypesMap;
+    this.exportConfiguration=exportConfiguration;
   }
 
   @Override
@@ -89,11 +107,25 @@ public class SerializableSegment extends SerializableResource {
         if (fieldsElement != null) {
           segmentElement.appendChild(fieldsElement);
         }
-      }
+      }      
+      if (coConstraintService.getLatestCoConstraintForSegment(segment.getId().getId()) != null && segment != null) { 
+      CoConstraintTable coConstraintsTable = coConstraintService.getLatestCoConstraintForSegment(segment.getId().getId()); 
+//      if (coConstraintsTable.getHeaders() != null){
+      	  SerializableCoConstraints serializableCoConstraints = new SerializableCoConstraints(coConstraintsTable, segment.getName(), datatypesMap, exportConfiguration);
+        Element coConstraintsElement = serializableCoConstraints.serialize();
+        System.out.println("Coconstraint XML :" + coConstraintsElement.toXML());
+        if (coConstraintsElement != null) {
+          segmentElement.appendChild(coConstraintsElement);
+        }
       return super.getSectionElement(segmentElement, level);
-    } catch (SerializationException exception) {
+    }
+      
+
+    
+    }catch (SerializationException exception) {
       throw new ResourceSerializationException(exception, Type.SEGMENT, segment);
     }
+	return segmentElement;
   }
 
   private Element serializeFields(Set<Field> fields) throws SubStructElementSerializationException {
@@ -122,9 +154,9 @@ public class SerializableSegment extends SerializableResource {
               fieldElement
                   .addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
               if (field.getRef() != null && field.getRef().getId() != null) {
-                if (this.datatypesMap.containsKey(field.getRef().getId())) {
+                if (this.datatypesNamesMap.containsKey(field.getRef().getId())) {
                   fieldElement.addAttribute(
-                      new Attribute("datatype", this.datatypesMap.get(field.getRef().getId())));
+                      new Attribute("datatype", this.datatypesNamesMap.get(field.getRef().getId())));
                 } else {
                   throw new DatatypeNotFoundException(field.getRef().getId());
                 }
@@ -159,9 +191,9 @@ public class SerializableSegment extends SerializableResource {
         if (dynamicMappingItem != null) {
           Element dynamicMappingItemElement = new Element("DynamicMappingItem");
           if (dynamicMappingItem.getDatatypeId() != null) {
-            if (this.datatypesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
+            if (this.datatypesNamesMap.containsKey(dynamicMappingItem.getDatatypeId())) {
               dynamicMappingItemElement.addAttribute(new Attribute("datatype",
-                  this.datatypesMap.get((dynamicMappingItem.getDatatypeId()))));
+                  this.datatypesNamesMap.get((dynamicMappingItem.getDatatypeId()))));
             } else {
               throw new DatatypeNotFoundException(dynamicMappingItem.getDatatypeId());
             }

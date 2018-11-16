@@ -62,7 +62,7 @@
 											</th>
 										</tr>
 										<tr>
-											<th colspan="3" class="rose"> Data Type Flavor</th>f
+											<th colspan="3" class="rose"> Data Type Flavor</th>
 											<td colspan="7">
 												<xsl:value-of select="@title" />
 											</td>

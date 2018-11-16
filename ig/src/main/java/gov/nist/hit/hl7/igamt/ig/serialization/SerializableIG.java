@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.serialization.sections.SectionSerializationUtil;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableAbstractDomain;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableDocumentMetadata;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
@@ -52,13 +53,14 @@ public class SerializableIG extends SerializableAbstractDomain {
   private Set<String> bindedDatatypes;
   private Set<String> bindedComponents;
   private Set<String> bindedValueSets;
+  private CoConstraintService coConstraintService;
 
   public SerializableIG(Ig ig, String position,
       Map<String, Datatype> datatypesMap, Map<String, SerializableValuesetStructure> valueSetsMap,
       Map<String, Segment> segmentsMap, Map<String, ConformanceProfile> conformanceProfilesMap,
       ExportConfiguration exportConfiguration, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets) {
+      Set<String> bindedComponents, Set<String> bindedValueSets, CoConstraintService coConstraintService) {
     super(ig, position);
     this.datatypesMap = datatypesMap;
     this.valueSetsMap = valueSetsMap;
@@ -72,6 +74,7 @@ public class SerializableIG extends SerializableAbstractDomain {
     this.bindedComponents = bindedComponents;
     this.bindedValueSets = bindedValueSets;
     this.populateNamesMap();
+    this.coConstraintService=coConstraintService;
   }
 
   /*
@@ -101,7 +104,7 @@ public class SerializableIG extends SerializableAbstractDomain {
               igDocument.getSegmentRegistry(), igDocument.getConformanceProfileRegistry(),
               igDocument.getProfileComponentRegistry(), igDocument.getCompositeProfileRegistry(),
               this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
-              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration);
+              this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration, this.coConstraintService);
       if (sectionElement != null) {
         igDocumentElement.appendChild(sectionElement);
       }
