@@ -43,7 +43,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -81,7 +80,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   DatatypeService datatypeService;
 
   @Override
-  public DatatypeLibrary findById(CompositeKey id) {
+  public DatatypeLibrary findById(String id) {
     // TODO Auto-generated method stub
     return datatypeLibraryRepository.findById(id).get();
   }
@@ -94,7 +93,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     // TODO Auto-generated method stub
     datatypeLibraryRepository.deleteById(id);
   }
@@ -144,7 +143,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     List<SectionTemplate> datatypeLibraryTemplate =
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
-    emptyLibrary.setId(new CompositeKey());
+    emptyLibrary.setId(new String());
     emptyLibrary.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : datatypeLibraryTemplate) {
@@ -176,7 +175,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
   private Set<String> mapLinkToId(Set<Link> links) {
-    Set<String> ids = links.stream().map(x -> x.getId().getId()).collect(Collectors.toSet());
+    Set<String> ids = links.stream().map(x -> x.getId()).collect(Collectors.toSet());
     return ids;
   }
 
@@ -197,7 +196,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         savedIds.removeAll(existants);
         for (String id : savedIds) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
@@ -206,7 +205,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
             }
-            if (datatype.getId().getId() != null) {
+            if (datatype.getId()!= null) {
               Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
                   reg.getChildren().size() + 1);
               ret.getDatatypes().add(datatype);
@@ -234,7 +233,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             Link link =
                 new Link(datatype.getId(), datatype.getDomainInfo(), reg.getChildren().size() + 1);
@@ -243,7 +242,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
               addDatatypes(getDatatypeResourceDependenciesIds(p), lib, ret);
-              System.out.println("putting In Library" + p.getId().getId());
+              System.out.println("putting In Library" + p.getId());
               reg.getChildren().add(link);
             }
           } else {
@@ -297,8 +296,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
     // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
+    List<String> groupResults =
+        mongoTemplate.aggregate(agg, DatatypeLibrary.class, String.class).getMappedResults();
 
     Criteria where2 = Criteria.where("id").in(groupResults);
     Query qry = Query.query(where2);
@@ -364,8 +363,8 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
     // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
+    List<String> groupResults =
+        mongoTemplate.aggregate(agg, DatatypeLibrary.class, String.class).getMappedResults();
 
     Criteria where2 = Criteria.where("id").in(groupResults);
     Query qry = Query.query(where2);

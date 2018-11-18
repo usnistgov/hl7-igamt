@@ -15,8 +15,6 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
 import java.util.HashMap;
 import java.util.List;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
@@ -36,9 +34,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
  */
 public interface ConformanceProfileService {
 
-  public ConformanceProfile findByKey(CompositeKey key);
-
-  public ConformanceProfile findLatestById(String id);
+  public ConformanceProfile findById(String id);
 
   public ConformanceProfile create(ConformanceProfile conformanceProfile);
 
@@ -48,7 +44,7 @@ public interface ConformanceProfileService {
 
   public void delete(ConformanceProfile conformanceProfile);
 
-  public void delete(CompositeKey key);
+  public void delete(String id);
 
   public void removeCollection();
 
@@ -74,11 +70,9 @@ public interface ConformanceProfileService {
 
   public List<ConformanceProfile> findByDomainInfoVersionAndName(String version, String name);
 
-  ConformanceProfile getLatestById(String id);
-
   public List<ConformanceProfile> findByDomainInfoScopeAndName(String scope, String name);
 
-  ConformanceProfile findDisplayFormat(CompositeKey id);
+  ConformanceProfile findDisplayFormat(String id);
 
   public DisplayConformanceProfileMetadata convertDomainToMetadata(
       ConformanceProfile conformanceProfile);
@@ -99,7 +93,6 @@ public interface ConformanceProfileService {
    * @return
    */
   public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure);
-
 
   /**
    * Validate the metadata information of the segment
@@ -160,15 +153,15 @@ public interface ConformanceProfileService {
       throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
 
   /**
-   * @param compositeKey
+   * @param String
    * @param valuesetsMap
    * @param segmentsMap
    * @param l
    * @param username
    * @return
    */
-  public Link cloneConformanceProfile(CompositeKey compositeKey,
-      HashMap<String, CompositeKey> valuesetsMap, HashMap<String, CompositeKey> segmentsMap, Link l,
+  public Link cloneConformanceProfile(String String,
+      HashMap<String, String> valuesetsMap, HashMap<String, String> segmentsMap, Link l,
       String username);
 
   /**

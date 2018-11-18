@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -54,7 +53,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 
 
 		for(Datatype datatype : datatypesMap.values()) {
-			listIDs.add(datatype.getId().getId());
+			listIDs.add(datatype.getId());
 			
 		}
 
@@ -72,8 +71,8 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 			versionSets.addAll(datatype.getDomainInfo().getCompatibilityVersion());
 			List list = new ArrayList(hs);
 			Collections.sort(list);
-			datatypesMap.put(datatype.getId().getId(), datatype);
-			datatypeNamesMap.put(new Ref(datatype.getId().getId()), datatype.getName());
+			datatypesMap.put(datatype.getId(), datatype);
+			datatypeNamesMap.put(new Ref(datatype.getId()), datatype.getName());
 			orderedVersionList = list;
 
 		}
@@ -86,7 +85,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 			if(datatype instanceof ComplexDatatype) {
 				for(Component component : ((ComplexDatatype) datatype).getComponents()) {
 					if(component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
-						Datatype datatype2 = datatypeService.getLatestById(component.getRef().getId());
+						Datatype datatype2 = datatypeService.findById(component.getRef().getId());
 						datatypeNamesMap.put(component.getRef(), datatype2.getName());
 					}
 				}

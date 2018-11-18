@@ -41,7 +41,7 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   }
 
   public SerializableAbstractDomain(AbstractDomain abstractDomain, String position, String title) {
-    super(abstractDomain.getId().getId(), position, title);
+    super(abstractDomain.getId(), position, title);
     this.abstractDomain = abstractDomain;
   }
 
@@ -77,8 +77,8 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
       element.addAttribute(new Attribute("name",
           this.abstractDomain.getName() != null ? this.abstractDomain.getName() : ""));
       element.addAttribute(new Attribute("id",
-          this.abstractDomain.getId() != null && this.abstractDomain.getId().getId() != null
-              ? this.abstractDomain.getId().getId()
+          this.abstractDomain.getId() != null && this.abstractDomain.getId() != null
+              ? this.abstractDomain.getId()
               : ""));
 
       element.addAttribute(new Attribute("username",
@@ -113,11 +113,11 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   }
 
   public SerializableConstraints getConformanceStatements(int level) {
-    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getConformanceStatements() : null);
+    return new SerializableConstraints(this.abstractDomain.getId(), this.abstractDomain.getDescription(), Type.CONFORMANCESTATEMENT, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getConformanceStatements() : null);
   }
 
   public SerializableConstraints getPredicates(int level) {
-    return new SerializableConstraints(this.abstractDomain.getId().getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getPredicates() : null);
+    return new SerializableConstraints(this.abstractDomain.getId(), this.abstractDomain.getDescription(), Type.PREDICATE, 1, this.abstractDomain.getLabel(), level, this.serializableBinding != null ? this.serializableBinding.getPredicates() : null);
   }
 
 }

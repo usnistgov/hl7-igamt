@@ -31,7 +31,7 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   }
 
   @Override
-  public MongoClient mongo() {
+  public MongoClient mongoClient() {
 
     return new MongoClient(new ServerAddress(DB_HOST, Integer.parseInt(DB_PORT)));
   }
@@ -40,6 +40,8 @@ public class DataMongoConfig extends AbstractMongoConfiguration {
   protected String getMappingBasePackage() {
     return "gov.nist.hit.hl7.igamt";
   }
+
+
 
 
 

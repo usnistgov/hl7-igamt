@@ -47,7 +47,7 @@ public class PrimitiveDatatype extends Datatype {
 
     PrimitiveDatatype clone = new PrimitiveDatatype();
     clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
+    clone.setCreatedFrom(this.getId());
     clone.setDescription(this.getDescription());
     DomainInfo domainInfo = this.getDomainInfo();
     domainInfo.setScope(Scope.USER);

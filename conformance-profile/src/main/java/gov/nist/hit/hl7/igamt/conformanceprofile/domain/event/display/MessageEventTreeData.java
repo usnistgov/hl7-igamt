@@ -1,6 +1,5 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class MessageEventTreeData {
@@ -9,7 +8,7 @@ public class MessageEventTreeData {
   private String description;
   private String hl7Version;
   private Type type = Type.EVENTS;
-  private CompositeKey id;
+  private String id;
 
 
   public String getName() {
@@ -44,11 +43,11 @@ public class MessageEventTreeData {
     this.type = type;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

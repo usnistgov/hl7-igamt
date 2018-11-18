@@ -74,9 +74,9 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
       if (segmentRegistry != null) {
         if (segmentRegistry.getChildren() != null && !segmentRegistry.getChildren().isEmpty()) {
           for (Link segmentLink : segmentRegistry.getChildren()) {
-            if(bindedSegments.contains(segmentLink.getId().getId())) {
-              if (segmentsMap.containsKey(segmentLink.getId().getId())) {
-                Segment segment = segmentsMap.get(segmentLink.getId().getId());
+            if(bindedSegments.contains(segmentLink.getId())) {
+              if (segmentsMap.containsKey(segmentLink.getId())) {
+                Segment segment = segmentsMap.get(segmentLink.getId());
                 SerializableSegment serializableSegment =
                     new SerializableSegment(segment, String.valueOf(segmentLink.getPosition()), this.getChildLevel(),
                         this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields);
@@ -88,7 +88,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
                   this.serializableSegments.add(serializableSegment);
                 }
               } else {
-                throw new SegmentNotFoundException(segmentLink.getId().getId());
+                throw new SegmentNotFoundException(segmentLink.getId());
               }
             }
           }

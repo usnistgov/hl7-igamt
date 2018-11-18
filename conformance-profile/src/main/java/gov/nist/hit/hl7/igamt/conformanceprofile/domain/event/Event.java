@@ -1,11 +1,10 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.event;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class Event {
 
-  private CompositeKey id;
+  private String id;
   String name;
   String parentStructId;
   final Type type = Type.EVENT;
@@ -14,7 +13,7 @@ public class Event {
     super();
   }
 
-  public Event(CompositeKey id, String event, String parentStructId) {
+  public Event(String id, String event, String parentStructId) {
     super();
     this.id = id;
     this.name = event;
@@ -29,7 +28,7 @@ public class Event {
     this.parentStructId = parentStructId;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
@@ -45,7 +44,7 @@ public class Event {
     return type;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 }

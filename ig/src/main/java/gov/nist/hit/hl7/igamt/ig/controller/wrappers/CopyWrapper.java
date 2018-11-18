@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 /**
  * @author ena3
@@ -20,10 +19,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 public class CopyWrapper {
 
   private String igDocumentId;
-  private CompositeKey id;
+  private String id;
   private String ext;
   private String name;
-
+  
+  
   public String getIgDocumentId() {
     return igDocumentId;
   }
@@ -32,11 +32,11 @@ public class CopyWrapper {
     this.igDocumentId = igDocumentId;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

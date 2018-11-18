@@ -79,7 +79,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
                     var treeObj = entry.data;
 
                     var dtLink:any = {};
-                    dtLink.id = treeObj.key.id;
+                    dtLink.id = treeObj.id;
                     dtLink.label = treeObj.label;
                     dtLink.domainInfo = treeObj.domainInfo;
                     var index = treeObj.label.indexOf("_");
@@ -105,7 +105,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
                     for (let entry of listTocVSs) {
                         var treeObj = entry.data;
                         var valuesetLink: any = {};
-                        valuesetLink.id = treeObj.key.id;
+                        valuesetLink.id = treeObj.id;
                         valuesetLink.label = treeObj.label;
                         valuesetLink.domainInfo = treeObj.domainInfo;
                         this.valuesetsLinks.push(valuesetLink);

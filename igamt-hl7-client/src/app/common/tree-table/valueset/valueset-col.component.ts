@@ -119,7 +119,7 @@ export class ValuesetColComponent {
   addVS(rowData){
     if(this.currentBindings && this.currentBindings.valuesetBindings){
       let binding:any = {};
-      binding.valuesetId = rowData.id.id;
+      binding.valuesetId = rowData.id;
       binding.label = rowData.label;
       binding.name = rowData.name;
       this.currentBindings.valuesetBindings.push(binding);

@@ -176,7 +176,7 @@ public class DatatypeController extends BaseController {
 
 
   private Datatype findById(String id) throws DatatypeNotFoundException {
-    Datatype Datatype = datatypeService.findLatestById(id);
+    Datatype Datatype = datatypeService.findById(id);
     if (Datatype == null) {
       throw new DatatypeNotFoundException(id);
     }
@@ -191,7 +191,7 @@ public class DatatypeController extends BaseController {
 	      @RequestParam(name = "dId", required = true) String documentId,
 	      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
 	      throws DatatypeException, IOException, ForbiddenOperationException {
-	      Datatype dt = this.datatypeService.findLatestById(id);
+	      Datatype dt = this.datatypeService.findById(id);
 	      validateSaveOperation(dt);
 	      this.datatypeService.applyChanges(dt, cItems);
 	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
@@ -202,7 +202,7 @@ public class DatatypeController extends BaseController {
 	      entityChangeDomain.setChangeItems(cItems);
 	      entityChangeDomain.setTargetVersion(dt.getVersion());
 	      entityChangeService.save(entityChangeDomain);
-	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId().getId(), new Date());
+	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
 	    
 	  }
 

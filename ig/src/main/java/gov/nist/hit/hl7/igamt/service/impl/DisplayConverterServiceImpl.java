@@ -203,7 +203,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Datatype dt = datatypeService.findByKey(l.getId());
+      Datatype dt = datatypeService.findById(l.getId());
       if (dt != null) {
 
 
@@ -219,7 +219,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Segment segment = segmentService.findByKey(l.getId());
+      Segment segment = segmentService.findById(l.getId());
       if (segment != null) {
         // addChildrenByType(node, Type.SEGMENT);
         Nodes.add(createSegmentNode(segment, l.getPosition()));
@@ -238,7 +238,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      CompositeProfileStructure compositeProfile = compositeProfileServie.findByKey(l.getId());
+      CompositeProfileStructure compositeProfile = compositeProfileServie.findById(l.getId());
       if (compositeProfile != null) {
         Nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
       }
@@ -261,11 +261,11 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setLabel(compositeProfile.getName());
     data.setDescription(compositeProfile.getDescription());
     data.setDomainInfo(compositeProfile.getDomainInfo());
-    data.setKey(compositeProfile.getId());
+    data.setId(compositeProfile.getId());
     data.setPosition(position);
     data.setType(Type.COMPOSITEPROFILE);
     node.setData(data);
-    node.setId(compositeProfile.getId().getId());
+    node.setId(compositeProfile.getId());
     return node;
   }
 
@@ -276,7 +276,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      ProfileComponent profileComponent = profileComponentService.findByCompositeKey(l.getId());
+      ProfileComponent profileComponent = profileComponentService.findById(l.getId());
       if (profileComponent != null) {
 
         Nodes.add(createPcNode(profileComponent, l.getPosition()));
@@ -300,7 +300,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setPosition(position);
     data.setDescription(profileComponent.getName());
     data.setDomainInfo(profileComponent.getDomainInfo());
-    data.setKey(profileComponent.getId());
+    data.setId(profileComponent.getId());
     data.setType(Type.COMPOSITEPROFILE);
     node.setData(data);
     return node;
@@ -340,10 +340,10 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setDescription(vs.getName());
     data.setPosition(position);
     data.setDomainInfo(vs.getDomainInfo());
-    data.setKey(vs.getId());
+    data.setId(vs.getId());
     data.setType(Type.VALUESET);
     node.setData(data);
-    node.setId(vs.getId().getId());
+    node.setId(vs.getId());
     return node;
   }
 
@@ -355,7 +355,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      ConformanceProfile confromanceProfile = conformanceProfileService.findByKey(l.getId());
+      ConformanceProfile confromanceProfile = conformanceProfileService.findById(l.getId());
       if (confromanceProfile != null) {
 
         Nodes.add(createCpNode(confromanceProfile, l.getPosition()));
@@ -380,10 +380,10 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setDescription(confromanceProfile.getDescription());
     data.setExt(confromanceProfile.getIdentifier());
     data.setDomainInfo(confromanceProfile.getDomainInfo());
-    data.setKey(confromanceProfile.getId());
+    data.setId(confromanceProfile.getId());
     node.setData(data);
     data.setPosition(position);
-    node.setId(confromanceProfile.getId().getId());
+    node.setId(confromanceProfile.getId());
     data.setType(Type.CONFORMANCEPROFILE);
     return node;
 
@@ -467,11 +467,11 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setLabel(elm.getName());
     data.setExt(elm.getExt());
     data.setDescription(elm.getDescription());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     data.setDomainInfo(elm.getDomainInfo());
     data.setType(Type.DATATYPE);
     node.setData(data);
-    node.setId(elm.getId().getId());
+    node.setId(elm.getId());
     return node;
   }
 
@@ -511,9 +511,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setPosition(position);
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     data.setType(Type.SEGMENT);
-    node.setId(elm.getId().getId());
+    node.setId(elm.getId());
     node.setData(data);
     return node;
 
@@ -554,10 +554,10 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setLabel(elm.getBindingIdentifier());
     data.setDescription(elm.getName());
     data.setDomainInfo(elm.getDomainInfo());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     data.setType(Type.VALUESET);
     node.setData(data);
-    node.setId(elm.getId().getId());
+    node.setId(elm.getId());
     return node;
   }
 
@@ -611,7 +611,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setLabel(elm.getName());
     data.setDescription(elm.getName());
     data.setDomainInfo(elm.getDomainInfo());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     data.setType(Type.COMPOSITEPROFILE);
     node.setData(data);
     return node;
@@ -657,9 +657,9 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     data.setExt(elm.getIdentifier());
     data.setDescription(elm.getDescription());
     data.setDomainInfo(elm.getDomainInfo());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     node.setData(data);
-    node.setId(elm.getId().getId());
+    node.setId(elm.getId());
     data.setType(Type.CONFORMANCEPROFILE);
     return node;
 

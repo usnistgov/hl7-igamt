@@ -74,9 +74,9 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
       if (conformanceProfileRegistry != null) {
         if (!conformanceProfileRegistry.getChildren().isEmpty()) {
           for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
-            if (conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
+            if (conformanceProfilesMap.containsKey(conformanceProfileLink.getId())) {
               ConformanceProfile conformanceProfile =
-                  conformanceProfilesMap.get(conformanceProfileLink.getId().getId());
+                  conformanceProfilesMap.get(conformanceProfileLink.getId());
               SerializableConformanceProfile serializableConformanceProfile =
                   new SerializableConformanceProfile(conformanceProfile,
                       String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
@@ -89,7 +89,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
                 }
               }
             } else {
-              throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId().getId());
+              throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId());
             }
           }
         }

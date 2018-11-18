@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonTypeName;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 @JsonTypeName("Ignore")
 public class IgnoreCell extends CoConstraintTableCell {

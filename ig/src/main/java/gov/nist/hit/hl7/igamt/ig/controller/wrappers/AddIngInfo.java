@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 /**
@@ -25,7 +24,7 @@ public class AddIngInfo {
   }
 
   public AddIngInfo(DomainInfo domainInfo, String name, String ext, String description,
-      boolean flavor, CompositeKey id) {
+      boolean flavor, String id) {
     super();
     this.domainInfo = domainInfo;
     this.name = name;
@@ -75,11 +74,11 @@ public class AddIngInfo {
     this.flavor = flavor;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 
@@ -89,6 +88,6 @@ public class AddIngInfo {
   private String ext;
   private String description;
   private boolean flavor;
-  private CompositeKey id;
+  private String id;
 
 }

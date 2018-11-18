@@ -135,7 +135,7 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
       return new ExportedFile(htmlContent, datatypeLibrary.getName(), datatypeLibrary.getId(), exportFormat);
     } catch (SerializationException serializationException) {
       throw new ExportException(serializationException,
-          "Unable to serialize IG Document with ID " + datatypeLibrary.getId().getId());
+          "Unable to serialize IG Document with ID " + datatypeLibrary.getId());
     }
   }
 

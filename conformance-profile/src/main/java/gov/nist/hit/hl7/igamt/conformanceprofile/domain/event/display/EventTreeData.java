@@ -1,20 +1,19 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class EventTreeData {
 
-  private CompositeKey id;
+  private String id;
   String name;
   String parentStructId;
   final Type type = Type.EVENT;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

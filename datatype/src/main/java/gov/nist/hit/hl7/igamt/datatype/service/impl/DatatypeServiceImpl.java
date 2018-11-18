@@ -42,7 +42,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -106,20 +105,20 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
   @Override
-  public Datatype findByKey(CompositeKey key) {
+  public Datatype findById(String key) {
     return datatypeRepository.findById(key).get();
   }
 
   @Override
   public Datatype create(Datatype datatype) {
-    datatype.setId(new CompositeKey());
+    datatype.setId(new String());
     datatype = datatypeRepository.save(datatype);
     return datatype;
   }
 
   @Override
   public Datatype save(Datatype datatype) {
-    // datatype.setId(CompositeKeyUtil.updateVersion(datatype.getId()));
+    // datatype.setId(StringUtil.updateVersion(datatype.getId()));
     datatype = datatypeRepository.save(datatype);
     return datatype;
   }
@@ -135,7 +134,7 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public void delete(CompositeKey key) {
+  public void delete(String key) {
     datatypeRepository.deleteById(key);
   }
 
@@ -189,44 +188,17 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public Datatype findLatestById(String id) {
-    Datatype datatype = datatypeRepository
-        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
-    return datatype;
-  }
-
-  @Override
   public List<Datatype> findByScope(Scope scope) {
     return datatypeRepository.findByScope(scope);
   }
 
   @Override
-  public Datatype getLatestById(String id) {
-
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    Datatype datatype = mongoTemplate.findOne(query, Datatype.class);
-    return datatype;
-  }
-  
-  
-
-
-  @Override
-  public List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version) {
+  public List<Datatype> findByScopeAndVersion(String scope, String hl7Version) {
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope);
     where.andOperator(Criteria.where("domainInfo.version").is(hl7Version));
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, Datatype.class, CompositeKey.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+   
+    Query qry = Query.query(where);
     List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
     return datatypes;
 
@@ -239,8 +211,7 @@ public class DatatypeServiceImpl implements DatatypeService {
         Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
             .andOperator(Criteria.where("domainInfo.scope").is(scope)));
     Query query = Query.query(where);
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
+
     List<Datatype> datatypes = mongoTemplate.find(query, Datatype.class);
     return datatypes;
   }
@@ -251,8 +222,6 @@ public class DatatypeServiceImpl implements DatatypeService {
         Criteria.where("name").is(name).andOperator(Criteria.where("domainInfo.version").is(version)
             .andOperator(Criteria.where("domainInfo.scope").is(scope)));
     Query query = Query.query(where);
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
     Datatype datatypes = mongoTemplate.findOne(query, Datatype.class);
     return datatypes;
   }
@@ -343,8 +312,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
     // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, Datatype.class, CompositeKey.class).getMappedResults();
+    List<String> groupResults =
+        mongoTemplate.aggregate(agg, Datatype.class, String.class).getMappedResults();
 
     Criteria where2 = Criteria.where("id").in(groupResults);
     Query qry = Query.query(where2);
@@ -391,7 +360,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
       throw new DatatypeValidationException("Datatype is missing");
     }
-    Datatype d = getLatestById(f.getRef().getId());
+    Datatype d = findById(f.getRef().getId());
     if (d == null) {
       throw new DatatypeValidationException("Datatype is missing");
     }
@@ -431,9 +400,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException {
-    Datatype datatype = findLatestById(predef.getId().getId());
+    Datatype datatype = findById(predef.getId());
     if (datatype == null) {
-      throw new DatatypeNotFoundException(predef.getId().getId());
+      throw new DatatypeNotFoundException(predef.getId());
     }
     datatype.setPreDef(predef.getPreDef());
     return save(datatype);
@@ -441,9 +410,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException {
-    Datatype datatype = findLatestById(postdef.getId().getId());
+    Datatype datatype = findById(postdef.getId());
     if (datatype == null) {
-      throw new DatatypeNotFoundException(postdef.getId().getId());
+      throw new DatatypeNotFoundException(postdef.getId());
     }
 
     datatype.setPostDef(postdef.getPostDef());
@@ -455,9 +424,9 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveMetadata(DisplayMetadata metadata)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(metadata);
-    Datatype datatype = findLatestById(metadata.getId().getId());
+    Datatype datatype = findById(metadata.getId());
     if (datatype == null) {
-      throw new DatatypeNotFoundException(metadata.getId().getId());
+      throw new DatatypeNotFoundException(metadata.getId());
     }
     datatype.setExt(metadata.getExt());
     datatype.setDescription(metadata.getDescription());
@@ -470,28 +439,28 @@ public class DatatypeServiceImpl implements DatatypeService {
   public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeNotFoundException, DatatypeValidationException {
     validate(conformanceStatement);
-    Datatype datatype = findLatestById(conformanceStatement.getId().getId());
+    Datatype datatype = findById(conformanceStatement.getId());
     if (datatype == null) {
-      throw new DatatypeNotFoundException(conformanceStatement.getId().getId());
+      throw new DatatypeNotFoundException(conformanceStatement.getId());
     }
     datatype.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(datatype);
   }
 
   @Override
-  public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, Link l, String username) {
+  public Link cloneDatatype(HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, Link l, String username) {
     // TODO Auto-generated method stub
 
-    Datatype elm = this.findByKey(l.getId());
+    Datatype elm = this.findById(l.getId());
 
     Link newLink = new Link();
-    if (datatypesMap.containsKey(l.getId().getId())) {
-      newLink.setId(datatypesMap.get(l.getId().getId()));
+    if (datatypesMap.containsKey(l.getId())) {
+      newLink.setId(datatypesMap.get(l.getId()));
     } else {
-      CompositeKey newKey = new CompositeKey();
+      String newKey = new String();
       newLink.setId(newKey);
-      datatypesMap.put(l.getId().getId(), newKey);
+      datatypesMap.put(l.getId(), newKey);
     }
     updateDependencies(elm, datatypesMap, valuesetsMap);
     elm.setFrom(elm.getId());
@@ -501,8 +470,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   }
 
-  private void updateDependencies(Datatype elm, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap) {
+  private void updateDependencies(Datatype elm, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap) {
     // TODO Auto-generated method stub
 
     if (elm instanceof ComplexDatatype) {
@@ -510,7 +479,7 @@ public class DatatypeServiceImpl implements DatatypeService {
         if (c.getRef() != null) {
           if (c.getRef().getId() != null) {
             if (datatypesMap.containsKey(c.getRef().getId())) {
-              c.getRef().setId(datatypesMap.get(c.getRef().getId()).getId());
+              c.getRef().setId(datatypesMap.get(c.getRef().getId()));
             }
           }
         }
@@ -523,7 +492,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     }
   }
 
-  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+  private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
     // TODO Auto-generated method stub
     Set<String> vauleSetIds = new HashSet<String>();
     if (binding.getChildren() != null) {
@@ -532,7 +501,7 @@ public class DatatypeServiceImpl implements DatatypeService {
           for (ValuesetBinding vs : child.getValuesetBindings()) {
             if (vs.getValuesetId() != null) {
               if (valuesetsMap.containsKey(vs.getValuesetId())) {
-                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
               }
             }
           }
@@ -562,7 +531,7 @@ public class DatatypeServiceImpl implements DatatypeService {
               cModel.setPath(path + "-" + c.getPosition());
               cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
               StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-              if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+              if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
 
               componentStructureTreeModel.setData(cModel);
               if (childChildDt instanceof ComplexDatatype) {
@@ -579,9 +548,9 @@ public class DatatypeServiceImpl implements DatatypeService {
                       scModel.setPath(path + "-" + c.getPosition() + "-" + sc.getPosition());
                       scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
                       StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                      if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                      if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                       StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
-                      if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                      if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                       subComponentStructureTreeModel.setData(scModel);
                       componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                     } else {
@@ -613,7 +582,7 @@ public class DatatypeServiceImpl implements DatatypeService {
               scModel.setPath(path + "-" + sc.getPosition());
               scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
               StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
-              if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+              if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
               subComponentStructureTreeModel.setData(scModel);
               result.add(subComponentStructureTreeModel);
             } else {
@@ -657,7 +626,7 @@ public class DatatypeServiceImpl implements DatatypeService {
             cModel.setPath(c.getPosition() + "");
             cModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
             StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-            if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId().getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+            if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
             componentStructureTreeModel.setData(cModel);
 
             if (childDt instanceof ComplexDatatype) {
@@ -673,9 +642,9 @@ public class DatatypeServiceImpl implements DatatypeService {
                     scModel.setPath(c.getPosition() + "-" + sc.getPosition());
                     scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                     StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId().getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
                     StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
-                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                     subComponentStructureTreeModel.setData(scModel);
                     componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                   } else {
@@ -712,7 +681,7 @@ public class DatatypeServiceImpl implements DatatypeService {
   private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
     Datatype dt = datatypesMap.get(id);
     if (dt == null) {
-      dt = this.findLatestById(id);
+      dt = this.findById(id);
       datatypesMap.put(id, dt);
     }
     return dt;
@@ -725,8 +694,8 @@ public class DatatypeServiceImpl implements DatatypeService {
       for (ValuesetBinding vb : valuesetBindings) {
         Valueset vs = valueSetsMap.get(vb.getValuesetId());
         if (vs == null) {
-          vs = this.valueSetService.findLatestById(vb.getValuesetId());
-          valueSetsMap.put(vs.getId().getId(), vs);
+          vs = this.valueSetService.findById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId(), vs);
         }
         if (vs != null) {
           DisplayValuesetBinding dvb = new DisplayValuesetBinding();
@@ -775,13 +744,13 @@ public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, 
 	List<DatatypeSelectItemGroup> ret = new ArrayList<DatatypeSelectItemGroup>();
 	DatatypeSelectItemGroup flavros = new DatatypeSelectItemGroup();
 	flavros.setLabel("Flavors");
-	List<Datatype> dtFlavors =  this.findFlavors( ids,dt.getId().getId(), dt.getName());
+	List<Datatype> dtFlavors =  this.findFlavors( ids,dt.getId(), dt.getName());
 	
 	if(dtFlavors!=null &&!dtFlavors.isEmpty()) {
 	dtFlavors.forEach(d -> flavros.getItems().add(createItem(d)));
 	ret.add(flavros);
 	}
-	List<Datatype> others =  this.findNonFlavor( ids,dt.getId().getId(), dt.getName());
+	List<Datatype> others =  this.findNonFlavor( ids,dt.getId(), dt.getName());
 
 
 	if(others!=null&& !others.isEmpty()) {
@@ -899,7 +868,7 @@ private DatatypeLabel createDatatypeLabel(Datatype dt) {
     DatatypeLabel label = new DatatypeLabel();
     label.setDomainInfo(dt.getDomainInfo());
     label.setExt(dt.getExt());
-    label.setId(dt.getId().getId());
+    label.setId(dt.getId());
     label.setLabel(dt.getLabel());
     if (dt instanceof ComplexDatatype)
       label.setLeaf(false);
@@ -1036,7 +1005,7 @@ private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Dat
     String location) {
   if (s.getBinding() == null) {
     ResourceBinding binding = new ResourceBinding();
-    binding.setElementId(s.getId().getId());
+    binding.setElementId(s.getId());
     s.setBinding(binding);
   }
   return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);

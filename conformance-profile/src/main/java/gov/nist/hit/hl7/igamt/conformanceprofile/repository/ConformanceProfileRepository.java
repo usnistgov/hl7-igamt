@@ -20,17 +20,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 
 /**
  *
+ *
  * @author Maxence Lefort on Mar 9, 2018.
+ * 
  */
 @Repository
 public interface ConformanceProfileRepository
-    extends MongoRepository<ConformanceProfile, CompositeKey> {
+    extends MongoRepository<ConformanceProfile, String> {
 
   public List<ConformanceProfile> findByIdentifier(String identifier);
 
@@ -58,11 +58,11 @@ public interface ConformanceProfileRepository
 
   @Query(value = "{ '_id' : ?0 }",
       fields = "{name : 1,messageType:1,identifier:1, structID:1, event:1, description:1,_id:1,domainInfo:1}")
-  public List<ConformanceProfile> findDisplayFormat(CompositeKey id);
+  public List<ConformanceProfile> findDisplayFormat(String id);
 
   @Query(value = "{ '_id._id' : ?0 }")
-  List<ConformanceProfile> findLatestById(ObjectId id, Sort sort);
+  public List<ConformanceProfile> findLatestById(ObjectId id, Sort sort);
 
-  public ConformanceProfile findOneById(CompositeKey key);
+  public ConformanceProfile findOneById(String key);
 
 }

@@ -139,7 +139,7 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     List<TreeNode> Nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Datatype dt = datatypeService.findByKey(l.getId());
+      Datatype dt = datatypeService.findById(l.getId());
       if (dt != null) {
 
 
@@ -206,7 +206,7 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     data.setDomainInfo(elm.getDomainInfo());
     data.setType(Type.DATATYPE);
     node.setData(data);
-    node.setId(elm.getId().getId());
+    node.setId(elm.getId());
     return node;
   }
 
