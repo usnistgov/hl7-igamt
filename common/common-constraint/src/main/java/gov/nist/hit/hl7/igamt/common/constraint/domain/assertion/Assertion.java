@@ -27,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public abstract class Assertion {
   private AssertionMode mode;
   private String description;
+  private String script;
   
 
   public Assertion() {
@@ -47,5 +48,13 @@ public abstract class Assertion {
 
   public void setMode(AssertionMode mode) {
     this.mode = mode;
+  }
+
+  public String getScript() {
+    return script;
+  }
+
+  public void setScript(String script) {
+    this.script = script;
   }
 }

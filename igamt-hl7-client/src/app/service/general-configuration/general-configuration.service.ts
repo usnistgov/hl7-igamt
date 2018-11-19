@@ -26,6 +26,12 @@ export class GeneralConfigurationService {
 
   _simpleConstraintVerbs: any[];
 
+  _occurenceTypes: any[];
+
+  _declarativeTypes:any[];
+
+  _declarativeCTypes:any[];
+
   _ifConstraintVerbs: any[];
 
   _instanceNums: any[];
@@ -51,10 +57,10 @@ export class GeneralConfigurationService {
   constructor(){
 
     this._constraintTypes = [
-      {label: 'Predefined', value: 'PREDEFINED', icon: 'fa fa-fw fa-spinner', disabled: true},
-      {label: 'Predefined Patterns', value: 'PREDEFINEDPATTERNS', icon: 'fa fa-fw fa-spinner', disabled: true},
-      {label: 'Assertion Builder', value: 'ASSERTION', icon: 'fa fa-fw fa-file-code-o'},
-      {label: 'Free Text', value: 'FREE', icon: 'fa fa-fw fa-file-text-o'}
+      {label: 'SIMPLE', value: 'simple', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'SIMPLE + Proposition Patterns', value: 'simple-proposition', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'COMPLEX', value: 'complex', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'Free', value: 'free', icon: 'fa fa-fw fa-file-text-o'}
     ];
 
 
@@ -112,7 +118,33 @@ export class GeneralConfigurationService {
     ];
 
     this._codeUsageOptions = [ { label : 'Required', value : 'R' },{ label : 'Permitted', value : 'P' },{ label : 'Excluded', value : 'E' }];
-    this._simpleConstraintVerbs = [ { label : 'SHALL', value : 'SHALL' },{ label : 'SHALL NOT', value : 'SHALL NOT' }];
+    this._simpleConstraintVerbs = [ { label : 'SHALL', value : 'SHALL' },{ label : 'SHALL NOT', value : 'SHALL NOT' },{ label : 'SHOULD', value : 'SHOULD' },{ label : 'SHOULD NOT', value : 'SHOULD NOT' },{ label : 'MAY', value : 'MAY' },{ label : 'MAY NOT', value : 'MAY NOT' }];
+    this._occurenceTypes = [ { label : 'At least one occurrence of', value : 'atLeast' },{ label : "The 'INSTANCE' occurrence of", value : 'instance' },{ label : 'No occurrence of', value : 'noOccurrence' },{ label : 'Exactly one occurrence of', value : 'exactlyOne' },{ label : "'COUNT' occurrences of", value : 'count' },{ label : 'All occurrences of', value : 'all' }];
+    this._declarativeTypes = [
+      { label : "contain the value 'VALUE'.", value : 'containtValue' },
+      { label : "contain the value 'VALUE' (DESCRIPTION).", value : 'containValueDesc' },
+      { label : "contain the value 'VALUE' drawn from the code system 'CODE SYSTEM'.", value : 'containCode' },
+      { label : "contain one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' }.", value : 'containListValues' },
+      { label : "contain one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' } drawn from the code system 'CODE SYSTEM'.", value : 'containListCodes' },
+      { label : "match the regular expression 'REGULAR EXPRESSION'.", value : 'regex' },
+      { label : "contain a positive integer'.", value : 'positiveInteger' },
+      { label : "be valued sequentially starting with the value '1'.", value : 'sequentially' },
+      { label : "be valued with an ISO-compliant OID.", value : 'iso' }
+    ];
+
+    this._declarativeCTypes = [
+      { label : "be identical to", value : 'c-identical' },
+      { label : "be earlier than", value : 'c-earlier' },
+      { label : "be earlier than or equivalent to", value : 'c-earlier-equivalent' },
+      { label : "be truncated earlier than", value : 'c-truncated-earlier' },
+      { label : "be truncated earlier than or truncated equivalent to", value : 'c-truncated-earlier-equivalent' },
+      { label : "be equivalent to", value : 'c-equivalent' },
+      { label : "be truncated equivalent to", value : 'c-truncated-equivalent' },
+      { label : "be equivalent to or later than", value : 'c-equivalent-later' },
+      { label : "be later than", value : 'c-later' },
+      { label : "be truncated equivalent to or truncated later than", value : 'c-truncated-equivalent-later' },
+      { label : "be truncated later than", value : 'c-truncated-later' }
+    ];
     this._ifConstraintVerbs = [ { label : 'is', value : 'IS' },{ label : 'is NOT', value : 'is NOT' }];
     this._formatTypes = [ { label : 'be ISO format', value : 'iso' },{ label : 'be positive', value : 'positive' },{ label : 'be negative', value : 'negative' },{ label : 'be numeric', value : 'numeric' },{ label : 'be alphanumeric', value : 'alphanumeric' },{ label : 'be regrex', value : 'regrex' }];
     this._operators = [ { label : 'be identical to the content of', value : 'equal' },{ label : 'be greater to the value of', value : 'greater' },{ label : 'be less to the value of', value : 'less' },{ label : 'be same or greater to the value of', value : 'equalorgreater' },{ label : 'be same or less to the value of', value : 'equalorless' },{ label : 'be different to the value of', value : 'notequal' }];

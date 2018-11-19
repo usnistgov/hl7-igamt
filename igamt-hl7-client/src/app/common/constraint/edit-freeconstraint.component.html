@@ -1,7 +1,21 @@
 <div ngModelGroup="freeText">
     <div class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
-            <label for="freetext">Free Text: </label>
+            <label for="id">ID: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <input id="id" name="id" class="form-control" required [(ngModel)]="constraint.identifier" type="text" #id="ngModel"/>
+            <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
+                <div *ngIf="id.errors.required">
+                    ID is required.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label for="freetext">Description: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
             <input id="freetext" name="freetext" class="form-control" required [(ngModel)]="constraint.freeText" type="text" #freetext="ngModel"/>

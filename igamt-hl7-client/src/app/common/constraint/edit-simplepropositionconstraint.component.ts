@@ -7,19 +7,26 @@ import {GeneralConfigurationService} from "../../service/general-configuration/g
 
 
 @Component({
-  selector : 'edit-simple-constraint',
-  templateUrl : './edit-simpleconstraint.component.html',
-  styleUrls : ['./edit-simpleconstraint.component.css'],
+  selector : 'edit-simple-proposition-constraint',
+  templateUrl : './edit-simplepropositionconstraint.component.html',
+  styleUrls : ['./edit-simplepropositionconstraint.component.css'],
   viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
-export class EditSimpleConstraintComponent {
+export class EditSimplePropositionConstraintComponent {
   @Input() constraint : any;
-  @Input() assertion : any;
+  @Input() ifAssertion : any;
+  @Input() thenAssertion : any;
   @Input() structure : any;
   @Input() groupName: string;
   @Input() level: string;
 
   needContext:boolean = false;
+
+  needPTargetOccurence:boolean = false;
+  targetPOccurenceIdPath:string;
+  targetPOccurenceLocationStr:string;
+  targetPOccurenceValue:string;
+  targetPOccurenceType:string;
 
   needTargetOccurence:boolean = false;
   targetOccurenceIdPath:string;
@@ -33,7 +40,6 @@ export class EditSimpleConstraintComponent {
   compareOccurenceValue:string;
   compareOccurenceType:string;
 
-  declarativeType:string;
 
   needComparison:boolean = false;
 
@@ -45,9 +51,12 @@ export class EditSimpleConstraintComponent {
   constructor(private configService : GeneralConfigurationService){}
 
   ngOnInit(){
-    if(!this.assertion) this.assertion = {};
-    if(!this.assertion.complement) this.assertion.complement = {};
-    if(!this.assertion.subject) this.assertion.subject = {};
+    if(!this.ifAssertion) this.ifAssertion = {};
+    if(!this.ifAssertion.complement) this.ifAssertion.complement = {};
+    if(!this.ifAssertion.subject) this.ifAssertion.subject = {};
+    if(!this.thenAssertion) this.thenAssertion = {};
+    if(!this.thenAssertion.complement) this.thenAssertion.complement = {};
+    if(!this.thenAssertion.subject) this.thenAssertion.subject = {};
     this.verbs = this.configService._simpleConstraintVerbs;
     this.occurenceTypes = this.configService._occurenceTypes;
     this.declarativeTypes = this.configService._declarativeTypes;
@@ -58,13 +67,22 @@ export class EditSimpleConstraintComponent {
     }
   }
 
+  selectPTargetElementLocation(location){
+    this.needPTargetOccurence = false;
+    this.targetPOccurenceIdPath = null;
+    this.targetPOccurenceLocationStr = null;
+    this.targetPOccurenceValue = null;
+    this.targetPOccurenceType = null;
+    this.ifAssertion.subject = {path:location};
+  }
+
   selectTargetElementLocation(location){
     this.needTargetOccurence = false;
     this.targetOccurenceIdPath = null;
     this.targetOccurenceLocationStr = null;
     this.targetOccurenceValue = null;
     this.targetOccurenceType = null;
-    this.assertion.subject = {path:location};
+    this.thenAssertion.subject = {path:location};
   }
 
   selectComparisonElementLocation(location){
@@ -73,7 +91,7 @@ export class EditSimpleConstraintComponent {
     this.compareOccurenceLocationStr = null;
     this.compareOccurenceValue = null;
     this.compareOccurenceType = null;
-    this.assertion.complement.path = location;
+    this.thenAssertion.complement.path = location;
   }
 
   getLocationLabel(location, type){
@@ -120,13 +138,13 @@ export class EditSimpleConstraintComponent {
     return result + "(" + elementName + ")";
   }
 
-  addListValue(list){
-    if(!list) list = [];
-    list.push('');
-  }
+  // addListValue(list){
+  //   if(!list) list = [];
+  //   list.push('');
+  // }
 
   changeDeclarativeType(){
-    if(this.assertion.complement.complementKey === 'containListValues' || this.assertion.complement.complementKey === 'containListCodes')
-      this.assertion.complement.values = [];
+    if(this.thenAssertion.complement.complementKey === 'containListValues' || this.thenAssertion.complement.complementKey === 'containListCodes')
+      this.thenAssertion.complement.values = [];
   }
 }

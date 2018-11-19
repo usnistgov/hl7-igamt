@@ -65,10 +65,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         ];
     }
 
-    output(x){
-      console.log(x);
-    }
-
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
@@ -77,103 +73,11 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         this.segmentId = this.route.snapshot.params["segmentId"];
 
         this.route.data.subscribe(data => {
-          this.segmentStructure = data.segmentStructure;
-          const x = data.segmentConformanceStatements;
-
-            this.tocService.getDataypeList().then((dtTOCdata) => {
-                let listTocDTs:any = dtTOCdata;
-                for(let entry of listTocDTs){
-                    var treeObj = entry.data;
-
-                    var dtLink:any = {};
-                    dtLink.id = treeObj.key.id;
-                    dtLink.label = treeObj.label;
-                    dtLink.domainInfo = treeObj.domainInfo;
-                    var index = treeObj.label.indexOf("_");
-                    if(index > -1){
-                        dtLink.name = treeObj.label.substring(0,index);
-                        dtLink.ext = treeObj.label.substring(index);;
-                    }else {
-                        dtLink.name = treeObj.label;
-                        dtLink.ext = null;
-                    }
-
-                    if(treeObj.lazyLoading) dtLink.leaf = false;
-                    else dtLink.leaf = true;
-                    this.datatypesLinks.push(dtLink);
-
-                    var dtOption = {label: dtLink.label, value : dtLink.id};
-                    this.datatypeOptions.push(dtOption);
-                }
-
-                this.tocService.getValueSetList().then((valuesetTOCdata) => {
-                    let listTocVSs: any = valuesetTOCdata;
-
-                    for (let entry of listTocVSs) {
-                        var treeObj = entry.data;
-                        var valuesetLink: any = {};
-                        valuesetLink.id = treeObj.key.id;
-                        valuesetLink.label = treeObj.label;
-                        valuesetLink.domainInfo = treeObj.domainInfo;
-                        this.valuesetsLinks.push(valuesetLink);
-                        var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
-                        this.valuesetOptions.push(vsOption);
-                    }
-
-
-                    this.segmentsService.getSegmentStructure(this.segmentId).then( segStructure  => {
-                        segStructure.children = _.sortBy(segStructure.children, function(child){ return child.data.position});
-                        this.idMap[this.segmentId] = {name:segStructure.name};
-                        var rootData = {elementId:this.segmentId};
-                        for (let child of segStructure.children) {
-                            var childData =  JSON.parse(JSON.stringify(rootData));
-                            childData.child = {
-                                elementId: child.data.id,
-                            };
-
-                            if(child.data.max === '1'){
-                                childData.child.instanceParameter = '1';
-                            }else{
-                                childData.child.instanceParameter = '*';
-                            }
-
-                            var data = {
-                                id: child.data.id,
-                                name: child.data.name,
-                                max: child.data.max,
-                                position: child.data.position,
-                                usage: child.data.usage,
-                                dtId: child.data.ref.id,
-                                idPath: this.segmentId + '-' + child.data.id,
-                                pathData: childData
-                            };
-
-                            var treeNode = {
-                                label: child.data.position + '. ' + child.data.name + '[max = ' + child.data.max + ']',
-                                data : data,
-                                expandedIcon: "fa-folder-open",
-                                collapsedIcon: "fa-folder",
-                                leaf:false
-                            };
-
-                            var dt = this.getDatatypeLink(child.data.ref.id);
-
-                            if(dt.leaf) treeNode.leaf = true;
-                            else treeNode.leaf = false;
-
-                            this.idMap[data.idPath] = data;
-                            this.treeData.push(treeNode);
-                        }
-
-                        this.segmentConformanceStatements= x;
-                        if(!this.segmentConformanceStatements.conformanceStatements) this.segmentConformanceStatements.conformanceStatements = [];
-
-                        this.backup=__.cloneDeep(this.segmentConformanceStatements);
-                    });
-
-
-                });
-            });
+            this.segmentStructure = data.segmentStructure;
+            const x = data.segmentConformanceStatements;
+            this.segmentConformanceStatements= x;
+            if(!this.segmentConformanceStatements.conformanceStatements) this.segmentConformanceStatements.conformanceStatements = [];
+            this.backup=__.cloneDeep(this.segmentConformanceStatements);
         });
     }
 
@@ -223,15 +127,19 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
 
     changeType(){
-        if(this.selectedConformanceStatement.type == 'ASSERTION'){
+        if(this.selectedConformanceStatement.displayType == 'simple'){
             this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.type == 'FREE'){
-            this.selectedConformanceStatement.assertion = undefined;
-        }else if(this.selectedConformanceStatement.type == 'PREDEFINEDPATTERNS'){
-            this.selectedConformanceStatement.assertion = undefined;
-        }else if(this.selectedConformanceStatement.type == 'PREDEFINED'){
-            this.selectedConformanceStatement.assertion = undefined;
+        }else if(this.selectedConformanceStatement.displayType == 'free'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "FREE";
+        }else if(this.selectedConformanceStatement.displayType == 'simple-proposition'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
+            this.selectedConformanceStatement.assertion = {mode:"IFTHEN"};
+            this.selectedConformanceStatement.assertion.ifAssertion = {mode:"SIMPLE"};
+            this.selectedConformanceStatement.assertion.thenAssertion = {mode:"SIMPLE"};
         }
     }
 
@@ -288,11 +196,17 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     selectCS(cs){
         this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
 
+        if(this.selectedConformanceStatement.type === 'FREE'){
+            this.selectedConformanceStatement.displayType = 'free';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
+            && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
+            && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else {
 
-        if(this.selectedConformanceStatement && this.selectedConformanceStatement.type && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.type === 'ASSERTION'){
-            this.constraintsService.generateTreeData(this.selectedConformanceStatement.assertion, this.treeData, this.idMap, this.datatypesLinks);
         }
-
 
         this.editorTab = true;
         this.listTab = false;
