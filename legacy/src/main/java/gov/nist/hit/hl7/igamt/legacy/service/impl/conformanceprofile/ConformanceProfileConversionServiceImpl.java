@@ -31,7 +31,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRef;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
@@ -99,7 +98,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       }
     }
 
-    convertedConformanceProfile.setId(new CompositeKey(oldMessage.getId()));
+    convertedConformanceProfile.setId(oldMessage.getId());
     convertedConformanceProfile.setCreatedFrom(oldMessage.getCreatedFrom());
     convertedConformanceProfile.setName(oldMessage.getName());
     convertedConformanceProfile.setStructID(oldMessage.getStructID());

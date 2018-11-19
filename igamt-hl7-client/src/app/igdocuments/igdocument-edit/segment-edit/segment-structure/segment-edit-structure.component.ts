@@ -12,6 +12,7 @@ import * as __ from 'lodash';
 import {SegmentsService} from "../segments.service";
 import {IgDocumentService} from "../../ig-document.service";
 import {Columns} from "../../../../common/constants/columns";
+import {Types} from "../../../../common/constants/types";
 
 @Component({
     selector : 'segment-edit',
@@ -31,6 +32,7 @@ export class SegmentEditStructureComponent implements WithSave {
 
     cols= Columns.segmentColumns;
     selectedColumns=Columns.segmentColumns;
+    documentType=Types.IGDOCUMENT;
 
     constructor(private route: ActivatedRoute,
                 private router : Router,
@@ -48,6 +50,7 @@ export class SegmentEditStructureComponent implements WithSave {
         this.changeItems = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.igId = this.router.url.split("/")[2];
+
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
             x.structure = this.configService.arraySortByPosition(x.structure);
             this.segmentStructure = {};
@@ -90,6 +93,7 @@ export class SegmentEditStructureComponent implements WithSave {
     }
 
     refreshTree(){
+        console.log("Refreshing tree");
         this.segmentStructure.structure = [...this.segmentStructure.structure];
     }
 

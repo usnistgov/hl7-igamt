@@ -29,8 +29,8 @@ public class ResourceSerializationException extends SerializationException {
 
   public ResourceSerializationException(Exception originException, Type type, Resource resource,
       String message) {
-    super(originException, type, "id=" + resource.getId().getId() + ",version="
-        + resource.getId().getVersion() + ",name=" + resource.getName());
+    super(originException, type, "id=" + resource.getId() + ",version="
+        + resource.getId()+ ",name=" + resource.getName());
     this.message = message;
   }
 

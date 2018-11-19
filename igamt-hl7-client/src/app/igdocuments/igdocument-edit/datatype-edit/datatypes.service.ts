@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from "@angular/router";
 import {IgErrorService} from "../ig-error/ig-error.service";
 import {LoadingService} from "../service/loading.service";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable()
 export class DatatypesService {
@@ -116,5 +117,14 @@ export class DatatypesService {
 
     public saveDatatypeConformanceStatements(id, conformanceStatements): Promise<any> {
         return this.http.post('api/datatypes/' + id + '/conformancestatement', conformanceStatements).toPromise();
+    }
+    // public saveDatatype(id, dId, cItem): Promise<any> {
+    // return  this.http.post('api/datatypes/' + id + '/document/' + dId + '/save',cItem).toPromise();
+    // }
+    public saveDatatype(id, dId, cItem): Promise<any> {
+
+     let httpParams = new HttpParams().append("dId", dId);
+
+    return  this.http.post('api/datatypes/' + id + '/structure',cItem, {params:httpParams}).toPromise();
     }
 }

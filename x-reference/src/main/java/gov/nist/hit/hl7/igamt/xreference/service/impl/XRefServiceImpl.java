@@ -11,13 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.xreference.service.impl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.fields;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
-import static org.springframework.data.mongodb.core.aggregation.ArrayOperators.Filter.filter;
-import static org.springframework.data.mongodb.core.aggregation.ComparisonOperators.Eq.valueOf;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,22 +21,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.el.ResourceBundleELResolver;
-
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
@@ -101,12 +89,8 @@ public class XRefServiceImpl extends XRefService {
       aggregation = newAggregation(match(Criteria.where("components.ref._id").is(new ObjectId(id))));
     }
     
-    	
-    List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "datatype", CompositeKey.class).getMappedResults();
     
-    Criteria where2 = Criteria.where("id").in(cpIds);
-    Query qry = Query.query(where2);
-    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
+    List<Datatype> datatypes = mongoTemplate.aggregate(aggregation, "datatype", Datatype.class).getMappedResults();
 
     return XReferenceUtil.processDatatypes(datatypes, id);
   }
@@ -129,11 +113,7 @@ public class XRefServiceImpl extends XRefService {
     
     
 	
-List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "segment", CompositeKey.class).getMappedResults();
-
-Criteria where2 = Criteria.where("id").in(cpIds);
-Query qry = Query.query(where2);
-List<Segment> segments = mongoTemplate.find(qry, Segment.class);
+List<Segment> segments= mongoTemplate.aggregate(aggregation, "segment", Segment.class).getMappedResults();
 
 return XReferenceUtil.processSegments(segments, id);
 
@@ -175,10 +155,8 @@ return XReferenceUtil.processSegments(segments, id);
       aggregation =
           newAggregation(match(XReferenceUtil.getConformanceProfileMultiLevelCriteria(10, objId)));
     }
-    List<CompositeKey> cpIds= mongoTemplate.aggregate(aggregation, "conformanceProfile", CompositeKey.class).getMappedResults();
-    Criteria where2 = Criteria.where("id").in(cpIds);
-    Query qry = Query.query(where2);
-    List<ConformanceProfile> conformanceProfiles = mongoTemplate.find(qry, ConformanceProfile.class);
+
+    List<ConformanceProfile> conformanceProfiles = mongoTemplate.aggregate(aggregation, "conformanceProfile", ConformanceProfile.class).getMappedResults();
     return XReferenceUtil.processSegmentRefs(conformanceProfiles, id);
   }
 

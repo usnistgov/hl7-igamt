@@ -3,9 +3,6 @@ package gov.nist.hit.hl7.igamt.datatypeLibrary.model;
 import java.util.Date;
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
-
-
 public class LibSummary {
 
   private String title;
@@ -13,7 +10,7 @@ public class LibSummary {
   private String coverpage;
   private String subtitle;
   private Date dateUpdated;
-  private CompositeKey id;
+  private String id;
   private String username;
   private List<String> participants;
 
@@ -70,11 +67,11 @@ public class LibSummary {
     this.position = position;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

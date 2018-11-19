@@ -101,7 +101,7 @@ export  class TocService{
   async getDatatypeById(id: string) {
     const list = await this.getDataypeList();
     const elm = _.find(list, function (x) {
-      return x.data.key.id === id;
+      return x.data.id === id;
     });
     return elm;
   }

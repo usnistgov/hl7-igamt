@@ -26,7 +26,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLibrary;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.TableLink;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -97,8 +96,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
     Ig newIg = new Ig();
     // Metadata
-    CompositeKey key = new CompositeKey(ig.getId());
-    newIg.setId(key);
+    newIg.setId(ig.getId());
     if (ig.getAccountId() != null) {
       Account acc = accountRepository.findByAccountId(ig.getAccountId());
       if (acc != null) {
@@ -218,8 +216,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
         (ProfileComponentLink l1, ProfileComponentLink l2) -> l1.getName().compareTo(l2.getName()))
         .collect(Collectors.toList());
     for (int i = 0; i < ordred.size(); i++) {
-      CompositeKey key = new CompositeKey(ordred.get(i).getId());
-      Link link = new Link(key, i + 1);
+      Link link = new Link(ordred.get(i).getId(), i + 1);
       ret.getChildren().add(link);
 
     }
@@ -229,7 +226,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
   Link createLink(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype obj, int position) {
     Link l = new Link();
-    l.setId(new CompositeKey(obj.getId(), 1));
+    l.setId(obj.getId());
     l.setPosition(position);
     l.setDomainInfo(
         new DomainInfo(obj.getHl7Version(), ConversionUtil.convertScope(obj.getScope())));
@@ -238,7 +235,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
   Link createLink(Message obj, int position) {
     Link l = new Link();
-    l.setId(new CompositeKey(obj.getId(), 1));
+    l.setId(obj.getId());
     l.setPosition(position);
     l.setDomainInfo(
         new DomainInfo(obj.getHl7Version(), ConversionUtil.convertScope(obj.getScope())));
@@ -247,7 +244,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
   Link createLink(Table obj, int position) {
     Link l = new Link();
-    l.setId(new CompositeKey(obj.getId(), 1));
+    l.setId(obj.getId());
     l.setPosition(position);
     l.setDomainInfo(
         new DomainInfo(obj.getHl7Version(), ConversionUtil.convertScope(obj.getScope())));
@@ -257,7 +254,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
 
   Link createLink(Segment obj, int position) {
     Link l = new Link();
-    l.setId(new CompositeKey(obj.getId(), 1));
+    l.setId(obj.getId());
     l.setPosition(position);
     l.setDomainInfo(
         new DomainInfo(obj.getHl7Version(), ConversionUtil.convertScope(obj.getScope())));
@@ -340,7 +337,6 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
   private ConformanceProfileRegistry createConformanceProfile(Messages messages) {
     ConformanceProfileRegistry ret = new ConformanceProfileRegistry();
     for (Message m : messages.getChildren()) {
-      CompositeKey key = new CompositeKey(m.getId());
       Link link = this.createLink(m, m.getPosition());
       ret.getChildren().add(link);
 
@@ -353,7 +349,7 @@ public class IgDocumentConversionServiceImpl implements ConversionService {
     Set<gov.nist.hit.hl7.igamt.common.base.domain.TextSection> children =
         new HashSet<TextSection>();
     for (Section s : childSections) {
-      children.add(createTextSectionFromSection(s, newIg.getId().getId()));
+      children.add(createTextSectionFromSection(s, newIg.getId()));
     }
     newIg.setContent(children);
 

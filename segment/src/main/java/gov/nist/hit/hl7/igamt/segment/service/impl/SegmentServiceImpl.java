@@ -39,7 +39,6 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -120,13 +119,13 @@ public class SegmentServiceImpl implements SegmentService {
   private CodeSystemService codeSystemService;
 
   @Override
-  public Segment findByKey(CompositeKey key) {
+  public Segment findById(String key) {
     return segmentRepository.findById(key).get();
   }
 
   @Override
   public Segment create(Segment segment) {
-    segment.setId(new CompositeKey());
+    segment.setId(null);
     segment = segmentRepository.save(segment);
     return segment;
   }
@@ -149,7 +148,7 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public void delete(CompositeKey key) {
+  public void delete(String key) {
     segmentRepository.deleteById(key);
   }
 
@@ -194,16 +193,7 @@ public class SegmentServiceImpl implements SegmentService {
     return segmentRepository.findByDomainInfoScopeAndName(scope, name);
   }
 
-  @Override
-  public Segment getLatestById(String id) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    Segment segment = mongoTemplate.findOne(query, Segment.class);
-    return segment;
 
-  }
 
   /**
    * @deprecated. Use segment.toStructure()
@@ -214,7 +204,7 @@ public class SegmentServiceImpl implements SegmentService {
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
-    result.setId(segment.getId());
+    result.setId(null);
     result.setScope(segment.getDomainInfo().getScope());
     result.setVersion(segment.getDomainInfo().getVersion());
     result.setName(segment.getName());
@@ -235,7 +225,7 @@ public class SegmentServiceImpl implements SegmentService {
           fModel.setPath(f.getPosition() + "");
           fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
           StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment, f.getId());
-          if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
+          if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
           fieldStructureTreeModel.setData(fModel);
           if (childDt instanceof ComplexDatatype) {
             ComplexDatatype fieldDatatype = (ComplexDatatype) childDt;
@@ -250,9 +240,9 @@ public class SegmentServiceImpl implements SegmentService {
                   cModel.setPath(f.getPosition() + "-" + c.getPosition());
                   cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                   StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb, c.getId());
-                  if (childSeb != null) cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
+                  if (childSeb != null) cModel.addBinding(this.createBindingDisplay(childSeb, segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
                   StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
-                  if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                  if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                   componentStructureTreeModel.setData(cModel);
                   if (childChildDt instanceof ComplexDatatype) {
                     ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
@@ -268,11 +258,11 @@ public class SegmentServiceImpl implements SegmentService {
                           scModel.setPath(f.getPosition() + "-" + c.getPosition() + "-" + sc.getPosition());
                           scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
                           StructureElementBinding childChildSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(childSeb, sc.getId());
-                          if (childChildSeb != null) scModel.addBinding(this.createBindingDisplay(childChildSeb, segment.getId().getId(), ViewScope.SEGMENT, 1, valueSetsMap));
+                          if (childChildSeb != null) scModel.addBinding(this.createBindingDisplay(childChildSeb, segment.getId(), ViewScope.SEGMENT, 1, valueSetsMap));
                           StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                          if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, childDt.getId().getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                          if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                           StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
-                          if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                          if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                           subComponentStructureTreeModel.setData(scModel);
                           componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                         } else {
@@ -307,7 +297,7 @@ public class SegmentServiceImpl implements SegmentService {
   private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
     Datatype dt = datatypesMap.get(id);
     if (dt == null) {
-      dt = this.datatypeService.findLatestById(id);
+      dt = this.datatypeService.findById(id);
       datatypesMap.put(id, dt);
     }
     return dt;
@@ -324,8 +314,8 @@ public class SegmentServiceImpl implements SegmentService {
       for (ValuesetBinding vb : valuesetBindings) {
         Valueset vs = valueSetsMap.get(vb.getValuesetId());
         if (vs == null) {
-          vs = this.valueSetService.findLatestById(vb.getValuesetId());
-          valueSetsMap.put(vs.getId().getId(), vs);
+          vs = this.valueSetService.findById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId(), vs);
         }
         if (vs != null) {
           DisplayValuesetBinding dvb = new DisplayValuesetBinding();
@@ -391,15 +381,7 @@ public class SegmentServiceImpl implements SegmentService {
     return null;
   }
 
-  @Override
-  public Segment findLatestById(String id) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    Segment segment = mongoTemplate.findOne(query, Segment.class);
-    return segment;
-  }
+
 
   @Override
   public DisplayMetadata convertDomainToMetadata(Segment segment) {
@@ -469,14 +451,8 @@ public class SegmentServiceImpl implements SegmentService {
     Criteria where = Criteria.where("domainInfo.scope").is(scope);
     where.andOperator(Criteria.where("domainInfo.version").is(version));
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
-    // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, Segment.class, CompositeKey.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("name");
@@ -543,11 +519,11 @@ public class SegmentServiceImpl implements SegmentService {
               if (structureElementBinding.getValuesetBindings() != null) {
                 for (ValuesetBinding valuesetBinding : structureElementBinding
                     .getValuesetBindings()) {
-                  Valueset vs = valueSetService.findLatestById(valuesetBinding.getValuesetId());
+                  Valueset vs = valueSetService.findById(valuesetBinding.getValuesetId());
                   if (vs.getCodeRefs() != null) {
                     for (CodeRef codeRef : vs.getCodeRefs()) {
                       CodeSystem codeSystem =
-                          codeSystemService.findLatestById(codeRef.getCodeSystemId());
+                          codeSystemService.findById(codeRef.getCodeSystemId());
                       Code code = codeSystem.findCode(codeRef.getCodeId());
                       CodeInfo codeInfo = new CodeInfo();
                       codeInfo.setCode(code.getValue());
@@ -581,7 +557,7 @@ public class SegmentServiceImpl implements SegmentService {
     if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
       throw new SegmentValidationException("Datatype not found");
     }
-    Datatype d = datatypeService.getLatestById(f.getRef().getId());
+    Datatype d = datatypeService.findById(f.getRef().getId());
     if (d == null) {
       throw new SegmentValidationException("Datatype not found");
     }
@@ -633,9 +609,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment savePredef(PreDef predef) throws SegmentNotFoundException {
-    Segment segment = findLatestById(predef.getId().getId());
+    Segment segment = findById(predef.getId());
     if (segment == null) {
-      throw new SegmentNotFoundException(predef.getId().getId());
+      throw new SegmentNotFoundException(predef.getId());
     }
     segment.setPreDef(predef.getPreDef());
     return save(segment);
@@ -643,9 +619,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment savePostdef(PostDef postdef) throws SegmentNotFoundException {
-    Segment segment = findLatestById(postdef.getId().getId());
+    Segment segment = findById(postdef.getId());
     if (segment == null) {
-      throw new SegmentNotFoundException(postdef.getId().getId());
+      throw new SegmentNotFoundException(postdef.getId());
     }
     segment.setPostDef(postdef.getPostDef());
     return save(segment);
@@ -656,9 +632,9 @@ public class SegmentServiceImpl implements SegmentService {
   public Segment saveMetadata(DisplayMetadata metadata)
       throws SegmentNotFoundException, SegmentValidationException {
     validate(metadata);
-    Segment segment = findLatestById(metadata.getId().getId());
+    Segment segment = findById(metadata.getId());
     if (segment == null) {
-      throw new SegmentNotFoundException(metadata.getId().getId());
+      throw new SegmentNotFoundException(metadata.getId());
     }
     segment.setExt(metadata.getExt());
     segment.setDescription(metadata.getDescription());
@@ -671,9 +647,9 @@ public class SegmentServiceImpl implements SegmentService {
   public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
       throws SegmentNotFoundException, SegmentValidationException {
     validate(conformanceStatement);
-    Segment segment = findLatestById(conformanceStatement.getId().getId());
+    Segment segment = findById(conformanceStatement.getId());
     if (segment == null) {
-      throw new SegmentNotFoundException(conformanceStatement.getId().getId());
+      throw new SegmentNotFoundException(conformanceStatement.getId());
     }
     segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
     return save(segment);
@@ -686,11 +662,11 @@ public class SegmentServiceImpl implements SegmentService {
    * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
    */
   @Override
-  public Link cloneSegment(CompositeKey key, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, Link l, String username)
+  public Link cloneSegment(String key, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, Link l, String username)
       throws CoConstraintSaveException {
 
-    Segment obj = this.findByKey(l.getId());
+    Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
 
     Link newLink = new Link();
@@ -710,8 +686,8 @@ public class SegmentServiceImpl implements SegmentService {
    * @param valuesetsMap
    * @throws CoConstraintSaveException
    */
-  private void updateDependencies(Segment elm, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, String username)
+  private void updateDependencies(Segment elm, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, String username)
       throws CoConstraintSaveException {
     // TODO Auto-generated method stub
 
@@ -719,7 +695,7 @@ public class SegmentServiceImpl implements SegmentService {
       if (f.getRef() != null) {
         if (f.getRef().getId() != null) {
           if (datatypesMap.containsKey(f.getRef().getId())) {
-            f.getRef().setId(datatypesMap.get(f.getRef().getId()).getId());
+            f.getRef().setId(datatypesMap.get(f.getRef().getId()));
           }
         }
       }
@@ -731,14 +707,14 @@ public class SegmentServiceImpl implements SegmentService {
 
   }
 
-  private void updateCoConstraint(Segment elm, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, String username)
+  private void updateCoConstraint(Segment elm, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, String username)
       throws CoConstraintSaveException {
-    CoConstraintTable cc = coConstraintService.getLatestCoConstraintForSegment(elm.getId().getId());
+    CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(elm.getId());
     if (cc != null) {
       CoConstraintTable cc_ =
           coConstraintService.clone(datatypesMap, valuesetsMap, elm.getId(), cc);
-      coConstraintService.saveCoConstraintForSegment(elm.getId().getId(), cc_, username);
+      coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
     }
 
   }
@@ -748,7 +724,7 @@ public class SegmentServiceImpl implements SegmentService {
    * @param elm
    * @param valuesetsMap
    */
-  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+  private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
     // TODO Auto-generated method stub
     if (binding.getChildren() != null) {
       for (StructureElementBinding child : binding.getChildren()) {
@@ -756,7 +732,7 @@ public class SegmentServiceImpl implements SegmentService {
           for (ValuesetBinding vs : child.getValuesetBindings()) {
             if (vs.getValuesetId() != null) {
               if (valuesetsMap.containsKey(vs.getValuesetId())) {
-                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
               }
             }
           }
@@ -765,8 +741,8 @@ public class SegmentServiceImpl implements SegmentService {
     }
   }
 
-  private void updateDynamicMapping(Segment elm, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, String username) {
+  private void updateDynamicMapping(Segment elm, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, String username) {
 
     DynamicMappingInfo dynmaicMapping = elm.getDynamicMappingInfo();
 
@@ -780,9 +756,9 @@ public class SegmentServiceImpl implements SegmentService {
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
       throws SegmentNotFoundException, SegmentValidationException {
     validate(dynamicMapping);
-    Segment segment = findLatestById(dynamicMapping.getId().getId());
+    Segment segment = findById(dynamicMapping.getId());
     if (segment == null) {
-      throw new SegmentNotFoundException(dynamicMapping.getId().getId());
+      throw new SegmentNotFoundException(dynamicMapping.getId());
     }
     segment.setDynamicMappingInfo(dynamicMapping.getDynamicMappingInfo());
     return save(segment);
@@ -941,7 +917,7 @@ public class SegmentServiceImpl implements SegmentService {
       String location) {
     if (s.getBinding() == null) {
       ResourceBinding binding = new ResourceBinding();
-      binding.setElementId(s.getId().getId());
+      binding.setElementId(s.getId());
       s.setBinding(binding);
     }
     return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);
@@ -1069,7 +1045,7 @@ public class SegmentServiceImpl implements SegmentService {
     DatatypeLabel label = new DatatypeLabel();
     label.setDomainInfo(dt.getDomainInfo());
     label.setExt(dt.getExt());
-    label.setId(dt.getId().getId());
+    label.setId(dt.getId());
     label.setLabel(dt.getLabel());
     if (dt instanceof ComplexDatatype)
       label.setLeaf(false);

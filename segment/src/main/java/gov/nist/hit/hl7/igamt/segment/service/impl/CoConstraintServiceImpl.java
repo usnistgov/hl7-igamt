@@ -21,7 +21,6 @@ import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTableContent;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTableGroup;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.IgnoreCell;
 import gov.nist.hit.hl7.igamt.coconstraints.repository.CoConstraintRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
@@ -43,18 +42,12 @@ public class CoConstraintServiceImpl implements CoConstraintService {
   private CoConstraintVerifyService verifyService;
 
   @Override
-  public CoConstraintTable getLatestCoConstraintForSegment(String id) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    return mongoTemplate.findOne(query, CoConstraintTable.class);
-    // CoConstraintTable coconstraint = this.repo.findById(new CompositeKey(id, 1)).orElse(null);
-    // return coconstraint;
+  public CoConstraintTable getCoConstraintForSegment(String id) {
+	  return repo.findById(id).get();
   }
 
   @Override
-  public Map<String, CompositeKey> references(CoConstraintTable cc) {
+  public Map<String, String> references(CoConstraintTable cc) {
     // TODO Auto-generated method stub
     return null;
   }
@@ -62,7 +55,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
   @Override
   public CoConstraintTable saveCoConstraintForSegment(String id, CoConstraintTable cc, String user)
       throws CoConstraintSaveException {
-    Segment segment = segmentService.getLatestById(id);
+    Segment segment = segmentService.findById(id);
     if (segment == null) {
       throw new CoConstraintSaveException(Maps.newHashMap(ImmutableMap.<String, String>builder()
           .put("Segment", "Segment " + id + " does not exists").build()));
@@ -86,15 +79,15 @@ public class CoConstraintServiceImpl implements CoConstraintService {
   }
 
   @Override
-  public CoConstraintTable clone(Map<String, CompositeKey> datatypes,
-      Map<String, CompositeKey> valueSets, CompositeKey segmentId, CoConstraintTable cc) {
+  public CoConstraintTable clone(Map<String, String> datatypes,
+      Map<String, String> valueSets, String segmentId, CoConstraintTable cc) {
     CoConstraintTable clone = cc.clone();
     clone.setId(segmentId);
     this.replaceId(clone.getContent(), datatypes);
     return clone;
   }
 
-  private void replaceId(CoConstraintTableContent content, Map<String, CompositeKey> datatypes) {
+  private void replaceId(CoConstraintTableContent content, Map<String, String> datatypes) {
     if (content.getFree() != null) {
       List<IgnoreCell> flavorCells = content.getFree().stream().map(row -> {
         return row.getCells().entrySet().stream().filter(cell -> {
@@ -109,7 +102,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 
       for (IgnoreCell cell : flavorCells) {
         if (datatypes.containsKey(cell.getValue())) {
-          cell.setValue(datatypes.get(cell.getValue()).getId());
+          cell.setValue(datatypes.get(cell.getValue()));
         }
       }
     }

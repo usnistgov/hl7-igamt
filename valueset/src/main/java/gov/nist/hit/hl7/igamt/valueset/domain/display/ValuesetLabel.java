@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain.display;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 
 /**
@@ -20,17 +19,17 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
  */
 public class ValuesetLabel {
 
-  private CompositeKey id;
+  private String id;
   private Scope scope;
   private String label;
   private String name;
   private String version;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

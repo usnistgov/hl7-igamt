@@ -117,7 +117,7 @@ public class IgExportServiceImpl implements IgExportService {
       return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
     } catch (SerializationException serializationException) {
       throw new ExportException(serializationException,
-          "Unable to serialize IG Document with ID " + igDocument.getId().getId());
+          "Unable to serialize IG Document with ID " + igDocument.getId());
     }
   }
 

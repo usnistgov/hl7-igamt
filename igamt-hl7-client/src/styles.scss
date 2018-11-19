@@ -279,3 +279,13 @@ body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.
 .layout-menu-container{
   background-color: #eac800 !important;
 }
+.ui-dropdown .ui-dropdown-label {
+  display: block;
+  /* border: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 900;
+  width: 100%;
+  padding-right: 0.5em;
+  margin-bottom: 1px;
+}

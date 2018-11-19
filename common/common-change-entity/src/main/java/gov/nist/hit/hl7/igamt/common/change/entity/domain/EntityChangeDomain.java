@@ -13,7 +13,7 @@ public class EntityChangeDomain {
   private String id;
 
   private String targetId; // segmentId
-  private int targetVersion; // segmentVersion
+  private Long targetVersion; // segmentVersion
   private EntityType targetType;
   private DocumentType documentType;
   private String documentId; // IgId
@@ -43,11 +43,11 @@ public class EntityChangeDomain {
     this.targetId = targetId;
   }
 
-  public int getTargetVersion() {
+  public Long getTargetVersion() {
     return targetVersion;
   }
 
-  public void setTargetVersion(int targetVersion) {
+  public void setTargetVersion(Long targetVersion) {
     this.targetVersion = targetVersion;
   }
 
@@ -86,7 +86,5 @@ public class EntityChangeDomain {
   public Date getUpdateDate() {
     return updateDate;
   }
-
-
 
 }

@@ -23,7 +23,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 import gov.nist.hit.hl7.igamt.valueset.repository.CodeSystemRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
@@ -43,13 +42,13 @@ public class CodeSystemServiceImpl implements CodeSystemService {
   private MongoTemplate mongoTemplate;
   
   @Override
-  public CodeSystem findById(CompositeKey id) {
+  public CodeSystem findById(String id) {
     return codeSystemRepository.findById(id).get();
   }
 
   @Override
   public CodeSystem create(CodeSystem codeSystem) {
-    codeSystem.setId(new CompositeKey());
+    codeSystem.setId(new String());
     codeSystem = codeSystemRepository.save(codeSystem);
     return codeSystem;
   }
@@ -71,7 +70,7 @@ public class CodeSystemServiceImpl implements CodeSystemService {
   }
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     codeSystemRepository.deleteById(id);
   }
 
@@ -89,22 +88,7 @@ public class CodeSystemServiceImpl implements CodeSystemService {
         hl7version, identifier);
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService#findLatestById(java.lang.String)
-   */
-  @Override
-  public CodeSystem findLatestById(String id) {
-    // TODO Auto-generated method stub Query query = new Query();
-    Query query = new Query();
 
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    CodeSystem codeSystem = mongoTemplate.findOne(query, CodeSystem.class);
-    return codeSystem;
-  }
 
 
 }

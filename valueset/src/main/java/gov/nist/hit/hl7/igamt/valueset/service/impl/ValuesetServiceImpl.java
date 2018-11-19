@@ -29,8 +29,6 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -70,27 +68,27 @@ public class ValuesetServiceImpl implements ValuesetService {
 
 
   @Override
-  public Valueset findById(CompositeKey id) {
+  public Valueset findById(String id) {
     return valuesetRepository.findById(id).get();
   }
 
   @Override
   public Valueset create(Valueset valueset) {
-    valueset.setId(new CompositeKey());
+    valueset.setId(new String());
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
 
   @Override
   public Valueset createFromLegacy(Valueset valueset, String legacyId) {
-    valueset.setId(new CompositeKey(legacyId));
+    valueset.setId(new String(legacyId));
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
 
   @Override
   public Valueset save(Valueset valueset) {
-    // valueset.setId(CompositeKeyUtil.updateVersion(valueset.getId()));
+    // valueset.setId(StringUtil.updateVersion(valueset.getId()));
     valueset = valuesetRepository.save(valueset);
     return valueset;
   }
@@ -106,7 +104,7 @@ public class ValuesetServiceImpl implements ValuesetService {
   }
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     valuesetRepository.deleteById(id);
   }
 
@@ -162,12 +160,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     return valuesetRepository.findByDomainInfoScopeAndBindingIdentifier(scope, bindingIdentifier);
   }
 
-  @Override
-  public Valueset findLatestById(String id) {
-    Valueset valueset = valuesetRepository
-        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
-    return valueset;
-  }
 
   @Override
   public Valueset getLatestById(String id) {
@@ -200,8 +192,8 @@ public class ValuesetServiceImpl implements ValuesetService {
     Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
 
     // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, Valueset.class, CompositeKey.class).getMappedResults();
+    List<String> groupResults =
+        mongoTemplate.aggregate(agg, Valueset.class, String.class).getMappedResults();
 
     Criteria where2 = Criteria.where("id").in(groupResults);
     Query qry = Query.query(where2);
@@ -443,9 +435,9 @@ public class ValuesetServiceImpl implements ValuesetService {
    */
   @Override
   public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(structure.getId().getId());
+    Valueset valueset = findLatestById(structure.getId());
     if (valueset == null) {
-      throw new ValuesetNotFoundException(structure.getId().getId());
+      throw new ValuesetNotFoundException(structure.getId());
     }
     valueset.setExtensibility(structure.getExtensibility());
     valueset.setStability(structure.getStability());
@@ -525,9 +517,9 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(preDef.getId().getId());
+    Valueset valueset = findLatestById(preDef.getId());
     if (valueset == null) {
-      throw new ValuesetNotFoundException(preDef.getId().getId());
+      throw new ValuesetNotFoundException(preDef.getId());
     }
     valueset.setPreDef(preDef.getPreDef());
     return save(valueset);
@@ -536,9 +528,9 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(displayMetadata.getId().getId());
+    Valueset valueset = findLatestById(displayMetadata.getId());
     if (valueset == null) {
-      throw new ValuesetNotFoundException(displayMetadata.getId().getId());
+      throw new ValuesetNotFoundException(displayMetadata.getId());
     }
     valueset.setBindingIdentifier(displayMetadata.getBindingIdentifier());
     valueset.setName(displayMetadata.getName());
@@ -550,16 +542,16 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(postDef.getId().getId());
+    Valueset valueset = findLatestById(postDef.getId());
     if (valueset == null) {
-      throw new ValuesetNotFoundException(postDef.getId().getId());
+      throw new ValuesetNotFoundException(postDef.getId());
     }
     valueset.setPostDef(postDef.getPostDef());
     return save(valueset);
   }
 
   @Override
-  public Link cloneValueSet(CompositeKey newkey, Link l, String username) {
+  public Link cloneValueSet(String newkey, Link l, String username) {
     Valueset elm = this.findById(l.getId());
     Link newLink = new Link();
     newLink = l.clone(newkey);

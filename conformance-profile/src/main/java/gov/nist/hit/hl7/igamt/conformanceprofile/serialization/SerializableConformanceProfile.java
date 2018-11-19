@@ -255,7 +255,7 @@ public class SerializableConformanceProfile extends SerializableResource {
     } else if (msgStructElement instanceof SegmentRef) {
       Segment segment = segmentsMap.get(msgStructElement.getId());
       if(segment != null) {
-        idPathMap.put(segment.getId().getId(), basePath+segment.getLabel());
+        idPathMap.put(segment.getId(), basePath+segment.getLabel());
         basePath += segment.getLabel();
         for(Field field : segment.getChildren()) {
           if(!idPathMap.containsKey(field.getId())) {

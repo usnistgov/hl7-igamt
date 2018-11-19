@@ -16,7 +16,6 @@ package gov.nist.hit.hl7.igamt.valueset.service;
 import java.util.List;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -32,9 +31,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
  */
 public interface ValuesetService {
 
-  public Valueset findById(CompositeKey id);
-
-  public Valueset findLatestById(String id);
+  public Valueset findById(String id);
 
   public Valueset create(Valueset valueset);
 
@@ -46,7 +43,7 @@ public interface ValuesetService {
 
   public void delete(Valueset valueset);
 
-  public void delete(CompositeKey id);
+  public void delete(String id);
 
   public void removeCollection();
 
@@ -140,6 +137,6 @@ public interface ValuesetService {
    * @param l
    * @return
    */
-  Link cloneValueSet(CompositeKey newkey, Link l, String username);
+  Link cloneValueSet(String newkey, Link l, String username);
 
 }

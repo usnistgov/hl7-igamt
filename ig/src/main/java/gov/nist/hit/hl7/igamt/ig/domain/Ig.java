@@ -7,7 +7,6 @@ import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
@@ -63,7 +62,7 @@ public class Ig extends AbstractDomain {
     // TODO Auto-generated constructor stub
   }
 
-  public Ig(CompositeKey id, String version, String name, PublicationInfo publicationInfo,
+  public Ig(String id, String version, String name, PublicationInfo publicationInfo,
       DomainInfo domainInfo, String username, String comment, String description) {
     super(id, version, name, publicationInfo, domainInfo, username, comment, description);
     // TODO Auto-generated constructor stub

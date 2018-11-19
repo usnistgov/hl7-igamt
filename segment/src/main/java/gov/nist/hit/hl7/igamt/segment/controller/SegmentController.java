@@ -187,7 +187,7 @@ public class SegmentController extends BaseController {
   @ResponseBody
   public CoConstraintTable getCoConstraints(@PathVariable("id") String id,
       Authentication authentication) throws NotFoundException {
-    return this.coconstraintService.getLatestCoConstraintForSegment(id);
+    return this.coconstraintService.getCoConstraintForSegment(id);
   }
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
@@ -199,7 +199,7 @@ public class SegmentController extends BaseController {
     CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
         authentication.getPrincipal().toString());
     return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
-        "Saved Successfully", ccTable.getId().getId(), false, new Date(), ccTable);
+        "Saved Successfully", ccTable.getId(), false, new Date(), ccTable);
   }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
@@ -212,7 +212,7 @@ public class SegmentController extends BaseController {
 
 
   private Segment findById(String id) throws SegmentNotFoundException {
-    Segment segment = segmentService.findLatestById(id);
+    Segment segment = segmentService.findById(id);
     if (segment == null) {
       throw new SegmentNotFoundException(id);
     }
@@ -227,7 +227,7 @@ public class SegmentController extends BaseController {
       @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
       throws SegmentException, IOException {
     try {
-      Segment s = this.segmentService.findLatestById(id);
+      Segment s = this.segmentService.findById(id);
       validateSaveOperation(s);
       this.segmentService.applyChanges(s, cItems);
       EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
@@ -238,7 +238,7 @@ public class SegmentController extends BaseController {
       entityChangeDomain.setChangeItems(cItems);
       entityChangeDomain.setTargetVersion(s.getVersion());
       entityChangeService.save(entityChangeDomain);
-      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId().getId(), new Date());
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, s.getId(), new Date());
     } catch (ForbiddenOperationException e) {
       throw new SegmentException(e);
     }

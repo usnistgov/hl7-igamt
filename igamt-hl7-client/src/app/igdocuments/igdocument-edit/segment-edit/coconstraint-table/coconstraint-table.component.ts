@@ -485,7 +485,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   save(): Promise<any> {
-    return this.ccTableService.saveCoConstraintTable(this.table, this._segment.id.id);
+    return this.ccTableService.saveCoConstraintTable(this.table, this._segment.id);
   }
 
   saveButton() {

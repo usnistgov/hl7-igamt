@@ -21,7 +21,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 
@@ -31,7 +30,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
  * @author Maxence Lefort on Mar 1, 2018.
  */
 @Repository
-public interface DatatypeRepository extends MongoRepository<Datatype, CompositeKey> {
+public interface DatatypeRepository extends MongoRepository<Datatype, String> {
 
   List<Datatype> findByDomainInfoVersion(String version);
 
@@ -49,9 +48,6 @@ public interface DatatypeRepository extends MongoRepository<Datatype, CompositeK
   List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 
   List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
-
-  @Query(value = "{ '_id._id' : ?0 }")
-  List<Datatype> findLatestById(ObjectId id, Sort sort);
 
   @Query(value = "{ 'domainInfo.scope' : ?0 }")
   List<Datatype> findByScope(Scope scope);

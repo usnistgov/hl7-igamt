@@ -24,7 +24,7 @@ export class CoConstraintTableService {
         if (!segment) {
             return null;
         } else {
-            const table: CoConstraintTable = await this.fetch_coconstraint_table(segment.id.id);
+            const table: CoConstraintTable = await this.fetch_coconstraint_table(segment.id);
             if (!table) {
                 if (segment.name === 'OBX') {
                   return await this.generate_obx_table(segment);

@@ -3,12 +3,11 @@ package gov.nist.hit.hl7.igamt.segment.domain.display;
 import java.util.Date;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 public class SegmentConformanceStatement {
-  private CompositeKey id;
+  private String id;
   private String name;
   private Date updateDate;
   private String label;
@@ -16,11 +15,11 @@ public class SegmentConformanceStatement {
   private String version;
   private Set<ConformanceStatement> conformanceStatements;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

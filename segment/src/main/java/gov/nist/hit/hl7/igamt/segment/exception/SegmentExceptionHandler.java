@@ -39,8 +39,11 @@ public class SegmentExceptionHandler {
   @ExceptionHandler({SegmentValidationException.class})
   public ResponseMessage handleValidationException(SegmentValidationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
     return message;
   }
+  
 
 
   @ResponseBody
@@ -48,6 +51,8 @@ public class SegmentExceptionHandler {
   @ExceptionHandler({SegmentException.class})
   public ResponseMessage handleSegmentException(SegmentException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
     return message;
   }
 
@@ -57,6 +62,8 @@ public class SegmentExceptionHandler {
   @ExceptionHandler({SegmentNotFoundException.class})
   public ResponseMessage handleSegmentNotFoundException(SegmentNotFoundException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
     return message;
   }
 
@@ -65,6 +72,19 @@ public class SegmentExceptionHandler {
   @ExceptionHandler({ForbiddenOperationException.class})
   public ResponseMessage handleSegmentNotFoundException(ForbiddenOperationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
+    return message;
+  }
+  
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage generalException(Exception exception) {
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
     return message;
   }
 
@@ -72,6 +92,8 @@ public class SegmentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({CoConstraintSaveException.class})
   public ResponseMessage handleValidationException(CoConstraintSaveException exception) {
+	  exception.printStackTrace();
+
 	Map<String, String> map = exception.getErrors();
 	String errorMessage = "";
 	for(Entry<String, String> entry : map.entrySet()){
@@ -81,6 +103,7 @@ public class SegmentExceptionHandler {
     return message;
   }
 
+  
 
 
 }

@@ -6,11 +6,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 @Repository
-public interface CoConstraintRepository extends MongoRepository<CoConstraintTable, CompositeKey> {
+public interface CoConstraintRepository extends MongoRepository<CoConstraintTable, String> {
 
-	public Optional<CoConstraintTable> findById(CompositeKey key);
+	public Optional<CoConstraintTable> findById(String key);
 
 }

@@ -197,7 +197,7 @@ export class EditLibraryComponent {
   getElementUrl(elm){
     var type=elm.type.toLowerCase();
 
-    return "./"+type+"/"+elm.key.id;
+    return "./"+type+"/"+elm.id;
   }
 
 
@@ -251,8 +251,8 @@ export class EditLibraryComponent {
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
       if(node.data.data.key){
-        if(node.data.data.key&& node.data.data.key.id) {
-          if (this.currentUrl.includes(node.data.data.key.id)) {
+        if(node.data.data.key&& node.data.data.id) {
+          if (this.currentUrl.includes(node.data.data.id)) {
             this.activeNode = node.id;
             return true;
           }
@@ -496,7 +496,7 @@ export class EditLibraryComponent {
 
     this.deleteElement.open({
       libId : this.libId,
-      id:node.data.data.key.id,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,

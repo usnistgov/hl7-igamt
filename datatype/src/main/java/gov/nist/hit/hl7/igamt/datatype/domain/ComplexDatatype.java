@@ -37,7 +37,7 @@ public class ComplexDatatype extends Datatype {
     clone.setComponents(components);
     clone.setBinding(this.getBinding());
     clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
+    clone.setCreatedFrom(this.getId());
     clone.setDescription(this.getDescription());
     DomainInfo domainInfo = this.getDomainInfo();
     domainInfo.setScope(Scope.USER);

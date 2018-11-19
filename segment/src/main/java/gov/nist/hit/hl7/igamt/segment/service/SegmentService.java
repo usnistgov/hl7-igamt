@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
@@ -41,9 +40,8 @@ import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveEx
  */
 public interface SegmentService extends ResourceService {
 
-  public Segment findByKey(CompositeKey key);
 
-  public Segment findLatestById(String id);
+  public Segment findById(String id);
 
   public Segment create(Segment segment);
 
@@ -69,8 +67,6 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
-
-  public Segment getLatestById(String id);
 
   public DisplayMetadata convertDomainToMetadata(Segment segment);
 
@@ -143,8 +139,8 @@ public interface SegmentService extends ResourceService {
       throws SegmentNotFoundException, SegmentValidationException;
 
 
-  public Link cloneSegment(CompositeKey compositeKey, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, Link l, String username)
+  public Link cloneSegment(String compositeKey, HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, Link l, String username)
       throws CoConstraintSaveException;
 
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)

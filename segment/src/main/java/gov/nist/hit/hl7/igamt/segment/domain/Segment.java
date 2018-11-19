@@ -28,7 +28,7 @@ public class Segment extends Resource {
   public ResourceBinding getBinding() {
     if (binding == null) {
       binding = new ResourceBinding();
-      binding.setElementId(this.getId().getId());
+      binding.setElementId(this.getId());
     }
     return binding;
   }
@@ -88,7 +88,7 @@ public class Segment extends Resource {
     clone.setBinding(this.binding);
     clone.setChildren(children);
     clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
+    clone.setCreatedFrom(this.getId());
     clone.setDescription(this.getDescription());
     DomainInfo domainInfo = this.getDomainInfo();
     domainInfo.setScope(Scope.USER);

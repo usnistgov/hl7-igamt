@@ -49,7 +49,7 @@ export class IgDocumentService {
 
                         } else {
                             this.tocService.metadata.next(x.metadata);
-
+                            this.tocService.igId=igId;
                             // this.initToc(igId,resolve,reject);
                             resolve(x);                //this.getMergedIg(igId, resolve,reject);
                         }
@@ -79,10 +79,13 @@ export class IgDocumentService {
                         let  ig = new IgDocumentInfo(igId);
                         ig.metadata=x["metadata"];
                         this.tocService.metadata.next(ig.metadata);
+                       // this.tocService.igId=igId;
                         ig.toc=x["toc"];
                         this.indexedDbService.initIg(ig).then(
                             () => {
-                                resolve(ig);
+                              this.tocService.igId=igId;
+
+                              resolve(ig);
                             }, error => {
                                 console.log("Could not add elements to client db");
                             }

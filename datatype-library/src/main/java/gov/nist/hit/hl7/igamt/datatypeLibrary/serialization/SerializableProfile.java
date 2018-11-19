@@ -75,7 +75,7 @@ public class SerializableProfile extends SerializableSection {
 	private Set<String> identifyDatatypesByScope(DatatypeRegistry datatypeRegistry) {
 		Set<String> bindedDatatypes = new HashSet<>();
 		for(Link datatypeLink : datatypeRegistry.getChildren()) {
-				bindedDatatypes.add(datatypeLink.getId().getId());
+				bindedDatatypes.add(datatypeLink.getId());
 		}
 		return bindedDatatypes;
 	}
