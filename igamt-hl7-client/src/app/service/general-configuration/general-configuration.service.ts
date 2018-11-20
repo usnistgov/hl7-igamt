@@ -26,9 +26,13 @@ export class GeneralConfigurationService {
 
   _simpleConstraintVerbs: any[];
 
+  _propsotionVerbs: any[];
+
   _occurenceTypes: any[];
 
   _declarativeTypes:any[];
+
+  _propsotionTypes: any[];
 
   _declarativeCTypes:any[];
 
@@ -119,7 +123,15 @@ export class GeneralConfigurationService {
 
     this._codeUsageOptions = [ { label : 'Required', value : 'R' },{ label : 'Permitted', value : 'P' },{ label : 'Excluded', value : 'E' }];
     this._simpleConstraintVerbs = [ { label : 'SHALL', value : 'SHALL' },{ label : 'SHALL NOT', value : 'SHALL NOT' },{ label : 'SHOULD', value : 'SHOULD' },{ label : 'SHOULD NOT', value : 'SHOULD NOT' },{ label : 'MAY', value : 'MAY' },{ label : 'MAY NOT', value : 'MAY NOT' }];
+    this._propsotionVerbs =  [ { label : 'IS', value : 'IS' },{ label : 'IS NOT', value : 'IS NOT' },{ label : 'DO', value : 'DO' },{ label : 'DO NOT', value : 'DO NOT' }];
     this._occurenceTypes = [ { label : 'At least one occurrence of', value : 'atLeast' },{ label : "The 'INSTANCE' occurrence of", value : 'instance' },{ label : 'No occurrence of', value : 'noOccurrence' },{ label : 'Exactly one occurrence of', value : 'exactlyOne' },{ label : "'COUNT' occurrences of", value : 'count' },{ label : 'All occurrences of', value : 'all' }];
+
+    this._propsotionTypes = [
+      { label : "valued.", value : 'valued' },
+      { label : "contain the value 'VALUE'.", value : 'containtValue' },
+      { label : "contain one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' }.", value : 'containListValues' }
+    ];
+
     this._declarativeTypes = [
       { label : "contain the value 'VALUE'.", value : 'containtValue' },
       { label : "contain the value 'VALUE' (DESCRIPTION).", value : 'containValueDesc' },

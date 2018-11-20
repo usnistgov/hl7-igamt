@@ -77,6 +77,8 @@ export class PatternEditorDemoComponent implements OnInit {
     or.putOne(st_1, 0);
     or.putOne(st_2, 1);
     this.assertions.predefined.push(new Pattern(ifthen));
+
+    console.log(this.assertions);
   }
 
 }

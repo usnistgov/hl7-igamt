@@ -5,14 +5,10 @@ import {NgModule}     from '@angular/core';
 
 import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
-import {EditFreeConstraintComponent} from "../common/constraint/edit-freeconstraint.component";
 import {EditSimpleConstraintComponent} from "../common/constraint/edit-simpleconstraint.component";
+import {EditSimplePropositionComponent} from "../common/constraint/edit-simpleproposition.component";
 import {EditSimplePropositionConstraintComponent}  from "../common/constraint/edit-simplepropositionconstraint.component";
-import {EditSimpleMessageConstraintComponent} from "../common/message-constraint/edit-simplemessageconstraint.component";
 import {EditComplexConstraintComponent} from "../common/constraint/edit-complexconstraint.component";
-import {EditAndOrConstraintComponent} from "../common/constraint/edit-andorconstraint.component";
-import {EditNotConstraintComponent} from "../common/constraint/edit-notconstraint.component";
-import {EditIfThenConstraintComponent} from "../common/constraint/edit-ifthenconstraint.component";
 
 import {DtFlavorPipe} from "../igdocuments/igdocument-edit/segment-edit/coconstraint-table/datatype-name.pipe";
 import {CommonModule} from "@angular/common";
@@ -20,7 +16,8 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule, ProgressSpinnerModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule} from 'primeng/primeng';
+import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
 import {DisplayConstantValueComponent} from "../common/tree-table-label/display-constantvalue.component";
@@ -66,7 +63,8 @@ import {CommentColComponent} from "../common/tree-table/comment/comment-col.comp
 import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
-
+import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
+import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -82,8 +80,11 @@ import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.
     RadioButtonModule,
     TableModule,
     ProgressSpinnerModule,
+    DragDropModule,
+    OrganizationChartModule,
     TreeTableModule,
     KeyFilterModule,MessageModule,MessagesModule,
+    DndListModule
 
   ],
   declarations: [
@@ -96,15 +97,11 @@ import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.
     DisplaySingleCodeComponent,
     DisplayConstantValueComponent,
     DisplayCommentComponent,
-    EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimplePropositionComponent,
     EditSimplePropositionConstraintComponent,
-    EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
-    EditAndOrConstraintComponent,
-    EditNotConstraintComponent,
-    EditIfThenConstraintComponent,
     CrossReferenceComponent,
     DatatypeListManagerComponent,
 
@@ -130,7 +127,9 @@ import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.
     CommentColComponent,
     CommentReadonlyColComponent,
 
-    CsSegmentTreeComponent
+    CsSegmentTreeComponent,
+    PatternEditorDemoComponent,
+    PatternDialogComponent
   ],
 
   exports: [
@@ -142,15 +141,11 @@ import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.
     DisplaySingleCodeComponent,
     DisplayConstantValueComponent,
     DisplayCommentComponent,
-    EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimplePropositionComponent,
     EditSimplePropositionConstraintComponent,
-    EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
-    EditAndOrConstraintComponent,
-    EditNotConstraintComponent,
-    EditIfThenConstraintComponent,
     CrossReferenceComponent,DatatypeListManagerComponent,
     DisplayMenuComponent,
 
@@ -176,7 +171,9 @@ import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.
     CommentColComponent,
     CommentReadonlyColComponent,
 
-    CsSegmentTreeComponent
+    CsSegmentTreeComponent,
+    PatternEditorDemoComponent,
+    PatternDialogComponent
   ]
 })
 export class UtilsModule {}

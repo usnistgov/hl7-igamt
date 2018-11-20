@@ -76,19 +76,11 @@
                     <edit-free-constraint *ngIf="selectedConformanceStatement.displayType === 'free'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
                     <edit-simple-constraint *ngIf="selectedConformanceStatement.displayType === 'simple'" [constraint]="selectedConformanceStatement" [assertion]="selectedConformanceStatement.assertion" [structure]="segmentStructure" [groupName]="'simple'"></edit-simple-constraint>
                     <edit-simple-proposition-constraint *ngIf="selectedConformanceStatement.displayType === 'simple-proposition'" [constraint]="selectedConformanceStatement" [ifAssertion]="selectedConformanceStatement.assertion.ifAssertion"  [thenAssertion]="selectedConformanceStatement.assertion.thenAssertion" [structure]="segmentStructure" [groupName]="'simpleproposition'"></edit-simple-proposition-constraint>
+                    <edit-complex-constraint *ngIf="selectedConformanceStatement.displayType === 'complex'" [constraint]="selectedConformanceStatement" [structure]="segmentStructure" [groupName]="'complex'"></edit-complex-constraint>
                 </div>
-
-                <!--<edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>-->
 
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
     </form>
 </div>
-<!--<strong>Example Tree</strong>-->
-<!--<div style="height: 600px; overflow: scroll; border: 1px solid darkgrey; width: 500px;">-->
-  <!--<app-cs-segment-tree [tree]="segmentStructure" [selectComplex]="false" (select)="output($event)"></app-cs-segment-tree>-->
-<!--</div>-->
-<strong>Example Pattern Editor</strong>
-
-<app-pattern-editor-demo></app-pattern-editor-demo>

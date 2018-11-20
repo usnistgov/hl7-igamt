@@ -1,5 +1,5 @@
 <div [ngModelGroup]="groupName">
-    <div class="ui-g ui-fluid">
+    <div *ngIf="constraint" class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
             <label for="id">ID: </label>
         </div>
@@ -13,18 +13,9 @@
         </div>
     </div>
 
-    <!--<div class="ui-g ui-fluid">-->
-        <!--<div class="ui-g-12 ui-md-2">-->
-            <!--<label for="desc">Description: </label>-->
-        <!--</div>-->
-        <!--<div class="ui-g-12 ui-md-10">-->
-            <!--<input id="desc" name="desc" class="form-control" required [(ngModel)]="assertion.description" type="text" #desc="ngModel"/>-->
-        <!--</div>-->
-    <!--</div>-->
-
     <table class="table constraint-table" style="width: 100%;">
         <tr style="background-color: #a7d6a9;">
-            <td align="center" *ngIf="needTargetOccurence">
+            <td align="center" *ngIf="assertion.subject && assertion.subject.occurenceType">
                 <strong>Target Occurrence Declarative Statement</strong>
             </td>
             <td align="center">
@@ -38,10 +29,10 @@
             </td>
             <td align="center">
                 <strong>Content Declarative Statement</strong>
-                <p-radioButton name="{{groupName}}-Declarative-Type" [value]="false" label="Value" [(ngModel)]="needComparison"></p-radioButton>
+                <p-radioButton name="{{groupName}}-Declarative-Type" [value]="false" label="Value" (click)="changeComplementMode()" [(ngModel)]="needComparison"></p-radioButton>
                 <p-radioButton name="{{groupName}}-Declarative-Type" [value]="true" label="Comparison" [(ngModel)]="needComparison"></p-radioButton>
             </td>
-            <td align="center" *ngIf="needComparison && needCompareOccurence">
+            <td align="center" *ngIf="assertion.complement && assertion.complement.occurenceType">
                 <strong>Comparison Occurrence Declarative Statement</strong>
             </td>
             <td align="center" *ngIf="needComparison">
@@ -50,28 +41,28 @@
         </tr>
 
         <tr style="background-color: #f6f6f6;">
-            <td align="center" *ngIf="needTargetOccurence">
-                <div *ngIf="targetOccurenceType === 'atLeast'">
+            <td align="center" *ngIf="assertion.subject && assertion.subject.occurenceType">
+                <div *ngIf="assertion.subject.occurenceType === 'atLeast'">
                     At least one occurrence of
                 </div>
 
-                <div *ngIf="targetOccurenceType === 'instance'">
-                    The '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="targetOccurenceValue" type="text" #targetoccurence="ngModel"/>' occurrence of
+                <div *ngIf="assertion.subject.occurenceType === 'instance'">
+                    The '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" type="text" #targetoccurence="ngModel"/>' occurrence of
                 </div>
 
-                <div *ngIf="targetOccurenceType === 'noOccurrence'">
+                <div *ngIf="assertion.subject.occurenceType === 'noOccurrence'">
                     No occurrence of
                 </div>
 
-                <div *ngIf="targetOccurenceType === 'exactlyOne'">
+                <div *ngIf="assertion.subject.occurenceType === 'exactlyOne'">
                     Exactly one occurrence of
                 </div>
 
-                <div *ngIf="targetOccurenceType === 'count'">
-                    '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="targetOccurenceValue" type="text" #targetoccurence="ngModel"/>' occurrences of
+                <div *ngIf="assertion.subject.occurenceType === 'count'">
+                    '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" type="text" #targetoccurence="ngModel"/>' occurrences of
                 </div>
 
-                <div *ngIf="targetOccurenceType === 'all'">
+                <div *ngIf="assertion.subject.occurenceType === 'all'">
                     All occurrences of
                 </div>
             </td>
@@ -135,12 +126,41 @@
                 </div>
 
                 <div *ngIf="assertion.complement.complementKey === 'containListValues'">
-                    <!--contain one of the values in the list: [ <div *ngIf="assertion.complement && assertion.complement.values"><input *ngFor="let childValue of assertion.complement.values; let idx = index;" id="{{groupName}}-complement.value-{{idx}}" name="{{groupName}}-complement.value-{{idx}}" required [(ngModel)]="childValue" type="text"/></div> <i class="fa fa-plus" (click)="addListValue(assertion.complement.values)"></i>].-->
+                    <div class="ui-g-12 ui-md-6">
+                        contain one of the values in the list:
+                    </div>
+                    <div class="ui-g-12 ui-md-6">
+                        <table *ngIf="assertion.complement.values" class="table constraint-table">
+                            <tr style="background-color: #f6f6f6;" *ngFor="let v of assertion.complement.values; let i=index; trackBy:customTrackBy">
+                                <td>
+                                    <input id="{{groupName}}-complement.values-{{i}}" name="{{groupName}}-complement.values-{{i}}" required [(ngModel)]="assertion.complement.values[i]" type="text"/>
+                                    <i class="fa fa-times" (click)="delValue(assertion.complement.values, i)"></i>
+                                </td>
+                            </tr>
+                        </table>
+                        <i class="fa fa-plus" (click)="addListValue(assertion.complement)"></i>
+                    </div>
                 </div>
 
-                <!--<div *ngIf="assertion.complement.complementKey === 'containListCodes'">-->
-                    <!--contain one of the values in the list: { <span *ngFor="let childValue of assertion.complement.values; let idx = index">'<input id="{{groupName}}-complement.value-{{idx}}" name="{{groupName}}-complement.value-{{idx}}" required [(ngModel)]="childValue" type="text" #desc="ngModel"/>'</span> <i class="fa fa-plus" (click)="addListValue(assertion.complement.values)"></i> } drawn from the code system '<input id="{{groupName}}-complement.codesys" name="{{groupName}}-complement.codesys" required [(ngModel)]="assertion.complement.codesys" type="text" #desc="ngModel"/>'.-->
-                <!--</div>-->
+                <div *ngIf="assertion.complement.complementKey === 'containListCodes'">
+                    <div class="ui-g-12 ui-md-4">
+                        contain one of the values in the list:
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+                        <table *ngIf="assertion.complement.values" class="table constraint-table">
+                            <tr style="background-color: #f6f6f6;" *ngFor="let v of assertion.complement.values; let i=index; trackBy:customTrackBy">
+                                <td>
+                                    <input id="{{groupName}}-complement.values-{{i}}" name="{{groupName}}-complement.values-{{i}}" required [(ngModel)]="assertion.complement.values[i]" type="text"/>
+                                    <i class="fa fa-times" (click)="delValue(assertion.complement.values, i)"></i>
+                                </td>
+                            </tr>
+                        </table>
+                        <i class="fa fa-plus" (click)="addListValue(assertion.complement)"></i>
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+                        drawn from the code system '<input id="{{groupName}}-complement.codesys" name="{{groupName}}-complement.codesys" required [(ngModel)]="assertion.complement.codesys" type="text" #codesys="ngModel"/>'.
+                    </div>
+                </div>
                 <div *ngIf="assertion.complement.complementKey === 'regex'">
                     match the regular expression '<input id="{{groupName}}-complement.value" name="{{groupName}}-complement.value" required [(ngModel)]="assertion.complement.value" type="text" #value="ngModel"/>'.
                 </div>
@@ -156,28 +176,28 @@
 
 
             </td>
-            <td *ngIf="needCompareOccurence" align="center">
-                <div *ngIf="compareOccurenceType === 'atLeast'">
+            <td *ngIf="assertion.complement && assertion.complement.occurenceType" align="center">
+                <div *ngIf="assertion.complement.occurenceType === 'atLeast'">
                     At least one occurrence of
                 </div>
 
-                <div *ngIf="compareOccurenceType === 'instance'">
-                    The '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="compareOccurenceValue" type="text" #compareoccurence="ngModel"/>' occurrence of
+                <div *ngIf="assertion.complement.occurenceType === 'instance'">
+                    The '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="assertion.complement.occurenceValue" type="text" #compareoccurence="ngModel"/>' occurrence of
                 </div>
 
-                <div *ngIf="compareOccurenceType === 'noOccurrence'">
+                <div *ngIf="assertion.complement.occurenceType === 'noOccurrence'">
                     No occurrence of
                 </div>
 
-                <div *ngIf="compareOccurenceType === 'exactlyOne'">
+                <div *ngIf="assertion.complement.occurenceType === 'exactlyOne'">
                     Exactly one occurrence of
                 </div>
 
-                <div *ngIf="compareOccurenceType === 'count'">
-                    '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="compareOccurenceValue" type="text" #compareoccurence="ngModel"/>' occurrences of
+                <div *ngIf="assertion.complement.occurenceType === 'count'">
+                    '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="assertion.complement.occurenceValue" type="text" #compareoccurence="ngModel"/>' occurrences of
                 </div>
 
-                <div *ngIf="compareOccurenceType === 'all'">
+                <div *ngIf="assertion.complement.occurenceType === 'all'">
                     All occurrences of
                 </div>
             </td>
@@ -187,11 +207,11 @@
         </tr>
 
         <tr class="small-content">
-            <td *ngIf="needTargetOccurence">
+            <td *ngIf="assertion.subject && assertion.subject.occurenceType">
                 <div class="ui-g">
-                    For repeatable '{{targetOccurenceLocationStr}}':
+                    For repeatable '{{assertion.subject.occurenceLocationStr}}':
                     <div class="ui-g-12" *ngFor="let occurenceType of occurenceTypes">
-                        <p-radioButton name="{{groupName}}-targetCccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="targetOccurenceType"></p-radioButton>
+                        <p-radioButton name="{{groupName}}-targetCccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="assertion.subject.occurenceType"></p-radioButton>
                     </div>
                 </div>
             </td>
@@ -218,11 +238,11 @@
                     </div>
                 </div>
             </td>
-            <td *ngIf="needCompareOccurence">
+            <td *ngIf="assertion.complement && assertion.complement.occurenceType">
                 <div class="ui-g">
-                    For repeatable '{{compareOccurenceLocationStr}}':
+                    For repeatable '{{assertion.complement.occurenceLocationStr}}':
                     <div class="ui-g-12" *ngFor="let occurenceType of occurenceTypes">
-                        <p-radioButton name="{{groupName}}-compareOccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="compareOccurenceType"></p-radioButton>
+                        <p-radioButton name="{{groupName}}-compareOccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="assertion.complement.occurenceType"></p-radioButton>
                     </div>
                 </div>
             </td>
@@ -230,18 +250,5 @@
                 <app-cs-segment-tree [tree]="structure" [selectComplex]="false" (select)="selectComparisonElementLocation($event)"></app-cs-segment-tree>
             </td>
         </tr>
-
     </table>
-
-    <!--<p-fieldset legend="Advanced Fields" [toggleable]="true" collapsed="true">-->
-        <!--<div class="ui-g ui-fluid">-->
-            <!--<div class="ui-g-12 ui-md-2">-->
-                <!--<label for="assertionScript">Assertion Script: </label>-->
-            <!--</div>-->
-
-            <!--<div class="ui-g-12 ui-md-10">-->
-                <!--<textarea id="assertionScript" name="assertionScript" class="form-control" [(ngModel)]="assertion.script" pInputTextarea [(ngModel)]="property"></textarea>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</p-fieldset>-->
 </div>

@@ -140,6 +140,10 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.selectedConformanceStatement.assertion = {mode:"IFTHEN"};
             this.selectedConformanceStatement.assertion.ifAssertion = {mode:"SIMPLE"};
             this.selectedConformanceStatement.assertion.thenAssertion = {mode:"SIMPLE"};
+        }else if(this.selectedConformanceStatement.displayType == 'complex'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
+            this.selectedConformanceStatement.assertion = {mode:"COMPLEX"};
         }
     }
 
