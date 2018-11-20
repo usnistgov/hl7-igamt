@@ -4,11 +4,11 @@ import {GeneralConfigurationService} from '../../service/general-configuration/g
 
 
 export interface TreeRestrictions {
-  primitive: boolean;
-  datatypes: string[];
-  repeat: boolean;
-  usages:  string[];
-  types: string[];
+  primitive?: boolean;
+  datatypes?: string[];
+  repeat?: boolean;
+  usages?:  string[];
+  types?: string[];
 }
 
 
@@ -48,6 +48,8 @@ export class CsSegmentTreeComponent implements OnInit {
     };
     if (this._restrictions) {
       this.evaluate(null, node, this._restrictions);
+    } else {
+      this.evaluate(null, node, {});
     }
 
     this._tree = [node];
@@ -111,7 +113,7 @@ export class CsSegmentTreeComponent implements OnInit {
 
   selected(event) {
     this.selectedNode = event.node;
-    this.select.emit([event.node, this.processPath(event.node)]);
+    this.select.emit(this.processPath(event.node));
   }
 
   processPath(n: TreeNode) {
