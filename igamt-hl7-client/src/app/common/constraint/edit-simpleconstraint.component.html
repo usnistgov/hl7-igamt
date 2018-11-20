@@ -216,7 +216,7 @@
                 </div>
             </td>
             <td>
-                <app-cs-segment-tree [tree]="structure" [selectComplex]="false" (select)="selectTargetElementLocation($event)"></app-cs-segment-tree>
+                <app-cs-segment-tree [tree]="structure" (select)="selectTargetElementLocation($event)"></app-cs-segment-tree>
             </td>
             <td *ngIf="needContext">Context</td>
             <td>
@@ -247,7 +247,7 @@
                 </div>
             </td>
             <td *ngIf="needComparison">
-                <app-cs-segment-tree [tree]="structure" [selectComplex]="false" (select)="selectComparisonElementLocation($event)"></app-cs-segment-tree>
+                <app-cs-segment-tree [tree]="structure" (select)="selectComparisonElementLocation($event)"></app-cs-segment-tree>
             </td>
         </tr>
     </table>

@@ -22,6 +22,9 @@ export class EditComplexConstraintComponent  implements OnInit{
 
   selected:Pattern;
 
+  propsotions:any[] = [];
+  declarations:any[] = [];
+
   constructor(private configService : GeneralConfigurationService){}
 
   edit(pattern: Pattern) {
@@ -37,6 +40,7 @@ export class EditComplexConstraintComponent  implements OnInit{
         complete() {
           console.log('COMPLETE');
           console.log(ctrl.selected);
+          ctrl.updateStatements();
         }
       });
     }else {
@@ -47,6 +51,7 @@ export class EditComplexConstraintComponent  implements OnInit{
         complete() {
           console.log('COMPLETE');
           console.log(ctrl.selected);
+          ctrl.updateStatements();
         }
       });
     }
@@ -62,6 +67,19 @@ export class EditComplexConstraintComponent  implements OnInit{
     
     if(leaf){
       return this.dialog.html(leaf.write());
+    }
+  }
+
+  updateStatements(){
+    this.declarations = [];
+    this.propsotions = [];
+
+    for(let item of this.selected.leafs){
+      if(item.data.type === 'D'){
+        this.declarations.push({mode:"SIMPLE", id:"DECLARATION_" + (item.data.id + 1)});
+      }else if(item.data.type === 'P'){
+        this.propsotions.push({mode:"SIMPLE", id:"PROPOSITION_" + (item.data.id + 1)});
+      }
     }
   }
 

@@ -5,6 +5,7 @@ import {NgModule}     from '@angular/core';
 
 import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
+import {EditFreeConstraintComponent} from "../common/constraint/edit-freeconstraint.component";
 import {EditSimpleConstraintComponent} from "../common/constraint/edit-simpleconstraint.component";
 import {EditSimplePropositionComponent} from "../common/constraint/edit-simpleproposition.component";
 import {EditSimplePropositionConstraintComponent}  from "../common/constraint/edit-simplepropositionconstraint.component";
@@ -97,6 +98,7 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     DisplaySingleCodeComponent,
     DisplayConstantValueComponent,
     DisplayCommentComponent,
+    EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
     EditSimplePropositionComponent,
     EditSimplePropositionConstraintComponent,
@@ -141,6 +143,7 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     DisplaySingleCodeComponent,
     DisplayConstantValueComponent,
     DisplayCommentComponent,
+    EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
     EditSimplePropositionComponent,
     EditSimplePropositionConstraintComponent,

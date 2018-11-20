@@ -45,7 +45,7 @@ export class EditSimpleConstraintComponent {
   }
 
   selectTargetElementLocation(location){
-    this.assertion.subject = {path:location};
+    this.assertion.subject = {path:location[1]};
     this.assertion.subject.occurenceIdPath = null;
     this.assertion.subject.occurenceLocationStr = null;
     this.assertion.subject.occurenceValue = null;
@@ -53,7 +53,7 @@ export class EditSimpleConstraintComponent {
   }
 
   selectComparisonElementLocation(location){
-    this.assertion.complement.path = location;
+    this.assertion.complement.path = location[1];
     this.assertion.complement.occurenceIdPath = null;
     this.assertion.complement.occurenceLocationStr = null;
     this.assertion.complement.occurenceValue = null;

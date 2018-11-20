@@ -143,7 +143,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         }else if(this.selectedConformanceStatement.displayType == 'complex'){
             this.selectedConformanceStatement.assertion = {};
             this.selectedConformanceStatement.type = "ASSERTION";
-            this.selectedConformanceStatement.assertion = {mode:"COMPLEX"};
         }
     }
 
@@ -183,8 +182,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     submitCS(){
-        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.idMap);
         this.deleteCS(this.selectedConformanceStatement.identifier);
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure);
+
         this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
         this.editorTab = false;
@@ -209,7 +209,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
             this.selectedConformanceStatement.displayType = 'simple';
         }else {
-
+            this.selectedConformanceStatement.displayType = 'complex';
         }
 
         this.editorTab = true;
