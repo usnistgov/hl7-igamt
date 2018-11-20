@@ -113,7 +113,7 @@ export class CsSegmentTreeComponent implements OnInit {
 
   selected(event) {
     this.selectedNode = event.node;
-    this.select.emit([event.node, this.processPath(event.node)]);
+    this.select.emit(this.processPath(event.node));
   }
 
   processPath(n: TreeNode) {
