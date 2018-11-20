@@ -121,8 +121,8 @@ export class UnaryOperator extends Operator {
   public complete(statements: Statement[]) {
     if (this.getOperand() === null) {
       const st = new Statement(this.parent.data.branch , statements.length, this, 0);
-      statements.push(st);
       this.setOperand(st);
+      statements.push(st);
     }
   }
 
@@ -184,15 +184,15 @@ export class BinaryOperator extends Operator {
     if (!this.getLeft()) {
       const type = this.data.type === 'IF-THEN' ? 'P' : this.data.branch;
       const st = new Statement(type, statements.length, this, LEFT);
-      statements.push(st);
       this.setOperand(LEFT, st);
+      statements.push(st);
     }
 
     if (!this.getRight()) {
       const type = this.data.type === 'IF-THEN' ? 'D' : this.data.branch;
       const st = new Statement(type, statements.length, this, RIGHT);
-      statements.push(st);
       this.setOperand(RIGHT, st);
+      statements.push(st);
     }
   }
 
@@ -256,8 +256,8 @@ export class NaryOperator extends Operator  {
   public complete(statements: Statement[]) {
     if (this.getOperand(0) === null) {
       const st = new Statement('D', statements.length, this, 0);
-      statements.push(st);
       this.setOperand(st);
+      statements.push(st);
     }
   }
 

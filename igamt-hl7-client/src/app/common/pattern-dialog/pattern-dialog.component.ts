@@ -50,6 +50,13 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
   }
 
   finish() {
+    let leafs = [];
+    if (this.pattern.assertion instanceof Statement) {
+      this.pattern.leafs = [<Statement> this.pattern.assertion ];
+    } else {
+      this.pattern.leafs = this.getLeafs(<Operator> this.pattern.assertion);
+    }
+    
     this.dismissWithData(this.pattern);
     this.pattern = null;
   }
@@ -144,18 +151,7 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
   }
 
   removeLeafs(pattern: Pattern, node: Operator) {
-    const getLeafs = function (op: Operator) {
-      const leafs = [];
-      for (const child of op.children) {
-        if (child instanceof Statement) {
-          leafs.push(child);
-        } else {
-          leafs.push.apply(leafs, getLeafs(child));
-        }
-      }
-      return leafs;
-    };
-    const rmLeafs = getLeafs(node);
+    const rmLeafs = this.getLeafs(node);
     console.log(rmLeafs);
     for (const leaf of rmLeafs){
       const i = pattern.leafs.indexOf(leaf);
@@ -164,6 +160,18 @@ export class PatternDialogComponent extends PrimeDialogAdapter implements OnInit
         pattern.leafs.splice(i);
       }
     }
+  }
+
+  getLeafs(op: Operator) {
+    const leafs = [];
+    for (const child of op.children) {
+      if (child instanceof Statement) {
+        leafs.push(child);
+      } else {
+        leafs.push.apply(leafs, this.getLeafs(child));
+      }
+    }
+    return leafs;
   }
 
 }

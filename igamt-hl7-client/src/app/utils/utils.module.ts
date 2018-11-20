@@ -7,6 +7,7 @@ import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
 import {EditFreeConstraintComponent} from "../common/constraint/edit-freeconstraint.component";
 import {EditSimpleConstraintComponent} from "../common/constraint/edit-simpleconstraint.component";
+import {EditSimplePropositionConstraintComponent}  from "../common/constraint/edit-simplepropositionconstraint.component";
 import {EditSimpleMessageConstraintComponent} from "../common/message-constraint/edit-simplemessageconstraint.component";
 import {EditComplexConstraintComponent} from "../common/constraint/edit-complexconstraint.component";
 import {EditAndOrConstraintComponent} from "../common/constraint/edit-andorconstraint.component";
@@ -64,6 +65,8 @@ import {TextdefReadonlyColComponent} from "../common/tree-table/textdef/textdef-
 import {CommentColComponent} from "../common/tree-table/comment/comment-col.component";
 import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
 
+import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -80,7 +83,7 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     TableModule,
     ProgressSpinnerModule,
     TreeTableModule,
-    KeyFilterModule,MessageModule,MessagesModule
+    KeyFilterModule,MessageModule,MessagesModule,
 
   ],
   declarations: [
@@ -95,6 +98,7 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     DisplayCommentComponent,
     EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimplePropositionConstraintComponent,
     EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
@@ -124,7 +128,9 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     TextdefColComponent,
     TextdefReadonlyColComponent,
     CommentColComponent,
-    CommentReadonlyColComponent
+    CommentReadonlyColComponent,
+
+    CsSegmentTreeComponent
   ],
 
   exports: [
@@ -138,6 +144,7 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     DisplayCommentComponent,
     EditFreeConstraintComponent,
     EditSimpleConstraintComponent,
+    EditSimplePropositionConstraintComponent,
     EditSimpleMessageConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
@@ -167,7 +174,9 @@ import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-
     TextdefColComponent,
     TextdefReadonlyColComponent,
     CommentColComponent,
-    CommentReadonlyColComponent
+    CommentReadonlyColComponent,
+
+    CsSegmentTreeComponent
   ]
 })
 export class UtilsModule {}

@@ -38,5 +38,4 @@ public class InstancePath extends Path {
     return "InstancePath [instanceParameter=" + instanceParameter + ", toString()="
         + super.toString() + "]";
   }
-
 }

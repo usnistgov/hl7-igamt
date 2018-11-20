@@ -12,8 +12,8 @@
             <label>IF Assertion: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <edit-simple-constraint *ngIf="constraint.ifAssertion.mode === 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [ifVerb]="true" [groupName]="groupName + '-ifSimple'"></edit-simple-constraint>
-            <edit-complex-constraint *ngIf="constraint.ifAssertion.mode !== 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="true" [groupName]="groupName + '-ifComplex'"></edit-complex-constraint>
+            <!--<edit-simple-constraint *ngIf="constraint.ifAssertion.mode === 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [ifVerb]="true" [groupName]="groupName + '-ifSimple'"></edit-simple-constraint>-->
+            <!--<edit-complex-constraint *ngIf="constraint.ifAssertion.mode !== 'SIMPLE'" [constraint]="constraint.ifAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [ifVerb]="true" [groupName]="groupName + '-ifComplex'"></edit-complex-constraint>-->
         </div>
     </div>
 
@@ -31,8 +31,8 @@
             <label>THEN Assertion: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <edit-simple-constraint *ngIf="constraint.thenAssertion.mode === 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-thenSimple'"></edit-simple-constraint>
-            <edit-complex-constraint *ngIf="constraint.thenAssertion.mode !== 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [groupName]="groupName + '-thenComplex'"></edit-complex-constraint>
+            <!--<edit-simple-constraint *ngIf="constraint.thenAssertion.mode === 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-thenSimple'"></edit-simple-constraint>-->
+            <!--<edit-complex-constraint *ngIf="constraint.thenAssertion.mode !== 'SIMPLE'" [constraint]="constraint.thenAssertion" [idMap]="idMap" [treeData]="treeData" [limited]="true" [groupName]="groupName + '-thenComplex'"></edit-complex-constraint>-->
         </div>
     </div>
 </div>

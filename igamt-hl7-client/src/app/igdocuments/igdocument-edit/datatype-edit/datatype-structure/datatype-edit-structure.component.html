@@ -347,9 +347,9 @@
         </div>
       </div>
 
-      <edit-free-constraint *ngIf="selectedPredicate.type === 'FREE'" [constraint]="selectedPredicate"></edit-free-constraint>
-      <edit-simple-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
-      <edit-complex-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode !== 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
+      <!--<edit-free-constraint *ngIf="selectedPredicate.type === 'FREE'" [constraint]="selectedPredicate"></edit-free-constraint>-->
+      <!--<edit-simple-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode === 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>-->
+      <!--<edit-complex-constraint *ngIf="selectedPredicate.assertion && selectedPredicate.assertion.mode !== 'SIMPLE'" [constraint]="selectedPredicate.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>-->
 
       <button pButton style="float: right" type="button"  class="blue-btn" icon="fa-check" label="Submit" (click)="submitCP()"></button>
     </form>

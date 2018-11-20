@@ -47,7 +47,6 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
 import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
 import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
 import {MultiSelectModule} from 'primeng/multiselect';
-import {CsSegmentTreeComponent} from '../../../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../../../common/pattern-editor-demo/pattern-editor-demo.component';
 import {PatternDialogComponent} from '../../../common/pattern-dialog/pattern-dialog.component';
 
@@ -81,7 +80,7 @@ import {PatternDialogComponent} from '../../../common/pattern-dialog/pattern-dia
   exports:[CoConstraintTableComponent, PatternDialogComponent, PatternEditorDemoComponent],
 
     providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
-    declarations: [CsSegmentTreeComponent, PatternEditorDemoComponent, PatternDialogComponent, ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
+    declarations: [PatternEditorDemoComponent, PatternDialogComponent, ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}
