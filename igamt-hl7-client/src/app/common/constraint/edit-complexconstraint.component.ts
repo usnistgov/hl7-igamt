@@ -59,6 +59,7 @@ export class EditComplexConstraintComponent  implements OnInit{
   }
 
   writeLeaf(leaf){
+    
     if(leaf){
       return this.dialog.html(leaf.write());
     }
