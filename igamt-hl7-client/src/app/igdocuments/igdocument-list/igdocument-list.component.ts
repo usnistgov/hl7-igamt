@@ -62,8 +62,8 @@ export class IgDocumentListComponent implements OnInit {
   copy(id){
     this.http.get<any>("/api/igdocuments/"+id+"/clone").toPromise().then(
       x => {
-        console.log(x);
-        this.router.navigate(['/ig/'+x.id]);
+        console.log(x.data);
+        this.router.navigate(['/ig/'+x.data]);
       }, error =>{
         console.log(error);
 

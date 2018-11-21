@@ -61,7 +61,7 @@ public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebEx
 	public ByteArrayOutputStream exportDatatypeLibraryToWeb(String username, String datatypeLibraryId)
 			throws ExportException {
 
-		DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+		DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(datatypeLibraryId);
 
 		ExportedFile exportedFile = datatypeLibraryExportServiceforHtml.exportDatatypeLibraryToHtml(username,
 				datatypeLibraryId);

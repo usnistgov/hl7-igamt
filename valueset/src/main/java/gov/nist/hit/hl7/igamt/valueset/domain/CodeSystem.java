@@ -84,4 +84,20 @@ public class CodeSystem extends Resource {
     return null;
   }
 
+public void complete(CodeSystem elm) {
+	super.complete(elm);;
+	elm.identifier = identifier;
+	elm.oid = oid;
+	elm.url = url;
+	elm.codes = codes;
+}
+
+public CodeSystem clone() {
+	CodeSystem codeSystem= new CodeSystem();
+	complete(codeSystem);
+	return codeSystem;
+	
+}
+
+
 }

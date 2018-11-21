@@ -347,7 +347,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Valueset valueSet = valuesetService.getLatestById(id);
+          Valueset valueSet = valuesetService.findById(id);
           if (valueSet != null) {
             Link link =
                 new Link(valueSet.getId(), valueSet.getDomainInfo(), reg.getChildren().size() + 1);
@@ -355,10 +355,7 @@ public class CrudServiceImpl implements CrudService {
             ret.getValueSets().add(valueSet);
           } else {
             throw new AddingException("Could not find Value Set  with id " + id);
-
           }
-
-
         }
       }
     }

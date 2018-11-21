@@ -20,8 +20,6 @@ import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveEx
 @Service("igService")
 public interface IgService {
 
-
-
   public Ig findById(String id);
 
   public List<Ig> findAll();
@@ -35,8 +33,6 @@ public interface IgService {
   public List<Ig> findByUsername(String username);
 
   public List<Ig> findLatestByUsername(String username, Scope scope);
-
-  public Ig findLatestById(String id);
 
   public List<Ig> finByScope(String string);
 

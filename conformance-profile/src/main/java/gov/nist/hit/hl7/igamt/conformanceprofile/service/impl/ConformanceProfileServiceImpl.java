@@ -472,11 +472,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Override
   public Link cloneConformanceProfile(String key, HashMap<String, String> valuesetsMap,
       HashMap<String, String> segmentsMap, Link l, String username) {
-    ConformanceProfile elm = this.findById(l.getId());
+    ConformanceProfile old = this.findById(l.getId());
+    ConformanceProfile elm =old.clone();
     Link newLink = new Link();
     newLink.setId(key);
     updateDependencies(elm, segmentsMap, valuesetsMap);
-    elm.setFrom(elm.getId());
     elm.setId(newLink.getId());
     elm.setUsername(username);
     this.save(elm);

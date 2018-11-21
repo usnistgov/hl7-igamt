@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 
-public abstract class AbstractDomain {
+public abstract class AbstractDomain{
   @Id
   private String id;
   private String name;
@@ -138,7 +138,6 @@ public abstract class AbstractDomain {
   public void setFrom(String from) {
     this.from = from;
   }
-  @Version
   public Long getVersion() {
     return version;
   }
@@ -146,6 +145,22 @@ public abstract class AbstractDomain {
   public void setVersion(Long version) {
     this.version = version;
   }
+
+  protected void complete(AbstractDomain elm) {
+	elm.name = name;
+	elm.publicationInfo = publicationInfo;
+	elm.domainInfo = domainInfo;
+	elm.username = username;
+	elm.comment = comment;
+	elm.description = description;
+	elm.createdFrom = createdFrom;
+	elm.creationDate = creationDate;
+	elm.updateDate = updateDate;
+	elm.from = id;
+  }
+
+  
+  
 
 
 

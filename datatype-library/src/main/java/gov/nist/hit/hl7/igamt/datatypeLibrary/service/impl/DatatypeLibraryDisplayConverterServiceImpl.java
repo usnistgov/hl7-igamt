@@ -202,7 +202,7 @@ public class DatatypeLibraryDisplayConverterServiceImpl
     data.setLabel(elm.getName());
     data.setExt(elm.getExt());
     data.setDescription(elm.getDescription());
-    data.setKey(elm.getId());
+    data.setId(elm.getId());
     data.setDomainInfo(elm.getDomainInfo());
     data.setType(Type.DATATYPE);
     node.setData(data);
