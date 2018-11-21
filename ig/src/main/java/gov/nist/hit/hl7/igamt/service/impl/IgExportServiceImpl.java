@@ -70,7 +70,7 @@ public class IgExportServiceImpl implements IgExportService {
   @Override
   public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId)
       throws ExportException {
-    Ig igDocument = igService.findLatestById(igDocumentId);
+    Ig igDocument = igService.findById(igDocumentId);
     if (igDocument != null) {
       ExportedFile htmlFile =
           this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML);
@@ -88,7 +88,7 @@ public class IgExportServiceImpl implements IgExportService {
   @Override
   public ExportedFile exportIgDocumentToWord(String username, String igDocumentId)
       throws ExportException {
-    Ig igDocument = igService.findLatestById(igDocumentId);
+    Ig igDocument = igService.findById(igDocumentId);
     if (igDocument != null) {
       ExportedFile htmlFile =
           this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD);
@@ -166,7 +166,7 @@ public class IgExportServiceImpl implements IgExportService {
       return exportedFile;
     } catch (SerializationException  serializationException) {
       throw new ExportException(serializationException,
-          "Unable to serialize IG Document with ID " + igDocument.getId().getId());
+          "Unable to serialize IG Document with ID " + igDocument.getId());
     }
   }
   

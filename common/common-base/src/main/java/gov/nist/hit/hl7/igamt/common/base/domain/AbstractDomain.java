@@ -7,9 +7,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 
-public abstract class AbstractDomain {
+public abstract class AbstractDomain{
   @Id
-  private CompositeKey id;
+  private String id;
   private String name;
   private PublicationInfo publicationInfo;
   private DomainInfo domainInfo;
@@ -23,10 +23,10 @@ public abstract class AbstractDomain {
 
   @LastModifiedDate
   private Date updateDate;
-  private CompositeKey from;
+  private String from;
 
   @Version
-  private int version;
+  private Long version;
 
 
 
@@ -35,7 +35,7 @@ public abstract class AbstractDomain {
     // TODO Auto-generated constructor stub
   }
 
-  public AbstractDomain(CompositeKey id, String version, String name,
+  public AbstractDomain(String id, String version, String name,
       PublicationInfo publicationInfo, DomainInfo domainInfo, String username, String comment,
       String description) {
     super();
@@ -80,11 +80,11 @@ public abstract class AbstractDomain {
   }
 
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 
@@ -131,21 +131,36 @@ public abstract class AbstractDomain {
 
   public abstract String getLabel();
 
-  public CompositeKey getFrom() {
+  public String getFrom() {
     return from;
   }
 
-  public void setFrom(CompositeKey from) {
+  public void setFrom(String from) {
     this.from = from;
   }
-
-  public int getVersion() {
+  public Long getVersion() {
     return version;
   }
 
-  public void setVersion(int version) {
+  public void setVersion(Long version) {
     this.version = version;
   }
+
+  protected void complete(AbstractDomain elm) {
+	elm.name = name;
+	elm.publicationInfo = publicationInfo;
+	elm.domainInfo = domainInfo;
+	elm.username = username;
+	elm.comment = comment;
+	elm.description = description;
+	elm.createdFrom = createdFrom;
+	elm.creationDate = creationDate;
+	elm.updateDate = updateDate;
+	elm.from = id;
+  }
+
+  
+  
 
 
 

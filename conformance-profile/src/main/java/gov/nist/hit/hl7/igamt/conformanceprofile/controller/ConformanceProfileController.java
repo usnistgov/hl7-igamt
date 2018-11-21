@@ -47,7 +47,7 @@ public class ConformanceProfileController extends BaseController {
 
   public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
       Authentication authentication) {
-    ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
+    ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
     return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile);
 
   }
@@ -169,7 +169,7 @@ public class ConformanceProfileController extends BaseController {
    * @throws ConformanceProfileNotFoundException
    */
   private ConformanceProfile findById(String id) throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = conformanceProfileService.findLatestById(id);
+    ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
     if (conformanceProfile == null) {
       throw new ConformanceProfileNotFoundException(id);
     }

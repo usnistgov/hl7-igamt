@@ -60,9 +60,9 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
       if (valuesetRegistry != null) {
         if (!valuesetRegistry.getChildren().isEmpty()) {
           for (Link valuesetLink : valuesetRegistry.getChildren()) {
-            if (bindedValueSets.contains(valuesetLink.getId().getId())){ 
-              if(valuesetsMap.containsKey(valuesetLink.getId().getId())) {
-                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId().getId());
+            if (bindedValueSets.contains(valuesetLink.getId())){ 
+              if(valuesetsMap.containsKey(valuesetLink.getId())) {
+                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId());
                 SerializableValueSet serializableValueSet = new SerializableValueSet(serializableValuesetStructure,
                     String.valueOf(valuesetLink.getPosition()), this.getChildLevel(), maxNumberOfCodes);
                 Element valuesetElement = serializableValueSet.serialize();
@@ -70,7 +70,7 @@ public class SerializableValuesetRegistry extends SerializableRegistry {
                   valuesetRegistryElement.appendChild(valuesetElement);
                 }
               } else {
-                throw new ValuesetNotFoundException(valuesetLink.getId().getId());
+                throw new ValuesetNotFoundException(valuesetLink.getId());
               }
             }
           }

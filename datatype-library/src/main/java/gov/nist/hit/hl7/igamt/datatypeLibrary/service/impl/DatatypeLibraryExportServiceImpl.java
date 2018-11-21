@@ -73,7 +73,7 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
   @Override
   public ExportedFile exportDatatypeLibraryToHtml(String username, String datatypeLibraryId)
       throws ExportException {
-	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(datatypeLibraryId);
     if (datatypeLibrary != null) {
       ExportedFile htmlFile =
           this.serializeDatatypeLibraryToHtml(username, datatypeLibrary, ExportFormat.HTML);
@@ -91,7 +91,7 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
   @Override
   public ExportedFile exportDatatypeLibraryToWord(String username, String datatypeLibraryId)
       throws ExportException {
-	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(datatypeLibraryId);
     if (datatypeLibrary != null) {
       ExportedFile htmlFile =
           this.serializeDatatypeLibraryToHtml(username, datatypeLibrary, ExportFormat.WORD);
@@ -135,13 +135,13 @@ public class DatatypeLibraryExportServiceImpl implements DatatypeLibraryExportSe
       return new ExportedFile(htmlContent, datatypeLibrary.getName(), datatypeLibrary.getId(), exportFormat);
     } catch (SerializationException serializationException) {
       throw new ExportException(serializationException,
-          "Unable to serialize IG Document with ID " + datatypeLibrary.getId().getId());
+          "Unable to serialize IG Document with ID " + datatypeLibrary.getId());
     }
   }
 
 @Override
 public ExportedFile exportDatatypeLibraryToWeb(String username, String datatypeLibraryId) throws ExportException {
-	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+	  DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(datatypeLibraryId);
 	    if (datatypeLibrary != null) {
 	      ExportedFile htmlFile =
 	          this.serializeDatatypeLibraryToWeb(username, datatypeLibrary, ExportFormat.HTML);

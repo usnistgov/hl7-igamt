@@ -1,27 +1,27 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 public class Link {
-  private CompositeKey id;
+  private String id;
   private int position;
   private DomainInfo domainInfo;
   private Type type;
 
-  public Link(CompositeKey id, int position) {
+  public Link(String id, int position) {
     super();
     this.id = id;
     this.position = position;
   }
 
-  public Link(CompositeKey id) {
+  public Link(String id) {
     super();
     this.id = id;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 
@@ -43,7 +43,7 @@ public class Link {
    * @param domainInfo2
    * @param i
    */
-  public Link(CompositeKey id2, DomainInfo domainInfo2, int position) {
+  public Link(String id2, DomainInfo domainInfo2, int position) {
     this.id = id2;
     this.domainInfo = domainInfo2;
     this.position = position;
@@ -92,7 +92,7 @@ public class Link {
     return true;
   }
 
-  public Link clone(CompositeKey id) {
+  public Link clone(String id) {
 
     Link l = new Link(id, this.position);
     l.setDomainInfo(l.getDomainInfo());

@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.datatype.controller;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,24 +13,34 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
+import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
+import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+
 
 
 @RestController
@@ -39,6 +51,9 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private DatatypeService datatypeService;
+  
+  @Autowired
+  EntityChangeService entityChangeService;
 
   @Autowired
   private CommonService commonService;
@@ -161,13 +176,41 @@ public class DatatypeController extends BaseController {
 
 
   private Datatype findById(String id) throws DatatypeNotFoundException {
-    Datatype Datatype = datatypeService.findLatestById(id);
+    Datatype Datatype = datatypeService.findById(id);
     if (Datatype == null) {
       throw new DatatypeNotFoundException(id);
     }
     return Datatype;
   }
+  
+  
+  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
+	      produces = {"application/json"})
+	  @ResponseBody
+	  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+	      @RequestParam(name = "dId", required = true) String documentId,
+	      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
+	      throws DatatypeException, IOException, ForbiddenOperationException {
+	      Datatype dt = this.datatypeService.findById(id);
+	      validateSaveOperation(dt);
+	      this.datatypeService.applyChanges(dt, cItems);
+	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+	      entityChangeDomain.setDocumentId(documentId);
+	      entityChangeDomain.setDocumentType(DocumentType.IG);
+	      entityChangeDomain.setTargetId(id);
+	      entityChangeDomain.setTargetType(EntityType.DATATYPE);
+	      entityChangeDomain.setChangeItems(cItems);
+	      entityChangeDomain.setTargetVersion(dt.getVersion());
+	      entityChangeService.save(entityChangeDomain);
+	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
+	    
+	  }
 
+  	private void validateSaveOperation(Datatype dt) throws ForbiddenOperationException {
+	    if (Scope.HL7STANDARD.equals(dt.getDomainInfo().getScope())) {
+	      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+	    }
+	  }
 
 
 }

@@ -152,7 +152,7 @@ public class ValuesetController extends BaseController {
   }
 
   private Valueset findById(String id) throws ValuesetNotFoundException {
-    Valueset valueset = valuesetService.findLatestById(id);
+    Valueset valueset = valuesetService.findById(id);
     if (valueset == null) {
       throw new ValuesetNotFoundException(id);
     }

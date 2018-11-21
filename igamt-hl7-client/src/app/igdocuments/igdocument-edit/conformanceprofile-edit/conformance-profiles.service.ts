@@ -10,8 +10,8 @@ export class ConformanceProfilesService {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/conformanceprofiles/' + id + '/metadata').toPromise().then(serverConformanceProfileMetadata => {
                 resolve(serverConformanceProfileMetadata);
-            }, error => {
-                reject(error);
+            }).catch(function (e) {
+
             });
 
         });
@@ -24,8 +24,9 @@ export class ConformanceProfilesService {
 
             this.http.get('api/conformanceprofiles/' + id + '/structure').toPromise().then(serverConformanceProfileStructure => {
                 resolve(serverConformanceProfileStructure);
-            }, error => {
-                reject(error);
+
+            }).catch(function (e) {
+
             });
 
         });
@@ -36,8 +37,8 @@ export class ConformanceProfilesService {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/conformanceprofiles/' + id + '/crossReference').toPromise().then(serverConformanceProfileCrossReference => {
                 resolve(serverConformanceProfileCrossReference);
-            }, error => {
-                reject(error);
+            }).catch(function (e) {
+
             });
         });
         return promise;
@@ -48,8 +49,9 @@ export class ConformanceProfilesService {
 
             this.http.get('api/conformanceprofiles/' + id + '/postdef').toPromise().then(serverConformanceProfilePostDef => {
                 resolve(serverConformanceProfilePostDef);
-            }, error => {
-                reject(error);
+            }
+            ).catch(function (e) {
+
             });
         });
         return promise;
@@ -59,8 +61,8 @@ export class ConformanceProfilesService {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/conformanceprofiles/' + id + '/predef').toPromise().then(serverConformanceProfilePreDef => {
                 resolve(serverConformanceProfilePreDef);
-            }, error => {
-                reject(error);
+            }).catch(function (e) {
+
             });
         });
         return promise;
@@ -70,9 +72,9 @@ export class ConformanceProfilesService {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/conformanceprofiles/' + id + '/conformancestatement').toPromise().then(serverConformanceProfileConformanceStatement => {
                 resolve(serverConformanceProfileConformanceStatement);
-            }, error => {
-                reject(error);
-            });
+            }).catch(function (e) {
+
+          });
         });
         return promise;
     }

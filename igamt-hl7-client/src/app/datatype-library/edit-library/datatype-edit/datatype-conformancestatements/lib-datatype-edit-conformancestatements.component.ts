@@ -79,7 +79,7 @@ export class LibDatatypeEditConformanceStatementsComponent implements WithSave{
                     var treeObj = entry.data;
 
                     var dtLink:any = {};
-                    dtLink.id = treeObj.key.id;
+                    dtLink.id = treeObj.id;
                     dtLink.label = treeObj.label;
                     dtLink.domainInfo = treeObj.domainInfo;
                     var index = treeObj.label.indexOf("_");

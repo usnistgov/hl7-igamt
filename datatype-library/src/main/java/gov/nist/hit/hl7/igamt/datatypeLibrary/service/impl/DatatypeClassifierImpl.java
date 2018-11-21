@@ -107,7 +107,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
 
     HashMap<EvolutionPropertie, Boolean> criterias = new HashMap<EvolutionPropertie, Boolean>();
     List<Datatype> dataInit =
-        datatypeService.getLatestByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
+        datatypeService.findByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
     for (Datatype dt : dataInit) {
       ArrayList<List<String>> temp = new ArrayList<List<String>>();
       List<String> version1 = new ArrayList<String>();
@@ -124,7 +124,7 @@ public class DatatypeClassifierImpl implements DatatypeClassifier {
       throws DatatypeNotFoundException {
     visited = new HashMap<String, Integer>();
     List<Datatype> datatypesToAdd =
-        datatypeService.getLatestByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
+        datatypeService.findByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
 
     for (Datatype dt : datatypesToAdd) {
       if (!datatypeMap.containsKey(dt.getName())) {

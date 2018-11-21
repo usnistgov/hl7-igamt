@@ -142,14 +142,14 @@ public class DeltaServiceImpl implements DeltaService {
       Datatype d2 = null;
 
       if (c1.getRef() != null && c1.getRef().getId() != null) {
-        d1 = datatypeService.getLatestById(c1.getRef().getId());
+        d1 = datatypeService.findById(c1.getRef().getId());
         if (d1 == null) {
           throw new DatatypeNotFoundException(c1.getRef().getId());
         }
 
       }
       if (c2.getRef() != null && c2.getRef().getId() != null) {
-        d2 = datatypeService.getLatestById(c2.getRef().getId());
+        d2 = datatypeService.findById((c2.getRef().getId()));
         if (d2 == null) {
           throw new DatatypeNotFoundException(c2.getRef().getId());
         }
@@ -278,7 +278,7 @@ public class DeltaServiceImpl implements DeltaService {
         && criterias.get((EvolutionPropertie.CPDATATYPE))) {
       Datatype d1 = null;
       if (c1.getRef() != null && c1.getRef().getId() != null) {
-        d1 = datatypeService.getLatestById(c1.getRef().getId());
+        d1 = datatypeService.findById(c1.getRef().getId());
         if (d1 == null) {
           throw new DatatypeNotFoundException(c1.getRef().getId());
         }
@@ -362,14 +362,14 @@ public class DeltaServiceImpl implements DeltaService {
       Datatype d2 = null;
 
       if (c1.getRef() != null && c1.getRef().getId() != null) {
-        d1 = datatypeService.getLatestById(c1.getRef().getId());
+        d1 = datatypeService.findById(c1.getRef().getId());
         if (d1 == null) {
           throw new DatatypeNotFoundException(c1.getRef().getId());
         }
 
       }
       if (c2.getRef() != null && c2.getRef().getId() != null) {
-        d2 = datatypeService.getLatestById(c2.getRef().getId());
+        d2 = datatypeService.findById(c2.getRef().getId());
         if (d2 == null) {
           throw new DatatypeNotFoundException(c2.getRef().getId());
         }

@@ -4,6 +4,9 @@ import {GeneralConfigurationService} from "../../../service/general-configuratio
 import {IgDocumentService} from "../../../igdocuments/igdocument-edit/ig-document.service";
 import { _ } from 'underscore';
 import * as __ from 'lodash';
+import {SelectItemGroup} from "primeng/components/common/selectitemgroup";
+import {Types} from "../../constants/types";
+import {DatatypeColService} from "./datatype-col.service";
 
 @Component({
   selector : 'datatype-col',
@@ -12,7 +15,7 @@ import * as __ from 'lodash';
 })
 
 export class DatatypeColComponent {
-  @Input() igId: any;
+  @Input() documentId: any;
   @Input() ref: any;
   @Output() refChange = new EventEmitter<any>();
   @Input() datatypeLabel: any;
@@ -22,9 +25,13 @@ export class DatatypeColComponent {
 
   @Output() refresh = new EventEmitter<any>();
 
+  @Input() documentType: Types;
+
+
   @Input() idPath : string;
   @Input() path : string;
   @Input() viewScope : string;
+  editing=false;
 
   changeDTDialogOpen:boolean;
   currentDTLabel:any;
@@ -35,7 +42,9 @@ export class DatatypeColComponent {
 
   cols: any[];
 
-  constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService, private igDocumentService : IgDocumentService){}
+  groupedLabels :SelectItemGroup[]= [];
+
+  constructor(private datatypesService : DatatypesService, private configService : GeneralConfigurationService, private datatypeColService:DatatypeColService){}
 
   ngOnInit(){
     this.changeDTDialogOpen = false;
@@ -46,21 +55,53 @@ export class DatatypeColComponent {
       { field: 'ext', header: 'Ext' },
       { field: 'label', header: 'Label' }
     ];
+
+
+
   }
 
   makeEditModeForDatatype(){
-    this.changeDTDialogOpen = true;
+    //this.changeDTDialogOpen = true;
+    console.log("On show ?")
     this.currentDTLabel = __.cloneDeep(this.datatypeLabel);
-    this.igDocumentService.getDatatypeLabels(this.igId).then((data) => {
-      this.datatypeLabels = data;
+    this.datatypeColService.getDatatypeFlavorsOptions(this.documentId,this.documentType, this.viewScope,this.ref.id ).then((data) => {
+      this.groupedLabels=data;
+    //  this.groupLabels(data);
+      this.editing=true;
     });
   }
+  groupLabels(datatypeLabels)
+  {
+    this.initOptions();
+
+
+    for(let i=0;i<datatypeLabels.length;i++){
+      if(datatypeLabels[i].name==this.currentDTLabel.name){
+        this.groupedLabels[0].items.push({label:datatypeLabels[i].label,value:datatypeLabels[i]});
+      }else{
+        this.groupedLabels[1].items.push({label:datatypeLabels[i].label,value:datatypeLabels[i]});
+      }
+    }
+  }
+
+  initOptions=function () {
+
+    this.groupedLabels =[
+      {
+        label: 'Flavors',
+        items: [
+        ]
+      },
+      {
+        label: 'Others',
+        items: [
+        ]
+      }
+    ];
+  };
 
   update(){
-    this.ref.id = this.currentDTLabel.id;
-    this.datatypeLabel = __.cloneDeep(this.currentDTLabel);
-    this.updateChildren();
-    this.changeDTDialogOpen = false;
+    this.ref.id = this.datatypeLabel.id;
     this.refChange.emit(this.ref);
     this.datatypeLabelChange.emit(this.datatypeLabel);
     let item:any = {};
@@ -72,7 +113,25 @@ export class DatatypeColComponent {
     this.changeItemsChange.emit(this.changeItems);
 
     this.datatypeLabels = null;
-    this.currentDTLabel = null;
+    this.resetDropDown();
+    if(!this.datatypeLabel.leaf){
+      this.datatypesService.getDatatypeStructureByRef(this.ref.id, this.idPath, this.path, this.viewScope).then((children) => {
+        children = this.configService.arraySortByPosition(children);
+        this.children = children;
+        this.childrenChange.emit(this.children);
+        this.refresh.emit(true);
+      });
+    }else {
+      this.children = null;
+      this.childrenChange.emit(this.children);
+      this.refresh.emit(true);
+    }
+  }
+
+  resetDropDown(){
+    console.log("Closing");
+    this.initOptions();
+    this.editing=false;
   }
 
   cancel(){
@@ -105,4 +164,5 @@ export class DatatypeColComponent {
     }
     return null;
   }
+
 }

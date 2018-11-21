@@ -14,7 +14,6 @@ package gov.nist.hit.hl7.igamt.profilecomponent.service;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 
 /**
@@ -23,7 +22,7 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
  */
 public interface ProfileComponentService {
 
-  ProfileComponent findByCompositeKey(CompositeKey compositeKey);
+  ProfileComponent findById(String id);
 
   ProfileComponent create(ProfileComponent profileComponent);
 
@@ -33,7 +32,7 @@ public interface ProfileComponentService {
 
   List<ProfileComponent> saveAll(List<ProfileComponent> profileComponents);
 
-  void delete(CompositeKey compositeKey);
+  void delete(String compositeKey);
 
   public void removeCollection();
 

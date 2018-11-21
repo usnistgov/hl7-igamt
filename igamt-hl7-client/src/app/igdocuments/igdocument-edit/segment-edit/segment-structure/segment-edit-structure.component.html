@@ -34,7 +34,11 @@
                 <tr>
                     <th *ngFor="let col of columns">
                         {{col.header}}
+
                     </th>
+
+
+
                 </tr>
             </ng-template>
 
@@ -46,7 +50,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'usage'">
-                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id.id"></usage-col>
+                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id"></usage-col>
                             <usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
                         </ng-container>
 
@@ -65,20 +69,20 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'datatype'">
-                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [igId] = "igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems"></datatype-col>
-                            <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></datatype-readonly-col>
+                            <datatype-col *ngIf="node.data.type === 'FIELD'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(datatypeLabel)]="node.data.datatypeLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId]="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></datatype-col>
+                            <datatype-readonly-col *ngIf="node.data.type !== 'FIELD'" [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'valueSet'">
-                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
+                            <valueset-col *ngIf="configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'singleCode'">
-                            <singlecode-col *ngIf="configService.isSingleCodeAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type,node.data.datatypeLabel.leaf, node.data.bindings)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></singlecode-col>
+                            <singlecode-col *ngIf="configService.isSingleCodeAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type,node.data.datatypeLabel.leaf, node.data.bindings)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></singlecode-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'constantValue'">
-                            <constantvalue-col *ngIf="configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
+                            <constantvalue-col *ngIf="configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, segmentStructure.name, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'textDef'">
@@ -87,7 +91,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'comment'">
-                            <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
+                            <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
                         </ng-container>
                     </td>
                 </tr>

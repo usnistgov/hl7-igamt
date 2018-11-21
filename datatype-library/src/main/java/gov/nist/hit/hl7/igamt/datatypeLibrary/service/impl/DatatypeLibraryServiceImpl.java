@@ -43,7 +43,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -81,7 +80,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   DatatypeService datatypeService;
 
   @Override
-  public DatatypeLibrary findById(CompositeKey id) {
+  public DatatypeLibrary findById(String id) {
     // TODO Auto-generated method stub
     return datatypeLibraryRepository.findById(id).get();
   }
@@ -94,7 +93,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     // TODO Auto-generated method stub
     datatypeLibraryRepository.deleteById(id);
   }
@@ -110,19 +109,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public List<DatatypeLibrary> findByUsername(String username) {
     // TODO Auto-generated method stub
     return datatypeLibraryRepository.findByUsername(username);
-  }
-
-
-
-  @Override
-  public DatatypeLibrary findLatestById(String id) {
-    // TODO Auto-generated method stub
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    DatatypeLibrary ig = mongoTemplate.findOne(query, DatatypeLibrary.class);
-    return ig;
   }
 
 
@@ -144,7 +130,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     List<SectionTemplate> datatypeLibraryTemplate =
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
-    emptyLibrary.setId(new CompositeKey());
+    emptyLibrary.setId(new String());
     emptyLibrary.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : datatypeLibraryTemplate) {
@@ -176,7 +162,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
   private Set<String> mapLinkToId(Set<Link> links) {
-    Set<String> ids = links.stream().map(x -> x.getId().getId()).collect(Collectors.toSet());
+    Set<String> ids = links.stream().map(x -> x.getId()).collect(Collectors.toSet());
     return ids;
   }
 
@@ -197,7 +183,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         savedIds.removeAll(existants);
         for (String id : savedIds) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
@@ -206,7 +192,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
 
             }
-            if (datatype.getId().getId() != null) {
+            if (datatype.getId()!= null) {
               Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
                   reg.getChildren().size() + 1);
               ret.getDatatypes().add(datatype);
@@ -234,7 +220,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             Link link =
                 new Link(datatype.getId(), datatype.getDomainInfo(), reg.getChildren().size() + 1);
@@ -243,7 +229,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
               addDatatypes(getDatatypeResourceDependenciesIds(p), lib, ret);
-              System.out.println("putting In Library" + p.getId().getId());
+              System.out.println("putting In Library" + p.getId());
               reg.getChildren().add(link);
             }
           } else {
@@ -278,7 +264,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public UpdateResult updateAttribute(String id, String attributeName, Object value) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include(attributeName);
     Update update = new Update();
     update.set(attributeName, value);
@@ -289,19 +275,9 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Override
   public List<DatatypeLibrary> findLatestByUsername(String username) {
-
-
-
     Criteria where = Criteria.where("username").is(username);
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
@@ -355,20 +331,13 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#findLatestPublished()
    */
   @Override
-  public List<DatatypeLibrary> findLatestPublished() {
+  public List<DatatypeLibrary> findPublished() {
     // TODO Auto-generated method stub
 
 
     Criteria where = Criteria.where("publicationInfo.status").is(STATUS.PUBLISHED);
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, CompositeKey.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("publicationInfo");
 

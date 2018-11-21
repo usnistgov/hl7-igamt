@@ -3,23 +3,22 @@ package gov.nist.hit.hl7.igamt.coconstraints.domain;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 @Document
 public class CoConstraintTable {
 	
 	@Id
-  	private CompositeKey id;
+  	private String id;
 	private boolean supportGroups;
 	private String segment;
 	private CoConstraintTableHeaders headers;
 	private CoConstraintTableContent content;
 	
 	
-	public CompositeKey getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(CompositeKey id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public boolean isSupportGroups() {

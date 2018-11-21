@@ -2,7 +2,6 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
@@ -21,7 +20,7 @@ public interface CrudService {
 
   AddValueSetResponseObject addValueSets(Set<String> ids, Ig ig) throws AddingException;
 
-  CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) throws AddingException;
+  String AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig) throws AddingException;
 
 
 }

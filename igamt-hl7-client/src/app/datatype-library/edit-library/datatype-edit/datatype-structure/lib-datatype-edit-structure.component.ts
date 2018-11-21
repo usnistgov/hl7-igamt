@@ -109,7 +109,7 @@ export class LibDatatypeEditStructureComponent implements WithSave{
           var treeObj = entry.data;
 
           var dtLink:any = {};
-          dtLink.id = treeObj.key.id;
+          dtLink.id = treeObj.id;
           dtLink.label = treeObj.label;
           dtLink.domainInfo = treeObj.domainInfo;
           var index = treeObj.label.indexOf("_");
@@ -228,7 +228,7 @@ export class LibDatatypeEditStructureComponent implements WithSave{
 
   generateBinding(datatypeStructure){
     let result:any = {};
-    result.elementId = datatypeStructure.id.id;
+    result.elementId = datatypeStructure.id;
     if(datatypeStructure.binding){
       result.conformanceStatements = datatypeStructure.binding.conformanceStatements;
       result.conformanceStatementCrossRefs = datatypeStructure.binding.conformanceStatementCrossRefs;

@@ -2,12 +2,11 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 
 public class DisplayMetadata {
 
-  private CompositeKey id;
+  private String id;
   private Scope scope;
   private String version;
   private String name;
@@ -16,11 +15,11 @@ public class DisplayMetadata {
   private String authorNote;
   private Set<String> compatibilityVersions;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

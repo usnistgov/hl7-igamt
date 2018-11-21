@@ -9,9 +9,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -69,7 +67,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          ConformanceProfile cp = conformanceProfileService.getLatestById(id);
+          ConformanceProfile cp = conformanceProfileService.findById(id);
           if (cp != null) {
             ret.getConformanceProfiles().add(cp);
             addDependecies(cp, ig, ret);
@@ -148,7 +146,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Segment segment = segmentService.getLatestById(id);
+          Segment segment = segmentService.findById(id);
           if (segment != null) {
             addDependecies(segment, ig, ret);
             Link link =
@@ -157,7 +155,7 @@ public class CrudServiceImpl implements CrudService {
             reg.getChildren().add(link);
           } else {
 
-            throw new AddingException("Could not find Segment with id" + segment.getId().getId());
+            throw new AddingException("Could not find Segment with id" + segment.getId());
 
 
           }
@@ -241,7 +239,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
@@ -261,7 +259,7 @@ public class CrudServiceImpl implements CrudService {
 
 
             }
-            if (datatype.getId().getId() != null) {
+            if (datatype.getId() != null) {
               Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
                   reg.getChildren().size() + 1);
               ret.getDatatypes().add(datatype);
@@ -291,7 +289,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Datatype datatype = datatypeService.getLatestById(id);
+          Datatype datatype = datatypeService.findById(id);
           if (datatype != null) {
             if (datatype.getBinding() != null) {
               Set<String> vauleSetBindingIds = processBinding(datatype.getBinding());
@@ -309,7 +307,7 @@ public class CrudServiceImpl implements CrudService {
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
               addDatatypes(getDatatypeResourceDependenciesIds(p), ig, ret);
-              System.out.println("putting In Library" + p.getId().getId());
+              System.out.println("putting In Library" + p.getId());
               reg.getChildren().add(link);
             }
           } else {
@@ -349,7 +347,7 @@ public class CrudServiceImpl implements CrudService {
         Set<String> existants = mapLinkToId(reg.getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
-          Valueset valueSet = valuesetService.getLatestById(id);
+          Valueset valueSet = valuesetService.findById(id);
           if (valueSet != null) {
             Link link =
                 new Link(valueSet.getId(), valueSet.getDomainInfo(), reg.getChildren().size() + 1);
@@ -357,10 +355,7 @@ public class CrudServiceImpl implements CrudService {
             ret.getValueSets().add(valueSet);
           } else {
             throw new AddingException("Could not find Value Set  with id " + id);
-
           }
-
-
         }
       }
     }
@@ -369,7 +364,7 @@ public class CrudServiceImpl implements CrudService {
 
 
   private Set<String> mapLinkToId(Set<Link> links) {
-    Set<String> ids = links.stream().map(x -> x.getId().getId()).collect(Collectors.toSet());
+    Set<String> ids = links.stream().map(x -> x.getId()).collect(Collectors.toSet());
     return ids;
   }
 
@@ -381,7 +376,7 @@ public class CrudServiceImpl implements CrudService {
    * gov.nist.hit.hl7.igamt.ig.domain.Ig)
    */
   @Override
-  public CompositeKey AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig)
+  public String AddConformanceProfilesToEmptyIg(Set<String> ids, Ig ig)
       throws AddingException {
     // TODO Auto-generated method stub
     AddMessageResponseObject ret = this.addConformanceProfiles(ids, ig);
@@ -420,11 +415,11 @@ public class CrudServiceImpl implements CrudService {
     System.out.println(list.size());
 
     for (int i = 0; i < list.size(); i++) {
-      orderMap.put(list.get(i).getId().getId(), i + 1);
+      orderMap.put(list.get(i).getId(), i + 1);
     }
 
     for (Link link : registry.getChildren()) {
-      link.setPosition(orderMap.get(link.getId().getId()));
+      link.setPosition(orderMap.get(link.getId()));
     }
 
   }

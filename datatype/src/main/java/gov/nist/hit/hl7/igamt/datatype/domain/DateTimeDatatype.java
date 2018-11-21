@@ -42,20 +42,19 @@ public class DateTimeDatatype extends PrimitiveDatatype {
   public DateTimeDatatype clone() {
 
     DateTimeDatatype clone = new DateTimeDatatype();
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setId(null);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setDateTimeConstraints(dateTimeConstraints);
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
+    super.complete(clone);
     return clone;
 
   };
+  
+  public void complete(DateTimeDatatype elm) {
+	  
+	  elm.dateTimeConstraints=dateTimeConstraints;
+	  
+  }
+  
+  
+  
+  
+  
 }

@@ -29,7 +29,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -104,21 +103,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Autowired
   ValuesetService valuesetService;
 
-  @Override
-  public ConformanceProfile findByKey(CompositeKey key) {
-    return conformanceProfileRepository.findById(key).get();
-
-  }
 
   @Override
   public ConformanceProfile create(ConformanceProfile conformanceProfile) {
-    conformanceProfile.setId(new CompositeKey());
+    conformanceProfile.setId(new String());
     return conformanceProfileRepository.save(conformanceProfile);
   }
 
   @Override
-  public ConformanceProfile save(ConformanceProfile conformanceProfile) {
-    // conformanceProfile.setId(CompositeKeyUtil.updateVersion(conformanceProfile.getId()));
+  public ConformanceProfile save(ConformanceProfile conformanceProfile) {   
     conformanceProfile.setUpdateDate(new Date());
     return conformanceProfileRepository.save(conformanceProfile);
   }
@@ -134,7 +127,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public void delete(CompositeKey key) {
+  public void delete(String key) {
     conformanceProfileRepository.deleteById(key);
   }
 
@@ -213,9 +206,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public ConformanceProfile findLatestById(String id) {
-    ConformanceProfile conformanceProfile = conformanceProfileRepository
-        .findLatestById(new ObjectId(id), new Sort(Sort.Direction.DESC, "_id.version")).get(0);
+  public ConformanceProfile findById(String id) {
+    ConformanceProfile conformanceProfile = conformanceProfileRepository.findOneById(id);
     return conformanceProfile;
   }
 
@@ -273,7 +265,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 
   @Override
-  public ConformanceProfile findDisplayFormat(CompositeKey id) {
+  public ConformanceProfile findDisplayFormat(String id) {
     List<ConformanceProfile> cps = conformanceProfileRepository.findDisplayFormat(id);
     if (cps != null && !cps.isEmpty()) {
       return cps.get(0);
@@ -282,16 +274,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  @Override
-  public ConformanceProfile getLatestById(String id) {
-    // TODO Auto-generated method stub
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    ConformanceProfile conformanceProfile = mongoTemplate.findOne(query, ConformanceProfile.class);
-    return conformanceProfile;
-  }
 
   @Override
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
@@ -320,7 +302,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    */
   @Override
   public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure) {
-    ConformanceProfile conformanceProfile = this.findLatestById(structure.getId().getId());
+    ConformanceProfile conformanceProfile = this.findById(structure.getId());
     if (conformanceProfile != null) {
       conformanceProfile.setBinding(structure.getBinding());
       conformanceProfile.setChildren(structure.getChildren());
@@ -332,9 +314,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = findLatestById(predef.getId().getId());
+    ConformanceProfile conformanceProfile = findById(predef.getId());
     if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(predef.getId().getId());
+      throw new ConformanceProfileNotFoundException(predef.getId());
     }
     conformanceProfile.setPreDef(predef.getPreDef());
     return save(conformanceProfile);
@@ -343,9 +325,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   @Override
   public ConformanceProfile savePostdef(PostDef postdef)
       throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = findLatestById(postdef.getId().getId());
+    ConformanceProfile conformanceProfile = findById(postdef.getId());
     if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(postdef.getId().getId());
+      throw new ConformanceProfileNotFoundException(postdef.getId());
     }
     conformanceProfile.setPostDef(postdef.getPostDef());
     return save(conformanceProfile);
@@ -356,9 +338,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
       throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
     validate(metadata);
-    ConformanceProfile conformanceProfile = findLatestById(metadata.getId().getId());
+    ConformanceProfile conformanceProfile = findById(metadata.getId());
     if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(metadata.getId().getId());
+      throw new ConformanceProfileNotFoundException(metadata.getId());
     }
     conformanceProfile.setDescription(metadata.getDescription());
     conformanceProfile.setDomainInfo(metadata.getDomainInfo());
@@ -376,9 +358,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       ConformanceProfileConformanceStatement conformanceStatement)
       throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
     validate(conformanceStatement);
-    ConformanceProfile conformanceProfile = findLatestById(conformanceStatement.getId().getId());
+    ConformanceProfile conformanceProfile = findById(conformanceStatement.getId());
     if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(conformanceStatement.getId().getId());
+      throw new ConformanceProfileNotFoundException(conformanceStatement.getId());
     }
     conformanceProfile.getBinding()
         .setConformanceStatements(conformanceStatement.getConformanceStatements());
@@ -403,7 +385,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       if (f.getRef() == null || StringUtils.isEmpty(f.getRef().getId())) {
         throw new ValidationException("Segment not found");
       }
-      Segment s = segmentService.getLatestById(f.getRef().getId());
+      Segment s = segmentService.findById(f.getRef().getId());
       if (s == null) {
         throw new ValidationException("Segment not found");
       }
@@ -488,13 +470,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
    */
   @Override
-  public Link cloneConformanceProfile(CompositeKey key, HashMap<String, CompositeKey> valuesetsMap,
-      HashMap<String, CompositeKey> segmentsMap, Link l, String username) {
-    ConformanceProfile elm = this.findByKey(l.getId());
+  public Link cloneConformanceProfile(String key, HashMap<String, String> valuesetsMap,
+      HashMap<String, String> segmentsMap, Link l, String username) {
+    ConformanceProfile old = this.findById(l.getId());
+    ConformanceProfile elm =old.clone();
     Link newLink = new Link();
     newLink.setId(key);
     updateDependencies(elm, segmentsMap, valuesetsMap);
-    elm.setFrom(elm.getId());
     elm.setId(newLink.getId());
     elm.setUsername(username);
     this.save(elm);
@@ -507,8 +489,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param datatypesMap
    * @param valuesetsMap
    */
-  private void updateDependencies(ConformanceProfile elm, HashMap<String, CompositeKey> segmentsMap,
-      HashMap<String, CompositeKey> valuesetsMap) {
+  private void updateDependencies(ConformanceProfile elm, HashMap<String, String> segmentsMap,
+      HashMap<String, String> valuesetsMap) {
     // TODO Auto-generated method stub
 
     updateBindings(elm.getBinding(), valuesetsMap);
@@ -520,7 +502,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param elm
    * @param valuesetsMap
    */
-  private void updateBindings(ResourceBinding binding, HashMap<String, CompositeKey> valuesetsMap) {
+  private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
     // TODO Auto-generated method stub
     if (binding.getChildren() != null) {
       for (StructureElementBinding child : binding.getChildren()) {
@@ -528,7 +510,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           for (ValuesetBinding vs : child.getValuesetBindings()) {
             if (vs.getValuesetId() != null) {
               if (valuesetsMap.containsKey(vs.getValuesetId())) {
-                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()).getId());
+                vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
               }
             }
           }
@@ -539,14 +521,14 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 
 
-  private void processCp(ConformanceProfile cp, HashMap<String, CompositeKey> segmentsMap) {
+  private void processCp(ConformanceProfile cp, HashMap<String, String> segmentsMap) {
     // TODO Auto-generated method stub
     for (MsgStructElement segOrgroup : cp.getChildren()) {
       if (segOrgroup instanceof SegmentRef) {
         SegmentRef ref = (SegmentRef) segOrgroup;
         if (ref.getRef() != null && ref.getRef().getId() != null) {
           if (segmentsMap.containsKey(ref.getRef().getId())) {
-            ref.setId(segmentsMap.get(ref.getRef().getId()).getId());
+            ref.setId(segmentsMap.get(ref.getRef().getId()));
           }
         }
       } else {
@@ -557,13 +539,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   private void processSegmentorGroup(MsgStructElement segOrgroup,
-      HashMap<String, CompositeKey> segmentsMap) {
+      HashMap<String, String> segmentsMap) {
     // TODO Auto-generated method stub
     if (segOrgroup instanceof SegmentRef) {
       SegmentRef ref = (SegmentRef) segOrgroup;
       if (ref.getRef() != null && ref.getRef().getId() != null) {
         if (segmentsMap.containsKey(ref.getRef().getId())) {
-          ref.setId(segmentsMap.get(ref.getRef().getId()).getId());
+          ref.setId(segmentsMap.get(ref.getRef().getId()));
         }
 
       }
@@ -597,9 +579,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     if (conformanceProfile.getChildren() != null && conformanceProfile.getChildren().size() > 0) {
       for(SegmentRefOrGroup sog : conformanceProfile.getChildren()){
         if(sog instanceof SegmentRef){
-          result.addSegment(this.createSegmentRefStructureTreeModel((SegmentRef)sog,datatypesMap, segmentsMap, valueSetsMap, null, null, conformanceProfile.getBinding(), conformanceProfile.getId().getId()));
+          result.addSegment(this.createSegmentRefStructureTreeModel((SegmentRef)sog,datatypesMap, segmentsMap, valueSetsMap, null, null, conformanceProfile.getBinding(), conformanceProfile.getId()));
         }else if(sog instanceof Group){
-          result.addGroup(this.createGroupStructureTreeModel((Group)sog,datatypesMap, segmentsMap, valueSetsMap, null, null, conformanceProfile.getBinding(), conformanceProfile.getId().getId()));
+          result.addGroup(this.createGroupStructureTreeModel((Group)sog,datatypesMap, segmentsMap, valueSetsMap, null, null, conformanceProfile.getBinding(), conformanceProfile.getId()));
         }
       }
     }
@@ -617,7 +599,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     StructureElementBinding childSeb = this.findStructureElementBindingByIdFromBinding(parentBinding, segmentRef.getId());
     if (childSeb != null) segmentRefDisplayModel.addBinding(this.createBindingDisplay(childSeb, conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
     segmentRefDisplayModel.setViewScope(ViewScope.CONFORMANCEPROFILE);
-    Segment s = this.segmentService.getLatestById(segmentRef.getRef().getId());
+    Segment s = this.segmentService.findById(segmentRef.getRef().getId());
     
     if(s != null){
       segmentRefDisplayModel.setSegmentLabel(this.createSegmentLabel(s));
@@ -635,7 +617,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             StructureElementBinding childChildSeb = this.findStructureElementBindingByIdFromBinding(childSeb, f.getId());
             if (childChildSeb != null) fModel.addBinding(this.createBindingDisplay(childChildSeb, conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
             StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(s, f.getId());
-            if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, s.getId().getId(), ViewScope.SEGMENT, 2, valueSetsMap));
+            if (fSeb != null) fModel.addBinding(this.createBindingDisplay(fSeb, s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
             fieldStructureTreeModel.setData(fModel);
 
             if (childDt instanceof ComplexDatatype) {
@@ -653,9 +635,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                     StructureElementBinding childChildChildSeb = this.findStructureElementBindingByIdFromBinding(childChildSeb, c.getId());
                     if (childChildChildSeb != null) cModel.addBinding(this.createBindingDisplay(childChildChildSeb, conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
                     StructureElementBinding childFSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb, c.getId());
-                    if (childFSeb != null) cModel.addBinding(this.createBindingDisplay(childFSeb, s.getId().getId(), ViewScope.SEGMENT, 2, valueSetsMap));
+                    if (childFSeb != null) cModel.addBinding(this.createBindingDisplay(childFSeb, s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
                     StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
-                    if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                    if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                     componentStructureTreeModel.setData(cModel);
                     if (childChildDt instanceof ComplexDatatype) {
                       ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
@@ -672,11 +654,11 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                             StructureElementBinding childChildChildChildSeb = this.findStructureElementBindingByIdFromBinding(childChildChildSeb, sc.getId());
                             if (childChildChildChildSeb != null) scModel.addBinding(this.createBindingDisplay(childChildChildChildSeb, conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
                             StructureElementBinding childChildFSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(childFSeb, sc.getId());
-                            if (childChildFSeb != null) scModel.addBinding(this.createBindingDisplay(childChildFSeb, s.getId().getId(), ViewScope.SEGMENT, 2, valueSetsMap));
+                            if (childChildFSeb != null) scModel.addBinding(this.createBindingDisplay(childChildFSeb, s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
                             StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                            if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, childDt.getId().getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                            if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, childDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
                             StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
-                            if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId().getId(), ViewScope.DATATYPE, 4, valueSetsMap));
+                            if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(), ViewScope.DATATYPE, 4, valueSetsMap));
                             subComponentStructureTreeModel.setData(scModel);
                             componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                           } else {
@@ -711,7 +693,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     SegmentLabel label = new SegmentLabel();
     label.setDomainInfo(s.getDomainInfo());
     label.setExt(s.getExt());
-    label.setId(s.getId().getId());
+    label.setId(s.getId());
     label.setLabel(s.getLabel());
     label.setName(s.getName());
     return label;
@@ -782,8 +764,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       for(ValuesetBinding vb:valuesetBindings){
         Valueset vs = valueSetsMap.get(vb.getValuesetId());
         if(vs == null){
-          vs = this.valuesetService.findLatestById(vb.getValuesetId());
-          valueSetsMap.put(vs.getId().getId(), vs);
+          vs = this.valuesetService.findById(vb.getValuesetId());
+          valueSetsMap.put(vs.getId(), vs);
         }
         if(vs != null){
           DisplayValuesetBinding dvb = new DisplayValuesetBinding();
@@ -803,7 +785,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   private Datatype findDatatype(String id, HashMap<String, Datatype> datatypesMap) {
     Datatype dt = datatypesMap.get(id);
     if(dt == null) {
-      dt = this.datatypeService.findLatestById(id);
+      dt = this.datatypeService.findById(id);
       datatypesMap.put(id, dt);
     }
     return dt;
@@ -813,7 +795,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     DatatypeLabel label = new DatatypeLabel();
     label.setDomainInfo(dt.getDomainInfo());
     label.setExt(dt.getExt());
-    label.setId(dt.getId().getId());
+    label.setId(dt.getId());
     label.setLabel(dt.getLabel());
     if (dt instanceof ComplexDatatype)
       label.setLeaf(false);

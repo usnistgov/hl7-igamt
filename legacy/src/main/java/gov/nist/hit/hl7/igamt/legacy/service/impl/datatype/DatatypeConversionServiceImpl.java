@@ -27,7 +27,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.DTMPredicate;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Datatype;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -127,7 +126,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
     } else {
       convertedDatatype = new gov.nist.hit.hl7.igamt.datatype.domain.Datatype();
     }
-    convertedDatatype.setId(new CompositeKey(oldDatatype.getId()));
+    convertedDatatype.setId(oldDatatype.getId());
     convertedDatatype.setCreatedFrom(oldDatatype.getCreatedFrom());
     convertedDatatype.setName(oldDatatype.getName());
     convertedDatatype.setDescription(oldDatatype.getDescription());

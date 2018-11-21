@@ -1,13 +1,9 @@
 import {Component, Input} from '@angular/core';
 
 import {SelectItem} from "primeng/components/common/selectitem";
-
-import * as _ from 'lodash'
-
 import {ViewChildren, ViewChild} from "@angular/core";
 import {TocService} from "./service/toc.service";
 import {TreeModel, TreeNode, IActionHandler, TREE_ACTIONS, TreeComponent} from "angular-tree-component";
-
 import {MenuItem} from 'primeng/api';
 import {ContextMenuComponent} from "ngx-contextmenu";
 import {ActivatedRoute, Router, NavigationEnd} from "@angular/router";
@@ -19,9 +15,6 @@ import {CopyElementComponent} from "./copy-element/copy-element.component";
 
 import {ExportService} from "./service/export.service";
 import {Types} from "../../common/constants/types";
-import {SectionsService} from "../../service/sections/sections.service";
-import {IndexedDbService} from "../../service/indexed-db/indexed-db.service";
-import {MessageService} from "primeng/components/common/messageservice";
 import {LoadingService} from "./service/loading.service";
 import {DeleteElementComponent} from "./delete-element/delete-element.component";
 import {BreadcrumbService} from "../../breadcrumb.service";
@@ -223,7 +216,7 @@ export class IgDocumentEditComponent {
 
   getElementUrl(elm){
     var type=elm.type.toLowerCase();
-    return "./"+type+"/"+elm.key.id;
+    return "./"+type+"/"+elm.id;
   }
 
 
@@ -280,9 +273,9 @@ export class IgDocumentEditComponent {
 
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
-       if(node.data.data.key){
-          if(node.data.data.key&& node.data.data.key.id) {
-            if (this.currentUrl.includes(node.data.data.key.id)) {
+       if(node.data.data){
+          if(node.data.data.id) {
+            if (this.currentUrl.includes(node.data.data.id)) {
               this.activeNode = node.id;
               return true;
             }
@@ -443,22 +436,15 @@ export class IgDocumentEditComponent {
 
     }if(object.segments){
       this.tocService.addNodesByType(object.segments,this.tree.treeModel.nodes,  Types.SEGMENTREGISTRY);
-
-
-
     }
     if(object.datatypes){
       this.tocService.addNodesByType( object.datatypes,this.tree.treeModel.nodes, Types.DATATYPEREGISTRY);
-
     }
     if(object.valueSets){
       this.tocService.addNodesByType(object.valueSets,this.tree.treeModel.nodes, Types.VALUESETREGISTRY);
-
     }
-
-
-      this.tree.treeModel.update();
-      this.setTreeModel();
+     this.tree.treeModel.update();
+     this.setTreeModel();
 
   };
 
@@ -472,9 +458,7 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
-
           this.distributeResult(result);
-          //console.log(result);
         }
       )
   }
@@ -489,7 +473,6 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         result => {
-
           this.distributeResult(result);
         }
       )
@@ -514,7 +497,7 @@ export class IgDocumentEditComponent {
 
     this.copyElemt.open({
       igDocumentId : this.igId,
-      id:node.data.data.key,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -538,7 +521,7 @@ export class IgDocumentEditComponent {
 
     this.copyElemt.open({
       igDocumentId : this.igId,
-      id:node.data.data.key,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -559,11 +542,9 @@ export class IgDocumentEditComponent {
 
   copyValueSet(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.VALUESETREGISTRY);
-    //console.log(existing);
-
     this.copyElemt.open({
       igDocumentId : this.igId,
-      id:node.data.data.key,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -589,7 +570,7 @@ export class IgDocumentEditComponent {
 
     this.copyElemt.open({
       igDocumentId : this.igId,
-      id:node.data.data.key,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -623,7 +604,7 @@ export class IgDocumentEditComponent {
 
     this.deleteElement.open({
       igId : this.igId,
-      id:node.data.data.key.id,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -643,7 +624,7 @@ export class IgDocumentEditComponent {
 
     this.deleteElement.open({
       igId : this.igId,
-      id:node.data.data.key.id,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -663,7 +644,7 @@ export class IgDocumentEditComponent {
   deleteValueSet(node){
     this.deleteElement.open({
       igId : this.igId,
-      id:node.data.data.key.id,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,
@@ -684,7 +665,7 @@ export class IgDocumentEditComponent {
   deleteConformanceProfile(node){
     this.deleteElement.open({
       igId : this.igId,
-      id:node.data.data.key.id,
+      id:node.data.data.id,
       name:node.data.data.label,
       ext:node.data.data.ext,
       type:node.data.data.type,

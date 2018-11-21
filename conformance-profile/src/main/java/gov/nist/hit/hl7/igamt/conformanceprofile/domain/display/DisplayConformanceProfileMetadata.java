@@ -1,10 +1,9 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 public class DisplayConformanceProfileMetadata {
-  private CompositeKey id;
+  private String id;
   private DomainInfo domainInfo;
   private String name;
   private String identifier;
@@ -18,11 +17,11 @@ public class DisplayConformanceProfileMetadata {
     super();
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

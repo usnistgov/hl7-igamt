@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 /**
  * @author Harold Affo
@@ -19,7 +18,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
  */
 public interface ResourceService {
 
-  public void delete(CompositeKey key);
+  public void delete(String key);
 
 
 }

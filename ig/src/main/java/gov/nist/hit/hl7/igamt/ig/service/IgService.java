@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -21,13 +20,11 @@ import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveEx
 @Service("igService")
 public interface IgService {
 
-
-
-  public Ig findById(CompositeKey id);
+  public Ig findById(String id);
 
   public List<Ig> findAll();
 
-  public void delete(CompositeKey id);
+  public void delete(String id);
 
   public Ig save(Ig ig);
 
@@ -36,8 +33,6 @@ public interface IgService {
   public List<Ig> findByUsername(String username);
 
   public List<Ig> findLatestByUsername(String username, Scope scope);
-
-  public Ig findLatestById(String id);
 
   public List<Ig> finByScope(String string);
 

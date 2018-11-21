@@ -33,7 +33,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ValueSetBindingStrengt
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ValueSetOrSingleCodeBinding;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.ConformanceStatement;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.Predicate;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
@@ -104,7 +103,7 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
   private void convertProfileComponents(ProfileComponent oldProfileComponent) {
     gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent convertedProfileComponent =
         new gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent();
-    convertedProfileComponent.setId(new CompositeKey(oldProfileComponent.getId()));
+    convertedProfileComponent.setId(oldProfileComponent.getId());
 
     for (SubProfileComponent spc : oldProfileComponent.getChildren()) {
 

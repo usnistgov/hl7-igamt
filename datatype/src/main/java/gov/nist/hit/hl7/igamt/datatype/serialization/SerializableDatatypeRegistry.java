@@ -69,9 +69,9 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
       if (datatypeRegistry != null) {
         if (!datatypeRegistry.getChildren().isEmpty()) {
           for (Link datatypeLink : datatypeRegistry.getChildren()) {
-            if(this.bindedDatatypes.contains(datatypeLink.getId().getId())) {
-              if (datatypesMap.containsKey(datatypeLink.getId().getId())) {
-                Datatype datatype = datatypesMap.get(datatypeLink.getId().getId());
+            if(this.bindedDatatypes.contains(datatypeLink.getId())) {
+              if (datatypesMap.containsKey(datatypeLink.getId())) {
+                Datatype datatype = datatypesMap.get(datatypeLink.getId());
                 SerializableDatatype serializableDatatype =
                     new SerializableDatatype(datatype, String.valueOf(datatypeLink.getPosition()),
                         this.getChildLevel(), datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedComponents);
@@ -83,7 +83,7 @@ public class SerializableDatatypeRegistry extends SerializableRegistry {
                   }
                 }
               } else {
-                throw new DatatypeNotFoundException(datatypeLink.getId().getId());
+                throw new DatatypeNotFoundException(datatypeLink.getId());
               }
             }
           }

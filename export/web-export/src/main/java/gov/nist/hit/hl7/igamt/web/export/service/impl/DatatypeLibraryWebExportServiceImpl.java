@@ -1,27 +1,15 @@
 package gov.nist.hit.hl7.igamt.web.export.service.impl;
 
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.URL;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.DirectoryStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -36,11 +24,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryExportService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
-import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
-import gov.nist.hit.hl7.igamt.export.domain.ExportFormat;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
-import gov.nist.hit.hl7.igamt.export.util.TransformationUtil;
 import gov.nist.hit.hl7.igamt.web.export.model.MyExportObject;
 import gov.nist.hit.hl7.igamt.web.export.service.DatatypeLibraryPopulateObjectService;
 import gov.nist.hit.hl7.igamt.web.export.service.DatatypeLibraryWebExportService;
@@ -50,7 +35,6 @@ import gov.nist.hit.hl7.igamt.web.export.util.PageCreator;
 import gov.nist.hit.hl7.igamt.web.export.util.Tools;
 import gov.nist.hit.hl7.igamt.web.export.util.ZipOutputStreamClass;
 import gov.nist.hit.hl7.igamt.web.export.util.ZipUtils;
-import gov.nist.hit.hl7.igamt.web.export.util.ZipWriter;
 
 @Component
 
@@ -79,7 +63,7 @@ public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebEx
 	public ByteArrayOutputStream exportDatatypeLibraryToWeb(String username, String datatypeLibraryId)
 			throws ExportException {
 
-		DatatypeLibrary datatypeLibrary = datatypeLibraryService.findLatestById(datatypeLibraryId);
+		DatatypeLibrary datatypeLibrary = datatypeLibraryService.findById(datatypeLibraryId);
 
 		ExportedFile exportedFile = datatypeLibraryExportServiceforHtml.exportDatatypeLibraryToHtml(username,
 				datatypeLibraryId);
@@ -171,12 +155,12 @@ public class DatatypeLibraryWebExportServiceImpl implements DatatypeLibraryWebEx
 		// Map<String,Datatype> datatypesMap = new HashMap<>();
 		for (Link datatypeLink : datatypeLibrary.getChildren()) {
 			if (datatypeLink != null && datatypeLink.getId() != null
-					&& !datatypesMap.containsKey(datatypeLink.getId().getId())) {
-				Datatype datatype = datatypeService.findByKey(datatypeLink.getId());
+					&& !datatypesMap.containsKey(datatypeLink.getId())) {
+				Datatype datatype = datatypeService.findById(datatypeLink.getId());
 				if (datatype != null) {
-					datatypesMap.put(datatypeLink.getId().getId(), datatype);
+					datatypesMap.put(datatypeLink.getId(), datatype);
 				} else {
-					throw new DatatypeNotFoundException(datatypeLink.getId().getId());
+					throw new DatatypeNotFoundException(datatypeLink.getId());
 				}
 			}
 		}

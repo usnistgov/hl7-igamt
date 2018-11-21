@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
@@ -14,9 +16,12 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -25,7 +30,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 
 @SpringBootApplication
-
+@EnableMongoAuditing
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
@@ -40,8 +45,14 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
 
-  @Autowired
-  ConfigService sharedConstantService;
+//  @Autowired
+//  ConfigService sharedConstantService;
+//  
+//  @Autowired
+//  MessageEventFacory messageEventFactory;
+//  
+		
+		 
 
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
@@ -86,7 +97,7 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
   // @Bean
   // public FilterRegistrationBean jwtFilter() {
-  // final FilterRegistrationBean registrationBean = new FilterRegistrationBean();
+  // final FilterRegistrationBean registrationBean = new FilterRegistrationBean();Datatype
   // registrationBean.setFilter(new JwtFilter());
   // registrationBean.addUrlPatterns("/api/*");
   //
@@ -134,40 +145,40 @@ public class BootstrapApplication implements CommandLineRunner {
   // }
 
   //
-  // @PostConstruct
-  // void createMessageEvent() {
-  // // System.out.println("creating message Event");
-  // // messageEventFactory.createMessageEvent();
-  // }
-  //
-  // //
-  // // @PostConstruct
-  // void createSharedConstant() {
-  // // Config constant = new Config();
-  // // List<String> hl7Versions = new ArrayList<String>();
-  // // hl7Versions.add("2.3.1");
-  // // hl7Versions.add("2.4");
-  // // hl7Versions.add("2.5");
-  // // hl7Versions.add("2.5.1");
-  // // hl7Versions.add("2.6");
-  // // hl7Versions.add("2.7");
-  // // hl7Versions.add("2.7.1");
-  // // hl7Versions.add("2.8");
-  // // hl7Versions.add("2.8.1");
-  // // hl7Versions.add("2.8.2");
-  // //
-  // // List<String> usages = new ArrayList<String>();
-  // //
-  // // usages.add("R");
-  // // usages.add("RE");
-  // // usages.add("RC");
-  // // usages.add("C");
-  // // usages.add("X");
-  // // constant.setHl7Versions(hl7Versions);
-  // // constant.setUsages(usages);
-  // // sharedConstantService.save(constant);
-  //
-  // }
+//   @PostConstruct
+//   void createMessageEvent() {
+//    System.out.println("creating message Event");
+//    messageEventFactory.createMessageEvent();
+//   }
+//  
+   //
+//    @PostConstruct
+//   void createSharedConstant() {
+//    Config constant = new Config();
+//    List<String> hl7Versions = new ArrayList<String>();
+//    hl7Versions.add("2.3.1");
+//    hl7Versions.add("2.4");
+//    hl7Versions.add("2.5");
+//    hl7Versions.add("2.5.1");
+//    hl7Versions.add("2.6");
+//    hl7Versions.add("2.7");
+//    hl7Versions.add("2.7.1");
+//    hl7Versions.add("2.8");
+//    hl7Versions.add("2.8.1");
+//    hl7Versions.add("2.8.2");
+//   
+//    List<String> usages = new ArrayList<String>();
+//   
+//    usages.add("R");
+//    usages.add("RE");
+//    usages.add("RC");
+//    usages.add("C");
+//    usages.add("X");
+//    constant.setHl7Versions(hl7Versions);
+//    constant.setUsages(usages);
+//    sharedConstantService.save(constant);
+//  
+//   }
   //
   // // @PostConstruct
   // void generateDatatypeLibrary()
@@ -191,14 +202,14 @@ public class BootstrapApplication implements CommandLineRunner {
   //
   // }
 
-   @PostConstruct
-   void classifyDatatypes() throws DatatypeNotFoundException {
+//   @PostConstruct
+//   void classifyDatatypes() throws DatatypeNotFoundException {
 //   datatypeClassificationService.deleteAll();
 //   System.out.println("Classifying dts");
 //   datatypeClassifier.classify();
 //   System.out.println("ENd of Classifying dts");
-  
-   }
+//  
+//   }
 
 
 

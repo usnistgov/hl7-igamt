@@ -11,9 +11,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -27,185 +25,182 @@ import gov.nist.hit.hl7.igamt.web.export.service.DatatypeLibraryPopulateObjectSe
 public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibraryPopulateObjectService {
 
 	@Autowired
-	private DatatypeService datatypeService;
-
+	  private DatatypeService datatypeService;
+	
 	@Autowired
-	private MyExportObject myExportObject;
-
+	  private MyExportObject myExportObject;
+	
 	@Override
 	public MyExportObject populateExportObject(Map<String, Datatype> datatypesMap) {
-		String allDatatypesXml;
-		Map<String, String> datatypeNamesMap = new HashMap<>();
-		Map<String, String> datatypesXMLOneByOne = new HashMap<>();
-		Map<String, String> datatypesXMLbyRoot = new HashMap<>();
-		Map<Datatype, String> mapDatatypeToXML = new HashMap<>();
-		Map<String, List<Datatype>> datatypesbyRoot = new HashMap<>();
-		Map<String, Map<String, List<Datatype>>> datatypesbyVersionThenName = new HashMap<>();
-		Map<String, Map<Set<String>, List<Datatype>>> datatypesbyNameThenVersion = new HashMap<>();
-
+		String allDatatypesXml ;
+		Map<Ref,String> datatypeNamesMap = new HashMap<>();
+		Map<String,String> datatypesXMLOneByOne = new HashMap<>();
+		Map<String,String> datatypesXMLbyRoot = new HashMap<>();
+		Map<Datatype,String> mapDatatypeToXML = new HashMap<>();
+		Map<String,List<Datatype>> datatypesbyRoot = new HashMap<>();
+		Map<String,Map<String,List<Datatype>>> datatypesbyVersionThenName = new HashMap<>();
+		Map<String,Map<Set<String>,List<Datatype>>> datatypesbyNameThenVersion = new HashMap<>();
+		
 		List<String> listIDs = new ArrayList<String>();
+
+
 
 		List<String> versionSets = new ArrayList<String>();
 		Set<String> hs = new HashSet<>();
 		List<String> orderedVersionList = new ArrayList();
+		
 
-		for (Datatype datatype : datatypesMap.values()) {
-			listIDs.add(datatype.getId().getId());
+
+
+		for(Datatype datatype : datatypesMap.values()) {
+			listIDs.add(datatype.getId());
+			
 		}
 
-		for (Datatype datatype : datatypesMap.values()) {
-			if (datatypesbyRoot.containsKey(datatype.getName())) {
+		
+		for(Datatype datatype : datatypesMap.values()) {
+			if(datatypesbyRoot.containsKey(datatype.getName())){
 				datatypesbyRoot.get(datatype.getName()).add(datatype);
-			} else {
+			}else {
 				List<Datatype> listDataype = new ArrayList<Datatype>();
 				listDataype.add(datatype);
 				datatypesbyRoot.put(datatype.getName(), listDataype);
 			}
-
+			
 			hs.addAll(datatype.getDomainInfo().getCompatibilityVersion());
 			versionSets.addAll(datatype.getDomainInfo().getCompatibilityVersion());
 			List list = new ArrayList(hs);
 			Collections.sort(list);
-			 datatypesMap.put(datatype.getId().getId(), datatype);
-			datatypeNamesMap.put(datatype.getId().getId(), datatype.getName());
+			datatypesMap.put(datatype.getId(), datatype);
+			datatypeNamesMap.put(new Ref(datatype.getId()), datatype.getName());
 			orderedVersionList = list;
-		}
 
+		}
+		
+		myExportObject.setDatatypeNamesMap(datatypeNamesMap);
 		myExportObject.setAllDomainCompatibilityVersions(orderedVersionList);
 
-		for (String key : datatypesMap.keySet()) {
+		for(String key : datatypesMap.keySet()) {
 			Datatype datatype = datatypesMap.get(key);
-			if (datatype instanceof ComplexDatatype) {
-				for (Component component : ((ComplexDatatype) datatype).getComponents()) {
-					if (component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
-						Datatype datatype2 = datatypeService.getLatestById(component.getRef().getId());
-						datatypeNamesMap.put(component.getRef().getId(), datatype2.getName());
+			if(datatype instanceof ComplexDatatype) {
+				for(Component component : ((ComplexDatatype) datatype).getComponents()) {
+					if(component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
+						Datatype datatype2 = datatypeService.findById(component.getRef().getId());
+						datatypeNamesMap.put(component.getRef(), datatype2.getName());
 					}
 				}
 			}
-
-			myExportObject.setDatatypeNamesMap(datatypeNamesMap);
-
+			
+			
+			
 		}
-
+		
 		int position = 0;
 		String Encoding = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 		allDatatypesXml = Encoding + "<Datatypes>";
-		for (String key : datatypesMap.keySet()) {
+		for(String key : datatypesMap.keySet()) {
 			Datatype datatype = datatypesMap.get(key);
-//			Scope scope = datatype.getDomainInfo().getScope();
-			if (!datatype.getName().equals("-")) {
-				SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,
-						String.valueOf(position), myExportObject.getDatatypeNamesMap());
-				try {
-					String datatypeXmlWhitoutEncoding = serializableDatatypeForWeb.serialize().toXML();
-					String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
-					position++;
-					if(datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
-
-					allDatatypesXml = allDatatypesXml + datatypeXmlWhitoutEncoding;
-					}
-					datatypesXMLOneByOne.put(String.valueOf(position), datatypeXml);
-					mapDatatypeToXML.put(datatype, datatypeXml);
-				} catch (ResourceSerializationException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				
+			if(!datatype.getName().equals("-")) {
+			SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position));
+			try {
+				String datatypeXmlWhitoutEncoding = serializableDatatypeForWeb.serialize().toXML();
+				String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
+				position++;
+				allDatatypesXml = allDatatypesXml + datatypeXmlWhitoutEncoding;
+				datatypesXMLOneByOne.put(String.valueOf(position), datatypeXml);
+				mapDatatypeToXML.put(datatype, datatypeXml);
+			} catch (ResourceSerializationException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
 			}
-			
+			}
 		}
 		allDatatypesXml = allDatatypesXml + "</Datatypes>";
 		System.out.println(allDatatypesXml);
-		
 
 		myExportObject.setAllDatatypesXml(allDatatypesXml);
 		myExportObject.setDatatypesXMLOneByOne(datatypesXMLOneByOne);
-		myExportObject.setMapDatatypeToXML(mapDatatypeToXML);
-
-
+		
 		String allRootDatatypeXML = "";
+		
+		for(String key : datatypesbyRoot.keySet()) {
+			 allRootDatatypeXML = "<Datatypes>";
+			for(Datatype datatype : datatypesbyRoot.get(key)) {
+				SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position));
+			try {
+				String datatypeXml = serializableDatatypeForWeb.serialize().toXML();
 
-		for (String key : datatypesbyRoot.keySet()) {
-			allRootDatatypeXML = "<Datatypes>";
-			for (Datatype datatype : datatypesbyRoot.get(key)) {
-				SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,
-						String.valueOf(position), myExportObject.getDatatypeNamesMap());
-				try {
-					String datatypeXml = serializableDatatypeForWeb.serialize().toXML();
-
-					allRootDatatypeXML = allRootDatatypeXML + datatypeXml;
-					position++;
-				} catch (ResourceSerializationException e1) {
-					e1.printStackTrace();
-				}
-
+				allRootDatatypeXML = allRootDatatypeXML + datatypeXml;
+				position++;
+			} catch (ResourceSerializationException e1) {
+				e1.printStackTrace();
 			}
+			
+		}
 			allRootDatatypeXML = allRootDatatypeXML + "</Datatypes>";
 			datatypesXMLbyRoot.put(key, allRootDatatypeXML);
 
 		}
 
-		for (String version : orderedVersionList) {
-			for (Datatype datatype : datatypesMap.values()) {
-				if (!datatype.getExt().isEmpty()) {
-					if (datatype.getDomainInfo().getCompatibilityVersion().contains(version)) {
-						if (datatypesbyVersionThenName.containsKey(version)) {
-							if (datatypesbyVersionThenName.get(version).containsKey(datatype.getName())) {
-								datatypesbyVersionThenName.get(version).get(datatype.getName()).add(datatype);
-							} else {
-								List<Datatype> listDataype = new ArrayList<Datatype>();
-								listDataype.add(datatype);
-								datatypesbyVersionThenName.get(version).put(datatype.getName(), listDataype);
-							}
-						} else {
+		
+		for(String version : orderedVersionList) {
+			for(Datatype datatype : datatypesMap.values()) {
+				if(!datatype.getExt().isEmpty()) {
+				if(datatype.getDomainInfo().getCompatibilityVersion().contains(version)) {
+					if(datatypesbyVersionThenName.containsKey(version)){
+						if(datatypesbyVersionThenName.get(version).containsKey(datatype.getName())) {
+							datatypesbyVersionThenName.get(version).get(datatype.getName()).add(datatype);
+						}else {
 							List<Datatype> listDataype = new ArrayList<Datatype>();
 							listDataype.add(datatype);
-							Map<String, List<Datatype>> newmap = new HashMap<>();
-							newmap.put(datatype.getName(), listDataype);
-							datatypesbyVersionThenName.put(version, newmap);
+							datatypesbyVersionThenName.get(version).put(datatype.getName(), listDataype);
 						}
-					}
-
+					}else {
+						List<Datatype> listDataype = new ArrayList<Datatype>();
+						listDataype.add(datatype);
+						Map<String,List<Datatype>> newmap = new HashMap<>();
+						newmap.put(datatype.getName(), listDataype);
+						datatypesbyVersionThenName.put(version, newmap);
+					}		
 				}
+
+			}
 			}
 
 		}
-
-		for (String name : datatypesbyRoot.keySet()) {
-			for (Datatype datatype : datatypesMap.values()) {
-				if (!datatype.getExt().isEmpty()) {
-					if (datatype.getName().equals(name)) {
-						if (datatypesbyNameThenVersion.containsKey(name)) {
-							Set<String> versionSet = new HashSet<>();
-							if (datatypesbyNameThenVersion.get(name).keySet()
-									.contains(datatype.getDomainInfo().getCompatibilityVersion())) {
-								datatypesbyNameThenVersion.get(name)
-										.get(datatype.getDomainInfo().getCompatibilityVersion()).add(datatype);
-
-							} else {
-								List<Datatype> listDataype = new ArrayList<Datatype>();
-								listDataype.add(datatype);
-								datatypesbyNameThenVersion.get(name)
-										.put(datatype.getDomainInfo().getCompatibilityVersion(), listDataype);
-							}
+		
+		
+		for(String name : datatypesbyRoot.keySet()) {
+			for(Datatype datatype : datatypesMap.values()) {
+				if(!datatype.getExt().isEmpty()) {
+				if(datatype.getName().equals(name) ) {
+				if(datatypesbyNameThenVersion.containsKey(name)) {
+					Set<String> versionSet = new HashSet<>();
+						if(datatypesbyNameThenVersion.get(name).keySet().contains(datatype.getDomainInfo().getCompatibilityVersion())) {
+								datatypesbyNameThenVersion.get(name).get(datatype.getDomainInfo().getCompatibilityVersion()).add(datatype);
+								
 						} else {
-							Map<Set<String>, List<Datatype>> newmap = new HashMap<>();
-							Set<String> versionSet = new HashSet<>();
 							List<Datatype> listDataype = new ArrayList<Datatype>();
 							listDataype.add(datatype);
-							newmap.put(datatype.getDomainInfo().getCompatibilityVersion(), listDataype);
-							datatypesbyNameThenVersion.put(name, newmap);
+							datatypesbyNameThenVersion.get(name).put(datatype.getDomainInfo().getCompatibilityVersion(), listDataype);					}	
+				} else { 
+					Map<Set<String>,List<Datatype>> newmap = new HashMap<>();
+					Set<String> versionSet = new HashSet<>();
+					List<Datatype> listDataype = new ArrayList<Datatype>();
+					listDataype.add(datatype);
+					newmap.put(datatype.getDomainInfo().getCompatibilityVersion(), listDataype);
+						datatypesbyNameThenVersion.put(name, newmap);
 
-						}
-					}
+					}	
 				}
 			}
-		}
+			}
+			}
 
 		myExportObject.setDatatypesXMLByRoot(datatypesXMLbyRoot);
 		myExportObject.setDatatypesbyVersionThenName(datatypesbyVersionThenName);
 		myExportObject.setDatatypesbyNameThenVersion(datatypesbyNameThenVersion);
+		myExportObject.setMapDatatypeToXML(mapDatatypeToXML);
 		return myExportObject;
 	}
 

@@ -14,7 +14,6 @@ package gov.nist.hit.hl7.igamt.valueset.domain.display;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
@@ -25,7 +24,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
  *
  */
 public class ValuesetStructure {
-  private CompositeKey id;
+  private String id;
   private Scope scope;
   private String version;
   private String bindingIdentifier;
@@ -41,10 +40,10 @@ public class ValuesetStructure {
   private Set<DisplayCodeSystem> displayCodeSystems = new HashSet<DisplayCodeSystem>();
   private Set<DisplayCode> displayCodes;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
   public Scope getScope() {

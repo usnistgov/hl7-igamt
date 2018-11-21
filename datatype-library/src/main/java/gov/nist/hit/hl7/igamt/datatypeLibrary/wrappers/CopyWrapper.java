@@ -1,21 +1,20 @@
 package gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 public class CopyWrapper {
 
   private String libId;
-  private CompositeKey id;
+  private String id;
   private String ext;
   private String name;
 
 
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

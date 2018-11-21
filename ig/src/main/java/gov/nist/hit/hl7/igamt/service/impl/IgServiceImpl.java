@@ -31,8 +31,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -88,9 +86,9 @@ public class IgServiceImpl implements IgService {
   ValuesetService valueSetService;
 
   @Override
-  public Ig findById(CompositeKey id) {
+  public Ig findById(String id) {
     // TODO Auto-generated method stub
-    return igRepository.findById(id).get();
+    return igRepository.findById(id).orElse(null);
   }
 
   @Override
@@ -100,7 +98,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     // TODO Auto-generated method stub
     igRepository.findById(id);
   }
@@ -214,14 +212,7 @@ public class IgServiceImpl implements IgService {
     Criteria where = Criteria.where("username").is(username)
         .andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<CompositeKey> groupResults =
-        mongoTemplate.aggregate(agg, Ig.class, CompositeKey.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
@@ -235,21 +226,10 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Ig findLatestById(String id) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    Ig ig = mongoTemplate.findOne(query, Ig.class);
-    return ig;
-
-  }
-
-  @Override
   public UpdateResult updateAttribute(String id, String attributeName, Object value) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include(attributeName);
     Update update = new Update();
     update.set(attributeName, value);
@@ -270,8 +250,7 @@ public class IgServiceImpl implements IgService {
   public Ig findIgContentById(String id) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include("id");
     query.fields().include("content");
     query.limit(1);
@@ -286,8 +265,6 @@ public class IgServiceImpl implements IgService {
   public Ig findIgMetadataById(String id) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
     query.fields().include("id");
     query.fields().include("metadata");
     query.limit(1);
@@ -333,19 +310,19 @@ public class IgServiceImpl implements IgService {
   @Override
   public Ig clone(Ig ig, String username) throws CoConstraintSaveException {
     Ig newIg = new Ig();
-    newIg.setId(new CompositeKey());
+    newIg.setId(null);
     newIg.setMetadata(ig.getMetadata().clone());
     newIg.setContent(ig.getContent());
     newIg.setUsername(username);
     newIg.setDomainInfo(ig.getDomainInfo());
     newIg.getDomainInfo().setScope(Scope.USER);
 
-    HashMap<String, CompositeKey> conformanceProfilesMap =
+    HashMap<String, String> conformanceProfilesMap =
         getNewIdsMap(ig.getCompositeProfileRegistry());
 
-    HashMap<String, CompositeKey> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
-    HashMap<String, CompositeKey> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
-    HashMap<String, CompositeKey> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
+    HashMap<String, String> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
+    HashMap<String, String> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
+    HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
 
     newIg.setValueSetRegistry(
         copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
@@ -373,20 +350,20 @@ public class IgServiceImpl implements IgService {
    */
   private ConformanceProfileRegistry copyConformanceProfileRegistry(
       ConformanceProfileRegistry conformanceProfileRegistry,
-      HashMap<String, CompositeKey> valuesetsMap, HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> segmentsMap,
-      HashMap<String, CompositeKey> conformanceProfilesMap, String username) {
+      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+      HashMap<String, String> segmentsMap,
+      HashMap<String, String> conformanceProfilesMap, String username) {
     // TODO Auto-generated method stub
 
     // TODO Auto-generated method stub
     ConformanceProfileRegistry newReg = new ConformanceProfileRegistry();
     HashSet<Link> children = new HashSet<Link>();
     for (Link l : conformanceProfileRegistry.getChildren()) {
-      if (!conformanceProfilesMap.containsKey(l.getId().getId())) {
+      if (!conformanceProfilesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            conformanceProfilesMap.get(l.getId().getId()), segmentsMap, valuesetsMap, l, username));
+            conformanceProfilesMap.get(l.getId()), segmentsMap, valuesetsMap, l, username));
       }
     }
     newReg.setChildren(children);
@@ -407,17 +384,17 @@ public class IgServiceImpl implements IgService {
    * @throws CoConstraintSaveException
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-      HashMap<String, CompositeKey> segmentsMap, HashMap<String, CompositeKey> valuesetsMap,
-      HashMap<String, CompositeKey> datatypesMap, String username)
+      HashMap<String, String> segmentsMap, HashMap<String, String> valuesetsMap,
+      HashMap<String, String> datatypesMap, String username)
       throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
     for (Link l : segmentRegistry.getChildren()) {
-      if (!segmentsMap.containsKey(l.getId().getId())) {
+      if (!segmentsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId().getId()), datatypesMap,
+        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()), datatypesMap,
             valuesetsMap, l, username));
       }
     }
@@ -432,13 +409,13 @@ public class IgServiceImpl implements IgService {
    * @return
    */
   private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
-      HashMap<String, CompositeKey> valuesetsMap, HashMap<String, CompositeKey> datatypesMap,
+      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
       String username) {
     // TODO Auto-generated method stub
     DatatypeRegistry newReg = new DatatypeRegistry();
     HashSet<Link> children = new HashSet<Link>();
     for (Link l : datatypeRegistry.getChildren()) {
-      if (!datatypesMap.containsKey(l.getId().getId())) {
+      if (!datatypesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
         children.add(this.datatypeService.cloneDatatype(datatypesMap, valuesetsMap, l, username));
@@ -454,34 +431,37 @@ public class IgServiceImpl implements IgService {
    * @param valuesetsMap
    */
   private ValueSetRegistry copyValueSetRegistry(ValueSetRegistry reg,
-      HashMap<String, CompositeKey> valuesetsMap, String username) {
+      HashMap<String, String> valuesetsMap, String username) {
     // TODO Auto-generated method stub
     ValueSetRegistry newReg = new ValueSetRegistry();
     newReg.setExportConfig(reg.getExportConfig());
     newReg.setCodesPresence(reg.getCodesPresence());
     HashSet<Link> children = new HashSet<Link>();
     for (Link l : reg.getChildren()) {
-      if (!valuesetsMap.containsKey(l.getId().getId())) {
+      if (!valuesetsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
         children.add(
-            this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId().getId()), l, username));
+            this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username));
       }
     }
     newReg.setChildren(children);
     return newReg;
   }
 
-  private HashMap<String, CompositeKey> getNewIdsMap(Registry reg) {
-    HashMap<String, CompositeKey> map = new HashMap<String, CompositeKey>();
+  private HashMap<String, String> getNewIdsMap(Registry reg) {
+	  
+    HashMap<String, String> map = new HashMap<String, String>();
+    if(reg !=null && reg.getChildren() !=null) {
     for (Link l : reg.getChildren()) {
       if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
-        map.put(l.getId().getId(), new CompositeKey());
+        map.put(l.getId(), new ObjectId().toString());
       }
     }
+   }
     return map;
-  }
 
+  }
 
 
 }

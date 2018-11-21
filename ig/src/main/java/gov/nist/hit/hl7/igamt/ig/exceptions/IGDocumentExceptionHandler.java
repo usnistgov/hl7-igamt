@@ -42,6 +42,7 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({AddingException.class})
   public AddingException handleXReferenceFoundException(AddingException exception) {
+	  exception.printStackTrace();
     return exception;
   }
 
@@ -51,6 +52,8 @@ public class IGDocumentExceptionHandler {
   @ExceptionHandler({ForbiddenOperationException.class})
   public ResponseMessage handleForbiddenOperationException(ForbiddenOperationException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+	  exception.printStackTrace();
+
     return message;
   }
 
@@ -59,6 +62,8 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({XReferenceException.class})
   public ResponseMessage handleXRefererenceException(XReferenceException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
@@ -68,6 +73,8 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.NOT_FOUND)
   @ExceptionHandler({IGNotFoundException.class})
   public ResponseMessage handleIGNotFoundException(IGNotFoundException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
@@ -77,6 +84,8 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({CloneException.class})
   public ResponseMessage handleCloneException(CloneException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
@@ -85,6 +94,8 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({IGUpdateException.class})
   public ResponseMessage handleUpdateTocException(IGUpdateException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
@@ -93,6 +104,8 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({IGConverterException.class})
   public ResponseMessage handleUpdateTocException(IGConverterException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
@@ -101,10 +114,22 @@ public class IGDocumentExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({IGCreationException.class})
   public ResponseMessage handleIGCreationException(IGCreationException exception) {
+	  exception.printStackTrace();
+
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
     return message;
   }
 
+
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage general(Exception exception) {
+	  exception.printStackTrace();
+
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
 
 
 }

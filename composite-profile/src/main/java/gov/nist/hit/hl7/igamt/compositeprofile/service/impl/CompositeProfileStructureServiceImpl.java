@@ -16,7 +16,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -33,13 +32,13 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
   CompositeProfileStructureRepository compositeProfileStructureRepository;
 
   @Override
-  public CompositeProfileStructure findByKey(CompositeKey key) {
-    return compositeProfileStructureRepository.findById(key).get();
+  public CompositeProfileStructure findById(String id) {
+    return compositeProfileStructureRepository.findById(id).get();
   }
 
   @Override
   public CompositeProfileStructure create(CompositeProfileStructure compositeProfileStructure) {
-    compositeProfileStructure.setId(new CompositeKey());
+    compositeProfileStructure.setId(null);
     return compositeProfileStructureRepository.save(compositeProfileStructure);
   }
 
@@ -61,8 +60,8 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
   }
 
   @Override
-  public void delete(CompositeKey key) {
-    compositeProfileStructureRepository.deleteById(key);
+  public void delete(String id) {
+    compositeProfileStructureRepository.deleteById(id);
   }
 
   @Override

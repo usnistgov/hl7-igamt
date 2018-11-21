@@ -19,6 +19,7 @@ export class ProgressHandlerService {
   }
 
   setHttpStatus(inFlight: boolean) {
+    console.log("Setting status to " + inFlight);
     this.requestInFlight$.next(inFlight);
   }
 
@@ -72,16 +73,16 @@ export class ProgressHandlerService {
     console.log("Parsing status")
   if(status==Status.SUCCESS){
     return "success";
-  }else if(status==Status.FAILED){
+   }else if(status==Status.FAILED){
     return "error";
-  }else if (status==Status.WARNING){
+   }else if (status==Status.WARNING){
     return "warn"
-  }else if(status==Status.INFO){
+   }else if(status==Status.INFO){
     return "info"
-  }
-  else{
+   }
+   else{
     return "success";
-  }
+   }
   }
 }
 

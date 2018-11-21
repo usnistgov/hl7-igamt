@@ -42,7 +42,7 @@ export class LibraryListComponent implements OnInit {
   }
 
   open(lib,readnly){
-    this.router.navigate(['datatype-libraries/lib/'+lib.id.id]);
+    this.router.navigate(['datatype-libraries/lib/'+lib.id]);
   }
 
   onSortChange(event) {
@@ -60,10 +60,10 @@ export class LibraryListComponent implements OnInit {
   }
 
   toggleMoreInfo(id){
-    if(this.moreInfoMap[id.id]){
-      this.moreInfoMap[id.id]=!this.moreInfoMap[id.id];
+    if(this.moreInfoMap[id]){
+      this.moreInfoMap[id]=!this.moreInfoMap[id];
     }else{
-      this.moreInfoMap[id.id]=true;
+      this.moreInfoMap[id]=true;
     }
     console.log(this.moreInfoMap);
 
@@ -73,7 +73,7 @@ export class LibraryListComponent implements OnInit {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to Delete this Library',
       accept: () => {
-        this.http.delete('api/datatype-library/'+lib.id.id).toPromise().then( x =>{
+        this.http.delete('api/datatype-library/'+lib.id).toPromise().then( x =>{
 
           var i= this.libs.indexOf(lib);
 

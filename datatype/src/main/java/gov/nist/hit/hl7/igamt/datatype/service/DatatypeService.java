@@ -13,15 +13,19 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
@@ -35,9 +39,8 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
  */
 public interface DatatypeService {
 
-  public Datatype findByKey(CompositeKey key);
+  public Datatype findById(String id);
 
-  public Datatype findLatestById(String id);
 
   public Datatype create(Datatype datatype);
 
@@ -49,7 +52,7 @@ public interface DatatypeService {
 
   public void delete(Datatype datatype);
 
-  public void delete(CompositeKey key);
+  public void delete(String id);
 
   public void removeCollection();
 
@@ -67,8 +70,6 @@ public interface DatatypeService {
   public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
-
-  public Datatype getLatestById(String id);
 
   public DisplayMetadata convertDomainToMetadata(Datatype datatype);
 
@@ -141,7 +142,7 @@ public interface DatatypeService {
    * @param hl7Version
    * @return
    */
-  List<Datatype> getLatestByScopeAndVersion(String scope, String hl7Version);
+  List<Datatype> findByScopeAndVersion(String scope, String hl7Version);
 
   /**
    * @param name
@@ -159,8 +160,8 @@ public interface DatatypeService {
    * @param l
    * @return
    */
-  public Link cloneDatatype(HashMap<String, CompositeKey> datatypesMap,
-      HashMap<String, CompositeKey> valuesetsMap, Link l, String username);
+  public Link cloneDatatype(HashMap<String, String> datatypesMap,
+      HashMap<String, String> valuesetsMap, Link l, String username);
 
   /**
    * @param datatype
@@ -175,6 +176,17 @@ public interface DatatypeService {
    * @return
    */
   public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype);
+  
+  
+  public List<Datatype> findDisplayFormatByIds(Set<String> ids);
+
+  public List<Datatype> findFlavors(Set<String> ids, String id, String name);
+
+  public List<Datatype> findNonFlavor(Set<String> ids, String id, String name);
+
+  public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
+
+  public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
 
 }

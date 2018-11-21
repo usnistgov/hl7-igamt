@@ -30,7 +30,7 @@
             <span class="ig-list-date">
             <a (click)="toggleMoreInfo(ig.id)" style="text-decoration: underline; cursor: pointer"> More details...</a>
           </span>
-            <div  *ngIf="moreInfoMap[ig.id.id]==true">
+            <div  *ngIf="moreInfoMap[ig.id]==true">
               <div>
                 <span class="ig-list-more-info-title"> Conformane Profiles:</span>
                 <span class="badge ig-list-cp-badge" *ngFor="let cp of ig.conformanceProfiles"> {{cp}}</span>
@@ -42,7 +42,7 @@
           <div style="float: right">
             <p-button styleClass="indigo-btn" (click)="open(ig,false)" label="Edit" icon="fa fa-pencil" iconPos="left"></p-button>
             <p-button styleClass="ui-button-secondary" (click)="open(ig,true)" label="Read" icon="fa fa-eye" iconPos="left"></p-button>
-            <p-button styleClass="purple-btn" label="Copy" icon="fa fa-copy" (click)="copy(ig.id.id,true)"  iconPos="left"></p-button>
+            <p-button styleClass="purple-btn" label="Copy" icon="fa fa-copy" (click)="copy(ig.id,true)"  iconPos="left"></p-button>
             <p-button styleClass="red-btn"  label="Delete" icon="fa fa-remove" iconPos="left"></p-button>
           </div>
         </div>

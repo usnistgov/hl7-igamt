@@ -15,7 +15,6 @@ package gov.nist.hit.hl7.igamt.valueset.service;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
 
 /**
@@ -24,9 +23,8 @@ import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
  */
 public interface CodeSystemService {
 
-  public CodeSystem findById(CompositeKey id);
+  public CodeSystem findById(String id);
 
-  public CodeSystem findLatestById(String id);
 
   public CodeSystem create(CodeSystem codeSystem);
 
@@ -36,7 +34,7 @@ public interface CodeSystemService {
 
   public void delete(CodeSystem codeSystem);
 
-  public void delete(CompositeKey id);
+  public void delete(String id);
 
   public void removeCollection();
 

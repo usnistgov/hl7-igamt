@@ -95,32 +95,6 @@ public class ConformanceProfile extends Resource {
     this.children.add(mse);
   }
 
-  @Override
-  public ConformanceProfile clone() {
-
-    ConformanceProfile clone = new ConformanceProfile();
-    clone.setBinding(this.binding);
-    clone.setChildren(this.getChildren());
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setEvent(this.getEvent());
-    clone.setId(null);
-    clone.setMessageType(messageType);
-    clone.setIdentifier(identifier);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setStructID(structID);
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
-    return clone;
-
-  }
-
   /*
    * (non-Javadoc)
    * 
@@ -130,5 +104,20 @@ public class ConformanceProfile extends Resource {
   public String getLabel() {
     return this.getName();
   }
+
+public void complete(ConformanceProfile elm) {
+	super.complete(elm);
+	elm.identifier = identifier;
+	elm.messageType = messageType;
+	elm.event = event;
+	elm.structID = structID;
+	elm.children = children;
+	elm.binding = binding;
+}
+public ConformanceProfile clone() {
+	ConformanceProfile elm= new ConformanceProfile();
+	complete(elm);
+	return elm;
+}
 
 }

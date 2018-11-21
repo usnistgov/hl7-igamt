@@ -228,36 +228,29 @@ public class Valueset extends Resource {
   @Override
   public Valueset clone() {
 
-
     Valueset clone = new Valueset();
-
-    clone.setOid(oid);
-    clone.setManagedBy(managedBy);
-    clone.setStability(stability);
-    clone.setIntensionalComment(intensionalComment);
-    clone.setExtensibility(extensibility);
-    clone.setContentDefinition(contentDefinition);
-    clone.setNumberOfCodes(numberOfCodes);
-    clone.setInternalCodeSystems(internalCodeSystems);
-    clone.setCodeRefs(codeRefs);
-    clone.setCodeSystemIds(codeSystemIds);
-    clone.setCodes(codes);
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId().getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setId(null);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
-    clone.setName(this.getName());
-
+    this.complete(clone);
     return clone;
+  }
 
-  };
+  public void complete(Valueset elm) {
+	super.complete(elm);
+	elm.bindingIdentifier = bindingIdentifier;
+	elm.oid = oid;
+	elm.intensionalComment = intensionalComment;
+	elm.url = url;
+	elm.managedBy = managedBy;
+	elm.stability = stability;
+	elm.extensibility = extensibility;
+	elm.contentDefinition = contentDefinition;
+	elm.sourceType = sourceType;
+	elm.numberOfCodes = numberOfCodes;
+	elm.codeSystemIds = codeSystemIds;
+	elm.codeRefs = codeRefs;
+	elm.internalCodeSystems = internalCodeSystems;
+	elm.codes = codes;
+ };
+  
+  
 
 }

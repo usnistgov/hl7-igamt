@@ -9,7 +9,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.domain.DatatypeLibrary;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.exceptions.AddingException;
@@ -22,15 +21,13 @@ public interface DatatypeLibraryService {
 
 
 
-  public DatatypeLibrary findById(CompositeKey id);
+  public DatatypeLibrary findById(String id);
 
   public List<DatatypeLibrary> findAll();
 
-  public void delete(CompositeKey id);
+  public void delete(String id);
 
   public DatatypeLibrary save(DatatypeLibrary DatatypeLibrary);
-
-  public DatatypeLibrary findLatestById(String id);
 
   public List<DatatypeLibrary> finByScope(String string);
 
@@ -44,15 +41,8 @@ public interface DatatypeLibraryService {
 
   List<DatatypeLibrary> findLatestByUsername(String username);
 
-  /**
-   * @param libs
-   * @return
-   */
   public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs);
 
-  /**
-   * @return
-   */
-  public List<DatatypeLibrary> findLatestPublished();
+  public List<DatatypeLibrary> findPublished();
 
 }
