@@ -207,7 +207,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
             && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
             && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
-            this.selectedConformanceStatement.displayType = 'simple';
+            this.selectedConformanceStatement.displayType = 'simple-proposition';
         }else {
             this.selectedConformanceStatement.displayType = 'complex';
         }

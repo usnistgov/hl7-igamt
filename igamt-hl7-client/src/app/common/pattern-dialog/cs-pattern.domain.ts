@@ -301,7 +301,7 @@ export class Statement extends Assertion  {
   name() {
     return this.data.name && this.data.name !== '' ?
       this.data.name :
-      (this.data.branch === 'D' ? 'DECLARATION_' : 'PREPOSITION_') + (this.data.id + 1);
+      (this.data.branch === 'D' ? 'DECLARATION_' : 'PROPOSITION_') + (this.data.id + 1);
   }
 
   public clone(parent: Operator) {

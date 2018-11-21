@@ -35,7 +35,7 @@ export class EditSimplePropositionComponent {
   }
 
   selectTargetElementLocation(location){
-    this.assertion.subject = {path:location[1]};
+    this.assertion.subject = {path:location};
     this.assertion.subject.occurenceIdPath = null;
     this.assertion.subject.occurenceLocationStr = null;
     this.assertion.subject.occurenceValue = null;
