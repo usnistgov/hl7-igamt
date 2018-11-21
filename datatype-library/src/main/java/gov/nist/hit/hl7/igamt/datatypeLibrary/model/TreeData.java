@@ -11,7 +11,7 @@ public class TreeData {
   private String label;
   private Date dateUpdated;
   private int position;
-  private String key;
+  private String id;
   private String description;
 
 
@@ -53,20 +53,20 @@ public class TreeData {
     this.type = type;
   }
 
-  public String getKey() {
-    return key;
-  }
-
-  public void setKey(String key) {
-    this.key = key;
-  }
-
   public String getDescription() {
     return description;
   }
 
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getId() {
+	return id;
+  }
+
+  public void setId(String id) {
+	this.id = id;
   }
 
 

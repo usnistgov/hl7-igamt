@@ -29,8 +29,6 @@ public interface DatatypeLibraryService {
 
   public DatatypeLibrary save(DatatypeLibrary DatatypeLibrary);
 
-  public DatatypeLibrary findLatestById(String id);
-
   public List<DatatypeLibrary> finByScope(String string);
 
   public DatatypeLibrary createEmptyDatatypeLibrary()
@@ -43,15 +41,8 @@ public interface DatatypeLibraryService {
 
   List<DatatypeLibrary> findLatestByUsername(String username);
 
-  /**
-   * @param libs
-   * @return
-   */
   public List<LibSummary> convertListToDisplayList(List<DatatypeLibrary> libs);
 
-  /**
-   * @return
-   */
-  public List<DatatypeLibrary> findLatestPublished();
+  public List<DatatypeLibrary> findPublished();
 
 }

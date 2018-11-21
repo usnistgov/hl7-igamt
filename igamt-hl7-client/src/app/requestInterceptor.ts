@@ -18,35 +18,48 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor( private router: Router, private progress: ProgressHandlerService) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-
+    console.log("setting  status ");
     this.progress.setHttpStatus(true);
-    console.log("Called");
-
-    console.log(request.method);
 
     return next.handle(request).do((event: HttpEvent<any>) => {
 
-      this.progress.setHttpStatus(false);
-      console.log("Called eeee");
 
 
-      if (event instanceof HttpResponse && (request.method =="POST"||request.method =="DELETE")) {
 
-        if(event.body&& event.body){
-          this.progress.showNotification(event.body,"topLeft");
+
+      if (event instanceof HttpResponse) {
+        this.progress.setHttpStatus(false);
+
+
+        if (request.method == "POST" || request.method == "DELETE") {
+
+
+          if (event.body && event.body) {
+            this.progress.showNotification(event.body, "topLeft");
+          }
+
+
         }
-
       }
+
+
+
+
 
 
 
     }, (err: any) => {
       if (err instanceof HttpErrorResponse) {
+        console.log("reseting status");
+
+        this.progress.setHttpStatus(false);
+
         if (err.status === 401 || err.status === 403) {
           console.log("UNAUTHORIZED");
 
           this.router.navigate(['/login']);
         }else{
+
 
           this.progress.showNotification(err.error,"topAlert");
 

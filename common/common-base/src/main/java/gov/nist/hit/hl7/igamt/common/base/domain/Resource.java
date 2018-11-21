@@ -32,4 +32,17 @@ public abstract class Resource extends AbstractDomain {
   public void setPostDef(String postDef) {
     this.postDef = postDef;
   }
+  
+  
+  protected void complete(Resource elm) {
+		
+		super.complete(elm);
+		elm.postDef=preDef;
+		elm.postDef=postDef;
+  		
+  }  
+  
+ 
+  
+  
 }

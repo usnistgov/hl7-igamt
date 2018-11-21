@@ -70,7 +70,6 @@ export class EditLibraryService {
         );
       }, error=>{
         resolve();
-        this.error.redirect("Could not load IG with id "+ libId)
       }
 
     );

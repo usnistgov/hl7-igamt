@@ -121,5 +121,15 @@ public class IGDocumentExceptionHandler {
   }
 
 
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  @ExceptionHandler({Exception.class})
+  public ResponseMessage general(Exception exception) {
+	  exception.printStackTrace();
+
+    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+    return message;
+  }
+
 
 }

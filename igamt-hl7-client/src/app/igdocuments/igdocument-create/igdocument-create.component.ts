@@ -214,10 +214,11 @@ export class IgDocumentCreateComponent {
 
   goTo(res:any) {
 
+console.log(res);
 
     this.route.queryParams
       .subscribe(params => {
-        var link="/ig/"+res.data.id;
+        var link="/ig/"+res.data;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });

@@ -88,7 +88,7 @@ public class IgServiceImpl implements IgService {
   @Override
   public Ig findById(String id) {
     // TODO Auto-generated method stub
-    return igRepository.findById(id).get();
+    return igRepository.findById(id).orElse(null);
   }
 
   @Override
@@ -229,7 +229,7 @@ public class IgServiceImpl implements IgService {
   public UpdateResult updateAttribute(String id, String attributeName, Object value) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include(attributeName);
     Update update = new Update();
     update.set(attributeName, value);
@@ -250,8 +250,7 @@ public class IgServiceImpl implements IgService {
   public Ig findIgContentById(String id) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include("id");
     query.fields().include("content");
     query.limit(1);
@@ -266,8 +265,6 @@ public class IgServiceImpl implements IgService {
   public Ig findIgMetadataById(String id) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
     query.fields().include("id");
     query.fields().include("metadata");
     query.limit(1);
@@ -453,15 +450,18 @@ public class IgServiceImpl implements IgService {
   }
 
   private HashMap<String, String> getNewIdsMap(Registry reg) {
+	  
     HashMap<String, String> map = new HashMap<String, String>();
+    if(reg !=null && reg.getChildren() !=null) {
     for (Link l : reg.getChildren()) {
       if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
         map.put(l.getId(), new ObjectId().toString());
       }
     }
+   }
     return map;
-  }
 
+  }
 
 
 }

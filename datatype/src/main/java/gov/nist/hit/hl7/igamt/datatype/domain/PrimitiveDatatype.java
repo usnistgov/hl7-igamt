@@ -37,28 +37,13 @@ public class PrimitiveDatatype extends Datatype {
   public PrimitiveDatatype(String id, String version, String name, PublicationInfo publicationInfo,
       DomainInfo domainInfo, String username, String comment, String description, String preDef,
       String postDef, String ext, String purposeAndUse, ResourceBinding resourceBinding) {
-    // super(id, version, name, publicationInfo, domainInfo, username, comment, description, preDef,
-    // postDef, ext, purposeAndUse, resourceBinding);
-    // TODO Auto-generated constructor stub
   }
 
   @Override
   public PrimitiveDatatype clone() {
-
+	  
     PrimitiveDatatype clone = new PrimitiveDatatype();
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setId(null);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
+    super.complete(clone);
     return clone;
-
   };
 }

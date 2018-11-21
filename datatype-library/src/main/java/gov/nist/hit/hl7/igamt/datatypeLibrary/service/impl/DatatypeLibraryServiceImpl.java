@@ -112,19 +112,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   }
 
 
-
-  @Override
-  public DatatypeLibrary findLatestById(String id) {
-    // TODO Auto-generated method stub
-    Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
-    DatatypeLibrary ig = mongoTemplate.findOne(query, DatatypeLibrary.class);
-    return ig;
-  }
-
-
   @Override
   public List<DatatypeLibrary> finByScope(String scope) {
     // TODO Auto-generated method stub
@@ -277,7 +264,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   public UpdateResult updateAttribute(String id, String attributeName, Object value) {
     // TODO Auto-generated method stub
     Query query = new Query();
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     query.fields().include(attributeName);
     Update update = new Update();
     update.set(attributeName, value);
@@ -288,19 +275,9 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
 
   @Override
   public List<DatatypeLibrary> findLatestByUsername(String username) {
-
-
-
     Criteria where = Criteria.where("username").is(username);
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<String> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, String.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("metadata");
@@ -354,20 +331,13 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
    * gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService#findLatestPublished()
    */
   @Override
-  public List<DatatypeLibrary> findLatestPublished() {
+  public List<DatatypeLibrary> findPublished() {
     // TODO Auto-generated method stub
 
 
     Criteria where = Criteria.where("publicationInfo.status").is(STATUS.PUBLISHED);
 
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<String> groupResults =
-        mongoTemplate.aggregate(agg, DatatypeLibrary.class, String.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("publicationInfo");
 

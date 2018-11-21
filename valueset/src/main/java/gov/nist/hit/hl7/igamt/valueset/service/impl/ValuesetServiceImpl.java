@@ -166,9 +166,7 @@ public class ValuesetServiceImpl implements ValuesetService {
     // TODO Auto-generated method stub Query query = new Query();
     Query query = new Query();
 
-    query.addCriteria(Criteria.where("_id._id").is(new ObjectId(id)));
-    query.with(new Sort(Sort.Direction.DESC, "_id.version"));
-    query.limit(1);
+    query.addCriteria(Criteria.where("_id").is(new ObjectId(id)));
     Valueset valueset = mongoTemplate.findOne(query, Valueset.class);
     return valueset;
   }
@@ -309,7 +307,7 @@ public class ValuesetServiceImpl implements ValuesetService {
           dCode.setCodeSysRef(codeSysRef);
           dCode.setId(codeRef.getCodeId());
 
-          CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
+          CodeSystem codeSystem = codeSystemService.findById(codeRef.getCodeSystemId());
           Code code = codeSystem.findCode(codeRef.getCodeId());
 
           if (code != null) {
@@ -340,7 +338,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
       if (valueset.getCodeSystemIds() != null) {
         for (String codeSystemId : valueset.getCodeSystemIds()) {
-          CodeSystem codeSystem = codeSystemService.findLatestById(codeSystemId);
+          CodeSystem codeSystem = codeSystemService.findById(codeSystemId);
           if (codeSystem != null) {
             DisplayCodeSystem displayCodeSystem = new DisplayCodeSystem();
             displayCodeSystem.setCodeSysRef(codeSystemId);
@@ -391,7 +389,7 @@ public class ValuesetServiceImpl implements ValuesetService {
         dCode.setCodeSysRef(codeSysRef);
         dCode.setId(codeRef.getCodeId());
 
-        CodeSystem codeSystem = codeSystemService.findLatestById(codeRef.getCodeSystemId());
+        CodeSystem codeSystem = codeSystemService.findById(codeRef.getCodeSystemId());
         Code code = codeSystem.findCode(codeRef.getCodeId());
 
         if (code != null) {
@@ -435,7 +433,7 @@ public class ValuesetServiceImpl implements ValuesetService {
    */
   @Override
   public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(structure.getId());
+    Valueset valueset = findById(structure.getId());
     if (valueset == null) {
       throw new ValuesetNotFoundException(structure.getId());
     }
@@ -517,7 +515,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(preDef.getId());
+    Valueset valueset = findById(preDef.getId());
     if (valueset == null) {
       throw new ValuesetNotFoundException(preDef.getId());
     }
@@ -528,7 +526,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(displayMetadata.getId());
+    Valueset valueset = findById(displayMetadata.getId());
     if (valueset == null) {
       throw new ValuesetNotFoundException(displayMetadata.getId());
     }
@@ -542,7 +540,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException {
-    Valueset valueset = findLatestById(postDef.getId());
+    Valueset valueset = findById(postDef.getId());
     if (valueset == null) {
       throw new ValuesetNotFoundException(postDef.getId());
     }
@@ -552,7 +550,8 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Link cloneValueSet(String newkey, Link l, String username) {
-    Valueset elm = this.findById(l.getId());
+    Valueset old = this.findById(l.getId());
+    Valueset elm=old.clone();
     Link newLink = new Link();
     newLink = l.clone(newkey);
     elm.setFrom(elm.getId());

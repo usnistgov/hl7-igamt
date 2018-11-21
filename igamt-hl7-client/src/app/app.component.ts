@@ -14,13 +14,12 @@ import {ChangeDetectorRef} from '@angular/core'
 @Component({
     selector: 'app-root',
     templateUrl: './app.component.html',
-    changeDetection: ChangeDetectionStrategy.Default,
     styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements AfterViewInit {
     options = {};
     routerLoading: boolean = false;
-    httpLoading: boolean=false;
+    httpLoading: boolean = false;
     showError=false;
 
     darkTheme = false;
@@ -204,13 +203,21 @@ export class AppComponent implements AfterViewInit {
       });
 
 
-      progress.getHttpStatus().subscribe( x =>{
 
-        this.httpLoading= x;
+
+
+      progress.getHttpStatus().subscribe( x =>{
+        console.log("HTTP LOADING");
+
+
+          this.httpLoading=x;
+
+
+
+        //
+
 
       });
-
-
 
 
     }
@@ -220,9 +227,11 @@ export class AppComponent implements AfterViewInit {
      }
 
     checkRouterEvent(event): void {
+      console.log(event);
      if (event instanceof NavigationStart) {
         console.log("Navigation Start");
         this.routerLoading = true;
+
     }
     if (event instanceof NavigationEnd ||
       event instanceof NavigationCancel ) {
@@ -231,6 +240,8 @@ export class AppComponent implements AfterViewInit {
     }
     else if(event instanceof NavigationError){
       this.routerLoading = false;
+    }else{
+      console.log(event);
     }
   }
 
