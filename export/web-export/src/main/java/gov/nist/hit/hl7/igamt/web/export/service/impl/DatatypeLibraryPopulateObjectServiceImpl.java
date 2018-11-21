@@ -101,7 +101,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 					String datatypeXmlWhitoutEncoding = serializableDatatypeForWeb.serialize().toXML();
 					String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
 					position++;
-					if(datatype.getDomainInfo().getScope().equals(Scope.MASTER)) {
+					if(datatype.getDomainInfo().getScope().equals(Scope.SDTF)) {
 
 					allDatatypesXml = allDatatypesXml + datatypeXmlWhitoutEncoding;
 					}

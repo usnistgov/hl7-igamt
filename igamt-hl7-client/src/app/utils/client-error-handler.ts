@@ -14,15 +14,15 @@ export class GlobalErrorHandler implements ErrorHandler {
 
   }
   handleError(error: Error) {
-     const router = this.injector.get(Router);
-    //
-    const progressHandler=this.injector.get(ProgressHandlerService);
-    const confirmationService= this.injector.get(ConfirmationService);
+    //  const router = this.injector.get(Router);
+    // //
+    // const progressHandler=this.injector.get(ProgressHandlerService);
+    // const confirmationService= this.injector.get(ConfirmationService);
 
-    if(!(error instanceof HttpErrorResponse)){
-      console.log(error);
-       progressHandler.setReportableError(error);
-    }
+    // if(!(error instanceof HttpErrorResponse)){
+    //   console.log(error);
+    //    progressHandler.setReportableError(error);
+    // }
   }
 
 

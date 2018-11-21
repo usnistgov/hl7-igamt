@@ -17,6 +17,8 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 
@@ -27,8 +29,20 @@ import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 public class ExportedFile {
 
   private InputStream content;
-
+  
+  private XSSFWorkbook excelContent;
+  
   private String fileName;
+
+
+  public XSSFWorkbook getExcelContent() {
+	return excelContent;
+}
+
+public void setExcelContent(XSSFWorkbook excelContent) {
+	this.excelContent = excelContent;
+}
+
 
   public ExportedFile(InputStream content, String documentTitle, CompositeKey documentKey,
       ExportFormat exportFormat) {

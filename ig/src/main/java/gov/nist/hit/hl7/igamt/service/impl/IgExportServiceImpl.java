@@ -97,8 +97,36 @@ public class IgExportServiceImpl implements IgExportService {
     }
     return null;
   }
+  
+//  @Override
+//  public ExportedFile exportCoConstraintsInExcel(String username, String igDocumentId) throws ExportException {
+//	    Ig igDocument = igService.findLatestById(igDocumentId);
+//	    if (igDocument != null) {
+//	      ExportedFile excelFile =
+//	          this.serializeCoConstraintsToExcel(username, igDocument, ExportFormat.HTML);
+//	      return excelFile;
+//	    }
+//	    return null;
+//	    }
 
-  /**
+  private ExportedFile serializeCoConstraintsToExcel(String username, Ig igDocument, ExportFormat html) {
+	  return null;
+//	    try {
+//	    	XSSFWorkbook excelContent =
+//	          exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);	      
+//	      ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+////	      System.out.println("int = " + exportedFile.getContent().read());
+//	      exportedFile.setExcelContent(excelContent);
+////	      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+//	      
+//	      return exportedFile;
+//	    } catch (SerializationException  serializationException) {
+//	      throw new ExportException(serializationException,
+//	          "Unable to serialize IG Document with ID " + igDocument.getId().getId());
+//	    }
+	  }
+
+/**
    * @param username
    * @param igDocumentId
    * @param exportFormat
@@ -148,5 +176,12 @@ public class IgExportServiceImpl implements IgExportService {
 			return scanner.useDelimiter("\\A").next();
 		}
 	}
+
+//@Override
+//public ExportedFile exportCoConstraintsInExcel(String username, String igDocumentId, String segmentId)
+//		throws ExportException {
+//	// TODO Auto-generated method stub
+//	return null;
+//}
 
 }
