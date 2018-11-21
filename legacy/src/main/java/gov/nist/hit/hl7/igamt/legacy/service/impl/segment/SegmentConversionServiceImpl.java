@@ -24,7 +24,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Field;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Segment;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -76,7 +75,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
     gov.nist.hit.hl7.igamt.segment.domain.Segment convertedSegment =
         new gov.nist.hit.hl7.igamt.segment.domain.Segment();
 
-    convertedSegment.setId(new CompositeKey(oldSegment.getId()));
+    convertedSegment.setId(oldSegment.getId());
     convertedSegment.setCreatedFrom(oldSegment.getCreatedFrom());
     convertedSegment.setName(oldSegment.getName());
     convertedSegment.setDescription(oldSegment.getDescription());

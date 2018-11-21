@@ -17,7 +17,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.repository.ProfileComponentRepository;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
@@ -34,13 +33,13 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   private ProfileComponentRepository profileComponentRepository;
 
   @Override
-  public ProfileComponent findByCompositeKey(CompositeKey compositeKey) {
-    return profileComponentRepository.findById(compositeKey).get();
+  public ProfileComponent findById(String id) {
+    return profileComponentRepository.findById(id).get();
   }
 
   @Override
   public ProfileComponent create(ProfileComponent profileComponent) {
-    profileComponent.setId(new CompositeKey());
+    profileComponent.setId(new String());
     profileComponent = profileComponentRepository.save(profileComponent);
     return profileComponent;
   }
@@ -52,7 +51,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public ProfileComponent save(ProfileComponent profileComponent) {
-    // profileComponent.setId(CompositeKeyUtil.updateVersion(profileComponent.getId()));
+    // profileComponent.setId(StringUtil.updateVersion(profileComponent.getId()));
     profileComponent = profileComponentRepository.save(profileComponent);
     return profileComponent;
   }
@@ -67,7 +66,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
   }
 
   @Override
-  public void delete(CompositeKey id) {
+  public void delete(String id) {
     profileComponentRepository.deleteById(id);
   }
 

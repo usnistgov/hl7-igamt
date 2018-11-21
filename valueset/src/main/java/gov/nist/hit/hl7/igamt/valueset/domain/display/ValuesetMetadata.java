@@ -13,7 +13,6 @@ package gov.nist.hit.hl7.igamt.valueset.domain.display;
 
 import java.net.URL;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 
@@ -23,7 +22,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
  */
 public class ValuesetMetadata {
 
-  private CompositeKey id;
+  private String id;
   private Scope scope;
   private String version;
   private String bindingIdentifier;
@@ -33,11 +32,11 @@ public class ValuesetMetadata {
   private URL url;
   private String authorNotes;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

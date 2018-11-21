@@ -17,9 +17,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
-
-
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
@@ -30,7 +27,7 @@ public class ExportedFile {
 
   private String fileName;
 
-  public ExportedFile(InputStream content, String documentTitle, CompositeKey documentKey,
+  public ExportedFile(InputStream content, String documentTitle, String documentKey,
       ExportFormat exportFormat) {
     super();
     this.content = content;
@@ -49,11 +46,11 @@ public class ExportedFile {
     return fileName;
   }
 
-  public void setFileName(String documentTitle, CompositeKey documentKey,
+  public void setFileName(String documentTitle, String documentKey,
       ExportFormat exportFormat) {
     documentTitle = this.cleanDocumentTitle(documentTitle != null ? documentTitle : "Document");
     this.fileName =
-        documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion())
+        documentTitle + "-" + documentKey
             + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
             + exportFormat.getValue();
   }

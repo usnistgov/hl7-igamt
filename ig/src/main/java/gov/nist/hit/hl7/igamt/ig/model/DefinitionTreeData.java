@@ -1,13 +1,12 @@
 package gov.nist.hit.hl7.igamt.ig.model;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class DefinitionTreeData extends TreeData {
 
 
 
-  private CompositeKey referenceId;
+  private String referenceId;
   private Type referenceType;
 
 
@@ -16,12 +15,12 @@ public class DefinitionTreeData extends TreeData {
     // TODO Auto-generated constructor stub
   }
 
-  public CompositeKey getReferenceId() {
+  public String getReferenceId() {
     return referenceId;
   }
 
 
-  public void setReferenceId(CompositeKey referenceId) {
+  public void setReferenceId(String referenceId) {
     this.referenceId = referenceId;
   }
 

@@ -270,16 +270,14 @@ body .layout-wrapper .layout-menu-container .layout-menu li > a span {
   word-break: keep-all;
 }
 
-
-
 body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.active-menuitem > a {
   background-color: white;
   color: #5c6bc0;
 }
+
 .layout-menu-container{
   background-color: #eac800 !important;
 }
-
 
 .pattern.ui-organizationchart .ui-organizationchart-node-content.ui-operator {
   padding: 0;
@@ -302,6 +300,7 @@ body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.
   padding-left: 10px;
   padding-bottom: 10px;
 }
+
 .operator-drop-area {
   padding: 5px;
   min-width: 100px;
@@ -323,4 +322,15 @@ body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.
   overflow-y: scroll;
   overflow-x: scroll;
   border-bottom: 1px solid darkgrey;
+}
+
+.ui-dropdown .ui-dropdown-label {
+  display: block;
+  /* border: 0; */
+  white-space: nowrap;
+  overflow: hidden;
+  font-weight: 900;
+  width: 100%;
+  padding-right: 0.5em;
+  margin-bottom: 1px;
 }

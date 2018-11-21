@@ -2,7 +2,6 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
@@ -10,7 +9,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 
 
 public class ConformanceProfileConformanceStatement {
-  private CompositeKey id;
+  private String id;
   private DomainInfo domainInfo;
   private String name;
   private String identifier;
@@ -19,11 +18,11 @@ public class ConformanceProfileConformanceStatement {
   private Set<ConformanceStatement> conformanceStatements;
   private Set<SegmentRefOrGroup> children;
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 

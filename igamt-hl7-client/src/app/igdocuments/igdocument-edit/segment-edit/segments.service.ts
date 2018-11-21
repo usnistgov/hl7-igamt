@@ -3,6 +3,7 @@ import {HttpClient} from '@angular/common/http';
 import {Router} from "@angular/router";
 import {IgErrorService} from "../ig-error/ig-error.service";
 import {LoadingService} from "../service/loading.service";
+import {HttpParams} from "@angular/common/http";
 
 
 @Injectable()
@@ -122,7 +123,12 @@ export class SegmentsService {
 
 
   public saveSegment(id, dId, cItem): Promise<any> {
-    return  this.http.post('api/segments/' + id + '/document/' + dId + '/save',cItem).toPromise();
+
+    let httpParams = new HttpParams().append("dId", dId);
+
+    return  this.http.post('api/segments/' + id + '/structure',cItem, {params:httpParams}).toPromise();
   }
+
+
 
 }

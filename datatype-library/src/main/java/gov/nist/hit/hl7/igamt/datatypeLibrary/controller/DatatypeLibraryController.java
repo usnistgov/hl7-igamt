@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +35,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -185,12 +183,12 @@ public class DatatypeLibraryController {
         if (datatypes != null && !datatypes.isEmpty()) {
           Datatype clone = datatypes.get(0).clone();
           clone.setUsername(username);
-          clone.setId(new CompositeKey());
+          clone.setId(null);
           clone.setName(datatypes.get(0).getName());
           clone.setExt(elm.getExt());
           clone.setDomainInfo(elm.getDomainInfo());
           clone = datatypeService.save(clone);
-          savedIds.add(clone.getId().getId());
+          savedIds.add(clone.getId());
         } else {
           throw new DatatypeNotFoundException(elm.getName(), elm.getDomainInfo().getVersion(),
               elm.getSourceScope().toString());
@@ -202,7 +200,7 @@ public class DatatypeLibraryController {
 
     }
 
-    ret.setId(new CompositeKey());
+    ret.setId(null);
     ret.setUsername(username);
     Date date = new Date();
     ret.setCreationDate(date);
@@ -210,7 +208,7 @@ public class DatatypeLibraryController {
     ret.setMetadata(wrapper.getMetadata());
 
     dataypeLibraryService.save(ret);
-    return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", ret.getId().getId(), false, date, ret);
+    return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", ret.getId(), false, date, ret);
 
   }
 
@@ -230,14 +228,14 @@ public class DatatypeLibraryController {
           Datatype clone = datatype.clone();
           clone.setDomainInfo(elm.getDomainInfo());
           clone.setUsername(username);
-          clone.setId(new CompositeKey());
+          clone.setId(null);
           clone.setName(datatype.getName());
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
-          savedIds.add(clone.getId().getId());
+          savedIds.add(clone.getId());
         }
       } else {
-        savedIds.add(elm.getId().getId());
+        savedIds.add(elm.getId());
       }
     }
     AddDatatypeResponseObject objects =
@@ -379,9 +377,9 @@ public class DatatypeLibraryController {
       throws IGNotFoundException, CloneException, DatatypeLibraryNotFoundException {
     DatatypeLibrary library = findLibraryById(id);
     String username = authentication.getPrincipal().toString();
-    Datatype datatype = datatypeService.findByKey(wrapper.getId());
+    Datatype datatype = datatypeService.findById(wrapper.getId());
     if (datatype == null) {
-      throw new CloneException("Cannot find datatype with id=" + wrapper.getId().getId());
+      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
     }
     Datatype clone = datatype.clone();
     clone.setUsername(username);
@@ -390,7 +388,7 @@ public class DatatypeLibraryController {
     info.setCompatibilityVersion(datatype.getDomainInfo().getCompatibilityVersion());
     info.setVersion(datatype.getDomainInfo().getVersion());
     clone.setDomainInfo(info);
-    clone.setId(new CompositeKey());
+    clone.setId(null);
     clone.setName(datatype.getName());
     clone.setExt(wrapper.getExt());
     clone = datatypeService.save(clone);
@@ -417,7 +415,7 @@ public class DatatypeLibraryController {
     if (found != null) {
       library.getDatatypeRegistry().getChildren().remove(found);
     }
-    Datatype datatype = datatypeService.findLatestById(datatypeId);
+    Datatype datatype = datatypeService.findById(datatypeId);
     if (datatype != null) {
       if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
         datatypeService.delete(datatype);
@@ -435,7 +433,8 @@ public class DatatypeLibraryController {
 
     DatatypeLibrary library = findLibraryById(id);
     if (library.getUsername().equals(authentication.getPrincipal().toString())) {
-      dataypeLibraryService.delete(library.getId());
+      dataypeLibraryService.delete(id);
+      //delete(library.getId());
       return new ResponseMessage(Status.SUCCESS, DATATYPE_LIBRARY_DELETED, id, new Date());
     } else {
       throw new OperationNotAllowedException("Operation Not allowed");
@@ -462,8 +461,8 @@ public class DatatypeLibraryController {
 
   private Set<String> gatherIds(DatatypeLibrary library) {
     Set<String> results = new HashSet<String>();
-    library.getDatatypeRegistry().getChildren().forEach(link -> results.add(link.getId().getId()));
-    library.getDerivedRegistry().getChildren().forEach(link -> results.add(link.getId().getId()));
+    library.getDatatypeRegistry().getChildren().forEach(link -> results.add(link.getId()));
+    library.getDerivedRegistry().getChildren().forEach(link -> results.add(link.getId()));
     return results;
   }
 
@@ -475,7 +474,7 @@ public class DatatypeLibraryController {
    */
   private Link findLinkById(String id, Set<Link> links) {
     for (Link link : links) {
-      if (link.getId().getId().equals(id)) {
+      if (link.getId().equals(id)) {
         return link;
       }
     }

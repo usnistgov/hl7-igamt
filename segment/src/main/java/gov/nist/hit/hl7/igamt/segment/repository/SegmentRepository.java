@@ -20,8 +20,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 /**
@@ -29,7 +27,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  * @author Jungyub Woo on Mar 15, 2018.
  */
 @Repository
-public interface SegmentRepository extends MongoRepository<Segment, CompositeKey> {
+public interface SegmentRepository extends MongoRepository<Segment, String> {
   List<Segment> findByDomainInfoVersion(String version);
 
   List<Segment> findByDomainInfoScope(String scope);
@@ -38,8 +36,7 @@ public interface SegmentRepository extends MongoRepository<Segment, CompositeKey
 
   List<Segment> findByName(String name);
 
-  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,
-      String name);
+  List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version,String name);
 
   List<Segment> findByDomainInfoVersionAndName(String version, String name);
 

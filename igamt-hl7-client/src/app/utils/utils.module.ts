@@ -62,6 +62,8 @@ import {TextdefColComponent} from "../common/tree-table/textdef/textdef-col.comp
 import {TextdefReadonlyColComponent} from "../common/tree-table/textdef/textdef-readonly-col.component";
 import {CommentColComponent} from "../common/tree-table/comment/comment-col.component";
 import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
+import {ElementLabelComponent} from "../common/element-label/element-label.component";
+import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.service";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -128,10 +130,11 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     TextdefReadonlyColComponent,
     CommentColComponent,
     CommentReadonlyColComponent,
-
     CsSegmentTreeComponent,
     PatternEditorDemoComponent,
-    PatternDialogComponent
+    PatternDialogComponent,
+    CommentReadonlyColComponent,
+    ElementLabelComponent
   ],
 
   exports: [
@@ -173,10 +176,11 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     TextdefReadonlyColComponent,
     CommentColComponent,
     CommentReadonlyColComponent,
-
     CsSegmentTreeComponent,
     PatternEditorDemoComponent,
-    PatternDialogComponent
-  ]
+    PatternDialogComponent,
+    ElementLabelComponent
+  ],
+  providers:[DatatypeColService]
 })
 export class UtilsModule {}

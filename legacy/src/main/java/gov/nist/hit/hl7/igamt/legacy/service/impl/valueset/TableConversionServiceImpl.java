@@ -4,11 +4,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
+import org.bson.types.ObjectId;
+
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SCOPE;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Table;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -120,21 +121,21 @@ public class TableConversionServiceImpl implements ConversionService {
       v.setDomainInfo(domainInfo);
 
       CodeSystem codeSystem = new CodeSystem();
-      codeSystem.setId(new CompositeKey());
+      codeSystem.setId(new ObjectId().toString());
       codeSystem.setIdentifier("HL7" + table.getBindingIdentifier());
       codeSystem.setDomainInfo(domainInfo);
 
       if (table.getCodes() != null) {
         for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
           Code code = new Code();
-          code.setCodeSystemId(codeSystem.getId().getId());
+          code.setCodeSystemId(codeSystem.getId());
           code.setDescription(c.getLabel());
           code.setValue(c.getValue());
           codeSystem.addCode(code);
 
           CodeRef codeRef = new CodeRef();
           codeRef.setCodeId(code.getId());
-          codeRef.setCodeSystemId(codeSystem.getId().getId());
+          codeRef.setCodeSystemId(codeSystem.getId());
           if (c.getCodeUsage().equals("R")) {
             codeRef.setUsage(CodeUsage.R);
           } else if (c.getCodeUsage().equals("E")) {
@@ -147,7 +148,7 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setNumberOfCodes(table.getCodes().size());
       }
       codeSystem = codeSystemService.save(codeSystem);
-      v.addCodeSystemId(codeSystem.getId().getId());
+      v.addCodeSystemId(codeSystem.getId());
     } else if (table.getScope().equals(SCOPE.PHINVADS)) {
       DomainInfo domainInfo = new DomainInfo();
       domainInfo.setVersion(table.getVersion());
@@ -157,21 +158,21 @@ public class TableConversionServiceImpl implements ConversionService {
       v.setDomainInfo(domainInfo);
 
       CodeSystem codeSystem = new CodeSystem();
-      codeSystem.setId(new CompositeKey());
+      codeSystem.setId(new ObjectId().toString());
       codeSystem.setIdentifier(table.getBindingIdentifier());
       codeSystem.setDomainInfo(domainInfo);
 
       if (table.getCodes() != null) {
         for (gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code c : table.getCodes()) {
           Code code = new Code();
-          code.setCodeSystemId(codeSystem.getId().getId());
+          code.setCodeSystemId(codeSystem.getId());
           code.setDescription(c.getLabel());
           code.setValue(c.getValue());
           codeSystem.addCode(code);
 
           CodeRef codeRef = new CodeRef();
           codeRef.setCodeId(code.getId());
-          codeRef.setCodeSystemId(codeSystem.getId().getId());
+          codeRef.setCodeSystemId(codeSystem.getId());
           if (c.getCodeUsage().equals("R")) {
             codeRef.setUsage(CodeUsage.R);
           } else if (c.getCodeUsage().equals("E")) {
@@ -184,7 +185,7 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setNumberOfCodes(table.getCodes().size());
       }
       codeSystem = codeSystemService.save(codeSystem);
-      v.addCodeSystemId(codeSystem.getId().getId());
+      v.addCodeSystemId(codeSystem.getId());
 
     } else if (table.getScope().equals(SCOPE.USER)) {
       DomainInfo domainInfo = new DomainInfo();
@@ -225,7 +226,7 @@ public class TableConversionServiceImpl implements ConversionService {
         v.setNumberOfCodes(table.getCodes().size());
       }
     }
-    v.setId(new CompositeKey(table.getId()));
+    v.setId(table.getId());
     valuesetService.save(v);
   }
 

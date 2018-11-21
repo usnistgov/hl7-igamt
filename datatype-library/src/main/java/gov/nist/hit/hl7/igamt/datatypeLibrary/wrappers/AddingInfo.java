@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 
@@ -21,13 +20,22 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
  */
 
 public class AddingInfo {
+	
+  private String id;
+  private DomainInfo domainInfo;
+  private String name;
+  private String ext;
+  private String description;
+  private boolean flavor;
+  private Scope sourceScope;
+	  
   public AddingInfo() {
     super();
     // TODO Auto-generated constructor stub
   }
 
   public AddingInfo(DomainInfo domainInfo, String name, String ext, String description,
-      boolean flavor, CompositeKey id) {
+      boolean flavor, String id) {
     super();
     this.domainInfo = domainInfo;
     this.name = name;
@@ -77,11 +85,11 @@ public class AddingInfo {
     this.flavor = flavor;
   }
 
-  public CompositeKey getId() {
+  public String getId() {
     return id;
   }
 
-  public void setId(CompositeKey id) {
+  public void setId(String id) {
     this.id = id;
   }
 
@@ -93,13 +101,6 @@ public class AddingInfo {
     this.sourceScope = sourceScope;
   }
 
-  private DomainInfo domainInfo;
-  private String name;
 
-  private String ext;
-  private String description;
-  private boolean flavor;
-  private CompositeKey id;
-  private Scope sourceScope;
 
 }

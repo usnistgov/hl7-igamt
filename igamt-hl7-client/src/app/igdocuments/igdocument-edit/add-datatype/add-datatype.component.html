@@ -89,31 +89,31 @@
               {{rowData.name}}--{{rowData.description}} --{{i}} xx {{i}}
             </td>
             <td class="ui-resizable-column" width="75px">
-              <input #extension ="ngModel" [name]="rowData.id.id+i" [id]="rowData.id.id+i"
+              <input #extension ="ngModel" [name]="rowData.id+i" [id]="rowData.id+i"
                       *ngIf="rowData.flavor"  DatatypeNamingConvention NamingDuplication
                       [existing]="namingIndicators" [label]="rowData.name" type="text"
                       style="width: 100%" pInputText [(ngModel)]="rowData.ext"
                       required minlength="4" maxlength="4" />
 
-              <div *ngIf="addingEditForm.controls[rowData.id.id+i]&&addingEditForm.controls[rowData.id.id+i].errors" style="color:red; font-size: 11px">
-                <div *ngIf="addingEditForm.controls[rowData.id.id+i].errors.required">
+              <div *ngIf="addingEditForm.controls[rowData.id+i]&&addingEditForm.controls[rowData.id+i].errors" style="color:red; font-size: 11px">
+                <div *ngIf="addingEditForm.controls[rowData.id+i].errors.required">
                   <span>*extension is required</span>
 
                 </div>
-                <div *ngIf="addingEditForm.controls[rowData.id.id+i].errors.maxlength">
+                <div *ngIf="addingEditForm.controls[rowData.id+i].errors.maxlength">
                   <span> *extension is too long</span>
 
                 </div>
-                <div  *ngIf="addingEditForm.controls[rowData.id.id+i].errors.minlength">
+                <div  *ngIf="addingEditForm.controls[rowData.id+i].errors.minlength">
                   <span> *extension is too short</span>
 
 
                 </div>
-                <div  *ngIf="addingEditForm.controls[rowData.id.id+i].errors.duplicated">
+                <div  *ngIf="addingEditForm.controls[rowData.id+i].errors.duplicated">
                   <span> *extension is duplicated</span>
 
                 </div>
-                <div *ngIf="addingEditForm.controls[rowData.id.id+i].errors.invalidConvention">
+                <div *ngIf="addingEditForm.controls[rowData.id+i].errors.invalidConvention">
                   <span> *invalid convention (LAAA)</span>
                 </div>
 

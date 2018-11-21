@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.valueset.domain.registry;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 public class ValueSetConfigForExport {
 
@@ -12,13 +11,13 @@ public class ValueSetConfigForExport {
     // TODO Auto-generated constructor stub
   }
 
-  private Set<CompositeKey> include = new HashSet<CompositeKey>();
+  private Set<String> include = new HashSet<String>();
 
-  public Set<CompositeKey> getInclude() {
+  public Set<String> getInclude() {
     return include;
   }
 
-  public void setInclude(Set<CompositeKey> include) {
+  public void setInclude(Set<String> include) {
     this.include = include;
   }
 }

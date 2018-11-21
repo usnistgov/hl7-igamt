@@ -18,6 +18,8 @@ import { ContextMenuModule } from 'primeng/primeng';
 import { DataGridModule } from 'primeng/primeng';
 import { DataListModule } from 'primeng/primeng';
 import { DataScrollerModule } from 'primeng/primeng';
+import {SelectItemGroup} from 'primeng/api';
+
 import { DataTableModule } from 'primeng/primeng';
 import { DialogModule } from 'primeng/primeng';
 import { DragDropModule } from 'primeng/primeng';
@@ -123,6 +125,7 @@ import {ConfirmDialogModule} from "primeng/components/confirmdialog/confirmdialo
 import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.component';
 import {ReportService} from "./dialog-wrapper/report.service";
 import {DisplayService} from "./display/display.service";
+import { ElementLabelComponent } from './common/element-label/element-label.component';
 
 @NgModule({
     imports: [
@@ -140,7 +143,8 @@ import {DisplayService} from "./display/display.service";
         CarouselModule,
         ChartModule,
         CheckboxModule,
-        ChipsModule,
+
+ChipsModule,
         CodeHighlighterModule,
         ConfirmDialogModule,
         ColorPickerModule,

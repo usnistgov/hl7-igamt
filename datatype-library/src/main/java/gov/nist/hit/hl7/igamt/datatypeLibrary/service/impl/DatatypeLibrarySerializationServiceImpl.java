@@ -41,7 +41,7 @@ public class DatatypeLibrarySerializationServiceImpl
     for (String key : datatypesMap.keySet()) {
       Datatype datatype = datatypesMap.get(key);
       if (datatype.getLabel() != null) {
-        datatypeNamesMap.put(datatype.getId().getId(), datatype.getLabel());
+        datatypeNamesMap.put(datatype.getId(), datatype.getLabel());
       }
       if (datatype instanceof ComplexDatatype) {
         ComplexDatatype complexDatatype = (ComplexDatatype) datatype;
@@ -56,12 +56,12 @@ public class DatatypeLibrarySerializationServiceImpl
       UsageConfiguration usageConfiguration) throws DatatypeNotFoundException {
     for (Link datatypeLink : datatypeLibrary.getChildren()) {
       if (datatypeLink != null && datatypeLink.getId() != null
-          && !datatypesMap.containsKey(datatypeLink.getId().getId())) {
-        Datatype datatype = datatypeService.findByKey(datatypeLink.getId());
+          && !datatypesMap.containsKey(datatypeLink.getId())) {
+        Datatype datatype = datatypeService.findById(datatypeLink.getId());
         if (datatype != null) {
-          datatypesMap.put(datatypeLink.getId().getId(), datatype);
+          datatypesMap.put(datatypeLink.getId(), datatype);
         } else {
-          throw new DatatypeNotFoundException(datatypeLink.getId().getId());
+          throw new DatatypeNotFoundException(datatypeLink.getId());
         }
       }
     }

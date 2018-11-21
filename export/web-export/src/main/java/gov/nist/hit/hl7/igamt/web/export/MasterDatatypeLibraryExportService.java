@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.MongoClient;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -74,7 +73,7 @@ public class MasterDatatypeLibraryExportService {
 		
 		for(String datatypeId : listIDs) {
 //			System.out.println(datatypeService);
-			Datatype datatype = datatypeService.findByKey(new CompositeKey(datatypeId,2));
+			Datatype datatype = datatypeService.findById(datatypeId);
 			if(datatypesbyRoot.containsKey(datatype.getName())){
 				datatypesbyRoot.get(datatype.getName()).add(datatype);
 			}else { 
@@ -115,7 +114,7 @@ public class MasterDatatypeLibraryExportService {
 			if(datatype instanceof ComplexDatatype) {
 				for(Component component : ((ComplexDatatype) datatype).getComponents()) {
 					if(component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
-						Datatype datatype2 = datatypeService.findByKey(new CompositeKey(component.getRef().getId(),2));
+						Datatype datatype2 = datatypeService.findById(component.getRef().getId());
 						datatypeNamesMap.put(component.getRef(), datatype2.getName());
 					}
 				}

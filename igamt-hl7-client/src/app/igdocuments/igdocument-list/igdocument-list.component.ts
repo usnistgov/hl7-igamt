@@ -34,7 +34,7 @@ export class IgDocumentListComponent implements OnInit {
   ngOnInit() {
   }
   open(ig,readnly){
-    this.router.navigate(['/ig/'+ig.id.id+'/metadata']);
+    this.router.navigate(['/ig/'+ig.id+'/metadata']);
   }
 
   onSortChange(event) {
@@ -52,10 +52,10 @@ export class IgDocumentListComponent implements OnInit {
   }
 
   toggleMoreInfo(id){
-    if(this.moreInfoMap[id.id]){
-      this.moreInfoMap[id.id]=!this.moreInfoMap[id.id];
+    if(this.moreInfoMap[id]){
+      this.moreInfoMap[id]=!this.moreInfoMap[id];
     }else{
-      this.moreInfoMap[id.id]=true;
+      this.moreInfoMap[id]=true;
     }
   }
 

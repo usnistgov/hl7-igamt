@@ -125,7 +125,7 @@ public class CoConstraintVerifyServiceImpl implements CoConstraintVerifyService 
     }).findFirst().orElse(null);
 
     if (field != null) {
-      Datatype dt = datatypeService.getLatestById(field.getRef().getId());
+      Datatype dt = datatypeService.findById(field.getRef().getId());
       return path.length == 1 ? dt
           : getDatatypeAtPath(dt, Arrays.copyOfRange(path, 1, path.length));
     } else {
@@ -146,9 +146,9 @@ public class CoConstraintVerifyServiceImpl implements CoConstraintVerifyService 
     }).findFirst().orElse(null);
 
     if (component != null) {
-      Datatype dt = datatypeService.getLatestById(component.getRef().getId());
+      Datatype dt = datatypeService.findById(component.getRef().getId());
       if (path.length == 1) {
-        return datatypeService.getLatestById(component.getRef().getId());
+        return datatypeService.findById(component.getRef().getId());
       } else {
         return getDatatypeAtPath(dt, Arrays.copyOfRange(path, 1, path.length));
       }

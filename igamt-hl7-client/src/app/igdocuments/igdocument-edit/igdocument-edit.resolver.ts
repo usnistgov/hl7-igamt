@@ -16,6 +16,7 @@ export  class IgdocumentEditResolver implements Resolve<any>{
 
     let igId = route.params["igId"];
 
+
     return this.igDocumentService.getIg(igId);
 
 

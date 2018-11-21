@@ -32,7 +32,6 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.ProfileComponentLink;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.SubProfileComponent;
 import gov.nist.hit.hl7.auth.domain.Account;
 import gov.nist.hit.hl7.auth.repository.AccountRepository;
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.OrderedProfileComponentLink;
@@ -179,7 +178,7 @@ public class CompositeProfileStructureConversionServiceImpl implements Conversio
         .setDescription(oldCompositeProfileStructure.getDescription());
     convertedCompositeProfileStructure.setDomainInfo(domainInfo);
     convertedCompositeProfileStructure
-        .setId(new CompositeKey(oldCompositeProfileStructure.getId()));
+        .setId(oldCompositeProfileStructure.getId());
     convertedCompositeProfileStructure.setName(oldCompositeProfileStructure.getName());
     convertedCompositeProfileStructure.setPostDef(oldCompositeProfileStructure.getDefPostText());
     convertedCompositeProfileStructure.setPreDef(oldCompositeProfileStructure.getDefPreText());

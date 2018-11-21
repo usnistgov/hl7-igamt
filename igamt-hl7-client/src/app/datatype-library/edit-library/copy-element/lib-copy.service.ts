@@ -14,7 +14,7 @@ export class LibCopyService {
 
 
   copyDatatype(wrapper){
-    return this.http.post('/api/datatype-library/'+wrapper.libId+'/datatypes/'+wrapper.id.id+'/clone', wrapper);
+    return this.http.post('/api/datatype-library/'+wrapper.libId+'/datatypes/'+wrapper.id+'/clone', wrapper);
   }
   copySection(sectionWrapper){
     return this.http.post('api/ig/datatype-library', sectionWrapper);

@@ -127,13 +127,13 @@ export class DisplayLabelComponent {
       id=this.elm.id;
 
     }else{
-     id= this.elm.key.id;
+     id= this.elm.id;
     }
     this.route.queryParams
       .subscribe(params => {
         console.log(params); // {order: "popular"}
 
-        this.router.navigate(["./"+type+"/"+this.elm.key.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
+        this.router.navigate(["./"+type+"/"+this.elm.id],{ preserveQueryParams:true ,relativeTo:this.route, preserveFragment:true});
 
       });
   }

@@ -112,7 +112,7 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       return serializableIG.serialize().toXML();
     } catch (Exception exception) {
       throw new SerializationException(exception, Type.IGDOCUMENT,
-          "id=" + igDocument.getId().getId() + ", version=" + igDocument.getId().getVersion());
+          "id=" + igDocument.getId() + ", version=" + igDocument.getVersion());
     }
   }
 
@@ -125,16 +125,16 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       UsageConfiguration usageConfiguration) throws ConformanceProfileNotFoundException {
     for (Link conformanceProfileLink : conformanceProfileLibrary.getChildren()) {
       if (conformanceProfileLink != null && conformanceProfileLink.getId() != null
-          && !conformanceProfilesMap.containsKey(conformanceProfileLink.getId().getId())) {
+          && !conformanceProfilesMap.containsKey(conformanceProfileLink.getId())) {
         ConformanceProfile conformanceProfile =
-            conformanceProfileService.findByKey(conformanceProfileLink.getId());
+            conformanceProfileService.findById(conformanceProfileLink.getId());
         if (conformanceProfile != null) {
-          conformanceProfilesMap.put(conformanceProfileLink.getId().getId(), conformanceProfile);
+          conformanceProfilesMap.put(conformanceProfileLink.getId(), conformanceProfile);
           for (MsgStructElement msgStructElement : conformanceProfile.getChildren()) {
             identifyBindedSegments(msgStructElement, usageConfiguration);
           }
         } else {
-          throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId().getId());
+          throw new ConformanceProfileNotFoundException(conformanceProfileLink.getId());
         }
       }
     }
@@ -171,14 +171,14 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       UsageConfiguration valuesetUsageConfiguration) throws SegmentNotFoundException {
     for (Link segmentLink : segmentLibrary.getChildren()) {
       if (segmentLink != null && segmentLink.getId() != null
-          && !segmentsMap.containsKey(segmentLink.getId().getId())) {
-        Segment segment = segmentService.findByKey(segmentLink.getId());
+          && !segmentsMap.containsKey(segmentLink.getId())) {
+        Segment segment = segmentService.findById(segmentLink.getId());
         if (segment != null) {
-          segmentsMap.put(segmentLink.getId().getId(), segment);
+          segmentsMap.put(segmentLink.getId(), segment);
           identifyBindedFields(segment, usageConfiguration, datatapeUsageConfiguration,
               valuesetUsageConfiguration);
         } else {
-          throw new SegmentNotFoundException(segmentLink.getId().getId());
+          throw new SegmentNotFoundException(segmentLink.getId());
         }
       }
     }
@@ -249,13 +249,13 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       UsageConfiguration usageConfiguration) throws ValuesetNotFoundException {
     for (Link valuesetLink : valuesetLibrary.getChildren()) {
       if (valuesetLink != null && valuesetLink.getId() != null
-          && !valuesetsMap.containsKey(valuesetLink.getId().getId())) {
+          && !valuesetsMap.containsKey(valuesetLink.getId())) {
         Valueset valueset = valuesetService.findById(valuesetLink.getId());
         if (valueset != null) {
           ValuesetStructure valuesetStructure = valuesetService.convertDomainToStructure(valueset);
-          valuesetsMap.put(valuesetLink.getId().getId(), new SerializableValuesetStructure(valuesetStructure, valueset));
+          valuesetsMap.put(valuesetLink.getId(), new SerializableValuesetStructure(valuesetStructure, valueset));
         } else {
-          throw new ValuesetNotFoundException(valuesetLink.getId().getId());
+          throw new ValuesetNotFoundException(valuesetLink.getId());
         }
       }
     }
@@ -270,12 +270,12 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       UsageConfiguration usageConfiguration) throws DatatypeNotFoundException {
     for (Link datatypeLink : datatypeLibrary.getChildren()) {
       if (datatypeLink != null && datatypeLink.getId() != null
-          && !datatypesMap.containsKey(datatypeLink.getId().getId())) {
-        Datatype datatype = datatypeService.findByKey(datatypeLink.getId());
+          && !datatypesMap.containsKey(datatypeLink.getId())) {
+        Datatype datatype = datatypeService.findById(datatypeLink.getId());
         if (datatype != null) {
-          datatypesMap.put(datatypeLink.getId().getId(), datatype);
+          datatypesMap.put(datatypeLink.getId(), datatype);
         } else {
-          throw new DatatypeNotFoundException(datatypeLink.getId().getId());
+          throw new DatatypeNotFoundException(datatypeLink.getId());
         }
       }
     }
