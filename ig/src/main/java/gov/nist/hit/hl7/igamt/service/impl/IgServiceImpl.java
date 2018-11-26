@@ -159,7 +159,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Ig CreateEmptyIg()
+  public Ig createEmptyIg()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
     // TODO Auto-generated method stub
     File ig = new ClassPathResource("IgTemplate.json").getFile();

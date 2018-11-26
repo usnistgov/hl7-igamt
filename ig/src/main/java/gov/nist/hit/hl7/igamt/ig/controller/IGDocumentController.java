@@ -352,7 +352,7 @@ public class IGDocumentController extends BaseController {
 
     try {
       String username = authentication.getPrincipal().toString();
-      Ig empty = igService.CreateEmptyIg();
+      Ig empty = igService.createEmptyIg();
       Set<String> savedIds = new HashSet<String>();
       for (Event ev : wrapper.getMsgEvts()) {
         ConformanceProfile profile = conformanceProfileService.findById(ev.getId());
@@ -367,19 +367,15 @@ public class IGDocumentController extends BaseController {
           savedIds.add(clone.getId());
         }
       }
-      empty.setId(new ObjectId().toString());
       empty.setUsername(username);
       DomainInfo info = new DomainInfo();
       info.setScope(Scope.USER);
       empty.setDomainInfo(info);
-      Date date = new Date();
-      empty.setCreationDate(date);
-      empty.setUpdateDate(date);
       empty.setMetadata(wrapper.getMetadata());
       crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
-      igService.save(empty);
+      Ig ret = igService.save(empty);
 
-      return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", empty.getId(), false, empty.getUpdateDate(), empty.getId());
+      return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(), false, ret.getUpdateDate(), ret.getId());
 
     } catch (Exception e) {
       throw e;

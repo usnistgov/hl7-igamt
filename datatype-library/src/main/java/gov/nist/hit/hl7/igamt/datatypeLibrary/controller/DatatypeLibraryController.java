@@ -172,7 +172,7 @@ public class DatatypeLibraryController {
       FileNotFoundException, IOException, AddingException, DatatypeNotFoundException {
 
     String username = authentication.getPrincipal().toString();
-    DatatypeLibrary ret = dataypeLibraryService.createEmptyDatatypeLibrary();
+    DatatypeLibrary empty = dataypeLibraryService.createEmptyDatatypeLibrary();
     if (wrapper.getToAdd() != null || !wrapper.getToAdd().isEmpty()) {
 
       Set<String> savedIds = new HashSet<String>();
@@ -195,20 +195,16 @@ public class DatatypeLibraryController {
         }
       }
 
-      dataypeLibraryService.addDatatypes(savedIds, ret, wrapper.getScope());
+      dataypeLibraryService.addDatatypes(savedIds, empty, wrapper.getScope());
 
 
     }
 
-    ret.setId(null);
-    ret.setUsername(username);
-    Date date = new Date();
-    ret.setCreationDate(date);
-    ret.setUpdateDate(date);
-    ret.setMetadata(wrapper.getMetadata());
-
-    dataypeLibraryService.save(ret);
-    return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", ret.getId(), false, date, ret);
+    empty.setUsername(username);
+    
+    empty.setMetadata(wrapper.getMetadata());
+        DatatypeLibrary lib = dataypeLibraryService.save(empty);
+    return new ResponseMessage<DatatypeLibrary>(Status.SUCCESS, "", "Datatype Library Created", lib.getId(), false, lib.getCreationDate(), lib);
 
   }
 
