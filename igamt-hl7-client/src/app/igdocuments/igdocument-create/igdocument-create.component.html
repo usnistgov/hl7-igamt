@@ -7,70 +7,111 @@
     <label class="metadata-label"> Select Hl7 Version</label>  <p-radioButton [style]="{'margin-left':'10px'}" *ngFor="let v of hl7Versions" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (click)="getMessages(v)"></p-radioButton>
   </div>
 
+  <div class="ui-g-12">
+
   <div>
-      <ng-container *ngFor="let selected of getSelected()">
+    <label class="metadata-label"> Selected Messages :</label>
+  </div>
+  <ng-container *ngFor="let selected of selectedEvents" >
+    <label class="badge cp-badge" style="margin-left: 10px;">
+      <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.hl7Version}}</span> {{selected.name}}-{{selected.parentStructId}}
+      <i class="fa fa-remove cp-remove" (click)="unselect(selected)"></i>
+    </label>
 
-        <label class="badge cp-badge" (click)="unselect(selected)" *ngIf="!selected.children">
-          <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.parent.data.hl7Version}}</span>    {{selected.data.name}}-{{selected.data.parentStructId}}
-          <i class="fa fa-remove cp-remove"></i>
-        </label>
+  </ng-container>
 
-      </ng-container>
+
+  </div>
+
+    <div class="ui-g-12">
+
+
+      <p-table #dt *ngIf="selcetedVersion" [value]="tableValue" dataKey="data.name" [globalFilterFields]="['data.name','children.data.name']" scrollable="true" scrollHeight="500px">
+        <ng-template pTemplate="caption">
+          <div style="text-align: left">
+            <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+            <input type="text" pInputText size="50" placeholder="search by message structure" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+          </div>
+        </ng-template>
+        <ng-template pTemplate="header" let-columns>
+          <tr>
+            <th>
+              Message Structure
+            </th>
+            <th>
+              Message Event
+            </th>
+            <th>
+              Description
+            </th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body"  let-node="node" let-rowNode let-expanded="expanded" let-rowData let-columns="columns">
+          <tr>
+            <td>
+
+              <!--<a [pRowToggler]="rowData">-->
+              <!--<i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>-->
+              <!--</a>-->
+              {{rowData.data.name}}
+
+            </td>
+            <td>
+              <!--<span *ngIf="rowData.data.type=='EVENT' ">  {{rowData.data.name}}</span>-->
+
+              <div *ngFor="let i of rowData.children">
+                <input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />
+                {{i.data.name}}
+              </div>
+            </td>
+
+            <td>
+
+              {{rowData.data.description}}
+            </td>
+          </tr>
+        </ng-template>
+
+
+
+        <!--<ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">-->
+        <!--<tr>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--</td>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--<div *ngFor="let i of rowData.children">-->
+        <!--<input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />-->
+        <!--{{i.data.name}}-->
+        <!--</div>-->
+        <!--</td>-->
+        <!--<td [attr.colspan]="1">-->
+
+        <!--</td>-->
+        <!--</tr>-->
+        <!--</ng-template>-->
+      </p-table>
+
+
+
+    </div>
+  <div class="ui-g-offset-10">
+
+    <p-button   styleClass="indigo-btn" (onClick)="previous($event)" label="Previous" icon="fa fa-hand-o-left" iconPos="left"></p-button>
+
+    <p-button    styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+
   </div>
 
 
-  <div>
-    <p-treeTable *ngIf="selcetedVersion" [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectdNodeMap[selectedVerion]" [style]="{'margin-top':'10px', 'max-height':'400px', 'overflow':'scroll'}">
-
-      <ng-template pTemplate="header" let-columns>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Event Types
-          </th>
-          <th>
-            Description
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
-        <tr>
-          <td>
-
-            <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-            <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
-
-          </td>
-          <td>
-            <span *ngIf="node.data.type=='EVENT' ">  <p-treeTableCheckbox [value]="rowNode" ></p-treeTableCheckbox> {{node.data.name}}</span>
 
 
 
 
-          </td>
-
-          <td>
-
-            {{node.data.description}}
-          </td>
-        </tr>
-      </ng-template>
-    </p-treeTable>
-
-<div class="ui-g-offset-10">
-
-  <p-button   styleClass="indigo-btn" (onClick)="previous($event)" label="Previous" icon="fa fa-hand-o-left" iconPos="left"></p-button>
-
-  <p-button    styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
 
 </div>
-  </div>
-</div>
-
-
-<div *ngIf="activeIndex==0" class="card">
+<div  *ngIf="activeIndex==0" class=" ui-g-12 card">
   <form  #f="ngForm" novalidate>
 
     <div class="ui-g input-box">
@@ -133,8 +174,14 @@
     </div>
 
   </form>
-  <p-button class="ui-g-offset-11" [disabled]= "f.invalid" styleClass="indigo-btn" (onClick)="next($event)" label="Next" icon="fa fa-hand-o-right" iconPos="left"></p-button>
 
+  <div class="ui-g-offset-10">
+
+
+  <p-button  [disabled]= "f.invalid" styleClass="indigo-btn" (onClick)="next($event)" label="Next" icon="fa fa-hand-o-right" iconPos="right"></p-button>
+
+  <p-button    [disabled]= "f.invalid" styleClass="green-btn" (onClick)="create()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+  </div>
 </div>
 
 

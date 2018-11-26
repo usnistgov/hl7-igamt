@@ -289,8 +289,6 @@ public class ValuesetServiceImpl implements ValuesetService {
       result.setBindingIdentifier(valueset.getBindingIdentifier());
       result.setId(valueset.getId());
       result.setName(valueset.getName());
-      result.setScope(valueset.getDomainInfo().getScope());
-      result.setVersion(valueset.getDomainInfo().getVersion());
       result.setExtensibility(valueset.getExtensibility());
       result.setStability(valueset.getStability());
       result.setContentDefinition(valueset.getContentDefinition());
