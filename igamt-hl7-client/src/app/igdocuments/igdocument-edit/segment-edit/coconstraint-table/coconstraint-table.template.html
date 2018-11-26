@@ -180,280 +180,278 @@
       </div>
     </div>
 
-  </form>
-</div>
+    <ng-template #empty let-type="type" let-obj="obj" let-key="key">
+      <div style="width: 100%; height: 100%; background-color: lightgrey;" (dblclick)="initCell(type,obj,key)">
+      </div>
+    </ng-template>
 
-<ng-template #empty let-type="type" let-obj="obj" let-key="key">
-  <div style="width: 100%; height: 100%; background-color: lightgrey;" (dblclick)="initCell(type,obj,key)">
+    <ng-template #value let-node let-req="req" let-form="form" let-id="id" let-key="key">
+      <div style="width: 100%;">
+        <input type="text"
+               [(ngModel)]="node.value"
+               #val="ngModel"
+               [name]="'val-'+id+'-'+key"
+               [id]="'val-'+id+'-'+key"
+               [registerForm]="form"
+               [registerModel]="val"
+               style="text-align: center; border: 1px solid;"
+               [registerValidators]="req ? [required()] : []"
+               [placeholder]="'PlainText'">
 
-  </div>
-</ng-template>
+        <p *ngIf="val.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+          {{val.control.errors.required ? 'This field is required' :
+          val.control.errors.unique ? val.control.errors.unique : ''}}
+        </p>
+      </div>
 
-<ng-template #value let-node let-req="req" let-form="form" let-id="id" let-key="key">
-  <div style="width: 100%;">
-    <input type="text"
-           [(ngModel)]="node.value"
-           #val="ngModel"
-           [name]="'val-'+id+'-'+key"
-           [id]="'val-'+id+'-'+key"
-           [registerForm]="form"
-           [registerModel]="val"
-           style="text-align: center; border: 1px solid;"
-           [registerValidators]="req ? [required()] : []"
-           [placeholder]="'PlainText'">
+    </ng-template>
 
-    <p *ngIf="val.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-      {{val.control.errors.required ? 'This field is required' :
-      val.control.errors.unique ? val.control.errors.unique : ''}}
-    </p>
-  </div>
+    <ng-template #code let-node let-field="field" let-form="form" let-req="req" let-id="id" let-key="key" let-varies="varies">
 
-</ng-template>
+      <p-dropdown appendTo="body"
+                  #loc="ngModel"
+                  [name]="'loc-'+id+'-'+key"
+                  [id]="'loc-'+id+'-'+key"
+                  [registerForm]="form"
+                  [registerModel]="loc"
+                  [style]="{'width': '95%' , 'border' : '1px solid'}"
+                  [placeholder]="'Location'"
+                  [required]="true"
+                  [options]="varies ? ceBindingLocations['2.8'] : ceBindingLocations[field.content.version]"
+                  [(ngModel)]="node.location">
+      </p-dropdown>
 
-<ng-template #code let-node let-field="field" let-form="form" let-req="req" let-id="id" let-key="key" let-varies="varies">
+      <input type="text"
+             #code="ngModel"
+             [name]="'code-'+id+'-'+key"
+             [id]="'code-'+id+'-'+key"
+             [registerForm]="form"
+             [registerModel]="code"
+             [registerValidators]="req ? [required(), uniq(ccFormVar,'code', key, 'code-'+id+'-'+key)] : [uniq(ccFormVar, 'code', key, 'code-'+id+'-'+key)]"
+             [(ngModel)]="node.value"
+             style="width: 95%; border: 1px solid; text-align: center;"
+             [placeholder]="'Code'">
 
-  <p-dropdown appendTo="body"
-              #loc="ngModel"
-              [name]="'loc-'+id+'-'+key"
-              [id]="'loc-'+id+'-'+key"
-              [registerForm]="form"
-              [registerModel]="loc"
-              [style]="{'width': '95%' , 'border' : '1px solid'}"
-              [placeholder]="'Location'"
-              [required]="true"
-              [options]="varies ? ceBindingLocations['2.8'] : ceBindingLocations[field.content.version]"
-              [(ngModel)]="node.location">
-  </p-dropdown>
+      <p *ngIf="code.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+        {{code.control.errors.required ? 'Code is required' :
+        code.control.errors.unique ? code.control.errors.unique : ''}}
+      </p>
+      <p *ngIf="loc.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+        {{loc.control.errors.required ? 'Location is required' : ''}}
+      </p>
+    </ng-template>
 
-  <input type="text"
-         #code="ngModel"
-         [name]="'code-'+id+'-'+key"
-         [id]="'code-'+id+'-'+key"
-         [registerForm]="form"
-         [registerModel]="code"
-         [registerValidators]="req ? [required(), uniq(ccFormVar,'code', key, 'code-'+id+'-'+key)] : [uniq(ccFormVar, 'code', key, 'code-'+id+'-'+key)]"
-         [(ngModel)]="node.value"
-         style="width: 95%; border: 1px solid; text-align: center;"
-         [placeholder]="'Code'">
+    <ng-template #textArea let-node let-id="id" let-key="key">
+      <textarea rows="1" class="textzone" type="text" [name]="'text-'+id+'-'+key"
+                [id]="'text-'+id+'-'+key" [(ngModel)]="node.value"></textarea>
+    </ng-template>
 
-  <p *ngIf="code.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-    {{code.control.errors.required ? 'Code is required' :
-    code.control.errors.unique ? code.control.errors.unique : ''}}
-  </p>
-  <p *ngIf="loc.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-    {{loc.control.errors.required ? 'Location is required' : ''}}
-  </p>
-</ng-template>
+    <ng-template #varies let-node let-field="field" let-obj="obj" let-key="key">
+      <table style="width: 100%; border: 0; height: 100%;">
+        <tr>
+          <td *ngIf="isIgnore(node)" style="border: 0; text-align: center; vertical-align: middle;">
+            <div style="width: 100%; text-align: center; vertical-align: middle;">
+              <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'value')">Value</span>
+              <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'vs')">ValueSet</span>
+              <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'code')">Code</span>
+            </div>
+          </td>
+          <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
+            <ng-container
+              *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
+          </td>
+          <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
+            <i (click)="clearVariesNodeValue(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
+               aria-hidden="true"></i>
+          </td>
+        </tr>
+      </table>
+    </ng-template>
 
-<ng-template #textArea let-node>
-  <textarea rows="1" class="textzone" type="text" [(ngModel)]="node.value"></textarea>
-</ng-template>
+    <ng-template #usage let-node let-id="id">
+      <p-dropdown appendTo="body" [options]="config.usages" [name]="'usage-'+id"
+                  [id]="'usage-'+id" [(ngModel)]="node.usage" [style]="{'width':'100%'}"></p-dropdown>
+    </ng-template>
 
-<ng-template #varies let-node let-field="field" let-obj="obj" let-key="key">
-  <table style="width: 100%; border: 0; height: 100%;">
-    <tr>
-      <td *ngIf="isIgnore(node)" style="border: 0; text-align: center; vertical-align: middle;">
-        <div style="width: 100%; text-align: center; vertical-align: middle;">
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'value')">Value</span>
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'vs')">ValueSet</span>
-          <span class="badge label-icon label-gray" (click)="setVariesNodeValue(obj, key, node,'code')">Code</span>
-        </div>
-      </td>
-      <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
-        <ng-container
-          *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
-      </td>
-      <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
-        <i (click)="clearVariesNodeValue(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
-           aria-hidden="true"></i>
-      </td>
-    </tr>
-  </table>
-</ng-template>
+    <ng-template #cardinality let-node let-id="id">
+      <input [(ngModel)]="node.cardinality.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"
+             #min="ngModel"
+             [name]="id+'-min'"
+             [id]="id+'-min'"
+             [registerForm]="ccFormVar"
+             min="0"
+             [registerValidators]="[minimum(0), required()]"
+             [ngStyle]="{ 'background-color' : min.control.errors ? 'pink' : 'white' }"
+             [registerModel]="min"
+             [required]="true"
+      />
+      <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"
+             #max="ngModel"
+             [name]="id+'-max'"
+             [id]="id+'-max'"
+             [registerForm]="ccFormVar"
+             [registerValidators]="[maximum(), required()]"
+             [ngStyle]="{ 'background-color' : max.control.errors ? 'pink' : 'white' }"
+             [registerModel]="max"
+             [required]="true"/>
+    </ng-template>
 
-<ng-template #usage let-node>
-  <p-dropdown appendTo="body" [options]="config.usages" [(ngModel)]="node.usage" [style]="{'width':'100%'}"></p-dropdown>
-</ng-template>
-
-<ng-template #cardinality let-node let-id="id">
-  <input [(ngModel)]="node.cardinality.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"
-         #min="ngModel"
-         [name]="id+'-min'"
-         [id]="id+'-min'"
-         [registerForm]="ccFormVar"
-         min="0"
-         [registerValidators]="[minimum(0), required()]"
-         [ngStyle]="{ 'background-color' : min.control.errors ? 'pink' : 'white' }"
-         [registerModel]="min"
-         [required]="true"
-  />
-  <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"
-         #max="ngModel"
-         [name]="id+'-max'"
-         [id]="id+'-max'"
-         [registerForm]="ccFormVar"
-         [registerValidators]="[maximum(), required()]"
-         [ngStyle]="{ 'background-color' : max.control.errors ? 'pink' : 'white' }"
-         [registerModel]="max"
-         [required]="true"/>
-</ng-template>
-
-<ng-template #valueset let-obj="obj" let-key="key" let-field="field">
-  <div style="width: 100%;" class="g-row">
-    <div class="ui-g-10">
+    <ng-template #valueset let-obj="obj" let-key="key" let-field="field">
+      <div style="width: 100%;" class="g-row">
+        <div class="ui-g-10">
             <span *ngFor="let vs of obj[key].vs" style="font-size : 1.15em;">
                 <span style="background-color: #c7cfcc" class="badge label-icon">
                     <span class="badge label-icon label-gray">VS</span>
                     <span style="color: black;">{{vs.bindingIdentifier}}</span>
                 </span>
             </span>
-    </div>
-    <div class="ui-g-2" style="padding: 0 !important;">
-      <i (click)="openVSDialog(obj,key, field)" class="fa fa-plus pull-right" aria-hidden="true"></i>
-    </div>
-  </div>
-</ng-template>
+        </div>
+        <div class="ui-g-2" style="padding: 0 !important;">
+          <i (click)="openVSDialog(obj,key, field)" class="fa fa-plus pull-right" aria-hidden="true"></i>
+        </div>
+      </div>
+    </ng-template>
 
-<ng-template #free>
+    <ng-template #free>
 
-  <table class="table table-bordered table-condensed no-margin">
-    <!--GROUPS DEFINITION-->
-    <colgroup span="1" class="first-td"></colgroup>
-    <colgroup span="1" class="first-td"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
-    <colgroup span="{{table.headers.selectors.length}}"
-              style="background-color:#B1daff; text-align: center;"></colgroup>
-    <colgroup span="{{table.headers.data.length}}"></colgroup>
-    <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
+      <table class="table table-bordered table-condensed no-margin">
+        <!--GROUPS DEFINITION-->
+        <colgroup span="1" class="first-td"></colgroup>
+        <colgroup span="1" class="first-td"></colgroup>
+        <colgroup span="1" class="small"></colgroup>
+        <colgroup span="1" class="small"></colgroup>
+        <colgroup span="{{table.headers.selectors.length}}"
+                  style="background-color:#B1daff; text-align: center;"></colgroup>
+        <colgroup span="{{table.headers.data.length}}"></colgroup>
+        <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
 
 
-    <!--FIRST GROUP HEADER-->
-    <thead>
-    <tr style="background-color: #f9f9f9; border-top : 2px solid black;">
-      <td></td>
-      <td class="first-td" style="text-align: center;">
+        <!--FIRST GROUP HEADER-->
+        <thead>
+        <tr style="background-color: #f9f9f9; border-top : 2px solid black;">
+          <td></td>
+          <td class="first-td" style="text-align: center;">
                   <span>
                     <i style="cursor: pointer; color: darkblue;" (click)="addCc(table.content.free)"
                        *ngIf="table.headers.selectors.length" class="fa fa-plus"></i>
                     <i style="cursor: pointer; color: red;" (click)="delGroup(list,index)" class="fa fa-times"></i>
                   </span>
 
-      </td>
-      <td [attr.colspan]="groupHeaderSize(table)+2"
-          [ngStyle]="{ 'min-width' : headWidth(table.content.free.length === 0, groupHeaderSize(table)) + 'px'}">
-        <!--<button pButton type="button" (click)="addCc(table.content.free)" *ngIf="table.headers.selectors.length" icon="fa-plus" iconPos="left" label="Add Co-Constraint"></button>-->
-        <span style="margin-left: 10px;">
+          </td>
+          <td [attr.colspan]="groupHeaderSize(table)+2"
+              [ngStyle]="{ 'min-width' : headWidth(table.content.free.length === 0, groupHeaderSize(table)) + 'px'}">
+            <!--<button pButton type="button" (click)="addCc(table.content.free)" *ngIf="table.headers.selectors.length" icon="fa-plus" iconPos="left" label="Add Co-Constraint"></button>-->
+            <span style="margin-left: 10px;">
                         <span class="badge label-gray">Co-Constraints Group</span>
                         <strong>Independent Co-Constraints</strong>
                     </span>
-      </td>
-    </tr>
-    </thead>
-    <ng-container *ngTemplateOutlet="cclist; context : {$implicit : table.content.free}"></ng-container>
-  </table>
+          </td>
+        </tr>
+        </thead>
+        <ng-container *ngTemplateOutlet="cclist; context : {$implicit : table.content.free}"></ng-container>
+      </table>
 
-</ng-template>
+    </ng-template>
 
-<ng-template #ccgroup let-node let-index="index" let-list="list">
-  <table class="table table-bordered table-condensed no-margin">
-    <!--GROUPS DEFINITION-->
-    <colgroup span="1" class="first-td"></colgroup>
-    <colgroup span="1" class="first-td"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
-    <colgroup span="1" class="small"></colgroup>
+    <ng-template #ccgroup let-node let-index="index" let-list="list">
+      <table class="table table-bordered table-condensed no-margin">
+        <!--GROUPS DEFINITION-->
+        <colgroup span="1" class="first-td"></colgroup>
+        <colgroup span="1" class="first-td"></colgroup>
+        <colgroup span="1" class="small"></colgroup>
+        <colgroup span="1" class="small"></colgroup>
 
-    <colgroup span="{{table.headers.selectors.length}}"
-              style="background-color:#B1daff; text-align: center;"></colgroup>
-    <colgroup span="{{table.headers.data.length}}"></colgroup>
-    <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
+        <colgroup span="{{table.headers.selectors.length}}"
+                  style="background-color:#B1daff; text-align: center;"></colgroup>
+        <colgroup span="{{table.headers.data.length}}"></colgroup>
+        <colgroup span="{{table.headers.user.length}}" style="background-color:#a7d6a9"></colgroup>
 
-    <!--FIRST GROUP HEADER-->
-    <thead>
-    <tr style="background-color: lightgrey; border-top : 2px solid black;">
-      <td class="first-td">
-        <i class="fa fa-bars" aria-hidden="true" *ngIf="dndGroups"></i>
-      </td>
-      <td class="first-td" style="text-align: center; vertical-align: middle;">
-        <i style="cursor: pointer; color: darkblue;" (click)="addCc(node.content.free)"
-           *ngIf="table.headers.selectors.length" class="fa fa-plus"></i>
-        <i style="cursor: pointer; color: red;" (click)="delGroup(list,index)" class="fa fa-times"></i>
-      </td>
-      <td class="small">
-        <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.data.requirements}"></ng-container>
-      </td>
-      <td class="small">
-        <ng-container
-          *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements, id : 'group'+index }"></ng-container>
-      </td>
-      <td [attr.colspan]="groupHeaderSize(table)"
-          [ngStyle]="{ 'min-width' : (headWidth(node.content.free.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
-        <span style="margin-left: 10px;" class="badge label-gray">Co-Constraints Group</span>
-        <input
-          style="width: 75% !important; font-weight: bold;"
-          [(ngModel)]="node.data.name"
-          type="text"
-          #groupM="ngModel"
-          [name]="'group'+index+'-name'"
-          [id]="'group'+index+'-name'"
-          [registerForm]="ccFormVar"
-          [registerModel]="groupM"
-          [required]="true"
-          placeholder="required">
-        <p *ngIf="groupM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-          {{groupM.control.errors.required ? 'Group name is required' : ''}}
-        </p>
-      </td>
+        <!--FIRST GROUP HEADER-->
+        <thead>
+        <tr style="background-color: lightgrey; border-top : 2px solid black;">
+          <td class="first-td">
+            <i class="fa fa-bars" aria-hidden="true" *ngIf="dndGroups"></i>
+          </td>
+          <td class="first-td" style="text-align: center; vertical-align: middle;">
+            <i style="cursor: pointer; color: darkblue;" (click)="addCc(node.content.free)"
+               *ngIf="table.headers.selectors.length" class="fa fa-plus"></i>
+            <i style="cursor: pointer; color: red;" (click)="delGroup(list,index)" class="fa fa-times"></i>
+          </td>
+          <td class="small">
+            <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.data.requirements}"></ng-container>
+          </td>
+          <td class="small">
+            <ng-container
+              *ngTemplateOutlet="cardinality; context : {$implicit : node.data.requirements, id : 'group'+index }"></ng-container>
+          </td>
+          <td [attr.colspan]="groupHeaderSize(table)"
+              [ngStyle]="{ 'min-width' : (headWidth(node.content.free.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
+            <span style="margin-left: 10px;" class="badge label-gray">Co-Constraints Group</span>
+            <input
+              style="width: 75% !important; font-weight: bold;"
+              [(ngModel)]="node.data.name"
+              type="text"
+              #groupM="ngModel"
+              [name]="'group'+index+'-name'"
+              [id]="'group'+index+'-name'"
+              [registerForm]="ccFormVar"
+              [registerModel]="groupM"
+              [required]="true"
+              placeholder="required">
+            <p *ngIf="groupM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+              {{groupM.control.errors.required ? 'Group name is required' : ''}}
+            </p>
+          </td>
 
-    </tr>
-    </thead>
-    <ng-container *ngTemplateOutlet="cclist; context : {$implicit : node.content.free}"></ng-container>
-  </table>
-</ng-template>
+        </tr>
+        </thead>
+        <ng-container *ngTemplateOutlet="cclist; context : {$implicit : node.content.free}"></ng-container>
+      </table>
+    </ng-template>
 
-<ng-template #cclist let-list>
-  <tbody [dndList]="{
+    <ng-template #cclist let-list>
+      <tbody [dndList]="{
             disabled: false,
             effectAllowed: 'move',
             allowedTypes: ['cc']}"
-         (dndDrop)="onDrop()"
-         [dndPlaceholder]="placeholder"
-         [dndModel]="list">
+             (dndDrop)="onDrop()"
+             [dndPlaceholder]="placeholder"
+             [dndModel]="list">
 
-  <tr *ngFor="let row of list; let i = index"
-      [dndType]="'cc'"
-      (dndDragStart)="onDragStart()"
-      (dndDragEnd)="onDrop()"
-      [dndDraggable]="{draggable:true, effectAllowed:'move'}"
-      [dndObject]="row"
-      (dndMoved)="removeItem(row, list)">
+      <tr *ngFor="let row of list; let i = index"
+          [dndType]="'cc'"
+          (dndDragStart)="onDragStart()"
+          (dndDragEnd)="onDrop()"
+          [dndDraggable]="{draggable:true, effectAllowed:'move'}"
+          [dndObject]="row"
+          (dndMoved)="removeItem(row, list)">
 
-    <!--HANDLE-->
-    <td class="first-td" style="text-align: center; vertical-align: middle;">
-      <i class="fa fa-bars" aria-hidden="true"></i>
-    </td>
+        <!--HANDLE-->
+        <td class="first-td" style="text-align: center; vertical-align: middle;">
+          <i class="fa fa-bars" aria-hidden="true"></i>
+        </td>
 
-    <!--DELETE BUTTON-->
-    <td class="first-td" style="text-align: center; vertical-align: middle;">
-      <i (click)="delRow(list,i)" style="cursor: pointer; color: red;" class="fa fa-times"></i>
-    </td>
+        <!--DELETE BUTTON-->
+        <td class="first-td" style="text-align: center; vertical-align: middle;">
+          <i (click)="delRow(list,i)" style="cursor: pointer; color: red;" class="fa fa-times"></i>
+        </td>
 
-    <!--REQUIREMENTS-->
-    <td class="small">
-      <ng-container *ngTemplateOutlet="usage; context : {$implicit : row.requirements}"></ng-container>
-    </td>
-    <td class="small">
-      <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements, id : row.id}"></ng-container>
-    </td>
+        <!--REQUIREMENTS-->
+        <td class="small">
+          <ng-container *ngTemplateOutlet="usage; context : {$implicit : row.requirements, id : row.id}"></ng-container>
+        </td>
+        <td class="small">
+          <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : row.requirements, id : row.id}"></ng-container>
+        </td>
 
-    <!--SELECTORS-->
-    <ng-container *ngIf="!table.headers.selectors.length">
-      <td class="table-ndef wide"></td>
-    </ng-container>
+        <!--SELECTORS-->
+        <ng-container *ngIf="!table.headers.selectors.length">
+          <td class="table-ndef wide"></td>
+        </ng-container>
 
-    <td class="wide" *ngFor="let field of table.headers.selectors">
-      <ng-container *ngIf="row.cells[field.id]">
-        <ng-container *ngTemplateOutlet="cTemplate(field); context :
+        <td class="wide" *ngFor="let field of table.headers.selectors">
+          <ng-container *ngIf="row.cells[field.id]">
+            <ng-container *ngTemplateOutlet="cTemplate(field); context :
                     {
                         $implicit : row.cells[field.id],
                         obj : row.cells,
@@ -464,17 +462,17 @@
                         id : row.id
 
                     }"></ng-container>
-      </ng-container>
-    </td>
+          </ng-container>
+        </td>
 
-    <!--DATA-->
-    <ng-container *ngIf="!table.headers.data.length">
-      <td class="table-ndef wide"></td>
-    </ng-container>
+        <!--DATA-->
+        <ng-container *ngIf="!table.headers.data.length">
+          <td class="table-ndef wide"></td>
+        </ng-container>
 
-    <td class="wide" *ngFor="let field of table.headers.data">
-      <ng-container *ngIf="row.cells[field.id]">
-        <ng-container *ngTemplateOutlet="cTemplate(field); context :
+        <td class="wide" *ngFor="let field of table.headers.data">
+          <ng-container *ngIf="row.cells[field.id]">
+            <ng-container *ngTemplateOutlet="cTemplate(field); context :
                     {
                         $implicit : row.cells[field.id],
                         field : field,
@@ -485,40 +483,40 @@
                         id : row.id
 
                     }"></ng-container>
-      </ng-container>
-    </td>
+          </ng-container>
+        </td>
 
-    <!--USER-->
-    <ng-container *ngIf="!table.headers.user.length">
-      <td class="table-ndef wide"></td>
-    </ng-container>
+        <!--USER-->
+        <ng-container *ngIf="!table.headers.user.length">
+          <td class="table-ndef wide"></td>
+        </ng-container>
 
-    <td class="wide" *ngFor="let field of table.headers.user">
-      <ng-container *ngIf="row.cells[field.id]">
-        <ng-container *ngTemplateOutlet="cTemplate(field); context :
+        <td class="wide" *ngFor="let field of table.headers.user">
+          <ng-container *ngIf="row.cells[field.id]">
+            <ng-container *ngTemplateOutlet="cTemplate(field); context :
                     {
                         $implicit : row.cells[field.id],
                         obj : row.cells,
                         key : field.id,
-                        req : false
-
+                        req : false,
+                        id : row.id
                     }"></ng-container>
-      </ng-container>
-    </td>
+          </ng-container>
+        </td>
 
 
-  </tr>
-  <tr *ngIf="!list || list.length == 0" style="background-color: #ececec; font-weight: bold; text-align: center;">
-    <td [attr.colspan]="groupHeaderSize(table)+4"
-        [ngStyle]="{ 'min-width' : (headWidth(list.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
-      No Co-Constraint Defined
-    </td>
-  </tr>
-  </tbody>
-</ng-template>
+      </tr>
+      <tr *ngIf="!list || list.length == 0" style="background-color: #ececec; font-weight: bold; text-align: center;">
+        <td [attr.colspan]="groupHeaderSize(table)+4"
+            [ngStyle]="{ 'min-width' : (headWidth(list.length === 0, groupHeaderSize(table)) - 200) + 'px' }">
+          No Co-Constraint Defined
+        </td>
+      </tr>
+      </tbody>
+    </ng-template>
 
-<ng-template #dataElement let-header let-index="index" let-list="list">
-  <div style="width: 100%; text-align: center; vertical-align : middle; font-size: 13px;">
+    <ng-template #dataElement let-header let-index="index" let-list="list">
+      <div style="width: 100%; text-align: center; vertical-align : middle; font-size: 13px;">
         <span>
             <span *ngIf="header.template">
                 <span class="badge label-icon label-gray">{{header.template}}</span>
@@ -527,66 +525,70 @@
                 <span class="badge label-icon label-gray">{{header.content.type}}</span>
             </span>
         </span>
-    <display-badge [type]="header.content.elmType"></display-badge>
-    <strong>{{header.label}}</strong>
-    <i *ngIf="!header.keep" (click)="delCol(list, index, header.id)" style="color: red; cursor: pointer; right : 3px;"
-       class="fa fa-times" aria-hidden="true"></i>
-  </div>
-</ng-template>
+        <display-badge [type]="header.content.elmType"></display-badge>
+        <strong>{{header.label}}</strong>
+        <i *ngIf="!header.keep" (click)="delCol(list, index, header.id)" style="color: red; cursor: pointer; right : 3px;"
+           class="fa fa-times" aria-hidden="true"></i>
+      </div>
+    </ng-template>
 
-<ng-template #userHeader let-header let-index="index" let-list="list">
-  {{header.label}}
-  <i *ngIf="!header.keep" (click)="delCol(list, index, header.id)" style="color: red; cursor: pointer; float: right;"
-     class="fa fa-times" aria-hidden="true"></i>
-</ng-template>
+    <ng-template #userHeader let-header let-index="index" let-list="list">
+      {{header.label}}
+      <i *ngIf="!header.keep" (click)="delCol(list, index, header.id)" style="color: red; cursor: pointer; float: right;"
+         class="fa fa-times" aria-hidden="true"></i>
+    </ng-template>
 
-<ng-template #datatype let-node let-cc="obj" let-form="form" let-id="id" let-key="key">
-  <p-dropdown #dtModel="ngModel"
-              #dtField
-              placeholder="Datatype"
-              [options]="config.dynCodes"
-              appendTo="body"
-              [name]="'dt-'+id+'-'+key"
-              [id]="'dt-'+id+'-'+key"
-              [registerForm]="form"
-              [registerModel]="dtModel"
-              [required]="true"
-              [(ngModel)]="node.value"
-              [style]="{'width':'100%', 'text-align' : 'center'}"
-              (onChange)="dtChange(cc.k2p1)"></p-dropdown>
+    <ng-template #datatype let-node let-cc="obj" let-form="form" let-id="id" let-key="key">
+      <p-dropdown #dtModel="ngModel"
+                  #dtField
+                  placeholder="Datatype"
+                  [options]="config.dynCodes"
+                  appendTo="body"
+                  [name]="'dt-'+id+'-'+key"
+                  [id]="'dt-'+id+'-'+key"
+                  [registerForm]="form"
+                  [registerModel]="dtModel"
+                  [required]="true"
+                  [(ngModel)]="node.value"
+                  [style]="{'width':'100%', 'text-align' : 'center'}"
+                  (onChange)="dtChange(cc.k2p1)"></p-dropdown>
 
-  <p *ngIf="dtModel.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-    {{dtModel.control.errors.required ? 'This field is required' :
-    dtModel.control.errors.unique ? dtModel.control.errors.unique : ''}}
-  </p>
-</ng-template>
+      <p *ngIf="dtModel.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+        {{dtModel.control.errors.required ? 'This field is required' :
+        dtModel.control.errors.unique ? dtModel.control.errors.unique : ''}}
+      </p>
+    </ng-template>
 
-<ng-template #flavor let-node let-cc="obj" let-form="form" let-id="id" let-key="key">
-  <div *ngIf="cc.k2.value && config.datatypes.length > 0">
-    <p-dropdown #flavorM="ngModel"
-                placeholder="Flavor"
-                [options]="config.datatypes | dtFlavor : cc.k2.value"
-                appendTo="body"
-                [name]="'fl-'+id+'-'+key"
-                [id]="'fl-'+id+'-'+key"
-                [registerForm]="form"
-                [registerModel]="flavorM"
-                [required]="true"
-                [(ngModel)]="node.value"
-                [style]="{'width':'100%', 'text-align' : 'center'}">
-      <ng-template let-item pTemplate="selectedItem">
-        <display-label [elm]="item.display" [redirect]="false"></display-label>
-      </ng-template>
-      <ng-template let-item pTemplate="item">
-        <display-label [elm]="item.display" [redirect]="false"></display-label>
-      </ng-template>
-    </p-dropdown>
-    <p *ngIf="flavorM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
-      {{flavorM.control.errors.required ? 'This field is required' :
-      flavorM.control.errors.unique ? flavorM.control.errors.unique : ''}}
-    </p>
-  </div>
-</ng-template>
+    <ng-template #flavor let-node let-cc="obj" let-form="form" let-id="id" let-key="key">
+      <div *ngIf="cc.k2.value && config.datatypes.length > 0">
+        <p-dropdown #flavorM="ngModel"
+                    placeholder="Flavor"
+                    [options]="config.datatypes | dtFlavor : cc.k2.value"
+                    appendTo="body"
+                    [name]="'fl-'+id+'-'+key"
+                    [id]="'fl-'+id+'-'+key"
+                    [registerForm]="form"
+                    [registerModel]="flavorM"
+                    [required]="true"
+                    [(ngModel)]="node.value"
+                    [style]="{'width':'100%', 'text-align' : 'center'}">
+          <ng-template let-item pTemplate="selectedItem">
+            <display-label [elm]="item.display" [redirect]="false"></display-label>
+          </ng-template>
+          <ng-template let-item pTemplate="item">
+            <display-label [elm]="item.display" [redirect]="false"></display-label>
+          </ng-template>
+        </p-dropdown>
+        <p *ngIf="flavorM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
+          {{flavorM.control.errors.required ? 'This field is required' :
+          flavorM.control.errors.unique ? flavorM.control.errors.unique : ''}}
+        </p>
+      </div>
+    </ng-template>
+  </form>
+</div>
+
+
 
 
 
