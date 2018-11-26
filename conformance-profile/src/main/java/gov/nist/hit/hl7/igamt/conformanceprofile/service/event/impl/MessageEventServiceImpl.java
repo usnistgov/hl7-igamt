@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.event.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,16 +52,28 @@ public class MessageEventServiceImpl implements MessageEventService {
       treedata.setName(msgEvent.getName());
       treedata.setType(msgEvent.getType());
       treedata.setDescription(msgEvent.getDescription());
+      List<EventTreeNode> children= new ArrayList<EventTreeNode>();
 
       for (Event ev : msgEvent.getChildren()) {
+    	  
+    	  
         EventTreeData data = new EventTreeData();
         data.setName(ev.getName());
+        data.setHl7Version(ev.getHl7Version());
+
         data.setParentStructId(ev.getParentStructId());
         data.setId(ev.getId());
         EventTreeNode node = new EventTreeNode();
+        node.setName(ev.getName());
         node.setData(data);
-        treenode.getChildren().add(node);
+        children.add(node);
+        
       }
+	  children = children.stream().sorted((EventTreeNode t1, EventTreeNode t2) -> t1.compareTo(t2)).collect(Collectors.toList());
+      for(int i=0;i<children.size();i++) {
+    	  children.get(i).getData().setName(children.get(i).getData().getName());
+      }
+    	  treenode.setChildren(children);
       treeNodes.add(treenode);
     }
     Collections.sort(treeNodes);

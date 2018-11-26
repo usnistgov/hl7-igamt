@@ -1,4 +1,4 @@
-<p-dialog [(visible)]="_visible">
+<p-dialog [(visible)]="_visible" [modal]="true" positionTop="200" positionLeft="400">
     <p-header>
       Add Conformance Profile
     </p-header>
@@ -22,48 +22,77 @@
     </ng-container>
   </div>
 
-  <p-treeTable *ngIf="selcetedVersion" [value]="tableValue"  selectionMode="checkbox" [(selection)]="selectdNodeMap[selectedVerion]" [style]="{'margin-top':'10px', 'max-height':'400px', 'overflow':'scroll'}">
+  <p-table #dt *ngIf="selcetedVersion" [value]="tableValue" dataKey="data.name" [globalFilterFields]="['data.name','children.data.name']" scrollable="true" scrollHeight="500px">
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <i class="fa fa-search" style="margin:4px 4px 0 0"></i>
+        <input type="text" pInputText size="50" placeholder="search by message structure" (input)="dt.filterGlobal($event.target.value, 'contains')" style="width:auto">
+      </div>
+    </ng-template>
+    <ng-template pTemplate="header" let-columns>
+      <tr>
+        <th>
+          Message Structure
+        </th>
+        <th>
+          Message Event
+        </th>
+        <th>
+          Description
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body"  let-node="node" let-rowNode let-expanded="expanded" let-rowData let-columns="columns">
+      <tr>
+        <td>
 
-  <ng-template pTemplate="header" let-columns>
-    <tr>
-      <th>
-       Name
-      </th>
-      <th>
-        Event Types
-      </th>
-      <th>
-        Description
-      </th>
-    </tr>
-  </ng-template>
-  <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
-    <tr>
-      <td>
+          <!--<a [pRowToggler]="rowData">-->
+          <!--<i [ngClass]="expanded ? 'pi pi-chevron-down' : 'pi pi-chevron-right'"></i>-->
+          <!--</a>-->
+          {{rowData.data.name}}
 
-        <p-treeTableToggler [rowNode]="rowNode"></p-treeTableToggler>
-        <span *ngIf="node.data.type=='EVENTS'"> {{node.data.name}}</span>
+        </td>
+        <td>
+          <!--<span *ngIf="rowData.data.type=='EVENT' ">  {{rowData.data.name}}</span>-->
 
-      </td>
-      <td>
-        <span *ngIf="node.data.type=='EVENT' ">  <p-treeTableCheckbox [value]="rowNode" ></p-treeTableCheckbox> {{node.data.name}}</span>
+          <div *ngFor="let i of rowData.children">
+            <input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />
+            {{i.data.name}}
+          </div>
+        </td>
+
+        <td>
+
+          {{rowData.data.description}}
+        </td>
+      </tr>
+    </ng-template>
 
 
 
+    <!--<ng-template pTemplate="rowexpansion" let-rowData let-columns="columns">-->
+    <!--<tr>-->
+    <!--<td [attr.colspan]="1">-->
 
-      </td>
+    <!--</td>-->
+    <!--<td [attr.colspan]="1">-->
 
-      <td>
+    <!--<div *ngFor="let i of rowData.children">-->
+    <!--<input type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)" />-->
+    <!--{{i.data.name}}-->
+    <!--</div>-->
+    <!--</td>-->
+    <!--<td [attr.colspan]="1">-->
 
-        {{node.data.description}}
-      </td>
-    </tr>
-  </ng-template>
-  </p-treeTable>
+    <!--</td>-->
+    <!--</tr>-->
+    <!--</ng-template>-->
+  </p-table>
+
 
 
   <p-footer>
-    <p-button    styleClass="green-btn" [disabled] ="!selectedSize" (onClick)="addMessages()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
+    <p-button    styleClass="green-btn" [disabled] ="selectedEvents.length==0" (onClick)="addMessages()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>
   </p-footer>
 
 </p-dialog>

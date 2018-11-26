@@ -48,9 +48,9 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  ConfigService sharedConstantService;
 //  
-//  @Autowired
-//  MessageEventFacory messageEventFactory;
-//  
+  @Autowired
+  MessageEventFacory messageEventFactory;
+  
 		
 		 
 
@@ -147,8 +147,8 @@ public class BootstrapApplication implements CommandLineRunner {
   //
 //   @PostConstruct
 //   void createMessageEvent() {
-//    System.out.println("creating message Event");
 //    messageEventFactory.createMessageEvent();
+//    System.out.println("done");
 //   }
 //  
    //

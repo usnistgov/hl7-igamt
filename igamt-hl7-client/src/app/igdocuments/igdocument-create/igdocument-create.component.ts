@@ -10,7 +10,7 @@ import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {Router, ActivatedRoute} from "@angular/router";
 import {MenuItem} from 'primeng/api';
 import {BreadcrumbService} from "../../breadcrumb.service";
-
+import * as _ from 'lodash';
 
 @Component({
   templateUrl: './igdocument-create.component.html'
@@ -21,7 +21,7 @@ export class IgDocumentCreateComponent {
   loading=false;
   uploadedFiles: any[] = [];
   activeIndex: number = 0;
-  selectedVerion:any;
+  selectedVerion :any;
   blockUI=false;
 
   metaData: any= {};
@@ -38,13 +38,15 @@ export class IgDocumentCreateComponent {
   hl7Versions: any[];
   selcetedVersion: any =null;
 
-  constructor(private _formBuilder: FormBuilder,private createService :IgDocumentCreateService,
+  selectedEvents:any[]=[];
+  constructor(private createService :IgDocumentCreateService,
               private router: Router,    private route: ActivatedRoute, private ws :  WorkspaceService, private  breadCrump:BreadcrumbService
   ) {
     this.path=[{label:"Igdocuments"},{label:"create new IG document"}];
     this.breadCrump.setItems(this.path);
     this.hl7Versions=ws.getAppConstant().hl7Versions;
   }
+
 
   ngOnInit() {
 
@@ -84,52 +86,30 @@ export class IgDocumentCreateComponent {
   getMessages(v){
     this.tableValue=[];
     this.selectedVerion=v;
-    console.log(v);
-    if(this.tableValueMap[v]){
-
-
-      this.tableValue=this.tableValueMap[this.selectedVerion];
-      if(this.selectdNodeMap[v]){
-        this.selectdNodeMap[this. selcetedVersion]=this.selectdNodeMap[v];
-
-      }
-
-    }else{
       this.createService.getMessagesByVersion(v).subscribe(x=>{
-
         console.log(this.selectedVerion);
         this.tableValue=x;
-        this.tableValueMap[this.selectedVerion]= this.tableValue;
-        this.selectdNodeMap[this.selectedVerion]=this.selectdNodeMap[this. selcetedVersion];
       })
-
-    }
-
   }
 
-  nodeSelect(event){
+
+
+
+  toggleEvent(event){
     console.log(event);
-  };
+    console.log(this.selectedEvents);
+   let index =this.selectedEvents.indexOf(event);
+    if(index<0){
+      this.selectedEvents.push(event);
 
-  toggle(node){
-    if(node.data.checked){
-      this.addNode(node);
     }else{
-      this.removeNode(node);
+      this.selectedEvents.splice(index,1);
     }
-  };
+  }
 
-  addNode(node){
-    console.log("Add Node");
-    console.log(node);
-
-  };
-
-  removeNode(node){
-    console.log("Remove");
-    console.log(node);
-
-  };
+  isSelected(event){
+   return this.selectedEvents.indexOf(event)>-1;
+  }
 
   submitEvent(){
     for(let i=0 ;i<this.selectdNodeMap[this. selcetedVersion].length; i++){
@@ -177,24 +157,8 @@ export class IgDocumentCreateComponent {
   create(){
     let wrapper:any ={};
 
-
-  let versions= Object.keys(this.selectdNodeMap);
-
-
-    for(let i = 0 ; i<versions.length; i++){
-      let version = versions[i];
-      console.log(this.selectdNodeMap[version]);
-      if(this.selectdNodeMap[version]) {
-        for (let j = 0; j < this.selectdNodeMap[version].length; j++) {
-          this.selectNode(this.selectdNodeMap[version][j]);
-        }
-      }
-
-  };
-
-  wrapper.msgEvts=this.msgEvts;
+  wrapper.msgEvts=this.selectedEvents;
   wrapper.metaData=this.metaData;
-  this.blockUI=true;
 
 
     this.createService.createIntegrationProfile(wrapper).subscribe(
@@ -206,25 +170,14 @@ export class IgDocumentCreateComponent {
 
   };
 
-  convertNodeToData(){
-
-
-
-  }
 
   goTo(res:any) {
-
-console.log(res);
-
     this.route.queryParams
       .subscribe(params => {
         var link="/ig/"+res.data;
         this.loading=false;
         this.router.navigate([link], params); // add the parameters to the end
       });
-
-
-
   }
 
   print(obj){
@@ -288,12 +241,9 @@ console.log(res);
   unselect(selected :any){
     console.log(selected);
 
-    let index = this.selectdNodeMap[this.selcetedVersion].indexOf(selected);
+    let index =this.selectedEvents.indexOf(selected);
     if(index >-1){
-      this.selectdNodeMap[this.selcetedVersion].splice(index,1);
-      if(selected.parent){
-        this.unselectParent(selected.parent);
-      }
+      this.selectedEvents.splice(index,1);
     }
   }
 
@@ -342,16 +292,9 @@ console.log(res);
 
   upload(event) {
     this.metaData.coverPicture =JSON.parse(event.xhr.response).link;
-
     for(let file of event.files) {
       this.uploadedFiles.push(file);
-
     }
-
-
   }
-
-
-
 
 }
