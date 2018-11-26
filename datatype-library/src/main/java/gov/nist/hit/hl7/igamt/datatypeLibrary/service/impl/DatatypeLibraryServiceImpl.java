@@ -82,7 +82,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   @Override
   public DatatypeLibrary findById(String id) {
     // TODO Auto-generated method stub
-    return datatypeLibraryRepository.findById(id).get();
+    return datatypeLibraryRepository.findById(id).orElse(null);
   }
 
   @Override
@@ -130,7 +130,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     List<SectionTemplate> datatypeLibraryTemplate =
         objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
-    emptyLibrary.setId(new String());
     emptyLibrary.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
     for (SectionTemplate template : datatypeLibraryTemplate) {
@@ -233,8 +232,6 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
               reg.getChildren().add(link);
             }
           } else {
-
-
             throw new AddingException("Could not find Datata type  with id " + id);
 
           }

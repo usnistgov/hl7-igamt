@@ -36,7 +36,7 @@ public interface IgService {
 
   public List<Ig> finByScope(String string);
 
-  public Ig CreateEmptyIg()
+  public Ig createEmptyIg()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException;
 
   public List<Ig> findIgIdsForUser(String username);

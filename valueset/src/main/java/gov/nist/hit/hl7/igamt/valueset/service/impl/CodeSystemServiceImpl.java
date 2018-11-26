@@ -43,7 +43,7 @@ public class CodeSystemServiceImpl implements CodeSystemService {
   
   @Override
   public CodeSystem findById(String id) {
-    return codeSystemRepository.findById(id).get();
+    return codeSystemRepository.findById(id).orElse(null);
   }
 
   @Override

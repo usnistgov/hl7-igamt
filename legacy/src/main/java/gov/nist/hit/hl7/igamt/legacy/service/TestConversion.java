@@ -19,7 +19,7 @@ public class TestConversion {
    new ConformanceProfileConversionServiceImpl().convert();
 //   new CompositeProfileStructureConversionServiceImpl().convert();
    new IgDocumentConversionServiceImpl().convert();
-  
+   System.out.println("Lagacy transformation done"); 
   }
 
   
