@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.Comp
  */
 public class SingleAssertion extends Assertion {
 
+  private String id;
   private Subject subject;
   private String verbKey;
   private Complement complement;
@@ -56,5 +57,13 @@ public class SingleAssertion extends Assertion {
   public String toString() {
     return "SingleAssertion [subject=" + subject + ", verbKey=" + verbKey + ", complement="
         + complement + "]";
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
   }
 }

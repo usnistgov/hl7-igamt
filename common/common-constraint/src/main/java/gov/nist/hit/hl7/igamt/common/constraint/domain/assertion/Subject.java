@@ -17,6 +17,43 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
  */
 public class Subject {
 
+  private String occurenceType;
+  private String occurenceValue;
+  private String occurenceIdPath;
+  private String occurenceLocationStr;
+  
+  public String getOccurenceType() {
+    return occurenceType;
+  }
+
+  public void setOccurenceType(String occurenceType) {
+    this.occurenceType = occurenceType;
+  }
+
+  public String getOccurenceValue() {
+    return occurenceValue;
+  }
+
+  public void setOccurenceValue(String occurenceValue) {
+    this.occurenceValue = occurenceValue;
+  }
+
+  public String getOccurenceIdPath() {
+    return occurenceIdPath;
+  }
+
+  public void setOccurenceIdPath(String occurenceIdPath) {
+    this.occurenceIdPath = occurenceIdPath;
+  }
+
+  public String getOccurenceLocationStr() {
+    return occurenceLocationStr;
+  }
+
+  public void setOccurenceLocationStr(String occurenceLocationStr) {
+    this.occurenceLocationStr = occurenceLocationStr;
+  }
+
   private Path path;
 
   public Subject() {
