@@ -25,8 +25,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     segmentId:any;
     igId:any;
     segmentConformanceStatements:any;
-    idMap: any;
-    treeData: any[];
     constraintTypes: any = [];
     assertionModes: any = [];
     backup:any;
@@ -35,12 +33,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     segmentStructure : any;
     listTab: boolean = true;
     editorTab: boolean = false;
-
-    valuesetsLinks :any = [];
-    datatypesLinks :any = [];
-    datatypeOptions:any = [];
-    valuesetOptions:any = [{label:'Select ValueSet', value:null}];
-
 
     changeItems:any[];
 
@@ -51,11 +43,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         private route: ActivatedRoute,
         private router : Router,
         private segmentsService : SegmentsService,
-        private datatypesService : DatatypesService,
         private configService : GeneralConfigurationService,
         private constraintsService : ConstraintsService,
-        private igErrorService:IgErrorService,
-        private tocService:TocService
     ){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
@@ -73,8 +62,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
         this.igId = this.router.url.split("/")[2];
-        this.idMap = {};
-        this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
 
         this.route.data.subscribe(data => {
@@ -122,15 +109,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
 
-    getDatatypeLink(id){
-        for (let dt of this.datatypesLinks) {
-            if(dt.id === id) return JSON.parse(JSON.stringify(dt));
-        }
-        console.log("Missing DT:::" + id);
-        return null;
-    }
-
-
     changeType(){
         if(this.selectedConformanceStatement.displayType == 'simple'){
             this.selectedConformanceStatement.assertion = {};
@@ -148,41 +126,6 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         }else if(this.selectedConformanceStatement.displayType == 'complex'){
             this.selectedConformanceStatement.assertion = {};
             this.selectedConformanceStatement.type = "ASSERTION";
-        }
-    }
-
-    changeAssertionMode(){
-        if(this.selectedConformanceStatement.assertion.mode == 'SIMPLE'){
-            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.assertion.mode === 'ANDOR'){
-            this.selectedConformanceStatement.assertion.child = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
-            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
-            this.selectedConformanceStatement.assertion.operator = 'AND';
-            this.selectedConformanceStatement.assertion.assertions = [];
-            this.selectedConformanceStatement.assertion.assertions.push({
-                "mode": "SIMPLE"
-            });
-
-            this.selectedConformanceStatement.assertion.assertions.push({
-                "mode": "SIMPLE"
-            });
-        }else if(this.selectedConformanceStatement.assertion.mode === 'NOT'){
-            this.selectedConformanceStatement.assertion.assertions = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
-            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
-            this.selectedConformanceStatement.assertion.child = {
-                "mode": "SIMPLE"
-            };
-        }else if(this.selectedConformanceStatement.assertion.mode === 'IFTHEN'){
-            this.selectedConformanceStatement.assertion.assertions = undefined;
-            this.selectedConformanceStatement.assertion.child = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = {
-                "mode": "SIMPLE"
-            };
-            this.selectedConformanceStatement.assertion.thenAssertion = {
-                "mode": "SIMPLE"
-            };
         }
     }
 
@@ -263,7 +206,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     hasChanged(){
-        return this.editForm && this.editForm.touched && this.editForm.dirty;
-
+        if(this.changeItems && this.changeItems.length > 0) return true;
+        return false;
     }
 }
