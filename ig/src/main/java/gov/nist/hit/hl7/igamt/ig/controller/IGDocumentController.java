@@ -30,6 +30,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
@@ -358,6 +359,7 @@ public class IGDocumentController extends BaseController {
         if (profile != null) {
           ConformanceProfile clone = profile.clone();
           clone.setUsername(username);
+          clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
           clone.setId(new ObjectId().toString());
           clone.setName(profile.getName());
@@ -367,6 +369,9 @@ public class IGDocumentController extends BaseController {
       }
       empty.setId(new ObjectId().toString());
       empty.setUsername(username);
+      DomainInfo info = new DomainInfo();
+      info.setScope(Scope.USER);
+      empty.setDomainInfo(info);
       Date date = new Date();
       empty.setCreationDate(date);
       empty.setUpdateDate(date);
@@ -653,6 +658,8 @@ public class IGDocumentController extends BaseController {
     clone.setUsername(username);
     clone.setId(new ObjectId().toString());
     clone.setName(wrapper.getName());
+    clone.getDomainInfo().setScope(Scope.USER);
+
     clone = conformanceProfileService.save(clone);
     ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId()));
     igService.save(ig);
@@ -678,6 +685,8 @@ public class IGDocumentController extends BaseController {
     clone.setId(new ObjectId().toString());
     clone.setName(segment.getName());
     clone.setExt(wrapper.getExt());
+    clone.getDomainInfo().setScope(Scope.USER);
+
     clone = segmentService.save(clone);
     ig.getSegmentRegistry().getChildren().add(new Link(clone.getId()));
     igService.save(ig);
@@ -702,6 +711,8 @@ public class IGDocumentController extends BaseController {
     clone.setUsername(username);
     clone.setId(new ObjectId().toString());
     clone.setExt(wrapper.getExt());
+    clone.getDomainInfo().setScope(Scope.USER);
+
     clone = datatypeService.save(clone);
     ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
     igService.save(ig);
@@ -723,9 +734,12 @@ public class IGDocumentController extends BaseController {
       throw new CloneException("Cannot find valueset with id=" + wrapper.getId());
     }
     Valueset clone = valueset.clone();
+    clone.getDomainInfo().setScope(Scope.USER);
+
     clone.setUsername(username);
     clone.setId(new ObjectId().toString());
     clone.setBindingIdentifier(wrapper.getName());
+    clone.getDomainInfo().setScope(Scope.USER);
     ig.getValueSetRegistry().getChildren().add(new Link(clone.getId()));
     clone = valuesetService.save(clone);
     igService.save(ig);
@@ -748,6 +762,8 @@ public class IGDocumentController extends BaseController {
       if (profile != null) {
         ConformanceProfile clone = profile.clone();
         clone.setUsername(username);
+        clone.getDomainInfo().setScope(Scope.USER);
+
         clone.setEvent(ev.getName());
         clone.setId(new ObjectId().toString());
         clone.setName(profile.getName());
@@ -774,6 +790,8 @@ public class IGDocumentController extends BaseController {
         Segment segment = segmentService.findById(elm.getId());
         if (segment != null) {
           Segment clone = segment.clone();
+          clone.getDomainInfo().setScope(Scope.USER);
+
           clone.setUsername(username);
           clone.setId(new ObjectId().toString());
           clone.setName(segment.getName());
@@ -803,6 +821,8 @@ public class IGDocumentController extends BaseController {
         Datatype datatype = datatypeService.findById(elm.getId());
         if (datatype != null) {
           Datatype clone = datatype.clone();
+          clone.getDomainInfo().setScope(Scope.USER);
+
           clone.setUsername(username);
           clone.setId(new ObjectId().toString());
           clone.setName(datatype.getName());
@@ -833,6 +853,8 @@ public class IGDocumentController extends BaseController {
         Valueset valueset = valuesetService.findById(elm.getId());
         if (valueset != null) {
           Valueset clone = valueset.clone();
+          clone.getDomainInfo().setScope(Scope.USER);
+
           clone.setUsername(username);
           clone.setId(new ObjectId().toString());
           clone.setBindingIdentifier(elm.getName());
@@ -854,8 +876,11 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id,
       Authentication authentication) throws IGNotFoundException, CoConstraintSaveException {
     String username = authentication.getPrincipal().toString();
+
     Ig ig = findIgById(id);
     Ig clone =this.igService.clone(ig, username);
+    clone.getDomainInfo().setScope(Scope.USER);
+
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", ig.getId(), false, ig.getUpdateDate(),  ig.getId());
 
 

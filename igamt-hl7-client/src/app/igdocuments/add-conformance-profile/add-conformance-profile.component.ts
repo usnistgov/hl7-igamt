@@ -8,7 +8,6 @@ import {ChangeDetectionStrategy} from "@angular/core";
 @Component({
   selector: 'app-add-conformance-profile',
   templateUrl: './add-conformance-profile.component.html',
-  changeDetection:ChangeDetectionStrategy.OnPush,
   styleUrls: ['./add-conformance-profile.component.css']
 })
 export class AddConformanceProfileComponent extends PrimeDialogAdapter{
@@ -17,6 +16,7 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
   id:any;
 
   selectedSize=0;
+  selectedEvents:any[]=[];
 
   tableValue :any;
   tableValueMap={};
@@ -62,78 +62,42 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
     this.dismissWithData(res.data);
   }
 
+  toggleEvent(event){
+    console.log(event);
+    console.log(this.selectedEvents);
+    let index =this.selectedEvents.indexOf(event);
+    if(index<0){
+      this.selectedEvents.push(event);
+
+    }else{
+      this.selectedEvents.splice(index,1);
+    }
+  }
+
+  isSelected(event){
+    return this.selectedEvents.indexOf(event)>-1;
+  }
+
   getMessages(v){
     this.tableValue=[];
     this.selectedVerion=v;
-    console.log(v);
-    if(this.tableValueMap[v]){
 
-
-      this.tableValue=this.tableValueMap[this.selectedVerion];
-      if(this.selectdNodeMap[v]){
-        this.selectdNodeMap[this. selcetedVersion]=this.selectdNodeMap[v];
-
-      }
-
-    }else{
       this.addingService.getMessagesByVersion(v).subscribe(x=>{
 
         console.log(this.selectedVerion);
         this.tableValue=x;
-        this.tableValueMap[this.selectedVerion]= this.tableValue;
-        this.selectdNodeMap[this.selectedVerion]=this.selectdNodeMap[this. selcetedVersion];
       })
-
-    }
 
   }
 
-  nodeSelect(event){
-    console.log(event);
-  };
 
-  toggle(node){
-    if(node.data.checked){
-      this.addNode(node);
-    }else{
-      this.removeNode(node);
-    }
-  };
-
-  addNode(node){
-    console.log("Add Node");
-    console.log(node);
-
-  };
-
-  removeNode(node){
-    console.log("Remove");
-    console.log(node);
-
-  };
 
 
   addMessages(){
     let wrapper:any ={};
     this.blockUI=true;
-
-    let versions= Object.keys(this.selectdNodeMap);
-
-
-    for(let i = 0 ; i<versions.length; i++){
-      let version = versions[i];
-      console.log(this.selectdNodeMap[version]);
-      for(let j =0 ; j<this.selectdNodeMap[version].length; j++){
-        this.selectNode(this.selectdNodeMap[version][j]);
-      }
-
-    };
-
-    wrapper.msgEvts=this.msgEvts;
+    wrapper.msgEvts=this.selectedEvents;
     wrapper.id=this.id;
-    this.blockUI=true;
-
-
     this.addingService.addMessages(wrapper).subscribe(
       res => {
         console.log(res);

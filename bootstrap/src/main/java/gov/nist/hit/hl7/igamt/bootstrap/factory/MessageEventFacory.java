@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,9 +80,11 @@ public class MessageEventFacory {
 
             String label = c.getDescription();
             label = label == null ? "Varies" : label; // Handle ACK
-            String[] ss = label.split(",");
+            label =label.replaceAll("\\s+","");
 
-            Set<String> events = new HashSet<String>(Arrays.asList(ss));
+            String[] ss = label.trim().split(",");
+  
+            List<String> events = Arrays.asList(ss);
 
             MessageEvent messageEvent = new MessageEvent(cp.getId(), cp.getStructID(), events,
                 cp.getDescription(), version);
