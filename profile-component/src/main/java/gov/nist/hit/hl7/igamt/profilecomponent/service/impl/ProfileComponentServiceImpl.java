@@ -34,7 +34,7 @@ public class ProfileComponentServiceImpl implements ProfileComponentService {
 
   @Override
   public ProfileComponent findById(String id) {
-    return profileComponentRepository.findById(id).get();
+    return profileComponentRepository.findById(id).orElse(null);
   }
 
   @Override

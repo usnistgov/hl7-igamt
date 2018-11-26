@@ -109,7 +109,6 @@ public class BindingHandler {
       for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
         if (oldConformanceStatement.getAssertion() != null
             && !oldConformanceStatement.getAssertion().equals("")) {
-          ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
           gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement newAssertionConformanceStatement = new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement();
           newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
           newAssertionConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
@@ -159,7 +158,6 @@ public class BindingHandler {
     Predicate oldPredicate = this.findPredicate(refObj, path);
     if (oldPredicate != null) {
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
-        ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
 
         gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate newAssertionPredicate =
             new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate();

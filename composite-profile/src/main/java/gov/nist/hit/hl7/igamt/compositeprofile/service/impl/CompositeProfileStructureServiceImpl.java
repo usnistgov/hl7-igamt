@@ -33,7 +33,7 @@ public class CompositeProfileStructureServiceImpl implements CompositeProfileStr
 
   @Override
   public CompositeProfileStructure findById(String id) {
-    return compositeProfileStructureRepository.findById(id).get();
+    return compositeProfileStructureRepository.findById(id).orElse(null);
   }
 
   @Override

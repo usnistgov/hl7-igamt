@@ -47,7 +47,7 @@ public class SegmentExceptionHandler {
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   @ExceptionHandler({CoConstraintNotFoundException.class})
-  public ResponseMessage handleCoConstraintNotFoundException(SegmentValidationException exception) {
+  public ResponseMessage handleCoConstraintNotFoundException(CoConstraintNotFoundException exception) {
     ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
 	  exception.printStackTrace();
 	message.setHide(true);
@@ -112,7 +112,10 @@ public class SegmentExceptionHandler {
     ResponseMessage message = new ResponseMessage(Status.FAILED, errorMessage);
     return message;
   }
+  
 
+
+  
   
 
 
