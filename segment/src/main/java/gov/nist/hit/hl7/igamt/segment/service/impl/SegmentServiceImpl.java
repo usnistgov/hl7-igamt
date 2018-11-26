@@ -905,7 +905,7 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private Object deleteConformanceStatementById(Segment s, String location) {
+  private ConformanceStatement deleteConformanceStatementById(Segment s, String location) {
     ConformanceStatement toBeDeleted = null;
     for(ConformanceStatement cs: s.getBinding().getConformanceStatements()){
       if(cs.getIdentifier().equals(location)) toBeDeleted = cs;
