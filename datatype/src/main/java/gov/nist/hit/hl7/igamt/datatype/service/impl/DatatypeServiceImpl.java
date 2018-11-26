@@ -307,16 +307,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope);
-    where.andOperator(Criteria.where("domainInfo.version").is(version));
-
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<String> groupResults =
-        mongoTemplate.aggregate(agg, Datatype.class, String.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("name");
@@ -452,18 +443,19 @@ public class DatatypeServiceImpl implements DatatypeService {
       HashMap<String, String> valuesetsMap, Link l, String username) {
     // TODO Auto-generated method stub
 
-    Datatype elm = this.findById(l.getId());
-
+    Datatype old = this.findById(l.getId());
+    Datatype elm=old.clone();
     Link newLink = new Link();
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-      String newKey = new String();
+        ;
+
+      String newKey = new ObjectId().toString();
       newLink.setId(newKey);
       datatypesMap.put(l.getId(), newKey);
     }
     updateDependencies(elm, datatypesMap, valuesetsMap);
-    elm.setFrom(elm.getId());
     elm.setId(newLink.getId());
     this.save(elm);
     return newLink;
@@ -809,7 +801,7 @@ private DatatypeSelectItem createItem(Datatype dt) {
 @Override
 public List<Datatype> findDisplayFormatByIds(Set<String> ids) {
     Query qry = new Query();
-    qry.addCriteria(Criteria.where("_id._id").in(convertIds(ids)));
+    qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("name");
@@ -830,7 +822,7 @@ private Set<ObjectId> convertIds(Set<String> ids) {
 @Override
 public List<Datatype> findFlavors(Set<String> ids, String id, String name) {
     Query qry = new Query();
-    qry.addCriteria(Criteria.where("_id._id").in(convertIds(ids)));
+    qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.addCriteria(Criteria.where("name").is(name));
 
     qry.fields().include("domainInfo");
@@ -847,7 +839,7 @@ public List<Datatype> findFlavors(Set<String> ids, String id, String name) {
 @Override
 public List<Datatype> findNonFlavor(Set<String> ids, String id, String name) {
     Query qry = new Query();
-    qry.addCriteria(Criteria.where("_id._id").in(convertIds(ids)));
+    qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.addCriteria(Criteria.where("name").ne(name));
     qry.with(new Sort(Sort.Direction.ASC, "name"));
 

@@ -20,7 +20,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     const confirmationService= this.injector.get(ConfirmationService);
 
     if(!(error instanceof HttpErrorResponse)){
-      console.log(error);
+       console.log(error);
        progressHandler.setReportableError(error);
     }
   }

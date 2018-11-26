@@ -67,11 +67,6 @@ public class Segment extends Resource {
     this.dynamicMappingInfo = dynamicMappingInfo;
   }
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
   @Override
   public String getLabel() {
     if (this.ext != null && !this.ext.isEmpty()) {
@@ -79,29 +74,25 @@ public class Segment extends Resource {
     }
     return this.getName();
   }
-
-
+  
   @Override
   public Segment clone() {
 
     Segment clone = new Segment();
-    clone.setBinding(this.binding);
-    clone.setChildren(children);
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setDynamicMappingInfo(dynamicMappingInfo);
-    clone.setId(null);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
+    complete(clone);
     return clone;
+  }
 
-  };
+ public void complete(Segment elm) {
+	 super.complete(elm);
+	 elm.ext = ext;
+	 elm.dynamicMappingInfo = dynamicMappingInfo;
+	 elm.binding = binding;
+	 elm.children = children;
+ };
+  
+  
+  
+  
 
 }

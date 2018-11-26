@@ -80,21 +80,21 @@ public class Datatype extends Resource {
   public Datatype clone() {
 
     Datatype clone = new Datatype();
-    clone.setBinding(this.binding);
-    clone.setComment(this.getComment());
-    clone.setCreatedFrom(this.getId());
-    clone.setDescription(this.getDescription());
-    DomainInfo domainInfo = this.getDomainInfo();
-    domainInfo.setScope(Scope.USER);
-    clone.setId(null);
-    clone.setPostDef(this.getPostDef());
-    clone.setPreDef(this.getPreDef());
-    clone.setName(this.getName());
-    clone.setDomainInfo(domainInfo);
-    clone.setCreationDate(new Date());
-    clone.setUpdateDate(new Date());
+    complete(clone);
     return clone;
 
-  };
+  }
+
+public void complete (Datatype elm) {
+	super.complete(elm);
+	elm.ext = ext;
+	elm.purposeAndUse = purposeAndUse;
+	elm.binding = binding;
+}
+
+
+  
+  
+  
 
 }

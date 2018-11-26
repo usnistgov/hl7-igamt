@@ -329,7 +329,7 @@ public class MasterDatatypeLibraryExportService {
 	
 	void TestLibrary() {
 		String testId="5b156211ad166643bef51c10";
-		DatatypeLibrary myDtLib= datatypeLibraryService.findLatestById(testId);
+		DatatypeLibrary myDtLib= datatypeLibraryService.findById(testId);
 		if(myDtLib !=null) {
 			Set<Link> links = myDtLib.getDatatypeRegistry().getChildren();
 		}

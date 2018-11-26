@@ -12,7 +12,6 @@ import {Types} from "../constants/types";
 })
 export class DisplayLabelComponent {
   _elm : any;
-  _ig : any;
   _redirect : boolean = true;
   @Input()
   igId : any;

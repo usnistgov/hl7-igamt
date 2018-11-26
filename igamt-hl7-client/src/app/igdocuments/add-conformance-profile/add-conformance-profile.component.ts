@@ -3,10 +3,12 @@ import {WorkspaceService} from "../../service/workspace/workspace.service";
 import {ActivatedRoute, Router} from "@angular/router";
 import {IgDocumentAddingService} from "../igdocument-edit/service/adding.service";
 import {PrimeDialogAdapter} from "../../common/prime-ng-adapters/prime-dialog-adapter";
+import {ChangeDetectionStrategy} from "@angular/core";
 
 @Component({
   selector: 'app-add-conformance-profile',
   templateUrl: './add-conformance-profile.component.html',
+  changeDetection:ChangeDetectionStrategy.OnPush,
   styleUrls: ['./add-conformance-profile.component.css']
 })
 export class AddConformanceProfileComponent extends PrimeDialogAdapter{

@@ -218,7 +218,7 @@ public class DatatypeLibraryController {
       @RequestBody AddingWrapper wrapper, Authentication authentication)
       throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
-    DatatypeLibrary lib = dataypeLibraryService.findLatestById(id);
+    DatatypeLibrary lib = dataypeLibraryService.findById(id);
     Set<String> savedIds = new HashSet<String>();
     for (AddingInfo elm : wrapper.getToAdd()) {
       if (elm.isFlavor()) {
@@ -307,7 +307,7 @@ public class DatatypeLibraryController {
   }
 
   private DatatypeLibrary findLibraryById(String id) throws DatatypeLibraryNotFoundException {
-    DatatypeLibrary ig = dataypeLibraryService.findLatestById(id);
+    DatatypeLibrary ig = dataypeLibraryService.findById(id);
     if (ig == null) {
       throw new DatatypeLibraryNotFoundException(id);
     }
@@ -337,7 +337,7 @@ public class DatatypeLibraryController {
       produces = {"application/json"})
   public @ResponseBody List<LibSummary> getPublished(Authentication authentication) {
     String username = authentication.getPrincipal().toString();
-    List<DatatypeLibrary> libs = dataypeLibraryService.findLatestPublished();
+    List<DatatypeLibrary> libs = dataypeLibraryService.findPublished();
     return dataypeLibraryService.convertListToDisplayList(libs);
   }
 

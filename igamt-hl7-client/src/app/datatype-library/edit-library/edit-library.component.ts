@@ -47,8 +47,6 @@ export class EditLibraryComponent {
   searchFilter:string="";
 
   types: SelectItem[]=[
-
-
     {label:"Narrative",value:"TEXT"},
     {label:"Data Type",value:"DATATYPE"}
   ];
@@ -119,13 +117,10 @@ export class EditLibraryComponent {
       if(node.data.data.domainInfo) {
 
         if (node.data.data.domainInfo.scope) {
-
           return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1);
         }
-
       }
       return node.data.data.label.startsWith(this.searchFilter) && (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(!this.selectedScopes||this.selectedScopes.length==0);
-
 
     });
 
@@ -194,6 +189,7 @@ export class EditLibraryComponent {
 
     return "./section/"+id;
   }
+
   getElementUrl(elm){
     var type=elm.type.toLowerCase();
 
@@ -247,7 +243,8 @@ export class EditLibraryComponent {
         }
       }
     }
-  }
+  };
+
   filterByUrl(url: any){
     this.tree.treeModel.filterNodes((node) => {
       if(node.data.data.key){
@@ -261,11 +258,7 @@ export class EditLibraryComponent {
       }
 
     });
-  }
-
-
-
-
+  };
 
   getItemFromTargetType(node:TreeNode) {
     this.currentNode=node;
@@ -282,7 +275,7 @@ export class EditLibraryComponent {
 
       return this.items;
     }
-  }
+  };
   onContextMenu(event, node){
 
 
@@ -331,7 +324,8 @@ export class EditLibraryComponent {
 
       return (!this.selectedTypes||this.selectedTypes.indexOf(node.data.data.type)>-1)&&(this.selectedScopes||this.selectedScopes.indexOf(node.data.data.domainInfo.scope)>-1) && node.data.data.label.startsWith(this.searchFilter);
 
-    });
+    }
+    );
   }
 
 
@@ -423,13 +417,11 @@ export class EditLibraryComponent {
 
   };
   copySection(node){
-    //console.log( this.tree._options);
     this.tocService.cloneNode(node);
   }
 
   createHl7Datatypes(){
     this.datatypeLibraryAddingService.getDatatypeClasses().subscribe(x=>{
-
     let sources=x;
     console.log(x);
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
@@ -442,11 +434,11 @@ export class EditLibraryComponent {
     })
       .subscribe(
         result => {
-
           this.distributeResult(result);
         }
       );
     }, error =>{
+
     });
 
   };
@@ -491,6 +483,7 @@ export class EditLibraryComponent {
         }
       )
   };
+
   deleteDatatype(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.DATATYPEREGISTRY);
 
