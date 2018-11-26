@@ -126,6 +126,7 @@ import { DialogWrapperComponent } from './dialog-wrapper/dialog-wrapper.componen
 import {ReportService} from "./dialog-wrapper/report.service";
 import {DisplayService} from "./display/display.service";
 import { ElementLabelComponent } from './common/element-label/element-label.component';
+
 @NgModule({
     imports: [
         BrowserModule,
@@ -206,7 +207,7 @@ ChipsModule,
         TreeTableModule,
         CommonModule,
         ReactiveFormsModule,
-
+      OrganizationChartModule,
 
         AlertModule.forRoot()
 
@@ -233,6 +234,7 @@ ChipsModule,
         ResetPasswordConfirmComponent,
         ErrorComponent,
         DialogWrapperComponent
+
     ], providers: [
     {provide: LocationStrategy, useClass: HashLocationStrategy},
     {

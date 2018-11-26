@@ -1,6 +1,0 @@
-<span *ngIf="path" [ngModelGroup]="groupName">{{getDisplayName()}}<span *ngIf="path.child">.</span><span *ngIf="!path.child">({{label()}})<i class="fa fa-pencil" (click)="displayPicker = true"></i></span><display-path *ngIf="path.child" [path]="path.child" [parentPath]="getIdPath()" [idMap]="idMap" [treeData]="treeData" [pathHolder]="pathHolder" [groupName]="groupName + '-child'"></display-path></span>
-<span *ngIf="!path">(Unselected Node)<i class="fa fa-pencil" (click)="displayPicker = true"></i></span>
-
-<p-dialog header="Select Node" [(visible)]="displayPicker">
-    <p-tree [value]="treeData" selectionMode="single" (onNodeSelect)="nodeSelect($event)" (onNodeExpand)="loadNode($event)"></p-tree>
-</p-dialog>

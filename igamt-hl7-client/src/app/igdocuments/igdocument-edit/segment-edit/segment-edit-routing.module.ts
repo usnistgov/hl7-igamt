@@ -63,7 +63,7 @@ import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segme
         path: ':segmentId/conformanceStatement',
         component: SegmentEditConformanceStatementsComponent,
         canDeactivate: [SaveFormsGuard],
-        resolve: {segmentConformanceStatements: SegmentEditConformanceStatementsResolver}
+        resolve: {segmentConformanceStatements: SegmentEditConformanceStatementsResolver, segmentStructure: SegmentEditStructureResolver}
       },
       {
         path: ':segmentId/crossRef', component: SegmentCrossRefComponent,resolve: { refs : SegmentCrossRefResolver}

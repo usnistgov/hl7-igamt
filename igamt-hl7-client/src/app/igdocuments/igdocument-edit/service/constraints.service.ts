@@ -106,14 +106,58 @@ export class ConstraintsService {
         return null;
     }
 
-    generateDescriptionForSimpleAssertion(assertion, idMap){
+    private getLocationLabel(location, structure){
+        if(location.path){
+            let result:string = structure.name;
+            result = this.getChildLocation(location.path.child, structure.structure, result, null);
+            return result;
+        }
+        return null;
+    }
+
+    private getChildLocation(path, list, result, elementName){
+        if(path && list){
+            for(let item of list){
+                if(item.data.id === path.elementId) {
+                    if(item.data.type === 'FIELD'){
+                        result = result + '-' + item.data.position;
+                    }else if(item.data.type === 'COMPONENT' || item.data.type === 'SUBCOMPONENT'){
+                        result = result + '.' + item.data.position;
+                    }else {
+                        result = result + '.' + item.data.name;
+                    }
+                    elementName = item.data.name;
+
+                    return this.getChildLocation(path.child,item.children, result, elementName);
+                }
+            }
+        }
+        return result + "(" + elementName + ")";
+    }
+
+    generateDescriptionForSimpleAssertion(assertion, structure){
+        console.log(assertion);
         if(assertion.mode === 'SIMPLE'){
 
             let subject,verb,complementKey:string;
 
             if(assertion.subject && assertion.subject.path){
-                subject = this.parsePath(assertion.subject.path, idMap, null, null, '-', null);
-                subject = subject + this.getInstanceNumForPath(assertion.subject.path, idMap);
+                subject = this.getLocationLabel(assertion.subject,structure);
+                if(assertion.subject.occurenceType){
+                    if(assertion.subject.occurenceType === 'atLeast'){
+                        subject = "At least one occurrence of " + subject;
+                    }else if(assertion.subject.occurenceType === 'instance'){
+                        subject = "The " + assertion.subject.occurenceValue  + " occurrence of " + subject;
+                    }else if(assertion.subject.occurenceType === 'noOccurrence'){
+                        subject = "No occurrence of " + subject;
+                    }else if(assertion.subject.occurenceType === 'exactlyOne'){
+                        subject = "Exactly one occurrence of " + subject;
+                    }else if(assertion.subject.occurenceType === 'count'){
+                        subject = assertion.subject.occurenceValue  + " occurrences of " + subject;
+                    }else if(assertion.subject.occurenceType === 'all'){
+                        subject = "All occurrences of " + subject;
+                    }
+                }
             }
 
             if(assertion.verbKey){
@@ -124,60 +168,114 @@ export class ConstraintsService {
                 complementKey = assertion.complement.complementKey;
             }
 
-            if(subject && verb && complementKey){
-                if(complementKey === 'SAMEVALUE'){
-                    let casesensitive:boolean;
-                    let value:string;
+            console.log(subject);
+            console.log(verb);
+            console.log(complementKey);
 
-                    casesensitive = assertion.complement.casesensitive;
+            if(subject && verb && complementKey){
+                if(complementKey === 'containtValue'){
+                    let value:string;
                     value = assertion.complement.value;
 
                     if(value){
-                        assertion.description = 'The content of ' + subject + ' ' + verb + ' contain the constant value \'' + value + '\'' + ((casesensitive) ? '(case-sensitive).' : '(case-insensitive)');
+                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\'';
                     }
-                }else if(complementKey === 'LISTVALUE'){
+                }if(complementKey === 'valued'){
+                    assertion.description = subject + ' ' + verb + ' valued';
+                }else if(complementKey === 'containValueDesc'){
+                    let value,description:string;
+                    value = assertion.complement.value;
+                    description = assertion.complement.desc;
+
+                    if(value){
+                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' (' + description + ')';
+                    }
+                }else if(complementKey === 'containCode'){
+                    let value,codesys:string;
+                    value = assertion.complement.value;
+                    codesys = assertion.complement.codesys;
+
+                    if(value){
+                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' ' + 'drawn from the code system \'' + codesys + '\'.';
+                    }
+                }else if(complementKey === 'containListValues'){
                     let values:string[];
                     values = assertion.complement.values;
 
-                    if(values && values.length > 0){
-                        assertion.description = 'The content of ' + subject + ' ' + verb + ' contain one of the values ' + this.parseValues(values, null, 0, null);
+                    if(values){
+                        assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '}.';
                     }
-                }else if(complementKey === 'PRESENCE'){
-                    assertion.description = subject + ' ' + verb + ' presence';
-                }else if(complementKey === 'COMPARENODE'){
-                    //The content of LOCATION 1 (DESCRIPTION) SHALL be identical to the content of LOCATION 2 (DESCRIPTION).
-                    let operator, otherLocation:string;
-                    let path:any;
+                }else if(complementKey === 'containListCodes'){
+                    let values:string[];
+                    let codesys:string;
+                    values = assertion.complement.values;
+                    codesys = assertion.complement.codesys;
 
-                    operator = assertion.complement.operator;
-                    path = assertion.complement.path;
-
-                    if(path) {
-                        otherLocation = this.parsePath(path, idMap, null, null, '-', null);
-                        otherLocation = otherLocation + this.getInstanceNumForPath(path, idMap);
+                    if(values){
+                        assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '} drawn from the code system \'' + codesys + '\'.';
                     }
-
-                    if(operator && otherLocation){
-                        assertion.description = 'The content of ' + subject + ' ' + verb + ' ' + this.configService.getOperatorLable(operator) + ' the content of ' + otherLocation;
-                    }
-                }else if(complementKey === 'COMPAREVALUE'){
-                    let operator, value:string;
-
-                    operator = assertion.complement.operator;
+                }else if(complementKey === 'regex'){
+                    let value:string;
                     value = assertion.complement.value;
 
-                    if(operator && value){
-                        assertion.description = 'The content of ' + subject + ' ' + verb + ' ' + this.configService.getOperatorLable(operator) + ' \'' + value + '\'';
+                    if(value){
+                        assertion.description = subject + ' ' + verb + ' match the regular expression \'' + value + '\'';
                     }
-                }else if(complementKey === 'FORMATTED'){
-                    let type, regexPattern:string;
+                }else if(complementKey === 'positiveInteger'){
+                    assertion.description = subject + ' ' + verb + ' contain a positive integer.';
+                }else if(complementKey === 'sequentially'){
+                    assertion.description = subject + ' ' + verb + " be valued sequentially starting with the value '1'.";
+                }else if(complementKey === 'iso'){
+                    assertion.description = subject + ' ' + verb + " be valued with an ISO-compliant OID.";
+                }else {
+                    let compareNode:string;
+                    if(assertion.complement.path){
+                        compareNode = this.getLocationLabel(assertion.complement,structure);
+                        if(assertion.complement.occurenceType){
+                            if(assertion.subject.occurenceType === 'atLeast'){
+                                compareNode = "At least one occurrence of " + compareNode;
+                            }else if(assertion.subject.occurenceType === 'instance'){
+                                compareNode = "The " + assertion.subject.occurenceValue  + " occurrence of " + compareNode;
+                            }else if(assertion.subject.occurenceType === 'noOccurrence'){
+                                compareNode = "No occurrence of " + compareNode;
+                            }else if(assertion.subject.occurenceType === 'exactlyOne'){
+                                compareNode = "Exactly one occurrence of " + compareNode;
+                            }else if(assertion.subject.occurenceType === 'count'){
+                                compareNode = assertion.subject.occurenceValue  + " occurrences of " + compareNode;
+                            }else if(assertion.subject.occurenceType === 'all'){
+                                compareNode = "All occurrences of " + compareNode;
+                            }
+                        }
 
-                    regexPattern = assertion.complement.regexPattern;
-                    type = assertion.complement.type;
+                        console.log(compareNode);
 
-                    if(type){
-                        assertion.description = 'The content of ' + subject + ' ' + verb + ' ' + this.configService.getFormattedType(type);
+                        if(complementKey === 'c-identical'){
+                            assertion.description = subject + ' ' + verb + ' be identical to ' + compareNode + ".";
+                        }else if(complementKey === 'c-earlier'){
+                            assertion.description = subject + ' ' + verb + ' be earlier than ' + compareNode + ".";
+                        }else if(complementKey === 'c-earlier-equivalent'){
+                            assertion.description = subject + ' ' + verb + ' be earlier than or equivalent to ' + compareNode + ".";
+                        }else if(complementKey === 'c-truncated-earlier'){
+                            assertion.description = subject + ' ' + verb + ' be truncated earlier than ' + compareNode + ".";
+                        }else if(complementKey === 'c-truncated-earlier-equivalent'){
+                            assertion.description = subject + ' ' + verb + ' be truncated earlier than or truncated equivalent to ' + compareNode + ".";
+                        }else if(complementKey === 'c-equivalent'){
+                            assertion.description = subject + ' ' + verb + ' be equivalent to ' + compareNode + ".";
+                        }else if(complementKey === 'c-truncated-equivalent'){
+                            assertion.description = subject + ' ' + verb + ' be truncated equivalent to ' + compareNode + ".";
+                        }else if(complementKey === 'c-equivalent-later'){
+                            assertion.description = subject + ' ' + verb + ' be equivalent to or later than ' + compareNode + ".";
+                        }else if(complementKey === 'c-later'){
+                            assertion.description = subject + ' ' + verb + ' be later than ' + compareNode + ".";
+                        }else if(complementKey === 'c-truncated-equivalent-later'){
+                            assertion.description = subject + ' ' + verb + ' be truncated equivalent to or truncated later than ' + compareNode + ".";
+                        }else if(complementKey === 'c-truncated-later'){
+                            assertion.description = subject + ' ' + verb + ' be truncated later than ' + compareNode + ".";
+                        }
+
                     }
+
+
                 }
             }
         }
@@ -191,7 +289,7 @@ export class ConstraintsService {
 
             if(operator && assertions && assertions.length > 1){
                 for (let childAssertion of assertions) {
-                    this.generateDescriptionForSimpleAssertion(childAssertion,idMap);
+                    this.generateDescriptionForSimpleAssertion(childAssertion,structure);
                     if(!childAssertion.description) isReady = false;
 
                     if(result){
@@ -213,7 +311,7 @@ export class ConstraintsService {
             child = assertion.child;
 
             if(assertion){
-                this.generateDescriptionForSimpleAssertion(child,idMap);
+                this.generateDescriptionForSimpleAssertion(child,structure);
                 if(!child.description) isReady = false;
 
                 result = 'NOT{' + child.description + '}';
@@ -230,80 +328,17 @@ export class ConstraintsService {
             thenAssertion = assertion.thenAssertion;
 
             if(ifAssertion && thenAssertion){
-                this.generateDescriptionForSimpleAssertion(ifAssertion,idMap);
-                this.generateDescriptionForSimpleAssertion(thenAssertion,idMap);
+                this.generateDescriptionForSimpleAssertion(ifAssertion,structure);
+                this.generateDescriptionForSimpleAssertion(thenAssertion,structure);
 
                 if(!ifAssertion.description) isReady = false;
                 if(!thenAssertion.description) isReady = false;
 
-                result = 'IF {' + ifAssertion.description + '}, then {' + thenAssertion.description + '}';
+                result = 'IF [' + ifAssertion.description + '], then [' + thenAssertion.description + ']';
             }
             if(isReady && result){
                 assertion.description = result;
             }
         }
-    }
-
-    parsePath(path,idMap, result, idPath, separator, end){
-        if(result){
-            idPath = idPath + '-' + path.elementId;
-            result = result + separator + idMap[idPath].position;
-            if(path.child) result = this.parsePath(path.child, idMap, result, idPath, '.', end);
-            else result = result + '(' + idMap[idPath].name + ')';
-        }else {
-            idPath = path.elementId;
-            result = idMap[path.elementId].name;
-            if(path.child) result = this.parsePath(path.child, idMap, result, idPath, separator, end);
-            else result = result + '(' + idMap[idPath].name + ')';
-        }
-        return result;
-    }
-
-    getInstanceNumForPath(path, idMap){
-        if(this.isRepeatedField(path.elementId, path.child.elementId, idMap)) {
-            return ' in ' + this.configService.getInstancLabelByValue(path.child.instanceParameter) + ' occurrence of the Field (' + this.getRepeatedFieldName(path.elementId, path.child.elementId, idMap) + ')';
-        }
-
-        return ' ';
-    }
-
-
-
-    isRepeatedField(segmentElementId, fieldElementId, idMap){
-        var fieldObj = idMap[segmentElementId + "-" + fieldElementId];
-
-        if(fieldObj) {
-            if(fieldObj.max !== '0' && fieldObj.max !== '1') return true;
-        }
-
-        return false;
-    }
-
-    getRepeatedFieldName(segmentElementId, fieldElementId, idMap){
-        var fieldObj = idMap[segmentElementId + "-" + fieldElementId];
-
-        if(fieldObj) {
-            if(fieldObj.max !== '0' && fieldObj.max !== '1') return fieldObj.name;
-        }
-
-        return null;
-    }
-
-    parseValues(values, result, index, separator){
-        if(result){
-            result = result + separator + '\'' + values[index] + '\'';
-        }else {
-            result = '\'' + values[index] + '\'';
-        }
-
-        index = index + 1;
-
-        if(values.length - 1 > index) {
-            result = this.parseValues(values, result, index, ', ');
-        }else if(values.length - 1 === index) {
-            result = this.parseValues(values, result, index, ' or ');
-        }
-
-        return result;
     }
 }
