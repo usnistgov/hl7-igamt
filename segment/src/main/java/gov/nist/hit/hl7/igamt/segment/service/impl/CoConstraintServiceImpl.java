@@ -43,7 +43,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 
   @Override
   public CoConstraintTable getCoConstraintForSegment(String id) {
-	  return repo.findById(id).get();
+	  return repo.findById(id).orElse(null);
   }
 
   @Override
