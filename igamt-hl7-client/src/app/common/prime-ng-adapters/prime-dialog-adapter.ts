@@ -1,31 +1,31 @@
 /**
  * Created by hnt5 on 10/5/17.
  */
-import {Subject} from "rxjs";
+import {Subject} from 'rxjs/Subject';
 
 export abstract class PrimeDialogAdapter {
-    _visible : boolean;
-    result$ : Subject<any>;
-    parent  : any;
+    _visible: boolean;
+    result$: Subject<any>;
+    parent: any;
 
-    constructor(){
-
+    protected constructor() {
     }
 
-    open(data){
-      console.log("Oppening");
-
+    open(data) {
+      console.log('Opening Dialog with data');
       console.log(data);
-        this.initResolvedData(data);
-        this.onDialogOpen();
-        this._visible  = true;
-        this.result$ = new Subject();
-        this.result$.subscribe(
-            complete => {
-                this._visible = false;
-            }
-        );
-        return this.result$;
+      console.log(data);
+      this.initResolvedData(data);
+      this.onDialogOpen();
+      this._visible  = true;
+      this.result$ = new Subject();
+      const ctrl = this;
+      this.result$.subscribe({
+        complete() {
+          ctrl._visible = false;
+        }
+      });
+      return this.result$;
     }
 
     abstract onDialogOpen();
@@ -43,14 +43,12 @@ export abstract class PrimeDialogAdapter {
     }
 
 
-    protected dismissWithNoData(){
+    protected dismissWithNoData() {
         this.result$.complete();
     }
 
-    protected dismissWithData(result){
-
+    protected dismissWithData(result) {
       this.result$.next(result);
-
       this.result$.complete();
     }
 

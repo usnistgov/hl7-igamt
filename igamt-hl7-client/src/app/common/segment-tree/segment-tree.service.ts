@@ -3,11 +3,9 @@
  */
 
 import {Injectable} from '@angular/core';
-import {Http} from '@angular/http';
 import {TreeNode} from 'primeng/components/common/treenode';
 import {GeneralConfigurationService} from '../../service/general-configuration/general-configuration.service';
 import {TocService} from '../../igdocuments/igdocument-edit/service/toc.service';
-import * as _ from 'lodash';
 import {HttpClient} from '@angular/common/http';
 
 @Injectable()
@@ -23,12 +21,12 @@ export class SegmentTreeNodeService {
 
   async getFieldsAsTreeNodes(segment, exclusion: any[]) {
     const nodes: TreeNode[] = [];
-    const list = segment.children.sort((x, y) => x.position - y.position);
+    const list = segment.structure.sort((x, y) => x.position - y.position);
     for (const field of list) {
       const node = await this.lazyNode(field.data, null, segment, exclusion);
       nodes.push(node);
     }
-    return nodes.sort((a,b) => {
+    return nodes.sort((a, b) => {
       return a.data.index - b.data.index;
     });
   }

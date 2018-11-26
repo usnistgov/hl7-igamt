@@ -1,0 +1,65 @@
+<p-dialog header="Assertion Pattern Editor" [(visible)]="_visible"
+          styleClass="pattern-dialog"
+          [modal]="true" [responsive]="true" [minWidth]="1000" [minHeight]="750"
+          [baseZIndex]="10000" [closable]="false" [closeOnEscape]="false" >
+  <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
+
+    <div style="width: 100%; border-bottom: 1px solid darkgrey;">
+      <div  style="border-bottom: 1px solid #a9a9a9; border-top: 1px solid #a9a9a9; height: 30px; background-color: #f3f0f6;display: flex;
+            flex-direction: row;" >
+        <div pDraggable="operator"  *ngFor="let op of operatorList; let i = index"  (onDragStart)="dragStartOp($event,op)" (onDragEnd)="dragEndOp($event)" style="text-align: center; cursor: pointer; flex-grow: 1;" [ngStyle]="{ 'border-right' : i < operatorList.length - 1 ? '1px solid #a9a9a9' : 'none'}">
+          {{op.data.type}}
+        </div>
+      </div>
+
+      <div style="background-color: #f4f4f4; padding: 10px;  display: flex;flex-flow: row; align-items: center;">
+        <i class="fa fa-hand-o-up" aria-hidden="true" style="font-size: 1.5em; color: darkblue;"></i>
+        <span style="margin-left: 10px;">Drag Operator</span>
+      </div>
+    </div>
+
+
+    <p-organizationChart [style]="{'width' : '100%', 'background-color' : 'white', 'padding' : '20px', 'min-height' : '500px;', 'overflow' : 'scroll'}" [value]="[ pattern.assertion ]" styleClass="pattern" *ngIf="pattern && pattern.assertion" >
+
+      <ng-template let-node pTemplate="statement">
+        <div class="operator-drop-area" pDroppable="operator"  (onDrop)="dropOp($event, node)">
+          Drop Here
+        </div>
+        <div class="node-content" pDroppable="statement" (onDrop)="dropSta($event, node)"  pDraggable="statement" (onDragStart)="dragStartSta($event,node)" (onDragEnd)="dragEndSta($event)">
+          <strong [ngStyle]="{ color : node.data.color}">{{ node.name() }}</strong>
+        </div>
+      </ng-template>
+
+      <ng-template let-node pTemplate="operator" style="background-color: #0c7ed5;">
+        <div style="width: 100%; text-align: right; padding-right: 5px;">
+          <i class="fa fa-minus" style="color: red; right: 5px; cursor: pointer;" (click)="remove(node)"></i>
+        </div>
+        <div class="node-content" >
+          <div>{{node.data.type}}</div>
+        </div>
+        <div style="width: 100%; text-align: right; padding-right: 5px;">
+          <i *ngIf="isNary(node)" class="fa fa-plus" style="color: lightgreen; right: 5px; cursor: pointer;" (click)="add(node)"></i>
+        </div>
+      </ng-template>
+
+    </p-organizationChart>
+
+    <div style="width: 100%; height: 140px; background-color: #f4f4f4;">
+      <div style="padding: 10px;">
+        <strong>Assertion Canonical Form</strong>
+      </div>
+      <div disabled="true" style="border-top: 1px solid darkgray; text-align: center; background-color: white; height: 100px; border-bottom: 1px solid darkgrey; overflow: scroll;  ">
+        <strong *ngIf="pattern && pattern.assertion" [innerHTML]="html(pattern.assertion.write())">
+
+        </strong>
+      </div>
+    </div>
+
+    <div style="width: 100%; padding: 10px; height: 45px; background-color: #f4f4f4; border-top: 1px solid darkgray;">
+      <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="finish()"></button>
+      <button pButton type="button" label="Reset" class="ui-button-raised red-btn pull-right" (click)="reset()"></button>
+      <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="cancel()"></button>
+    </div>
+
+  </div>
+</p-dialog>

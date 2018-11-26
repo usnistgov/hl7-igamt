@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -41,7 +41,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
-import javassist.NotFoundException;
 
 
 @RestController
@@ -186,8 +185,13 @@ public class SegmentController extends BaseController {
       produces = {"application/json"})
   @ResponseBody
   public CoConstraintTable getCoConstraints(@PathVariable("id") String id,
-      Authentication authentication) throws NotFoundException {
-    return this.coconstraintService.getCoConstraintForSegment(id);
+      Authentication authentication) throws CoConstraintNotFoundException {
+    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
+    if(table == null) {
+    	throw new CoConstraintNotFoundException(id);
+    } else {
+    	return table;
+    }
   }
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,

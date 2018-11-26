@@ -1,7 +1,35 @@
-<p-panel class="border" header="Complex Assertion" [toggleable]="true" [ngModelGroup]="groupName">
-    <div *ngIf="constraint.mode">
-        <edit-ifthen-constraint *ngIf="constraint.mode === 'IFTHEN'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName + '-IFTHEN'"></edit-ifthen-constraint>
-        <edit-andor-constraint *ngIf="constraint.mode === 'ANDOR'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-ANDOR'"></edit-andor-constraint>
-        <edit-not-constraint *ngIf="constraint.mode === 'NOT'" [constraint]="constraint" [idMap]="idMap" [treeData]="treeData" [ifVerb]="ifVerb" [groupName]="groupName + '-NOT'"></edit-not-constraint>
+<div [ngModelGroup]="groupName">
+    <div class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label for="id">ID: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <input id="id" name="id" class="form-control" required [(ngModel)]="constraint.identifier" type="text" #id="ngModel"/>
+            <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
+                <div *ngIf="id.errors.required">
+                    ID is required.
+                </div>
+            </div>
+        </div>
+
+        <div class="ui-g-12 ui-md-2">
+            <label for="id">Pattern Definition: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <div [innerHTML]="write(selected)"></div>
+            <i class="fa fa-pencil" (click)="edit(selected)"></i>
+        </div>
     </div>
-</p-panel>
+
+    <div *ngFor="let p of propsotions">
+        <strong>{{p.id}}</strong><br>
+        <edit-simple-proposition [assertion]="p" [structure]="structure" [groupName]="p.id"></edit-simple-proposition>
+    </div>
+
+    <div *ngFor="let d of declarations">
+        <strong>{{d.id}}</strong><br>
+        <edit-simple-constraint [assertion]="d" [structure]="structure" [groupName]="d.id"></edit-simple-constraint>
+    </div>
+</div>
+
+<app-pattern-dialog></app-pattern-dialog>

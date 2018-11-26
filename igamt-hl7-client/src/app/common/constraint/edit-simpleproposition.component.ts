@@ -7,26 +7,21 @@ import {GeneralConfigurationService} from "../../service/general-configuration/g
 
 
 @Component({
-  selector : 'edit-simple-constraint',
-  templateUrl : './edit-simpleconstraint.component.html',
-  styleUrls : ['./edit-simpleconstraint.component.css'],
+  selector : 'edit-simple-proposition',
+  templateUrl : './edit-simpleproposition.component.html',
+  styleUrls : ['./edit-simpleproposition.component.css'],
   viewProviders: [ { provide: ControlContainer, useExisting: NgForm } ]
 })
-export class EditSimpleConstraintComponent {
+export class EditSimplePropositionComponent {
   @Input() constraint : any;
   @Input() assertion : any;
   @Input() structure : any;
   @Input() groupName: string;
   @Input() level: string;
 
-  needContext:boolean = false;
-
-  needComparison:boolean = false;
-
   verbs: any[];
   occurenceTypes:any[];
   declarativeTypes:any[];
-  declarativeCTypes:any[];
 
   constructor(private configService : GeneralConfigurationService){}
 
@@ -34,14 +29,9 @@ export class EditSimpleConstraintComponent {
     if(!this.assertion) this.assertion = {};
     if(!this.assertion.complement) this.assertion.complement = {};
     if(!this.assertion.subject) this.assertion.subject = {};
-    this.verbs = this.configService._simpleConstraintVerbs;
+    this.verbs = this.configService._propsotionVerbs;
     this.occurenceTypes = this.configService._occurenceTypes;
-    this.declarativeTypes = this.configService._declarativeTypes;
-    this.declarativeCTypes = this.configService._declarativeCTypes;
-
-    if(this.level === 'CONFORMANCEPROFILE'){
-      this.needContext = true;
-    }
+    this.declarativeTypes = this.configService._propsotionTypes;
   }
 
   selectTargetElementLocation(location){
@@ -50,14 +40,6 @@ export class EditSimpleConstraintComponent {
     this.assertion.subject.occurenceLocationStr = null;
     this.assertion.subject.occurenceValue = null;
     this.assertion.subject.occurenceType = null;
-  }
-
-  selectComparisonElementLocation(location){
-    this.assertion.complement.path = location;
-    this.assertion.complement.occurenceIdPath = null;
-    this.assertion.complement.occurenceLocationStr = null;
-    this.assertion.complement.occurenceValue = null;
-    this.assertion.complement.occurenceType = null;
   }
 
   getLocationLabel(location, type){
@@ -83,18 +65,10 @@ export class EditSimpleConstraintComponent {
           elementName = item.data.name;
 
           if(item.data.max && item.data.max !== '0' && item.data.max !== '1'){
-            if(type === 'TARGET'){
-              if(!this.assertion.subject.occurenceType){
-                this.assertion.subject.occurenceType = 'TBD';
-                this.assertion.subject.occurenceIdPath = item.data.idPath;
-                this.assertion.subject.occurenceLocationStr = result + "(" + elementName + ")";
-              }
-            }else{
-              if(!this.assertion.complement.occurenceType){
-                this.assertion.complement.occurenceType = true;
-                this.assertion.complement.occurenceIdPath = item.data.idPath;
-                this.assertion.complement.occurenceLocationStr = result + "(" + elementName + ")";
-              }
+            if(!this.assertion.subject.occurenceType){
+              this.assertion.subject.occurenceType = 'TBD';
+              this.assertion.subject.occurenceIdPath = item.data.idPath;
+              this.assertion.subject.occurenceLocationStr = result + "(" + elementName + ")";
             }
           }
           return this.getChildLocation(path.child,item.children, result, elementName, type);
@@ -121,14 +95,5 @@ export class EditSimpleConstraintComponent {
 
   customTrackBy(index: number, obj: any): any {
     return  index;
-  }
-
-  changeComplementMode(){
-    if(!this.needComparison && this.assertion.complement){
-      this.assertion.complement.occurenceIdPath = null;
-      this.assertion.complement.occurenceLocationStr = null;
-      this.assertion.complement.occurenceValue = null;
-      this.assertion.complement.occurenceType = null;
-    }
   }
 }

@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
@@ -79,7 +80,7 @@ import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -964,9 +965,30 @@ public void applyChanges(Datatype d, List<ChangeItemDomain> cItems) throws JsonP
 	        item.setOldPropertyValue(seb.getComments());
 	        seb.setComments(
 	            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+	      }   else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
+	        ObjectMapper mapper = new ObjectMapper();
+	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+	        if(item.getChangeType().equals(ChangeType.ADD)){
+	          d.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+	        }else if(item.getChangeType().equals(ChangeType.DELETE)){
+	          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
+	        }else if(item.getChangeType().equals(ChangeType.UPDATE)){
+	          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
+	          d.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+	        }
 	      }
 	    }
 	    this.save(d);
+}
+
+private ConformanceStatement deleteConformanceStatementById(Datatype d, String location) {
+  ConformanceStatement toBeDeleted = null;
+  for(ConformanceStatement cs: d.getBinding().getConformanceStatements()){
+    if(cs.getIdentifier().equals(location)) toBeDeleted = cs;
+  }
+  
+  if(toBeDeleted != null) d.getBinding().getConformanceStatements().remove(toBeDeleted);
+  return toBeDeleted;
 }
 /**
  * @param hashSet

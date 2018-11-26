@@ -270,15 +270,60 @@ body .layout-wrapper .layout-menu-container .layout-menu li > a span {
   word-break: keep-all;
 }
 
-
-
 body .layout-wrapper.layout-horizontal .layout-menu-container .layout-menu > li.active-menuitem > a {
   background-color: white;
   color: #5c6bc0;
 }
+
 .layout-menu-container{
   background-color: #eac800 !important;
 }
+
+.pattern.ui-organizationchart .ui-organizationchart-node-content.ui-operator {
+  padding: 0;
+  background-color:#495ebb;
+  color: white;
+  text-align: center;
+  border: 1px solid #495ebb;
+}
+
+.pattern.ui-organizationchart .ui-organizationchart-node-content.ui-statement {
+  padding: 0;
+  //background-color:#495ebb;
+  //color: white;
+  //text-align: center;
+  //border: 1px solid #495ebb;
+}
+
+.node-content {
+  padding-right: 10px;
+  padding-left: 10px;
+  padding-bottom: 10px;
+}
+
+.operator-drop-area {
+  padding: 5px;
+  min-width: 100px;
+  min-height: 30px;
+  background-color: #97caf552;
+  border: 2px dashed rgba(60, 47, 203, 0.92);
+  text-align: center;
+  vertical-align: center;
+  color: #9e9e9e;
+}
+
+.pattern-dialog .ui-dialog-content {
+  padding: 0 !important;
+}
+
+.pattern {
+  max-height: 450px;
+  min-height: 450px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+  border-bottom: 1px solid darkgrey;
+}
+
 .ui-dropdown .ui-dropdown-label {
   display: block;
   /* border: 0; */
