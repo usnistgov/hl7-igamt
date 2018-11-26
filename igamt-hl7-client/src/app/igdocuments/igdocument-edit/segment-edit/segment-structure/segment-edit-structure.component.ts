@@ -62,6 +62,7 @@ export class SegmentEditStructureComponent implements WithSave {
     reset(){
         this.segmentStructure=__.cloneDeep(this.backup);
         this.editForm.control.markAsPristine();
+        this.changeItems = [];
     }
 
     getCurrent(){

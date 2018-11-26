@@ -110,13 +110,14 @@ public class BindingHandler {
         if (oldConformanceStatement.getAssertion() != null
             && !oldConformanceStatement.getAssertion().equals("")) {
           ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
-
-          gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement newAssertionConformanceStatement =
-              new gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement();
+          gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement newAssertionConformanceStatement = new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement();
           newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          newAssertionConformanceStatement
-              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-                  oldConformanceStatement.getDescription(), oldObject, "Assertion"));
+          newAssertionConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
+          newAssertionConformanceStatement.setAssertionScript(oldConformanceStatement.getAssertion());
+          
+//          newAssertionConformanceStatement
+//              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
+//                  oldConformanceStatement.getDescription(), oldObject, "Assertion"));
           rb.addConformanceStatement(newAssertionConformanceStatement);
         } else {
           gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement newFreeConformanceStatement =
@@ -160,14 +161,16 @@ public class BindingHandler {
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
         ConstraintHandler cHandler = new ConstraintHandler(segmentRepository, datatypeRepository);
 
-        gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionPredicate newAssertionPredicate =
-            new gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionPredicate();
+        gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate newAssertionPredicate =
+            new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate();
         newAssertionPredicate
             .setFalseUsage(ConversionUtil.convertUsage(oldPredicate.getFalseUsage()));
         newAssertionPredicate
             .setTrueUsage(ConversionUtil.convertUsage(oldPredicate.getTrueUsage()));
-        newAssertionPredicate.setAssertion(cHandler.constructAssertionObj(
-            oldPredicate.getAssertion(), oldPredicate.getDescription(), refObj, "Condition"));
+        newAssertionPredicate.setFreeText(oldPredicate.getDescription());
+        newAssertionPredicate.setAssertion(oldPredicate.getAssertion());
+//        newAssertionPredicate.setAssertion(cHandler.constructAssertionObj(
+//            oldPredicate.getAssertion(), oldPredicate.getDescription(), refObj, "Condition"));
         seb.setPredicate(newAssertionPredicate);
       } else {
         gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate newFreeTextPredicate =

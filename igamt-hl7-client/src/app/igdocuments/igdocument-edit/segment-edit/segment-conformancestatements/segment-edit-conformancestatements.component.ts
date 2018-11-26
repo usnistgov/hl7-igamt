@@ -23,6 +23,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     cols:any;
     currentUrl:any;
     segmentId:any;
+    igId:any;
     segmentConformanceStatements:any;
     idMap: any;
     treeData: any[];
@@ -39,6 +40,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     datatypesLinks :any = [];
     datatypeOptions:any = [];
     valuesetOptions:any = [{label:'Select ValueSet', value:null}];
+
+
+    changeItems:any[];
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -68,6 +72,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     ngOnInit() {
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
+        this.igId = this.router.url.split("/")[2];
         this.idMap = {};
         this.treeData = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
@@ -83,6 +88,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     reset(){
         this.segmentConformanceStatements=__.cloneDeep(this.backup);
+        this.changeItems = [];
+        this.editForm.control.markAsPristine();
     }
 
     getCurrent(){
@@ -99,11 +106,9 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
-
-            this.segmentsService.saveSegmentConformanceStatements(this.segmentId, this.segmentConformanceStatements).then(saved=>{
-
+            this.segmentsService.saveSegment(this.segmentId, this.igId, this.segmentConformanceStatements).then(saved=>{
                 this.backup = __.cloneDeep(this.segmentConformanceStatements);
-
+                this.changeItems = [];
                 this.editForm.control.markAsPristine();
                 resolve(true);
 
@@ -182,13 +187,28 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     submitCS(){
-        this.deleteCS(this.selectedConformanceStatement.identifier);
+        var isupdated = this.deleteCS(this.selectedConformanceStatement.identifier, true);
         if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure);
-
         this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
         this.editorTab = false;
         this.listTab = true;
+
+        if(isupdated){
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = this.selectedConformanceStatement;
+            item.changeType = "UPDATE";
+            this.changeItems.push(item);
+        }else {
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = this.selectedConformanceStatement;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
     }
 
     addNewCS(){
@@ -216,9 +236,22 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         this.listTab = false;
     }
 
-    deleteCS(identifier){
-        this.segmentConformanceStatements.conformanceStatements = _.without(this.segmentConformanceStatements.conformanceStatements, _.findWhere(this.segmentConformanceStatements.conformanceStatements, {identifier: identifier}));
+    deleteCS(identifier, forUpdate){
+        var found = _.findWhere(this.segmentConformanceStatements.conformanceStatements, {identifier: identifier});
+        this.segmentConformanceStatements.conformanceStatements = _.without(this.segmentConformanceStatements.conformanceStatements, found);
         this.editForm.control.markAsDirty();
+
+        if(!forUpdate){
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = null;
+            item.changeType = "DELETE";
+            this.changeItems.push(item);
+        }
+
+        if(found) return true;
+        return false;
     }
 
     printCS(cs){
