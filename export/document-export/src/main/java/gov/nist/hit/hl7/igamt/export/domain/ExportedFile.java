@@ -19,7 +19,6 @@ import java.util.Date;
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.CompositeKey;
 
 
 /**
@@ -44,7 +43,7 @@ public void setExcelContent(XSSFWorkbook excelContent) {
 }
 
 
-  public ExportedFile(InputStream content, String documentTitle, CompositeKey documentKey,
+  public ExportedFile(InputStream content, String documentTitle, String documentKey,
       ExportFormat exportFormat) {
     super();
     this.content = content;
@@ -63,12 +62,11 @@ public void setExcelContent(XSSFWorkbook excelContent) {
     return fileName;
   }
 
-  public void setFileName(String documentTitle, CompositeKey documentKey,
+  public void setFileName(String documentTitle, String documentKey,
       ExportFormat exportFormat) {
     documentTitle = this.cleanDocumentTitle(documentTitle != null ? documentTitle : "Document");
     this.fileName =
-        documentTitle + "-" + documentKey.getId() + "." + String.valueOf(documentKey.getVersion())
-            + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
+        documentTitle + "-" + documentKey  + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
             + exportFormat.getValue();
     System.out.println("wqlo");
   }

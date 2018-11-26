@@ -61,7 +61,7 @@ public class HtmlWriter {
 									td(span(each(datatypesbyVersionThenName.get(version).get(name),
 											datatype -> span(
 													a(datatype.getName() + datatype.getExt()).withHref("LeafTableForDatatype_"
-															+ datatype.getName() +datatype.getId().getId()+ ".html"),
+															+ datatype.getName() +datatype.getId()+ ".html"),
 													span(", ")).withId("p1")),
 											a("See all at once").withHref("AllDatatypesVersion_" + version + "ForRoot_"
 													+ name + ".html")))))))).render();
@@ -105,7 +105,7 @@ public class HtmlWriter {
 															datatype -> span(
 																	a(datatype.getName() + datatype.getExt())
 																			.withHref("LeafTableForDatatype_" + datatype.getName()
-																					+ datatype.getId().getId()+".html"),
+																					+ datatype.getId()+".html"),
 																	br()).withId("p1")),
 															a("See all at once").withHref("AllDatatypesForRoot_" + name
 																	+ "Version_" + versionSet + ".html")))))))))))

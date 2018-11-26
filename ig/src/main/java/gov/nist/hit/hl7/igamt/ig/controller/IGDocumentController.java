@@ -445,7 +445,7 @@ public class IGDocumentController extends BaseController {
           xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
       return results;
     } else {
-      throw new IGNotFoundException("Cannot found Id document");
+      throw new IGNotFoundException("Cannot find Id document");
     }
   }
 

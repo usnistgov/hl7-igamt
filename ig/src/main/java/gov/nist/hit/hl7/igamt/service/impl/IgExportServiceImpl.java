@@ -150,16 +150,7 @@ public class IgExportServiceImpl implements IgExportService {
           exportFontConfiguration, "2.0_beta");
       InputStream htmlContent =
           exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
-      
-//      try {
-//		System.out.println("html content in IgExport Service is :" + convert(htmlContent,Charset.defaultCharset()));
-//	} catch (IOException e) {
-//		// TODO Auto-generated catch block
-//		e.printStackTrace();
-//	}
-      
       ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
-//      System.out.println("int = " + exportedFile.getContent().read());
       exportedFile.setContent(htmlContent);
 //      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
       

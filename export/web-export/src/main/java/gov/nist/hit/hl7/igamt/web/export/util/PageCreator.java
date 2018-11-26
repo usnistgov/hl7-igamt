@@ -99,7 +99,7 @@ public class PageCreator {
 //							new File("Datatype_" + datatype.getName() + datatype.getExt() + ".html"),
 //							datatypeTransformedToTable);
 					ZipOutputStreamClass.addFileToZip(zipStream, "Pages/",
-							"LeafTableForDatatype_" + datatype.getName() + datatype.getId().getId()+".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", datatypeTransformedToTable));
+							"LeafTableForDatatype_" + datatype.getName() + datatype.getId()+".html", createPage(Tools.getPathFileFromResources("ForJava/StructureForTables.html"), "<TagToReplace></TagToReplace>", datatypeTransformedToTable));
 
 				} catch (IOException e) {
 					// TODO Auto-generated catch block

@@ -108,8 +108,8 @@ private ExportConfiguration exportConfiguration;
           segmentElement.appendChild(fieldsElement);
         }
       }      
-      if (coConstraintService.getLatestCoConstraintForSegment(segment.getId().getId()) != null && segment != null) { 
-      CoConstraintTable coConstraintsTable = coConstraintService.getLatestCoConstraintForSegment(segment.getId().getId()); 
+      if (coConstraintService.getCoConstraintForSegment(segment.getId()) != null && segment != null) { 
+      CoConstraintTable coConstraintsTable = coConstraintService.getCoConstraintForSegment(segment.getId()); 
 //      if (coConstraintsTable.getHeaders() != null){
       	  SerializableCoConstraints serializableCoConstraints = new SerializableCoConstraints(coConstraintsTable, segment.getName(), datatypesMap, exportConfiguration);
         Element coConstraintsElement = serializableCoConstraints.serialize();
