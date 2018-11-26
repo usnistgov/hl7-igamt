@@ -16,7 +16,8 @@ import {ButtonModule} from "primeng/components/button/button";
 import {FileUploadModule} from 'primeng/fileupload';
 
 import {BreadcrumbModule} from 'primeng/breadcrumb';
-
+import {TableModule} from 'primeng/table';
+import {CheckboxModule} from 'primeng/checkbox';
 @NgModule({
   imports: [
     TreeTableModule,SharedModule,
@@ -27,7 +28,10 @@ import {BreadcrumbModule} from 'primeng/breadcrumb';
     ReactiveFormsModule,
     RadioButtonModule,
     ButtonModule,
+    CheckboxModule,
     FileUploadModule,
+    TableModule,
+
     MessageModule,
     BreadcrumbModule,
     FroalaEditorModule.forRoot(), FroalaViewModule.forRoot(),
