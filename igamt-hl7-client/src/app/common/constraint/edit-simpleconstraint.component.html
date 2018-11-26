@@ -1,163 +1,254 @@
 <div [ngModelGroup]="groupName">
-    <div class="ui-g ui-fluid">
+    <div *ngIf="constraint" class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
-            <label>Simple Assertion Type: </label>
+            <label for="id">ID: </label>
         </div>
         <div class="ui-g-12 ui-md-10">
-            <p-dropdown id="simpleAssertionType" name="simpleAssertionType" required #simpleAssertionType="ngModel" [options]="simpleAssertionTypes" [(ngModel)]="constraint.complement.complementKey" placeholder="Select a type" [group]="true"></p-dropdown>
-            <div *ngIf="simpleAssertionType.invalid && (simpleAssertionType.dirty || simpleAssertionType.touched)" class="alert alert-danger">
-                <div *ngIf="simpleAssertionType.errors.required">
-                    SimpleAssertion Type is required.
+            <input id="id" name="id" class="form-control" required [(ngModel)]="constraint.identifier" type="text" #id="ngModel"/>
+            <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
+                <div *ngIf="id.errors.required">
+                    ID is required.
                 </div>
             </div>
         </div>
     </div>
 
+    <table class="table constraint-table" style="width: 100%;">
+        <tr style="background-color: #a7d6a9;">
+            <td align="center" *ngIf="assertion.subject && assertion.subject.occurenceType">
+                <strong>Target Occurrence Declarative Statement</strong>
+            </td>
+            <td align="center">
+                <strong>Target Node Location</strong>
+            </td>
+            <td align="center" *ngIf="needContext">
+                <strong>Context</strong>
+            </td>
+            <td align="center">
+                <strong>Verb</strong>
+            </td>
+            <td align="center">
+                <strong>Content Declarative Statement</strong>
+                <p-radioButton name="{{groupName}}-Declarative-Type" [value]="false" label="Value" (click)="changeComplementMode()" [(ngModel)]="needComparison"></p-radioButton>
+                <p-radioButton name="{{groupName}}-Declarative-Type" [value]="true" label="Comparison" [(ngModel)]="needComparison"></p-radioButton>
+            </td>
+            <td align="center" *ngIf="assertion.complement && assertion.complement.occurenceType">
+                <strong>Comparison Occurrence Declarative Statement</strong>
+            </td>
+            <td align="center" *ngIf="needComparison">
+                <strong>Comparison node Location</strong>
+            </td>
+        </tr>
 
-    <div *ngIf="constraint.complement.complementKey">
-        <div *ngIf="constraint.complement.complementKey === 'SAMEVALUE'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
+        <tr style="background-color: #f6f6f6;">
+            <td align="center" *ngIf="assertion.subject && assertion.subject.occurenceType">
+                <div *ngIf="assertion.subject.occurenceType === 'atLeast'">
+                    At least one occurrence of
                 </div>
-                <div class="ui-g-12 ui-md-10">
-                    <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        contain the constant value '<input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;"/>'  <p-checkbox id="casesensitive" name="casesensitive" [(ngModel)]="constraint.complement.casesensitive" binary="true"></p-checkbox> Case InSensitive
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="constraint.complement.complementKey === 'LISTVALUE'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
-                </div>
-                <div class="ui-g-12 ui-md-10">
-                    <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        be one of list values: <span *ngFor="let listValueEntry of constraint.complement.values; let idx = index">'<input id="listValue_{{idx}}" name="listValue_{{idx}}" required [(ngModel)]="constraint.complement.values[idx]" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>'</span> <button pButton type="button"  class="blue-btn" icon="fa-plus" (click)="addValue()"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div *ngIf="constraint.complement.complementKey === 'COMPARENODE'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
+                <div *ngIf="assertion.subject.occurenceType === 'instance'">
+                    The '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" type="text" #targetoccurence="ngModel"/>' occurrence of
                 </div>
-                <div class="ui-g-12 ui-md-10">
-                    <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        <display-path [path]="constraint.complement.path" [pathHolder]="constraint.complement" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-other'"></display-path>
-                        <li *ngIf="constraint && constraint.complement && constraint.complement.path && constraint.complement.path.child && isRepeatedField(constraint.complement.path.elementId, constraint.complement.path.child.elementId)">in <p-dropdown id="complementathInstance" name="complementathInstance" required #complementathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.complement.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.complement.path.elementId, constraint.complement.path.child.elementId)}})</li>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div *ngIf="constraint.complement.complementKey === 'COMPAREVALUE'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
+                <div *ngIf="assertion.subject.occurenceType === 'noOccurrence'">
+                    No occurrence of
                 </div>
-                <div class="ui-g-12 ui-md-10">
-                    <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="operator" name="operator" required #operator="ngModel" [options]="operators" [(ngModel)]="constraint.complement.operator" placeholder="Select an operator"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        <input id="value" name="value" required #value="ngModel" [(ngModel)]="constraint.complement.value" type="text" style="width:100px;border-width:0px 0px 1px 0px"/>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div *ngIf="constraint.complement.complementKey === 'FORMATTED'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
-                </div>
-                <div class="ui-g-12 ui-md-10">
-                    {{constraint|json}}
 
-                    <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
+                <div *ngIf="assertion.subject.occurenceType === 'exactlyOne'">
+                    Exactly one occurrence of
+                </div>
+
+                <div *ngIf="assertion.subject.occurenceType === 'count'">
+                    '<input id="{{groupName}}-target-occurence" name="{{groupName}}-target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" type="text" #targetoccurence="ngModel"/>' occurrences of
+                </div>
+
+                <div *ngIf="assertion.subject.occurenceType === 'all'">
+                    All occurrences of
+                </div>
+            </td>
+            <td align="center">
+                {{getLocationLabel(assertion.subject, 'TARGET')}}
+            </td>
+            <td *ngIf="needContext" align="center">Context</td>
+            <td align="center">{{assertion.verbKey}}</td>
+            <td align="center">
+                <div *ngIf="assertion.complement.complementKey === 'c-identical'">
+                    be identical to
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-earlier'">
+                    be earlier than
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-earlier-equivalent'">
+                    be earlier than or equivalent to
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-truncated-earlier'">
+                    be truncated earlier than
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-truncated-earlier-equivalent'">
+                    be truncated earlier than or truncated equivalent to
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-equivalent'">
+                    be equivalent to
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-truncated-equivalent'">
+                    be truncated equivalent to
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'c-equivalent-later'">
+                    be equivalent to or later than
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'c-later'">
+                    be later than
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'c-truncated-equivalent-later'">
+                    be truncated equivalent to or truncated later than
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'c-truncated-later'">
+                    be truncated later than
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'containtValue'">
+                    contain the value '<input id="{{groupName}}-complement.value" name="{{groupName}}-complement.value" required [(ngModel)]="assertion.complement.value" type="text" #value="ngModel"/>'.
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'containValueDesc'">
+                    contain the value '<input id="{{groupName}}-complement.value" name="{{groupName}}-complement.value" required [(ngModel)]="assertion.complement.value" type="text" #value="ngModel"/>' (<input id="{{groupName}}-complement.desc" name="{{groupName}}-complement.desc" required [(ngModel)]="assertion.complement.desc" type="text" #valueDesc="ngModel"/>).
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'containCode'">
+                    contain the value '<input id="{{groupName}}-complement.value" name="{{groupName}}-complement.value" required [(ngModel)]="assertion.complement.value" type="text" #value="ngModel"/>' drawn from the code system '<input id="{{groupName}}-complement.codesys" name="{{groupName}}-complement.codesys" required [(ngModel)]="assertion.complement.codesys" type="text" #codesys="ngModel"/>'.
+                </div>
+
+                <div *ngIf="assertion.complement.complementKey === 'containListValues'">
+                    <div class="ui-g-12 ui-md-6">
+                        contain one of the values in the list:
                     </div>
-                    <div class="ui-g-12 ui-md-2">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
-                    </div>
-                    <div class="ui-g-12 ui-md-4">
-                        <p-dropdown id="formatType" name="formatType" required #formatType="ngModel" [options]="formatTypes" [(ngModel)]="constraint.complement.type" placeholder="Select a format type"></p-dropdown>
+                    <div class="ui-g-12 ui-md-6">
+                        <table *ngIf="assertion.complement.values" class="table constraint-table">
+                            <tr style="background-color: #f6f6f6;" *ngFor="let v of assertion.complement.values; let i=index; trackBy:customTrackBy">
+                                <td>
+                                    <input id="{{groupName}}-complement.values-{{i}}" name="{{groupName}}-complement.values-{{i}}" required [(ngModel)]="assertion.complement.values[i]" type="text"/>
+                                    <i class="fa fa-times" (click)="delValue(assertion.complement.values, i)"></i>
+                                </td>
+                            </tr>
+                        </table>
+                        <i class="fa fa-plus" (click)="addListValue(assertion.complement)"></i>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div *ngIf="constraint.complement.complementKey === 'PRESENCE'">
-            <div class="ui-g ui-fluid">
-                <div class="ui-g-12 ui-md-2">
-                    <label>Assertion: </label>
-                </div>
-                <div class="ui-g-12 ui-md-10">
+
+                <div *ngIf="assertion.complement.complementKey === 'containListCodes'">
                     <div class="ui-g-12 ui-md-4">
-                        The content of <display-path [path]="constraint.subject.path" [pathHolder]="constraint.subject" [idMap]="idMap" [treeData]="treeData" [groupName]="groupName+'-subject'"></display-path>
-                        <li *ngIf="constraint && constraint.subject && constraint.subject.path && constraint.subject.path.child && isRepeatedField(constraint.subject.path.elementId, constraint.subject.path.child.elementId)">in <p-dropdown id="subjectPathInstance" name="subjectPathInstance" required #subjectPathInstance="ngModel" [options]="instanceNums" [(ngModel)]="constraint.subject.path.child.instanceParameter"></p-dropdown> occurrence of the Field ({{getRepeatedFieldName(constraint.subject.path.elementId, constraint.subject.path.child.elementId)}})</li>
+                        contain one of the values in the list:
                     </div>
-                    <div class="ui-g-12 ui-md-8">
-                        <p-dropdown id="verb" name="verb" required #verb="ngModel" [options]="verbs" [(ngModel)]="constraint.verbKey" placeholder="Select a verb"></p-dropdown>
+                    <div class="ui-g-12 ui-md-4">
+                        <table *ngIf="assertion.complement.values" class="table constraint-table">
+                            <tr style="background-color: #f6f6f6;" *ngFor="let v of assertion.complement.values; let i=index; trackBy:customTrackBy">
+                                <td>
+                                    <input id="{{groupName}}-complement.values-{{i}}" name="{{groupName}}-complement.values-{{i}}" required [(ngModel)]="assertion.complement.values[i]" type="text"/>
+                                    <i class="fa fa-times" (click)="delValue(assertion.complement.values, i)"></i>
+                                </td>
+                            </tr>
+                        </table>
+                        <i class="fa fa-plus" (click)="addListValue(assertion.complement)"></i>
+                    </div>
+                    <div class="ui-g-12 ui-md-4">
+                        drawn from the code system '<input id="{{groupName}}-complement.codesys" name="{{groupName}}-complement.codesys" required [(ngModel)]="assertion.complement.codesys" type="text" #codesys="ngModel"/>'.
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+                <div *ngIf="assertion.complement.complementKey === 'regex'">
+                    match the regular expression '<input id="{{groupName}}-complement.value" name="{{groupName}}-complement.value" required [(ngModel)]="assertion.complement.value" type="text" #value="ngModel"/>'.
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'positiveInteger'">
+                    contain a positive integer.
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'sequentially'">
+                    be valued sequentially starting with the value '1'.
+                </div>
+                <div *ngIf="assertion.complement.complementKey === 'iso'">
+                    be valued with an ISO-compliant OID.
+                </div>
 
 
-    <!--<p-fieldset legend="Advanced Fields" [toggleable]="true" collapsed="true" (onAfterToggle)="generateAssertionScript(constraint)">-->
-        <!--<div class="ui-g ui-fluid">-->
-            <!--<div class="ui-g-12 ui-md-2">-->
-                <!--<label for="assertionScript">Path Information: </label>-->
-            <!--</div>-->
-            <!--<div class="ui-g-12 ui-md-5">-->
-                <!--<input name="path1" id="path1" pInputText type="text" #path1="ngModel" class="ui-g-12" disabled [(ngModel)]="constraint.path1" />-->
-            <!--</div>-->
-            <!--<div class="ui-g-12 ui-md-5">-->
-                <!--<input name="positionPath1" id="positionPath1" pInputText type="text" #positionPath1="ngModel" class="ui-g-12" disabled [(ngModel)]="constraint.positionPath1" />-->
-            <!--</div>-->
-            <!--<div class="ui-g-12 ui-md-2">-->
-                <!--<label for="assertionScript">Assertion Script (Auto Generated): </label>-->
-            <!--</div>-->
-            <!--<div class="ui-g-12 ui-md-10">-->
-                <!--<textarea id="assertionScript" name="assertionScript" class="form-control" disabled [(ngModel)]="constraint.assertionScript" pInputTextarea [(ngModel)]="property"></textarea>-->
-            <!--</div>-->
-        <!--</div>-->
-    <!--</p-fieldset>-->
+            </td>
+            <td *ngIf="assertion.complement && assertion.complement.occurenceType" align="center">
+                <div *ngIf="assertion.complement.occurenceType === 'atLeast'">
+                    At least one occurrence of
+                </div>
 
+                <div *ngIf="assertion.complement.occurenceType === 'instance'">
+                    The '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="assertion.complement.occurenceValue" type="text" #compareoccurence="ngModel"/>' occurrence of
+                </div>
+
+                <div *ngIf="assertion.complement.occurenceType === 'noOccurrence'">
+                    No occurrence of
+                </div>
+
+                <div *ngIf="assertion.complement.occurenceType === 'exactlyOne'">
+                    Exactly one occurrence of
+                </div>
+
+                <div *ngIf="assertion.complement.occurenceType === 'count'">
+                    '<input id="{{groupName}}-compare-occurence" name="{{groupName}}-compare-occurence" required [(ngModel)]="assertion.complement.occurenceValue" type="text" #compareoccurence="ngModel"/>' occurrences of
+                </div>
+
+                <div *ngIf="assertion.complement.occurenceType === 'all'">
+                    All occurrences of
+                </div>
+            </td>
+            <td *ngIf="needComparison" align="center">
+                {{getLocationLabel(assertion.complement, 'COMPARE')}}
+            </td>
+        </tr>
+
+        <tr class="small-content">
+            <td *ngIf="assertion.subject && assertion.subject.occurenceType">
+                <div class="ui-g">
+                    For repeatable '{{assertion.subject.occurenceLocationStr}}':
+                    <div class="ui-g-12" *ngFor="let occurenceType of occurenceTypes">
+                        <p-radioButton name="{{groupName}}-targetCccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="assertion.subject.occurenceType"></p-radioButton>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <app-cs-segment-tree [tree]="structure" (select)="selectTargetElementLocation($event)"></app-cs-segment-tree>
+            </td>
+            <td *ngIf="needContext">Context</td>
+            <td>
+                <div class="ui-g">
+                    <div class="ui-g-12" *ngFor="let verb of verbs">
+                        <p-radioButton name="{{groupName}}-verb" [value]="verb.value" [label]="verb.label" [(ngModel)]="assertion.verbKey"></p-radioButton>
+                    </div>
+                </div>
+            </td>
+            <td>
+                <div *ngIf="!needComparison" class="ui-g">
+                    <div class="ui-g-12" *ngFor="let declarativeType of declarativeTypes">
+                        <p-radioButton name="{{groupName}}-declarativeType" [value]="declarativeType.value" [label]="declarativeType.label" (onChange)="changeDeclarativeType()" [(ngModel)]="assertion.complement.complementKey"></p-radioButton>
+                    </div>
+                </div>
+                <div *ngIf="needComparison" class="ui-g">
+                    <div class="ui-g-12" *ngFor="let declarativeCType of declarativeCTypes">
+                        <p-radioButton name="{{groupName}}-declarativeCType" [value]="declarativeCType.value" [label]="declarativeCType.label" [(ngModel)]="assertion.complement.complementKey"></p-radioButton>
+                    </div>
+                </div>
+            </td>
+            <td *ngIf="assertion.complement && assertion.complement.occurenceType">
+                <div class="ui-g">
+                    For repeatable '{{assertion.complement.occurenceLocationStr}}':
+                    <div class="ui-g-12" *ngFor="let occurenceType of occurenceTypes">
+                        <p-radioButton name="{{groupName}}-compareOccurenceType" [value]="occurenceType.value" [label]="occurenceType.label" [(ngModel)]="assertion.complement.occurenceType"></p-radioButton>
+                    </div>
+                </div>
+            </td>
+            <td *ngIf="needComparison">
+                <app-cs-segment-tree [tree]="structure" (select)="selectComparisonElementLocation($event)"></app-cs-segment-tree>
+            </td>
+        </tr>
+    </table>
 </div>

@@ -62,6 +62,7 @@ export class SegmentEditStructureComponent implements WithSave {
     reset(){
         this.segmentStructure=__.cloneDeep(this.backup);
         this.editForm.control.markAsPristine();
+        this.changeItems = [];
     }
 
     getCurrent(){
@@ -101,7 +102,8 @@ export class SegmentEditStructureComponent implements WithSave {
         this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
     }
     hasChanged(){
-        return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+        if(this.changeItems && this.changeItems.length > 0) return true;
+        return false;
     }
 
     print(node){

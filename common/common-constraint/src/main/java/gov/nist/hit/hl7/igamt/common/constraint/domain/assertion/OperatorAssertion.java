@@ -21,7 +21,7 @@ import java.util.Set;
 public class OperatorAssertion extends Assertion {
 
   public enum Operator {
-    AND, OR
+    AND, OR, XOR
   }
 
   private Operator operator;

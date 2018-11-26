@@ -11,8 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
 
 /**
  * @author jungyubw
@@ -20,27 +19,105 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  */
 
 
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "complementKey")
-@JsonSubTypes({@JsonSubTypes.Type(value = PresenceComplement.class, name = "PRESENCE"),
-               @JsonSubTypes.Type(value = SameValueComplement.class, name = "SAMEVALUE"),
-               @JsonSubTypes.Type(value = CompareValueComplement.class, name = "COMPAREVALUE"),
-               @JsonSubTypes.Type(value = CompareNodeComplement.class, name = "COMPARENODE"),
-               @JsonSubTypes.Type(value = FormattedComplement.class, name = "FORMATTED"),
-               @JsonSubTypes.Type(value = ListValuesComplement.class, name = "LISTVALUE"),
-               @JsonSubTypes.Type(value = ValuesetComplement.class, name = "VALUESET"),
-               @JsonSubTypes.Type(value = GenericComplement.class, name = "GENERIC")})
+public class Complement {
 
-public abstract class Complement {
-	
-  protected ComplementKey complementKey;
+  private String complementKey;
 
-  public ComplementKey getComplementKey() {
+  private String occurenceType;
+  private String occurenceValue;
+  private String occurenceIdPath;
+  private String occurenceLocationStr;
+
+  private Path path;
+
+  private String value;
+  private String[] values;
+  private String desc;
+  private String codesys;
+
+  public Complement() {
+    super();
+  }
+
+  public String getComplementKey() {
     return complementKey;
   }
 
-  public void setComplementKey(ComplementKey complementKey) {
+  public void setComplementKey(String complementKey) {
     this.complementKey = complementKey;
   }
-  
-  
+
+  public String getOccurenceType() {
+    return occurenceType;
+  }
+
+  public void setOccurenceType(String occurenceType) {
+    this.occurenceType = occurenceType;
+  }
+
+  public String getOccurenceValue() {
+    return occurenceValue;
+  }
+
+  public void setOccurenceValue(String occurenceValue) {
+    this.occurenceValue = occurenceValue;
+  }
+
+  public String getOccurenceIdPath() {
+    return occurenceIdPath;
+  }
+
+  public void setOccurenceIdPath(String occurenceIdPath) {
+    this.occurenceIdPath = occurenceIdPath;
+  }
+
+  public String getOccurenceLocationStr() {
+    return occurenceLocationStr;
+  }
+
+  public void setOccurenceLocationStr(String occurenceLocationStr) {
+    this.occurenceLocationStr = occurenceLocationStr;
+  }
+
+  public Path getPath() {
+    return path;
+  }
+
+  public void setPath(Path path) {
+    this.path = path;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  public String[] getValues() {
+    return values;
+  }
+
+  public void setValues(String[] values) {
+    this.values = values;
+  }
+
+  public String getDesc() {
+    return desc;
+  }
+
+  public void setDesc(String desc) {
+    this.desc = desc;
+  }
+
+  public String getCodesys() {
+    return codesys;
+  }
+
+  public void setCodesys(String codesys) {
+    this.codesys = codesys;
+  }
+
+
 }

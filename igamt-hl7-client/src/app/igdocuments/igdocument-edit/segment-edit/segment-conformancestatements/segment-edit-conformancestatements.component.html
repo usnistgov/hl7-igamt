@@ -12,8 +12,8 @@
                 </div>
             </div>
             <div class="ui-g-4">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
+                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
+                <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
             </div>
         </div>
 
@@ -49,7 +49,7 @@
                                 </div>
                             </td>
                             <td>
-                                <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'])"></button>
+                                <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'], false)"></button>
                                 <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
                             </td>
                         </tr>
@@ -68,48 +68,16 @@
                         <label>Editor Type: </label>
                     </div>
                     <div class="ui-g-12 ui-md-10">
-                        <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedConformanceStatement.type" (onChange)="changeType()"></p-selectButton>
+                        <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedConformanceStatement.displayType" (onChange)="changeType()"></p-selectButton>
                     </div>
                 </div>
 
-                <div *ngIf="selectedConformanceStatement.type">
-                    <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-md-2">
-                            <label for="id">ID: </label>
-                        </div>
-                        <div class="ui-g-12 ui-md-10">
-                            <input id="id" name="id" required minlength="2" [(ngModel)]="selectedConformanceStatement.identifier" type="text" #id="ngModel" style="width:50%;"/>
-                            <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
-                                <div *ngIf="id.errors.required">
-                                    Constraint Id is required.
-                                </div>
-                                <div *ngIf="id.errors.minlength">
-                                    Constraint Id must be at least 2 characters long.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div *ngIf="selectedConformanceStatement.displayType">
+                    <edit-free-constraint *ngIf="selectedConformanceStatement.displayType === 'free'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
+                    <edit-simple-constraint *ngIf="selectedConformanceStatement.displayType === 'simple'" [constraint]="selectedConformanceStatement" [assertion]="selectedConformanceStatement.assertion" [structure]="segmentStructure" [groupName]="'simple'"></edit-simple-constraint>
+                    <edit-simple-proposition-constraint *ngIf="selectedConformanceStatement.displayType === 'simple-proposition'" [constraint]="selectedConformanceStatement" [ifAssertion]="selectedConformanceStatement.assertion.ifAssertion"  [thenAssertion]="selectedConformanceStatement.assertion.thenAssertion" [structure]="segmentStructure" [groupName]="'simpleproposition'"></edit-simple-proposition-constraint>
+                    <edit-complex-constraint *ngIf="selectedConformanceStatement.displayType === 'complex'" [constraint]="selectedConformanceStatement" [structure]="segmentStructure" [groupName]="'complex'"></edit-complex-constraint>
                 </div>
-
-                <div *ngIf="selectedConformanceStatement.type && selectedConformanceStatement.type ==='ASSERTION'">
-                    <div class="ui-g ui-fluid">
-                        <div class="ui-g-12 ui-md-2">
-                            <label>Assertion Level: </label>
-                        </div>
-                        <div class="ui-g-12 ui-md-10">
-                            <p-dropdown id="assertionMode" name="assertionMode" required #assertionMode="ngModel" [options]="assertionModes" [group]="true" [autoWidth]="false" [(ngModel)]="selectedConformanceStatement.assertion.mode" (onChange)="changeAssertionMode()"></p-dropdown>
-                            <div *ngIf="assertionMode.invalid && (assertionMode.dirty || assertionMode.touched)" class="alert alert-danger">
-                                <div *ngIf="assertionMode.errors.required">
-                                    Assertion Type is required.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <edit-free-constraint *ngIf="selectedConformanceStatement.type === 'FREE'" [constraint]="selectedConformanceStatement"></edit-free-constraint>
-                <edit-simple-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode === 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'rootSimple'"></edit-simple-constraint>
-                <edit-complex-constraint *ngIf="selectedConformanceStatement.assertion && selectedConformanceStatement.assertion.mode !== 'SIMPLE'" [constraint]="selectedConformanceStatement.assertion" [idMap]="idMap" [treeData]="treeData" [groupName]="'root'"></edit-complex-constraint>
 
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>

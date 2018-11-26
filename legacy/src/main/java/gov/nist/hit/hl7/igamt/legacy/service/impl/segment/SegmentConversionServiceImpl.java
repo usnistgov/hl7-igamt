@@ -87,8 +87,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
     convertedSegment.setPostDef(oldSegment.getText2());
     convertedSegment.setPreDef(oldSegment.getText1());
     PublicationInfo publicationInfo = new PublicationInfo();
-    publicationInfo
-        .setPublicationDate(ConversionUtil.convertPublicationDate(oldSegment.getPublicationDate()));
+    publicationInfo.setPublicationDate(ConversionUtil.convertPublicationDate(oldSegment.getPublicationDate()));
     publicationInfo.setPublicationVersion(oldSegment.getVersion());
     convertedSegment.setPublicationInfo(publicationInfo);
     convertedSegment.setComment(oldSegment.getComment());
