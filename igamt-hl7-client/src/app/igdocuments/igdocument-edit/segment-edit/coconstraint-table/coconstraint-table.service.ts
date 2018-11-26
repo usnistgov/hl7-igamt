@@ -61,10 +61,10 @@ export class CoConstraintTableService {
 
     async generate_obx_table(segment: any): Promise<CoConstraintTable> {
         const tmp: CoConstraintTable = this.generate_generic_table(segment.name);
-        const obx3 = _.find(segment.children, function (child) {
+        const obx3 = _.find(segment.structure, function (child) {
           return child.data.position === 3;
         });
-        const obx2 = _.find(segment.children, function (child) {
+        const obx2 = _.find(segment.structure, function (child) {
           return child.data.position === 2;
         });
 
@@ -121,23 +121,22 @@ export class CoConstraintTableService {
 
     async get_bound_codes(segment: any) {
 
-      const elm = _.filter(segment.children, function (child) {
+      console.log(segment);
+      const elm = _.filter(segment.structure, function (child) {
         return child.data.position === 2;
       });
 
       if (elm !== null && elm.length === 1) {
-        const bindingsForChild = _.filter(segment.binding.children, function (child) {
-          return child.elementId === elm[0].data.id;
-        });
-
 
         const bound_codes: any[] = [];
-        const bindings = bindingsForChild[0].valuesetBindings;
-        const compatible = _.filter(bindings, function (o) {
-          return o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0;
+        console.log(elm[0].data.bindings);
+        // let y = ;
+        console.log();
+        const compatible = _.filter(elm[0].data.bindings.flatMap(x => x.valuesetBindings), function (o) {
+          // // const vsBinding
+          // console.log(o);
+          return (o.valuesetLocations && (o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0));
         });
-
-
 
         for (const binding of compatible){
           const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();

@@ -121,7 +121,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment findById(String key) {
-    return segmentRepository.findById(key).get();
+    return segmentRepository.findById(key).orElse(null);
   }
 
   @Override
@@ -205,7 +205,7 @@ public class SegmentServiceImpl implements SegmentService {
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
-    result.setId(null);
+    result.setId(segment.getId());
     result.setScope(segment.getDomainInfo().getScope());
     result.setVersion(segment.getDomainInfo().getVersion());
     result.setName(segment.getName());
