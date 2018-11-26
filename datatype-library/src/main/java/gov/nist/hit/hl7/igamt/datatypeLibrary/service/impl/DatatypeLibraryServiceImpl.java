@@ -82,7 +82,7 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
   @Override
   public DatatypeLibrary findById(String id) {
     // TODO Auto-generated method stub
-    return datatypeLibraryRepository.findById(id).get();
+    return datatypeLibraryRepository.findById(id).orElse(null);
   }
 
   @Override

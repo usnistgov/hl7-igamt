@@ -120,7 +120,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment findById(String key) {
-    return segmentRepository.findById(key).get();
+    return segmentRepository.findById(key).orElse(null);
   }
 
   @Override
