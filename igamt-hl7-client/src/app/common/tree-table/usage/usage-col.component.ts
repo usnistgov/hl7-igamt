@@ -52,7 +52,7 @@ export class UsageColComponent {
     if(this.usage === 'C') this.setPredicate();
   }
 
-  setPredicate(){
+  async setPredicate(){
     if(!this.bindings) this.bindings = [];
 
     var binding:any = this.findBindingByViewScope();
