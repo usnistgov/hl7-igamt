@@ -47,6 +47,10 @@
                             <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
                         </ng-container>
 
+                        <ng-container *ngSwitchCase="'segment'">
+                            <segment-col *ngIf="node.data.type === 'SEGMENTREF'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(segmentLabel)]="node.data.segmentLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId]="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></segment-col>
+                        </ng-container>
+
                         <ng-container *ngSwitchCase="'usage'">
                             <usage-col *ngIf="node.data.type === 'GROUP' || node.data.type === 'SEGMENTREF'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="conformanceprofileStructure.id"></usage-col>
                             <usage-readonly-col *ngIf="node.data.type !== 'GROUP' && node.data.type !== 'SEGMENTREF'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>

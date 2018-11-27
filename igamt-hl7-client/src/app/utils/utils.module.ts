@@ -64,6 +64,8 @@ import {CommentColComponent} from "../common/tree-table/comment/comment-col.comp
 import {CommentReadonlyColComponent} from "../common/tree-table/comment/comment-readonly-col.component";
 import {ElementLabelComponent} from "../common/element-label/element-label.component";
 import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.service";
+import {SegmentColComponent} from "../common/tree-table/segment/segment-col.component";
+import {SegmentColService} from "../common/tree-table/segment/segment-col.service";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -120,6 +122,7 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     ConfLengthReadonlyColComponent,
     DatatypeColComponent,
     DatatypeReadonlyColComponent,
+    SegmentColComponent,
     ValuesetColComponent,
     ValuesetReadonlyColComponent,
     SingleCodeColComponent,
@@ -166,6 +169,7 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     ConfLengthReadonlyColComponent,
     DatatypeColComponent,
     DatatypeReadonlyColComponent,
+    SegmentColComponent,
     ValuesetColComponent,
     ValuesetReadonlyColComponent,
     SingleCodeColComponent,
@@ -181,6 +185,6 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     PatternDialogComponent,
     ElementLabelComponent
   ],
-  providers:[DatatypeColService]
+  providers:[DatatypeColService, SegmentColService]
 })
 export class UtilsModule {}

@@ -723,7 +723,6 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 @Override
 public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype  dt, String scope) {
-	
 	boolean isComplex= dt instanceof ComplexDatatype;
 		
 	List<DatatypeSelectItemGroup> ret = new ArrayList<DatatypeSelectItemGroup>();
@@ -736,32 +735,18 @@ public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, 
 	ret.add(flavros);
 	}
 	List<Datatype> others =  this.findNonFlavor( ids,dt.getId(), dt.getName());
-
-
 	if(others!=null&& !others.isEmpty()) {
-		
-		
 		 others = others.stream()       
                 .filter(d -> applyRule(d, isComplex,scope))   
                 .collect(Collectors.toList());
-		
-		
-	
 	}
-	
-	
 	if(!others.isEmpty()) {
 		DatatypeSelectItemGroup othersgroup = new DatatypeSelectItemGroup();
 		othersgroup.setLabel("others");
 		others.forEach(d -> othersgroup.getItems().add(createItem(d)));
 		ret.add(othersgroup);
 	}
-	
-	
-	
 	return ret; 
-			
-	
 }
 
 

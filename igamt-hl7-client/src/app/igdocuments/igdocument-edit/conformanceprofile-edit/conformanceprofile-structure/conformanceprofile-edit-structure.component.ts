@@ -97,4 +97,9 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     print(node){
         console.log(node);
     }
+
+    refreshTree(){
+        console.log("Refreshing tree");
+        this.conformanceprofileStructure.structure = [...this.conformanceprofileStructure.structure];
+    }
 }

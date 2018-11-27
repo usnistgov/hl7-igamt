@@ -92,6 +92,19 @@ export class SegmentsService {
     return promise;
   }
 
+  public getSegmentStructureByRef(id, idPath, path) : Promise<any> {
+    const promise = new Promise<any>((resolve, reject) => {
+      this.http.get('api/segments/' + id + '/' + idPath + '/' + path  +'/structure-by-ref').toPromise().then(serverSegmentStructure => {
+        resolve(serverSegmentStructure);
+      }, error => {
+        console.log("Error");
+        resolve(null);
+        this.igErrorService.redirect(error);
+      });
+    });
+    return promise;
+  }
+
   public saveSegmentMetadata(id, metadata): Promise<any> {
       return this.http.post('api/segments/' + id + '/metadata',metadata).toPromise();
   }

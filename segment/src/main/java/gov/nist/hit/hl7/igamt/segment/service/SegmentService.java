@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.segment.service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -29,6 +30,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
@@ -168,4 +170,16 @@ public interface SegmentService extends ResourceService {
 
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
+  /**
+   * @param datatype
+   * @param idPath
+   * @param path
+   * @return
+   */
+  public Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
+  
+  public List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
+  public List<Segment> findFlavors(Set<String> ids, String id, String name);
+
+  public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 }
