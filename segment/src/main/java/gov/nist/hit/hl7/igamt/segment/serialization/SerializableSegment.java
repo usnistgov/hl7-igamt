@@ -117,15 +117,19 @@ private ExportConfiguration exportConfiguration;
         if (coConstraintsElement != null) {
           segmentElement.appendChild(coConstraintsElement);
         }
-      return super.getSectionElement(segmentElement, level);
-    }
-      
+      }
+        
+        System.out.println("segmentElement inside IF:" + segmentElement.toXML());
 
+      return super.getSectionElement(segmentElement, level);
+    
+      
+//System.out.println("segmentElement :" + segmentElement.toXML());
     
     }catch (SerializationException exception) {
       throw new ResourceSerializationException(exception, Type.SEGMENT, segment);
     }
-	return segmentElement;
+//	return segmentElement;
   }
 
   private Element serializeFields(Set<Field> fields) throws SubStructElementSerializationException {
