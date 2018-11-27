@@ -49,15 +49,9 @@ public class ExportServiceImpl implements ExportService {
   public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,
       ExportParameters exportParameters) throws ExportException {
     try {
-//        System.out.println("XML cnotent before XSLT :" + serializedElement);
-
       File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,
           xsltPath != null ? xsltPath : GLOBAL_STYLESHEET, exportParameters);
-//      String str = FileUtils.readFileToString(htmlFile);
-//      System.out.println("File String after XSLT is : "+ str);
-
       InputStream htmlInputStream = FileUtils.openInputStream(htmlFile); 
-//      System.out.println("String content after cleanHTML : " + convert(HtmlUtil.cleanHtml(htmlInputStream),Charset.defaultCharset()));
       return HtmlUtil.cleanHtml(htmlInputStream);
 //      return htmlInputStream;
 
