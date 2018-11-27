@@ -31,15 +31,14 @@ db:
   host: localhost
   
 key: 
-  public: /Users/jungyubw/Documents/Works/Projects/hl7-auth/auth-utils/KeyPair/publicKey.txt
-  private: /Users/jungyubw/Documents/Works/Projects/hl7-auth/auth-utils/KeyPair/privateKey.txt
+ public: /Users/ynb4/Projects/hl7-auth/auth-utils/KeyPair/publicKey.txt
+ private: /Users/ynb4/Projects/hl7-auth/auth-utils/KeyPair/privateKey.txt
   
-  
+
 auth:
   url: http://localhost:8090
   
-admin:
-  to: abdelghani.elouakili@nist.gov
-  cc: elouakili.abdelghani@gmail.com;abdelghani.el-ouakili@telecomnancy.net
+  
+  
 
   

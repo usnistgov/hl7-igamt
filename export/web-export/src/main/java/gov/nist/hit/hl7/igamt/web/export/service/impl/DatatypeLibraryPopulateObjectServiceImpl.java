@@ -33,7 +33,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 	@Override
 	public MyExportObject populateExportObject(Map<String, Datatype> datatypesMap) {
 		String allDatatypesXml ;
-		Map<Ref,String> datatypeNamesMap = new HashMap<>();
+		Map<String,String> datatypeNamesMap = new HashMap<>();
 		Map<String,String> datatypesXMLOneByOne = new HashMap<>();
 		Map<String,String> datatypesXMLbyRoot = new HashMap<>();
 		Map<Datatype,String> mapDatatypeToXML = new HashMap<>();
@@ -72,7 +72,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 			List list = new ArrayList(hs);
 			Collections.sort(list);
 			datatypesMap.put(datatype.getId(), datatype);
-			datatypeNamesMap.put(new Ref(datatype.getId()), datatype.getName());
+			datatypeNamesMap.put(datatype.getId(), datatype.getName());
 			orderedVersionList = list;
 
 		}
@@ -86,7 +86,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 				for(Component component : ((ComplexDatatype) datatype).getComponents()) {
 					if(component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
 						Datatype datatype2 = datatypeService.findById(component.getRef().getId());
-						datatypeNamesMap.put(component.getRef(), datatype2.getName());
+						datatypeNamesMap.put(component.getRef().getId(), datatype2.getName());
 					}
 				}
 			}
@@ -101,7 +101,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 		for(String key : datatypesMap.keySet()) {
 			Datatype datatype = datatypesMap.get(key);
 			if(!datatype.getName().equals("-")) {
-			SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position));
+			SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position),datatypeNamesMap);
 			try {
 				String datatypeXmlWhitoutEncoding = serializableDatatypeForWeb.serialize().toXML();
 				String datatypeXml = Encoding + datatypeXmlWhitoutEncoding;
@@ -126,7 +126,7 @@ public class DatatypeLibraryPopulateObjectServiceImpl implements DatatypeLibrary
 		for(String key : datatypesbyRoot.keySet()) {
 			 allRootDatatypeXML = "<Datatypes>";
 			for(Datatype datatype : datatypesbyRoot.get(key)) {
-				SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position));
+				SerializableDatatypeForWeb serializableDatatypeForWeb = new SerializableDatatypeForWeb(datatype,String.valueOf(position),datatypeNamesMap);
 			try {
 				String datatypeXml = serializableDatatypeForWeb.serialize().toXML();
 

@@ -13,8 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.util.Scanner;
 
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -85,13 +92,41 @@ public class IgExportServiceImpl implements IgExportService {
     if (igDocument != null) {
       ExportedFile htmlFile =
           this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.WORD);
-      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo().getVersion());
+      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
       return wordFile;
     }
     return null;
   }
+  
+//  @Override
+//  public ExportedFile exportCoConstraintsInExcel(String username, String igDocumentId) throws ExportException {
+//	    Ig igDocument = igService.findLatestById(igDocumentId);
+//	    if (igDocument != null) {
+//	      ExportedFile excelFile =
+//	          this.serializeCoConstraintsToExcel(username, igDocument, ExportFormat.HTML);
+//	      return excelFile;
+//	    }
+//	    return null;
+//	    }
 
-  /**
+  private ExportedFile serializeCoConstraintsToExcel(String username, Ig igDocument, ExportFormat html) {
+	  return null;
+//	    try {
+//	    	XSSFWorkbook excelContent =
+//	          exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);	      
+//	      ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+////	      System.out.println("int = " + exportedFile.getContent().read());
+//	      exportedFile.setExcelContent(excelContent);
+////	      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+//	      
+//	      return exportedFile;
+//	    } catch (SerializationException  serializationException) {
+//	      throw new ExportException(serializationException,
+//	          "Unable to serialize IG Document with ID " + igDocument.getId().getId());
+//	    }
+	  }
+
+/**
    * @param username
    * @param igDocumentId
    * @param exportFormat
@@ -107,18 +142,37 @@ public class IgExportServiceImpl implements IgExportService {
       ExportFontConfiguration exportFontConfiguration =
           exportFontConfigurationService.getExportFontConfiguration(username);
       String xmlContent =
-          igSerializationService.serializeIgDocument(igDocument, exportConfiguration);
-      // TODO add appinfoservice to get app version
+          igSerializationService.serializeIgDocument(igDocument, exportConfiguration);  
+//      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+      	// TODO add app infoservice to get app version
       ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
           igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
           exportFontConfiguration, "2.0_beta");
       InputStream htmlContent =
           exportService.exportSerializedElementToHtml(xmlContent, IG_XSLT_PATH, exportParameters);
-      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
-    } catch (SerializationException serializationException) {
+      ExportedFile exportedFile = new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+      exportedFile.setContent(htmlContent);
+//      return new ExportedFile(htmlContent, igDocument.getName(), igDocument.getId(), exportFormat);
+      
+      return exportedFile;
+    } catch (SerializationException  serializationException) {
       throw new ExportException(serializationException,
           "Unable to serialize IG Document with ID " + igDocument.getId());
     }
   }
+  
+  public String convert(InputStream inputStream, Charset charset) throws IOException {
+		
+		try (Scanner scanner = new Scanner(inputStream, charset.name())) {
+			return scanner.useDelimiter("\\A").next();
+		}
+	}
+
+//@Override
+//public ExportedFile exportCoConstraintsInExcel(String username, String igDocumentId, String segmentId)
+//		throws ExportException {
+//	// TODO Auto-generated method stub
+//	return null;
+//}
 
 }

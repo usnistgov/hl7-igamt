@@ -27,6 +27,7 @@ import gov.nist.hit.hl7.igamt.ig.serialization.exception.SectionSerializationExc
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableSection;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -48,7 +49,7 @@ public class SectionSerializationUtil {
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration) throws SerializationException {
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration,CoConstraintService coConstraintService) throws SerializationException {
     if (section != null) {
       try {
         SerializableSection serializableSection =
@@ -57,7 +58,7 @@ public class SectionSerializationUtil {
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
-                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration);
+                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration, coConstraintService);
         if (serializableSection != null) {
           return serializableSection.serialize();
         }

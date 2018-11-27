@@ -33,7 +33,7 @@ public class MyExportObject  {
 	
 	private 	Map<String,String> datatypesXMLOneByOne;
 	private 	Map<String,String> datatypesXMLByRoot;
-	private 	Map<Ref,String> datatypeNamesMap;
+	private 	Map<String,String> datatypeNamesMap;
 	private 	Map<Datatype,String> mapDatatypeToXML;
 	private List<String> allDomainCompatibilityVersions;
 	Map<String,Map<String,List<Datatype>>> datatypesbyVersionThenName = new HashMap<>();
@@ -44,10 +44,10 @@ public class MyExportObject  {
 	
 
 	
-	public Map<Ref, String> getDatatypeNamesMap() {
+	public Map<String, String> getDatatypeNamesMap() {
 		return datatypeNamesMap;
 	}
-	public void setDatatypeNamesMap(Map<Ref, String> datatypeNamesMap) {
+	public void setDatatypeNamesMap(Map<String, String> datatypeNamesMap) {
 		this.datatypeNamesMap = datatypeNamesMap;
 	}
 	public String getAllDatatypesXml() {

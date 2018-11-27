@@ -26,4 +26,5 @@ import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 public interface IgExportService {
   public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId) throws ExportException;
   public ExportedFile exportIgDocumentToWord(String username, String igDocumentId) throws ExportException;
+//  public ExportedFile exportCoConstraintsInExcel(String username, String igDocumentId, String segmentId) throws ExportException;
 }
