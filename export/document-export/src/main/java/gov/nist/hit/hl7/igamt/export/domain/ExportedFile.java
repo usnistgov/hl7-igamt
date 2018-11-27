@@ -17,6 +17,10 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+
+
 /**
  *
  * @author Maxence Lefort on May 8, 2018.
@@ -24,8 +28,20 @@ import java.util.Date;
 public class ExportedFile {
 
   private InputStream content;
-
+  
+  private XSSFWorkbook excelContent;
+  
   private String fileName;
+
+
+  public XSSFWorkbook getExcelContent() {
+	return excelContent;
+}
+
+public void setExcelContent(XSSFWorkbook excelContent) {
+	this.excelContent = excelContent;
+}
+
 
   public ExportedFile(InputStream content, String documentTitle, String documentKey,
       ExportFormat exportFormat) {
@@ -50,9 +66,9 @@ public class ExportedFile {
       ExportFormat exportFormat) {
     documentTitle = this.cleanDocumentTitle(documentTitle != null ? documentTitle : "Document");
     this.fileName =
-        documentTitle + "-" + documentKey
-            + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
+        documentTitle + "-" + documentKey  + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + "."
             + exportFormat.getValue();
+    System.out.println("wqlo");
   }
 
   private String cleanDocumentTitle(String documentTitle) {

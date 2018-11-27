@@ -1,7 +1,10 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -13,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -216,6 +220,30 @@ public class IGDocumentController extends BaseController {
       throw new AuthenticationCredentialsNotFoundException("No Authentication ");
     }
   }
+  
+  
+//  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+//  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+//      HttpServletResponse response) throws ExportException {
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    if (authentication != null) {
+//      String username = authentication.getPrincipal().toString();
+//      ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+//      File coCons;
+//      response.setContentType("text/html");
+//      response.setHeader("Content-disposition",
+//          "attachment;filename=" + exportedFile.getFileName());
+//      try {
+//    		coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
+//  	      InputStream targetStream = new FileInputStream(coCons);
+//        FileCopyUtils.copy(targetStream, response.getOutputStream());
+//      } catch (IOException e) {
+//        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+//      }
+//    } else {
+//      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//    }
+//  }
 
   /**
    * 
@@ -446,7 +474,7 @@ public class IGDocumentController extends BaseController {
           xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
       return results;
     } else {
-      throw new IGNotFoundException("Cannot found Id document");
+      throw new IGNotFoundException("Cannot find Id document");
     }
   }
 

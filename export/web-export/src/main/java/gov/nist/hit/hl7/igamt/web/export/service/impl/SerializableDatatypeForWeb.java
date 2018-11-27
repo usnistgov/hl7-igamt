@@ -41,8 +41,10 @@ public class SerializableDatatypeForWeb extends SerializableResource {
     this.level = level;
   }
 
-  public SerializableDatatypeForWeb(Datatype datatype, String position) {
+  public SerializableDatatypeForWeb(Datatype datatype, String position, Map<String, String> datatypeNamesMap) {
     super(datatype, position);
+    this.datatypeNamesMap = datatypeNamesMap;
+
   }
   
   @Override
@@ -105,6 +107,8 @@ public class SerializableDatatypeForWeb extends SerializableResource {
               component.getConfLength() != null ? component.getConfLength() : ""));
           componentElement
               .addAttribute(new Attribute("id", component.getId() != null ? component.getId() : ""));
+          componentElement
+          .addAttribute(new Attribute("refId", component.getRef() != null ? component.getRef().getId(): ""));
           componentElement.addAttribute(
               new Attribute("name", component.getName() != null ? component.getName() : ""));
           componentElement.addAttribute(new Attribute("maxLength",

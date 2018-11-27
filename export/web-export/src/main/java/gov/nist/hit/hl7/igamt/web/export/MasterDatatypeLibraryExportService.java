@@ -49,7 +49,7 @@ public class MasterDatatypeLibraryExportService {
 	public MyExportObject serializeMasterDatatypeLib(List<String> listIDs) {
 		MyExportObject myExportObject = new MyExportObject();
 		String allDatatypesXml ;
-		Map<Ref,String> datatypeNamesMap = new HashMap<>();
+		Map<String,String> datatypeNamesMap = new HashMap<>();
 		Map<String,Datatype> datatypesMap = new HashMap<>();
 		Map<String,String> datatypesXMLOneByOne = new HashMap<>();
 		Map<String,String> datatypesXMLbyRoot = new HashMap<>();
@@ -89,7 +89,7 @@ public class MasterDatatypeLibraryExportService {
 			List list = new ArrayList(hs);
 			Collections.sort(list);
 			datatypesMap.put(datatypeId, datatype);
-			datatypeNamesMap.put(new Ref(datatypeId), datatype.getName());
+			datatypeNamesMap.put(datatypeId, datatype.getName());
 			orderedVersionList = list;
 
 		}
@@ -115,7 +115,7 @@ public class MasterDatatypeLibraryExportService {
 				for(Component component : ((ComplexDatatype) datatype).getComponents()) {
 					if(component.getRef() != null && !datatypeNamesMap.containsKey(component.getRef())) {
 						Datatype datatype2 = datatypeService.findById(component.getRef().getId());
-						datatypeNamesMap.put(component.getRef(), datatype2.getName());
+						datatypeNamesMap.put(component.getRef().getId(), datatype2.getName());
 					}
 				}
 			}

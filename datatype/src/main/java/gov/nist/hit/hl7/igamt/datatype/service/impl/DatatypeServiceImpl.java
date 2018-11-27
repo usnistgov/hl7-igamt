@@ -99,7 +99,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype findById(String key) {
-    return datatypeRepository.findById(key).get();
+    return datatypeRepository.findById(key).orElse(null);
   }
 
   @Override

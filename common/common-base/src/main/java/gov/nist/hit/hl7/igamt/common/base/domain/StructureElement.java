@@ -25,6 +25,7 @@ public class StructureElement {
     this.custom = custom;
   }
   
+  
   public int getPosition() {
     return position;
   }

@@ -13,8 +13,15 @@
  */
 package gov.nist.hit.hl7.igamt.export.service.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.stereotype.Service;
@@ -44,13 +51,20 @@ public class ExportServiceImpl implements ExportService {
     try {
       File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,
           xsltPath != null ? xsltPath : GLOBAL_STYLESHEET, exportParameters);
-      InputStream htmlInputStream = FileUtils.openInputStream(htmlFile);
+      InputStream htmlInputStream = FileUtils.openInputStream(htmlFile); 
       return HtmlUtil.cleanHtml(htmlInputStream);
+//      return htmlInputStream;
+
     } catch (Exception exception) {
       throw new ExportException(exception);
     }
   }
 
-
+  public String convert(InputStream inputStream, Charset charset) throws IOException {
+		
+		try (Scanner scanner = new Scanner(inputStream, charset.name())) {
+			return scanner.useDelimiter("\\A").next();
+		}
+	}
 
 }
