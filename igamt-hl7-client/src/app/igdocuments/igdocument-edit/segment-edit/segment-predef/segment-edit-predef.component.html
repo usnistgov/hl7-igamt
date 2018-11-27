@@ -12,7 +12,7 @@
           </div>
         </div>
 
-        <div class="ui-g-4">
+        <div class="ui-g-4" *ngIf="segmentPredef.scope === 'USER'">
           <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
           <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
         </div>

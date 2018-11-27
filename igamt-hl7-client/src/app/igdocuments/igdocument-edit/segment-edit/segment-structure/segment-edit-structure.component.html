@@ -11,13 +11,13 @@
                     </span>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-4" *ngIf="segmentStructure.scope === 'USER'">
                 <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
                 <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
             </div>
         </div>
 
-        <p-treeTable [value]="segmentStructure.structure" [scrollable]="true"  [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+        <p-treeTable *ngIf="segmentStructure.scope === 'USER'" [value]="segmentStructure.structure" [scrollable]="true"  [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
             <ng-template pTemplate="caption">
                 <div style="text-align:right">
                     <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
@@ -34,11 +34,7 @@
                 <tr>
                     <th *ngFor="let col of columns">
                         {{col.header}}
-
                     </th>
-
-
-
                 </tr>
             </ng-template>
 
@@ -92,6 +88,78 @@
 
                         <ng-container *ngSwitchCase="'comment'">
                             <comment-col [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "segmentStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></comment-col>
+                        </ng-container>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-treeTable>
+
+        <p-treeTable *ngIf="segmentStructure.scope !== 'USER'" [value]="segmentStructure.structure" [scrollable]="true"  [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+            <ng-template pTemplate="caption">
+                <div style="text-align:right">
+                    <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+                </div>
+            </ng-template>
+
+            <ng-template pTemplate="colgroup" let-columns>
+                <colgroup>
+                    <col *ngFor="let col of columns" class="{{col.style}}">
+                </colgroup>
+            </ng-template>
+
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th *ngFor="let col of columns">
+                        {{col.header}}
+                    </th>
+                </tr>
+            </ng-template>
+
+            <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+                <tr>
+                    <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+                        <ng-container *ngSwitchCase="'name'">
+                            <i (click)="print(node);print(changeItems);"><name-col [type]="node.data.type" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></name-col></i>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'usage'">
+                            <usage-readonly-col [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'cardinality'">
+                            <cardinality-readonly-col [(min)]="node.data.min" [(max)]="node.data.max"></cardinality-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'length'">
+                            <length-readonly-col [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></length-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'confLength'">
+                            <conflength-readonly-col [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></conflength-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'datatype'">
+                            <datatype-readonly-col [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" [documentType]="documentType" ></datatype-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'valueSet'">
+                            <valueset-readonly-col [(bindings)]="node.data.bindings"></valueset-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'singleCode'">
+                            <singlecode-readonly-col [(bindings)]="node.data.bindings"></singlecode-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'constantValue'">
+                            <constantvalue-readonly-col [(bindings)]="node.data.bindings"></constantvalue-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'textDef'">
+                            <textdef-readonly-col [text]="node.data.text"></textdef-readonly-col>
+                        </ng-container>
+
+                        <ng-container *ngSwitchCase="'comment'">
+                            <comment-readonly-col [(bindings)]="node.data.bindings"></comment-readonly-col>
                         </ng-container>
                     </td>
                 </tr>
