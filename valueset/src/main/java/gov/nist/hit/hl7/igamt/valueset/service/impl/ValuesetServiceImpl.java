@@ -69,7 +69,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
   @Override
   public Valueset findById(String id) {
-    return valuesetRepository.findById(id).get();
+    return valuesetRepository.findById(id).orElse(null);
   }
 
   @Override

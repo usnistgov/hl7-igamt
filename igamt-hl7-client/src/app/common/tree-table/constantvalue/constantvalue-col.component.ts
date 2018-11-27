@@ -69,7 +69,7 @@ export class ConstantValueColComponent {
     this.currentBindings = this.backup;
   }
 
-  initCurrentBinding(){
+  async initCurrentBinding(){
     this.currentBindings = null;
     if(this.bindings){
       for (var i in this.bindings) {

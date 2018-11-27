@@ -34,7 +34,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     listTab: boolean = true;
     editorTab: boolean = false;
 
-    changeItems:any[];
+    changeItems:any[] = [];
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -93,7 +93,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
-            this.segmentsService.saveSegment(this.segmentId, this.igId, this.segmentConformanceStatements).then(saved=>{
+            this.segmentsService.saveSegment(this.segmentId, this.igId, this.changeItems).then(saved=>{
                 this.backup = __.cloneDeep(this.segmentConformanceStatements);
                 this.changeItems = [];
                 this.editForm.control.markAsPristine();
@@ -115,7 +115,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.selectedConformanceStatement.type = "ASSERTION";
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
         }else if(this.selectedConformanceStatement.displayType == 'free'){
-            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.assertion = undefined;
             this.selectedConformanceStatement.type = "FREE";
         }else if(this.selectedConformanceStatement.displayType == 'simple-proposition'){
             this.selectedConformanceStatement.assertion = {};
@@ -130,14 +130,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     submitCS(){
-        var isupdated = this.deleteCS(this.selectedConformanceStatement.identifier, true);
-        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure);
-        this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
-        this.selectedConformanceStatement = {};
-        this.editorTab = false;
-        this.listTab = true;
-
-        if(isupdated){
+        this.selectedConformanceStatement.displayType = undefined;
+        if(this.deleteCS(this.selectedConformanceStatement.identifier, true)){
             let item:any = {};
             item.location = this.selectedConformanceStatement.identifier;
             item.propertyType = 'STATEMENT';
@@ -152,6 +146,14 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             item.changeType = "ADD";
             this.changeItems.push(item);
         }
+
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure);
+        this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
+        this.selectedConformanceStatement = {};
+        this.editorTab = false;
+        this.listTab = true;
+
+
     }
 
     addNewCS(){
@@ -199,6 +201,12 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     printCS(cs){
         console.log(cs);
+    }
+
+    print(){
+        console.log(this.segmentConformanceStatements);
+        console.log(this.changeItems);
+
     }
 
     onTabOpen(e) {

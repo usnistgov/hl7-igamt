@@ -38,7 +38,6 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.IfThenAssertion
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.NotAssertion;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.OperatorAssertion;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.SingleAssertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.complement.ValuesetComplement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -105,7 +104,7 @@ public class XRefServiceImpl extends XRefService {
     Aggregation aggregation = null;
     if (filterSegmentIds != null) {
       aggregation =
-          newAggregation(match(Criteria.where("_id._id").in(toObjectIds(filterSegmentIds))),
+          newAggregation(match(Criteria.where("_id").in(toObjectIds(filterSegmentIds))),
               match(Criteria.where("children.ref._id").is(new ObjectId(id))));
     } else {
       aggregation = newAggregation(match(Criteria.where("children.ref._id").is(new ObjectId(id))));
@@ -149,7 +148,7 @@ return XReferenceUtil.processSegments(segments, id);
     ObjectId objId = new ObjectId(id);
     if (filterConformanceProfileIds != null) {
       aggregation = newAggregation(
-          match(Criteria.where("_id._id").in(toObjectIds(filterConformanceProfileIds))),
+          match(Criteria.where("_id.").in(toObjectIds(filterConformanceProfileIds))),
           match(XReferenceUtil.getConformanceProfileMultiLevelCriteria(10, objId)));
     } else {
       aggregation =
@@ -570,7 +569,7 @@ return XReferenceUtil.processSegments(segments, id);
 	if( cf instanceof AssertionConformanceStatement) {
 		Assertion asrt = ((AssertionConformanceStatement)cf).getAssertion();
 		boolean contain=false;
-		processAssertion(asrt, id, contain);
+		//processAssertion(asrt, id, contain);
 		if(contain) {
 			CrossRefsNode node = new  CrossRefsNode();
 			CrossRef data = new CrossRef();
@@ -592,50 +591,41 @@ return XReferenceUtil.processSegments(segments, id);
 	return null;	
 }
 
-private void processAssertion(Assertion asrt, String id, boolean contain) {
+//private void processAssertion(Assertion asrt, String id, boolean contain) {
+//
+//if(!contain) {
+//	if(asrt instanceof SingleAssertion) {
+//		
+//		processSingleAssertion((SingleAssertion)asrt, id, contain);
+//		
+//	}else if(asrt instanceof IfThenAssertion) {
+//
+//		IfThenAssertion ifAssert=(IfThenAssertion)asrt;
+//		
+//		if(ifAssert.getIfAssertion()!=null) {
+//			
+//			 processAssertion(asrt, id, contain);
+//			
+//		}if(ifAssert.getThenAssertion()!=null) {
+//			
+//			 processAssertion(asrt, id, contain);
+//		}
+//		
+//	}else if(asrt instanceof OperatorAssertion) {
+//		OperatorAssertion opAssert=(OperatorAssertion)asrt;
+//		if(opAssert.getAssertions() != null) {
+//			for(Assertion subAssert : opAssert.getAssertions()) {
+//			processAssertion(subAssert, id, contain);
+//			}
+//		}
+//	}else if(asrt instanceof NotAssertion) {
+//		NotAssertion notAssertion=(NotAssertion)asrt;
+//		if(notAssertion.getChild() != null) {
+//			 processAssertion(notAssertion.getChild(), id, contain);
+//		}
+//	  }
+//	}
+//}
 
-if(!contain) {
-	if(asrt instanceof SingleAssertion) {
-		
-		processSingleAssertion((SingleAssertion)asrt, id, contain);
-		
-	}else if(asrt instanceof IfThenAssertion) {
-
-		IfThenAssertion ifAssert=(IfThenAssertion)asrt;
-		
-		if(ifAssert.getIfAssertion()!=null) {
-			
-			 processAssertion(asrt, id, contain);
-			
-		}if(ifAssert.getThenAssertion()!=null) {
-			
-			 processAssertion(asrt, id, contain);
-		}
-		
-	}else if(asrt instanceof OperatorAssertion) {
-		OperatorAssertion opAssert=(OperatorAssertion)asrt;
-		if(opAssert.getAssertions() != null) {
-			for(Assertion subAssert : opAssert.getAssertions()) {
-			processAssertion(subAssert, id, contain);
-			}
-		}
-	}else if(asrt instanceof NotAssertion) {
-		NotAssertion notAssertion=(NotAssertion)asrt;
-		if(notAssertion.getChild() != null) {
-			 processAssertion(notAssertion.getChild(), id, contain);
-		}
-	  }
-	}
-}
-
-private void processSingleAssertion(SingleAssertion asrt, String id, boolean contain) {
-	
-	if(asrt.getComplement() instanceof ValuesetComplement) {
-		ValuesetComplement cmp = (ValuesetComplement)asrt.getComplement();	
-		if(cmp.getBinding() !=null && cmp.getBinding().getValuesetId()!=null &&cmp.getBinding().getValuesetId().equals(id) ) {
-			contain =true;	
-	  }
-	}
-}
 
 }

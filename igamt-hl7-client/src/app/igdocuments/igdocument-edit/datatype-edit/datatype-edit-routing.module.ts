@@ -54,7 +54,7 @@ import {DatatypeEditConformanceStatementsResolver} from './datatype-conformances
             path: ':datatypeId/conformanceStatement',
             component: DatatypeEditConformanceStatementsComponent,
             canDeactivate: [SaveFormsGuard],
-            resolve: {datatypeConformanceStatements: DatatypeEditConformanceStatementsResolver}
+            resolve: {datatypeConformanceStatements: DatatypeEditConformanceStatementsResolver, datatypeStructure: DatatypeEditStructureResolver}
         },
       {
         path: ':datatypeId/crossRef', component: DatatypeCrossRefComponent,resolve: { refs : DatatypeCrossRefResolver}

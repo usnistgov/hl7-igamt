@@ -92,4 +92,9 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     reorderCols(){
         this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
     }
+
+
+    print(node){
+        console.log(node);
+    }
 }

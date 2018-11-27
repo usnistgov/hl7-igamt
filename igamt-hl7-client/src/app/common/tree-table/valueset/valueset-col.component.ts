@@ -93,7 +93,7 @@ export class ValuesetColComponent {
     this.valuesetLabels = null;
   }
 
-  initCurrentBinding(){
+  async initCurrentBinding(){
     this.currentBindings = null;
     if(this.bindings){
       for (var i in this.bindings) {

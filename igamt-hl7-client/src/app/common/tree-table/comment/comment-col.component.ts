@@ -61,7 +61,7 @@ export class CommentColComponent {
     this.changeItemsChange.emit(this.changeItems);
   }
 
-  findAllComments(){
+  async findAllComments(){
     this.allComments = [];
     if(this.bindings){
       for (var i in this.bindings) {
