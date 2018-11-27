@@ -232,7 +232,7 @@ public class IGDocumentController extends BaseController {
 //      File coCons;
 //      response.setContentType("text/html");
 //      response.setHeader("Content-disposition",
-//          "attachment;filename=" + exportedFile.getFileName());
+//          "attachment;filename=" + "CoconstraintExcel.xsl");
 //      try {
 //    		coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
 //  	      InputStream targetStream = new FileInputStream(coCons);
