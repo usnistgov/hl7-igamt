@@ -51,13 +51,13 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private DatatypeService datatypeService;
-  
+
   @Autowired
   EntityChangeService entityChangeService;
 
   @Autowired
   private CommonService commonService;
-  
+
   private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
   private static final String PREDEF_SAVED = "PREDEF_SAVED";
   private static final String POSTDEF_SAVED = "POSTDEF_SAVED";
@@ -182,35 +182,34 @@ public class DatatypeController extends BaseController {
     }
     return Datatype;
   }
-  
-  
-  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
-	      produces = {"application/json"})
-	  @ResponseBody
-	  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-	      @RequestParam(name = "dId", required = true) String documentId,
-	      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
-	      throws DatatypeException, IOException, ForbiddenOperationException {
-	      Datatype dt = this.datatypeService.findById(id);
-	      validateSaveOperation(dt);
-	      this.datatypeService.applyChanges(dt, cItems);
-	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-	      entityChangeDomain.setDocumentId(documentId);
-	      entityChangeDomain.setDocumentType(DocumentType.IG);
-	      entityChangeDomain.setTargetId(id);
-	      entityChangeDomain.setTargetType(EntityType.DATATYPE);
-	      entityChangeDomain.setChangeItems(cItems);
-	      entityChangeDomain.setTargetVersion(dt.getVersion());
-	      entityChangeService.save(entityChangeDomain);
-	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
-	    
-	  }
 
-  	private void validateSaveOperation(Datatype dt) throws ForbiddenOperationException {
-	    if (Scope.HL7STANDARD.equals(dt.getDomainInfo().getScope())) {
-	      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-	    }
-	  }
+
+  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
+      produces = {"application/json"})
+  @ResponseBody
+  public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
+      @RequestParam(name = "dId", required = true) String documentId,
+      @RequestBody List<ChangeItemDomain> cItems, Authentication authentication)
+      throws DatatypeException, IOException, ForbiddenOperationException {
+    Datatype dt = this.datatypeService.findById(id);
+    validateSaveOperation(dt);
+    this.datatypeService.applyChanges(dt, cItems);
+    EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+    entityChangeDomain.setDocumentId(documentId);
+    entityChangeDomain.setDocumentType(DocumentType.IG);
+    entityChangeDomain.setTargetId(id);
+    entityChangeDomain.setTargetType(EntityType.DATATYPE);
+    entityChangeDomain.setChangeItems(cItems);
+    entityChangeDomain.setTargetVersion(dt.getVersion());
+    entityChangeService.save(entityChangeDomain);
+    return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, dt.getId(), new Date());
+  }
+
+  private void validateSaveOperation(Datatype dt) throws ForbiddenOperationException {
+    if (Scope.HL7STANDARD.equals(dt.getDomainInfo().getScope())) {
+      throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
+    }
+  }
 
 
 }

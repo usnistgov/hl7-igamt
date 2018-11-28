@@ -13,12 +13,16 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileSaveStructure;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
@@ -87,19 +91,6 @@ public interface ConformanceProfileService {
       ConformanceProfile conformanceProfile);
 
 
-  /**
-   * 
-   * @param structure
-   * @return
-   */
-  public ConformanceProfile convertToConformanceProfile(ConformanceProfileSaveStructure structure);
-
-  /**
-   * Validate the metadata information of the segment
-   * 
-   * @param metadata
-   * @throws ConformanceProfileValidationException
-   */
   public void validate(DisplayConformanceProfileMetadata metadata)
       throws ConformanceProfileValidationException;
 
@@ -169,5 +160,7 @@ public interface ConformanceProfileService {
    * @return
    */
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile);
+  
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
 }

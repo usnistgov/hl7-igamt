@@ -1,10 +1,7 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -16,7 +13,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +78,7 @@ import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
 import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -161,7 +158,7 @@ public class IGDocumentController extends BaseController {
     return result;  
   }
   
-  @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/falvorOptions/{dtId}", method = RequestMethod.GET, produces = {"application/json"})
+  @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {"application/json"})
   public @ResponseBody List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(@PathVariable("id") String id, @PathVariable("viewScope") String viewScope,@PathVariable("dtId") String dtId, Authentication authentication) throws IGNotFoundException {
     Ig igdoument = findIgById(id);
     List<DatatypeSelectItemGroup> result =new ArrayList<DatatypeSelectItemGroup>();
@@ -171,8 +168,18 @@ public class IGDocumentController extends BaseController {
     
     result = datatypeService.getDatatypeFlavorsOptions(ids, d, viewScope);
     return result;
-      
-
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/segmentFalvorOptions/{segId}", method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody List<SegmentSelectItemGroup> getSegmentFlavorsOptions(@PathVariable("id") String id, @PathVariable("viewScope") String viewScope,@PathVariable("segId") String segId, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    List<SegmentSelectItemGroup> result =new ArrayList<SegmentSelectItemGroup>();
+    Set<String> ids = this.gatherIds(igdoument.getSegmentRegistry().getChildren());
+        
+    Segment s = this.segmentService.findById(segId);
+    
+    result = segmentService.getSegmentFlavorsOptions(ids, s, viewScope);
+    return result;
   }
   
   @RequestMapping(value = "/api/igdocuments/{id}/valuesetLabels", method = RequestMethod.GET, produces = {"application/json"})

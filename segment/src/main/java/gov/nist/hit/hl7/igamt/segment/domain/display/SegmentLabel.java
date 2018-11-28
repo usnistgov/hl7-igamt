@@ -9,22 +9,20 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
+package gov.nist.hit.hl7.igamt.segment.domain.display;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceProfileSaveStructure {
+public class SegmentLabel {
   private String id;
-  private ResourceBinding binding;
-  private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
+  private String label;
+  private DomainInfo domainInfo;
+  private String name;
+  private String ext;
 
   public String getId() {
     return id;
@@ -34,21 +32,36 @@ public class ConformanceProfileSaveStructure {
     this.id = id;
   }
 
-  public ResourceBinding getBinding() {
-    return binding;
+  public String getLabel() {
+    return label;
   }
 
-  public void setBinding(ResourceBinding binding) {
-    this.binding = binding;
+  public void setLabel(String label) {
+    this.label = label;
   }
 
-  public Set<SegmentRefOrGroup> getChildren() {
-    return children;
+  public DomainInfo getDomainInfo() {
+    return domainInfo;
   }
 
-  public void setChildren(Set<SegmentRefOrGroup> children) {
-    this.children = children;
+  public void setDomainInfo(DomainInfo domainInfo) {
+    this.domainInfo = domainInfo;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  public String getExt() {
+    return ext;
+  }
+
+  public void setExt(String ext) {
+    this.ext = ext;
+  }
 
 }

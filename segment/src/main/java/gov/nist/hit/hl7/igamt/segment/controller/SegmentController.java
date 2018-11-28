@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.segment.controller;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -35,6 +36,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
+import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
@@ -67,6 +69,15 @@ public class SegmentController extends BaseController {
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
     return segmentService.convertDomainToDisplayStructure(segment);
+  }
+  
+  @RequestMapping(value = "/api/segments/{id}/{idPath}/{path}/structure-by-ref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public Set<?> getComponentStructure(@PathVariable("id") String id,
+      @PathVariable("idPath") String idPath, @PathVariable("path") String path, Authentication authentication)
+      throws SegmentNotFoundException {
+    Segment segment = findById(id);
+    return segmentService.convertSegmentStructurForMessage(segment, idPath, path);
   }
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,

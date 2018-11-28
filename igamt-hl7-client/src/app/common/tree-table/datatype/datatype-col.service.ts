@@ -8,7 +8,7 @@ export class DatatypeColService {
   constructor(private http: HttpClient) { }
 
   public getDatatypeFlavorsOptions( documentId , documentType , viewScope, datatypeId): Promise<any> {
-    let url= "/"+documentId+"/"+viewScope+"/falvorOptions/"+datatypeId;
+    let url= "/"+documentId+"/"+viewScope+"/datatypeFalvorOptions/"+datatypeId;
     if(documentType==Types.IGDOCUMENT){
       url= 'api/igdocuments'+url;
     }else{
