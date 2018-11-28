@@ -11,7 +11,7 @@
                     </span>
                 </div>
             </div>
-            <div class="ui-g-4">
+            <div class="ui-g-4" *ngIf="segmentConformanceStatements.scope === 'USER'">
                 <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
                 <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
             </div>
@@ -27,7 +27,7 @@
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
                             </th>
-                            <th style="width:15em" pReorderableColumn>Actions</th>
+                            <th *ngIf="segmentConformanceStatements.scope === 'USER'" style="width:15em" pReorderableColumn>Actions</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
@@ -48,13 +48,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td>
+                            <td *ngIf="segmentConformanceStatements.scope === 'USER'">
                                 <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'], false)"></button>
                                 <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
                             </td>
                         </tr>
                     </ng-template>
-                    <ng-template pTemplate="summary" let-rowData>
+                    <ng-template *ngIf="segmentConformanceStatements.scope === 'USER'" pTemplate="summary" let-rowData>
                         <div style="text-align:left">
                             <button type="button" pButton icon="fa fa-plus" (click)="addNewCS()" label="Create New Conformance Statement"></button>
                         </div>
@@ -62,7 +62,7 @@
                 </p-table>
             </p-accordionTab>
 
-            <p-accordionTab header="Conformance Statement Editor" [(selected)]="editorTab">
+            <p-accordionTab *ngIf="segmentConformanceStatements.scope === 'USER'" header="Conformance Statement Editor" [(selected)]="editorTab">
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
                         <label>Editor Type: </label>
