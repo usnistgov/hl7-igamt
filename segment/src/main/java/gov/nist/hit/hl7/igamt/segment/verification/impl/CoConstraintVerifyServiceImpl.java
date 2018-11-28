@@ -85,7 +85,7 @@ public class CoConstraintVerifyServiceImpl implements CoConstraintVerifyService 
       Datatype datatype) {
     boolean errors = false;
     boolean complex = datatype instanceof ComplexDatatype;
-    boolean coded = datatype.getName().matches("^C(N|W)E$");
+    boolean coded = datatype.getName().matches("^C[N|W]?E$");
     boolean varies = datatype.getName().equals("VARIES");
     if (header.getContent().getType() == CellType.Ignore)
       return false;
