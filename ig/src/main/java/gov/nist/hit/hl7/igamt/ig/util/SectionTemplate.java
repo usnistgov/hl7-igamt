@@ -4,6 +4,7 @@ import java.util.Set;
 
 public class SectionTemplate {
 
+
   private String label;
   private String type;
   private int position;

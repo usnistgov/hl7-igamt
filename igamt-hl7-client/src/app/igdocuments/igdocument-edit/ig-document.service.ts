@@ -36,33 +36,35 @@ export class IgDocumentService {
         return new Promise(
             (resolve , reject) => {
 
-                this.indexedDbService.getIgDocument().then(  x => {
+              this.initIgDocument(igId, resolve);
 
 
-
-                        console.log("ID From DB");
-
-                        if(x.id!==igId) {
-
-                            // this.initToc(igId,resolve,reject);
-                            this.initIgDocument(igId, resolve);
-
-                        } else {
-                            this.tocService.metadata.next(x.metadata);
-                            this.tocService.igId=igId;
-                            // this.initToc(igId,resolve,reject);
-                            resolve(x);                //this.getMergedIg(igId, resolve,reject);
-                        }
-
-
-
-
-                    },error =>{
-                        this.initIgDocument(igId, resolve);
-
-                        // this.initToc(igId,resolve,reject);
-                    }
-                )
+              // this.indexedDbService.getIgDocument().then(  x => {
+              //
+              //
+              //
+              //           console.log("ID From DB");
+              //
+              //           if(x.id!==igId) {
+              //
+              //               // this.initToc(igId,resolve,reject);
+              //               this.initIgDocument(igId, resolve);
+              //
+              //           } else {
+              //               this.tocService.metadata.next(x.metadata);
+              //               this.tocService.igId=igId;
+              //               resolve(x);
+              //           }
+              //
+              //
+              //
+              //
+              //       },error =>{
+              //           this.initIgDocument(igId, resolve);
+              //
+              //           // this.initToc(igId,resolve,reject);
+              //       }
+              //  )
 
             })
 

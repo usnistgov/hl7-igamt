@@ -124,11 +124,10 @@ public class DatatypeLibraryServiceImpl implements DatatypeLibraryService {
     // TODO Auto-generated method stub
 
     // TODO Auto-generated method stub
-    File ig = new ClassPathResource("datatypeLibraryTemplate.json").getFile();
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     List<SectionTemplate> datatypeLibraryTemplate =
-        objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
+        objectMapper.readValue(DatatypeLibraryServiceImpl.class.getResourceAsStream("/datatypeLibraryTemplate.json"), new TypeReference<List<SectionTemplate>>() {});
     DatatypeLibrary emptyLibrary = new DatatypeLibrary();
     emptyLibrary.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
