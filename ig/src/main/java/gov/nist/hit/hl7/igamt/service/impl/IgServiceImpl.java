@@ -162,11 +162,10 @@ public class IgServiceImpl implements IgService {
   public Ig createEmptyIg()
       throws JsonParseException, JsonMappingException, FileNotFoundException, IOException {
     // TODO Auto-generated method stub
-    File ig = new ClassPathResource("IgTemplate.json").getFile();
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     List<SectionTemplate> igTemplates =
-        objectMapper.readValue(ig, new TypeReference<List<SectionTemplate>>() {});
+        objectMapper.readValue(IgServiceImpl.class.getResourceAsStream("/IgTemplate.json"), new TypeReference<List<SectionTemplate>>() {});
     Ig emptyIg = new Ig();
     emptyIg.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
