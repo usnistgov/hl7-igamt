@@ -127,9 +127,14 @@ export class GeneralConfigurationService {
     this._occurenceTypes = [ { label : 'At least one occurrence of', value : 'atLeast' },{ label : "The 'INSTANCE' occurrence of", value : 'instance' },{ label : 'No occurrence of', value : 'noOccurrence' },{ label : 'Exactly one occurrence of', value : 'exactlyOne' },{ label : "'COUNT' occurrences of", value : 'count' },{ label : 'All occurrences of', value : 'all' }];
 
     this._propsotionTypes = [
-      { label : "valued.", value : 'valued' },
-      { label : "contain the value 'VALUE'.", value : 'containtValue' },
-      { label : "contain one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' }.", value : 'containListValues' }
+      { label : "is valued", value : 'valued' },
+      { label : "is not valued", value : 'notValued' },
+      { label : "contains the value 'VALUE'.", value : 'containtValue' },
+      { label : "does not contain the value 'VALUE'.", value : 'notContaintValue' },
+      { label : "contains the value 'VALUE' (DESCRIPTION).", value : 'containValueDesc' },
+      { label : "does not contain the value 'VALUE' (DESCRIPTION).", value : 'notContainValueDesc' },
+      { label : "contains one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' }.", value : 'containListValues' },
+      { label : "does not contain one of the values in the list: { 'VALUE 1', 'VALUE 2', 'VALUE N' }.", value : 'notContainListValues' }
     ];
 
     this._declarativeTypes = [

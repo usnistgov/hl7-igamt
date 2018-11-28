@@ -144,7 +144,7 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
             item.changeType = "ADD";
             this.changeItems.push(item);
         }
-        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.datatypeStructure);
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.datatypeStructure, 'D');
         this.datatypeConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
         this.editorTab = false;

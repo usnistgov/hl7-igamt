@@ -147,7 +147,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.changeItems.push(item);
         }
 
-        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure);
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure, 'D');
         this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
         this.editorTab = false;
