@@ -135,7 +135,7 @@ export class ConstraintsService {
         return result + "(" + elementName + ")";
     }
 
-    generateDescriptionForSimpleAssertion(assertion, structure){
+    generateDescriptionForSimpleAssertion(assertion, structure, pdType){
         console.log(assertion);
         if(assertion.mode === 'SIMPLE'){
 
@@ -160,124 +160,180 @@ export class ConstraintsService {
                 }
             }
 
-            if(assertion.verbKey){
-                verb = assertion.verbKey;
-            }
+            if(pdType === 'D'){
+                if(assertion.verbKey){
+                    verb = assertion.verbKey;
+                }
 
-            if(assertion.complement) {
-                complementKey = assertion.complement.complementKey;
-            }
+                if(assertion.complement) {
+                    complementKey = assertion.complement.complementKey;
+                }
 
-            console.log(subject);
-            console.log(verb);
-            console.log(complementKey);
+                if(subject && verb && complementKey){
+                    if(complementKey === 'containtValue'){
+                        let value:string;
+                        value = assertion.complement.value;
 
-            if(subject && verb && complementKey){
-                if(complementKey === 'containtValue'){
-                    let value:string;
-                    value = assertion.complement.value;
+                        if(value){
+                            assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\'';
+                        }
+                    }if(complementKey === 'valued'){
+                        assertion.description = subject + ' ' + verb + ' valued';
+                    }else if(complementKey === 'containValueDesc'){
+                        let value,description:string;
+                        value = assertion.complement.value;
+                        description = assertion.complement.desc;
 
-                    if(value){
-                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\'';
-                    }
-                }if(complementKey === 'valued'){
-                    assertion.description = subject + ' ' + verb + ' valued';
-                }else if(complementKey === 'containValueDesc'){
-                    let value,description:string;
-                    value = assertion.complement.value;
-                    description = assertion.complement.desc;
+                        if(value){
+                            assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' (' + description + ')';
+                        }
+                    }else if(complementKey === 'containCode'){
+                        let value,codesys:string;
+                        value = assertion.complement.value;
+                        codesys = assertion.complement.codesys;
 
-                    if(value){
-                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' (' + description + ')';
-                    }
-                }else if(complementKey === 'containCode'){
-                    let value,codesys:string;
-                    value = assertion.complement.value;
-                    codesys = assertion.complement.codesys;
+                        if(value){
+                            assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' ' + 'drawn from the code system \'' + codesys + '\'.';
+                        }
+                    }else if(complementKey === 'containListValues'){
+                        let values:string[];
+                        values = assertion.complement.values;
 
-                    if(value){
-                        assertion.description = subject + ' ' + verb + ' contain the constant value \'' + value + '\' ' + 'drawn from the code system \'' + codesys + '\'.';
-                    }
-                }else if(complementKey === 'containListValues'){
-                    let values:string[];
-                    values = assertion.complement.values;
+                        if(values){
+                            assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '}.';
+                        }
+                    }else if(complementKey === 'containListCodes'){
+                        let values:string[];
+                        let codesys:string;
+                        values = assertion.complement.values;
+                        codesys = assertion.complement.codesys;
 
-                    if(values){
-                        assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '}.';
-                    }
-                }else if(complementKey === 'containListCodes'){
-                    let values:string[];
-                    let codesys:string;
-                    values = assertion.complement.values;
-                    codesys = assertion.complement.codesys;
+                        if(values){
+                            assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '} drawn from the code system \'' + codesys + '\'.';
+                        }
+                    }else if(complementKey === 'regex'){
+                        let value:string;
+                        value = assertion.complement.value;
 
-                    if(values){
-                        assertion.description = subject + ' ' + verb + ' contain one of the values in the list: {' + values + '} drawn from the code system \'' + codesys + '\'.';
-                    }
-                }else if(complementKey === 'regex'){
-                    let value:string;
-                    value = assertion.complement.value;
-
-                    if(value){
-                        assertion.description = subject + ' ' + verb + ' match the regular expression \'' + value + '\'';
-                    }
-                }else if(complementKey === 'positiveInteger'){
-                    assertion.description = subject + ' ' + verb + ' contain a positive integer.';
-                }else if(complementKey === 'sequentially'){
-                    assertion.description = subject + ' ' + verb + " be valued sequentially starting with the value '1'.";
-                }else if(complementKey === 'iso'){
-                    assertion.description = subject + ' ' + verb + " be valued with an ISO-compliant OID.";
-                }else {
-                    let compareNode:string;
-                    if(assertion.complement.path){
-                        compareNode = this.getLocationLabel(assertion.complement,structure);
-                        if(assertion.complement.occurenceType){
-                            if(assertion.subject.occurenceType === 'atLeast'){
-                                compareNode = "At least one occurrence of " + compareNode;
-                            }else if(assertion.subject.occurenceType === 'instance'){
-                                compareNode = "The " + assertion.subject.occurenceValue  + " occurrence of " + compareNode;
-                            }else if(assertion.subject.occurenceType === 'noOccurrence'){
-                                compareNode = "No occurrence of " + compareNode;
-                            }else if(assertion.subject.occurenceType === 'exactlyOne'){
-                                compareNode = "Exactly one occurrence of " + compareNode;
-                            }else if(assertion.subject.occurenceType === 'count'){
-                                compareNode = assertion.subject.occurenceValue  + " occurrences of " + compareNode;
-                            }else if(assertion.subject.occurenceType === 'all'){
-                                compareNode = "All occurrences of " + compareNode;
+                        if(value){
+                            assertion.description = subject + ' ' + verb + ' match the regular expression \'' + value + '\'';
+                        }
+                    }else if(complementKey === 'positiveInteger'){
+                        assertion.description = subject + ' ' + verb + ' contain a positive integer.';
+                    }else if(complementKey === 'sequentially'){
+                        assertion.description = subject + ' ' + verb + " be valued sequentially starting with the value '1'.";
+                    }else if(complementKey === 'iso'){
+                        assertion.description = subject + ' ' + verb + " be valued with an ISO-compliant OID.";
+                    }else {
+                        let compareNode:string;
+                        if(assertion.complement.path){
+                            compareNode = this.getLocationLabel(assertion.complement,structure);
+                            if(assertion.complement.occurenceType){
+                                if(assertion.subject.occurenceType === 'atLeast'){
+                                    compareNode = "At least one occurrence of " + compareNode;
+                                }else if(assertion.subject.occurenceType === 'instance'){
+                                    compareNode = "The " + assertion.subject.occurenceValue  + " occurrence of " + compareNode;
+                                }else if(assertion.subject.occurenceType === 'noOccurrence'){
+                                    compareNode = "No occurrence of " + compareNode;
+                                }else if(assertion.subject.occurenceType === 'exactlyOne'){
+                                    compareNode = "Exactly one occurrence of " + compareNode;
+                                }else if(assertion.subject.occurenceType === 'count'){
+                                    compareNode = assertion.subject.occurenceValue  + " occurrences of " + compareNode;
+                                }else if(assertion.subject.occurenceType === 'all'){
+                                    compareNode = "All occurrences of " + compareNode;
+                                }
                             }
+
+                            console.log(compareNode);
+
+                            if(complementKey === 'c-identical'){
+                                assertion.description = subject + ' ' + verb + ' be identical to ' + compareNode + ".";
+                            }else if(complementKey === 'c-earlier'){
+                                assertion.description = subject + ' ' + verb + ' be earlier than ' + compareNode + ".";
+                            }else if(complementKey === 'c-earlier-equivalent'){
+                                assertion.description = subject + ' ' + verb + ' be earlier than or equivalent to ' + compareNode + ".";
+                            }else if(complementKey === 'c-truncated-earlier'){
+                                assertion.description = subject + ' ' + verb + ' be truncated earlier than ' + compareNode + ".";
+                            }else if(complementKey === 'c-truncated-earlier-equivalent'){
+                                assertion.description = subject + ' ' + verb + ' be truncated earlier than or truncated equivalent to ' + compareNode + ".";
+                            }else if(complementKey === 'c-equivalent'){
+                                assertion.description = subject + ' ' + verb + ' be equivalent to ' + compareNode + ".";
+                            }else if(complementKey === 'c-truncated-equivalent'){
+                                assertion.description = subject + ' ' + verb + ' be truncated equivalent to ' + compareNode + ".";
+                            }else if(complementKey === 'c-equivalent-later'){
+                                assertion.description = subject + ' ' + verb + ' be equivalent to or later than ' + compareNode + ".";
+                            }else if(complementKey === 'c-later'){
+                                assertion.description = subject + ' ' + verb + ' be later than ' + compareNode + ".";
+                            }else if(complementKey === 'c-truncated-equivalent-later'){
+                                assertion.description = subject + ' ' + verb + ' be truncated equivalent to or truncated later than ' + compareNode + ".";
+                            }else if(complementKey === 'c-truncated-later'){
+                                assertion.description = subject + ' ' + verb + ' be truncated later than ' + compareNode + ".";
+                            }
+
                         }
 
-                        console.log(compareNode);
-
-                        if(complementKey === 'c-identical'){
-                            assertion.description = subject + ' ' + verb + ' be identical to ' + compareNode + ".";
-                        }else if(complementKey === 'c-earlier'){
-                            assertion.description = subject + ' ' + verb + ' be earlier than ' + compareNode + ".";
-                        }else if(complementKey === 'c-earlier-equivalent'){
-                            assertion.description = subject + ' ' + verb + ' be earlier than or equivalent to ' + compareNode + ".";
-                        }else if(complementKey === 'c-truncated-earlier'){
-                            assertion.description = subject + ' ' + verb + ' be truncated earlier than ' + compareNode + ".";
-                        }else if(complementKey === 'c-truncated-earlier-equivalent'){
-                            assertion.description = subject + ' ' + verb + ' be truncated earlier than or truncated equivalent to ' + compareNode + ".";
-                        }else if(complementKey === 'c-equivalent'){
-                            assertion.description = subject + ' ' + verb + ' be equivalent to ' + compareNode + ".";
-                        }else if(complementKey === 'c-truncated-equivalent'){
-                            assertion.description = subject + ' ' + verb + ' be truncated equivalent to ' + compareNode + ".";
-                        }else if(complementKey === 'c-equivalent-later'){
-                            assertion.description = subject + ' ' + verb + ' be equivalent to or later than ' + compareNode + ".";
-                        }else if(complementKey === 'c-later'){
-                            assertion.description = subject + ' ' + verb + ' be later than ' + compareNode + ".";
-                        }else if(complementKey === 'c-truncated-equivalent-later'){
-                            assertion.description = subject + ' ' + verb + ' be truncated equivalent to or truncated later than ' + compareNode + ".";
-                        }else if(complementKey === 'c-truncated-later'){
-                            assertion.description = subject + ' ' + verb + ' be truncated later than ' + compareNode + ".";
-                        }
 
                     }
+                }
+            }else if(pdType === 'P'){
+                if(assertion.complement) {
+                    complementKey = assertion.complement.complementKey;
+                }
 
+                if(subject &&  complementKey){
+                    if(complementKey === 'containtValue'){
+                        let value:string;
+                        value = assertion.complement.value;
 
+                        if(value){
+                            assertion.description = subject + ' contains the constant value \'' + value + '\'';
+                        }
+                    }else if(complementKey === 'notContaintValue'){
+                        let value:string;
+                        value = assertion.complement.value;
+
+                        if(value){
+                            assertion.description = subject + ' does not contain the constant value \'' + value + '\'';
+                        }
+                    }else if(complementKey === 'valued'){
+                        assertion.description = subject + ' is valued';
+                    }else if(complementKey === 'notValued'){
+                        assertion.description = subject + ' is not valued';
+                    }else if(complementKey === 'containValueDesc'){
+                        let value,description:string;
+                        value = assertion.complement.value;
+                        description = assertion.complement.desc;
+
+                        if(value){
+                            assertion.description = subject  + ' contains the constant value \'' + value + '\' (' + description + ')';
+                        }
+                    }else if(complementKey === 'notContainValueDesc'){
+                        let value,description:string;
+                        value = assertion.complement.value;
+                        description = assertion.complement.desc;
+
+                        if(value){
+                            assertion.description = subject  + ' does not contain the constant value \'' + value + '\' (' + description + ')';
+                        }
+                    }else if(complementKey === 'containListValues'){
+                        let values:string[];
+                        values = assertion.complement.values;
+
+                        if(values){
+                            assertion.description = subject  + ' contains one of the values in the list: {' + values + '}.';
+                        }
+                    }else if(complementKey === 'notContainListValues'){
+                        let values:string[];
+                        values = assertion.complement.values;
+
+                        if(values){
+                            assertion.description = subject  + ' does not contain one of the values in the list: {' + values + '}.';
+                        }
+                    }
                 }
             }
+
+
         }
         else if(assertion.mode === 'ANDOR'){
             let operator, result:string;
@@ -289,7 +345,7 @@ export class ConstraintsService {
 
             if(operator && assertions && assertions.length > 1){
                 for (let childAssertion of assertions) {
-                    this.generateDescriptionForSimpleAssertion(childAssertion,structure);
+                    this.generateDescriptionForSimpleAssertion(childAssertion,structure, pdType);
                     if(!childAssertion.description) isReady = false;
 
                     if(result){
@@ -311,7 +367,7 @@ export class ConstraintsService {
             child = assertion.child;
 
             if(assertion){
-                this.generateDescriptionForSimpleAssertion(child,structure);
+                this.generateDescriptionForSimpleAssertion(child,structure, pdType);
                 if(!child.description) isReady = false;
 
                 result = 'NOT{' + child.description + '}';
@@ -328,8 +384,8 @@ export class ConstraintsService {
             thenAssertion = assertion.thenAssertion;
 
             if(ifAssertion && thenAssertion){
-                this.generateDescriptionForSimpleAssertion(ifAssertion,structure);
-                this.generateDescriptionForSimpleAssertion(thenAssertion,structure);
+                this.generateDescriptionForSimpleAssertion(ifAssertion,structure, 'P');
+                this.generateDescriptionForSimpleAssertion(thenAssertion,structure, 'D');
 
                 if(!ifAssertion.description) isReady = false;
                 if(!thenAssertion.description) isReady = false;
