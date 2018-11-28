@@ -122,9 +122,7 @@ export class DatatypesService {
     // return  this.http.post('api/datatypes/' + id + '/document/' + dId + '/save',cItem).toPromise();
     // }
     public saveDatatype(id, dId, cItem): Promise<any> {
-
-     let httpParams = new HttpParams().append("dId", dId);
-
-    return  this.http.post('api/datatypes/' + id + '/structure',cItem, {params:httpParams}).toPromise();
+        let httpParams = new HttpParams().append("dId", dId);
+        return  this.http.post('api/datatypes/' + id + '/structure',cItem, {params:httpParams}).toPromise();
     }
 }

@@ -190,7 +190,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope);
     where.andOperator(Criteria.where("domainInfo.version").is(hl7Version));
-   
+
     Query qry = Query.query(where);
     List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
     return datatypes;
@@ -332,7 +332,8 @@ public class DatatypeServiceImpl implements DatatypeService {
         result.setLabel(datatype.getName());
       }
       result.setName(datatype.getName());
-      if(datatype.getBinding() != null) result.setConformanceStatements(datatype.getBinding().getConformanceStatements());
+      if (datatype.getBinding() != null)
+        result.setConformanceStatements(datatype.getBinding().getConformanceStatements());
       return result;
     }
     return null;
@@ -437,12 +438,12 @@ public class DatatypeServiceImpl implements DatatypeService {
     // TODO Auto-generated method stub
 
     Datatype old = this.findById(l.getId());
-    Datatype elm=old.clone();
+    Datatype elm = old.clone();
     Link newLink = new Link();
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-        ;
+      ;
 
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
@@ -496,7 +497,8 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope) {
+  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path,
+      String viewScope) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
@@ -509,14 +511,18 @@ public class DatatypeServiceImpl implements DatatypeService {
           for (Component c : childDatatype.getComponents()) {
             Datatype childChildDt = this.findDatatype(c.getRef().getId(), datatypesMap);
             if (childChildDt != null) {
-              ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
+              ComponentStructureTreeModel componentStructureTreeModel =
+                  new ComponentStructureTreeModel();
               ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
               cModel.setViewScope(ViewScope.SEGMENT);
               cModel.setIdPath(idPath + "-" + c.getId());
               cModel.setPath(path + "-" + c.getPosition());
               cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
-              StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-              if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+              StructureElementBinding cSeb =
+                  this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
+              if (cSeb != null)
+                cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(),
+                    ViewScope.DATATYPE, 2, valueSetsMap));
 
               componentStructureTreeModel.setData(cModel);
               if (childChildDt instanceof ComplexDatatype) {
@@ -524,18 +530,28 @@ public class DatatypeServiceImpl implements DatatypeService {
                 if (componentDatatype.getComponents() != null
                     && componentDatatype.getComponents().size() > 0) {
                   for (Component sc : componentDatatype.getComponents()) {
-                    Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
+                    Datatype childChildChildDt =
+                        this.findDatatype(sc.getRef().getId(), datatypesMap);
                     if (childChildChildDt != null) {
-                      SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                      SubComponentStructureTreeModel subComponentStructureTreeModel =
+                          new SubComponentStructureTreeModel();
                       SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
                       scModel.setViewScope(ViewScope.SEGMENT);
                       scModel.setIdPath(idPath + "-" + c.getId() + "-" + sc.getId());
                       scModel.setPath(path + "-" + c.getPosition() + "-" + sc.getPosition());
                       scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
-                      StructureElementBinding childCSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                      if (childCSeb != null) scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
-                      StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childChildDt, sc.getId());
-                      if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                      StructureElementBinding childCSeb =
+                          this.findStructureElementBindingByComponentIdFromStructureElementBinding(
+                              cSeb, sc.getId());
+                      if (childCSeb != null)
+                        scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId(),
+                            ViewScope.DATATYPE, 2, valueSetsMap));
+                      StructureElementBinding scSeb =
+                          this.findStructureElementBindingByComponentIdForDatatype(childChildDt,
+                              sc.getId());
+                      if (scSeb != null)
+                        scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(),
+                            ViewScope.DATATYPE, 3, valueSetsMap));
                       subComponentStructureTreeModel.setData(scModel);
                       componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                     } else {
@@ -555,19 +571,25 @@ public class DatatypeServiceImpl implements DatatypeService {
     } else if (viewScope.equals(ViewScope.DATATYPE.toString())) {
       if (datatype instanceof ComplexDatatype) {
         ComplexDatatype componentDatatype = (ComplexDatatype) datatype;
-        if (componentDatatype.getComponents() != null && componentDatatype.getComponents().size() > 0) {
-          Set<SubComponentStructureTreeModel> result = new HashSet<SubComponentStructureTreeModel>();
+        if (componentDatatype.getComponents() != null
+            && componentDatatype.getComponents().size() > 0) {
+          Set<SubComponentStructureTreeModel> result =
+              new HashSet<SubComponentStructureTreeModel>();
           for (Component sc : componentDatatype.getComponents()) {
             Datatype childChildChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
             if (childChildChildDt != null) {
-              SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+              SubComponentStructureTreeModel subComponentStructureTreeModel =
+                  new SubComponentStructureTreeModel();
               SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
               scModel.setViewScope(ViewScope.DATATYPE);
               scModel.setIdPath(idPath + "-" + sc.getId());
               scModel.setPath(path + "-" + sc.getPosition());
               scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
-              StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
-              if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+              StructureElementBinding scSeb =
+                  this.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
+              if (scSeb != null)
+                scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(),
+                    ViewScope.DATATYPE, 3, valueSetsMap));
               subComponentStructureTreeModel.setData(scModel);
               result.add(subComponentStructureTreeModel);
             } else {
@@ -604,32 +626,45 @@ public class DatatypeServiceImpl implements DatatypeService {
         for (Component c : dt.getComponents()) {
           Datatype childDt = this.findDatatype(c.getRef().getId(), datatypesMap);
           if (childDt != null) {
-            ComponentStructureTreeModel componentStructureTreeModel = new ComponentStructureTreeModel();
+            ComponentStructureTreeModel componentStructureTreeModel =
+                new ComponentStructureTreeModel();
             ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
             cModel.setViewScope(ViewScope.DATATYPE);
             cModel.setIdPath(c.getId());
             cModel.setPath(c.getPosition() + "");
             cModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
-            StructureElementBinding cSeb = this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-            if (cSeb != null) cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+            StructureElementBinding cSeb =
+                this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
+            if (cSeb != null)
+              cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(),
+                  ViewScope.DATATYPE, 1, valueSetsMap));
             componentStructureTreeModel.setData(cModel);
 
             if (childDt instanceof ComplexDatatype) {
               ComplexDatatype childDatatype = (ComplexDatatype) childDt;
-              if (childDatatype.getComponents() != null && childDatatype.getComponents().size() > 0) {
+              if (childDatatype.getComponents() != null
+                  && childDatatype.getComponents().size() > 0) {
                 for (Component sc : childDatatype.getComponents()) {
                   Datatype childChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                   if (childChildDt != null) {
-                    SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                    SubComponentStructureTreeModel subComponentStructureTreeModel =
+                        new SubComponentStructureTreeModel();
                     SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(c);
                     scModel.setViewScope(ViewScope.DATATYPE);
                     scModel.setIdPath(c.getId() + "-" + sc.getId());
                     scModel.setPath(c.getPosition() + "-" + sc.getPosition());
                     scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
-                    StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
-                    StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
-                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                    StructureElementBinding childSeb =
+                        this.findStructureElementBindingByComponentIdFromStructureElementBinding(
+                            cSeb, sc.getId());
+                    if (childSeb != null)
+                      scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
+                          ViewScope.DATATYPE, 1, valueSetsMap));
+                    StructureElementBinding scSeb = this
+                        .findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
+                    if (scSeb != null)
+                      scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
+                          ViewScope.DATATYPE, 2, valueSetsMap));
                     subComponentStructureTreeModel.setData(scModel);
                     componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                   } else {
@@ -659,7 +694,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
     bindingDisplay.setPredicate(seb.getPredicate());
-    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    bindingDisplay
+        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
   }
 
@@ -721,63 +757,63 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
 
-@Override
-public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype  dt, String scope) {
-	boolean isComplex= dt instanceof ComplexDatatype;
-		
-	List<DatatypeSelectItemGroup> ret = new ArrayList<DatatypeSelectItemGroup>();
-	DatatypeSelectItemGroup flavros = new DatatypeSelectItemGroup();
-	flavros.setLabel("Flavors");
-	List<Datatype> dtFlavors =  this.findFlavors( ids,dt.getId(), dt.getName());
-	
-	if(dtFlavors!=null &&!dtFlavors.isEmpty()) {
-	dtFlavors.forEach(d -> flavros.getItems().add(createItem(d)));
-	ret.add(flavros);
-	}
-	List<Datatype> others =  this.findNonFlavor( ids,dt.getId(), dt.getName());
-	if(others!=null&& !others.isEmpty()) {
-		 others = others.stream()       
-                .filter(d -> applyRule(d, isComplex,scope))   
-                .collect(Collectors.toList());
-	}
-	if(!others.isEmpty()) {
-		DatatypeSelectItemGroup othersgroup = new DatatypeSelectItemGroup();
-		othersgroup.setLabel("others");
-		others.forEach(d -> othersgroup.getItems().add(createItem(d)));
-		ret.add(othersgroup);
-	}
-	return ret; 
-}
+  @Override
+  public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt,
+      String scope) {
+    boolean isComplex = dt instanceof ComplexDatatype;
+
+    List<DatatypeSelectItemGroup> ret = new ArrayList<DatatypeSelectItemGroup>();
+    DatatypeSelectItemGroup flavros = new DatatypeSelectItemGroup();
+    flavros.setLabel("Flavors");
+    List<Datatype> dtFlavors = this.findFlavors(ids, dt.getId(), dt.getName());
+
+    if (dtFlavors != null && !dtFlavors.isEmpty()) {
+      dtFlavors.forEach(d -> flavros.getItems().add(createItem(d)));
+      ret.add(flavros);
+    }
+    List<Datatype> others = this.findNonFlavor(ids, dt.getId(), dt.getName());
+    if (others != null && !others.isEmpty()) {
+      others =
+          others.stream().filter(d -> applyRule(d, isComplex, scope)).collect(Collectors.toList());
+    }
+    if (!others.isEmpty()) {
+      DatatypeSelectItemGroup othersgroup = new DatatypeSelectItemGroup();
+      othersgroup.setLabel("others");
+      others.forEach(d -> othersgroup.getItems().add(createItem(d)));
+      ret.add(othersgroup);
+    }
+    return ret;
+  }
 
 
 
-private boolean applyRule(Datatype d, boolean isComplex, String scope) {
-	boolean secondComplex= d instanceof ComplexDatatype;
-	// TODO Auto-generated method stub
-	boolean ret=false;
-	if(scope.equals(ViewScope.DATATYPE.toString())) {
-		ret = !isComplex &&!secondComplex; 
-		
-	}else {
-		
-		if(isComplex) {
-			ret = secondComplex==isComplex;
-		}else {
-			ret=true;
-		}
-	}
-	return ret; 
-}
+  private boolean applyRule(Datatype d, boolean isComplex, String scope) {
+    boolean secondComplex = d instanceof ComplexDatatype;
+    // TODO Auto-generated method stub
+    boolean ret = false;
+    if (scope.equals(ViewScope.DATATYPE.toString())) {
+      ret = !isComplex && !secondComplex;
 
-private DatatypeSelectItem createItem(Datatype dt) {
-	// TODO Auto-generated method stub
-	DatatypeSelectItem item = new DatatypeSelectItem(dt.getLabel(),this.createDatatypeLabel(dt));
-	return item;
-	
-}
+    } else {
 
-@Override
-public List<Datatype> findDisplayFormatByIds(Set<String> ids) {
+      if (isComplex) {
+        ret = secondComplex == isComplex;
+      } else {
+        ret = true;
+      }
+    }
+    return ret;
+  }
+
+  private DatatypeSelectItem createItem(Datatype dt) {
+    // TODO Auto-generated method stub
+    DatatypeSelectItem item = new DatatypeSelectItem(dt.getLabel(), this.createDatatypeLabel(dt));
+    return item;
+
+  }
+
+  @Override
+  public List<Datatype> findDisplayFormatByIds(Set<String> ids) {
     Query qry = new Query();
     qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.fields().include("domainInfo");
@@ -786,19 +822,19 @@ public List<Datatype> findDisplayFormatByIds(Set<String> ids) {
     qry.fields().include("description");
     qry.fields().include("ext");
     List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
-	return datatypes;
-}
+    return datatypes;
+  }
 
-private Set<ObjectId> convertIds(Set<String> ids) {
-	// TODO Auto-generated method stub
+  private Set<ObjectId> convertIds(Set<String> ids) {
+    // TODO Auto-generated method stub
     Set<ObjectId> results = new HashSet<ObjectId>();
     ids.forEach(id -> results.add(new ObjectId(id)));
     return results;
-}
+  }
 
 
-@Override
-public List<Datatype> findFlavors(Set<String> ids, String id, String name) {
+  @Override
+  public List<Datatype> findFlavors(Set<String> ids, String id, String name) {
     Query qry = new Query();
     qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.addCriteria(Criteria.where("name").is(name));
@@ -811,17 +847,17 @@ public List<Datatype> findFlavors(Set<String> ids, String id, String name) {
     qry.with(new Sort(Sort.Direction.ASC, "ext"));
 
     List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
-	return datatypes;
-}
+    return datatypes;
+  }
 
-@Override
-public List<Datatype> findNonFlavor(Set<String> ids, String id, String name) {
+  @Override
+  public List<Datatype> findNonFlavor(Set<String> ids, String id, String name) {
     Query qry = new Query();
     qry.addCriteria(Criteria.where("_id").in(convertIds(ids)));
     qry.addCriteria(Criteria.where("name").ne(name));
     qry.with(new Sort(Sort.Direction.ASC, "name"));
 
-//
+    //
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("name");
@@ -829,12 +865,12 @@ public List<Datatype> findNonFlavor(Set<String> ids, String id, String name) {
     qry.fields().include("ext");
     qry.fields().include("_class");
 
-    
-    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
-	return datatypes;
-}
 
-private DatatypeLabel createDatatypeLabel(Datatype dt) {
+    List<Datatype> datatypes = mongoTemplate.find(qry, Datatype.class);
+    return datatypes;
+  }
+
+  private DatatypeLabel createDatatypeLabel(Datatype dt) {
     DatatypeLabel label = new DatatypeLabel();
     label.setDomainInfo(dt.getDomainInfo());
     label.setExt(dt.getExt());
@@ -849,270 +885,269 @@ private DatatypeLabel createDatatypeLabel(Datatype dt) {
     return label;
   }
 
-@Override
-public void applyChanges(Datatype d, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException {
-	// TODO Auto-generated method stub
-	 Collections.sort(cItems);
-	    for (ChangeItemDomain item : cItems) {
-	      if (item.getPropertyType().equals(PropertyType.USAGE)) {
-	        Component c = this.findComponentById(d, item.getLocation());
-	        if (c != null) {
-	          item.setOldPropertyValue(c.getUsage());
-	          c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
-	    	  	Component c  = this.findComponentById(d, item.getLocation());
-	        if (c != null) {
-	          item.setOldPropertyValue(c.getMinLength());
-	          if (item.getPropertyValue() == null) {
-	            c.setMinLength("NA");
-	          } else {
-	            c.setMinLength((String) item.getPropertyValue());
-	          }
+  @Override
+  public void applyChanges(Datatype d, List<ChangeItemDomain> cItems)
+      throws JsonProcessingException, IOException {
+    Collections.sort(cItems);
+    for (ChangeItemDomain item : cItems) {
+      if (item.getPropertyType().equals(PropertyType.USAGE)) {
+        Component c = this.findComponentById(d, item.getLocation());
+        if (c != null) {
+          item.setOldPropertyValue(c.getUsage());
+          c.setUsage(Usage.valueOf((String) item.getPropertyValue()));
+        }
+      } else if (item.getPropertyType().equals(PropertyType.LENGTHMIN)) {
+        Component c = this.findComponentById(d, item.getLocation());
+        if (c != null) {
+          item.setOldPropertyValue(c.getMinLength());
+          if (item.getPropertyValue() == null) {
+            c.setMinLength("NA");
+          } else {
+            c.setMinLength((String) item.getPropertyValue());
+          }
 
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
-	    	  Component c = this.findComponentById(d, item.getLocation());
-	        if (c != null) {
-	          item.setOldPropertyValue(c.getMaxLength());
-	          if (item.getPropertyValue() == null) {
-	            c.setMaxLength("NA");
-	          } else {
-	            c.setMaxLength((String) item.getPropertyValue());
-	          }
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
-	    	  Component c = this.findComponentById(d, item.getLocation());
-	        if (c != null) {
-	          item.setOldPropertyValue(c.getConfLength());
-	          if (item.getPropertyValue() == null) {
-	            c.setConfLength("NA");
-	          } else {
-	            c.setConfLength((String) item.getPropertyValue());
-	          }
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
-	    	  Component c = this.findComponentById(d, item.getLocation());
-	        if (c != null) {
-	          item.setOldPropertyValue(c.getRef());
-	          ObjectMapper mapper = new ObjectMapper();
-	          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-	          c.setRef(mapper.readValue(jsonInString, Ref.class));
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
-	        ObjectMapper mapper = new ObjectMapper();
-	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-	        StructureElementBinding seb =
-	            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-	        item.setOldPropertyValue(seb.getValuesetBindings());
-	        seb.setValuesetBindings(
-	            this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
-	                Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
-	      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
-	        ObjectMapper mapper = new ObjectMapper();
-	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-	        StructureElementBinding seb =
-	            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-	        item.setOldPropertyValue(seb.getExternalSingleCode());
-	        seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
-	      } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-	        StructureElementBinding seb =
-	            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-	        item.setOldPropertyValue(seb.getConstantValue());
-	        if (item.getPropertyValue() == null) {
-	          seb.setConstantValue(null);
-	        } else {
-	          seb.setConstantValue((String) item.getPropertyValue());
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-	        Component f = this.findComponentById(d, item.getLocation());
-	        if (f != null) {
-	          item.setOldPropertyValue(f.getText());
-	          if (item.getPropertyValue() == null) {
-	            f.setText(null);
-	          } else {
-	            f.setText((String) item.getPropertyValue());
-	          }
-	        }
-	      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-	        ObjectMapper mapper = new ObjectMapper();
-	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-	        StructureElementBinding seb =
-	            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
-	        item.setOldPropertyValue(seb.getComments());
-	        seb.setComments(
-	            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-	      }   else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
-	        ObjectMapper mapper = new ObjectMapper();
-	        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-	        if(item.getChangeType().equals(ChangeType.ADD)){
-	          d.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
-	        }else if(item.getChangeType().equals(ChangeType.DELETE)){
-	          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
-	        }else if(item.getChangeType().equals(ChangeType.UPDATE)){
-	          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
-	          d.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
-	        }
-	      }
-	    }
-	    this.save(d);
-}
-
-private ConformanceStatement deleteConformanceStatementById(Datatype d, String location) {
-  ConformanceStatement toBeDeleted = null;
-  for(ConformanceStatement cs: d.getBinding().getConformanceStatements()){
-    if(cs.getIdentifier().equals(location)) toBeDeleted = cs;
-  }
-  
-  if(toBeDeleted != null) d.getBinding().getConformanceStatements().remove(toBeDeleted);
-  return toBeDeleted;
-}
-/**
- * @param hashSet
- * @return
- */
-private Set<ValuesetBinding> convertDisplayValuesetBinding(
-    HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-  if (displayValuesetBindings != null) {
-    Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-    for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-      ValuesetBinding vb = new ValuesetBinding();
-      vb.setStrength(dvb.getStrength());
-      vb.setValuesetId(dvb.getValuesetId());
-      vb.setValuesetLocations(dvb.getValuesetLocations());
-      result.add(vb);
-    }
-    return result;
-  }
-  return null;
-}
-
-/**
- * @param sebs
- * @param location
- * @return
- */
-private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Datatype s,
-    String location) {
-  if (s.getBinding() == null) {
-    ResourceBinding binding = new ResourceBinding();
-    binding.setElementId(s.getId());
-    s.setBinding(binding);
-  }
-  return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);
-}
-
-/**
- * @param binding
- * @param location
- * @return
- */
-private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
-    ResourceBinding binding, String location) {
-  if (binding.getChildren() == null) {
-    if (location.contains("-")) {
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location.split("\\-")[0]);
-      binding.addChild(seb);
-      return this.findAndCreateStructureElementBindingByIdPath(seb,
-          location.replace(location.split("\\-")[0] + "-", ""));
-    } else {
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location);
-      binding.addChild(seb);
-      return seb;
-    }
-  } else {
-    if (location.contains("-")) {
-      for (StructureElementBinding seb : binding.getChildren()) {
-        if (seb.getElementId().equals(location.split("\\-")[0]))
-          return this.findAndCreateStructureElementBindingByIdPath(seb,
-              location.replace(location.split("\\-")[0] + "-", ""));
+        }
+      } else if (item.getPropertyType().equals(PropertyType.LENGTHMAX)) {
+        Component c = this.findComponentById(d, item.getLocation());
+        if (c != null) {
+          item.setOldPropertyValue(c.getMaxLength());
+          if (item.getPropertyValue() == null) {
+            c.setMaxLength("NA");
+          } else {
+            c.setMaxLength((String) item.getPropertyValue());
+          }
+        }
+      } else if (item.getPropertyType().equals(PropertyType.CONFLENGTH)) {
+        Component c = this.findComponentById(d, item.getLocation());
+        if (c != null) {
+          item.setOldPropertyValue(c.getConfLength());
+          if (item.getPropertyValue() == null) {
+            c.setConfLength("NA");
+          } else {
+            c.setConfLength((String) item.getPropertyValue());
+          }
+        }
+      } else if (item.getPropertyType().equals(PropertyType.DATATYPE)) {
+        Component c = this.findComponentById(d, item.getLocation());
+        if (c != null) {
+          item.setOldPropertyValue(c.getRef());
+          ObjectMapper mapper = new ObjectMapper();
+          String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+          c.setRef(mapper.readValue(jsonInString, Ref.class));
+        }
+      } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
+        item.setOldPropertyValue(seb.getValuesetBindings());
+        seb.setValuesetBindings(
+            this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
+                Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+      } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
+        item.setOldPropertyValue(seb.getExternalSingleCode());
+        seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
+      } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
+        item.setOldPropertyValue(seb.getConstantValue());
+        if (item.getPropertyValue() == null) {
+          seb.setConstantValue(null);
+        } else {
+          seb.setConstantValue((String) item.getPropertyValue());
+        }
+      } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
+        Component f = this.findComponentById(d, item.getLocation());
+        if (f != null) {
+          item.setOldPropertyValue(f.getText());
+          if (item.getPropertyValue() == null) {
+            f.setText(null);
+          } else {
+            f.setText((String) item.getPropertyValue());
+          }
+        }
+      } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
+        item.setOldPropertyValue(seb.getComments());
+        seb.setComments(
+            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+      } else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        if (item.getChangeType().equals(ChangeType.ADD)) {
+          d.getBinding()
+              .addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
+          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
+        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
+          item.setOldPropertyValue(this.deleteConformanceStatementById(d, item.getLocation()));
+          d.getBinding()
+              .addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+        }
       }
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location.split("\\-")[0]);
-      binding.addChild(seb);
-      return this.findAndCreateStructureElementBindingByIdPath(seb,
-          location.replace(location.split("\\-")[0] + "-", ""));
-    } else {
-      for (StructureElementBinding seb : binding.getChildren()) {
-        if (seb.getElementId().equals(location))
-          return seb;
+    }
+    this.save(d);
+  }
+
+  private ConformanceStatement deleteConformanceStatementById(Datatype d, String location) {
+    ConformanceStatement toBeDeleted = null;
+    for (ConformanceStatement cs : d.getBinding().getConformanceStatements()) {
+      if (cs.getIdentifier().equals(location))
+        toBeDeleted = cs;
+    }
+
+    if (toBeDeleted != null)
+      d.getBinding().getConformanceStatements().remove(toBeDeleted);
+    return toBeDeleted;
+  }
+
+  /**
+   * @param hashSet
+   * @return
+   */
+  private Set<ValuesetBinding> convertDisplayValuesetBinding(
+      HashSet<DisplayValuesetBinding> displayValuesetBindings) {
+    if (displayValuesetBindings != null) {
+      Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+      for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+        ValuesetBinding vb = new ValuesetBinding();
+        vb.setStrength(dvb.getStrength());
+        vb.setValuesetId(dvb.getValuesetId());
+        vb.setValuesetLocations(dvb.getValuesetLocations());
+        result.add(vb);
       }
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location);
-      binding.addChild(seb);
-      return seb;
+      return result;
+    }
+    return null;
+  }
+
+  /**
+   * @param sebs
+   * @param location
+   * @return
+   */
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(Datatype s,
+      String location) {
+    if (s.getBinding() == null) {
+      ResourceBinding binding = new ResourceBinding();
+      binding.setElementId(s.getId());
+      s.setBinding(binding);
+    }
+    return this.findAndCreateStructureElementBindingByIdPath(s.getBinding(), location);
+  }
+
+  /**
+   * @param binding
+   * @param location
+   * @return
+   */
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      ResourceBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location.split("\\-")[0]);
+        binding.addChild(seb);
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location);
+        binding.addChild(seb);
+        return seb;
+      }
+    } else {
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
+        }
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location.split("\\-")[0]);
+        binding.addChild(seb);
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
+        }
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location);
+        binding.addChild(seb);
+        return seb;
+      }
     }
   }
-}
 
-/**
- * @param seb
- * @param replace
- * @return
- */
-private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
-    StructureElementBinding binding, String location) {
-  if (binding.getChildren() == null) {
-    if (location.contains("-")) {
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location.split("\\-")[0]);
-      binding.addChild(seb);
-      return this.findAndCreateStructureElementBindingByIdPath(seb,
-          location.replace(location.split("\\-")[0] + "-", ""));
-    } else {
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location);
-      binding.addChild(seb);
-      return seb;
-    }
-  } else {
-    if (location.contains("-")) {
-      for (StructureElementBinding seb : binding.getChildren()) {
-        if (seb.getElementId().equals(location.split("\\-")[0]))
-          return this.findAndCreateStructureElementBindingByIdPath(seb,
-              location.replace(location.split("\\-")[0] + "-", ""));
+  /**
+   * @param seb
+   * @param replace
+   * @return
+   */
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      StructureElementBinding binding, String location) {
+    if (binding.getChildren() == null) {
+      if (location.contains("-")) {
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location.split("\\-")[0]);
+        binding.addChild(seb);
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location);
+        binding.addChild(seb);
+        return seb;
       }
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location.split("\\-")[0]);
-      binding.addChild(seb);
-      return this.findAndCreateStructureElementBindingByIdPath(seb,
-          location.replace(location.split("\\-")[0] + "-", ""));
     } else {
-      for (StructureElementBinding seb : binding.getChildren()) {
-        if (seb.getElementId().equals(location))
-          return seb;
+      if (location.contains("-")) {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location.split("\\-")[0]))
+            return this.findAndCreateStructureElementBindingByIdPath(seb,
+                location.replace(location.split("\\-")[0] + "-", ""));
+        }
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location.split("\\-")[0]);
+        binding.addChild(seb);
+        return this.findAndCreateStructureElementBindingByIdPath(seb,
+            location.replace(location.split("\\-")[0] + "-", ""));
+      } else {
+        for (StructureElementBinding seb : binding.getChildren()) {
+          if (seb.getElementId().equals(location))
+            return seb;
+        }
+        StructureElementBinding seb = new StructureElementBinding();
+        seb.setElementId(location);
+        binding.addChild(seb);
+        return seb;
       }
-      StructureElementBinding seb = new StructureElementBinding();
-      seb.setElementId(location);
-      binding.addChild(seb);
-      return seb;
     }
   }
-}
 
-/**
- * @param s
- * @param location
- * @return
- */
-private Component findComponentById(Datatype d, String location) {
-	if(d instanceof ComplexDatatype) {
-		  for (Component c :( (ComplexDatatype)d).getComponents()) {
-			    if (c.getId().equals(location))
-			      return c;
-			  }
-	}
+  /**
+   * @param s
+   * @param location
+   * @return
+   */
+  private Component findComponentById(Datatype d, String location) {
+    if (d instanceof ComplexDatatype) {
+      for (Component c : ((ComplexDatatype) d).getComponents()) {
+        if (c.getId().equals(location))
+          return c;
+      }
+    }
 
-  return null;
-}
-
-
-
-
-
-
+    return null;
+  }
 
 
 

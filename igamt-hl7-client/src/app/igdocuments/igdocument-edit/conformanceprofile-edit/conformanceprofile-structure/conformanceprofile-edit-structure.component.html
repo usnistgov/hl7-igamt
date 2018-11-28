@@ -48,7 +48,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'segment'">
-                            <segment-col *ngIf="node.data.type === 'SEGMENTREF'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(segmentLabel)]="node.data.segmentLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId]="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></segment-col>
+                            <segment-col *ngIf="node.data.type === 'SEGMENTREF'" [(ref)]="node.data.ref" (refresh)="refreshTree()" [(name)]="node.data.name" [(segmentLabel)]="node.data.segmentLabel" [idPath]="node.data.idPath" [path]="node.data.path" [documentId]="igId" [viewScope]="node.data.viewScope" [(children)]="node.children" [(changeItems)]="changeItems" [documentType]="documentType"></segment-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'usage'">

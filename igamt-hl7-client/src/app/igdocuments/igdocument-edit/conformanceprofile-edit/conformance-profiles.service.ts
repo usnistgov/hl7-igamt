@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
+import {HttpParams} from "@angular/common/http";
 
 @Injectable()
 export class ConformanceProfilesService {
@@ -83,10 +84,6 @@ export class ConformanceProfilesService {
         return this.http.post('api/conformanceprofiles/' + id + '/metadata',metadata).toPromise();
     }
 
-    public saveConformanceProfileStructure(id, structure): Promise<any> {
-        return this.http.post('api/conformanceprofiles/' + id + '/structure',structure).toPromise();
-    }
-
     public saveConformanceProfilePreDef(id, preDef): Promise<any> {
         return this.http.post('api/conformanceprofiles/' + id + '/predef', preDef).toPromise();
     }
@@ -101,5 +98,10 @@ export class ConformanceProfilesService {
 
     public saveConformanceProfileConformanceStatements(id, conformanceStatements): Promise<any> {
         return this.http.post('api/conformanceprofiles/' + id + '/conformancestatement', conformanceStatements).toPromise();
+    }
+
+    public saveConformanceProfile(id, dId, cItem): Promise<any> {
+        let httpParams = new HttpParams().append("dId", dId);
+        return  this.http.post('api/conformanceprofiles/' + id + '/structure',cItem, {params:httpParams}).toPromise();
     }
 }

@@ -69,18 +69,16 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
         return !this.editForm.invalid;
     }
 
-    save(): Promise<any>{
+    save(){
         return new Promise((resolve, reject)=> {
-            let saveObj:any = {};
-            saveObj.id = this.conformanceprofileStructure.id;
-
-            this.conformanceProfilesService.saveConformanceProfileStructure(this.conformanceprofileId, saveObj).then(saved => {
+            this.conformanceProfilesService.saveConformanceProfile(this.conformanceprofileId, this.igId, this.changeItems).then(saved => {
                 this.backup = __.cloneDeep(this.conformanceprofileStructure);
+                this.changeItems = [];
                 this.editForm.control.markAsPristine();
                 resolve(true);
+
             }, error => {
-                console.log("error saving");
-                reject();
+                reject(error);
             });
         })
     }

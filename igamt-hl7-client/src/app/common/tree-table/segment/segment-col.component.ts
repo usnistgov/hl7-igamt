@@ -22,6 +22,8 @@ export class SegmentColComponent {
   @Output() segmentLabelChange = new EventEmitter<any>();
   @Input() children: any[];
   @Output() childrenChange = new EventEmitter<any[]>();
+  @Input() name: string;
+  @Output() nameChange = new EventEmitter<string>();
 
   @Output() refresh = new EventEmitter<any>();
 
@@ -100,11 +102,13 @@ export class SegmentColComponent {
     this.segmentLabelChange.emit(this.segmentLabel);
     let item:any = {};
     item.location = this.idPath;
-    item.propertyType = 'SEGMENT';
+    item.propertyType = 'SEGMENTREF';
     item.propertyValue = this.ref;
     item.changeType = "UPDATE";
     this.changeItems.push(item);
     this.changeItemsChange.emit(this.changeItems);
+    this.name = this.segmentLabel.name;
+    this.nameChange.emit(this.name);
 
     this.segmentLabels = null;
     this.resetDropDown();
