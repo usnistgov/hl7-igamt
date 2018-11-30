@@ -12,8 +12,6 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
 import {ConstraintsService} from "../../service/constraints.service";
 import {TocService} from "../../service/toc.service";
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
-import {SegmentsService} from "../../segment-edit/segments.service";
-import {DatatypesService} from "../../datatype-edit/datatypes.service";
 
 @Component({
     templateUrl : './conformanceprofile-edit-conformancestatements.component.html',
@@ -21,47 +19,32 @@ import {DatatypesService} from "../../datatype-edit/datatypes.service";
 })
 
 export class ConformanceprofileEditConformancestatementsComponent implements WithSave {
+    cols:any;
     currentUrl:any;
-    conformanceprofileId:any;
-    conformanceprofileConformanceStatements:any;
+    conformanceProfileId:any;
+    igId:any;
+    conformanceProfileConformanceStatements:any;
+    constraintTypes: any = [];
+    assertionModes: any = [];
     backup:any;
+
+    selectedConformanceStatement: any = {};
+    conformanceProfileStructure : any;
+    listTab: boolean = true;
+    editorTab: boolean = false;
+
+    changeItems:any[] = [];
 
     @ViewChild('editForm')
     private editForm: NgForm;
 
-    segmentsLinks :any = [];
-    segmentsOptions:any = [];
-    datatypesLinks :any = [];
-    datatypeOptions:any = [];
-    valuesetsLinks :any = [];
-    valuesetOptions:any = [{label:'Select ValueSet', value:null}];
-
-    valuesetStrengthOptions:any = [];
-
-    usages:any;
-    cUsages:any;
-
-    listTab: boolean = true;
-    editorTab: boolean = false;
-    selectContextDialog: boolean = false;
-
-    selectedConformanceStatement: any = {};
-
-    constraintTypes: any = [];
-    assertionModes: any = [];
-
-    cols:any;
-
-    contextTreeModel:any = [];
-
-    constructor(private route: ActivatedRoute,
-                private router : Router,
-                private configService : GeneralConfigurationService,
-                private conformanceProfilesService : ConformanceProfilesService,
-                private segmentsService : SegmentsService,
-                private datatypesService : DatatypesService,
-                private constraintsService : ConstraintsService,
-                private tocService:TocService){
+    constructor(
+        private route: ActivatedRoute,
+        private router : Router,
+        private conformanceProfilesService : ConformanceProfilesService,
+        private configService : GeneralConfigurationService,
+        private constraintsService : ConstraintsService,
+    ){
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -75,256 +58,28 @@ export class ConformanceprofileEditConformancestatementsComponent implements Wit
     }
 
     ngOnInit() {
-        this.usages = this.configService._usages;
-        this.cUsages = this.configService._cUsages;
         this.constraintTypes = this.configService._constraintTypes;
         this.assertionModes = this.configService._assertionModes;
-        this.valuesetStrengthOptions = this.configService._valuesetStrengthOptions;
+        this.igId = this.router.url.split("/")[2];
+        this.conformanceProfileId = this.route.snapshot.params["conformanceprofileId"];
 
-        this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
-        this.route.data.map(data =>data.conformanceprofileConformanceStatements).subscribe(x=>{
-            this.tocService.getSegmentsList().then((segTOCdata) => {
-                let listTocSEGs:any = segTOCdata;
-                for(let entry of listTocSEGs){
-                    var treeObj = entry.data;
-
-                    var segLink:any = {};
-                    segLink.id = treeObj.id;
-                    segLink.label = treeObj.label;
-                    segLink.domainInfo = treeObj.domainInfo;
-                    var index = treeObj.label.indexOf("_");
-                    if(index > -1){
-                        segLink.name = treeObj.label.substring(0,index);
-                        segLink.ext = treeObj.label.substring(index);;
-                    }else {
-                        segLink.name = treeObj.label;
-                        segLink.ext = null;
-                    }
-
-                    this.segmentsLinks.push(segLink);
-
-                    var segOption = {label: segLink.label, value : segLink.id};
-                    this.segmentsOptions.push(segOption);
-                }
-
-                this.tocService.getDataypeList().then((dtTOCdata) => {
-                    let listTocDTs:any = dtTOCdata;
-                    for(let entry of listTocDTs){
-                        var treeObj = entry.data;
-
-                        var dtLink:any = {};
-                        dtLink.id = treeObj.id;
-                        dtLink.label = treeObj.label;
-                        dtLink.domainInfo = treeObj.domainInfo;
-                        var index = treeObj.label.indexOf("_");
-                        if(index > -1){
-                            dtLink.name = treeObj.label.substring(0,index);
-                            dtLink.ext = treeObj.label.substring(index);;
-                        }else {
-                            dtLink.name = treeObj.label;
-                            dtLink.ext = null;
-                        }
-
-                        if(treeObj.lazyLoading) dtLink.leaf = false;
-                        else dtLink.leaf = true;
-                        this.datatypesLinks.push(dtLink);
-
-                        var dtOption = {label: dtLink.label, value : dtLink.id};
-                        this.datatypeOptions.push(dtOption);
-                    }
-
-
-                    this.tocService.getValueSetList().then((valuesetTOCdata) => {
-                        let listTocVSs: any = valuesetTOCdata;
-
-                        for (let entry of listTocVSs) {
-                            var treeObj = entry.data;
-                            var valuesetLink: any = {};
-                            valuesetLink.id = treeObj.id;
-                            valuesetLink.label = treeObj.label;
-                            valuesetLink.domainInfo = treeObj.domainInfo;
-                            this.valuesetsLinks.push(valuesetLink);
-                            var vsOption = {label: valuesetLink.label, value: valuesetLink.id};
-                            this.valuesetOptions.push(vsOption);
-                        }
-                        this.sortStructure(x);
-                        this.backup=x;
-                        this.conformanceprofileConformanceStatements=__.cloneDeep(this.backup);
-                    });
-                });
-            });
-
+        this.route.data.subscribe(data => {
+            this.conformanceProfileStructure = data.conformanceProfileStructure;
+            const x = data.conformanceProfileConformanceStatements;
+            this.conformanceProfileConformanceStatements= x;
+            if(!this.conformanceProfileConformanceStatements.conformanceStatements) this.conformanceProfileConformanceStatements.conformanceStatements = [];
+            this.backup=__.cloneDeep(this.conformanceProfileConformanceStatements);
         });
     }
 
-    sortStructure(x){
-        x.children = _.sortBy(x.children, function(child){ return child.position});
-        for (let child of  x.children) {
-            if(child.children) this.sortStructure(child);
-        }
-    }
-
-    selectCS(cs){
-        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
-        this.editorTab = true;
-        this.listTab = false;
-    }
-
-    deleteCS(identifier){
-        this.conformanceprofileConformanceStatements.conformanceStatements = _.without(this.conformanceprofileConformanceStatements.conformanceStatements, _.findWhere(this.conformanceprofileConformanceStatements.conformanceStatements, {identifier: identifier}));
-    }
-
-    onTabOpen(e) {
-        if(e.index === 0) this.selectedConformanceStatement = {};
-    }
-
-    submitCS(){
-        // if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.idMap);
-        this.deleteCS(this.selectedConformanceStatement.identifier);
-        this.conformanceprofileConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
-        this.selectedConformanceStatement = {};
-        this.editorTab = false;
-        this.listTab = true;
-    }
-
-    changeType(){
-        if(this.selectedConformanceStatement.type == 'ASSERTION'){
-            this.selectedConformanceStatement.assertion = {};
-            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.type == 'FREE'){
-            this.selectedConformanceStatement.assertion = undefined;
-        }else if(this.selectedConformanceStatement.type == 'PREDEFINEDPATTERNS'){
-            this.selectedConformanceStatement.assertion = undefined;
-        }else if(this.selectedConformanceStatement.type == 'PREDEFINED'){
-            this.selectedConformanceStatement.assertion = undefined;
-        }
-    }
-
-    addNewCS(){
-        this.selectedConformanceStatement = {};
-        this.editorTab = true;
-        this.listTab = false;
-    }
-
-    changeAssertionMode(){
-        if(this.selectedConformanceStatement.assertion.mode == 'SIMPLE'){
-            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
-        }else if(this.selectedConformanceStatement.assertion.mode === 'ANDOR'){
-            this.selectedConformanceStatement.assertion.child = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
-            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
-            this.selectedConformanceStatement.assertion.operator = 'AND';
-            this.selectedConformanceStatement.assertion.assertions = [];
-            this.selectedConformanceStatement.assertion.assertions.push({
-                "mode": "SIMPLE"
-            });
-
-            this.selectedConformanceStatement.assertion.assertions.push({
-                "mode": "SIMPLE"
-            });
-        }else if(this.selectedConformanceStatement.assertion.mode === 'NOT'){
-            this.selectedConformanceStatement.assertion.assertions = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = undefined;
-            this.selectedConformanceStatement.assertion.thenAssertion = undefined;
-            this.selectedConformanceStatement.assertion.child = {
-                "mode": "SIMPLE"
-            };
-        }else if(this.selectedConformanceStatement.assertion.mode === 'IFTHEN'){
-            this.selectedConformanceStatement.assertion.assertions = undefined;
-            this.selectedConformanceStatement.assertion.child = undefined;
-            this.selectedConformanceStatement.assertion.ifAssertion = {
-                "mode": "SIMPLE"
-            };
-            this.selectedConformanceStatement.assertion.thenAssertion = {
-                "mode": "SIMPLE"
-            };
-        }
-    }
-
-    openDialogSelectContext(){
-        this.contextTreeModel = [
-            {
-                "label": this.conformanceprofileConformanceStatements.name,
-                "data": {idPath : null, type : 'MESSAGE'},
-                "expandedIcon": "fa fa-folder-open",
-                "collapsedIcon": "fa fa-folder",
-                "children" : []
-            }
-        ];
-
-        this.popTreeModel(this.contextTreeModel[0], this.conformanceprofileConformanceStatements.children);
-
-        this.selectContextDialog = true;
-    }
-
-    selectContext(idPath){
-        this.selectedConformanceStatement.contextLocation = idPath;
-        this.selectContextDialog = false;
-    }
-
-    popTreeModel(parent, list){
-        for(let item of list){
-            let idPath;
-            if(parent.data.idPath) idPath = parent.data.idPath + ',' + item.id;
-            else idPath = item.id;
-            if(item.type === 'SEGMENTREF'){
-                parent.children.push({
-                    "label": item.position + '. ' + this.getSegmentElm(item.ref.id).name,
-                    "data": {"idPath" : idPath, "type" : 'SEGMENTREF'},
-                    "expandedIcon": "fa fa-folder-open",
-                    "collapsedIcon": "fa fa-folder"
-                });
-            }else if(item.type === 'GROUP'){
-                let group = {
-                    "label": item.position + '. ' + item.name,
-                    "data": {idPath : idPath, type : 'GROUP'},
-                    "expandedIcon": "fa fa-folder-open",
-                    "collapsedIcon": "fa fa-folder",
-                    "children" : []
-                };
-                this.popTreeModel(group, item.children);
-                parent.children.push(group);
-            }
-        }
-    }
-
-    showContext(context){
-        if(context){
-            return this.findContext(context, this.conformanceprofileConformanceStatements.children, this.conformanceprofileConformanceStatements.name);
-        }
-        return this.conformanceprofileConformanceStatements.name;
-    }
-
-    findContext(context, list, result){
-        var res = context.split(",");
-        for(let item of list){
-            if(item.id === res[0]){
-                if(res.length === 1){
-                    return result + '-' +'[' + item.position + ']' + item.name;
-                }else if (res.length > 1){
-                    res.shift();
-                    return this.findContext(res.toString(), item.children, result + '-' +'[' + item.position + ']' + item.name);
-                }
-            }
-        }
-        return "NOT FOUND";
-    }
-
-    getSegmentElm(id){
-        for(let link of this.segmentsLinks){
-            if(link.id === id) return link;
-        }
-        return null;
-    }
-
     reset(){
-        this.conformanceprofileConformanceStatements=__.cloneDeep(this.backup);
+        this.conformanceProfileConformanceStatements=__.cloneDeep(this.backup);
+        this.changeItems = [];
         this.editForm.control.markAsPristine();
-
     }
 
     getCurrent(){
-        return  this.conformanceprofileConformanceStatements;
+        return  this.conformanceProfileConformanceStatements;
     }
 
     getBackup(){
@@ -335,20 +90,130 @@ export class ConformanceprofileEditConformancestatementsComponent implements Wit
         return !this.editForm.invalid;
     }
 
-    hasChanged(){
-      return this.editForm&& this.editForm.touched&&this.editForm.dirty;
-
-    }
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
-            this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileConformanceStatements).then(saved => {
-                this.backup = __.cloneDeep(this.conformanceprofileConformanceStatements);
+            this.conformanceProfilesService.saveConformanceProfile(this.conformanceProfileId, this.igId, this.changeItems).then(saved=>{
+                this.backup = __.cloneDeep(this.conformanceProfileConformanceStatements);
+                this.changeItems = [];
                 this.editForm.control.markAsPristine();
                 resolve(true);
-            }, error => {
+
+            }, error=>{
+
+
+                reject(error);
                 console.log("error saving");
-                reject();
             });
-        })
+        });
+    }
+
+
+    changeType(){
+        if(this.selectedConformanceStatement.displayType == 'simple'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
+            this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
+        }else if(this.selectedConformanceStatement.displayType == 'free'){
+            this.selectedConformanceStatement.assertion = undefined;
+            this.selectedConformanceStatement.type = "FREE";
+        }else if(this.selectedConformanceStatement.displayType == 'simple-proposition'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
+            this.selectedConformanceStatement.assertion = {mode:"IFTHEN"};
+            this.selectedConformanceStatement.assertion.ifAssertion = {mode:"SIMPLE"};
+            this.selectedConformanceStatement.assertion.thenAssertion = {mode:"SIMPLE"};
+        }else if(this.selectedConformanceStatement.displayType == 'complex'){
+            this.selectedConformanceStatement.assertion = {};
+            this.selectedConformanceStatement.type = "ASSERTION";
+        }
+    }
+
+    submitCS(){
+        this.selectedConformanceStatement.displayType = undefined;
+        if(this.deleteCS(this.selectedConformanceStatement.identifier, true)){
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = this.selectedConformanceStatement;
+            item.changeType = "UPDATE";
+            this.changeItems.push(item);
+        }else {
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = this.selectedConformanceStatement;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
+
+        if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.conformanceProfileStructure, 'D');
+        this.conformanceProfileConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
+        this.selectedConformanceStatement = {};
+        this.editorTab = false;
+        this.listTab = true;
+
+
+    }
+
+    addNewCS(){
+        this.selectedConformanceStatement = {};
+        this.editorTab = true;
+        this.listTab = false;
+    }
+
+    selectCS(cs){
+        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+
+        if(this.selectedConformanceStatement.type === 'FREE'){
+            this.selectedConformanceStatement.displayType = 'free';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
+            && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
+            && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple-proposition';
+        }else {
+            this.selectedConformanceStatement.displayType = 'complex';
+        }
+
+        this.editorTab = true;
+        this.listTab = false;
+    }
+
+    deleteCS(identifier, forUpdate){
+        var found = _.findWhere(this.conformanceProfileConformanceStatements.conformanceStatements, {identifier: identifier});
+        this.conformanceProfileConformanceStatements.conformanceStatements = _.without(this.conformanceProfileConformanceStatements.conformanceStatements, found);
+        this.editForm.control.markAsDirty();
+
+        if(!forUpdate){
+            let item:any = {};
+            item.location = this.selectedConformanceStatement.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = null;
+            item.changeType = "DELETE";
+            this.changeItems.push(item);
+        }
+
+        if(found) return true;
+        return false;
+    }
+
+    printCS(cs){
+        console.log(cs);
+    }
+
+    print(){
+        console.log(this.conformanceProfileConformanceStatements);
+        console.log(this.changeItems);
+
+    }
+
+    onTabOpen(e) {
+        if(e.index === 0) this.selectedConformanceStatement = {};
+    }
+
+    hasChanged(){
+        if(this.changeItems && this.changeItems.length > 0) return true;
+        return false;
     }
 }

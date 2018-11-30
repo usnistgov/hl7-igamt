@@ -60,7 +60,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileDisplayModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureTreeModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfileMetadata;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
@@ -1142,6 +1144,65 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         return seb;
       }
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#convertDomainToContextStructure(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
+   */
+  @Override
+  public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile) {
+    ConformanceProfileStructureTreeModel result = new ConformanceProfileStructureTreeModel();
+    result.setData(new ConformanceProfileDisplayModel(conformanceProfile));
+
+    if (conformanceProfile.getChildren() != null && conformanceProfile.getChildren().size() > 0) {
+      for (SegmentRefOrGroup sog : conformanceProfile.getChildren()) {
+        if (sog instanceof SegmentRef) {
+          SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
+          SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)sog);
+          segmentRefDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
+          segmentRefDisplayModel.setPath("1-" + sog.getPosition());
+          segmentRefStructureTreeModel.setData(segmentRefDisplayModel);
+          result.addChild(segmentRefStructureTreeModel);
+        } else if (sog instanceof Group) {
+          GroupStructureTreeModel groupStructureTreeModel = new GroupStructureTreeModel();
+          GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)sog);
+          groupDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
+          groupDisplayModel.setPath("1-" + sog.getPosition());
+          updateChild(groupStructureTreeModel, groupDisplayModel, sog);
+          groupStructureTreeModel.setData(groupDisplayModel);
+          result.addChild(groupStructureTreeModel);
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param groupStructureTreeModel
+   * @param groupDisplayModel
+   * @param sog
+   */
+  private void updateChild(GroupStructureTreeModel parentStructureTreeModel,
+      GroupDisplayModel parentDisplayModel, SegmentRefOrGroup parent) {
+    for(SegmentRefOrGroup child : ((Group)parent).getChildren()){
+      if(child instanceof Group){
+        GroupStructureTreeModel groupStructureTreeModel = new GroupStructureTreeModel();
+        GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)child);
+        groupDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
+        groupDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());
+        updateChild(groupStructureTreeModel, groupDisplayModel, child);
+        groupStructureTreeModel.setData(groupDisplayModel);
+        parentStructureTreeModel.addGroup(groupStructureTreeModel);
+      }else if(child instanceof SegmentRef){
+        SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
+        SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)child);
+        segmentRefDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
+        segmentRefDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());
+        segmentRefStructureTreeModel.setData(segmentRefDisplayModel);
+        parentStructureTreeModel.addSegment(segmentRefStructureTreeModel);        
+      }
+    }
+    
   }
 }
 
