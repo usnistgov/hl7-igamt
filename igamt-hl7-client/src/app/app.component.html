@@ -15,13 +15,6 @@
                  'layout-overlay-active':overlayMenuActive}">
 
     <app-topbar></app-topbar>
-
-  <div style="background: red">
-    wdwdwddwdwwddw
-    dwdwwdwd
-    wdwdwdwd
-  {{routerLoading}}---{{httpLoading}}
-  </div>
     <div class="layout-menu-container" (click)="onMenuClick($event)">
         <p-scrollPanel #layoutMenuScroller [style]="{height: '100%'}">
             <div class="layout-menu-content">
@@ -38,7 +31,7 @@
           <app-breadcrumb></app-breadcrumb>
 
           <router-outlet></router-outlet>
-          </div>
+        </div>
         <app-footer></app-footer>
         <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
     </div>

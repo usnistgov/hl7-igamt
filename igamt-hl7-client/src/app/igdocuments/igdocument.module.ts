@@ -17,7 +17,8 @@ import {PickListModule} from "primeng/components/picklist/picklist";
 import {DropdownModule} from "primeng/components/dropdown/dropdown";
 import {InputTextModule} from "primeng/components/inputtext/inputtext";
 import {DataViewModule} from "primeng/components/dataview/dataview";
-
+import {ConfirmDialogModule} from 'primeng/confirmdialog';
+import {ConfirmationService} from 'primeng/api';
 @NgModule({
 	imports: [
 		CommonModule,
@@ -27,6 +28,7 @@ import {DataViewModule} from "primeng/components/dataview/dataview";
     StepsModule,
     MessageModule,
     MessagesModule,
+    ConfirmDialogModule,
     RadioButtonModule,
     CommonModule,
     UtilsModule,
@@ -49,7 +51,7 @@ import {DataViewModule} from "primeng/components/dataview/dataview";
 	],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
 	declarations: [IgDocumentListComponent],
-  providers:[Igsresolver]
+  providers:[Igsresolver,ConfirmationService]
 
 })
 export class IgDocumentModule {}
