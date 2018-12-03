@@ -270,7 +270,6 @@ public class CrudServiceImpl implements CrudService {
       }
     }
     return ret;
-
   }
 
 
@@ -313,7 +312,6 @@ public class CrudServiceImpl implements CrudService {
         }
       }
     }
-
   }
 
 

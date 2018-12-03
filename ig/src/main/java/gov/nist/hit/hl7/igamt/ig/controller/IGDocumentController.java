@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
+import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -284,29 +286,39 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<IgSummary> getUserIG(Authentication authentication) {
-    String username = authentication.getPrincipal().toString();
-    List<Ig> igdouments = igService.findByUsername(username, Scope.USER);
-    return igService.convertListToDisplayList(igdouments);
-  }
-  
-  @RequestMapping(value = "/api/igdocuments/preloaded", method = RequestMethod.GET,
-	      produces = {"application/json"})
-	  public @ResponseBody List<IgSummary> getAllPreloaded(Authentication authentication) {
+  public @ResponseBody List<IgSummary> getUserIG(Authentication authentication, @RequestParam("type") AccessType type) {
 	    String username = authentication.getPrincipal().toString();
-	    List<Ig> igdouments = igService.findAllPreloadedIG();
-	    return igService.convertListToDisplayList(igdouments);
-  }
-  @RequestMapping(value = "/api/igdocuments/all", method = RequestMethod.GET,
-	      produces = {"application/json"})
-  @PreAuthorize("hasAuthority('ADMIN')")
-  public @ResponseBody List<IgSummary> getAllUsersIg(Authentication authentication) {
-	  
-	    String username = authentication.getPrincipal().toString();
+	    List<Ig> igdouments = new ArrayList<Ig>();
 	    
-	    
-	    List<Ig> igdouments = igService.findAllUsersIG();
-	    return igService.convertListToDisplayList(igdouments);
+	  if(type != null) {
+		  if(type.equals(AccessType.PUBLIC)) {
+			  
+			  igdouments = igService.findAllPreloadedIG();
+
+		  }else if(type.equals(AccessType.PRIVATE)) {
+			  
+			  igdouments = igService.findByUsername(username, Scope.USER);
+			  
+		  }else if(type.equals(AccessType.ALL)) {
+			  
+			  igdouments=igService.findAllUsersIG();
+			  
+		  }else if(type.equals(AccessType.SHARED)) {
+			  //TODO 
+		  }else  {
+			  
+			  igdouments=igService.findByUsername(username, Scope.USER);
+
+		  }
+		  return igService.convertListToDisplayList(igdouments);
+
+	  }else {
+		  
+		  igdouments=igService.findByUsername(username, Scope.USER);
+
+		  return igService.convertListToDisplayList(igdouments);
+	  }
+
   }
 
   /**

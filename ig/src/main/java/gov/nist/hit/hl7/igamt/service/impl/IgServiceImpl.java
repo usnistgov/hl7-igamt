@@ -25,6 +25,7 @@ import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreFilter;
 import org.springframework.stereotype.Service;
 
@@ -237,6 +238,7 @@ public class IgServiceImpl implements IgService {
   }
   
   @Override
+  @PreAuthorize("hasAuthority('ADMIN')")
   public List<Ig> findAllUsersIG() {
     Criteria where = Criteria.where("domainInfo.scope").is(Scope.USER);                                              
     Query qry = Query.query(where);

@@ -10,6 +10,7 @@ import {Http} from "@angular/http";
 import {HttpClient} from "@angular/common/http";
 import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
+import {HttpParams} from "@angular/common/http";
 
 @Injectable()
 export  class Igsresolver implements Resolve<any>{
@@ -20,15 +21,20 @@ export  class Igsresolver implements Resolve<any>{
     console.log(route);
     let params= route.queryParams;
 
-    if (params.type && params.type == "USER") {
 
-      return this.http.get("api/igdocuments");
+    if (params.type && params.type == "USER") {
+      let httpParams = new HttpParams().append("type", "PRIVATE");
+
+      return this.http.get("api/igdocuments", {params:httpParams});
 
     }else if (params.type && params.type == "ALL") {
 
-      return this.http.get("api/igdocuments/all");
+      let httpParams = new HttpParams().append("type", "ALL");
+
+      return this.http.get("api/igdocuments", {params:httpParams});
 
     }else if (params.type && params.type == "PRELOADED") {
+      let httpParams = new HttpParams().append("type", "PUBLIC");
 
       return this.http.get("api/igdocuments/preloaded");
 
