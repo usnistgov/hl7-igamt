@@ -2,16 +2,14 @@ import {Component, OnInit} from '@angular/core';
 import {SelectItem} from "primeng/components/common/selectitem";
 import {ActivatedRoute, Router} from "@angular/router";
 import {HttpClient} from "@angular/common/http";
+import {ConfirmationService} from 'primeng/api';
 
 @Component({
     templateUrl: './igdocument-list.component.html'
 })
 export class IgDocumentListComponent implements OnInit {
-  igs :any
-
-
+  igs :any;
   sortKey: string;
-
   sortField: string;
   moreInfoMap={};
   sortOptions: SelectItem[]= [
@@ -22,15 +20,13 @@ export class IgDocumentListComponent implements OnInit {
 
   sortOrder: number;
 
-  constructor(public activeRoute: ActivatedRoute,public  router:Router, public http:HttpClient) {
+  constructor(public activeRoute: ActivatedRoute,public  router:Router, public http:HttpClient,private confirmationService: ConfirmationService) {
     this.activeRoute.data.map(data =>data.igList).subscribe(x=>{
 
-
-
-      this.igs=x;
-
+      this.igs = x;
     });
-  }
+  };
+
   ngOnInit() {
   }
   open(ig,readnly){
@@ -70,4 +66,35 @@ export class IgDocumentListComponent implements OnInit {
       });
   };
 
+
+  deleteIg(id){
+    this.http.get<any>("/api/igdocuments/"+id+"/delete").toPromise().then(
+      x => {
+        console.log(x.data);
+        this.router.navigate(['/ig/'+x.data]);
+      }, error =>{
+        console.log(error);
+
+      });
+  };
+
+
+  confirmDelete(ig) {
+   // console.log(ig);
+    this.confirmationService.confirm({
+      message: 'Are you sure that you want to delete this Ig document',
+      accept: () => {
+        this.http.delete('api/igdocuments/'+ig.id).toPromise().then( x =>{
+
+          var i= this.igs.indexOf(ig);
+
+          console.log(ig);
+
+          if(i>0){
+            this.igs.splice(i,1);
+          }
+        });
+      }
+    });
+  }
 }

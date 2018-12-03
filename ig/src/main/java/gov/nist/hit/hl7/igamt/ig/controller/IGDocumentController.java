@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +36,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -279,17 +282,31 @@ public class IGDocumentController extends BaseController {
     }
   }
 
-  /**
-   * 
-   * @param authentication
-   * @return
-   */
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody List<IgSummary> getUserIG(Authentication authentication) {
     String username = authentication.getPrincipal().toString();
-    List<Ig> igdouments = igService.findLatestByUsername(username, Scope.USER);
+    List<Ig> igdouments = igService.findByUsername(username, Scope.USER);
     return igService.convertListToDisplayList(igdouments);
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/preloaded", method = RequestMethod.GET,
+	      produces = {"application/json"})
+	  public @ResponseBody List<IgSummary> getAllPreloaded(Authentication authentication) {
+	    String username = authentication.getPrincipal().toString();
+	    List<Ig> igdouments = igService.findAllPreloadedIG();
+	    return igService.convertListToDisplayList(igdouments);
+  }
+  @RequestMapping(value = "/api/igdocuments/all", method = RequestMethod.GET,
+	      produces = {"application/json"})
+  @PreAuthorize("hasAuthority('ADMIN')")
+  public @ResponseBody List<IgSummary> getAllUsersIg(Authentication authentication) {
+	  
+	    String username = authentication.getPrincipal().toString();
+	    
+	    
+	    List<Ig> igdouments = igService.findAllUsersIG();
+	    return igService.convertListToDisplayList(igdouments);
   }
 
   /**
@@ -687,12 +704,11 @@ public class IGDocumentController extends BaseController {
     }
     ConformanceProfile clone = profile.clone();
     clone.setUsername(username);
-    clone.setId(new ObjectId().toString());
     clone.setName(wrapper.getName());
     clone.getDomainInfo().setScope(Scope.USER);
-
     clone = conformanceProfileService.save(clone);
-    ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId()));
+    
+    ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getConformanceProfileRegistry().getChildren().size()+1));
     igService.save(ig);
     
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Conformance profile clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createConformanceProfileNode(clone, 0));
@@ -713,13 +729,12 @@ public class IGDocumentController extends BaseController {
     }
     Segment clone = segment.clone();
     clone.setUsername(username);
-    clone.setId(new ObjectId().toString());
     clone.setName(segment.getName());
     clone.setExt(wrapper.getExt());
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = segmentService.save(clone);
-    ig.getSegmentRegistry().getChildren().add(new Link(clone.getId()));
+    ig.getSegmentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size()+1));
     igService.save(ig);
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createSegmentNode(clone, 0));
 
@@ -745,7 +760,7 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = datatypeService.save(clone);
-    ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId()));
+    ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size()+1));
     igService.save(ig);
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createDatatypeNode(clone, 0));
 
@@ -768,11 +783,11 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone.setUsername(username);
-    clone.setId(new ObjectId().toString());
     clone.setBindingIdentifier(wrapper.getName());
     clone.getDomainInfo().setScope(Scope.USER);
-    ig.getValueSetRegistry().getChildren().add(new Link(clone.getId()));
     clone = valuesetService.save(clone);
+    ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
+
     igService.save(ig);
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Value Set clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createValueSetNode(clone, 0));
 
@@ -796,9 +811,9 @@ public class IGDocumentController extends BaseController {
         clone.getDomainInfo().setScope(Scope.USER);
 
         clone.setEvent(ev.getName());
-        clone.setId(new ObjectId().toString());
         clone.setName(profile.getName());
         clone = conformanceProfileService.save(clone);
+        ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getConformanceProfileRegistry().getChildren().size()+1));
         savedIds.add(clone.getId());
       }
     }
@@ -824,10 +839,10 @@ public class IGDocumentController extends BaseController {
           clone.getDomainInfo().setScope(Scope.USER);
 
           clone.setUsername(username);
-          clone.setId(new ObjectId().toString());
           clone.setName(segment.getName());
           clone.setExt(elm.getExt());
           clone = segmentService.save(clone);
+          ig.getSegmentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size()+1));
           savedIds.add(clone.getId());
         }
       } else {
@@ -855,10 +870,11 @@ public class IGDocumentController extends BaseController {
           clone.getDomainInfo().setScope(Scope.USER);
 
           clone.setUsername(username);
-          clone.setId(new ObjectId().toString());
           clone.setName(datatype.getName());
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
+          ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size()+1));
+
           savedIds.add(clone.getId());
         }
       } else {
@@ -867,8 +883,6 @@ public class IGDocumentController extends BaseController {
     }
     AddDatatypeResponseObject objects = crudService.addDatatypes(savedIds, ig);
     return new ResponseMessage<AddDatatypeResponseDisplay>(Status.SUCCESS, "", "Data type Added Succesfully", ig.getId(), false, ig.getUpdateDate(),  displayConverter.convertDatatypeResponseToDisplay(objects));
-
-
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST,
@@ -885,11 +899,10 @@ public class IGDocumentController extends BaseController {
         if (valueset != null) {
           Valueset clone = valueset.clone();
           clone.getDomainInfo().setScope(Scope.USER);
-
           clone.setUsername(username);
-          clone.setId(new ObjectId().toString());
           clone.setBindingIdentifier(elm.getName());
           clone = valuesetService.save(clone);
+          ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
           savedIds.add(clone.getId());
         }
       } else {
@@ -913,8 +926,18 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
 
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", ig.getId(), false, ig.getUpdateDate(),  ig.getId());
+  }
+  
 
+  @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.DELETE,
+      produces = {"application/json"})
+  public @ResponseBody ResponseMessage<String> archive(@PathVariable("id") String id,
+      Authentication authentication) throws IGNotFoundException{
 
+    Ig ig = findIgById(id);
+    igService.delete(ig);
+ 
+    return new ResponseMessage<String>(Status.SUCCESS, "", "Ig deleted Successfully", ig.getId(), false, ig.getUpdateDate(),  ig.getId());
   }
 
   /**

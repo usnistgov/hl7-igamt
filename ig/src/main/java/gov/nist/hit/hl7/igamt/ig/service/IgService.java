@@ -32,7 +32,7 @@ public interface IgService {
 
   public List<Ig> findByUsername(String username);
 
-  public List<Ig> findLatestByUsername(String username, Scope scope);
+  public List<Ig> findByUsername(String username, Scope scope);
 
   public List<Ig> finByScope(String string);
 
@@ -50,6 +50,12 @@ public interface IgService {
   public TextSection findSectionById(Set<TextSection> content, String sectionId);
 
   UpdateResult updateAttribute(String id, String attributeName, Object value);
+
+List<Ig> findAllUsersIG();
+
+List<Ig> findAllPreloadedIG();
+
+public void delete(Ig ig);
 
 
 

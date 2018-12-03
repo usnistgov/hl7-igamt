@@ -438,7 +438,6 @@ private static  CrossRefsLabel getLabel(Document doc) {
     String query = "ref._id";
     tmp.add(Criteria.where(query).is(objId));
       for (int i = 1; i <= level; i++) {
-
         query = "children."+query;
         tmp.add(Criteria.where(query).is(objId));
       }
