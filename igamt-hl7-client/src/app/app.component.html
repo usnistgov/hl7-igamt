@@ -15,7 +15,7 @@
                  'layout-overlay-active':overlayMenuActive}">
 
     <app-topbar></app-topbar>
-    <div class="layout-menu-container" (click)="onMenuClick($event)">
+    <div class="layout-menu-container" (click)="onMenuClick($event)" style="position : inherit !important;height: 50px !important;">
         <p-scrollPanel #layoutMenuScroller [style]="{height: '100%'}">
             <div class="layout-menu-content">
                 <div class="layout-menu-title">MENU</div>
@@ -24,7 +24,7 @@
         </p-scrollPanel>
     </div>
 
-    <div class="layout-content">
+    <div class="layout-content "style="padding-top: 0px !important; height: 100%">
         <div class="layout-content-container">
           <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
 

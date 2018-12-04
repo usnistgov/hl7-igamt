@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ElementRef} from '@angular/core';
 
 import {SelectItem} from "primeng/components/common/selectitem";
 import {ViewChildren, ViewChild} from "@angular/core";
@@ -36,6 +36,10 @@ export class IgDocumentEditComponent {
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
   @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
+  @ViewChild("vsLib") vsLib :ElementRef;
+  @ViewChild("dtLib") dtLib :ElementRef;
+  @ViewChild("segLib") segLib :ElementRef;
+  @ViewChild("cpLib") cpLib :ElementRef;
 
   igId:any;
   exportModel: MenuItem[];
@@ -171,7 +175,12 @@ export class IgDocumentEditComponent {
     ];
   }
 
+  scrollTo(ref: ElementRef ){
+    console.log("Scrolling");
+    console.log(ref);
+    ref.nativeElement.scrollIntoView({ behavior: "smooth", block: "start" });
 
+  }
 
 
   exportAsWord(){
