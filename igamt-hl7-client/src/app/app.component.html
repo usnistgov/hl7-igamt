@@ -15,7 +15,7 @@
                  'layout-overlay-active':overlayMenuActive}">
 
     <app-topbar></app-topbar>
-    <div class="layout-menu-container" (click)="onMenuClick($event)" style="position : inherit !important;height: 50px !important;">
+    <div class="layout-menu-container" (click)="onMenuClick($event)" style="position : fixed !important; top: 50px !important;height: 50px !important;">
         <p-scrollPanel #layoutMenuScroller [style]="{height: '100%'}">
             <div class="layout-menu-content">
                 <div class="layout-menu-title">MENU</div>
@@ -24,16 +24,14 @@
         </p-scrollPanel>
     </div>
 
-    <div class="layout-content "style="padding-top: 0px !important; height: 100%">
-        <div class="layout-content-container">
+    <div style="top: 100px; height: 100%; width: 100%; position:fixed">
           <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
 
-          <app-breadcrumb></app-breadcrumb>
+          <!--<app-breadcrumb></app-breadcrumb>-->
 
           <router-outlet></router-outlet>
         </div>
         <app-footer></app-footer>
         <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
-    </div>
 </div>
 
