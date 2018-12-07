@@ -61,7 +61,7 @@ export class SegmentEditPredefComponent extends HasFroala implements WithSave {
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
 
         return !this.editForm.invalid;
 

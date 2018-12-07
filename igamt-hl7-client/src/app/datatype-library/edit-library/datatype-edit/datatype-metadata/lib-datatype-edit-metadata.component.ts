@@ -59,7 +59,7 @@ export class LibDatatypeEditMetadataComponent extends HasFroala implements WithS
     return this.backup;
   }
 
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
 

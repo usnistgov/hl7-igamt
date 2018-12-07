@@ -73,7 +73,7 @@ export class SegmentEditStructureComponent implements WithSave {
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         // return !this.editForm.invalid;
         return true;
     }

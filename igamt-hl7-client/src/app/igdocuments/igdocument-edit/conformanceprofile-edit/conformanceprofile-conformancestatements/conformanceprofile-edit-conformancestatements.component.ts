@@ -331,7 +331,7 @@ export class ConformanceprofileEditConformancestatementsComponent implements Wit
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return !this.editForm.invalid;
     }
 

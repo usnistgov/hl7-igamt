@@ -17,7 +17,6 @@ import * as _ from 'lodash';
 })
 export class IgDocumentCreateComponent {
   tableValue :any;
-  tableValueMap={};
   loading=false;
   uploadedFiles: any[] = [];
   activeIndex: number = 0;
@@ -78,10 +77,6 @@ export class IgDocumentCreateComponent {
 
 
   }
-
-
-  totalStepsCount: number;
-
 
   getMessages(v){
     this.tableValue=[];
@@ -199,11 +194,6 @@ export class IgDocumentCreateComponent {
     }
   }
 
-  unselectEvent(event){
-
-    this.unselectNode(event.node);
-  }
-
 
   unselectNode(node){
     if(node.children&& node.children.length>0){
@@ -245,14 +235,6 @@ export class IgDocumentCreateComponent {
     if(index >-1){
       this.selectedEvents.splice(index,1);
     }
-  }
-
-  unselectParent(parent){
-
-    parent.partialSelected=this.getPartialSelection(parent);
-    console.log(parent.partialSelected);
-    this.unselect(parent);
-
   }
 
   getPartialSelection(parent){

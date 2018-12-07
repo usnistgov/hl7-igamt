@@ -363,7 +363,6 @@ public class IGDocumentController extends BaseController {
     if (!updateResult.wasAcknowledged()) {
       throw new IGUpdateException(id);
     }
-
     return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
   }
 

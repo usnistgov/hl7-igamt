@@ -65,7 +65,7 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return !this.editForm.invalid;
     }
 

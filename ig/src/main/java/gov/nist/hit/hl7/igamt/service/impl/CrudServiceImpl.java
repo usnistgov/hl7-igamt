@@ -386,7 +386,7 @@ public class CrudServiceImpl implements CrudService {
     orderRegistry(ig.getDatatypeRegistry(), ordredDatatypes);
 
     List<AbstractDomain> orderdValueSet = ret.getValueSets().stream()
-        .sorted((Valueset t1, Valueset t2) -> t1.getName().compareTo(t2.getName()))
+        .sorted((Valueset t1, Valueset t2) -> t1.getBindingIdentifier().compareTo(t2.getBindingIdentifier()))
         .collect(Collectors.toList());
 
     orderRegistry(ig.getValueSetRegistry(), orderdValueSet);

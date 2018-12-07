@@ -65,7 +65,7 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
   getBackup(){
     return this.backup;
   }
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
   upload(event) {

@@ -18,7 +18,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
   canDeactivate(component: WithSave):Promise<any>{
 
-        if (!component.isValid()) {
+        if (!component.canSave()) {
           console.log("invalid form");
 
 
@@ -39,10 +39,12 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
         }else if (!component.hasChanged()) {
 
-          return  Promise.resolve(true);
+           return  Promise.resolve(true);
         }else{
 
-          return  this.getUnsavedDialog(component);
+         return  component.save();
+
+          // return  this.getUnsavedDialog(component);
 
         }
 

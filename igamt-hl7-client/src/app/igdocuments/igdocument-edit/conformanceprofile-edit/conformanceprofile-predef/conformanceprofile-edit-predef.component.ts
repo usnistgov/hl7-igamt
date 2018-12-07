@@ -51,7 +51,7 @@ export class ConformanceprofileEditPredefComponent extends  HasFroala implements
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return !this.editForm.invalid;
     }
     hasChanged(){

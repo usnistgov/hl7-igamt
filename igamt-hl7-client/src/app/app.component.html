@@ -26,12 +26,9 @@
 
     <div style="top: 100px; height: 100%; width: 100%; position:fixed">
           <p-messages [(value)]="msgs" id="topAlert" key="topAlert"></p-messages>
-
-          <!--<app-breadcrumb></app-breadcrumb>-->
-
           <router-outlet></router-outlet>
-        </div>
-        <app-footer></app-footer>
-        <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
+    </div>
+    <app-footer></app-footer>
+    <div class="layout-mask" *ngIf="staticMenuMobileActive"></div>
 </div>
 

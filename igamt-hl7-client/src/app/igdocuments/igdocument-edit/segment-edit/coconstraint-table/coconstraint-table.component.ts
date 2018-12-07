@@ -157,7 +157,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   // ------ TEMPLATE -----
 
   printForm(event) {
-    console.log(this.ccFormVar.isValid);
+    console.log(this.ccFormVar.canSave);
   }
 
   headWidth(empty: boolean, x: number) {
@@ -476,7 +476,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     return this.table;
   }
 
-  isValid(): boolean {
+  canSave(): boolean {
     return this.ccFormVar && this.ccFormVar.valid;
   }
 

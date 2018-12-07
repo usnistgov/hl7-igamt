@@ -36,7 +36,7 @@ export  class Igsresolver implements Resolve<any>{
     }else if (params.type && params.type == "PRELOADED") {
       let httpParams = new HttpParams().append("type", "PUBLIC");
 
-      return this.http.get("api/igdocuments/preloaded");
+      return this.http.get("api/igdocuments", {params:httpParams});
 
     }
 
