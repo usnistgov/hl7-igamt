@@ -4,10 +4,11 @@ import {Router} from "@angular/router";
 import {IgErrorService} from "../ig-error/ig-error.service";
 import {LoadingService} from "../service/loading.service";
 import {HttpParams} from "@angular/common/http";
+import {TocService} from "../service/toc.service";
 
 @Injectable()
 export class DatatypesService {
-    constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService) {}
+    constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService, private tocService: TocService) {}
 
     public getDatatypeMetadata(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
@@ -121,8 +122,9 @@ export class DatatypesService {
     // public saveDatatype(id, dId, cItem): Promise<any> {
     // return  this.http.post('api/datatypes/' + id + '/document/' + dId + '/save',cItem).toPromise();
     // }
-    public saveDatatype(id, dId, cItem): Promise<any> {
-        let httpParams = new HttpParams().append("dId", dId);
-        return  this.http.post('api/datatypes/' + id + '/structure',cItem, {params:httpParams}).toPromise();
+    public save(id, cItem): Promise<any> {
+      let igId= this.tocService.getIgId();
+      let httpParams = new HttpParams().append("dId", igId);
+        return  this.http.post('api/datatypes/'+ id,cItem, {params:httpParams}).toPromise();
     }
 }

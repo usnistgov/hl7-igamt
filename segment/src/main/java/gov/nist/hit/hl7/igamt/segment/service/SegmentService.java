@@ -24,7 +24,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -70,7 +69,6 @@ public interface SegmentService extends ResourceService {
 
   public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-  public DisplayMetadata convertDomainToMetadata(Segment segment);
 
   public PreDef convertDomainToPredef(Segment segment);
 
@@ -81,17 +79,6 @@ public interface SegmentService extends ResourceService {
   public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
 
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
-
-
-
-  /**
-   * Validate the metadata information of the segment
-   * 
-   * @param metadata
-   * @throws SegmentValidationException
-   */
-  public void validate(DisplayMetadata metadata) throws SegmentValidationException;
-
 
   /**
    * 
@@ -109,15 +96,7 @@ public interface SegmentService extends ResourceService {
    */
   public Segment savePostdef(PostDef postdef) throws SegmentNotFoundException;
 
-  /**
-   * 
-   * @param metadata
-   * @return
-   * @throws SegmentNotFoundException
-   * @throws SegmentValidationException
-   */
-  public Segment saveMetadata(DisplayMetadata metadata)
-      throws SegmentNotFoundException, SegmentValidationException;
+
 
   /**
    * Validate conformance statements of the segment

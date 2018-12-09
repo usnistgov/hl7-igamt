@@ -60,7 +60,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -410,21 +409,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 
 
-  @Override
-  public DisplayMetadata convertDomainToMetadata(Segment segment) {
-    if (segment != null) {
-      DisplayMetadata result = new DisplayMetadata();
-      result.setAuthorNote(segment.getComment());
-      result.setDescription(segment.getDescription());
-      result.setExt(segment.getExt());
-      result.setId(segment.getId());
-      result.setName(segment.getName());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      return result;
-    }
-    return null;
-  }
+
 
   @Override
   public PreDef convertDomainToPredef(Segment segment) {
@@ -595,18 +580,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-  @Override
-  public void validate(DisplayMetadata metadata) throws SegmentValidationException {
-    if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
-      if (StringUtils.isEmpty(metadata.getName())) {
-        throw new SegmentValidationException("Name is missing");
-      }
-      if (StringUtils.isEmpty(metadata.getExt())) {
-        throw new SegmentValidationException("Ext is missing");
-      }
-    }
-  }
-
 
 
   /**
@@ -655,19 +628,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-  @Override
-  public Segment saveMetadata(DisplayMetadata metadata)
-      throws SegmentNotFoundException, SegmentValidationException {
-    validate(metadata);
-    Segment segment = findById(metadata.getId());
-    if (segment == null) {
-      throw new SegmentNotFoundException(metadata.getId());
-    }
-    segment.setExt(metadata.getExt());
-    segment.setDescription(metadata.getDescription());
-    segment.setComment(metadata.getAuthorNote());
-    return save(segment);
-  }
 
 
   @Override

@@ -89,13 +89,13 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
     }
 
     canSave(){
-        return !this.editForm.invalid;
+        return !this.datatypeConformanceStatements.readOnly;
     }
 
 
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
-            this.datatypesService.saveDatatype(this.datatypeId, this.igId, this.changeItems).then(saved=>{
+            this.datatypesService.save(this.datatypeId, this.changeItems).then(saved=>{
                 this.backup = __.cloneDeep(this.datatypeConformanceStatements);
                 this.changeItems = [];
                 this.editForm.control.markAsPristine();

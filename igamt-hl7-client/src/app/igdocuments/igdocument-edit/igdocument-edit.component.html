@@ -45,11 +45,8 @@
 
     <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa fa-check"></button>
     <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
-
-    <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
-    <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-
-
+    <!--<button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>-->
+    <!--<button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>-->
   </div>
 
 
@@ -63,7 +60,6 @@
   <div (click)="toggleHideToc()"   class="panel-leftheading ">
     <p-header class="panel-lefttitle" pTooltip="Show TOC "  tooltipPosition="bottom" > <i class="fa fa-eye"></i>Table of Content</p-header>
   </div>
-
 
 </div>
 
@@ -152,8 +148,6 @@
             </div>
           </ng-container>
 
-
-
           <ng-container *ngSwitchCase="'VALUESETREGISTRY'" >
             <div #vsLib>
               <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
@@ -232,9 +226,9 @@
               <ng-template contextMenuItem (execute)="copyValueSet(node)">
                 <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <ng-template contextMenuItem (execute)="deleteValueSet(node)">
-                <i class="fa fa-remove"></i> Delete
-              </ng-template>
+              <!--<ng-template contextMenuItem (execute)="deleteValueSet(node)">-->
+                <!--<i class="fa fa-remove"></i> Delete-->
+              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
           </ng-container>

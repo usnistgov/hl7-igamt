@@ -18,59 +18,90 @@ import {HasFroala} from "../../../../configuration/has-froala";
     styleUrls : ['./datatype-edit-predef.component.css']
 })
 export class DatatypeEditPredefComponent extends  HasFroala implements WithSave  {
-    currentUrl:any;
-    datatypeId:any;
-    datatypePredef:any;
-    backup:any;
+  currentUrl:any;
 
-    @ViewChild('editForm')
-    private editForm: NgForm;
+  datatypeId:any;
+  current:any;
+  backup:any;
+  changeItems: any[]=[];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private http:HttpClient, private igErrorService:IgErrorService){
-      super();
-    }
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
-    ngOnInit() {
-        this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.route.data.map(data =>data.datatypePredef).subscribe(x=>{
-            this.backup=x;
-            this.datatypePredef=_.cloneDeep(this.backup);
-        });
-    }
+  constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private http:HttpClient,private igErrorService:IgErrorService){
 
-    reset(){
-        this.datatypePredef=_.cloneDeep(this.backup);
-        this.editForm.control.markAsPristine();
+    super();
+    router.events.subscribe(event => {
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+      }
+    });
+  }
 
-    }
+  ngOnInit() {
+    this.datatypeId
+      = this.route.snapshot.params["datatypeId"];
+    this.route.data.map(data =>data.datatypePredef).subscribe(x=>{
+      this.backup=x;
+      this.current=_.cloneDeep(this.backup);
+    });
+  }
 
-    getCurrent(){
-        return  this.datatypePredef;
-    }
+  reset(){
 
-    getBackup(){
-        return this.backup;
-    }
+    this.current=_.cloneDeep(this.backup);
 
-    canSave(){
-        return !this.editForm.invalid;
-    }
-    hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
 
-    }
-    save(): Promise<any>{
-        return new Promise((resolve, reject)=> {
-            this.datatypesService.saveDatatypePreDef(this.datatypeId, this.datatypePredef).then(saved => {
-                    this.backup = _.cloneDeep(this.datatypePredef);
-                    this.editForm.control.markAsPristine();
-                    resolve(true);
-                }, error => {
-                    console.log("error saving");
-                    reject(error);
-                }
+  getCurrent(){
+    return  this.current;
+  }
 
-            );
-        })
-    }
+  getBackup(){
+    return this.backup;
+  }
+
+  canSave(){
+
+    return !this.current.readOnly;
+
+
+  }
+
+  save(): Promise<any> {
+
+    this.createChanges(this.current,this.backup);
+    console.log("saving");
+    return new Promise((resolve, reject) => {
+
+      this.datatypesService.save( this.datatypeId,this.changeItems).then(saved => {
+
+        this.backup = _.cloneDeep(this.current);
+
+        //this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+
+        console.log("error saving");
+        reject(error);
+
+      });
+    });
+  }
+  hasChanged(){
+    return  this.backup.text != this.current.text;
+  }
+
+  createChanges(elm, backup){
+    this.changeItems=[];
+    let obj:any={};
+    obj.location= this.datatypeId;
+    obj.propertyType="PREDEF";
+    obj.propertyValue=elm.text;
+    obj.oldPropertyValue=backup.text;
+    obj.position=-1;
+    obj.changeType="UPDATE";
+    this.changeItems.push(obj);
+  }
 }

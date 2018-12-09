@@ -36,7 +36,6 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -130,12 +129,8 @@ public class SegmentController extends BaseController {
     Segment segment = findById(id);
     DefinitionDisplay display= new DefinitionDisplay();
     display.build(segment, SectionType.PREDEF, getReadOnly(authentication, segment));
-   
     return display;
-
   }
-
-
 
 private boolean getReadOnly(Authentication authentication, Segment segment) {
 	// TODO Auto-generated method stub
@@ -196,16 +191,6 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
 //    Segment segment = segmentService.savePostdef(postDef);
 //    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, segment.getUpdateDate());
 //  }
-
-
-  @RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveSegmentMetadata(@PathVariable("id") String id,
-      @RequestBody DisplayMetadata displayMetadata, Authentication authentication)
-      throws ValidationException, SegmentNotFoundException {
-    Segment segment = segmentService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id, segment.getUpdateDate());
-  }
 
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.POST,
