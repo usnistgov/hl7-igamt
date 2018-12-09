@@ -63,7 +63,7 @@ export class SegmentEditPredefComponent extends HasFroala implements WithSave {
 
     canSave(){
 
-      return true;
+      return !this.current.readOnly;
 
 
     }

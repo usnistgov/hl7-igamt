@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.segment.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -33,10 +34,13 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
@@ -86,10 +90,17 @@ public class SegmentController extends BaseController {
 
   @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})
-  public SegmentConformanceStatement getSegmentConformanceStatement(@PathVariable("id") String id,
+  public ConformanceStatementDisplay getSegmentConformanceStatement(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    return segmentService.convertDomainToConformanceStatement(segment);
+    
+    ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
+    Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
+    if(segment.getBinding() !=null) {
+    	cfs=segment.getBinding().getConformanceStatements();
+    }
+    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs);
+    return  conformanceStatementDisplay;
   }
 
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,
@@ -103,10 +114,12 @@ public class SegmentController extends BaseController {
   @RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public DisplayMetadata getSegmentMetadata(@PathVariable("id") String id,
+  public DisplayMetadataSegment getSegmentMetadata(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    return segmentService.convertDomainToMetadata(segment);
+    DisplayMetadataSegment display= new DisplayMetadataSegment();
+    display.complete(segment, SectionType.METADATA, getReadOnly(authentication, segment));
+    return display;
 
   }
 
@@ -141,7 +154,7 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
     DefinitionDisplay display= new DefinitionDisplay();
-    display.build(segment, SectionType.PREDEF, getReadOnly(authentication, segment));
+    display.build(segment, SectionType.POSTDEF, getReadOnly(authentication, segment));
    
     return display;
 

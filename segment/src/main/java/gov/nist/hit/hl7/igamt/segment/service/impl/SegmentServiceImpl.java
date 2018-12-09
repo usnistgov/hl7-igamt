@@ -807,6 +807,12 @@ public class SegmentServiceImpl implements SegmentService {
     	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
     		item.setOldPropertyValue(s.getPostDef());
     		s.setPostDef((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+    		item.setOldPropertyValue(s.getAuthorNotes());
+    		s.setAuthorNotes((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.EXT)) {
+    		item.setOldPropertyValue(s.getExt());
+    		s.setExt((String)item.getPropertyValue());
     	}
     	
     	else  if (item.getPropertyType().equals(PropertyType.USAGE)) {

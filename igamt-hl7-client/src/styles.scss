@@ -380,3 +380,7 @@ body .ui-panel .ui-panel-content {
   box-sizing: border-box;
    padding: 0em 0em;
 }
+
+p-dialog{
+  z-index: 9999!important;
+}

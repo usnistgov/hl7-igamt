@@ -88,7 +88,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     }
 
     canSave(){
-        return !this.editForm.invalid;
+        return true;
     }
 
     save(): Promise<any>{

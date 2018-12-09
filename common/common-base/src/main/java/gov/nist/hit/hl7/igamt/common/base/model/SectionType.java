@@ -3,7 +3,7 @@ package gov.nist.hit.hl7.igamt.common.base.model;
 
 public enum SectionType {
 
-	  METADATA("Meta-data"), PREDEF("Pre-Definition"),POSTFDEF("Post-Definition"),CROSREFS("Cross-references"),STRUCTURE("Structure"), DYNAMICMAPPING("Dynamic Mapping"), COCONSTRAINTS("Co-Constraints"),
+	  METADATA("Meta-data"), PREDEF("Pre-Definition"),POSTDEF("Post-Definition"),CROSREFS("Cross-references"),STRUCTURE("Structure"), DYNAMICMAPPING("Dynamic Mapping"), COCONSTRAINTS("Co-Constraints"),
 	  CONFORMANCESTATEMENTS("Conformance Statements");
 	  private final String value;
 

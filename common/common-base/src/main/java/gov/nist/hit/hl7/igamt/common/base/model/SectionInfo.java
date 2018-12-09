@@ -18,7 +18,7 @@ public class SectionInfo {
 	protected Type type;
 	protected Set<String> participants; 
 	protected boolean readOnly;
-	
+	protected String description;
 	
 	public String getLabel() {
 		return label;
@@ -84,6 +84,13 @@ public class SectionInfo {
 	section.setReadOnly(readOnly);
 	section.setLabel(elm.getLabel());
 	section.setDomainInfo(elm.getDomainInfo());
+	section.setDescription(elm.getDescription());
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	
