@@ -369,3 +369,14 @@ background-color: saddlebrown;
 .scroll-badge-s{
 background-color: blue;
 }
+.section-content{
+  max-height: 700px;
+  overflow: scroll;
+  padding: 5px;
+}
+
+body .ui-panel .ui-panel-content {
+  height: 100%;
+  box-sizing: border-box;
+   padding: 0em 0em;
+}

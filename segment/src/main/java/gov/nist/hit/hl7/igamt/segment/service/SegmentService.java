@@ -158,7 +158,7 @@ public interface SegmentService extends ResourceService {
    * @param segment
    * @return
    */
-  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment);
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
   /**
    * @param s

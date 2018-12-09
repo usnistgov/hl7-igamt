@@ -42,6 +42,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -199,15 +200,13 @@ public class SegmentServiceImpl implements SegmentService {
    * @deprecated. Use segment.toStructure()
    */
   @Override
-  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment) {
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
-    result.setId(segment.getId());
-    result.setScope(segment.getDomainInfo().getScope());
-    result.setVersion(segment.getDomainInfo().getVersion());
-    result.setName(segment.getName());
+    result.complete(result, segment, SectionType.STRUCTURE,readOnly);
+
     if (segment.getExt() != null) {
       result.setLabel(segment.getName() + "_" + segment.getExt());
     } else {
@@ -430,6 +429,7 @@ public class SegmentServiceImpl implements SegmentService {
   @Override
   public PreDef convertDomainToPredef(Segment segment) {
     if (segment != null) {
+    	
       PreDef result = new PreDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
@@ -800,7 +800,16 @@ public class SegmentServiceImpl implements SegmentService {
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.USAGE)) {
+    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
+    		item.setOldPropertyValue(s.getPreDef());
+    		s.setPreDef((String)item.getPropertyValue());
+    	
+    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
+    		item.setOldPropertyValue(s.getPostDef());
+    		s.setPostDef((String)item.getPropertyValue());
+    	}
+    	
+    	else  if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Field f = this.findFieldById(s, item.getLocation());
         if (f != null) {
           item.setOldPropertyValue(f.getUsage());

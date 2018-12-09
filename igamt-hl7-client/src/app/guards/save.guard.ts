@@ -37,15 +37,12 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
           });
          // return this.getInvalidDataDialog(component);
 
-        }else if (!component.hasChanged()) {
+        } else if (!component.hasChanged()) {
 
            return  Promise.resolve(true);
-        }else{
 
+        } else {
          return  component.save();
-
-          // return  this.getUnsavedDialog(component);
-
         }
 
   }

@@ -81,7 +81,7 @@ export class IgDocumentService {
                         let  ig = new IgDocumentInfo(igId);
                         ig.metadata=x["metadata"];
                         this.tocService.metadata.next(ig.metadata);
-                       // this.tocService.igId=igId;
+                        this.tocService.igId=igId;
                         ig.toc=x["toc"];
                         this.indexedDbService.initIg(ig).then(
                             () => {

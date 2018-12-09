@@ -93,7 +93,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     save(): Promise<any>{
         return new Promise((resolve, reject)=> {
-            this.segmentsService.saveSegment(this.segmentId, this.igId, this.changeItems).then(saved=>{
+            this.segmentsService.save(this.segmentId, this.changeItems).then(saved=>{
                 this.backup = __.cloneDeep(this.segmentConformanceStatements);
                 this.changeItems = [];
                 this.editForm.control.markAsPristine();

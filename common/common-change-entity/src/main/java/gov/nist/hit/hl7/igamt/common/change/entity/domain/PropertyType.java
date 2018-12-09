@@ -20,10 +20,10 @@ public enum PropertyType {
   EXT, AUTHORNOTES,
   
   //PRETEXT
-  PRETEXT,
+  PREDEF,
   
   //POSTTEXT
-  POSTTEXT,
+  POSTDEF,
   
   //DYNAMICMAPPING
   MAPPINGITEM,

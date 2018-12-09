@@ -74,10 +74,7 @@ export class SegmentEditPostdefComponent extends HasFroala implements WithSave {
           resolve(true);
 
         }, error => {
-
-          console.log("error saving");
-          reject(error);
-
+           reject(error);
 
          }
 

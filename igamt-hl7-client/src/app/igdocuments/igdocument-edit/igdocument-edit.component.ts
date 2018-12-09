@@ -580,6 +580,7 @@ export class IgDocumentEditComponent {
   };
 
   copyConformanceProfile(node){
+
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
     this.copyElemt.open({
       igDocumentId : this.igId,
@@ -602,7 +603,6 @@ export class IgDocumentEditComponent {
   }
 
   copySection(node){
-   //console.log( this.tree._options);
     this.tocService.cloneNode(node);
   }
 
@@ -626,8 +626,6 @@ export class IgDocumentEditComponent {
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
         }
       )
   };
@@ -646,9 +644,6 @@ export class IgDocumentEditComponent {
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
-
         }
       )
   };
@@ -661,14 +656,11 @@ export class IgDocumentEditComponent {
       ext:node.data.data.ext,
       type:node.data.data.type,
       node:node.data.data
-
     })
       .subscribe(
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
         }
       )
 
@@ -685,10 +677,8 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         id => {
-
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
         }
       )
   }
