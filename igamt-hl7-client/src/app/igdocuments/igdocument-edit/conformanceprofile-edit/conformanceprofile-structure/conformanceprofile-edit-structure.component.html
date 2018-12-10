@@ -1,6 +1,5 @@
 <div *ngIf="conformanceprofileStructure">
     <form #editForm="ngForm">
-========{{changeItems}}
       <entity-header [elm]="conformanceprofileStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
       <div class="section-content">
