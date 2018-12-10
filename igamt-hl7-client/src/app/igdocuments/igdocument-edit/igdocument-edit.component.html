@@ -15,8 +15,8 @@
   <app-add-value-set></app-add-value-set>
   <app-copy-element></app-copy-element>
   <app-delete-element></app-delete-element>
-  <div>
-      <span class="ig-title">{{metadata.title}}</span>
+  <div class="">
+      <span class="ig-title ">{{metadata.title}}</span>
     <hr style="margin-top: 0rem;
     margin-bottom: 0rem;
     border: 0;
@@ -30,7 +30,7 @@
   </div>
 
 
-<p-toolbar class="toc-filter-toolbar">
+<p-toolbar class="toc-filter-toolbar ig-toolbar">
   <div class="multiselect-adapter ui-toolbar-group-left">
 
     <input   type="text" [(ngModel)]="searchFilter" pInputText placeholder="Filter By Name"  id="filter" #filter (keyup)="filterFn()" pTooltip="Filter by name"  tooltipPosition="top" >
@@ -61,12 +61,12 @@
 
 </div>
 
-<div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" style="padding : 0;">
+<div [ngClass]="{'ui-g-12 ':!hideToc, 'ui-g-11':hideToc}" class="document-container toc">
   <div class="ui-g-3 no-margin" style="padding : 0; "  *ngIf="!hideToc">
   <p-panel [toggleable]="false">
     <p-header class="toc-panel-header">
 
-      <div style="height: 55px !important;">
+      <div  class="toc-panel-header header-color">
       Table Of Content
       <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
       <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
@@ -78,7 +78,7 @@
       <span class="badge scroll-badge scroll-badge-cp"  style="float: right;cursor: pointer" type="button"  label="CP" pTooltip="Scroll to Conformance Profile" tooltipPosition="top"  (click)="scrollTo(cpLib)">CP</span>
       </div>
     </p-header>
-    <div style="overflow: scroll; max-height: 700px;">
+    <div class="toc-panel-body">
 
     <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
     <tree-root [nodes]="nodes"  #treeroot [options]="options">

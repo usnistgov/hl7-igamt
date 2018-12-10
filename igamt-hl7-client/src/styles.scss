@@ -392,3 +392,29 @@ p-dialog{
   overflow: auto;
   box-sizing: border-box;
 }
+
+.toc-panel-header{
+  height: 55px;
+}
+.toc-panel-body{
+  max-height: 700px;
+  overflow-y: scroll;
+  border-right: 1px solid #d4d4d4;
+}
+
+.document-container {
+  border-bottom: 1px solid #d4d4d4;
+  padding: 0;
+}
+
+.header-color {
+  background-color: #e0e0e0 !important;
+  border-color: #e0e0e0 !important;
+}
+ .ig-toolbar .ui-toolbar {
+   background-color:  #e0e0e0 !important;
+ }
+body .toc .ui-widget-header {
+  background-color:  #e0e0e0 !important;
+
+}

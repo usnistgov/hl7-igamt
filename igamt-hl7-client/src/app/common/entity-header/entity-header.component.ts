@@ -36,6 +36,9 @@ export class EntityHeaderComponent {
     this.sectionTypeDisplay= this.createSectionTypeDisplay(this.elm);
   }
   createSectionTypeDisplay(elm:any){
+    if(elm){
+
+
 
     if(elm.sectionType=='PREDEF'){
       return new VisualRep("fa fa-mail-reply", "Pre Definition");
@@ -58,7 +61,7 @@ export class EntityHeaderComponent {
       return new VisualRep( "fa fa-table","Dynamic Mapping");
     }
 
-  }
+  }}
 }
 
 export class VisualRep{

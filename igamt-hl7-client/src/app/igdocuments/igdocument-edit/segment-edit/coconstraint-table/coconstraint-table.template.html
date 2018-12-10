@@ -20,19 +20,10 @@
   </tr>
   </thead>
 </table>
-<div class="ui-g cp-header">
-  <div class="ui-g-8 ui-g-nopad">
-    <div class="cp-header-title ui-g-12">
-      CoConstraint Table for Segment : {{_segment.name}}
-    </div>
-  </div>
-  <div class="ui-g-4">
-    <button  [disabled]="!ccFormVar || !ccFormVar.valid" style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
-    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-  </div>
-</div>
+<entity-header [elm]="display"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
-<div class="cc-div" style="overflow-x: scroll; width: 100%; margin-top: 40px;" *ngIf="table">
+
+<div class="section-content cc-div" style="overflow-x: scroll; width: 100%; margin-top: 40px;" *ngIf="table">
   <form #ccForm="ngForm">
     <table class="table table-condensed no-margin">
 
