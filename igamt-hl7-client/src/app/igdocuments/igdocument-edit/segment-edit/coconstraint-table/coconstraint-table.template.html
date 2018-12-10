@@ -27,7 +27,7 @@
     </div>
   </div>
   <div class="ui-g-4">
-    <button  [disabled]="!ccFormVar || !formStatus()" style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
+    <button  [disabled]="!ccFormVar || !ccFormVar.valid" style="float:right" (click)="saveButton()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
     <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
   </div>
 </div>
@@ -192,10 +192,8 @@
                #val="ngModel"
                [name]="'val-'+id+'-'+key"
                [id]="'val-'+id+'-'+key"
-               [registerForm]="form"
-               [registerModel]="val"
                style="text-align: center; border: 1px solid;"
-               [registerValidators]="req ? [required()] : []"
+               [required]="req"
                [placeholder]="'PlainText'">
 
         <p *ngIf="val.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
@@ -206,14 +204,12 @@
 
     </ng-template>
 
-    <ng-template #code let-node let-field="field" let-form="form" let-req="req" let-id="id" let-key="key" let-varies="varies">
+    <ng-template #code let-node let-unique="unique" let-field="field" let-form="form" let-req="req" let-id="id" let-key="key" let-varies="varies">
 
       <p-dropdown appendTo="body"
                   #loc="ngModel"
                   [name]="'loc-'+id+'-'+key"
                   [id]="'loc-'+id+'-'+key"
-                  [registerForm]="form"
-                  [registerModel]="loc"
                   [style]="{'width': '95%' , 'border' : '1px solid'}"
                   [placeholder]="'Location'"
                   [required]="true"
@@ -225,9 +221,13 @@
              #code="ngModel"
              [name]="'code-'+id+'-'+key"
              [id]="'code-'+id+'-'+key"
-             [registerForm]="form"
-             [registerModel]="code"
-             [registerValidators]="req ? [required(), uniq(ccFormVar,'code', key, 'code-'+id+'-'+key)] : [uniq(ccFormVar, 'code', key, 'code-'+id+'-'+key)]"
+
+             [appUniqueSelectorCC]="unique"
+             [uniqueSelectorCCColumn]="key"
+             [uniqueSelectorCCForm]="ccFormVar"
+             [uniqueSelectorCCField]="code"
+             [uniqueSelectorCCId]="'code-'+id+'-'+key"
+
              [(ngModel)]="node.value"
              style="width: 95%; border: 1px solid; text-align: center;"
              [placeholder]="'Code'">
@@ -246,7 +246,7 @@
                 [id]="'text-'+id+'-'+key" [(ngModel)]="node.value"></textarea>
     </ng-template>
 
-    <ng-template #varies let-node let-field="field" let-obj="obj" let-key="key">
+    <ng-template #varies let-node let-field="field" let-obj="obj" let-key="key" let-form="form" let-id="id">
       <table style="width: 100%; border: 0; height: 100%;">
         <tr>
           <td *ngIf="isIgnore(node)" style="border: 0; text-align: center; vertical-align: middle;">
@@ -258,7 +258,7 @@
           </td>
           <td *ngIf="!isIgnore(node)" style="border: 0; vertical-align: middle;">
             <ng-container
-              *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
+              *ngTemplateOutlet="cTemplate({content : { type : node.type}}); context : {$implicit : node, id: id, unique: false, form: form, obj : obj, key : key, req : true, field : field, varies : true}"></ng-container>
           </td>
           <td *ngIf="!isIgnore(node)" style="text-align: center; border: 0; width: 10px; background-color: lightgray; vertical-align: middle;">
             <i (click)="clearVariesNodeValue(obj, key, node)" style="color: red; cursor: pointer; float: right;" class="fa fa-times"
@@ -278,21 +278,17 @@
              #min="ngModel"
              [name]="id+'-min'"
              [id]="id+'-min'"
-             [registerForm]="ccFormVar"
              min="0"
-             [registerValidators]="[minimum(0), required()]"
+             [appMinCardinality]="node.cardinality.max"
              [ngStyle]="{ 'background-color' : min.control.errors ? 'pink' : 'white' }"
-             [registerModel]="min"
              [required]="true"
       />
       <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"
              #max="ngModel"
              [name]="id+'-max'"
              [id]="id+'-max'"
-             [registerForm]="ccFormVar"
-             [registerValidators]="[maximum(), required()]"
+             [appMaxCardinality]="node.cardinality.min"
              [ngStyle]="{ 'background-color' : max.control.errors ? 'pink' : 'white' }"
-             [registerModel]="max"
              [required]="true"/>
     </ng-template>
 
@@ -394,8 +390,6 @@
               #groupM="ngModel"
               [name]="'group'+index+'-name'"
               [id]="'group'+index+'-name'"
-              [registerForm]="ccFormVar"
-              [registerModel]="groupM"
               [required]="true"
               placeholder="required">
             <p *ngIf="groupM.control.errors" style="color: red; margin: 0; text-align: center; font-size: 12px;">
@@ -546,8 +540,6 @@
                   appendTo="body"
                   [name]="'dt-'+id+'-'+key"
                   [id]="'dt-'+id+'-'+key"
-                  [registerForm]="form"
-                  [registerModel]="dtModel"
                   [required]="true"
                   [(ngModel)]="node.value"
                   [style]="{'width':'100%', 'text-align' : 'center'}"
@@ -567,8 +559,6 @@
                     appendTo="body"
                     [name]="'fl-'+id+'-'+key"
                     [id]="'fl-'+id+'-'+key"
-                    [registerForm]="form"
-                    [registerModel]="flavorM"
                     [required]="true"
                     [(ngModel)]="node.value"
                     [style]="{'width':'100%', 'text-align' : 'center'}">
@@ -585,6 +575,7 @@
         </p>
       </div>
     </ng-template>
+
   </form>
 </div>
 

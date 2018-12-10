@@ -32,9 +32,13 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
     }
 
     selectRow(event) {
-      if (!this.complex) {
+      if (!this.complex && !this.varies) {
         event.data.bindingLocation = ['.'];
+      } else {
+        event.data.bindingLocation = null;
       }
+      event.data.bindingStrength = null;
+      event.data.id = event.data.bindingIdentifier + '-' + event.data.version;
     }
 
     transform(list) {
