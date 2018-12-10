@@ -9,6 +9,7 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 
 public class ConformanceStatementDisplay extends SectionInfo{
 	  private Set<ConformanceStatement> conformanceStatements;
+	  private String name;
 
 	public Set<ConformanceStatement> getConformanceStatements() {
 		return conformanceStatements;
@@ -18,11 +19,19 @@ public class ConformanceStatementDisplay extends SectionInfo{
 		this.conformanceStatements = conformanceStatements;
 	}
 	  
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}	
+	
 	public void complete(Resource elm, SectionType type,boolean readOnly, Set<ConformanceStatement> conformanceStatements ){
 		
 		super.complete(this, elm, type, readOnly);
-		setConformanceStatements(conformanceStatements);	
+		setConformanceStatements(conformanceStatements);
+		this.name=elm.getName();
 	}
-	  
 
 }

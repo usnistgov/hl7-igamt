@@ -14,10 +14,6 @@ public class DefinitionDisplay extends SectionInfo {
 	public void setText(String text) {
 		this.text = text;
 	}
-	
-	
-	
-
 	public void  build(Resource obj, SectionType type, boolean readOnly) {
 		super.complete(this, obj, type, readOnly);
 		if(type.equals(SectionType.POSTDEF)) {

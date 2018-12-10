@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 public class SegmentStructureDisplay extends SectionInfo{
 
   private Set<FieldStructureTreeModel> structure;
+  private String name;
 
   public String getId() {
     return id;
@@ -56,4 +57,12 @@ public class SegmentStructureDisplay extends SectionInfo{
       this.structure = new HashSet<FieldStructureTreeModel>();
     this.structure.add(fieldStructureTreeModel);
   }
+
+public String getName() {
+	return name;
+}
+
+public void setName(String name) {
+	this.name = name;
+}
 }

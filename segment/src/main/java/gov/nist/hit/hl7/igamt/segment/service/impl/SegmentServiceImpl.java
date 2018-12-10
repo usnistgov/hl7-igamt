@@ -205,7 +205,7 @@ public class SegmentServiceImpl implements SegmentService {
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
     result.complete(result, segment, SectionType.STRUCTURE,readOnly);
-
+    result.setName(segment.getName());
     if (segment.getExt() != null) {
       result.setLabel(segment.getName() + "_" + segment.getExt());
     } else {
