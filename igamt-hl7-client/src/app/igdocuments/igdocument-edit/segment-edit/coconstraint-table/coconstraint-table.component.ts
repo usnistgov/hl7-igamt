@@ -52,6 +52,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   dndGroups: boolean;
   table: CoConstraintTable;
   tableId: any;
+  display:any;
   config: any;
   activeType: string;
   ceBindingLocations: any;
@@ -70,8 +71,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   @Input() set segment(value: any) {
     this._segment = value;
     const ctrl = this;
-    this.ccTableService.getCCTableForSegment(this._segment).then(function (table) {
-      ctrl.table = table;
+    this.ccTableService.getCCTableForSegment(this._segment).then(function (display) {
+      ctrl.display= display;
+      ctrl.table = ctrl.display.data;
       ctrl.backUp = _.cloneDeep(ctrl.table);
       if (ctrl.table.segment === 'OBX') {
         ctrl.config.dynCodes = [];
@@ -382,8 +384,8 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     return this.table;
   }
 
-  isValid(): boolean {
-    return this.ccFormVar && this.ccFormVar.valid;
+  canSave(): boolean {
+    return  this.display&&!this.display.readOnly;
   }
 
   reset(): any {
@@ -391,7 +393,14 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   save(): Promise<any> {
-    return this.ccTableService.saveCoConstraintTable(this.table, this._segment.id);
+    return new Promise((resolve, reject) => {
+      this.ccTableService.saveCoConstraintTable(this.table, this._segment.id).then((result) => {
+        this.ccFormVar.form.markAsPristine();
+        resolve(true);
+      }, (error) => {
+        reject(error);
+      });
+    });
   }
 
   saveButton() {
@@ -406,7 +415,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   hasChanged(): boolean {
-    return false;
+    return this.ccFormVar && this.ccFormVar.dirty;
   }
 }
 

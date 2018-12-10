@@ -1,7 +1,7 @@
-<div class="ui-g cp-header" *ngIf="elm">
+<div class="ui-g cp-header header-color" *ngIf="elm">
   <div class="ui-g-8 ui-g-nopad">
     <div class="cp-header-title ui-g-12">
-      <element-label [label]="elm.label" [domainInfo]="elm.domainInfo"></element-label><span *ngIf="elm.description">-{{elm.description}}</span>
+      <element-label [label]="elm.label" [domainInfo]="elm.domainInfo"></element-label>
       <span *ngIf="sectionTypeDisplay">
      / <i [class]="sectionTypeDisplay.icon"></i> {{sectionTypeDisplay.text}}
 
@@ -16,7 +16,7 @@
 
   <div class="ui-g-4" *ngIf="!elm.readOnly">
     <button  style="float:right" (click)="saveParent()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="!hasChanged || !canSave"></button>
-    <button  style="float:right"  (click)="resetParent()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!hasChanged||!canSave" ></button>
+    <button  style="float:right"  (click)="resetParent()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!hasChanged" ></button>
   </div>
 
 </div>

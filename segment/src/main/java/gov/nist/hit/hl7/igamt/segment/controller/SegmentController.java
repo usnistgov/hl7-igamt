@@ -39,6 +39,7 @@ import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDispla
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
@@ -217,14 +218,17 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
       produces = {"application/json"})
   @ResponseBody
-  public CoConstraintTable getCoConstraints(@PathVariable("id") String id,
-      Authentication authentication) throws CoConstraintNotFoundException {
-    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
-    if(table == null) {
-    	throw new CoConstraintNotFoundException(id);
-    } else {
-    	return table;
-    }
+  public CoConstraintTableDisplay getCoConstraints(@PathVariable("id") String id,
+      Authentication authentication) throws CoConstraintNotFoundException, SegmentNotFoundException {
+	  
+	    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
+	    
+	    Segment segment = findById(id);
+	    CoConstraintTableDisplay display= new CoConstraintTableDisplay();
+	    display.complete(display, segment, SectionType.COCONSTRAINTS, getReadOnly(authentication, segment));
+	    display.setData(table);
+	    return display;
+    
   }
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,

@@ -16,7 +16,7 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
   }
 
-  canDeactivate(component: WithSave):Promise<any>{
+  canDeactivate(component: WithSave):Promise<boolean>{
 
 
 

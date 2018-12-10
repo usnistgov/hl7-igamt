@@ -800,6 +800,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     qry.fields().include("domainInfo");
     qry.fields().include("id");
+    qry.fields().include("_class");
     qry.fields().include("name");
     qry.fields().include("description");
     qry.fields().include("ext");
