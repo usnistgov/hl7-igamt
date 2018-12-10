@@ -25,6 +25,7 @@ export class ConformanceprofileEditConformancestatementsComponent implements Wit
     conformanceprofileId:any;
     conformanceprofileConformanceStatements:any;
     backup:any;
+    changeItems=[];
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -331,15 +332,14 @@ export class ConformanceprofileEditConformancestatementsComponent implements Wit
         return this.backup;
     }
 
-    canSave(){
-        return !this.editForm.invalid;
-    }
+  canSave(){
+    return this.conformanceprofileConformanceStatements.readOnly;
+  }
+  hasChanged(){
+    return this.changeItems!=null&& this.changeItems.length>0;
+  }
 
-    hasChanged(){
-      return this.editForm&& this.editForm.touched&&this.editForm.dirty;
-
-    }
-    save(): Promise<any>{
+  save(): Promise<any>{
         return new Promise((resolve, reject)=> {
             this.conformanceProfilesService.saveConformanceProfileConformanceStatements(this.conformanceprofileId, this.conformanceprofileConformanceStatements).then(saved => {
                 this.backup = __.cloneDeep(this.conformanceprofileConformanceStatements);

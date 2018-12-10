@@ -17,7 +17,7 @@ package gov.nist.hit.hl7.igamt.common.change.entity.domain;
  */
 public enum PropertyType {
   //METDATA
-  EXT, AUTHORNOTES,
+  EXT, AUTHORNOTES,USAGENOTES,INDENTIFIER, BINDINGIDENTIFIER,
   
   //PRETEXT
   PREDEF,

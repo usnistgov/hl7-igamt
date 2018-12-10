@@ -1,22 +1,8 @@
 <div *ngIf="conformanceprofileConformanceStatements">
     <form #editForm="ngForm">
-        <div class="ui-g cp-header">
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    <h1>Conformance Statements of {{conformanceprofileConformanceStatements.name}}</h1>
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-            <span class="ig-list-date" *ngIf="conformanceprofileConformanceStatements.updateDate">
-            <i class="fa fa-calendar"></i> {{conformanceprofileConformanceStatements.updateDate}}
-          </span>
-                </div>
-            </div>
-            <div class="ui-g-4">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
-            </div>
-        </div>
+      <entity-header [elm]="conformanceprofileConformanceStatements"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()" ></entity-header>
 
+      <div class="section-content">
         <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
                 <p-table [columns]="cols" [value]="conformanceprofileConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
@@ -124,6 +110,8 @@
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
+      </div>
+
     </form>
 
     <p-dialog header="Select Context Location (Click Message or Group)" [(visible)]="selectContextDialog" [modal]="true" [responsive]="true" [width]="600" [minWidth]="200" [minY]="70">
@@ -138,4 +126,5 @@
             </ng-template>
         </p-tree>
     </p-dialog>
+
 </div>

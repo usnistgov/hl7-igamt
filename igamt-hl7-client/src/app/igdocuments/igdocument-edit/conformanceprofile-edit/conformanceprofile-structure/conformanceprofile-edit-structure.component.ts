@@ -23,7 +23,7 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     igId:any;
     conformanceprofileId:any;
     conformanceprofileStructure:any;
-    changeItems:any[];
+    changeItems:any[]=[];
     backup:any;
 
     @ViewChild('editForm')
@@ -53,6 +53,8 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
 
     reset(){
         this.conformanceprofileStructure=__.cloneDeep(this.backup);
+        this.changeItems = [];
+
         this.editForm.control.markAsPristine();
 
     }
@@ -66,12 +68,16 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     }
 
     canSave(){
-        return !this.editForm.invalid;
+        return !this.conformanceprofileStructure.readOnly;
+    }
+    hasChanged(){
+    return this.changeItems!=null&& this.changeItems.length>0;
     }
 
-    save(){
+
+  save(){
         return new Promise((resolve, reject)=> {
-            this.conformanceProfilesService.saveConformanceProfile(this.conformanceprofileId, this.igId, this.changeItems).then(saved => {
+            this.conformanceProfilesService.save(this.conformanceprofileId, this.changeItems).then(saved => {
                 this.backup = __.cloneDeep(this.conformanceprofileStructure);
                 this.changeItems = [];
                 this.editForm.control.markAsPristine();
@@ -83,9 +89,6 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
         })
     }
 
-    hasChanged(){
-        return this.editForm&& this.editForm.touched&&this.editForm.dirty;
-    }
 
     reorderCols(){
         this.selectedColumns= __.sortBy(this.selectedColumns,['position']);

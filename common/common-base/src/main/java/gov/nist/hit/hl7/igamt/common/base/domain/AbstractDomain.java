@@ -18,6 +18,8 @@ public abstract class AbstractDomain{
   private String description;
   private String createdFrom;
   private String authorNotes;
+  private String usageNotes;
+
 
   @CreatedDate
   private Date creationDate;
@@ -166,6 +168,14 @@ public String getAuthorNotes() {
 
 public void setAuthorNotes(String authorNotes) {
 	this.authorNotes = authorNotes;
+}
+
+public String getUsageNotes() {
+	return usageNotes;
+}
+
+public void setUsageNotes(String usageNotes) {
+	this.usageNotes = usageNotes;
 }
 
   
