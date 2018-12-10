@@ -384,3 +384,11 @@ body .ui-panel .ui-panel-content {
 p-dialog{
   z-index: 9999!important;
 }
+.ui-scrollpanel-content {
+  height: calc(100% + 18px);
+  width: calc(100% + 18px);
+  padding: 0 0px 0px 0;
+  position: relative;
+  overflow: auto;
+  box-sizing: border-box;
+}
