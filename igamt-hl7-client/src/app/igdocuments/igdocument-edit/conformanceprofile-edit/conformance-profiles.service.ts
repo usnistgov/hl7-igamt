@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {HttpParams} from "@angular/common/http";
+import {TocService} from "../service/toc.service";
 
 @Injectable()
 export class ConformanceProfilesService {
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private tocService:TocService) {
     }
 
     public getConformanceProfileMetadata(id): Promise<any> {
@@ -100,8 +101,11 @@ export class ConformanceProfilesService {
         return this.http.post('api/conformanceprofiles/' + id + '/conformancestatement', conformanceStatements).toPromise();
     }
 
-    public saveConformanceProfile(id, dId, cItem): Promise<any> {
-        let httpParams = new HttpParams().append("dId", dId);
-        return  this.http.post('api/conformanceprofiles/' + id + '/structure',cItem, {params:httpParams}).toPromise();
+    public save(id, cItem): Promise<any> {
+      let igId= this.tocService.getIgId();
+
+      let httpParams = new HttpParams().append("dId", igId);
+
+      return  this.http.post('api/conformanceprofiles/' + id,cItem, {params:httpParams}).toPromise();
     }
 }

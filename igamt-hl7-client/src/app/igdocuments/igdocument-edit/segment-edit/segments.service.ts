@@ -4,11 +4,12 @@ import {Router} from "@angular/router";
 import {IgErrorService} from "../ig-error/ig-error.service";
 import {LoadingService} from "../service/loading.service";
 import {HttpParams} from "@angular/common/http";
+import {TocService} from "../service/toc.service";
 
 
 @Injectable()
 export class SegmentsService {
-  constructor(private http: HttpClient, private  router:Router , private igErrorService:IgErrorService, private loadingService :LoadingService) {
+  constructor(private http: HttpClient , private igErrorService:IgErrorService, private loadingService :LoadingService, private  tocService:TocService) {
   }
 
   public getSegmentMetadata(id): Promise<any> {
@@ -114,12 +115,16 @@ export class SegmentsService {
   }
 
   public saveSegmentPreDef(id, preDef): Promise<any> {
-      return this.http.post('api/segments/' + id + '/predef', preDef).toPromise();
+    let igId= this.tocService.getIgId();
+    let httpParams = new HttpParams().append("dId", igId);
+    return  this.http.post('api/segments/' + id + '/preDef',preDef, {params:httpParams}).toPromise();
 
   }
 
   public saveSegmentPostDef(id, postDef): Promise<any> {
-      return this.http.post('api/segments/' + id + '/postdef', postDef).toPromise();
+    let igId= this.tocService.getIgId();
+    let httpParams = new HttpParams().append("dId", igId);
+    return  this.http.post('api/segments/' + id + '/postDef',postDef, {params:httpParams}).toPromise();
   }
 
   public saveSegmentDynamicMapping(id, dynamicmapping): Promise<any> {
@@ -130,12 +135,13 @@ export class SegmentsService {
     return null;
   }
 
-  public saveSegment(id, dId, cItem): Promise<any> {
-
-    let httpParams = new HttpParams().append("dId", dId);
-
-    return  this.http.post('api/segments/' + id + '/structure',cItem, {params:httpParams}).toPromise();
+  public save(id,cItem): Promise<any> {
+    let igId= this.tocService.getIgId();
+    let httpParams = new HttpParams().append("dId", igId);
+    return  this.http.post('api/segments/' + id,cItem, {params:httpParams}).toPromise();
   }
+
+
 
 
 

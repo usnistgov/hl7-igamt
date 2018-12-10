@@ -96,7 +96,7 @@ export class SegmentEditDynamicMappingComponent extends HasFroala implements Wit
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return !this.editForm.invalid;
     }
 

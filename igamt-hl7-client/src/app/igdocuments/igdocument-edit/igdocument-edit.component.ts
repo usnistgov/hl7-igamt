@@ -1,4 +1,4 @@
-import {Component, Input} from '@angular/core';
+import {Component, Input, ElementRef} from '@angular/core';
 
 import {SelectItem} from "primeng/components/common/selectitem";
 import {ViewChildren, ViewChild} from "@angular/core";
@@ -36,6 +36,10 @@ export class IgDocumentEditComponent {
   @ViewChild(AddValueSetComponent) addVs: AddValueSetComponent;
   @ViewChild(CopyElementComponent) copyElemt: CopyElementComponent;
   @ViewChild(DeleteElementComponent) deleteElement: DeleteElementComponent;
+  @ViewChild("vsLib") vsLib :ElementRef;
+  @ViewChild("dtLib") dtLib :ElementRef;
+  @ViewChild("segLib") segLib :ElementRef;
+  @ViewChild("cpLib") cpLib :ElementRef;
 
   igId:any;
   exportModel: MenuItem[];
@@ -171,7 +175,12 @@ export class IgDocumentEditComponent {
     ];
   }
 
+  scrollTo(ref: ElementRef ){
+    console.log("Scrolling");
+    console.log(ref);
+    ref.nativeElement.scrollIntoView({ behavior: "smooth", block: "start" });
 
+  }
 
 
   exportAsWord(){
@@ -511,10 +520,12 @@ export class IgDocumentEditComponent {
           datatypes.push(result);
           toDistribute.datatypes=datatypes;
           this.distributeResult(toDistribute);
-
+          this.router.navigate(["./"+"datatype"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
         }
       )
   };
+
+
 
   copySegment(node){
     let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.SEGMENTREGISTRY);
@@ -535,6 +546,8 @@ export class IgDocumentEditComponent {
           segments.push(result);
           toDistribute.segments=segments;
           this.distributeResult(toDistribute);
+          this.router.navigate(["./"+"segment"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
+
 
         }
       )
@@ -558,6 +571,8 @@ export class IgDocumentEditComponent {
           valueSets.push(result);
           toDistribute.valueSets=valueSets;
           this.distributeResult(toDistribute);
+          this.router.navigate(["./"+"valueset"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
+
 
         }
       )
@@ -565,9 +580,8 @@ export class IgDocumentEditComponent {
   };
 
   copyConformanceProfile(node){
-    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
-    //console.log(existing);
 
+    let existing=this.tocService.getNameUnicityIndicators(this.tree.treeModel.nodes,Types.CONFORMANCEPROFILEREGISTRY);
     this.copyElemt.open({
       igDocumentId : this.igId,
       id:node.data.data.id,
@@ -576,21 +590,19 @@ export class IgDocumentEditComponent {
       type:node.data.data.type,
       namingIndicators:existing
 
-    })
-      .subscribe(
+    }).subscribe(
         result => {
           let toDistribute:any={};
           let conformanceProfiles=[];
           conformanceProfiles.push(result);
           toDistribute.conformanceProfiles=conformanceProfiles;
           this.distributeResult(toDistribute);
-
+          this.router.navigate(["./"+"conformanceprofile"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
         }
       )
   }
 
   copySection(node){
-   //console.log( this.tree._options);
     this.tocService.cloneNode(node);
   }
 
@@ -614,8 +626,6 @@ export class IgDocumentEditComponent {
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
         }
       )
   };
@@ -634,9 +644,6 @@ export class IgDocumentEditComponent {
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
-
         }
       )
   };
@@ -649,14 +656,11 @@ export class IgDocumentEditComponent {
       ext:node.data.data.ext,
       type:node.data.data.type,
       node:node.data.data
-
     })
       .subscribe(
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
-
         }
       )
 
@@ -673,10 +677,8 @@ export class IgDocumentEditComponent {
     })
       .subscribe(
         id => {
-
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);
-
         }
       )
   }

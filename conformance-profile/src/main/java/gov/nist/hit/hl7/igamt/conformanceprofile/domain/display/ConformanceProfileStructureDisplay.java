@@ -15,59 +15,16 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceProfileStructureDisplay {
-  private String id;
-  private String label;
-  private String name;
-  private Scope scope;
-  private String version;
+public class ConformanceProfileStructureDisplay extends SectionInfo{
+
 
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public String getLabel() {
-    return label;
-  }
-
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Scope getScope() {
-    return scope;
-  }
-
-  public void setScope(Scope scope) {
-    this.scope = scope;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
 
   public Set<SegmentRefOrGroupStructureTreeModel> getStructure() {
     return structure;

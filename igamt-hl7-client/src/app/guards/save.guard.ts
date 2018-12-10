@@ -18,32 +18,36 @@ export class SaveFormsGuard implements CanDeactivate<WithSave> {
 
   canDeactivate(component: WithSave):Promise<any>{
 
-        if (!component.isValid()) {
-          console.log("invalid form");
 
 
-          this.confirmationService.confirm({
-            header: "Invalid Data",
-            message: "You have Invalid Data, please fix your data before leaving",
-            key: 'INVALIDDATA',
-            accept: () => {
+       if (!component.hasChanged()) {
+
+           return  Promise.resolve(true);
+
+        } else {
+         if (!component.canSave()) {
+           console.log("invalid form");
 
 
-              Promise.resolve(false);
-            },
-            reject: () => {
-              Promise.resolve(false);
-            }
-          });
-         // return this.getInvalidDataDialog(component);
+           this.confirmationService.confirm({
+             header: "Invalid Data",
+             message: "You have Invalid Data, please fix your data before leaving",
+             key: 'INVALIDDATA',
+             accept: () => {
 
-        }else if (!component.hasChanged()) {
 
-          return  Promise.resolve(true);
-        }else{
+               Promise.resolve(false);
+             },
+             reject: () => {
+               Promise.resolve(false);
+             }
+           });
+           // return this.getInvalidDataDialog(component);
 
-          return  this.getUnsavedDialog(component);
+         }else{
+           return  component.save();
 
+         }
         }
 
   }

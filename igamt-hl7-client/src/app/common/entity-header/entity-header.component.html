@@ -1,15 +1,22 @@
-<div class="h-bar">
-  <display-badge [type]="_elm.type"></display-badge> {{header()}}
-  <span class="text-small label label-green">
-    <i class="fa fa-calendar" aria-hidden="true"></i>
-    {{_elm.dateUpdated | date : 'short'}}
-  </span>
-  <span *ngIf="_elm.type != 'document'" class="text-small label label-blue">
-    <i class="fa fa-code-fork" aria-hidden="true"></i>
-    HL7 v{{_elm.hl7Version }}
-  </span>
-  <span *ngIf="_elm.type == 'document'" class="text-small label label-user">
-    <i class="fa fa-user" aria-hidden="true"></i>
-    <!--{{_elm.owner.username }}-->
-  </span>
+<div class="ui-g cp-header" *ngIf="elm">
+  <div class="ui-g-8 ui-g-nopad">
+    <div class="cp-header-title ui-g-12">
+      <element-label [label]="elm.label" [domainInfo]="elm.domainInfo"></element-label><span *ngIf="elm.description">-{{elm.description}}</span>
+      <span *ngIf="sectionTypeDisplay">
+     / <i [class]="sectionTypeDisplay.icon"></i> {{sectionTypeDisplay.text}}
+
+    </span>
+    </div>
+    <div class="ui-g-12 cp-header-subtitle" style="padding: 0px">
+            <span class="ig-list-date" *ngIf="elm.dateUpdated">
+            <i class="fa fa-calendar"></i> {{elm.dateUpdated}}
+          </span>
+    </div>
+  </div>
+
+  <div class="ui-g-4" *ngIf="!elm.readOnly">
+    <button  style="float:right" (click)="saveParent()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="!hasChanged || !canSave"></button>
+    <button  style="float:right"  (click)="resetParent()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!hasChanged||!canSave" ></button>
+  </div>
+
 </div>

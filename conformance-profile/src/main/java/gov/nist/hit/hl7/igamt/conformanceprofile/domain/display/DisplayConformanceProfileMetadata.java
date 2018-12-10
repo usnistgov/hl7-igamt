@@ -1,17 +1,16 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.model.DisplayMetadata;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 
-public class DisplayConformanceProfileMetadata {
-  private String id;
-  private DomainInfo domainInfo;
+public class DisplayConformanceProfileMetadata extends DisplayMetadata{
   private String name;
   private String identifier;
-  private String description;
   private String messageType;
   private String structId;
-  private String authorNotes;
-  private String usageNote;
+  private String event;
+
 
   public DisplayConformanceProfileMetadata() {
     super();
@@ -25,13 +24,6 @@ public class DisplayConformanceProfileMetadata {
     this.id = id;
   }
 
-  public DomainInfo getDomainInfo() {
-    return domainInfo;
-  }
-
-  public void setDomainInfo(DomainInfo domainInfo) {
-    this.domainInfo = domainInfo;
-  }
 
   public String getName() {
     return name;
@@ -49,14 +41,6 @@ public class DisplayConformanceProfileMetadata {
     this.identifier = identifier;
   }
 
-  public String getDescription() {
-    return description;
-  }
-
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
   public String getMessageType() {
     return messageType;
   }
@@ -72,22 +56,24 @@ public class DisplayConformanceProfileMetadata {
   public void setStructId(String structId) {
     this.structId = structId;
   }
+	public void complete(ConformanceProfile obj, SectionType type, boolean readOnly) {
+		super.complete(this, obj, type, readOnly);
+	
+		this.identifier=obj.getIdentifier();
+		this.messageType= obj.getMessageType();
+		this.structId=obj.getStructID();
+		this.setEvent(obj.getEvent());
+		this.name=obj.getName();
+	}
 
-  public String getAuthorNotes() {
-    return authorNotes;
-  }
+	public String getEvent() {
+		return event;
+	}
 
-  public void setAuthorNotes(String authorNotes) {
-    this.authorNotes = authorNotes;
-  }
+	public void setEvent(String event) {
+		this.event = event;
+	}
 
-  public String getUsageNote() {
-    return usageNote;
-  }
-
-  public void setUsageNote(String usageNote) {
-    this.usageNote = usageNote;
-  }
 
 
 }

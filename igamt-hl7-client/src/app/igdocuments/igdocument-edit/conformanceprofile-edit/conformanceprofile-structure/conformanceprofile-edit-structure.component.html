@@ -1,25 +1,10 @@
 <div *ngIf="conformanceprofileStructure">
     <form #editForm="ngForm">
+      <entity-header [elm]="conformanceprofileStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
-        <div class="ui-g cp-header">
+      <div class="section-content">
 
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    Conformance Profile Structure: {{conformanceprofileStructure.name}}
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-            <span class="ig-list-date" *ngIf="conformanceprofileStructure.updateDate">
-                <i class="fa fa-calendar"></i> {{conformanceprofileStructure.updateDate}}
-            </span>
-                </div>
-            </div>
-            <div class="ui-g-4">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
-                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-            </div>
-        </div>
-
-        <p-treeTable [value]="conformanceprofileStructure.structure" [scrollable]="true" [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+        <p-treeTable [value]="conformanceprofileStructure.structure" [scrollable]="true" [columns]="selectedColumns" [style]="{width:'100%'}" scrollHeight="600px">
             <ng-template pTemplate="caption">
                 <div style="text-align:right">
                     <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
@@ -97,7 +82,7 @@
                 </tr>
             </ng-template>
         </p-treeTable>
-
+      </div>
 
     </form>
 

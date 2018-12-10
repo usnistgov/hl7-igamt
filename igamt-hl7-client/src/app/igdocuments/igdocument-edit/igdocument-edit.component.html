@@ -45,11 +45,6 @@
 
     <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa fa-check"></button>
     <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
-
-    <button  (click)="print(igForm)"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o"></button>
-    <button  pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh"></button>
-
-
   </div>
 
 
@@ -58,12 +53,11 @@
 </p-toolbar>
 </div>
 <div class="ui-g">
-<div *ngIf="hideToc"  style="width: 50px">
+<div *ngIf="hideToc" style="width: 50px">
 
   <div (click)="toggleHideToc()"   class="panel-leftheading ">
     <p-header class="panel-lefttitle" pTooltip="Show TOC "  tooltipPosition="bottom" > <i class="fa fa-eye"></i>Table of Content</p-header>
   </div>
-
 
 </div>
 
@@ -71,17 +65,20 @@
   <div class="ui-g-3 no-margin" style="padding : 0; "  *ngIf="!hideToc">
   <p-panel [toggleable]="false">
     <p-header class="toc-panel-header">
+
+      <div style="height: 55px !important;">
       Table Of Content
       <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-arrow-left"  pTooltip="Hide TOC" tooltipPosition="top" (click)="toggleHideToc()"></button>
       <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
       <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
       <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
-
-
-
-
+      <span class="badge scroll-badge scroll-badge-vs"  style="float: right; cursor: pointer" type="button"  label="VS" pTooltip="Scroll to Value Set"  tooltipPosition="top"  (click)="scrollTo(vsLib)">VS</span>
+      <span class="badge scroll-badge scroll-badge-dt"  style="float: right; cursor: pointer" type="button"  label="DT" pTooltip="Scroll to Data Type"  tooltipPosition="top"  (click)="scrollTo(dtLib)">DT</span>
+      <span class="badge scroll-badge scroll-badge-s"  style="float: right; cursor: pointer" type="button"  label="S"  pTooltip="Scroll to Segment"    tooltipPosition="top"  (click)="scrollTo(segLib)">S</span>
+      <span class="badge scroll-badge scroll-badge-cp"  style="float: right;cursor: pointer" type="button"  label="CP" pTooltip="Scroll to Conformance Profile" tooltipPosition="top"  (click)="scrollTo(cpLib)">CP</span>
+      </div>
     </p-header>
-    <div style="max-height: 800px; overflow: scroll">
+    <div style="overflow: scroll; max-height: 700px;">
 
     <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
     <tree-root [nodes]="nodes"  #treeroot [options]="options">
@@ -119,22 +116,26 @@
 
 
           <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+            <div #cpLib>
             <span  [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
-
             <context-menu  #conformanceProfilesContextMenu>
               <ng-template contextMenuItem (execute)="addMessage(node)">
                 <i class="fa fa-plus"></i>Add Conformance Profile
               </ng-template>
             </context-menu>
+            </div>
           </ng-container>
 
 
 
           <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-            <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            <div #compositePLib>
+              <span> {{getPath(node)}} {{node.data.data.label}}</span>
+            </div>
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+            <div #dtLib>
             <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
 
             <context-menu  #addDatatypeContextMenu>
@@ -142,39 +143,41 @@
                 <i class="fa fa-plus"></i> Add HL7 Data Types
               </ng-template>
             </context-menu>
+            </div>
           </ng-container>
 
-
-
-          <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
-            <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
-            <context-menu  #valueSetsContextMenu>
-              <ng-template contextMenuItem (execute)="addValueSets()">
-                <i class="fa fa-plus"></i> Add Hl7 Value Sets
-              </ng-template>
-            </context-menu>
+          <ng-container *ngSwitchCase="'VALUESETREGISTRY'" >
+            <div #vsLib>
+              <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
+              <context-menu  #valueSetsContextMenu>
+                <ng-template contextMenuItem (execute)="addValueSets()">
+                  <i class="fa fa-plus"></i> Add Hl7 Value Sets
+                </ng-template>
+              </context-menu>
+            </div>
           </ng-container>
 
 
           <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
-
+          <div #segLib>
             <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
             <context-menu  #segmentContextMenu>
               <ng-template contextMenuItem (execute)="addSegments()">
                 <i class="fa fa-plus"></i> Add Segments
               </ng-template>
             </context-menu>
+          </div>
           </ng-container>
 
           <ng-container *ngSwitchCase="'DATATYPE'">
             <display-label [elm]="node.data.data" [igId]="igId"   [contextMenu]="datatypeContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #datatypeContextMenu>
               <ng-template contextMenuItem (execute)="copyDatatype(node)">
-                <i class="fa fa-copy"></i> Copy
+                <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <ng-template contextMenuItem (execute)="deleteDatatype(node)">
-                <i class="fa fa-remove"></i> Delete
-              </ng-template>
+              <!--<ng-template contextMenuItem (execute)="deleteDatatype(node)">-->
+                <!--<i class="fa fa-remove"></i> Delete-->
+              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data"  *ngIf="rla.isActive"></display-menu>
           </ng-container>
@@ -183,11 +186,11 @@
             <display-label [elm]="node.data.data" [contextMenu]="conformanceProfileContextMenu" [igId]="igId" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #conformanceProfileContextMenu>
               <ng-template contextMenuItem (execute)="copyConformanceProfile(node)">
-                <i class="fa fa-copy"></i> Copy
+                <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <ng-template contextMenuItem (execute)="deleteConformanceProfile(node)">
-                <i class="fa fa-remove"></i> Delete
-              </ng-template>
+              <!--<ng-template contextMenuItem (execute)="deleteConformanceProfile(node)">-->
+                <!--<i class="fa fa-remove"></i> Delete-->
+              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
           </ng-container>
@@ -203,11 +206,11 @@
             <display-label [elm]="node.data.data" [igId]="igId" [contextMenu]="segmentContextMenu" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
             <context-menu  #segmentContextMenu>
               <ng-template contextMenuItem (execute)="copySegment(node)">
-                <i class="fa fa-copy"></i> Copy
+                <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <ng-template contextMenuItem (execute)="deleteSegment(node)">
-                <i class="fa fa-remove"></i> Delete
-              </ng-template>
+              <!--<ng-template contextMenuItem (execute)="deleteSegment(node)">-->
+                <!--<i class="fa fa-remove"></i> Delete-->
+              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
 
@@ -216,14 +219,14 @@
           </ng-container>
 
           <ng-container *ngSwitchCase="'VALUESET'" >
-            <display-label [elm]="node.data.data" [igId]="igId" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive"></display-label>
+            <display-label [elm]="node.data.data" [igId]="igId" [routerLink]="getElementUrl(node.data.data)" routerLinkActive="active-node" #rla="routerLinkActive" [contextMenu]="valueSetContextMenu" ></display-label>
             <context-menu  #valueSetContextMenu>
               <ng-template contextMenuItem (execute)="copyValueSet(node)">
-                <i class="fa fa-copy"></i> Copy
+                <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <ng-template contextMenuItem (execute)="deleteValueSet(node)">
-                <i class="fa fa-remove"></i> Delete
-              </ng-template>
+              <!--<ng-template contextMenuItem (execute)="deleteValueSet(node)">-->
+                <!--<i class="fa fa-remove"></i> Delete-->
+              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
           </ng-container>

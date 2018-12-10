@@ -1,23 +1,8 @@
 <div *ngIf="segmentConformanceStatements">
     <form #editForm="ngForm">
-        <div class="ui-g cp-header">
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    Conformance Statements: {{segmentConformanceStatements.name}}
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-                    <span class="ig-list-date" *ngIf="segmentConformanceStatements.updateDate">
-                        <i class="fa fa-calendar"></i> {{segmentConformanceStatements.updateDate}}
-                    </span>
-                </div>
-            </div>
-            <div class="ui-g-4" *ngIf="segmentConformanceStatements.scope === 'USER'">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
-                <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
-            </div>
-        </div>
-
-        <p-accordion (onOpen)="onTabOpen($event)">
+      <entity-header [elm]="segmentConformanceStatements"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+      <div class="section-content">
+      <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
                 <p-table [columns]="cols" [value]="segmentConformanceStatements.conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
                     <ng-template pTemplate="header" let-columns>
@@ -27,7 +12,7 @@
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
                             </th>
-                            <th *ngIf="segmentConformanceStatements.scope === 'USER'" style="width:15em" pReorderableColumn>Actions</th>
+                            <th *ngIf="!segmentConformanceStatements.readOnly" style="width:15em" pReorderableColumn>Actions</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
@@ -48,13 +33,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td *ngIf="segmentConformanceStatements.scope === 'USER'">
+                            <td *ngIf="!segmentConformanceStatements.readOnly">
                                 <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'], false)"></button>
                                 <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
                             </td>
                         </tr>
                     </ng-template>
-                    <ng-template *ngIf="segmentConformanceStatements.scope === 'USER'" pTemplate="summary" let-rowData>
+                    <ng-template *ngIf="!segmentConformanceStatements.readOnly" pTemplate="summary" let-rowData>
                         <div style="text-align:left">
                             <button type="button" pButton icon="fa fa-plus" (click)="addNewCS()" label="Create New Conformance Statement"></button>
                         </div>
@@ -62,7 +47,7 @@
                 </p-table>
             </p-accordionTab>
 
-            <p-accordionTab *ngIf="segmentConformanceStatements.scope === 'USER'" header="Conformance Statement Editor" [(selected)]="editorTab">
+            <p-accordionTab *ngIf="!segmentConformanceStatements.readOnly" header="Conformance Statement Editor" [(selected)]="editorTab">
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
                         <label>Editor Type: </label>
@@ -82,5 +67,6 @@
                 <button pButton style="float: right" type="button"  class="blue-btn" icon="fa fa-plus" label="Submit" (click)="submitCS()" [disabled]="editForm.invalid"></button>
             </p-accordionTab>
         </p-accordion>
+      </div>
     </form>
 </div>

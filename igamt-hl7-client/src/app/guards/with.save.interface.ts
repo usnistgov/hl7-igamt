@@ -9,7 +9,7 @@ export interface WithSave{
   reset(): any;
   getCurrent():any;
   getBackup():any;
-  isValid(): boolean;
+  canSave(): boolean;
   hasChanged():boolean;
 }
 

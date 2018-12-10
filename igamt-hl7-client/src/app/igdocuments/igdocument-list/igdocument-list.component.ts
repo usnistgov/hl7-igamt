@@ -84,17 +84,13 @@ export class IgDocumentListComponent implements OnInit {
     this.confirmationService.confirm({
       message: 'Are you sure that you want to delete this Ig document',
       accept: () => {
-        this.http.delete('api/igdocuments/'+ig.id).toPromise().then( x =>{
-
+        this.http.delete('api/igdocuments/'+ig.id).toPromise().then( x => {
           var i= this.igs.indexOf(ig);
-
-          console.log(ig);
-
           if(i>0){
             this.igs.splice(i,1);
           }
         });
       }
     });
-  }
+  };
 }
