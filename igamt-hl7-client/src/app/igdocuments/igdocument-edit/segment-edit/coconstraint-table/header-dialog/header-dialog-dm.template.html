@@ -11,6 +11,6 @@
       <app-segment-tree [excluded]="selectedPaths" [segment]="_segment" (nodeSelect)="setNode($event)"></app-segment-tree>
     </div>
     <p-footer>
-        <button type="button" *ngIf="type && node && validateSelection()" (click)="addHeader()" class="btn btn-success" > Select </button>
+        <button type="button" [disabled]="!(type && node && validateSelection())" (click)="addHeader()" class="btn btn-success" > Select </button>
     </p-footer>
 </p-dialog>

@@ -75,6 +75,6 @@
       </form>
     </div>
     <p-footer>
-      <button type="button" class="btn btn-success" (click)="select()" *ngIf="myForm.valid"> Select </button>
+      <button type="button" class="btn btn-success" (click)="select()" [disabled]="!myForm.valid || !selectedTables || selectedTables.length === 0"> Select </button>
     </p-footer>
 </p-dialog>
