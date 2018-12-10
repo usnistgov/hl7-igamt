@@ -8,7 +8,7 @@ import {WorkspaceService} from "./service/workspace/workspace.service";
 import {NavigationStart, NavigationEnd, NavigationCancel, NavigationError, Router} from "@angular/router";
 import {ProgressHandlerService} from "./service/progress-handler.service";
 import {Message} from 'primeng/api';
-import {ClientErrorHandlerService, ErrorValue} from "./utils/client-error-handler.service";
+import {ClientErrorHandlerService} from "./utils/client-error-handler.service";
 import {RoutingStateService} from "./url/routing-state.service";
 import {ChangeDetectorRef} from '@angular/core'
 @Component({

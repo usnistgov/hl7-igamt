@@ -27,6 +27,8 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
   segmentMetadata:any;
   backup:any;
   currentNode:any;
+  changeItems: any[]=[];
+
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -62,11 +64,17 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
     return this.backup;
   }
 
-  isValid(){
-    return !this.editForm.invalid;
+  canSave(){
+    if(this.segmentMetadata.readOnly){
+      return false;
+    }else{
+     return  this.segmentMetadata.ext!==null||this.segmentMetadata !=="";
+    }
+
   }
 
   save(): Promise<any>{
+    this.createChanges(this.segmentMetadata,this.backup);
     return new Promise((resolve, reject)=>{
 
         let treeModel=this.tocService.getTreeModel();
@@ -79,9 +87,9 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
         this.tocService.setTreeModelInDB(treeModel).then(x=>{
 
 
-          this.segmentsService.saveSegmentMetadata(this.segmentId,this.segmentMetadata).then( saved => {
+          this.segmentsService.save(this.segmentId,this.changeItems).then( saved => {
 
-
+              this.segmentMetadata.label=this.segmentMetadata.name+"_"+this.segmentMetadata.ext;
             this.backup = _.cloneDeep(this.segmentMetadata);
 
             this.editForm.control.markAsPristine();
@@ -104,7 +112,35 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
   };
 
   hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+   return  this.segmentMetadata.ext !== this.backup.ext||this.segmentMetadata.authorNote!==this.backup.authorNote;
+
+  }
+
+  createChanges(elm, backup){
+    this.changeItems=[];
+
+    if(elm.ext !== backup.ext){
+
+      let obj:any={};
+      obj.location=this.segmentId;
+      obj.propertyType="EXT";
+      obj.propertyValue=elm.ext;
+      obj.oldPropertyValue=backup.ext;
+      obj.position=-1;
+      obj.changeType="UPDATE";
+      this.changeItems.push(obj);
+    }
+    if(elm.authorNote!==backup.authorNote){
+
+      let obj:any={};
+      obj.location=this.segmentId;
+      obj.propertyType="AUTHORNOTES";
+      obj.propertyValue=elm.ext;
+      obj.oldPropertyValue=backup.ext;
+      obj.position=-1;
+      obj.changeType="UPDATE";
+      this.changeItems.push(obj);
+    }
 
   }
 

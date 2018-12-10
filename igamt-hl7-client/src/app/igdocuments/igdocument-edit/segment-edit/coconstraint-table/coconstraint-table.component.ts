@@ -9,7 +9,6 @@ import {
 import {CCHeaderDialogDmComponent} from './header-dialog/header-dialog-dm.component';
 import {CoConstraintTableService} from './coconstraint-table.service';
 import {CCHeaderDialogUserComponent} from './header-dialog/header-dialog-user.component';
-import {ValidatorFn, AbstractControl, NgForm, Validators} from '@angular/forms';
 import {ValueSetBindingPickerComponent} from '../../../../common/valueset-binding-picker/valueset-binding-picker.component';
 import {ActivatedRoute} from '@angular/router';
 import {TocService} from '../../service/toc.service';
@@ -53,6 +52,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   dndGroups: boolean;
   table: CoConstraintTable;
   tableId: any;
+  display:any;
   config: any;
   activeType: string;
   ceBindingLocations: any;
@@ -71,8 +71,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   @Input() set segment(value: any) {
     this._segment = value;
     const ctrl = this;
-    this.ccTableService.getCCTableForSegment(this._segment).then(function (table) {
-      ctrl.table = table;
+    this.ccTableService.getCCTableForSegment(this._segment).then(function (display) {
+      ctrl.display= display;
+      ctrl.table = ctrl.display.data;
       ctrl.backUp = _.cloneDeep(ctrl.table);
       if (ctrl.table.segment === 'OBX') {
         ctrl.config.dynCodes = [];
@@ -113,6 +114,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   // ------ DND -----
+
   removeItem(item: any, list: any[]): void {
     list.splice(list.indexOf(item), 1);
   }
@@ -121,44 +123,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     $event.event.preventDefault();
   }
 
-  // ------ VALIDATOR -------
-  uniq(form: NgForm, field: string, key: string, exclude: string): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } => {
-      if (control.value && control.value !== '') {
-        return this.found(form, control.value, field, key, exclude) ? {unique: 'This field must be unique'} : null;
-      } else {
-        return null;
-      }
-    };
-  }
-
-  required() {
-    return Validators.required;
-  }
-
-  minimum(x: number) {
-    return Validators.min(x);
-  }
-
-
-  maximum(){
-    return Validators.pattern(/^(\*|(0|[1-9]\d*)?)$/);
-  }
-
-  found(form: NgForm, value: string, field: string, key: string, exclude: string) {
-    for (const control in form.controls) {
-      if (control.includes(key) && control.includes(field) && form.controls[control].value === value && control !== exclude) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   // ------ TEMPLATE -----
-
-  printForm(event) {
-    console.log(this.ccFormVar.isValid);
-  }
 
   headWidth(empty: boolean, x: number) {
     if (!empty) {
@@ -298,16 +263,12 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
   delCol(list: any[], i: number, column: string) {
     this.reqDel(this.table, column);
-    if(Object.keys(this.ccFormVar.controls).length === 0){
-      this.ccFormVar.resetForm();
-    }
     list.splice(i, 1);
   }
 
   reqDel(obj, key) {
     if (obj.content.free) {
       for (const cc of obj.content.free) {
-        this.removeControlFromForm(cc.id + '-' + key);
         delete cc[key];
       }
     }
@@ -319,51 +280,11 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   delRow(list: any[], i: number) {
-    this.removeControlFromForm(list[i].id);
-    if(Object.keys(this.ccFormVar.controls).length === 0){
-      this.ccFormVar.resetForm();
-    }
     list.splice(i, 1);
-  }
-
-  removeControlFromForm(id: string) {
-
-    for (const x in this.ccFormVar.controls) {
-
-      if (x.includes(id)) {
-        delete this.ccFormVar.controls[x];
-      }
-    }
-  }
-
-  removeControlFromFormGrp(group: CCGroup, i: number) {
-    this.removeControlFromForm('group' + i);
-    if (group.content.free) {
-      for (const cc of group.content.free) {
-        this.removeControlFromForm(cc.id);
-      }
-    }
-    if (group.content.groups) {
-      let i = 0;
-      for (const gr of group.content.groups) {
-        this.removeControlFromFormGrp(gr, i++);
-      }
-    }
   }
 
   addCc(list: any[]) {
     list.push(this.ccTableService.new_line(this.table.headers.selectors, this.table.headers.data, this.table.headers.user));
-  }
-
-  formStatus(){
-    let bool = true;
-    for(const x in this.ccFormVar.controls) {
-
-      bool = bool && this.ccFormVar.controls[x].valid;
-
-    }
-
-    return bool;
   }
 
   initColumn(obj) {
@@ -403,10 +324,6 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   delGroup(list: any[], i: number) {
-    this.removeControlFromFormGrp(list[i], i);
-    if(Object.keys(this.ccFormVar.controls).length === 0){
-      this.ccFormVar.resetForm();
-    }
     list.splice(i, 1);
   }
 
@@ -414,16 +331,8 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     node.value = '';
   }
 
-  main() {
-    console.log(JSON.stringify(this.table));
-  }
-
   getLocationForCoded(version) {
     return this.configService.getValuesetLocationsForCE(version);
-  }
-
-  print(x) {
-    console.log(x);
   }
 
   ngOnInit() {
@@ -467,7 +376,6 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
   }
 
-
   getBackup(): any {
     return this.backUp;
   }
@@ -476,8 +384,8 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     return this.table;
   }
 
-  isValid(): boolean {
-    return this.ccFormVar && this.ccFormVar.valid;
+  canSave(): boolean {
+    return  this.display&&!this.display.readOnly;
   }
 
   reset(): any {
@@ -485,7 +393,14 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   }
 
   save(): Promise<any> {
-    return this.ccTableService.saveCoConstraintTable(this.table, this._segment.id);
+    return new Promise((resolve, reject) => {
+      this.ccTableService.saveCoConstraintTable(this.table, this._segment.id).then((result) => {
+        this.ccFormVar.form.markAsPristine();
+        resolve(true);
+      }, (error) => {
+        reject(error);
+      });
+    });
   }
 
   saveButton() {
@@ -498,8 +413,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
     });
   }
+
   hasChanged(): boolean {
-    return false;
+    return this.ccFormVar && this.ccFormVar.dirty;
   }
 }
 

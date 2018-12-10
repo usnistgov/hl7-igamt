@@ -52,7 +52,7 @@ export class LibDatatypeEditPostdefComponent extends HasFroala implements WithSa
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return !this.editForm.invalid;
     }
 

@@ -43,6 +43,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
@@ -237,7 +238,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setMessageType(conformanceProfile.getMessageType());
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
-      result.setAuthorNotes(conformanceProfile.getComment());
+     // result.setAuthorNotes(conformanceProfile.getComment());
       return result;
     }
     return null;
@@ -291,17 +292,22 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile) {
+      ConformanceProfile conformanceProfile, boolean readOnly) {
     if (conformanceProfile != null) {
       ConformanceProfileConformanceStatement result = new ConformanceProfileConformanceStatement();
-      result.setDomainInfo(conformanceProfile.getDomainInfo());
-      result.setId(conformanceProfile.getId());
+      result.complete(result, conformanceProfile, SectionType.CONFORMANCESTATEMENTS, readOnly);
       result.setIdentifier(conformanceProfile.getIdentifier());
       result.setMessageType(conformanceProfile.getMessageType());
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
       result.setChildren(conformanceProfile.getChildren());
-      result.setConformanceStatements(conformanceProfile.getBinding().getConformanceStatements());
+      Set<ConformanceStatement> cfs= new HashSet<ConformanceStatement>();
+      if(conformanceProfile.getBinding()!=null) {
+    	  if(conformanceProfile.getBinding().getConformanceStatements() !=null) {
+    		  cfs=conformanceProfile.getBinding().getConformanceStatements();
+    	  	}
+      }
+      result.setConformanceStatements(cfs);
       return result;
     }
     return null;
@@ -563,16 +569,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    */
   @Override
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(
-      ConformanceProfile conformanceProfile) {
+      ConformanceProfile conformanceProfile, boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
     HashMap<String, Segment> segmentsMap = new HashMap<String, Segment>();
 
     ConformanceProfileStructureDisplay result = new ConformanceProfileStructureDisplay();
-    result.setId(conformanceProfile.getId());
-    result.setScope(conformanceProfile.getDomainInfo().getScope());
-    result.setVersion(conformanceProfile.getDomainInfo().getVersion());
-    result.setName(conformanceProfile.getName());
+    result.complete(result, conformanceProfile, SectionType.STRUCTURE, readOnly);
     String label = conformanceProfile.getName();
     if (conformanceProfile.getIdentifier() != null)
       label = label + "-" + conformanceProfile.getIdentifier();
@@ -919,7 +922,25 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.USAGE)) {
+    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
+    		item.setOldPropertyValue(cp.getPreDef());
+    		cp.setPreDef((String)item.getPropertyValue());
+    	
+    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
+    		item.setOldPropertyValue(cp.getPostDef());
+    		cp.setPostDef((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+    		item.setOldPropertyValue(cp.getAuthorNotes());
+    		cp.setAuthorNotes((String)item.getPropertyValue());
+    	}
+    	else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+    		item.setOldPropertyValue(cp.getUsageNotes());
+    		cp.setUsageNotes((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.INDENTIFIER)) {
+    		item.setOldPropertyValue(cp.getIdentifier());
+    		cp.setIdentifier((String)item.getPropertyValue());
+    	}
+    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null) {
           item.setOldPropertyValue(srog.getUsage());

@@ -17,61 +17,92 @@ import {HasFroala} from "../../../../configuration/has-froala";
   templateUrl : './datatype-edit-postdef.component.html',
   styleUrls : ['./datatype-edit-postdef.component.css']
 })
+
 export class DatatypeEditPostdefComponent extends HasFroala implements WithSave  {
-    currentUrl:any;
-    datatypeId:any;
-    datatypePostdef:any;
-    backup:any;
+  currentUrl:any;
 
-    @ViewChild('editForm')
-    private editForm: NgForm;
+  datatypeId:any;
+  current:any;
+  backup:any;
+  changeItems: any[]=[];
 
-    constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private http:HttpClient, private igErrorService:IgErrorService){
-        super();
-    }
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
-    ngOnInit() {
-        this.datatypeId = this.route.snapshot.params["datatypeId"];
-        this.route.data.map(data =>data.datatypePostdef).subscribe(x=>{
-            this.backup=x;
-            this.datatypePostdef=_.cloneDeep(this.backup);
-        });
-    }
+  constructor(private route: ActivatedRoute, private  router : Router, private datatypesService : DatatypesService, private http:HttpClient,private igErrorService:IgErrorService){
 
-    reset(){
-        this.datatypePostdef=_.cloneDeep(this.backup);
-        this.editForm.control.markAsPristine();
+    super();
+    router.events.subscribe(event => {
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+      }
+    });
+  }
 
-    }
+  ngOnInit() {
+    this.datatypeId
+      = this.route.snapshot.params["datatypeId"];
+    this.route.data.map(data =>data.datatypePostdef).subscribe(x=>{
+      this.backup=x;
+      this.current=_.cloneDeep(this.backup);
+    });
+  }
 
-    getCurrent(){
-        return  this.datatypePostdef;
-    }
+  reset(){
 
-    getBackup(){
-        return this.backup;
-    }
+    this.current=_.cloneDeep(this.backup);
 
-    isValid(){
-        return !this.editForm.invalid;
-    }
-    hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+  }
 
-    }
+  getCurrent(){
+    return  this.current;
+  }
 
-    save(): Promise<any>{
-        return new Promise((resolve, reject)=> {
-            this.datatypesService.saveDatatypePostDef(this.datatypeId, this.datatypePostdef).then(saved => {
-                    this.backup = _.cloneDeep(this.datatypePostdef);
-                    this.editForm.control.markAsPristine();
-                    resolve(true);
-                }, error => {
-                    console.log("error saving");
-                    reject(error);
-                }
+  getBackup(){
+    return this.backup;
+  }
 
-            );
-        })
-    }
+  canSave(){
+
+    return !this.current.readOnly;
+
+
+  }
+
+  save(): Promise<any> {
+
+    this.createChanges(this.current,this.backup);
+    console.log("saving");
+    return new Promise((resolve, reject) => {
+
+      this.datatypesService.save( this.datatypeId,this.changeItems).then(saved => {
+
+        this.backup = _.cloneDeep(this.current);
+
+        //this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+
+        console.log("error saving");
+        reject(error);
+
+      });
+    });
+  }
+  hasChanged(){
+    return  this.backup.text != this.current.text;
+  }
+
+  createChanges(elm, backup){
+    this.changeItems=[];
+    let obj:any={};
+    obj.location= this.datatypeId;
+    obj.propertyType="POSTDEF";
+    obj.propertyValue=elm.text;
+    obj.oldPropertyValue=backup.text;
+    obj.position=-1;
+    obj.changeType="UPDATE";
+    this.changeItems.push(obj);
+  }
 }

@@ -89,7 +89,7 @@ public interface ConformanceProfileService {
       ConformanceProfile conformanceProfile);
 
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile);
+      ConformanceProfile conformanceProfile, boolean readOnly);
 
 
   public void validate(DisplayConformanceProfileMetadata metadata)
@@ -160,7 +160,7 @@ public interface ConformanceProfileService {
    * @param conformanceProfile
    * @return
    */
-  public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile);
+  public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile, boolean readOnly);
   
   public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 

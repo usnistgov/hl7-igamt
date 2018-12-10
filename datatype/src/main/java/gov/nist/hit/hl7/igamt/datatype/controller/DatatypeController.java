@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -21,7 +22,9 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -29,19 +32,19 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-
-
 
 @RestController
 public class DatatypeController extends BaseController {
@@ -72,7 +75,7 @@ public class DatatypeController extends BaseController {
   public DatatypeStructureDisplay getDatatypeStructure(@PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
-    return datatypeService.convertDomainToStructureDisplay(datatype);
+    return datatypeService.convertDomainToStructureDisplay(datatype, getReadOnly(authentication, datatype));
 
   }
 
@@ -88,38 +91,62 @@ public class DatatypeController extends BaseController {
 
   @RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.GET,
       produces = {"application/json"})
-  public DisplayMetadata getDatatypeMetadata(@PathVariable("id") String id,
+  public DatatypeDisplayMetadata getDatatypeMetadata(@PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
-    Datatype Datatype = findById(id);
-    return datatypeService.convertDomainToMetadata(Datatype);
+    Datatype datatype = findById(id);
+    DatatypeDisplayMetadata display= new DatatypeDisplayMetadata();
+    display.complete(datatype, SectionType.METADATA, getReadOnly(authentication, datatype));
+    return display;
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public PreDef getDatatypePredef(@PathVariable("id") String id, Authentication authentication)
+  public DefinitionDisplay getDatatypePredef(@PathVariable("id") String id, Authentication authentication)
       throws DatatypeNotFoundException {
-    Datatype Datatype = findById(id);
-    return datatypeService.convertDomainToPredef(Datatype);
-
-  }
-
+	  
+	  
+    Datatype datatype = findById(id);
+    DefinitionDisplay display= new DefinitionDisplay();
+    display.build(datatype, SectionType.PREDEF, getReadOnly(authentication, datatype));
+    return display;
+}
+ 
+  private boolean getReadOnly(Authentication authentication, Datatype elm) {
+	// TODO Auto-generated method stub
+	if(elm.getUsername() ==null) {
+		return true;
+	}else {
+		return !elm.getUsername().equals(authentication.getName());
+	}
+	
+}
+ 
   @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public PostDef getDatatypePostdef(@PathVariable("id") String id, Authentication authentication)
+  public DefinitionDisplay getDatatypePostdef(@PathVariable("id") String id, Authentication authentication)
       throws DatatypeNotFoundException {
-    Datatype Datatype = findById(id);
-    return datatypeService.convertDomainToPostdef(Datatype);
+	   Datatype datatype = findById(id);
+	    DefinitionDisplay display= new DefinitionDisplay();
+	    display.build(datatype, SectionType.POSTDEF, getReadOnly(authentication, datatype));
+	    return display;
 
   }
 
   @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.GET,
       produces = {"application/json"})
-  public DatatypeConformanceStatement getDatatypeConformanceStatement(@PathVariable("id") String id,
+  public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
-    return datatypeService.convertDomainToConformanceStatement(datatype);
+    
+    ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
+    Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
+    if(datatype.getBinding() !=null) {
+    	cfs=datatype.getBinding().getConformanceStatements();
+    }
+    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs);
+    return  conformanceStatementDisplay;
   }
 
 
@@ -141,15 +168,6 @@ public class DatatypeController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, datatype.getUpdateDate());
   }
 
-
-  @RequestMapping(value = "/api/datatypes/{id}/metadata", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveDatatypeMetadata(@PathVariable("id") String id,
-      @RequestBody DisplayMetadata displayMetadata, Authentication authentication)
-      throws ValidationException, DatatypeNotFoundException {
-    Datatype Datatype = datatypeService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id, Datatype.getUpdateDate());
-  }
 
 
   @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.POST,
@@ -184,7 +202,7 @@ public class DatatypeController extends BaseController {
   }
 
 
-  @RequestMapping(value = "/api/datatypes/{id}/structure", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST,
       produces = {"application/json"})
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,

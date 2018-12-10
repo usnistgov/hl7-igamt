@@ -264,19 +264,12 @@ public class CrudServiceImpl implements CrudService {
                   reg.getChildren().size() + 1);
               ret.getDatatypes().add(datatype);
               reg.getChildren().add(link);
-            } else {
-              System.out.println(datatype.getName());
-              System.out.println(datatype.getDomainInfo().getVersion());
-              System.out.println(datatype.getDomainInfo().getScope());
-
-
             }
           }
         }
       }
     }
     return ret;
-
   }
 
 
@@ -319,7 +312,6 @@ public class CrudServiceImpl implements CrudService {
         }
       }
     }
-
   }
 
 
@@ -394,12 +386,10 @@ public class CrudServiceImpl implements CrudService {
     orderRegistry(ig.getDatatypeRegistry(), ordredDatatypes);
 
     List<AbstractDomain> orderdValueSet = ret.getValueSets().stream()
-        .sorted((Valueset t1, Valueset t2) -> t1.getName().compareTo(t2.getName()))
+        .sorted((Valueset t1, Valueset t2) -> t1.getBindingIdentifier().compareTo(t2.getBindingIdentifier()))
         .collect(Collectors.toList());
 
     orderRegistry(ig.getValueSetRegistry(), orderdValueSet);
-
-
     return ig.getId();
   }
 
@@ -410,14 +400,9 @@ public class CrudServiceImpl implements CrudService {
   private void orderRegistry(Registry registry, List<AbstractDomain> list) {
     // TODO Auto-generated method stub
     HashMap<String, Integer> orderMap = new HashMap<String, Integer>();
-    System.out.println(registry.getType());
-    System.out.println(registry.getChildren().size());
-    System.out.println(list.size());
-
     for (int i = 0; i < list.size(); i++) {
       orderMap.put(list.get(i).getId(), i + 1);
     }
-
     for (Link link : registry.getChildren()) {
       link.setPosition(orderMap.get(link.getId()));
     }

@@ -20,8 +20,10 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
@@ -40,6 +42,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 
 @RestController
@@ -57,13 +60,23 @@ public class ConformanceProfileController extends BaseController {
     // TODO Auto-generated constructor stub
   }
 
+  private boolean getReadOnly(Authentication authentication, ConformanceProfile cp) {
+		// TODO Auto-generated method stub
+		if(cp.getUsername() ==null) {
+			return true;
+		}else {
+			return !cp.getUsername().equals(authentication.getName());
+		}
+		
+	}
   @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.GET,
       produces = {"application/json"})
 
   public ConformanceProfileStructureDisplay getConformanceProfileStructure(
       @PathVariable("id") String id, Authentication authentication) {
     ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
-    return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile);
+    
+    return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile,getReadOnly(authentication, conformanceProfile));
 
   }
   
@@ -84,29 +97,33 @@ public class ConformanceProfileController extends BaseController {
       @PathVariable("id") String id, Authentication authentication)
       throws ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = findById(id);
-    return conformanceProfileService.convertDomainToMetadata(conformanceProfile);
-
+    DisplayConformanceProfileMetadata display =new DisplayConformanceProfileMetadata();
+    display.complete(conformanceProfile, SectionType.METADATA, getReadOnly(authentication, conformanceProfile));
+    return display;
   }
 
   @RequestMapping(value = "/api/conformanceprofiles/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public DisplayConformanceProfilePreDef getConformanceProfilePredef(@PathVariable("id") String id,
+  public DefinitionDisplay getConformanceProfilePredef(@PathVariable("id") String id,
       Authentication authentication) throws ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = findById(id);
-    return conformanceProfileService.convertDomainToPredef(conformanceProfile);
+    DefinitionDisplay display= new DefinitionDisplay();
+    display.build(conformanceProfile, SectionType.PREDEF, getReadOnly(authentication, conformanceProfile));
+    return display;
 
   }
 
   @RequestMapping(value = "/api/conformanceprofiles/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public DisplayConformanceProfilePostDef getConformanceProfilePostdef(
+  public DefinitionDisplay getConformanceProfilePostdef(
       @PathVariable("id") String id, Authentication authentication)
       throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = findById(id);
-    return conformanceProfileService.convertDomainToPostdef(conformanceProfile);
-
+	    ConformanceProfile conformanceProfile = findById(id);
+	    DefinitionDisplay display= new DefinitionDisplay();
+	    display.build(conformanceProfile, SectionType.POSTDEF, getReadOnly(authentication, conformanceProfile));
+	    return display;
   }
 
   @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement",
@@ -116,7 +133,7 @@ public class ConformanceProfileController extends BaseController {
       @PathVariable("id") String id, Authentication authentication)
       throws ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = findById(id);
-    return conformanceProfileService.convertDomainToConformanceStatement(conformanceProfile);
+    return conformanceProfileService.convertDomainToConformanceStatement(conformanceProfile, getReadOnly(authentication, conformanceProfile));
 
   }
 
@@ -189,7 +206,7 @@ public class ConformanceProfileController extends BaseController {
     this.conformanceProfileService = conformanceProfileService;
   }
 
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/structure", method = RequestMethod.POST,
+  @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.POST,
       produces = {"application/json"})
   @ResponseBody
   public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
@@ -203,7 +220,7 @@ public class ConformanceProfileController extends BaseController {
     entityChangeDomain.setDocumentId(documentId);
     entityChangeDomain.setDocumentType(DocumentType.IG);
     entityChangeDomain.setTargetId(id);
-    entityChangeDomain.setTargetType(EntityType.DATATYPE);
+    entityChangeDomain.setTargetType(EntityType.CONFORMANCEPROFILE);
     entityChangeDomain.setChangeItems(cItems);
     entityChangeDomain.setTargetVersion(cp.getVersion());
     entityChangeService.save(entityChangeDomain);

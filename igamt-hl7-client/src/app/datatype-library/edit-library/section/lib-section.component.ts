@@ -80,7 +80,7 @@ export class LibSectionComponent extends HasFroala implements OnInit, WithSave {
     return this.backup;
   }
 
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
 

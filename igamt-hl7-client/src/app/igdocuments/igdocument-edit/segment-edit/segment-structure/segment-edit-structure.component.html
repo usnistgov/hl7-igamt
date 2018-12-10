@@ -1,23 +1,10 @@
 <div *ngIf="segmentStructure">
     <form #editForm="ngForm">
-        <div class="ui-g cp-header">
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    Segment Structure: {{segmentStructure.label}}
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-                    <span class="ig-list-date" *ngIf="segmentStructure.updateDate">
-                        <i class="fa fa-calendar"></i> {{segmentStructure.updateDate}}
-                    </span>
-                </div>
-            </div>
-            <div class="ui-g-4" *ngIf="segmentStructure.scope === 'USER'">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
-                <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
-            </div>
-        </div>
 
-        <p-treeTable *ngIf="segmentStructure.scope === 'USER'" [value]="segmentStructure.structure" [scrollable]="true"  [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+      <entity-header [elm]="segmentStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+
+      <div class="section-content">
+      <p-treeTable *ngIf="!segmentStructure.readOnly" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="600px">
             <ng-template pTemplate="caption">
                 <div style="text-align:right">
                     <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
@@ -94,7 +81,7 @@
             </ng-template>
         </p-treeTable>
 
-        <p-treeTable *ngIf="segmentStructure.scope !== 'USER'" [value]="segmentStructure.structure" [scrollable]="true"  [reorderableColumns]="true" [columns]="selectedColumns" [style]="{width:'100%'}">
+        <p-treeTable *ngIf="segmentStructure.readOnly" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}" scrollHeight="600px">
             <ng-template pTemplate="caption">
                 <div style="text-align:right">
                     <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
@@ -165,5 +152,6 @@
                 </tr>
             </ng-template>
         </p-treeTable>
+      </div>
     </form>
 </div>

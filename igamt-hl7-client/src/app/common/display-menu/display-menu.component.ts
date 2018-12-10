@@ -69,11 +69,11 @@ export class DisplayMenuComponent {
 
       ret.push( new SubMenu("coConstraint"+"/"+this.elm.id,"coConstraint","Co-Constraint", "fa fa-table"));
 
-      ret.push( new SubMenu("dynamicMapping"+"/"+this.elm.id,"dynamicMapping","Dynamic Mapping", "fa fa-table"));
+     // ret.push( new SubMenu("dynamicMapping"+"/"+this.elm.id,"dynamicMapping","Dynamic Mapping", "fa fa-table"));
 
     }
 
-    ret.push(  new SubMenu("crossRef"+"/"+this.elm.id,"crossRef","Cross Reference", "fa fa-list"));
+   // ret.push(  new SubMenu("crossRef"+"/"+this.elm.id,"crossRef","Cross Reference", "fa fa-list"));
 
 
   return ret;

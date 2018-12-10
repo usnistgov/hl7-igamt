@@ -3,36 +3,19 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 
 
 
-public class ConformanceProfileConformanceStatement {
-  private String id;
-  private DomainInfo domainInfo;
+public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String name;
   private String identifier;
   private String messageType;
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
   private Set<SegmentRefOrGroup> children;
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public DomainInfo getDomainInfo() {
-    return domainInfo;
-  }
-
-  public void setDomainInfo(DomainInfo domainInfo) {
-    this.domainInfo = domainInfo;
-  }
 
   public String getName() {
     return name;

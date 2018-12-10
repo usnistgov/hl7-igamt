@@ -1,21 +1,6 @@
 <div *ngIf="datatypeConformanceStatements">
     <form #editForm="ngForm">
-        <div class="ui-g cp-header">
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    Conformance Statements: {{datatypeConformanceStatements.name}}
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-                    <span class="ig-list-date" *ngIf="datatypeConformanceStatements.updateDate">
-                        <i class="fa fa-calendar"></i> {{datatypeConformanceStatements.updateDate}}
-                    </span>
-                </div>
-            </div>
-            <div class="ui-g-4" *ngIf="datatypeConformanceStatements.scope === 'USER'">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid || changeItems.length === 0"></button>
-                <button  style="float:right" (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!editForm.dirty" ></button>
-            </div>
-        </div>
+      <entity-header [elm]="datatypeConformanceStatements"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
         <p-accordion (onOpen)="onTabOpen($event)">
             <p-accordionTab header="List of Conformance Statements" [(selected)]="listTab">
@@ -27,7 +12,7 @@
                                 {{col.header}}
                                 <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
                             </th>
-                            <th *ngIf="datatypeConformanceStatements.scope === 'USER'" style="width:15em" pReorderableColumn>Actions</th>
+                            <th *ngIf="!datatypeConformanceStatements.readOnly" style="width:15em" pReorderableColumn>Actions</th>
                         </tr>
                     </ng-template>
                     <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
@@ -48,13 +33,13 @@
                                     </div>
                                 </div>
                             </td>
-                            <td *ngIf="datatypeConformanceStatements.scope === 'USER'">
+                            <td *ngIf="!datatypeConformanceStatements.readOnly">
                                 <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteCS(rowData['identifier'], false)"></button>
                                 <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-pencil" label="Edit" (click)="selectCS(rowData)"></button>
                             </td>
                         </tr>
                     </ng-template>
-                    <ng-template *ngIf="datatypeConformanceStatements.scope === 'USER'" pTemplate="summary" let-rowData>
+                    <ng-template *ngIf="!datatypeConformanceStatements.readOnly" pTemplate="summary" let-rowData>
                         <div style="text-align:left">
                             <button type="button" pButton icon="fa fa-plus" (click)="addNewCS()" label="Create New Conformance Statement"></button>
                         </div>
@@ -62,7 +47,7 @@
                 </p-table>
             </p-accordionTab>
 
-            <p-accordionTab *ngIf="datatypeConformanceStatements.scope === 'USER'" header="Conformance Statement Editor" [(selected)]="editorTab">
+            <p-accordionTab *ngIf="!datatypeConformanceStatements.readOnly" header="Conformance Statement Editor" [(selected)]="editorTab">
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
                         <label>Editor Type: </label>

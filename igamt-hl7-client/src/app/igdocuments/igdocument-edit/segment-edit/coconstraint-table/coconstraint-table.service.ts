@@ -13,6 +13,12 @@ import {HttpClient} from '@angular/common/http';
  * Created by hnt5 on 10/11/17.
  */
 
+export interface CoConstraintDisplay {
+  data : CoConstraintTable,
+  [index : string] : any
+}
+
+
 @Injectable()
 export class CoConstraintTableService {
 
@@ -20,19 +26,21 @@ export class CoConstraintTableService {
                 private tocService: TocService) {}
 
 
-    async getCCTableForSegment(segment: any): Promise<CoConstraintTable> {
+    async getCCTableForSegment(segment: any): Promise<CoConstraintDisplay> {
         if (!segment) {
             return null;
         } else {
-            const table: CoConstraintTable = await this.fetch_coconstraint_table(segment.id);
-            if (!table) {
+            const display: CoConstraintDisplay = await this.fetch_coconstraint_table(segment.id);
+            if (!display.data) {
                 if (segment.name === 'OBX') {
-                  return await this.generate_obx_table(segment);
+                  display.data = await this.generate_obx_table(segment);
+                  return display;
                 } else {
-                  return this.generate_generic_table(segment.name);
+                  display.data = this.generate_generic_table(segment.name);
+                  return display;
                 }
             } else {
-              return table;
+              return display;
             }
         }
     }
@@ -153,7 +161,7 @@ export class CoConstraintTableService {
 
     async fetch_coconstraint_table(id: string)  {
       try {
-        const table: CoConstraintTable = await this.$http.get<CoConstraintTable>('api/segments/' + id + '/coconstraints').toPromise();
+        const table: CoConstraintDisplay = await this.$http.get<CoConstraintDisplay>('api/segments/' + id + '/coconstraints').toPromise();
         return table;
       } catch (e) {
         return null;

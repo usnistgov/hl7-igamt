@@ -12,7 +12,6 @@ import {HasFroala} from "../../../configuration/has-froala";
 @Component({
   templateUrl: './section.component.html',
 
-
 })
 
 export class SectionComponent extends HasFroala implements OnInit, WithSave {
@@ -100,7 +99,7 @@ export class SectionComponent extends HasFroala implements OnInit, WithSave {
     return this.backup;
   }
 
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
 

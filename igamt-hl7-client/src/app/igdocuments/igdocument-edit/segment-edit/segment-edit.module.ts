@@ -47,6 +47,9 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
 import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
 import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
 import {MultiSelectModule} from 'primeng/multiselect';
+import {UniqueCoConstraintDirective} from '../../../formValidators/unique-coconstraint.directive';
+import {MaxCardinalityDirective} from '../../../formValidators/max-cardinality.directive';
+import {MinCardinalityDirective} from '../../../formValidators/min-cardinality.directive';
 
 @NgModule({
     imports: [
@@ -68,17 +71,19 @@ import {MultiSelectModule} from 'primeng/multiselect';
         DataListModule,
         MultiSelectModule,
         RadioButtonModule,
-      DragDropModule,
-      OrganizationChartModule,
+        DragDropModule,
+        OrganizationChartModule,
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
         MessageModule
     ],
-  exports:[CoConstraintTableComponent],
+  exports: [CoConstraintTableComponent, UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective],
 
     providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
-    declarations: [ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
+    declarations: [
+      UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective,
+      ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class SegmentEditModule {}

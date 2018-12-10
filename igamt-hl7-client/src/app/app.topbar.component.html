@@ -4,11 +4,11 @@
   <span style="color:#F3C60D; font-size: 24px; font-weight: 900">IGAMT </span>
 
 
-    <a id="menu-button" href="#" (click)="app.onMenuButtonClick($event)">
+    <a id="menu-button" (click)="app.onMenuButtonClick($event)">
         <i class="fa fa-align-left"></i>
     </a>
 
-    <a href="#" class="profile" (click)="app.onTopbarMenuButtonClick($event)">
+    <a  class="profile" (click)="app.onTopbarMenuButtonClick($event)">
         <span class="username">{{getUsername()}} </span>
         <img src="assets/layout/images/avatar/avatar1.png" alt="apollo-layout" />
         <i class="fa fa-angle-down"></i>

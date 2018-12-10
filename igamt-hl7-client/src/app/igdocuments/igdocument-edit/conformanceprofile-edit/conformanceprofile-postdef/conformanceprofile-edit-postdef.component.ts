@@ -7,7 +7,7 @@ import 'rxjs/add/operator/filter';
 import {HttpClient} from "@angular/common/http";
 import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
-import * as __ from 'lodash';
+import * as _ from 'lodash';
 import {ConformanceProfilesService} from "../conformance-profiles.service";
 import {HasFroala} from "../../../../configuration/has-froala";
 
@@ -15,59 +15,90 @@ import {HasFroala} from "../../../../configuration/has-froala";
     templateUrl : './conformanceprofile-edit-postdef.component.html',
     styleUrls : ['./conformanceprofile-edit-postdef.component.css']
 })
-
 export class ConformanceprofileEditPostdefComponent extends  HasFroala implements WithSave {
-    currentUrl:any;
-    conformanceprofileId:any;
-    conformanceprofilePostdef:any;
-    backup:any;
+  currentUrl:any;
+  conformanceprofileId:any;
+  current:any;
+  backup:any;
+  changeItems: any[]=[];
 
-    @ViewChild('editForm')
-    private editForm: NgForm;
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private http:HttpClient){
-        super();
-    }
+  constructor(private route: ActivatedRoute, private  router : Router, private conformanceProfilesService : ConformanceProfilesService, private http:HttpClient){
 
-    ngOnInit() {
-        this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
-        this.route.data.map(data =>data.conformanceprofilePostdef).subscribe(x=>{
-            this.backup=x;
-            this.conformanceprofilePostdef=__.cloneDeep(this.backup);
-        });
-    }
+    super();
+    router.events.subscribe(event => {
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+      }
+    });
+  }
 
-    reset(){
-        this.conformanceprofilePostdef=__.cloneDeep(this.backup);
-        this.editForm.control.markAsPristine();
+  ngOnInit() {
+    this.conformanceprofileId = this.route.snapshot.params["conformanceprofileId"];
+    this.route.data.map(data =>data.conformanceprofilePostdef).subscribe(x=>{
+      this.backup=x;
+      this.current=_.cloneDeep(this.backup);
+    });
+  }
 
-    }
+  reset(){
 
-    getCurrent(){
-        return  this.conformanceprofilePostdef;
-    }
+    this.current=_.cloneDeep(this.backup);
 
-    getBackup(){
-        return this.backup;
-    }
+  }
 
-    isValid(){
-        return !this.editForm.invalid;
-    }
-    hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
-    }
-    save(): Promise<any>{
-        return new Promise((resolve, reject)=> {
-            this.conformanceProfilesService.saveConformanceProfilePostDef(this.conformanceprofileId, this.conformanceprofilePostdef).then(saved => {
-                    this.backup = __.cloneDeep(this.conformanceprofilePostdef);
-                    this.editForm.control.markAsPristine();
-                    resolve(true);
-                }, error => {
-                    console.log("error saving");
-                    reject();
-                }
-            );
-        })
-    }
+  getCurrent(){
+    return  this.current;
+  }
+
+  getBackup(){
+    return this.backup;
+  }
+
+  canSave(){
+
+    return !this.current.readOnly;
+
+
+  }
+
+  save(): Promise<any> {
+
+    this.createChanges(this.current,this.backup);
+    console.log("saving");
+    return new Promise((resolve, reject) => {
+
+      this.conformanceProfilesService.save(this.conformanceprofileId,this.changeItems).then(saved => {
+
+        this.backup = _.cloneDeep(this.current);
+
+        //this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+
+        console.log("error saving");
+        reject(error);
+
+      });
+    });
+  }
+  hasChanged(){
+    return  this.backup.text != this.current.text;
+  }
+
+  createChanges(elm, backup){
+    this.changeItems=[];
+    let obj:any={};
+    obj.location=this.conformanceprofileId;
+    obj.propertyType="POSTDEF";
+    obj.propertyValue=elm.text;
+    obj.oldPropertyValue=backup.text;
+    obj.position=-1;
+    obj.changeType="UPDATE";
+    this.changeItems.push(obj);
+  }
 }
+

@@ -22,7 +22,16 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
  */
 public interface CommonService {
 
-  public void checkRight(Authentication auth, AbstractDomain obj)
-      throws ForbiddenOperationException;
+ 
+
+
+void checkAuthority(Authentication auth, String role) throws ForbiddenOperationException;
+
+void checkOwnerShip(Authentication auth, AbstractDomain obj) throws ForbiddenOperationException;
+
+  
+  
+
+  
 
 }

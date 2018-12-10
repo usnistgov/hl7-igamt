@@ -63,7 +63,7 @@ export class DatatypeLibraryMetadataComponent extends HasFroala implements OnIni
   getBackup(){
     return this.backup;
   }
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
   upload(event) {

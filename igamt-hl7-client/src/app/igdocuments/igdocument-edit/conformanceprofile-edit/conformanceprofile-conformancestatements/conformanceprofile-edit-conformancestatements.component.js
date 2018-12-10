@@ -299,7 +299,7 @@ var ConformanceprofileEditConformancestatementsComponent = (function () {
     ConformanceprofileEditConformancestatementsComponent.prototype.getBackup = function () {
         return this.backup;
     };
-    ConformanceprofileEditConformancestatementsComponent.prototype.isValid = function () {
+    ConformanceprofileEditConformancestatementsComponent.prototype.canSave = function () {
         return !this.editForm.invalid;
     };
     ConformanceprofileEditConformancestatementsComponent.prototype.save = function () {
