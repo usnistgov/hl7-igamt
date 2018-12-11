@@ -283,7 +283,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
 
-    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    Criteria where = Criteria.where("domainInfo.scope").is(scope)
+            .andOperator(Criteria.where("domainInfo.version").is(version));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");

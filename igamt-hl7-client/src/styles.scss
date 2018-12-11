@@ -2,15 +2,9 @@
 @import "./app/igdocuments/igdocument-edit/toc/toc.component.css";
 @import "./app/igdocuments/igdocument-edit/igdocument-edit.component.css";
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-html{
-  overflow: hidden;
-  height: 100%;
 
-}
 body{
   font-family: 'Open Sans', sans-serif;
-  overflow: hidden !important;
-  height: 100% !important;
 
 }
 span.ig-list-title{
@@ -397,14 +391,13 @@ p-dialog{
   height: 55px;
 }
 .toc-panel-body{
+  overflow: scroll;
   max-height: 700px;
-  overflow-y: scroll;
   border-right: 1px solid #d4d4d4;
 }
 
 .document-container {
   border-bottom: 1px solid #d4d4d4;
-  padding: 0;
 }
 
 .header-color {
