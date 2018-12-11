@@ -80,13 +80,14 @@ public class ConformanceProfileController extends BaseController {
 
   }
   
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/contextStructure", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/structure/{contextId}", method = RequestMethod.GET,
       produces = {"application/json"})
 
-  public ConformanceProfileStructureTreeModel getContextStructure(
-      @PathVariable("id") String id, Authentication authentication) {
+  public ConformanceProfileStructureDisplay getConformanceProfileStructure(
+      @PathVariable("id") String id, @PathVariable("contextId") String contextId, Authentication authentication) {
     ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
-    return conformanceProfileService.convertDomainToContextStructure(conformanceProfile);
+    
+    return conformanceProfileService.convertDomainToDisplayStructureFromContext(conformanceProfile,contextId, getReadOnly(authentication, conformanceProfile));
 
   }
 

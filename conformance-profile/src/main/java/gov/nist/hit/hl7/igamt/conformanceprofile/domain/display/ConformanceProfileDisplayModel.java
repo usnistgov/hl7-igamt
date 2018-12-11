@@ -22,9 +22,11 @@ public class ConformanceProfileDisplayModel extends ConformanceProfile{
 
   private String idPath;
   private Type type;
+  private int position;
   public ConformanceProfileDisplayModel() {
     super();
     this.type = Type.COMPOSITEPROFILE;
+    position = 1;
   }
   
   public ConformanceProfileDisplayModel(ConformanceProfile conformanceProfile) {
@@ -47,6 +49,7 @@ public class ConformanceProfileDisplayModel extends ConformanceProfile{
     this.setStructID(conformanceProfile.getStructID());
     this.setUpdateDate(conformanceProfile.getUpdateDate());
     this.setVersion(conformanceProfile.getVersion());
+    position = 1;
   }
 
   public String getIdPath() {
@@ -63,6 +66,14 @@ public class ConformanceProfileDisplayModel extends ConformanceProfile{
 
   public void setType(Type type) {
     this.type = type;
+  }
+
+  public int getPosition() {
+    return position;
+  }
+
+  public void setPosition(int position) {
+    this.position = position;
   }
   
   

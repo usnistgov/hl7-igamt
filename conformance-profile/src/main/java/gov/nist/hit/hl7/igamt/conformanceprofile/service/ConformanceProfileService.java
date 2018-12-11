@@ -162,6 +162,8 @@ public interface ConformanceProfileService {
    */
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructure(ConformanceProfile conformanceProfile, boolean readOnly);
   
+  public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
+  
   public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
   /**

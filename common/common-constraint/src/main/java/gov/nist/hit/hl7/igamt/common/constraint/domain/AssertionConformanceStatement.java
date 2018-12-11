@@ -12,7 +12,6 @@
 package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
 
 /**
  * @author jungyubw
@@ -20,7 +19,6 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
  */
 public class AssertionConformanceStatement extends ConformanceStatement {
   private Assertion assertion;
-  private Path context;
 
   public AssertionConformanceStatement() {
     super();
@@ -34,14 +32,4 @@ public class AssertionConformanceStatement extends ConformanceStatement {
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
   }
-
-  public Path getContext() {
-    return context;
-  }
-
-  public void setContext(Path context) {
-    this.context = context;
-  }
-
-  
 }

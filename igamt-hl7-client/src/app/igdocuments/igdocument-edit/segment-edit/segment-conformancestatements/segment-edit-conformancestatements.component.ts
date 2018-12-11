@@ -188,7 +188,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
         if(!forUpdate){
             let item:any = {};
-            item.location = this.selectedConformanceStatement.identifier;
+            item.location = identifier;
             item.propertyType = 'STATEMENT';
             item.propertyValue = null;
             item.changeType = "DELETE";

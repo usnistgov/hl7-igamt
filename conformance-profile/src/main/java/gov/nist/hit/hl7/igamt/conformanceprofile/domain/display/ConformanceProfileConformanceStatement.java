@@ -2,10 +2,8 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
 
 
 
@@ -15,7 +13,7 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String messageType;
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
-  private Set<SegmentRefOrGroup> children;
+  private Set<SegmentRefOrGroupStructureTreeModel> structure;
 
   public String getName() {
     return name;
@@ -57,12 +55,15 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
     this.conformanceStatements = conformanceStatements;
   }
 
-  public Set<SegmentRefOrGroup> getChildren() {
-    return children;
+  public Set<SegmentRefOrGroupStructureTreeModel> getStructure() {
+    return structure;
   }
 
-  public void setChildren(Set<SegmentRefOrGroup> children) {
-    this.children = children;
+  public void setStructure(Set<SegmentRefOrGroupStructureTreeModel> structure) {
+    this.structure = structure;
   }
+
+
+
 }
 
