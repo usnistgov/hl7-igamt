@@ -5,7 +5,6 @@ import {Component, Input} from "@angular/core";
 import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
-
 @Component({
   selector : 'edit-simple-constraint',
   templateUrl : './edit-simpleconstraint.component.html',
@@ -41,6 +40,16 @@ export class EditSimpleConstraintComponent {
 
     if(this.level === 'CONFORMANCEPROFILE'){
       this.needContext = true;
+    }
+
+    this.checkComparionMode();
+  }
+
+  checkComparionMode() {
+    if(this.assertion && this.assertion.complement && this.assertion.complement.complementKey) {
+      for(let item of this.declarativeCTypes){
+        if(item.value === this.assertion.complement.complementKey) this.needComparison = true;
+      }
     }
   }
 
