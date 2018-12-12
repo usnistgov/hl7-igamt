@@ -578,7 +578,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     } else {
       result.setLabel(datatype.getName());
     }
-
+    result.setName(datatype.getName());
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype dt = (ComplexDatatype) datatype;
 
