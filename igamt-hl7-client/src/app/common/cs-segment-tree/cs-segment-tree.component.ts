@@ -39,13 +39,14 @@ export class CsSegmentTreeComponent implements OnInit {
       label: tree.label,
       type: 'root',
       data: {
-        id: tree.id.id,
+        id: tree.id,
         type: 'SEGMENT',
         version: tree.version,
         scope: tree.scope
       },
       children : this.configService.arraySortByPosition(tree.structure)
     };
+    console.log(tree);
     if (this._restrictions) {
       this.evaluate(null, node, this._restrictions);
     } else {
@@ -112,6 +113,7 @@ export class CsSegmentTreeComponent implements OnInit {
   selected(event) {
     this.selectedNode = event.node;
     console.log(this.selectedNode);
+    console.log(this.processPath(event.node));
     this.node.emit(this.selectedNode);
     this.select.emit(this.processPath(event.node));
   }
