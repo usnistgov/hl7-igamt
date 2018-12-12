@@ -909,7 +909,7 @@ public class IGDocumentController extends BaseController {
           clone.setUsername(username);
           clone.setBindingIdentifier(elm.getName());
           clone = valuesetService.save(clone);
-          ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
+//          ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
           savedIds.add(clone.getId());
         }
       } else {
