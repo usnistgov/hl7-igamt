@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
@@ -100,6 +101,7 @@ public class SegmentController extends BaseController {
     	cfs=segment.getBinding().getConformanceStatements();
     }
     conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs);
+    conformanceStatementDisplay.setType(Type.SEGMENT);
     return  conformanceStatementDisplay;
   }
 

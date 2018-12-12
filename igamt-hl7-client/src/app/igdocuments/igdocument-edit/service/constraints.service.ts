@@ -110,6 +110,7 @@ export class ConstraintsService {
         if(location.path){
             let result:string = structure.name;
             result = this.getChildLocation(location.path.child, structure.structure, result, null);
+            result = result.replace("undefined.", "");
             return result;
         }
         return null;

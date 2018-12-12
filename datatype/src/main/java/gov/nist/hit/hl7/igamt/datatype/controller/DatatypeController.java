@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
@@ -146,6 +147,7 @@ public class DatatypeController extends BaseController {
     	cfs=datatype.getBinding().getConformanceStatements();
     }
     conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs);
+    conformanceStatementDisplay.setType(Type.DATATYPE);
     return  conformanceStatementDisplay;
   }
 

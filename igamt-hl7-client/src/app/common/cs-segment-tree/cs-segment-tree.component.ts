@@ -25,6 +25,7 @@ export class CsSegmentTreeComponent implements OnInit {
   @Output() select: EventEmitter<any> = new EventEmitter<any>();
   @Output() node: EventEmitter<any> = new EventEmitter<any>();
 
+
   constructor(private configService: GeneralConfigurationService) {}
 
   @Input() set restrictions(restrictions: TreeRestrictions){
@@ -40,7 +41,7 @@ export class CsSegmentTreeComponent implements OnInit {
       type: 'root',
       data: {
         id: tree.id,
-        type: 'SEGMENT',
+        type: tree.type,
         version: tree.version,
         scope: tree.scope
       },

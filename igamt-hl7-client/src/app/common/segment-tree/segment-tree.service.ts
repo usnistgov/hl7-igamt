@@ -84,14 +84,12 @@ export class SegmentTreeNodeService {
 
   async getComponentsAsTreeNodes(node, segment, exclusion) {
     const nodes: TreeNode[] = [];
-    this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure').subscribe(async result => {
-      const data = result as any;
-      for (const d of data.children) {
-        nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
-      }
-    });
-    return nodes.sort((a,b) => {
-      return a.data.index - b.data.index;
+    const data: any = await this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure').toPromise();
+    for (const d of data.structure) {
+      nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
+    }
+    return nodes.sort((a, b) => {
+      return a.data.position - b.data.position;
     });
   }
 
