@@ -25,13 +25,13 @@ public class ConformanceProfileDisplayModel extends ConformanceProfile{
   private int position;
   public ConformanceProfileDisplayModel() {
     super();
-    this.type = Type.COMPOSITEPROFILE;
+    this.type = Type.CONFORMANCEPROFILE;
     position = 1;
   }
   
   public ConformanceProfileDisplayModel(ConformanceProfile conformanceProfile) {
     super();
-    this.type = Type.COMPOSITEPROFILE;
+    this.type = Type.CONFORMANCEPROFILE;
     this.idPath = conformanceProfile.getId();
     this.setCreatedFrom(conformanceProfile.getCreatedFrom());
     this.setCreationDate(conformanceProfile.getCreationDate());
