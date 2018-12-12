@@ -16,7 +16,7 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
  *
  */
 public class Subject {
-
+  private Path path;
   private String occurenceType;
   private String occurenceValue;
   private String occurenceIdPath;
@@ -53,8 +53,6 @@ public class Subject {
   public void setOccurenceLocationStr(String occurenceLocationStr) {
     this.occurenceLocationStr = occurenceLocationStr;
   }
-
-  private Path path;
 
   public Subject() {
     super();

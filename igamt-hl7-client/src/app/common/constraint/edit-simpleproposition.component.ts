@@ -46,6 +46,7 @@ export class EditSimplePropositionComponent {
     if(location.path){
       let result:string = this.structure.name;
       result = this.getChildLocation(location.path.child, this.structure.structure, result, null, type);
+      result = result.replace("undefined.", "");
       return result;
     }
     return null;
@@ -69,6 +70,7 @@ export class EditSimplePropositionComponent {
               this.assertion.subject.occurenceType = 'TBD';
               this.assertion.subject.occurenceIdPath = item.data.idPath;
               this.assertion.subject.occurenceLocationStr = result + "(" + elementName + ")";
+              this.assertion.subject.occurenceLocationStr = this.assertion.subject.occurenceLocationStr.replace("undefined.", "");
             }
           }
           return this.getChildLocation(path.child,item.children, result, elementName, type);
