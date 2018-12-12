@@ -88,7 +88,10 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
             for (const dt of dtList) {
               ctrl.config.datatypes.push({label: dt.data.label, value: dt.id, display : dt.data});
             }
-            ctrl.config.dynCodes = ctrl.filterDynCodeFromIg(ctrl.config.datatypes, ctrl.config.dynCodes);
+            ctrl.config.dynCodes = ctrl.filterDynCodeFromIg(ctrl.config.datatypes, ctrl.config.dynCodes).sort((a, b) => {
+              return 0 - (a.value > b.value ? -1 : 1);
+            });
+
           });
         });
       }

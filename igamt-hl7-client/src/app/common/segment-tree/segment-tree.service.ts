@@ -28,6 +28,7 @@ export class SegmentTreeNodeService {
   }
 
   decorateNode(node : TreeNode, parent: TreeNode) {
+    console.log(node);
     node.label = node.data.name;
     node.data.index = node.data.position;
     node.data.obj =   node.data;
@@ -36,7 +37,7 @@ export class SegmentTreeNodeService {
     // node.selectable = true;
     node.data.version = node.data.datatypeLabel.domainInfo.version;
     node.data.coded = this.configService.isCodedElement(node.data.datatypeLabel.label);
-    node.data.variable = node.data.name === 'VARIES';
+    node.data.variable = node.data.datatypeLabel.name === 'VARIES';
     node.data.complex = !node.leaf;
 
     if(node && node.children) {
