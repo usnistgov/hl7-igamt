@@ -204,7 +204,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
       varies: field.content.varies
     }).subscribe(
       result => {
+        if((<VSCell> obj[key]).vs !== result) this.ccFormVar.form.markAsDirty();
         (<VSCell> obj[key]).vs = result;
+
       }
     );
   }
@@ -244,6 +246,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
     this.headerDialogDm.open(resolve).subscribe(
       result => {
+        this.ccFormVar.form.markAsDirty();
         this.table.headers[h].push(result);
         this.initColumn(result);
       }
@@ -253,6 +256,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   openUserHeaderDialog() {
     this.headerDialogUser.open({header: 'USER'}).subscribe(
       result => {
+        this.ccFormVar.form.markAsDirty();
         this.table.headers.user.push(result);
         this.initColumn(result);
       }

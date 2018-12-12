@@ -23,7 +23,7 @@ export class CsSegmentTreeComponent implements OnInit {
   _restrictions: TreeRestrictions;
   selectedNode: TreeNode;
   @Output() select: EventEmitter<any> = new EventEmitter<any>();
-
+  @Output() node: EventEmitter<any> = new EventEmitter<any>();
 
   constructor(private configService: GeneralConfigurationService) {}
 
@@ -109,10 +109,10 @@ export class CsSegmentTreeComponent implements OnInit {
     }
   }
 
-
-
   selected(event) {
     this.selectedNode = event.node;
+    console.log(this.selectedNode);
+    this.node.emit(this.selectedNode);
     this.select.emit(this.processPath(event.node));
   }
 
