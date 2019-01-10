@@ -40,6 +40,7 @@ export class IgDocumentEditComponent {
   @ViewChild("dtLib") dtLib :ElementRef;
   @ViewChild("segLib") segLib :ElementRef;
   @ViewChild("cpLib") cpLib :ElementRef;
+  @ViewChild("top") top :ElementRef;
 
   igId:any;
   exportModel: MenuItem[];
@@ -177,8 +178,8 @@ export class IgDocumentEditComponent {
 
   scrollTo(ref: ElementRef ){
     console.log("Scrolling");
-    console.log(ref);
-    ref.nativeElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    //ref.nativeElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    ref.nativeElement.scrollIntoView();
 
   }
 

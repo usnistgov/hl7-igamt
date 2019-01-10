@@ -1,9 +1,7 @@
 <div>
-  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  key ='UNSAVEDDATA'>
-
-  </p-confirmDialog>
-
-  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  #cd  key ='INVALIDDATA'>
+   <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true"  key='UNSAVEDDATA'>
+   </p-confirmDialog>
+  <p-confirmDialog header="Confirmation" icon="fa fa-question-circle" width="425" [closable]="true" #cd  key ='INVALIDDATA' >
 
     <p-footer>
       <button type="button" pButton icon="fa fa-check" label="OK" (click)="cd.reject()"></button>
@@ -16,17 +14,16 @@
   <app-copy-element></app-copy-element>
   <app-delete-element></app-delete-element>
   <div class="">
-      <span class="ig-title ">{{metadata.title}}</span>
+    <span class="ig-title"> {{metadata.title}} </span>
     <hr style="margin-top: 0rem;
-    margin-bottom: 0rem;
-    border: 0;
-    border-top: 1px solid #f5f5f5;"/>
+               margin-bottom: 0rem;
+               margin-left:4px;
+               border: 0;
+               border-top: 1px solid #f5f5f5;"/>
       <span class="ig-date" *ngIf="ig.dateUpdated">
 
             <i class="fa fa-calendar"></i> Date Updated:   {{ig.dateUpdated|date }}
       </span>
-
-
   </div>
 
 
@@ -72,10 +69,10 @@
       <button style="float: right;padding: 0px" pButton type="button"  icon="fa fa-compress" pTooltip="Collapse All" tooltipPosition="top"  (click)="collapseAll()"></button>
       <button  style="float: right; padding: 0px" pButton type="button"  icon="fa fa-expand"  pTooltip="Expand All" tooltipPosition="top" (click)="expandAll()"></button>
       <button  style="float: right;padding: 0px" pButton type="button"  icon="fa fa-plus"  pTooltip="Add new Section"  tooltipPosition="top"  (click)="addSection()"></button>
-      <span class="badge scroll-badge scroll-badge-vs"  style="float: right; cursor: pointer" type="button"  label="VS" pTooltip="Scroll to Value Set"  tooltipPosition="top"  (click)="scrollTo(vsLib)">VS</span>
-      <span class="badge scroll-badge scroll-badge-dt"  style="float: right; cursor: pointer" type="button"  label="DT" pTooltip="Scroll to Data Type"  tooltipPosition="top"  (click)="scrollTo(dtLib)">DT</span>
-      <span class="badge scroll-badge scroll-badge-s"  style="float: right; cursor: pointer" type="button"  label="S"  pTooltip="Scroll to Segment"    tooltipPosition="top"  (click)="scrollTo(segLib)">S</span>
-      <span class="badge scroll-badge scroll-badge-cp"  style="float: right;cursor: pointer" type="button"  label="CP" pTooltip="Scroll to Conformance Profile" tooltipPosition="top"  (click)="scrollTo(cpLib)">CP</span>
+      <button class="badge scroll-badge scroll-badge-vs"  style="float: right; cursor: pointer" type="button"  label="VS" pTooltip="Scroll to Value Set"  tooltipPosition="top"  (click)="scrollTo(vsLib)">VS</button>
+      <button class="badge scroll-badge scroll-badge-dt"  style="float: right; cursor: pointer" type="button"  label="DT" pTooltip="Scroll to Data Type"  tooltipPosition="top"  (click)="scrollTo(dtLib)">DT</button>
+      <button class="badge scroll-badge scroll-badge-s"  style="float: right; cursor: pointer" type="button"  label="S"  pTooltip="Scroll to Segment"    tooltipPosition="top"  (click)="scrollTo(segLib)">S</button>
+      <button class="badge scroll-badge scroll-badge-cp"  style="float: right;cursor: pointer" type="button"  label="CP" pTooltip="Scroll to Conformance Profile" tooltipPosition="top"  (click)="scrollTo(cpLib)">CP</button>
       </div>
     </p-header>
     <div class="toc-panel-body">
@@ -248,10 +245,11 @@
   <!--ROUTE-->
   <div [ngClass]="{'ui-g-9 ':!hideToc, 'ui-g-12':hideToc}" class="ui-g-9 " style="padding : 0;" >
       <div>
+
+
         <router-outlet></router-outlet>
       </div>
   </div>
 </div>
 </div>
 
-<p-blockUI [blocked]="blockUI"></p-blockUI>

@@ -86,7 +86,8 @@ export class IgDocumentListComponent implements OnInit {
       accept: () => {
         this.http.delete('api/igdocuments/'+ig.id).toPromise().then( x => {
           var i= this.igs.indexOf(ig);
-          if(i>0){
+          console.log(i);
+          if(i>-1){
             this.igs.splice(i,1);
           }
         });

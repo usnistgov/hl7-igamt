@@ -2,15 +2,9 @@
 @import "./app/igdocuments/igdocument-edit/toc/toc.component.css";
 @import "./app/igdocuments/igdocument-edit/igdocument-edit.component.css";
 @import url('https://fonts.googleapis.com/css?family=Open+Sans');
-html{
-  overflow: hidden;
-  height: 100%;
 
-}
 body{
   font-family: 'Open Sans', sans-serif;
-  overflow: hidden !important;
-  height: 100% !important;
 
 }
 span.ig-list-title{
@@ -370,7 +364,7 @@ background-color: saddlebrown;
 background-color: blue;
 }
 .section-content{
-  max-height: 700px;
+  max-height: 600px;
   overflow: scroll;
   padding: 5px;
 }
@@ -397,14 +391,15 @@ p-dialog{
   height: 55px;
 }
 .toc-panel-body{
+  overflow: auto;
   max-height: 700px;
-  overflow-y: scroll;
   border-right: 1px solid #d4d4d4;
 }
 
 .document-container {
   border-bottom: 1px solid #d4d4d4;
-  padding: 0;
+  padding-bottom: 100px;
+  position: relative;
 }
 
 .header-color {
@@ -417,4 +412,19 @@ p-dialog{
 body .toc .ui-widget-header {
   background-color:  #e0e0e0 !important;
 
+}
+.fixed-ig-header
+{
+  top: 100px !important;
+  position: fixed;
+  z-index: 320;
+  height: 60px;
+  width: 100%;
+  background-color: wheat;
+}
+.fixed-ig-sub-header{
+  top: 160px !important;
+  position: fixed;
+  z-index: 320;
+  height: 100px;
 }

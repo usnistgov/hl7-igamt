@@ -68,7 +68,7 @@ export class SegmentEditMetadataComponent extends HasFroala implements WithSave 
     if(this.segmentMetadata.readOnly){
       return false;
     }else{
-     return  this.segmentMetadata.ext!==null||this.segmentMetadata !=="";
+     return this.segmentMetadata.ext!==null&&this.segmentMetadata.ext!=="";
     }
 
   }

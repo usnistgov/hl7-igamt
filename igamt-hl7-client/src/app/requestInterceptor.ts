@@ -56,6 +56,7 @@ export class AuthInterceptor implements HttpInterceptor {
 
         if (err.status === 401 || err.status === 403) {
           console.log("UNAUTHORIZED");
+          this.progress.showNotification(err.error,"topAlert");
 
           this.router.navigate(['/login']);
         }else{
