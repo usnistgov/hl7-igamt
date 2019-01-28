@@ -22,8 +22,9 @@ import {HasFroala} from "../../../../configuration/has-froala";
 export class SegmentEditPredefComponent extends HasFroala implements WithSave {
     currentUrl:any;
     segmentId:any;
-    segmentPredef:any;
+    current:any;
     backup:any;
+    changeItems: any[]=[];
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -42,39 +43,42 @@ export class SegmentEditPredefComponent extends HasFroala implements WithSave {
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.route.data.map(data =>data.segmentPredef).subscribe(x=>{
             this.backup=x;
-            this.segmentPredef=_.cloneDeep(this.backup);
+            this.current=_.cloneDeep(this.backup);
         });
     }
 
     reset(){
 
-        this.segmentPredef=_.cloneDeep(this.backup);
-      this.editForm.control.markAsPristine();
+        this.current=_.cloneDeep(this.backup);
 
     }
 
     getCurrent(){
-        return  this.segmentPredef;
+        return  this.current;
     }
 
     getBackup(){
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
 
-        return !this.editForm.invalid;
+      return !this.current.readOnly;
+
 
     }
 
     save(): Promise<any> {
+
+      this.createChanges(this.current,this.backup);
+      console.log("saving");
       return new Promise((resolve, reject) => {
 
-        this.segmentsService.saveSegmentPreDef(this.segmentId, this.segmentPredef).then(saved => {
+        this.segmentsService.save(this.segmentId,this.changeItems).then(saved => {
 
-          this.backup = _.cloneDeep(this.segmentPredef);
+          this.backup = _.cloneDeep(this.current);
 
-          this.editForm.control.markAsPristine();
+          //this.editForm.control.markAsPristine();
           resolve(true);
 
         }, error => {
@@ -86,7 +90,18 @@ export class SegmentEditPredefComponent extends HasFroala implements WithSave {
       });
     }
   hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+    return  this.backup.text != this.current.text;
+  }
 
+  createChanges(elm, backup){
+    this.changeItems=[];
+    let obj:any={};
+    obj.location=this.segmentId;
+    obj.propertyType="PREDEF";
+    obj.propertyValue=elm.text;
+    obj.oldPropertyValue=backup.text;
+    obj.position=-1;
+    obj.changeType="UPDATE";
+    this.changeItems.push(obj);
   }
 }

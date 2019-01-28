@@ -73,14 +73,15 @@ export class DatatypeEditStructureComponent implements WithSave{
     return this.backup;
   }
 
-  isValid(){
-    // return !this.editForm.invalid;
-    return true;
+  canSave(){
+
+    return !this.datatypeStructure.readOnly;
+
   }
 
   save(){
     return new Promise((resolve, reject)=> {
-      this.datatypesService.saveDatatype(this.datatypeId, this.igId, this.changeItems).then(saved => {
+      this.datatypesService.save(this.datatypeId, this.changeItems).then(saved => {
         this.backup = __.cloneDeep(this.datatypeStructure);
         this.changeItems = [];
         this.editForm.control.markAsPristine();
@@ -101,7 +102,7 @@ export class DatatypeEditStructureComponent implements WithSave{
     this.selectedColumns= __.sortBy(this.selectedColumns,['position']);
   }
   hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+    return this.changeItems!=null&& this.changeItems.length>0;
   }
 
   print(node){

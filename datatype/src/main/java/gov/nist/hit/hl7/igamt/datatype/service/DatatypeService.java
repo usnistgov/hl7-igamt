@@ -27,7 +27,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -71,8 +70,6 @@ public interface DatatypeService {
 
   public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
 
-  public DisplayMetadata convertDomainToMetadata(Datatype datatype);
-
   public PreDef convertDomainToPredef(Datatype datatype);
 
   public PostDef convertDomainToPostdef(Datatype datatype);
@@ -80,15 +77,6 @@ public interface DatatypeService {
   List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 
   public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
-
-  /**
-   * Validate the metadata information of the segment
-   * 
-   * @param metadata
-   * @throws DatatypeValidationException
-   */
-  public void validate(DisplayMetadata metadata) throws DatatypeValidationException;
-
 
   /**
    * 
@@ -106,15 +94,6 @@ public interface DatatypeService {
    */
   public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException;
 
-  /**
-   * 
-   * @param metadata
-   * @return
-   * @throws DatatypeNotFoundException
-   * @throws DatatypeValidationException
-   */
-  public Datatype saveMetadata(DisplayMetadata metadata)
-      throws DatatypeNotFoundException, DatatypeValidationException;
 
   /**
    * Validate conformance statements of the segment
@@ -175,7 +154,7 @@ public interface DatatypeService {
    * @param datatype
    * @return
    */
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype);
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
   
   
   public List<Datatype> findDisplayFormatByIds(Set<String> ids);

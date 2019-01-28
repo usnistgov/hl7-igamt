@@ -19,73 +19,88 @@ import {HasFroala} from "../../../../configuration/has-froala";
 })
 
 export class SegmentEditPostdefComponent extends HasFroala implements WithSave {
-    currentUrl:any;
-    segmentId:any;
-    segmentPostdef:any;
-    backup:any;
+  currentUrl:any;
+  segmentId:any;
+  current:any;
+  backup:any;
+  changeItems: any[]=[];
 
-    @ViewChild('editForm')
-    private editForm: NgForm;
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
-    constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient, private igErrorService:IgErrorService)
-    { super();
-        router.events.subscribe(event => {
-            if (event instanceof NavigationEnd ) {
-                this.currentUrl=event.url;
-            }
-        });
-    }
+  constructor(private route: ActivatedRoute, private  router : Router, private segmentsService : SegmentsService, private http:HttpClient,private igErrorService:IgErrorService){
 
-    ngOnInit() {
-        this.segmentId = this.route.snapshot.params["segmentId"];
-        this.route.data.map(data =>data.segmentPostdef).subscribe(x=>{
-            this.backup=x;
-            this.segmentPostdef=_.cloneDeep(this.backup);
-        });
-    }
+    super();
+    router.events.subscribe(event => {
+      if (event instanceof NavigationEnd ) {
+        this.currentUrl=event.url;
+      }
+    });
+  }
 
-    reset(){
-        this.segmentPostdef=_.cloneDeep(this.backup);
-        this.editForm.control.markAsPristine();
+  ngOnInit() {
+    this.segmentId = this.route.snapshot.params["segmentId"];
+    this.route.data.map(data =>data.segmentPostdef).subscribe(x=>{
+      this.backup=x;
+      this.current=_.cloneDeep(this.backup);
+    });
+  }
 
-    }
+  reset(){
 
-    getCurrent(){
-        return  this.segmentPostdef;
-    }
+    this.current=_.cloneDeep(this.backup);
 
-    getBackup(){
-        return this.backup;
-    }
+  }
 
-    isValid(){
-        return !this.editForm.invalid;
-    }
+  getCurrent(){
+    return  this.current;
+  }
 
-    save(): Promise<any>{
-      return new Promise((resolve, reject)=> {
+  getBackup(){
+    return this.backup;
+  }
 
+  canSave(){
 
-         this.segmentsService.saveSegmentPostDef(this.segmentId, this.segmentPostdef).then(saved => {
-
-          this.backup = _.cloneDeep(this.segmentPostdef);
-
-          this.editForm.control.markAsPristine();
-          resolve(true);
-
-        }, error => {
-
-          console.log("error saving");
-          reject(error);
+    return !this.current.readOnly;
 
 
-         }
+  }
 
-        );
-    })
-    }
+  save(): Promise<any> {
+
+    this.createChanges(this.current,this.backup);
+    console.log("saving");
+    return new Promise((resolve, reject) => {
+
+      this.segmentsService.save(this.segmentId,this.changeItems).then(saved => {
+
+        this.backup = _.cloneDeep(this.current);
+
+        //this.editForm.control.markAsPristine();
+        resolve(true);
+
+      }, error => {
+
+        console.log("error saving");
+        reject(error);
+
+      });
+    });
+  }
   hasChanged(){
-    return this.editForm&& this.editForm.touched&&this.editForm.dirty;
+    return  this.backup.text != this.current.text;
+  }
 
+  createChanges(elm, backup){
+    this.changeItems=[];
+    let obj:any={};
+    obj.location=this.segmentId;
+    obj.propertyType="POSTDEF";
+    obj.propertyValue=elm.text;
+    obj.oldPropertyValue=backup.text;
+    obj.position=-1;
+    obj.changeType="UPDATE";
+    this.changeItems.push(obj);
   }
 }

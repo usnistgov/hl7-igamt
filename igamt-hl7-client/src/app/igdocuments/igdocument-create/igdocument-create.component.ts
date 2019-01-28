@@ -17,7 +17,6 @@ import * as _ from 'lodash';
 })
 export class IgDocumentCreateComponent {
   tableValue :any;
-  tableValueMap={};
   loading=false;
   uploadedFiles: any[] = [];
   activeIndex: number = 0;
@@ -79,10 +78,6 @@ export class IgDocumentCreateComponent {
 
   }
 
-
-  totalStepsCount: number;
-
-
   getMessages(v){
     this.tableValue=[];
     this.selectedVerion=v;
@@ -92,67 +87,26 @@ export class IgDocumentCreateComponent {
       })
   }
 
-
-
-
-  toggleEvent(event){
-    console.log(event);
-    console.log(this.selectedEvents);
-   let index =this.selectedEvents.indexOf(event);
-    if(index<0){
-      this.selectedEvents.push(event);
-
-    }else{
-      this.selectedEvents.splice(index,1);
-    }
-  }
-
   isSelected(event){
-   return this.selectedEvents.indexOf(event)>-1;
-  }
+    for( let i=0;i<this.selectedEvents.length; i++){
 
-  submitEvent(){
-    for(let i=0 ;i<this.selectdNodeMap[this. selcetedVersion].length; i++){
-      if(this.selectdNodeMap[this. selcetedVersion][i].data.parentStructId){
-        if(this.selectdNodeMap[this. selcetedVersion][i].parent.data.id){
-          if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]){
-            if(this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children) {
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
-
-
-              });
-            }else{
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
-              this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-                name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-                parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
-
-
-              })
-            }
-          }else{
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id]={};
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children=[];
-            this.messageEventMap[this.selectdNodeMap[this. selcetedVersion][i].parent.data.id].children.push({
-              name:this.selectdNodeMap[this. selcetedVersion][i].data.name,
-              parentStructId:this.selectdNodeMap[this. selcetedVersion][i].parent.data.structId
-
-            })
-
-
-          }
-        }
-
+      if(this.selectedEvents[i].id==event.id&&this.selectedEvents[i].name==event.name){
+        return true;
       }
     }
-   this.msgEvts=Object.keys(this.messageEventMap).map((key)=>{ return {id:key, children:this.messageEventMap[key].children}});
+    return false;
+  };
+  toggleEvent(event){
 
-    console.log(this.msgEvts);
+    for( let i=0;i<this.selectedEvents.length; i++){
 
+      if(this.selectedEvents[i].id==event.id&&this.selectedEvents[i].name==event.name) {
+        this.selectedEvents.splice(i, 1);
+        return;
+      }
+    }
+    this.selectedEvents.push(event);
   }
-
 
   create(){
     let wrapper:any ={};
@@ -199,11 +153,6 @@ export class IgDocumentCreateComponent {
     }
   }
 
-  unselectEvent(event){
-
-    this.unselectNode(event.node);
-  }
-
 
   unselectNode(node){
     if(node.children&& node.children.length>0){
@@ -245,14 +194,6 @@ export class IgDocumentCreateComponent {
     if(index >-1){
       this.selectedEvents.splice(index,1);
     }
-  }
-
-  unselectParent(parent){
-
-    parent.partialSelected=this.getPartialSelection(parent);
-    console.log(parent.partialSelected);
-    this.unselect(parent);
-
   }
 
   getPartialSelection(parent){

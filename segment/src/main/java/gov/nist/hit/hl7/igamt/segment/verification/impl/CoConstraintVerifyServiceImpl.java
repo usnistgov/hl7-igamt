@@ -96,7 +96,6 @@ public class CoConstraintVerifyServiceImpl implements CoConstraintVerifyService 
           "Element metadata is invalid or has changed");
     }
 
-
     return errors;
   }
 

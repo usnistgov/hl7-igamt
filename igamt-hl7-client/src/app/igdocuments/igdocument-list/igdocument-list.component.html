@@ -1,13 +1,13 @@
+<p-confirmDialog header="Confirmation" icon="pi pi-exclamation-triangle"></p-confirmDialog>
+
 <div class="list-ig" >
-
-
   <p-dataView [value]="igs" [paginator]="true"  paginatorPosition="both" [rows]="8" [sortField]="sortField" [sortOrder]="sortOrder" [filterBy]="'title,subtitle,username'" #dv >
     <p-header>
 
       <p-dropdown [options]="sortOptions" [(ngModel)]="sortKey" placeholder="Sort By"
                   (onChange)="onSortChange($event)" [autoWidth]="false" [style]="{'min-width':'15em','vertical-align' : 'top',    'margin-bottom': '-60px !important' }"></p-dropdown>
 
-      <input type="search" pInputText placeholder="Filter" (keyup)="dv.filter($event.target.value)" style="float: right" >
+      <input type="search" pInputText placeholder="Global filter" (keyup)="dv.filter($event.target.value)" style="float: right" >
 
     </p-header>
     <ng-template let-ig pTemplate="listItem">
@@ -43,7 +43,7 @@
             <p-button styleClass="indigo-btn" (click)="open(ig,false)" label="Edit" icon="fa fa-pencil" iconPos="left"></p-button>
             <p-button styleClass="ui-button-secondary" (click)="open(ig,true)" label="Read" icon="fa fa-eye" iconPos="left"></p-button>
             <p-button styleClass="purple-btn" label="Copy" icon="fa fa-copy" (click)="copy(ig.id,true)"  iconPos="left"></p-button>
-            <p-button styleClass="red-btn"  label="Delete" icon="fa fa-remove" iconPos="left"></p-button>
+            <p-button styleClass="red-btn"  label="Delete" icon="fa fa-remove" iconPos="left" (click)="confirmDelete(ig)"></p-button>
           </div>
         </div>
       </div>

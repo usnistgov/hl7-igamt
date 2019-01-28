@@ -74,7 +74,7 @@ export class ValuesetEditStructureComponent implements WithSave{
         return this.backup;
     }
 
-    isValid(){
+    canSave(){
         return true;
     }
 

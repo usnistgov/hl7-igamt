@@ -4,6 +4,7 @@ public abstract class Resource extends AbstractDomain {
 
   private String preDef;
   private String postDef;
+  
 
   public Resource() {
     super();

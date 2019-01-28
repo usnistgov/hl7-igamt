@@ -32,9 +32,13 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
     }
 
     selectRow(event) {
-      if (!this.complex) {
+      if (!this.complex && !this.varies) {
         event.data.bindingLocation = ['.'];
+      } else {
+        event.data.bindingLocation = null;
       }
+      event.data.bindingStrength = null;
+      event.data.id = event.data.bindingIdentifier + '-' + event.data.version;
     }
 
     transform(list) {
@@ -43,7 +47,7 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
             if (vs.hasOwnProperty('bindingStrength') && vs.hasOwnProperty('bindingLocation')) {
                 selected.push({
                     bindingIdentifier : vs.bindingIdentifier,
-                    bindingLocation : vs.bindingLocation,
+                    bindingLocation : Array.isArray(vs.bindingLocation) ? vs.bindingLocation : [vs.bindingLocation],
                     bindingStrength : vs.bindingStrength,
                     hl7Version : vs.hl7Version,
                     name : vs.name,

@@ -25,9 +25,12 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
     conformanceprofileMetadata:any;
     backup:any;
     currentNode:any;
+    changeItems: any[]=[];
 
-    @ViewChild('editForm')
-    private editForm: NgForm;
+
+
+  @ViewChild('editForm')
+  private editForm: NgForm;
 
     constructor(private route: ActivatedRoute, private conformanceProfilesService : ConformanceProfilesService, private tocService:TocService, private igErrorService:IgErrorService ){
         super();
@@ -53,9 +56,15 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
         return this.backup;
     }
 
-    isValid(){
-        return !this.editForm.invalid;
+
+  canSave(){
+    if(this.conformanceprofileMetadata.readOnly){
+      return false;
+    }else{
+      return  this.conformanceprofileMetadata.name!==null||this.conformanceprofileMetadata !=="";
     }
+
+  }
     hasChanged(){
     return this.editForm&& this.editForm.touched&&this.editForm.dirty;
 
@@ -68,8 +77,10 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
                 node.data.data.label= this.conformanceprofileMetadata.name;
                 node.data.data.ext= this.conformanceprofileMetadata.identifier;
                 this.tocService.setTreeModelInDB(treeModel).then(x=>{
-                    this.conformanceProfilesService.saveConformanceProfileMetadata(this.conformanceprofileId,this.conformanceprofileMetadata).then(saved => {
+                    this.conformanceProfilesService.save(this.conformanceprofileId,this.changeItems).then(saved => {
+                      this.conformanceprofileMetadata.label=this.conformanceprofileMetadata.name+"-"+this.conformanceprofileMetadata.identifier;
                             this.backup = _.cloneDeep(this.conformanceprofileMetadata);
+
                             this.editForm.control.markAsPristine();
                             resolve(true);
                         }, error => {
@@ -84,4 +95,44 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
             }
         )
     };
+
+  createChanges(elm, backup){
+    this.changeItems=[];
+
+    if(elm.identifier !== backup.identifier){
+
+      let obj:any={};
+      obj.location=this.conformanceprofileId;
+      obj.propertyType="IDENTIFIER";
+      obj.propertyValue=elm.identifier;
+      obj.oldPropertyValue=backup.identifier;
+      obj.position=-1;
+      obj.changeType="UPDATE";
+      this.changeItems.push(obj);
+    }
+    if(elm.usageNote!==backup.usageNote){
+
+      let obj:any={};
+      obj.location=this.conformanceprofileId;
+      obj.propertyType="USAGENOTES";
+      obj.propertyValue=elm.usageNote;
+      obj.oldPropertyValue=backup.usageNote;
+      obj.position=-1;
+      obj.changeType="UPDATE";
+      this.changeItems.push(obj);
+    }
+
+    if(elm.authorNote!==backup.authorNote){
+
+      let obj:any={};
+      obj.location=this.conformanceprofileId;
+      obj.propertyType="AUTHORNOTES";
+      obj.propertyValue=elm.authorNote;
+      obj.oldPropertyValue=backup.authorNote;
+      obj.position=-1;
+      obj.changeType="UPDATE";
+      this.changeItems.push(obj);
+    }
+
+  }
 }

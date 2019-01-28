@@ -1,25 +1,11 @@
 <div *ngIf="datatypeMetadata">
     <form #editForm="ngForm">
-        <div class="ui-g cp-header">
-            <div class="ui-g-8 ui-g-nopad">
-                <div class="cp-header-title ui-g-12">
-                    MetaData: {{datatypeMetadata.name}}
-                </div>
-                <div class="ui-g-12 cp-header-subtitle">
-                    <span class="ig-list-date" *ngIf="datatypeMetadata.updateDate">
-                        <i class="fa fa-calendar"></i> {{datatypeMetadata.updateDate}}
-                    </span>
-                </div>
-            </div>
+      <entity-header [elm]="datatypeMetadata"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
-            <div class="ui-g-4" *ngIf="datatypeMetadata.scope === 'USER'">
-                <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-                <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
-            </div>
 
-        </div>
+      <div class="section-content">
 
-        <div *ngIf="datatypeMetadata.scope === 'USER'">
+        <div *ngIf="!datatypeMetadata.readOnly">
             <div class="ui-g input-box">
                 <label class="metadata-label ui-g-2">
                     Name
@@ -44,7 +30,7 @@
                 <label class="metadata-label ui-g-2">
                     Description
                 </label>
-                <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="datatypeMetadata.description" />
+                <input name="description" id="description" pInputText type="text" class="ui-g-10" #description="ngModel" [(ngModel)]="datatypeMetadata.description" disabled />
             </div>
 
             <div class="ui-g input-box">
@@ -55,7 +41,7 @@
             </div>
         </div>
 
-        <div *ngIf="datatypeMetadata.scope !== 'USER'">
+        <div *ngIf="datatypeMetadata.readOnly">
             <div class="ui-g input-box">
                 <label class="metadata-label ui-g-2">
                     Name
@@ -77,5 +63,6 @@
                 <div class="ui-g-10" [froalaEditor]="getOptions(editForm)" [(froalaModel)]="datatypeMetadata.authorNote"></div>
             </div>
         </div>
+      </div>
     </form>
 </div>

@@ -38,10 +38,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
@@ -64,7 +66,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -226,22 +227,6 @@ public class DatatypeServiceImpl implements DatatypeService {
    * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#convertDomainToMetadata(gov.nist.hit.
    * hl7.igamt.datatype.domain.Datatype)
    */
-  @Override
-  public DisplayMetadata convertDomainToMetadata(Datatype datatype) {
-    if (datatype != null) {
-      DisplayMetadata result = new DisplayMetadata();
-      result.setAuthorNote(datatype.getComment());
-      result.setDescription(datatype.getDescription());
-      result.setExt(datatype.getExt());
-      result.setId(datatype.getId());
-      result.setName(datatype.getName());
-      result.setScope(datatype.getDomainInfo().getScope());
-      result.setVersion(datatype.getDomainInfo().getVersion());
-      result.setCompatibilityVersions(datatype.getDomainInfo().getCompatibilityVersion());
-      return result;
-    }
-    return null;
-  }
 
   /*
    * (non-Javadoc)
@@ -299,7 +284,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
 
-    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    Criteria where = Criteria.where("domainInfo.scope").is(scope)
+            .andOperator(Criteria.where("domainInfo.version").is(version));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -354,17 +340,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     ValidationUtil.validateConfLength(f.getConfLength());
   }
 
-  @Override
-  public void validate(DisplayMetadata metadata) throws DatatypeValidationException {
-    if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
-      if (StringUtils.isEmpty(metadata.getName())) {
-        throw new DatatypeValidationException("Name is missing");
-      }
-      if (StringUtils.isEmpty(metadata.getExt())) {
-        throw new DatatypeValidationException("Ext is missing");
-      }
-    }
-  }
 
 
 
@@ -405,19 +380,7 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
 
-  @Override
-  public Datatype saveMetadata(DisplayMetadata metadata)
-      throws DatatypeNotFoundException, DatatypeValidationException {
-    validate(metadata);
-    Datatype datatype = findById(metadata.getId());
-    if (datatype == null) {
-      throw new DatatypeNotFoundException(metadata.getId());
-    }
-    datatype.setExt(metadata.getExt());
-    datatype.setDescription(metadata.getDescription());
-    datatype.setComment(metadata.getAuthorNote());
-    return save(datatype);
-  }
+
 
 
   @Override
@@ -604,21 +567,19 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype) {
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     DatatypeStructureDisplay result = new DatatypeStructureDisplay();
-    result.setId(datatype.getId());
-    result.setScope(datatype.getDomainInfo().getScope());
-    result.setVersion(datatype.getDomainInfo().getVersion());
-    result.setName(datatype.getName());
+    
+    result.complete(result, datatype, SectionType.STRUCTURE,readOnly);
     if (datatype.getExt() != null) {
       result.setLabel(datatype.getName() + "_" + datatype.getExt());
     } else {
       result.setLabel(datatype.getName());
     }
-
+    result.setName(datatype.getName());
     if (datatype instanceof ComplexDatatype) {
       ComplexDatatype dt = (ComplexDatatype) datatype;
 
@@ -680,6 +641,7 @@ public class DatatypeServiceImpl implements DatatypeService {
         }
       }
     }
+    result.setType(Type.DATATYPE);
     return result;
   }
 
@@ -841,6 +803,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     qry.fields().include("domainInfo");
     qry.fields().include("id");
+    qry.fields().include("_class");
     qry.fields().include("name");
     qry.fields().include("description");
     qry.fields().include("ext");
@@ -890,7 +853,28 @@ public class DatatypeServiceImpl implements DatatypeService {
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.USAGE)) {
+    	
+    	
+    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
+    		item.setOldPropertyValue(d.getPreDef());
+    		d.setPreDef((String)item.getPropertyValue());
+    	
+    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
+    		item.setOldPropertyValue(d.getPostDef());
+    		d.setPostDef((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+    		item.setOldPropertyValue(d.getAuthorNotes());
+    		d.setAuthorNotes((String)item.getPropertyValue());
+    	
+    	}else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+    		item.setOldPropertyValue(d.getUsageNotes());
+    		d.setUsageNotes((String)item.getPropertyValue());
+    	}
+      	else if(item.getPropertyType().equals(PropertyType.EXT)) {
+    		item.setOldPropertyValue(d.getExt());
+    		d.setExt((String)item.getPropertyValue());
+    	}
+    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Component c = this.findComponentById(d, item.getLocation());
         if (c != null) {
           item.setOldPropertyValue(c.getUsage());

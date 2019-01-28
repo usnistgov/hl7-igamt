@@ -23,6 +23,7 @@ export class GlobalErrorHandler implements ErrorHandler {
     //   console.log(error);
     //    progressHandler.setReportableError(error);
     // }
+    throw error;
   }
 
 

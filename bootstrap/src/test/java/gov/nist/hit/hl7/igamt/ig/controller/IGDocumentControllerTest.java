@@ -120,7 +120,7 @@ public class IGDocumentControllerTest {
 
     List<Ig> igs = igs();
 
-    Mockito.when(mockIgService.findLatestByUsername(Mockito.anyString(), Scope.USER))
+    Mockito.when(mockIgService.findByUsername(Mockito.anyString(), Scope.USER))
         .thenReturn(igs);
     Mockito.when(mockIgService.convertListToDisplayList(Mockito.anyList()))
         .thenReturn(summaries(igs));

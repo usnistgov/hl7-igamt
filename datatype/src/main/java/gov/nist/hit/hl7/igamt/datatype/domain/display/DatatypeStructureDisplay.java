@@ -14,20 +14,16 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class DatatypeStructureDisplay {
-  private String id;
-  private String label;
-  private String name;
-  private Scope scope;
-  private String version;
+public class DatatypeStructureDisplay extends SectionInfo {
 
   private Set<ComponentStructureTreeModel> structure;
+  private String name;
 
   public String getId() {
     return id;
@@ -45,30 +41,6 @@ public class DatatypeStructureDisplay {
     this.label = label;
   }
 
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public Scope getScope() {
-    return scope;
-  }
-
-  public void setScope(Scope scope) {
-    this.scope = scope;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
-
   public Set<ComponentStructureTreeModel> getStructure() {
     return structure;
   }
@@ -84,5 +56,13 @@ public class DatatypeStructureDisplay {
     if (this.structure == null)
       this.structure = new HashSet<ComponentStructureTreeModel>();
     this.structure.add(componentStructureTreeModel);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

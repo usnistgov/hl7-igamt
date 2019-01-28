@@ -27,38 +27,31 @@ import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 @Service
 public class CommonServiceImpl implements CommonService {
 
-  @Override
-  public void checkRight(Authentication auth, AbstractDomain obj)
-      throws ForbiddenOperationException {
-    // TODO Auto-generated method stub
-    if (obj.getUsername() != null) {
-      if (auth.isAuthenticated() && auth.getName() != null
-          && auth.getName().equals(obj.getUsername())) {
-
-        throw new ForbiddenOperationException(
-            "The Authenticated User is not the Owner of this resource");
-      }
-
-      if (obj.getDomainInfo() != null && obj.getDomainInfo().getScope() != null
-          && !obj.getDomainInfo().getScope().equals(Scope.USER)) {
-
-        if (auth.getAuthorities() != null) {
-          if (!auth.getAuthorities().contains(new SimpleGrantedAuthority("ADMIN"))) {
-
-            throw new ForbiddenOperationException("Only an Admin can perform this operation");
-          } else {
-
-            throw new ForbiddenOperationException("Only an Admin can perform this operation");
-          }
-        }
-      } else {
-        throw new ForbiddenOperationException("Only an Admin can perform this operation");
-
-      }
 
 
-    }
+@Override
+public void checkAuthority(Authentication auth, String role)  throws ForbiddenOperationException {
+	// TODO Auto-generated method stub
+	if(auth.getAuthorities().contains(new SimpleGrantedAuthority(role))) {
+		
+	throw  new ForbiddenOperationException("The User must have the" +role+ "authority"+"to perform this operation");
+	}
+}
 
-  }
+@Override
+public void checkOwnerShip(Authentication auth, AbstractDomain obj) throws ForbiddenOperationException {
+	// TODO Auto-generated method stub
+	if(obj.getUsername()==null&&!auth.getName().equals(obj.getUsername())) {
+		throw  new ForbiddenOperationException("The User must be the owner of this resource to perform this operation");
+	}
+}
+
+  
+  
+  
+  
+  
+  
+  
 
 }

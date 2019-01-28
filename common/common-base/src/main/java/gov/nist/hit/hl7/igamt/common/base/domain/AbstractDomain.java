@@ -17,6 +17,9 @@ public abstract class AbstractDomain{
   private String comment;
   private String description;
   private String createdFrom;
+  private String authorNotes;
+  private String usageNotes;
+
 
   @CreatedDate
   private Date creationDate;
@@ -158,6 +161,22 @@ public abstract class AbstractDomain{
 	elm.updateDate = updateDate;
 	elm.from = id;
   }
+
+public String getAuthorNotes() {
+	return authorNotes;
+}
+
+public void setAuthorNotes(String authorNotes) {
+	this.authorNotes = authorNotes;
+}
+
+public String getUsageNotes() {
+	return usageNotes;
+}
+
+public void setUsageNotes(String usageNotes) {
+	this.usageNotes = usageNotes;
+}
 
   
   

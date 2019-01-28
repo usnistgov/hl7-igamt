@@ -38,10 +38,12 @@ import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -59,7 +61,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -199,14 +200,12 @@ public class SegmentServiceImpl implements SegmentService {
    * @deprecated. Use segment.toStructure()
    */
   @Override
-  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment) {
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
-    result.setId(segment.getId());
-    result.setScope(segment.getDomainInfo().getScope());
-    result.setVersion(segment.getDomainInfo().getVersion());
+    result.complete(result, segment, SectionType.STRUCTURE,readOnly);
     result.setName(segment.getName());
     if (segment.getExt() != null) {
       result.setLabel(segment.getName() + "_" + segment.getExt());
@@ -314,6 +313,7 @@ public class SegmentServiceImpl implements SegmentService {
 
       }
     }
+    result.setType(Type.SEGMENT);
     return result;
   }
 
@@ -411,25 +411,12 @@ public class SegmentServiceImpl implements SegmentService {
 
 
 
-  @Override
-  public DisplayMetadata convertDomainToMetadata(Segment segment) {
-    if (segment != null) {
-      DisplayMetadata result = new DisplayMetadata();
-      result.setAuthorNote(segment.getComment());
-      result.setDescription(segment.getDescription());
-      result.setExt(segment.getExt());
-      result.setId(segment.getId());
-      result.setName(segment.getName());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      return result;
-    }
-    return null;
-  }
+
 
   @Override
   public PreDef convertDomainToPredef(Segment segment) {
     if (segment != null) {
+    	
       PreDef result = new PreDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
@@ -595,18 +582,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-  @Override
-  public void validate(DisplayMetadata metadata) throws SegmentValidationException {
-    if (!metadata.getScope().equals(Scope.HL7STANDARD)) {
-      if (StringUtils.isEmpty(metadata.getName())) {
-        throw new SegmentValidationException("Name is missing");
-      }
-      if (StringUtils.isEmpty(metadata.getExt())) {
-        throw new SegmentValidationException("Ext is missing");
-      }
-    }
-  }
-
 
 
   /**
@@ -655,19 +630,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-  @Override
-  public Segment saveMetadata(DisplayMetadata metadata)
-      throws SegmentNotFoundException, SegmentValidationException {
-    validate(metadata);
-    Segment segment = findById(metadata.getId());
-    if (segment == null) {
-      throw new SegmentNotFoundException(metadata.getId());
-    }
-    segment.setExt(metadata.getExt());
-    segment.setDescription(metadata.getDescription());
-    segment.setComment(metadata.getAuthorNote());
-    return save(segment);
-  }
 
 
   @Override
@@ -800,7 +762,26 @@ public class SegmentServiceImpl implements SegmentService {
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-      if (item.getPropertyType().equals(PropertyType.USAGE)) {
+    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
+    		item.setOldPropertyValue(s.getPreDef());
+    		s.setPreDef((String)item.getPropertyValue());
+    	
+    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
+    		item.setOldPropertyValue(s.getPostDef());
+    		s.setPostDef((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+    		item.setOldPropertyValue(s.getAuthorNotes());
+    		s.setAuthorNotes((String)item.getPropertyValue());
+    	}
+    	else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+    		item.setOldPropertyValue(s.getUsageNotes());
+    		s.setUsageNotes((String)item.getPropertyValue());
+    	}else if(item.getPropertyType().equals(PropertyType.EXT)) {
+    		item.setOldPropertyValue(s.getExt());
+    		s.setExt((String)item.getPropertyValue());
+    	}
+    	
+    	else  if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Field f = this.findFieldById(s, item.getLocation());
         if (f != null) {
           item.setOldPropertyValue(f.getUsage());

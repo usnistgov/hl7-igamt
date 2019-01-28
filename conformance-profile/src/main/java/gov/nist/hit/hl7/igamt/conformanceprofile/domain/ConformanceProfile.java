@@ -13,13 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 /**
@@ -102,6 +99,9 @@ public class ConformanceProfile extends Resource {
    */
   @Override
   public String getLabel() {
+	  if(this.getIdentifier()!=null&&!this.getIdentifier().isEmpty()) {
+		  return this.getName()+"-"+this.getIdentifier();
+	  }
     return this.getName();
   }
 

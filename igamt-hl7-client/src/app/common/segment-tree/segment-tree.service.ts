@@ -19,6 +19,34 @@ export class SegmentTreeNodeService {
     this.valueSetAllowedComponents = this.configService.valueSetAllowedComponents;
   }
 
+  decorateTree(tree: TreeNode[]) {
+    if(tree) {
+      for (let node of tree) {
+        this.decorateNode(node, null);
+      }
+    }
+  }
+
+  decorateNode(node : TreeNode, parent: TreeNode) {
+    console.log(node);
+    node.label = node.data.name;
+    node.data.index = node.data.position;
+    node.data.obj =   node.data;
+    node.data.path = (parent && parent.data && parent.data.path) ? parent.data.path + '.' + node.data.position + '[1]' : node.data.position + '[1]';
+    node.leaf = node.data.datatypeLabel.leaf;
+    // node.selectable = true;
+    node.data.version = node.data.datatypeLabel.domainInfo.version;
+    node.data.coded = this.configService.isCodedElement(node.data.datatypeLabel.label);
+    node.data.variable = node.data.datatypeLabel.name === 'VARIES';
+    node.data.complex = !node.leaf;
+
+    if(node && node.children) {
+      for(let child of node.children){
+        this.decorateNode(child, node);
+      }
+    }
+  }
+
   async getFieldsAsTreeNodes(segment, exclusion: any[]) {
     const nodes: TreeNode[] = [];
     const list = segment.structure.sort((x, y) => x.position - y.position);
@@ -56,14 +84,12 @@ export class SegmentTreeNodeService {
 
   async getComponentsAsTreeNodes(node, segment, exclusion) {
     const nodes: TreeNode[] = [];
-    this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure').subscribe(async result => {
-      const data = result as any;
-      for (const d of data.children) {
-        nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
-      }
-    });
-    return nodes.sort((a,b) => {
-      return a.data.index - b.data.index;
+    const data: any = await this.http.get('api/datatypes/' + node.data.obj.ref.id + '/structure').toPromise();
+    for (const d of data.structure) {
+      nodes.push(await this.lazyNode(d.data, node, segment, exclusion));
+    }
+    return nodes.sort((a, b) => {
+      return a.data.position - b.data.position;
     });
   }
 

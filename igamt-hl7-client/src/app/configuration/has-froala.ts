@@ -5,15 +5,12 @@ import {NgForm} from "@angular/forms";
 export class HasFroala {
 
 
-  getOptions(form:NgForm) {
+  getOptions(form: NgForm) {
 
-    return  {
+    return {
       placeholder: "Edit Me",
       events: {
-        'froalaEditor.focus': function (e, editor) {
-          console.log(form);
-          form.form.markAsDirty();
-          form.form.markAsTouched();
+        'froalaEditor.blur': function (e, editor) {
         }
       }
     }

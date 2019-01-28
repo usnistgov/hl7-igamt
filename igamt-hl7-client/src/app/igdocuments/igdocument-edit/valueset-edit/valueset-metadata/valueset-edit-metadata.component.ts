@@ -51,7 +51,7 @@ export class ValuesetEditMetadataComponent extends HasFroala implements WithSave
     return this.backup;
   }
 
-  isValid(){
+  canSave(){
     return !this.editForm.invalid;
   }
 

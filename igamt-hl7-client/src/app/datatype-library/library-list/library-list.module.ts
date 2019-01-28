@@ -24,7 +24,6 @@ import {ConfirmationService} from 'primeng/api';
       FormsModule,
       InputTextModule,
       DataViewModule,
-      ConfirmDialogModule,
       ConfirmDialogModule
     ],
   declarations: [LibraryListComponent,ConfirmDialogModule],

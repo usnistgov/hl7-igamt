@@ -17,13 +17,13 @@ package gov.nist.hit.hl7.igamt.common.change.entity.domain;
  */
 public enum PropertyType {
   //METDATA
-  EXT, AUTHORNOTES,
+  EXT, AUTHORNOTES,USAGENOTES,INDENTIFIER, BINDINGIDENTIFIER,
   
   //PRETEXT
-  PRETEXT,
+  PREDEF,
   
   //POSTTEXT
-  POSTTEXT,
+  POSTDEF,
   
   //DYNAMICMAPPING
   MAPPINGITEM,
