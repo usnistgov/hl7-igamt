@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -43,6 +45,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -102,6 +105,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
+  
+  @Autowired
+  private InMemoryDomainExtentionService domainExtention;
 
   @Autowired
   private CoConstraintService coConstraintService;
@@ -120,7 +126,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public Segment findById(String key) {
-    return segmentRepository.findById(key).orElse(null);
+	Segment segment = this.domainExtention.findById(key, Segment.class);
+    return segment == null ? segmentRepository.findById(key).orElse(null) : segment;
   }
 
   @Override
@@ -139,7 +146,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public List<Segment> findAll() {
-    return segmentRepository.findAll();
+	return Stream.concat(this.domainExtention.getAll(Segment.class).stream(), segmentRepository.findAll().stream())
+	.collect(Collectors.toList());
   }
 
   @Override

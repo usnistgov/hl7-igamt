@@ -11,15 +11,20 @@
  */
 package gov.nist.hit.hl7.igamt.common.constraint.domain.assertion;
 
+import gov.nist.healthcare.diff.utils.annotation.DeltaField;
+
 /**
  * @author jungyubw
  *
  */
 public class Subject {
-
+  @DeltaField
   private String occurenceType;
+  @DeltaField
   private String occurenceValue;
+  @DeltaField
   private String occurenceIdPath;
+  @DeltaField
   private String occurenceLocationStr;
   
   public String getOccurenceType() {

@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain;
 
 import java.io.Serializable;
 
+import gov.nist.healthcare.diff.utils.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
 
 /**
@@ -24,6 +25,7 @@ public class AssertionPredicate extends Predicate implements Serializable{
    * 
    */
   private static final long serialVersionUID = -8306847581430345712L;
+  @DeltaField
   private Assertion assertion;
 
   public AssertionPredicate() {
