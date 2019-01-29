@@ -1,10 +1,7 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
 
-import javax.annotation.PostConstruct;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -50,21 +47,18 @@ public class BootstrapApplication implements CommandLineRunner {
 //  
   @Autowired
   MessageEventFacory messageEventFactory;
-  
-		
-		 
 
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
 
   @Autowired
   DatatypeClassifier datatypeClassifier;
+  
   @Autowired
   DatatypeService dataypeService;
+  
   @Autowired
-
   DatatypeClassificationService datatypeClassificationService;
-
 
 
   @Bean
