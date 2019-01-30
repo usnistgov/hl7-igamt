@@ -53,6 +53,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -298,7 +299,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
       result.setType(Type.CONFORMANCEPROFILE);
-      result.setStructure(this.convertDomainToContextStructure(conformanceProfile).getChildren());
+      result.setAssociatedConformanceStatementMap(new HashMap<String, ConformanceStatementsContainer>());
+      result.setStructure(this.convertDomainToContextStructure(conformanceProfile, result.getAssociatedConformanceStatementMap()).getChildren());
       Set<ConformanceStatement> cfs= new HashSet<ConformanceStatement>();
       if(conformanceProfile.getBinding()!=null) {
     	  if(conformanceProfile.getBinding().getConformanceStatements() !=null) {
@@ -1220,7 +1222,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#convertDomainToContextStructure(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
    */
   @Override
-  public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile) {
+  public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> map) {
     ConformanceProfileStructureTreeModel result = new ConformanceProfileStructureTreeModel();
     result.setData(new ConformanceProfileDisplayModel(conformanceProfile));
 
@@ -1230,6 +1232,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
           SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)sog);
           Segment s = this.segmentService.findById(((SegmentRef) sog).getRef().getId());
+          if(s.getDomainInfo().getScope().equals(Scope.USER)) {
+            this.segmentService.collectAssoicatedConformanceStatements(s, map);
+          }
           segmentRefDisplayModel.setName(s.getName());
           segmentRefDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
           segmentRefDisplayModel.setPath("1-" + sog.getPosition());
@@ -1240,7 +1245,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)sog);
           groupDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
           groupDisplayModel.setPath("1-" + sog.getPosition());
-          updateChild(groupStructureTreeModel, groupDisplayModel, sog);
+          updateChild(groupStructureTreeModel, groupDisplayModel, sog, map);
           groupStructureTreeModel.setData(groupDisplayModel);
           result.addChild(groupStructureTreeModel);
         }
@@ -1250,25 +1255,29 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   /**
+   * @param map 
    * @param groupStructureTreeModel
    * @param groupDisplayModel
    * @param sog
    */
   private void updateChild(GroupStructureTreeModel parentStructureTreeModel,
-      GroupDisplayModel parentDisplayModel, SegmentRefOrGroup parent) {
+      GroupDisplayModel parentDisplayModel, SegmentRefOrGroup parent, HashMap<String, ConformanceStatementsContainer> map) {
     for(SegmentRefOrGroup child : ((Group)parent).getChildren()){
       if(child instanceof Group){
         GroupStructureTreeModel groupStructureTreeModel = new GroupStructureTreeModel();
         GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)child);
         groupDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
         groupDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());
-        updateChild(groupStructureTreeModel, groupDisplayModel, child);
+        updateChild(groupStructureTreeModel, groupDisplayModel, child, map);
         groupStructureTreeModel.setData(groupDisplayModel);
         parentStructureTreeModel.addGroup(groupStructureTreeModel);
       }else if(child instanceof SegmentRef){
         SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
         SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)child);
         Segment s = this.segmentService.findById(((SegmentRef) child).getRef().getId());
+        if(s.getDomainInfo().getScope().equals(Scope.USER)) {
+          this.segmentService.collectAssoicatedConformanceStatements(s, map);
+        }
         segmentRefDisplayModel.setName(s.getName());
         segmentRefDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
         segmentRefDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());

@@ -70,6 +70,14 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.segmentConformanceStatements= x;
             if(!this.segmentConformanceStatements.conformanceStatements) this.segmentConformanceStatements.conformanceStatements = [];
             this.backup=__.cloneDeep(this.segmentConformanceStatements);
+
+            const map = new Map(Object.entries(this.segmentConformanceStatements.associatedConformanceStatementMap));
+
+            let keys = Array.from( map.keys() );
+
+
+
+            console.log(keys);
         });
     }
 

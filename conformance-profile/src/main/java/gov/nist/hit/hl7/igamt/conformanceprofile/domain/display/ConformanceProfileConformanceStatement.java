@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 
 
 
@@ -14,6 +16,7 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
+  private HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap;
 
   public String getName() {
     return name;
@@ -61,6 +64,14 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
 
   public void setStructure(Set<SegmentRefOrGroupStructureTreeModel> structure) {
     this.structure = structure;
+  }
+
+  public HashMap<String, ConformanceStatementsContainer> getAssociatedConformanceStatementMap() {
+    return associatedConformanceStatementMap;
+  }
+
+  public void setAssociatedConformanceStatementMap(HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    this.associatedConformanceStatementMap = associatedConformanceStatementMap;
   }
 
 

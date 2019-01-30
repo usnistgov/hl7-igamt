@@ -24,6 +24,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -161,4 +162,6 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findFlavors(Set<String> ids, String id, String name);
 
   public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+
+  public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
 }

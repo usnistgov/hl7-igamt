@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +35,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -146,7 +148,9 @@ public class DatatypeController extends BaseController {
     if(datatype.getBinding() !=null) {
     	cfs=datatype.getBinding().getConformanceStatements();
     }
-    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs);
+    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.DATATYPE);
     return  conformanceStatementDisplay;
   }
