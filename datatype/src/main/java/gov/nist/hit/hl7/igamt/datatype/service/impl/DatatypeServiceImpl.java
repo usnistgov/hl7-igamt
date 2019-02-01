@@ -1141,12 +1141,15 @@ public class DatatypeServiceImpl implements DatatypeService {
         ComplexDatatype cDT = (ComplexDatatype)datatype;
         for(Component c : cDT.getComponents()) {
           Datatype dt = this.findById(c.getRef().getId());
-          if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
-            if(dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null && dt.getBinding().getConformanceStatements().size() > 0) {
-              if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(), Type.DATATYPE, dt.getId(), dt.getLabel()));
-              this.collectAssoicatedConformanceStatements(cDT, associatedConformanceStatementMap);
-            }
+          if(dt != null){
+            if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
+              if(dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null && dt.getBinding().getConformanceStatements().size() > 0) {
+                if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(), Type.DATATYPE, dt.getId(), dt.getLabel()));
+                this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
+              }
+            }            
           }
+
         }  
       }
     }

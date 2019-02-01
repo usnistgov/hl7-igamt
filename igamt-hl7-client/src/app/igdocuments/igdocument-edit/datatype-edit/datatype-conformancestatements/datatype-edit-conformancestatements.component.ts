@@ -29,6 +29,7 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
     constraintTypes: any = [];
     assertionModes: any = [];
     backup:any;
+    keys : any[] = []
 
     selectedConformanceStatement: any = {};
     datatypeStructure : any;
@@ -73,6 +74,9 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
             this.datatypeConformanceStatements= x;
             if(!this.datatypeConformanceStatements.conformanceStatements) this.datatypeConformanceStatements.conformanceStatements = [];
             this.backup=__.cloneDeep(this.datatypeConformanceStatements);
+
+            const map = new Map(Object.entries(this.datatypeConformanceStatements.associatedConformanceStatementMap));
+            this.keys = Array.from( map.keys() );
         });
     }
 

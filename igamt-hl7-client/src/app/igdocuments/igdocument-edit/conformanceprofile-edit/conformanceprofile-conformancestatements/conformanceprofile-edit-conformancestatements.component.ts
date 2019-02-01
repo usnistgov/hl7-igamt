@@ -19,6 +19,7 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
 })
 export class ConformanceprofileEditConformancestatementsComponent  implements WithSave{
     cols:any;
+    aCols:any;
     currentUrl:any;
     messageId:any;
     igId:any;
@@ -26,6 +27,8 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
     constraintTypes: any = [];
     assertionModes: any = [];
     backup:any;
+    dtKeys : any[] = [];
+    segKeys : any[] = [];
 
     selectedConformanceStatement: any = {};
     messageStructure : any;
@@ -56,6 +59,11 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
             { field: 'context', header: 'CONTEXT', colStyle: {width: '20em'}},
             { field: 'description', header: 'Description' }
         ];
+
+        this.aCols = [
+            { field: 'identifier', header: 'ID', colStyle: {width: '20em'}, sort:'identifier'},
+            { field: 'description', header: 'Description' }
+        ];
     }
 
     ngOnInit() {
@@ -69,7 +77,8 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
             this.messageConformanceStatements= x;
             if(!this.messageConformanceStatements.conformanceStatements) this.messageConformanceStatements.conformanceStatements = [];
             this.backup=__.cloneDeep(this.messageConformanceStatements);
-            console.log(this.messageConformanceStatements);
+            this.segKeys = Array.from( new Map(Object.entries(this.messageConformanceStatements.associatedSEGConformanceStatementMap)).keys() );
+            this.dtKeys = Array.from( new Map(Object.entries(this.messageConformanceStatements.associatedDTConformanceStatementMap)).keys() );
         });
     }
 

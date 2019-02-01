@@ -16,7 +16,8 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
-  private HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap;
+  private HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap;
+  private HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap;
 
   public String getName() {
     return name;
@@ -66,14 +67,23 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
     this.structure = structure;
   }
 
-  public HashMap<String, ConformanceStatementsContainer> getAssociatedConformanceStatementMap() {
-    return associatedConformanceStatementMap;
+  public HashMap<String, ConformanceStatementsContainer> getAssociatedSEGConformanceStatementMap() {
+    return associatedSEGConformanceStatementMap;
   }
 
-  public void setAssociatedConformanceStatementMap(HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
-    this.associatedConformanceStatementMap = associatedConformanceStatementMap;
+  public void setAssociatedSEGConformanceStatementMap(
+      HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap) {
+    this.associatedSEGConformanceStatementMap = associatedSEGConformanceStatementMap;
   }
 
+  public HashMap<String, ConformanceStatementsContainer> getAssociatedDTConformanceStatementMap() {
+    return associatedDTConformanceStatementMap;
+  }
+
+  public void setAssociatedDTConformanceStatementMap(
+      HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap) {
+    this.associatedDTConformanceStatementMap = associatedDTConformanceStatementMap;
+  }
 
 
 }

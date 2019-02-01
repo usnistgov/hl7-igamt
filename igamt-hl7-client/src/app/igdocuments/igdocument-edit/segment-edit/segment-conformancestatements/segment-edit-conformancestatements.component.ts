@@ -14,12 +14,15 @@ import {SegmentsService} from "../segments.service";
 import {DatatypesService} from "../../datatype-edit/datatypes.service";
 import {IgErrorService} from "../../ig-error/ig-error.service";
 import {TocService} from "../../service/toc.service";
+import {CSDialogComponent} from "../../../../common/conformance-statement-dialog/cs-dialog.component";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
     styleUrls : ['./segment-edit-conformancestatements.component.css']
 })
 export class SegmentEditConformanceStatementsComponent  implements WithSave{
+    @ViewChild(CSDialogComponent) dialog: CSDialogComponent;
+
     cols:any;
     currentUrl:any;
     segmentId:any;
@@ -27,6 +30,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     segmentConformanceStatements:any;
     constraintTypes: any = [];
     assertionModes: any = [];
+    keys : any[] = []
     backup:any;
 
     selectedConformanceStatement: any = {};
@@ -70,14 +74,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.segmentConformanceStatements= x;
             if(!this.segmentConformanceStatements.conformanceStatements) this.segmentConformanceStatements.conformanceStatements = [];
             this.backup=__.cloneDeep(this.segmentConformanceStatements);
-
             const map = new Map(Object.entries(this.segmentConformanceStatements.associatedConformanceStatementMap));
-
-            let keys = Array.from( map.keys() );
-
-
-
-            console.log(keys);
+            this.keys = Array.from( map.keys() );
         });
     }
 
@@ -187,6 +185,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
         this.editorTab = true;
         this.listTab = false;
+
+        this.editCS(cs);
     }
 
     deleteCS(identifier, forUpdate){
@@ -224,5 +224,33 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     hasChanged(){
         if(this.changeItems && this.changeItems.length > 0) return true;
         return false;
+    }
+
+    editCS(cs: any) {
+        const ctrl = this;
+        if (cs) {
+            const payload = {
+                cs : cs
+            };
+            this.dialog.open(payload).subscribe({
+                next(cs) {
+                    ctrl.selectedConformanceStatement = cs;
+                },
+                complete() {
+                    console.log('COMPLETE');
+                    console.log(ctrl.selectedConformanceStatement);
+                }
+            });
+        }else {
+            this.dialog.open({ pattern: null}).subscribe({
+                next(p) {
+                    ctrl.selectedConformanceStatement = cs;
+                },
+                complete() {
+                    console.log('COMPLETE');
+                    console.log(ctrl.selectedConformanceStatement);
+                }
+            });
+        }
     }
 }
