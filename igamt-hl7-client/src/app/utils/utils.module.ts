@@ -70,7 +70,6 @@ import {SegmentColService} from "../common/tree-table/segment/segment-col.servic
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
 import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.component';
-import {CSDialogComponent} from '../common/conformance-statement-dialog/cs-dialog.component';
 
 @NgModule({
   imports: [
@@ -139,8 +138,7 @@ import {CSDialogComponent} from '../common/conformance-statement-dialog/cs-dialo
     PatternEditorDemoComponent,
     PatternDialogComponent,
     CommentReadonlyColComponent,
-    ElementLabelComponent,
-    CSDialogComponent
+    ElementLabelComponent
   ],
 
   exports: [
@@ -186,8 +184,7 @@ import {CSDialogComponent} from '../common/conformance-statement-dialog/cs-dialo
     CsSegmentTreeComponent,
     PatternEditorDemoComponent,
     PatternDialogComponent,
-    ElementLabelComponent,
-    CSDialogComponent
+    ElementLabelComponent
   ],
   providers:[DatatypeColService, SegmentColService]
 })

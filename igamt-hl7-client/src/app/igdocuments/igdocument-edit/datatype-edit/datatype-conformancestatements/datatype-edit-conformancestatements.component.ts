@@ -33,8 +33,8 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
 
     selectedConformanceStatement: any = {};
     datatypeStructure : any;
-    listTab: boolean = true;
-    editorTab: boolean = false;
+    csEditor:boolean = false;
+    backupCS:any;
 
     changeItems:any[] = [];
 
@@ -151,20 +151,39 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
         if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.datatypeStructure, 'D');
         this.datatypeConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
-        this.editorTab = false;
-        this.listTab = true;
+        this.csEditor = false;
+    }
 
+    discardEdit(){
+        this.selectedConformanceStatement = {};
+        this.csEditor = false;
+    }
 
+    resetEdit(){
+        this.selectedConformanceStatement = __.cloneDeep(this.backupCS);
+
+        if(this.selectedConformanceStatement.type === 'FREE'){
+            this.selectedConformanceStatement.displayType = 'free';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
+            && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
+            && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple-proposition';
+        }else {
+            this.selectedConformanceStatement.displayType = 'complex';
+        }
     }
 
     addNewCS(){
         this.selectedConformanceStatement = {};
-        this.editorTab = true;
-        this.listTab = false;
+        this.backupCS = {};
+        this.csEditor = true;
     }
 
     selectCS(cs){
-        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        this.selectedConformanceStatement = __.cloneDeep(cs);
+        this.backupCS = __.cloneDeep(cs);
 
         if(this.selectedConformanceStatement.type === 'FREE'){
             this.selectedConformanceStatement.displayType = 'free';
@@ -178,8 +197,7 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
             this.selectedConformanceStatement.displayType = 'complex';
         }
 
-        this.editorTab = true;
-        this.listTab = false;
+        this.csEditor = true;
     }
 
     deleteCS(identifier, forUpdate){

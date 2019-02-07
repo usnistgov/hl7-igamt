@@ -11,18 +11,12 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import * as __ from 'lodash';
 import {SegmentsService} from "../segments.service";
-import {DatatypesService} from "../../datatype-edit/datatypes.service";
-import {IgErrorService} from "../../ig-error/ig-error.service";
-import {TocService} from "../../service/toc.service";
-import {CSDialogComponent} from "../../../../common/conformance-statement-dialog/cs-dialog.component";
 
 @Component({
     templateUrl : './segment-edit-conformancestatements.component.html',
     styleUrls : ['./segment-edit-conformancestatements.component.css']
 })
 export class SegmentEditConformanceStatementsComponent  implements WithSave{
-    @ViewChild(CSDialogComponent) dialog: CSDialogComponent;
-
     cols:any;
     currentUrl:any;
     segmentId:any;
@@ -35,8 +29,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     selectedConformanceStatement: any = {};
     segmentStructure : any;
-    listTab: boolean = true;
-    editorTab: boolean = false;
+    csEditor:boolean = false;
+    backupCS:any;
 
     changeItems:any[] = [];
 
@@ -156,20 +150,39 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.segmentStructure, 'D');
         this.segmentConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
-        this.editorTab = false;
-        this.listTab = true;
+        this.csEditor = false;
+    }
 
+    discardEdit(){
+        this.selectedConformanceStatement = {};
+        this.csEditor = false;
+    }
 
+    resetEdit(){
+        this.selectedConformanceStatement = __.cloneDeep(this.backupCS);
+
+        if(this.selectedConformanceStatement.type === 'FREE'){
+            this.selectedConformanceStatement.displayType = 'free';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
+            && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
+            && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple-proposition';
+        }else {
+            this.selectedConformanceStatement.displayType = 'complex';
+        }
     }
 
     addNewCS(){
         this.selectedConformanceStatement = {};
-        this.editorTab = true;
-        this.listTab = false;
+        this.backupCS = {};
+        this.csEditor = true;
     }
 
     selectCS(cs){
-        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        this.selectedConformanceStatement = __.cloneDeep(cs);
+        this.backupCS = __.cloneDeep(cs);
 
         if(this.selectedConformanceStatement.type === 'FREE'){
             this.selectedConformanceStatement.displayType = 'free';
@@ -183,10 +196,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
             this.selectedConformanceStatement.displayType = 'complex';
         }
 
-        this.editorTab = true;
-        this.listTab = false;
-
-        this.editCS(cs);
+        this.csEditor = true;
     }
 
     deleteCS(identifier, forUpdate){
@@ -217,40 +227,8 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
 
     }
 
-    onTabOpen(e) {
-        if(e.index === 0) this.selectedConformanceStatement = {};
-    }
-
     hasChanged(){
         if(this.changeItems && this.changeItems.length > 0) return true;
         return false;
-    }
-
-    editCS(cs: any) {
-        const ctrl = this;
-        if (cs) {
-            const payload = {
-                cs : cs
-            };
-            this.dialog.open(payload).subscribe({
-                next(cs) {
-                    ctrl.selectedConformanceStatement = cs;
-                },
-                complete() {
-                    console.log('COMPLETE');
-                    console.log(ctrl.selectedConformanceStatement);
-                }
-            });
-        }else {
-            this.dialog.open({ pattern: null}).subscribe({
-                next(p) {
-                    ctrl.selectedConformanceStatement = cs;
-                },
-                complete() {
-                    console.log('COMPLETE');
-                    console.log(ctrl.selectedConformanceStatement);
-                }
-            });
-        }
     }
 }

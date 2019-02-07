@@ -32,8 +32,8 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
 
     selectedConformanceStatement: any = {};
     messageStructure : any;
-    listTab: boolean = true;
-    editorTab: boolean = false;
+    csEditor:boolean = false;
+    backupCS:any;
     showContextTree : boolean = false;
 
     changeItems:any[] = [];
@@ -159,26 +159,67 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
         if(this.selectedConformanceStatement.type === 'ASSERTION') this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedConformanceStatement.assertion, this.messageStructure, 'D');
         this.messageConformanceStatements.conformanceStatements.push(this.selectedConformanceStatement);
         this.selectedConformanceStatement = {};
-        this.editorTab = false;
-        this.listTab = true;
+        this.csEditor = false;
 
 
     }
 
+    discardEdit(){
+        this.selectedConformanceStatement = {};
+        this.messageStructure = null;
+        this.csEditor = false;
+    }
+
+    resetEdit(){
+        this.selectedConformanceStatement = __.cloneDeep(this.backupCS);
+
+        if(this.selectedConformanceStatement.type === 'FREE'){
+            this.selectedConformanceStatement.displayType = 'free';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple';
+        }else if(this.selectedConformanceStatement.type === 'ASSERTION' && this.selectedConformanceStatement.assertion && this.selectedConformanceStatement.assertion.mode === 'IFTHEN'
+            && this.selectedConformanceStatement.assertion.ifAssertion && this.selectedConformanceStatement.assertion.ifAssertion.mode === 'SIMPLE'
+            && this.selectedConformanceStatement.assertion.thenAssertion && this.selectedConformanceStatement.assertion.thenAssertion.mode === 'SIMPLE'){
+            this.selectedConformanceStatement.displayType = 'simple-proposition';
+        }else {
+            this.selectedConformanceStatement.displayType = 'complex';
+        }
+
+        this.messageStructure = null;
+        if(this.selectedConformanceStatement.context && this.selectedConformanceStatement.context.child){
+            console.log(this.getIdList(this.selectedConformanceStatement.context.child, null));
+            this.conformanceProfilesService.getConformanceProfileContextStructure(this.messageId, this.getIdList(this.selectedConformanceStatement.context.child, null)).then(data => {
+                this.messageStructure = data;
+                console.log(data);
+
+            }, error => {
+            });
+        }else {
+            this.conformanceProfilesService.getConformanceProfileStructure(this.messageId).then(data => {
+                this.messageStructure = data;
+                console.log(data);
+
+            }, error => {
+            });
+        }
+    }
+
     addNewCS(){
         this.selectedConformanceStatement = {};
-        this.editorTab = true;
-        this.listTab = false;
+        this.backupCS = {};
         this.conformanceProfilesService.getConformanceProfileStructure(this.messageId).then(data => {
             this.messageStructure = data;
             console.log(data);
 
         }, error => {
         });
+
+        this.csEditor = true;
     }
 
     selectCS(cs){
-        this.selectedConformanceStatement = JSON.parse(JSON.stringify(cs));
+        this.selectedConformanceStatement = __.cloneDeep(cs);
+        this.backupCS = __.cloneDeep(cs);
 
         if(this.selectedConformanceStatement.type === 'FREE'){
             this.selectedConformanceStatement.displayType = 'free';
@@ -210,8 +251,7 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
             });
         }
 
-        this.editorTab = true;
-        this.listTab = false;
+        this.csEditor = true;
     }
 
     deleteCS(identifier, forUpdate){
