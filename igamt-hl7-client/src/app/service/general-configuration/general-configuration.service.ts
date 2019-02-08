@@ -48,6 +48,8 @@ export class GeneralConfigurationService {
 
   _assertionModes: any[];
 
+  _predicateTypes : any[];
+
   _constraintTypes: any[];
 
   _extensibilityOptions:any[];
@@ -63,6 +65,12 @@ export class GeneralConfigurationService {
     this._constraintTypes = [
       {label: 'SIMPLE', value: 'simple', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'SIMPLE + Proposition Patterns', value: 'simple-proposition', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'COMPLEX', value: 'complex', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'Free', value: 'free', icon: 'fa fa-fw fa-file-text-o'}
+    ];
+
+    this._predicateTypes = [
+      {label: 'SIMPLE', value: 'simple', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'COMPLEX', value: 'complex', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'Free', value: 'free', icon: 'fa fa-fw fa-file-text-o'}
     ];

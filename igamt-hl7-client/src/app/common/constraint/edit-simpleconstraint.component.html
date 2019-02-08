@@ -1,5 +1,5 @@
 <div [ngModelGroup]="groupName">
-    <div *ngIf="constraint" class="ui-g ui-fluid">
+    <div *ngIf="!isPredicate && constraint" class="ui-g ui-fluid">
         <div class="ui-g-12 ui-md-2">
             <label for="id">ID: </label>
         </div>
@@ -8,6 +8,32 @@
             <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
                 <div *ngIf="id.errors.required">
                     ID is required.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isPredicate && constraint" class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label for="id">True Usage: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="cUsages" [autoWidth]="false" id="tUsage" name="tUsage" required [(ngModel)]="constraint.trueUsage" [style]="{'width' : '25%'}" #tUsage="ngModel"></p-dropdown>
+            <div *ngIf="tUsage.invalid && (tUsage.dirty || tUsage.touched)" class="alert alert-danger">
+                <div *ngIf="tUsage.errors.required">
+                    True Usage is required.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="isPredicate && constraint" class="ui-g ui-fluid">
+        <div class="ui-g-12 ui-md-2">
+            <label for="id">False Usage: </label>
+        </div>
+        <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="cUsages" [autoWidth]="false"  id="fUsage" name="fUsage" required [(ngModel)]="constraint.falseUsage" [style]="{'width' : '25%'}" #fUsage="ngModel"></p-dropdown>
+            <div *ngIf="fUsage.invalid && (fUsage.dirty || fUsage.touched)" class="alert alert-danger">
+                <div *ngIf="fUsage.errors.required">
+                    True Usage is required.
                 </div>
             </div>
         </div>
