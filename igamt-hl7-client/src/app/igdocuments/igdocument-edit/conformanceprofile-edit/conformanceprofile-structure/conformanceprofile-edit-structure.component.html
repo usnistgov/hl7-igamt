@@ -59,6 +59,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'valueSet'">
+                            {{node.data.idPath}}
                             <valueset-col *ngIf="(node.data.type === 'FIELD' || node.data.type === 'COMPONENT' || node.data.type === 'SUBCOMPONENT') && configService.isValueSetAllow(node.data.datatypeLabel.name, node.data.position, node.parent, null, node.data.type)" [datatypeLabel]="node.data.datatypeLabel" [igId] = "igId" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "conformanceprofileStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></valueset-col>
                         </ng-container>
 
