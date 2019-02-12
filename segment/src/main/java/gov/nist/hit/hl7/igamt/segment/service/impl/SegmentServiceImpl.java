@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -1301,5 +1302,20 @@ public class SegmentServiceImpl implements SegmentService {
 
     List<Segment> segments = mongoTemplate.find(qry, Segment.class);
     return segments;
+  }
+
+  @Override
+  public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if(segment.getDomainInfo().getScope().equals(Scope.USER)) {
+      for(Field f : segment.getChildren()) {
+        Datatype dt = this.datatypeService.findById(f.getRef().getId());
+        if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
+          if(dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null && dt.getBinding().getConformanceStatements().size() > 0) {
+            if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(), Type.DATATYPE, dt.getId(), dt.getLabel()));
+            this.datatypeService.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
+          }
+        }
+      }      
+    }    
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Created by hnt5 on 10/30/17.
  */
-import {NgModule}     from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
@@ -40,6 +40,7 @@ import {MessageModule} from 'primeng/message';
 import {DisplayMenuComponent} from "../common/display-menu/display-menu.component";
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
+import {SelectButtonModule} from 'primeng/selectbutton';
 
 import {NameColComponent} from "../common/tree-table/name/name-col.component";
 import {UsageColComponent} from "../common/tree-table/usage/usage-col.component";
@@ -66,6 +67,8 @@ import {ElementLabelComponent} from "../common/element-label/element-label.compo
 import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.service";
 import {SegmentColComponent} from "../common/tree-table/segment/segment-col.component";
 import {SegmentColService} from "../common/tree-table/segment/segment-col.service";
+import {PredicateColComponent} from "../common/tree-table/predicate/predicate-col.component";
+import {PredicateReadonlyColComponent} from "../common/tree-table/predicate/predicate-readonly-col.component";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -78,6 +81,7 @@ import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/confl
 import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
 import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
 import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
+
 @NgModule({
   imports: [
     CommonModule,
@@ -96,8 +100,11 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DragDropModule,
     OrganizationChartModule,
     TreeTableModule,
-    KeyFilterModule,MessageModule,MessagesModule,
-    DndListModule
+    KeyFilterModule,
+    MessageModule,
+    MessagesModule,
+    DndListModule,
+    SelectButtonModule
 
   ],
   declarations: [
@@ -153,7 +160,9 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     ConflengthDeltaColComponent,
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
-    ValuesetDeltaColComponent
+    ValuesetDeltaColComponent,
+    PredicateColComponent,
+    PredicateReadonlyColComponent
   ],
 
   exports: [
@@ -171,9 +180,9 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     EditSimplePropositionConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
-    CrossReferenceComponent,DatatypeListManagerComponent,
+    CrossReferenceComponent,
+    DatatypeListManagerComponent,
     DisplayMenuComponent,
-
     NameColComponent,
     UsageColComponent,
     UsageReadonlyColComponent,
@@ -207,8 +216,10 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     ConflengthDeltaColComponent,
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
-    ValuesetDeltaColComponent
+    ValuesetDeltaColComponent,
+    PredicateColComponent,
+    PredicateReadonlyColComponent
   ],
-  providers:[DatatypeColService, SegmentColService]
+  providers: [DatatypeColService, SegmentColService]
 })
 export class UtilsModule {}
