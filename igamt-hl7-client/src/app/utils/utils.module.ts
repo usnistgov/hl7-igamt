@@ -40,6 +40,7 @@ import {MessageModule} from 'primeng/message';
 import {DisplayMenuComponent} from "../common/display-menu/display-menu.component";
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
+import {SelectButtonModule} from 'primeng/selectbutton';
 
 import {NameColComponent} from "../common/tree-table/name/name-col.component";
 import {UsageColComponent} from "../common/tree-table/usage/usage-col.component";
@@ -66,6 +67,8 @@ import {ElementLabelComponent} from "../common/element-label/element-label.compo
 import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.service";
 import {SegmentColComponent} from "../common/tree-table/segment/segment-col.component";
 import {SegmentColService} from "../common/tree-table/segment/segment-col.service";
+import {PredicateColComponent} from "../common/tree-table/predicate/predicate-col.component";
+import {PredicateReadonlyColComponent} from "../common/tree-table/predicate/predicate-readonly-col.component";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -90,7 +93,8 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     OrganizationChartModule,
     TreeTableModule,
     KeyFilterModule,MessageModule,MessagesModule,
-    DndListModule
+    DndListModule,
+    SelectButtonModule
 
   ],
   declarations: [
@@ -138,7 +142,9 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     PatternEditorDemoComponent,
     PatternDialogComponent,
     CommentReadonlyColComponent,
-    ElementLabelComponent
+    ElementLabelComponent,
+    PredicateColComponent,
+    PredicateReadonlyColComponent
   ],
 
   exports: [
@@ -184,7 +190,9 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     CsSegmentTreeComponent,
     PatternEditorDemoComponent,
     PatternDialogComponent,
-    ElementLabelComponent
+    ElementLabelComponent,
+    PredicateColComponent,
+    PredicateReadonlyColComponent
   ],
   providers:[DatatypeColService, SegmentColService]
 })

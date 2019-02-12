@@ -682,7 +682,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             FieldStructureTreeModel fieldStructureTreeModel = new FieldStructureTreeModel();
             FieldDisplayDataModel fModel = new FieldDisplayDataModel(f);
             fModel.setViewScope(ViewScope.SEGMENT);
-            fModel.setIdPath(f.getId());
+            fModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-"+ f.getId());
             fModel.setPath(f.getPosition() + "");
             fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
             StructureElementBinding childChildSeb =
@@ -708,7 +708,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                         new ComponentStructureTreeModel();
                     ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
                     cModel.setViewScope(ViewScope.SEGMENT);
-                    cModel.setIdPath(f.getId() + "-" + c.getId());
+                    cModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId() + "-" + c.getId());
                     cModel.setPath(f.getPosition() + "-" + c.getPosition());
                     cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                     StructureElementBinding childChildChildSeb =
@@ -741,7 +741,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                             SubComponentDisplayDataModel scModel =
                                 new SubComponentDisplayDataModel(sc);
                             scModel.setViewScope(ViewScope.SEGMENT);
-                            scModel.setIdPath(f.getId() + "-" + c.getId() + "-" + sc.getId());
+                            scModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId() + "-" + c.getId() + "-" + sc.getId());
                             scModel.setPath(
                                 f.getPosition() + "-" + c.getPosition() + "-" + sc.getPosition());
                             scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
@@ -1028,6 +1028,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           }
         }
       } else if (item.getPropertyType().equals(PropertyType.VALUESET)) {
+        System.out.println(item);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());

@@ -23,18 +23,14 @@ import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
  */
 public class ResourceBinding extends Binding {
   private Set<ConformanceStatement> conformanceStatements;
-  private Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs;
 
   public ResourceBinding() {
     super();
   }
 
-  public ResourceBinding(String elementId, Set<StructureElementBinding> children,
-      Set<ConformanceStatement> conformanceStatements,
-      Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
+  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<ConformanceStatement> conformanceStatements) {
     super(elementId, children);
     this.conformanceStatements = conformanceStatements;
-    this.conformanceStatementCrossRefs = conformanceStatementCrossRefs;
   }
 
   public Set<ConformanceStatement> getConformanceStatements() {
@@ -45,17 +41,6 @@ public class ResourceBinding extends Binding {
     this.conformanceStatements = conformanceStatements;
   }
 
-  public Set<ConformanceStatementCrossRef> getConformanceStatementCrossRefs() {
-    return conformanceStatementCrossRefs;
-  }
-
-  public void setConformanceStatementCrossRefs(
-      Set<ConformanceStatementCrossRef> conformanceStatementCrossRefs) {
-    if (conformanceStatementCrossRefs == null) {
-      this.conformanceStatementCrossRefs = new HashSet<ConformanceStatementCrossRef>();
-    }
-    this.conformanceStatementCrossRefs = conformanceStatementCrossRefs;
-  }
 
   public void addConformanceStatement(ConformanceStatement conformanceStatement) {
     if (conformanceStatements == null) {
