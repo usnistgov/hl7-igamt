@@ -21,7 +21,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileConformanceStatement;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
@@ -31,6 +30,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 
@@ -95,55 +95,6 @@ public interface ConformanceProfileService {
 
   public void validate(DisplayConformanceProfileMetadata metadata)
       throws ConformanceProfileValidationException;
-
-
-  /**
-   * 
-   * @param predef
-   * @return
-   * @throws ConformanceProfileNotFoundException
-   */
-  public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException;
-
-  /**
-   * 
-   * @param postdef
-   * @return
-   * @throws ConformanceProfileNotFoundException
-   */
-  public ConformanceProfile savePostdef(PostDef postdef) throws ConformanceProfileNotFoundException;
-
-  /**
-   * 
-   * @param metadata
-   * @return
-   * @throws ConformanceProfileNotFoundException
-   * @throws ConformanceProfileValidationException
-   */
-  public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
-      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
-
-  /**
-   * Validate conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @throws ConformanceProfileValidationException
-   */
-  public void validate(ConformanceProfileConformanceStatement conformanceStatement)
-      throws ConformanceProfileValidationException;
-
-
-  /**
-   * Save the conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @return
-   * @throws ConformanceProfileNotFoundException
-   * @throws ConformanceProfileValidationException
-   */
-  public ConformanceProfile saveConformanceStatement(
-      ConformanceProfileConformanceStatement conformanceStatement)
-      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException;
 
   /**
    * @param String

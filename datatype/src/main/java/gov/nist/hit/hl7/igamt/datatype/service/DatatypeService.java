@@ -23,9 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
@@ -82,23 +80,6 @@ public interface DatatypeService {
   public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
 
   /**
-   * 
-   * @param predef
-   * @return
-   * @throws DatatypeNotFoundException
-   */
-  public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException;
-
-  /**
-   * 
-   * @param postdef
-   * @return
-   * @throws DatatypeNotFoundException
-   */
-  public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException;
-
-
-  /**
    * Validate conformance statements of the segment
    * 
    * @param conformanceStatement
@@ -106,18 +87,6 @@ public interface DatatypeService {
    */
   public void validate(DatatypeConformanceStatement conformanceStatement)
       throws DatatypeValidationException;
-
-
-  /**
-   * Save the conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @return
-   * @throws DatatypeNotFoundException
-   * @throws DatatypeValidationException
-   */
-  public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
-      throws DatatypeNotFoundException, DatatypeValidationException;
 
   /**
    * @param scope

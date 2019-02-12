@@ -11,9 +11,7 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
-
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -26,6 +24,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -33,15 +32,15 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -87,6 +86,9 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   CompositeProfileStructureService compositeProfileServie;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
 
   @Autowired
@@ -617,8 +619,8 @@ public class IgServiceImpl implements IgService {
     
     for(Link link : igdoument.getConformanceProfileRegistry().getChildren()){
       ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
-      if(cp.getBinding() != null && cp.getBinding().getConformanceStatements() != null && cp.getBinding().getConformanceStatements().size() > 0){
-        associatedMSGConformanceStatementMap.put(cp.getIdentifier(), new ConformanceStatementsContainer(cp.getBinding().getConformanceStatements(), Type.CONFORMANCEPROFILE, link.getId(), cp.getIdentifier()));
+      if(cp.getBinding() != null && cp.getBinding().getConformanceStatementIds() != null && cp.getBinding().getConformanceStatementIds().size() > 0){
+        associatedMSGConformanceStatementMap.put(cp.getIdentifier(), new ConformanceStatementsContainer(this.collectCS(cp.getBinding().getConformanceStatementIds()), Type.CONFORMANCEPROFILE, link.getId(), cp.getIdentifier()));
       }
       this.conformanceProfileService.convertDomainToContextStructure(cp, associatedSEGConformanceStatementMap, associatedDTConformanceStatementMap);
     }
@@ -630,6 +632,16 @@ public class IgServiceImpl implements IgService {
     return igDocumentConformanceStatement;
   }
 
+  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        result.add(this.conformanceStatementRepository.findById(id).get());
+      }
+    }
+    
+    return result;
+  }
 
 
 }

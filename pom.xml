@@ -112,6 +112,7 @@
 		<module>export-configuration</module>
 		<module>export</module>
 		<module>co-constraint</module>
+		<module>constraint</module>
 	</modules>
   
 </project>

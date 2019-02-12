@@ -37,13 +37,13 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
-import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
@@ -67,6 +67,9 @@ public class SegmentController extends BaseController {
   CoConstraintService coconstraintService;
   @Autowired
   EntityChangeService entityChangeService;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
 
   public SegmentController() {}
@@ -98,8 +101,10 @@ public class SegmentController extends BaseController {
     
     ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-    if(segment.getBinding() !=null) {
-    	cfs=segment.getBinding().getConformanceStatements();
+    if(segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
+        for(String csId : segment.getBinding().getConformanceStatementIds()){
+          cfs.add(conformanceStatementRepository.findById(csId).get());
+        }
     }
     
     HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
@@ -163,54 +168,6 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
 
   }
 
-
-
-  // @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
-  // produces = {"application/json"})
-  // public ResponseMessage saveStucture(@PathVariable("id") String id,
-  // @RequestBody SegmentStructure structure, Authentication authentication)
-  // throws ValidationException, SegmentException, ForbiddenOperationException,
-  // SegmentNotFoundException {
-  // log.debug("Saving segment with id=" + id);
-  // if (!Scope.HL7STANDARD.equals(structure.getScope())) {
-  // Segment segment = segmentService.convertToSegment(structure);
-  // if (segment == null) {
-  // throw new SegmentNotFoundException(id);
-  // }
-  // segment = segmentService.save(segment);
-  // return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
-  // } else {
-  // throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-  // }
-  // }
-
-//  @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.POST,
-//      produces = {"application/json"})
-//  public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
-//      Authentication authentication) throws ValidationException, SegmentNotFoundException {
-//    Segment segment = segmentService.savePredef(preDef);
-//    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, segment.getUpdateDate());
-//  }
-//
-//  @RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.POST,
-//      produces = {"application/json"})
-//  public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
-//      Authentication authentication) throws ValidationException, SegmentNotFoundException {
-//    Segment segment = segmentService.savePostdef(postDef);
-//    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, segment.getUpdateDate());
-//  }
-
-
-  @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveConformanceStatement(@PathVariable("id") String id,
-      Authentication authentication, @RequestBody SegmentConformanceStatement conformanceStatement)
-      throws SegmentValidationException, SegmentNotFoundException {
-    Segment segment = segmentService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
-        segment.getUpdateDate());
-  }
-
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage saveDynamicMapping(@PathVariable("id") String id,
@@ -219,8 +176,6 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
     Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
     return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
   }
-
-
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
       produces = {"application/json"})

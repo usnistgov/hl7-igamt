@@ -16,7 +16,7 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
-import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 

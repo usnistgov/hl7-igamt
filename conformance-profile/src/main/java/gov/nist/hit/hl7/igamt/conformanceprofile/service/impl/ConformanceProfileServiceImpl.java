@@ -47,13 +47,9 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
-import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -74,12 +70,18 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNot
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -115,6 +117,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ValuesetService valuesetService;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
+  
+  @Autowired
+  private PredicateRepository predicateRepository;
 
 
   @Override
@@ -304,73 +312,25 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setStructure(this.convertDomainToContextStructure(conformanceProfile, result.getAssociatedSEGConformanceStatementMap(), result.getAssociatedDTConformanceStatementMap()).getChildren());
       Set<ConformanceStatement> cfs= new HashSet<ConformanceStatement>();
       if(conformanceProfile.getBinding()!=null) {
-    	  if(conformanceProfile.getBinding().getConformanceStatements() !=null) {
-    		  cfs=conformanceProfile.getBinding().getConformanceStatements();
-    	  	}
+        cfs = this.collectCS(conformanceProfile.getBinding().getConformanceStatementIds());
       }
       result.setConformanceStatements(cfs);
       return result;
     }
     return null;
   }
-
-
-  @Override
-  public ConformanceProfile savePredef(PreDef predef) throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = findById(predef.getId());
-    if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(predef.getId());
+  
+  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        result.add(this.conformanceStatementRepository.findById(id).get());
+      }
     }
-    conformanceProfile.setPreDef(predef.getPreDef());
-    return save(conformanceProfile);
+    
+    return result;
   }
-
-  @Override
-  public ConformanceProfile savePostdef(PostDef postdef)
-      throws ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = findById(postdef.getId());
-    if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(postdef.getId());
-    }
-    conformanceProfile.setPostDef(postdef.getPostDef());
-    return save(conformanceProfile);
-  }
-
-
-  @Override
-  public ConformanceProfile saveMetadata(DisplayConformanceProfileMetadata metadata)
-      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
-    validate(metadata);
-    ConformanceProfile conformanceProfile = findById(metadata.getId());
-    if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(metadata.getId());
-    }
-    conformanceProfile.setDescription(metadata.getDescription());
-    conformanceProfile.setDomainInfo(metadata.getDomainInfo());
-    conformanceProfile.setId(metadata.getId());
-    conformanceProfile.setIdentifier(metadata.getIdentifier());
-    conformanceProfile.setMessageType(metadata.getMessageType());
-    conformanceProfile.setName(metadata.getName());
-    conformanceProfile.setStructID(metadata.getStructId());
-    return save(conformanceProfile);
-  }
-
-
-  @Override
-  public ConformanceProfile saveConformanceStatement(
-      ConformanceProfileConformanceStatement conformanceStatement)
-      throws ConformanceProfileNotFoundException, ConformanceProfileValidationException {
-    validate(conformanceStatement);
-    ConformanceProfile conformanceProfile = findById(conformanceStatement.getId());
-    if (conformanceProfile == null) {
-      throw new ConformanceProfileNotFoundException(conformanceStatement.getId());
-    }
-    conformanceProfile.getBinding()
-        .setConformanceStatements(conformanceStatement.getConformanceStatements());
-    return save(conformanceProfile);
-  }
-
-
+  
   private void validateMsgStructElement(MsgStructElement f) throws ValidationException {
     if (f instanceof SegmentRef) {
       validateSegmentRef((SegmentRef) f);
@@ -443,24 +403,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
       if (StringUtils.isEmpty(metadata.getStructId())) {
         throw new ConformanceProfileValidationException("Message Struct ID is missing");
-      }
-    }
-  }
-
-
-
-  /**
-   * TODO: anything more to validate ??
-   */
-  @Override
-  public void validate(ConformanceProfileConformanceStatement conformanceStatement)
-      throws ConformanceProfileValidationException {
-    if (conformanceStatement != null) {
-      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
-        if (StringUtils.isEmpty(statement.getIdentifier())) {
-          throw new ConformanceProfileValidationException(
-              "conformance statement identifier is missing");
-        }
       }
     }
   }
@@ -880,9 +822,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    bindingDisplay.setPredicate(seb.getPredicate());
-    bindingDisplay
-        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
   }
 
@@ -1071,12 +1012,16 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         if (item.getChangeType().equals(ChangeType.ADD)) {
-          cp.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          cs = this.conformanceStatementRepository.save(cs);
+          cp.getBinding().addConformanceStatement(cs.getId());
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(this.deleteConformanceStatementById(cp, item.getLocation()));
+          item.setOldPropertyValue(item.getLocation());
+          this.deleteConformanceStatementById(cp, item.getLocation());
         } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          item.setOldPropertyValue(this.deleteConformanceStatementById(cp, item.getLocation()));
-          cp.getBinding().addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          cs = this.conformanceStatementRepository.save(cs);
         }
       }
     }
@@ -1104,14 +1049,16 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return null;
   }
 
-  private ConformanceStatement deleteConformanceStatementById(ConformanceProfile cp, String location) {
-    ConformanceStatement toBeDeleted = null;
-    for (ConformanceStatement cs : cp.getBinding().getConformanceStatements()) {
+  private String deleteConformanceStatementById(ConformanceProfile cp, String location) {
+    String toBeDeleted = null;
+    for (String id : cp.getBinding().getConformanceStatementIds()) {
+      ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
       if (cs.getIdentifier().equals(location))
-        toBeDeleted = cs;
+        toBeDeleted = id;
     }
+
     if (toBeDeleted != null)
-      cp.getBinding().getConformanceStatements().remove(toBeDeleted);
+      cp.getBinding().getConformanceStatementIds().remove(toBeDeleted);
     return toBeDeleted;
   }
   
@@ -1236,8 +1183,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           Segment s = this.segmentService.findById(((SegmentRef) sog).getRef().getId());
           
           if(s.getDomainInfo().getScope().equals(Scope.USER)) {
-            if(s.getBinding() != null && s.getBinding().getConformanceStatements() != null && s.getBinding().getConformanceStatements().size() > 0) {
-              if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(s.getBinding().getConformanceStatements(), Type.SEGMENT, s.getId(), s.getLabel()));
+            if(s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null && s.getBinding().getConformanceStatementIds().size() > 0) {
+              if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT, s.getId(), s.getLabel()));
             }
             
             this.segmentService.collectAssoicatedConformanceStatements(s, dtMap);
@@ -1285,8 +1232,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         Segment s = this.segmentService.findById(((SegmentRef) child).getRef().getId());
         
         if(s.getDomainInfo().getScope().equals(Scope.USER)) {
-          if(s.getBinding() != null && s.getBinding().getConformanceStatements() != null && s.getBinding().getConformanceStatements().size() > 0) {
-            if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(s.getBinding().getConformanceStatements(), Type.SEGMENT, s.getId(), s.getLabel()));
+          if(s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null && s.getBinding().getConformanceStatementIds().size() > 0) {
+            if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT, s.getId(), s.getLabel()));
           }
           
           this.segmentService.collectAssoicatedConformanceStatements(s, dtMap);
