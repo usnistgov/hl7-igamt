@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.segment.controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -36,9 +38,8 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -100,10 +101,14 @@ public class SegmentController extends BaseController {
     if(segment.getBinding() !=null) {
     	cfs=segment.getBinding().getConformanceStatements();
     }
-    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs);
+    
+    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.SEGMENT);
-    return  conformanceStatementDisplay;
+    return conformanceStatementDisplay;
   }
+
 
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -370,6 +375,7 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
     }
   }
+  
 
 
 }

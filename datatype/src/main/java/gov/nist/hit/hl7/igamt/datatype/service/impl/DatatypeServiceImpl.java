@@ -56,6 +56,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -80,7 +81,7 @@ import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
  *
- * @author Maxence Lefort on Mar 1, 2018.
+ * @author Jungyub Woo on Mar 1, 2018.
  */
 
 @Service("datatypeService")
@@ -1133,6 +1134,24 @@ public class DatatypeServiceImpl implements DatatypeService {
     return null;
   }
 
+  @Override
+  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {    
+    if(datatype.getDomainInfo().getScope().equals(Scope.USER)) {
+      if(datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDT = (ComplexDatatype)datatype;
+        for(Component c : cDT.getComponents()) {
+          Datatype dt = this.findById(c.getRef().getId());
+          if(dt != null){
+            if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
+              if(dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null && dt.getBinding().getConformanceStatements().size() > 0) {
+                if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(), Type.DATATYPE, dt.getId(), dt.getLabel()));
+                this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
+              }
+            }            
+          }
 
-
+        }  
+      }
+    }
+  }
 }
