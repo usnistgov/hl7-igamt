@@ -42,6 +42,7 @@ export class IgDocumentEditComponent {
   @ViewChild("cpLib") cpLib :ElementRef;
   @ViewChild("top") top :ElementRef;
 
+
   igId:any;
   exportModel: MenuItem[];
   userUrl : MenuItem[]=[];
@@ -81,8 +82,11 @@ export class IgDocumentEditComponent {
   @ViewChild('igcontextmenu') public igcontextmenu: ContextMenuComponent;
   @ViewChild('textcontextmenu') public textcontextmenu: ContextMenuComponent;
   @ViewChild('datatypescontextmenu') public datatypescontextmenu: ContextMenuComponent;
-  currentNode:TreeNode;
+  @ViewChild('AlphabiticalOrderMenu') public alphabiticalOrderMenu: ContextMenuComponent;
+  @ViewChild('registryOrderContextMenu') public registryOrderContextMenu: ContextMenuComponent;
 
+
+  currentNode:TreeNode;
 
   private items: MenuItem[];
 
