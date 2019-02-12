@@ -4,6 +4,7 @@
 import {Component, Output, EventEmitter, OnInit, Input} from '@angular/core';
 import {SegmentTreeNodeService} from './segment-tree.service';
 import {TreeNode} from 'primeng/components/common/treenode';
+import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
 @Component({
     selector : 'app-segment-tree',
@@ -17,7 +18,7 @@ export class SegmentTreeComponent implements OnInit {
     @Output() nodeSelect = new EventEmitter();
     tree: TreeNode[];
 
-    constructor(private nodeService: SegmentTreeNodeService) {
+    constructor(private nodeService: SegmentTreeNodeService, private configService: GeneralConfigurationService) {
 
     }
 
@@ -41,21 +42,24 @@ export class SegmentTreeComponent implements OnInit {
       this.initTree(excluded);
     }
 
-    loadNode(event) {
-        if (event.node) {
-            return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment, this._excluded).then(nodes => {
-              event.node.children = nodes.sort((a,b) => {
-                return a.data.index - b.data.index;
-              });
-            });
-        }
-    }
+    // loadNode(event) {
+    //     if (event.node) {
+    //         return this.nodeService.getComponentsAsTreeNodes(event.node, this._segment, this._excluded).then(nodes => {
+    //           event.node.children = nodes.sort((a,b) => {
+    //             return a.data.index - b.data.index;
+    //           });
+    //         });
+    //     }
+    // }
 
     initTree(l: string[]) {
         if (this._segment) {
-            this.nodeService.getFieldsAsTreeNodes(this._segment, l).then(result => {
-                this.tree = result;
-            });
+            this.nodeService.decorateTree(this._segment.structure);
+            this.tree = this.configService.arraySortByPosition(this._segment.structure);
+            console.log(this.tree);
+            // this.nodeService.getFieldsAsTreeNodes(this._segment, l).then(result => {
+            //
+            // });
         }
     }
 

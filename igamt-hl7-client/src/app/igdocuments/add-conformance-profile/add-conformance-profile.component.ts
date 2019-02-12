@@ -61,22 +61,43 @@ export class AddConformanceProfileComponent extends PrimeDialogAdapter{
   closeWithData(res : any){
     this.dismissWithData(res.data);
   }
-
-  toggleEvent(event){
-    console.log(event);
-    console.log(this.selectedEvents);
-    let index =this.selectedEvents.indexOf(event);
-    if(index<0){
-      this.selectedEvents.push(event);
-
-    }else{
-      this.selectedEvents.splice(index,1);
-    }
-  }
+  //
+  // toggleEvent(event){
+  //   console.log(event);
+  //   console.log(this.selectedEvents);
+  //   let index =this.selectedEvents.indexOf(event);
+  //   if(index<0){
+  //     this.selectedEvents.push(event);
+  //
+  //   }else{
+  //     this.selectedEvents.splice(index,1);
+  //   }
+  // }
+  //
+  // isSelected(event){
+  //   return this.selectedEvents.indexOf(event)>-1;
+  // }
 
   isSelected(event){
-    return this.selectedEvents.indexOf(event)>-1;
-  }
+    for( let i=0;i<this.selectedEvents.length; i++){
+
+      if(this.selectedEvents[i].id==event.id&&this.selectedEvents[i].name==event.name){
+        return true;
+      }
+    }
+    return false;
+  };
+  toggleEvent(event){
+
+    for( let i=0;i<this.selectedEvents.length; i++){
+
+      if(this.selectedEvents[i].id==event.id&&this.selectedEvents[i].name==event.name) {
+        this.selectedEvents.splice(i, 1);
+        return;
+      }
+    }
+    this.selectedEvents.push(event);
+  };
 
   getMessages(v){
     this.tableValue=[];

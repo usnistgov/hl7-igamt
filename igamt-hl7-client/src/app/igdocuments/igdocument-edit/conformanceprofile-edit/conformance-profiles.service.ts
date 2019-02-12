@@ -35,6 +35,20 @@ export class ConformanceProfilesService {
         return promise;
     }
 
+    public getConformanceProfileContextStructure(id, contextId): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+
+            this.http.get('api/conformanceprofiles/' + id + '/structure/' + contextId).toPromise().then(serverConformanceProfileStructure => {
+                resolve(serverConformanceProfileStructure);
+
+            }).catch(function (e) {
+
+            });
+
+        });
+        return promise;
+    }
+
     public getConformanceProfileCrossReference(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
             this.http.get('api/conformanceprofiles/' + id + '/crossReference').toPromise().then(serverConformanceProfileCrossReference => {

@@ -61,6 +61,7 @@ import {LoadingService} from "./service/loading.service";
 import { DeleteElementComponent } from './delete-element/delete-element.component';
 import {DeleteElementService} from "./delete-element/delete-element.service";
 import {ConstraintsService} from "./service/constraints.service";
+import {SidebarModule} from 'primeng/sidebar';
 
 
 @NgModule({
@@ -99,7 +100,7 @@ import {ConstraintsService} from "./service/constraints.service";
     TableModule,
     RadioButtonModule,
     ButtonModule,
-    BlockUIModule,
+    BlockUIModule,SidebarModule,
     SplitButtonModule,
     NamingConventionModule,
     ModalModule.forRoot()

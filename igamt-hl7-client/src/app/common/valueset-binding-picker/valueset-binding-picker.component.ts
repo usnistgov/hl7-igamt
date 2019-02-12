@@ -47,7 +47,7 @@ export class ValueSetBindingPickerComponent extends PrimeDialogAdapter implement
             if (vs.hasOwnProperty('bindingStrength') && vs.hasOwnProperty('bindingLocation')) {
                 selected.push({
                     bindingIdentifier : vs.bindingIdentifier,
-                    bindingLocation : vs.bindingLocation,
+                    bindingLocation : Array.isArray(vs.bindingLocation) ? vs.bindingLocation : [vs.bindingLocation],
                     bindingStrength : vs.bindingStrength,
                     hl7Version : vs.hl7Version,
                     name : vs.name,

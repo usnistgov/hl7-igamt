@@ -5,7 +5,6 @@ import {Component, Input} from "@angular/core";
 import { ControlContainer, NgForm } from '@angular/forms';
 import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 
-
 @Component({
   selector : 'edit-simple-constraint',
   templateUrl : './edit-simpleconstraint.component.html',
@@ -42,6 +41,16 @@ export class EditSimpleConstraintComponent {
     if(this.level === 'CONFORMANCEPROFILE'){
       this.needContext = true;
     }
+
+    this.checkComparionMode();
+  }
+
+  checkComparionMode() {
+    if(this.assertion && this.assertion.complement && this.assertion.complement.complementKey) {
+      for(let item of this.declarativeCTypes){
+        if(item.value === this.assertion.complement.complementKey) this.needComparison = true;
+      }
+    }
   }
 
   selectTargetElementLocation(location){
@@ -64,6 +73,7 @@ export class EditSimpleConstraintComponent {
     if(location.path){
       let result:string = this.structure.name;
       result = this.getChildLocation(location.path.child, this.structure.structure, result, null, type);
+      result = result.replace("undefined.", "");
       return result;
     }
     return null;
@@ -88,12 +98,14 @@ export class EditSimpleConstraintComponent {
                 this.assertion.subject.occurenceType = 'TBD';
                 this.assertion.subject.occurenceIdPath = item.data.idPath;
                 this.assertion.subject.occurenceLocationStr = result + "(" + elementName + ")";
+                this.assertion.subject.occurenceLocationStr = this.assertion.subject.occurenceLocationStr.replace("undefined.", "")
               }
             }else{
               if(!this.assertion.complement.occurenceType){
                 this.assertion.complement.occurenceType = true;
                 this.assertion.complement.occurenceIdPath = item.data.idPath;
                 this.assertion.complement.occurenceLocationStr = result + "(" + elementName + ")";
+                this.assertion.complement.occurenceLocationStr = this.assertion.complement.occurenceLocationStr.replace("undefined.", "")
               }
             }
           }

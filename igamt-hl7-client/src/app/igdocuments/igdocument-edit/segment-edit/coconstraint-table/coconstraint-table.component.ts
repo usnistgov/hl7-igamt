@@ -88,7 +88,10 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
             for (const dt of dtList) {
               ctrl.config.datatypes.push({label: dt.data.label, value: dt.id, display : dt.data});
             }
-            ctrl.config.dynCodes = ctrl.filterDynCodeFromIg(ctrl.config.datatypes, ctrl.config.dynCodes);
+            ctrl.config.dynCodes = ctrl.filterDynCodeFromIg(ctrl.config.datatypes, ctrl.config.dynCodes).sort((a, b) => {
+              return 0 - (a.value > b.value ? -1 : 1);
+            });
+
           });
         });
       }
@@ -204,7 +207,9 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
       varies: field.content.varies
     }).subscribe(
       result => {
+        if((<VSCell> obj[key]).vs !== result) this.ccFormVar.form.markAsDirty();
         (<VSCell> obj[key]).vs = result;
+
       }
     );
   }
@@ -244,6 +249,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
 
     this.headerDialogDm.open(resolve).subscribe(
       result => {
+        this.ccFormVar.form.markAsDirty();
         this.table.headers[h].push(result);
         this.initColumn(result);
       }
@@ -253,6 +259,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   openUserHeaderDialog() {
     this.headerDialogUser.open({header: 'USER'}).subscribe(
       result => {
+        this.ccFormVar.form.markAsDirty();
         this.table.headers.user.push(result);
         this.initColumn(result);
       }

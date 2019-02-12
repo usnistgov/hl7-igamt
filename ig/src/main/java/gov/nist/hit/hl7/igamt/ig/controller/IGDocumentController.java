@@ -194,7 +194,7 @@ public class IGDocumentController extends BaseController {
 
     for(Link link :igdoument.getValueSetRegistry().getChildren()){
       Valueset vs = this.valuesetService.findById(link.getId());
-      if(vs != null){
+      if(vs != null && vs.getDomainInfo() !=null ){
         ValuesetLabel label = new ValuesetLabel();
         label.setId(vs.getId());
         label.setScope(vs.getDomainInfo().getScope());
@@ -823,7 +823,6 @@ public class IGDocumentController extends BaseController {
         clone.setEvent(ev.getName());
         clone.setName(profile.getName());
         clone = conformanceProfileService.save(clone);
-        ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getConformanceProfileRegistry().getChildren().size()+1));
         savedIds.add(clone.getId());
       }
     }
@@ -852,7 +851,6 @@ public class IGDocumentController extends BaseController {
           clone.setName(segment.getName());
           clone.setExt(elm.getExt());
           clone = segmentService.save(clone);
-          ig.getSegmentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size()+1));
           savedIds.add(clone.getId());
         }
       } else {
@@ -883,7 +881,6 @@ public class IGDocumentController extends BaseController {
           clone.setName(datatype.getName());
           clone.setExt(elm.getExt());
           clone = datatypeService.save(clone);
-          ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size()+1));
 
           savedIds.add(clone.getId());
         }
@@ -912,7 +909,7 @@ public class IGDocumentController extends BaseController {
           clone.setUsername(username);
           clone.setBindingIdentifier(elm.getName());
           clone = valuesetService.save(clone);
-          ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
+//          ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size()+1));
           savedIds.add(clone.getId());
         }
       } else {

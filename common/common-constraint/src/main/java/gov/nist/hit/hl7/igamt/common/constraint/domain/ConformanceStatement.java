@@ -14,6 +14,8 @@ package gov.nist.hit.hl7.igamt.common.constraint.domain;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
+import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Path;
+
 /**
  * @author jungyubw
  *
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 public class ConformanceStatement {
   private ConstraintType type;
   protected String identifier;
+  private Path context;
 
   public ConformanceStatement() {
     super();
@@ -44,6 +47,14 @@ public class ConformanceStatement {
 
   public void setType(ConstraintType type) {
     this.type = type;
+  }
+
+  public Path getContext() {
+    return context;
+  }
+
+  public void setContext(Path context) {
+    this.context = context;
   }
 
 

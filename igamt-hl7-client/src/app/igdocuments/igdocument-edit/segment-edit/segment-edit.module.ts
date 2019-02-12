@@ -38,7 +38,15 @@ import {SegmentTreeNodeService} from '../../../common/segment-tree/segment-tree.
 import {TreeModule} from 'primeng/tree';
 import {TocService} from '../service/toc.service';
 import {ValueSetBindingPickerComponent} from '../../../common/valueset-binding-picker/valueset-binding-picker.component';
-import {DataListModule, DataTableModule, DragDropModule, OrganizationChartModule, PickListModule, RadioButtonModule} from 'primeng/primeng';
+import {
+  DataListModule,
+  DataTableModule,
+  DragDropModule,
+  InputSwitchModule,
+  OrganizationChartModule,
+  PickListModule,
+  RadioButtonModule
+} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
 import {MessageService} from "primeng/components/common/messageservice";
@@ -76,7 +84,8 @@ import {MinCardinalityDirective} from '../../../formValidators/min-cardinality.d
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
-        MessageModule
+        MessageModule,
+        InputSwitchModule
     ],
   exports: [CoConstraintTableComponent, UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective],
 

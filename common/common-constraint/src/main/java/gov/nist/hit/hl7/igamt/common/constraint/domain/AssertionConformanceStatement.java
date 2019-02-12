@@ -32,6 +32,4 @@ public class AssertionConformanceStatement extends ConformanceStatement {
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
   }
-
-  
 }

@@ -41,7 +41,7 @@ export class CCHeaderDialogDmComponent extends PrimeDialogAdapter implements OnI
 
     addHeader() {
         const value = {
-            id : this.node.path + ':' + this.type,
+            id : this.node.path.replace(/\./gi,'-') + ':' + this.type,
             label : this._segment.name + '-' + this.node.path,
             template : this.node.variable ? CellTemplate.VARIES : null,
             content : {

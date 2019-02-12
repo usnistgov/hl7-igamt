@@ -70,6 +70,14 @@ import {SegmentColService} from "../common/tree-table/segment/segment-col.servic
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
 import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.component';
+import {NameDeltaColComponent} from '../common/tree-table/name/name-delta-col/name-delta-col.component';
+import {CardinalityDeltaColComponent} from '../common/tree-table/cardinality/cardinality-delta-col/cardinality-delta-col.component';
+import {DeltaDisplayComponent} from '../common/delta/delta-display/delta-display.component';
+import {UsageDeltaColComponent} from '../common/tree-table/usage/usage-delta-col/usage-delta-col.component';
+import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/conflength-delta-col/conflength-delta-col.component';
+import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
+import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
+import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
 @NgModule({
   imports: [
     CommonModule,
@@ -137,7 +145,15 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     PatternEditorDemoComponent,
     PatternDialogComponent,
     CommentReadonlyColComponent,
-    ElementLabelComponent
+    ElementLabelComponent,
+    DeltaDisplayComponent,
+    NameDeltaColComponent,
+    CardinalityDeltaColComponent,
+    UsageDeltaColComponent,
+    ConflengthDeltaColComponent,
+    LengthDeltaColComponent,
+    DatatypeDeltaColComponent,
+    ValuesetDeltaColComponent
   ],
 
   exports: [
@@ -183,7 +199,15 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     CsSegmentTreeComponent,
     PatternEditorDemoComponent,
     PatternDialogComponent,
-    ElementLabelComponent
+    ElementLabelComponent,
+    DeltaDisplayComponent,
+    NameDeltaColComponent,
+    CardinalityDeltaColComponent,
+    UsageDeltaColComponent,
+    ConflengthDeltaColComponent,
+    LengthDeltaColComponent,
+    DatatypeDeltaColComponent,
+    ValuesetDeltaColComponent
   ],
   providers:[DatatypeColService, SegmentColService]
 })

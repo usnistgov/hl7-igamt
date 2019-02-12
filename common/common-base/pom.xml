@@ -27,7 +27,12 @@
     <groupId>org.apache.commons</groupId>
     <artifactId>commons-lang3</artifactId>
     </dependency>
-    
-   
+
+
+  	<dependency>
+  		<groupId>gov.nist.healthcare</groupId>
+  		<artifactId>diff-utils</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>

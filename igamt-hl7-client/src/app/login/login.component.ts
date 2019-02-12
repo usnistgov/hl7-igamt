@@ -1,7 +1,7 @@
 import {Component, Inject, forwardRef, ElementRef} from '@angular/core';
-import { Router }      from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from './auth.service';
-import {DomSanitizer,SafeResourceUrl} from '@angular/platform-browser';
+import {DomSanitizer, SafeResourceUrl} from '@angular/platform-browser';
 import {MessageService} from "primeng/components/common/messageservice";
 
 
@@ -14,7 +14,7 @@ export class LoginComponent {
   username: string;
   password: string;
 
-  constructor(public authService: AuthService, public router: Router,public sanitizer:DomSanitizer, private hostElement: ElementRef) {
+  constructor(public authService: AuthService, public router: Router,public sanitizer: DomSanitizer, private hostElement: ElementRef) {
   }
 
 

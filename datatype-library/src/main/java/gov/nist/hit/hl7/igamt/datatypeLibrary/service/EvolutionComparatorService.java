@@ -12,7 +12,6 @@
 package gov.nist.hit.hl7.igamt.datatypeLibrary.service;
 
 import java.util.HashMap;
-
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -23,7 +22,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
  * @author ena3
  *
  */
-public interface DeltaService {
+public interface EvolutionComparatorService {
   boolean compareDatatypes(Datatype d1, Datatype d2, HashMap<EvolutionPropertie, Boolean> criterias)
       throws DatatypeNotFoundException;
 
@@ -33,7 +32,5 @@ public interface DeltaService {
 
   DeltaTreeNode getDatatypesDelta(Datatype d1, Datatype d2,
       HashMap<EvolutionPropertie, Boolean> criterias) throws DatatypeNotFoundException;
-
-
 
 }
