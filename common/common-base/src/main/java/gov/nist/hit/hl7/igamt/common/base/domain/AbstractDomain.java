@@ -31,8 +31,6 @@ public abstract class AbstractDomain{
   @Version
   private Long version;
 
-
-
   public AbstractDomain() {
     super();
     // TODO Auto-generated constructor stub

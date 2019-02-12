@@ -31,14 +31,10 @@ db:
   host: localhost
   
 key: 
-  public: /Users/jungyubw/Documents/Works/Projects/hl7-auth/auth-utils/KeyPair/publicKey.txt
-  private: /Users/jungyubw/Documents/Works/Projects/hl7-auth/auth-utils/KeyPair/privateKey.txt
-  
+  public: /usr/local/etc/hit/igamt/publicKey.txt  
 
 auth:
   url: http://localhost:8090
-  
-  
-  
+   
 
   
