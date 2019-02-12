@@ -2,10 +2,7 @@
     <form #editForm="ngForm">
 
       <entity-header [elm]="segmentStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
-      <button (click)="doDelta()">
-        {{ !delta ? 'DELTA' : 'STRUCTURE'}}
-      </button>
-      <p-inputSwitch [(ngModel)]="checked" [ngModelOptions]="{standalone: true}" name="switch"></p-inputSwitch>
+
       <div class="section-content">
       <p-treeTable *ngIf="!segmentStructure.readOnly && !delta" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="600px">
             <ng-template pTemplate="caption">

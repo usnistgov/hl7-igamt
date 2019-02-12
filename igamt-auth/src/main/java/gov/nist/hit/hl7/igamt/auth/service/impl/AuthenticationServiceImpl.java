@@ -102,9 +102,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       // Install the all-trusting host verifier
       HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
-    } catch (
-
-    NoSuchAlgorithmException e) {
+    } catch (NoSuchAlgorithmException e) {
       e.printStackTrace();
     } catch (KeyManagementException e) {
       e.printStackTrace();
