@@ -45,8 +45,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -1256,5 +1259,42 @@ public class SegmentServiceImpl implements SegmentService {
     }
     
     return result;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#makeLocationInfo(gov.nist.hit.hl7.igamt.segment.domain.Segment)
+   */
+  @Override
+  public Binding makeLocationInfo(Segment s) {
+    if(s.getBinding() != null) {
+      for(StructureElementBinding seb : s.getBinding().getChildren()){
+        seb.setLocationInfo(makeLocationInfoForField(s, seb));  
+      }
+      return s.getBinding();
+    }
+    return null;
+  }
+
+  /**
+   * @param s
+   * @param seb
+   * @return
+   */
+  @Override
+  public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb) {
+    if(s != null && s.getChildren() != null) {
+      for(Field f : s.getChildren()) {
+        if(f.getId().equals(seb.getElementId())){
+          
+          for(StructureElementBinding childSeb : seb.getChildren()){
+            Datatype childDT = this.datatypeService.findById(f.getRef().getId());
+            if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
+          }
+          
+          return new LocationInfo(seb.getElementId(), LocationType.FIELD, f.getPosition(), f.getName());
+        }
+      }
+    }
+    return null;
   }
 }

@@ -28,6 +28,9 @@ public abstract class Binding {
    * elementId of child of child : 1st component id of 3rd field Datatype
    */
   protected String elementId;
+  
+  protected LocationInfo locationInfo;
+  
   protected Set<StructureElementBinding> children;
 
   public Binding() {
@@ -64,4 +67,11 @@ public abstract class Binding {
     this.children.add(childStructureElementBinding); 
   }
 
+  public LocationInfo getLocationInfo() {
+    return locationInfo;
+  }
+
+  public void setLocationInfo(LocationInfo locationInfo) {
+    this.locationInfo = locationInfo;
+  }
 }

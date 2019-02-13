@@ -70,6 +70,17 @@ public abstract class Predicate {
   public void setId(String id) {
     this.id = id;
   }
+  
+  public String generateDescription() {
+    if(this instanceof  FreeTextPredicate){
+      FreeTextPredicate cp = (FreeTextPredicate)this;
+      return cp.getFreeText();
+    }else if(this instanceof  AssertionPredicate){
+      AssertionPredicate cp = (AssertionPredicate)this;
+      if(cp.getAssertion() != null) return cp.getAssertion().getDescription();
+    }
+    return null;
+  }
 
 
 }

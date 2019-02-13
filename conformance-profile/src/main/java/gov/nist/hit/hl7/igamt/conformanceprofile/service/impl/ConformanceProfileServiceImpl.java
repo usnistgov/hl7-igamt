@@ -45,6 +45,8 @@ import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -1247,6 +1249,47 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
     
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#makeLocationInfo(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
+   */
+  @Override
+  public Binding makeLocationInfo(ConformanceProfile cp) {
+    if(cp.getBinding() != null) {
+      for(StructureElementBinding seb : cp.getBinding().getChildren()){
+        seb.setLocationInfo(makeLocationInfoForGroupOrSegRef(cp.getChildren(), seb));  
+      }
+      return cp.getBinding();
+    }
+    return null;
+  }
+
+  /**
+   * @param list
+   * @param seb
+   * @return
+   */
+  private LocationInfo makeLocationInfoForGroupOrSegRef(Set<SegmentRefOrGroup> list, StructureElementBinding seb) {
+    if(list != null) {
+      for(SegmentRefOrGroup sg : list) {
+        if(sg.getId().equals(seb.getElementId())){
+          if(sg instanceof Group){
+            for(StructureElementBinding childSeb : seb.getChildren()){
+              childSeb.setLocationInfo(this.makeLocationInfoForGroupOrSegRef( ((Group) sg).getChildren(), childSeb));  
+            }
+            return new LocationInfo(seb.getElementId(), LocationType.GROUP, sg.getPosition(), sg.getName());            
+          }else if (sg instanceof SegmentRef){
+            Segment s = this.segmentService.findById(((SegmentRef)sg).getRef().getId());
+            for(StructureElementBinding childSeb : seb.getChildren()){
+              childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));  
+            }
+            return new LocationInfo(seb.getElementId(), LocationType.SEGREF, sg.getPosition(), s.getLabel());     
+          }
+        }
+      }
+    }
+    return null;
   }
 }
 

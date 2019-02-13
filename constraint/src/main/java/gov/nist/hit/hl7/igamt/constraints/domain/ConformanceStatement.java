@@ -72,6 +72,17 @@ public class ConformanceStatement {
   public void setId(String id) {
     this.id = id;
   }
+  
+  public String generateDescription() {
+    if(this instanceof  FreeTextConformanceStatement){
+      FreeTextConformanceStatement cs = (FreeTextConformanceStatement)this;
+      return cs.getFreeText();
+    }else if(this instanceof  AssertionConformanceStatement){
+      AssertionConformanceStatement cs = (AssertionConformanceStatement)this;
+      if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
+    }
+    return null;
+  }
 
 
 }

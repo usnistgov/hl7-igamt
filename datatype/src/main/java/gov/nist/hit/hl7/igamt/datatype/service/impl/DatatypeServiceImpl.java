@@ -46,8 +46,11 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -362,25 +365,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
     ValidationUtil.validateConfLength(f.getConfLength());
   }
-
-
-
-
-  /**
-   * TODO: anything more to validate ??
-   */
-  @Override
-  public void validate(DatatypeConformanceStatement conformanceStatement)
-      throws DatatypeValidationException {
-    if (conformanceStatement != null) {
-      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
-        if (StringUtils.isEmpty(statement.getIdentifier())) {
-          throw new DatatypeValidationException("conformance statement identifier is missing");
-        }
-      }
-    }
-  }
-
 
   @Override
   public Link cloneDatatype(HashMap<String, String> datatypesMap,
@@ -1141,5 +1125,58 @@ public class DatatypeServiceImpl implements DatatypeService {
         }  
       }
     }
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+   */
+  @Override
+  public Binding makeLocationInfo(Datatype dt) {
+    if(dt instanceof ComplexDatatype && dt.getBinding() != null) {
+      for(StructureElementBinding seb : dt.getBinding().getChildren()){
+        seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype)dt, seb));  
+      }
+      return dt.getBinding();
+    }
+    return null;
+  }
+
+  /**
+   * @param dt
+   * @param seb
+   * @return
+   */
+  @Override
+  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb) {
+    if(dt != null && dt.getComponents() != null) {
+      for(Component c : dt.getComponents()) {
+        if(c.getId().equals(seb.getElementId())){
+          
+          for(StructureElementBinding childSeb : seb.getChildren()){
+            Datatype childDT = this.findById(c.getRef().getId());
+            if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(makeLocationInfoForSubComponent((ComplexDatatype)childDT, childSeb));  
+          }
+          
+          return new LocationInfo(seb.getElementId(), LocationType.COMPONENT, c.getPosition(), c.getName());
+        }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * @param childDT
+   * @param childSeb
+   * @return
+   */
+  private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt, StructureElementBinding seb) {
+    if(dt != null && dt.getComponents() != null) {
+      for(Component c : dt.getComponents()) {
+        if(c.getId().equals(seb.getElementId())){          
+          return new LocationInfo(seb.getElementId(), LocationType.SUBCOMPONENT, c.getPosition(), c.getName());
+        }
+      }
+    }
+    return null;
   }
 }
