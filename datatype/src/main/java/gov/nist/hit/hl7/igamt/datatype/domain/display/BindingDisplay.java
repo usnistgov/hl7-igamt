@@ -12,7 +12,8 @@
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -24,14 +25,23 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
  *
  */
 public class BindingDisplay {
+
+  @DeltaField
   private ViewScope sourceType;
   private String sourceId;
+  @DeltaIdentity
   private int priority;
+  @DeltaField
   private Set<Comment> comments;
+  @DeltaField
   private Set<DisplayValuesetBinding> valuesetBindings;
+  @DeltaField
   private InternalSingleCode internalSingleCode;
+  @DeltaField
   private ExternalSingleCode externalSingleCode;
+  @DeltaField
   private String constantValue;
+  @DeltaField
   private Predicate predicate;
 
   public Set<Comment> getComments() {
@@ -105,6 +115,4 @@ public class BindingDisplay {
   public void setPriority(int priority) {
     this.priority = priority;
   }
-
-
 }

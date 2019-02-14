@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 
 /**
@@ -19,10 +20,10 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
  */
 public class DisplayValuesetBinding extends ValuesetBinding {
 
+  @DeltaField
   private String label;
+  @DeltaField
   private String name;
-
-
 
   public DisplayValuesetBinding() {
     super();

@@ -11,17 +11,27 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain.assertion;
 
+import gov.nist.diff.annotation.DeltaField;
+
+// import gov.nist.healthcare.diff.utils.annotation.DeltaField;
+
 /**
  * @author jungyubw
  *
  */
 public class Subject {
+
+  @DeltaField
   private Path path;
+  @DeltaField
   private String occurenceType;
+  @DeltaField
   private String occurenceValue;
+  @DeltaField
   private String occurenceIdPath;
+  @DeltaField
   private String occurenceLocationStr;
-  
+
   public String getOccurenceType() {
     return occurenceType;
   }
@@ -54,6 +64,8 @@ public class Subject {
     this.occurenceLocationStr = occurenceLocationStr;
   }
 
+
+
   public Subject() {
     super();
   }
@@ -70,8 +82,7 @@ public class Subject {
   public String toString() {
     return "Subject [path=" + path + "]";
   }
-  
-  
+
 
 
 }

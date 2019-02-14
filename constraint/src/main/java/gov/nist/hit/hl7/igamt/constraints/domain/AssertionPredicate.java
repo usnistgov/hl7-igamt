@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.constraints.domain;
 
 import java.io.Serializable;
 
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
@@ -25,6 +26,7 @@ public class AssertionPredicate extends Predicate implements Serializable{
    * 
    */
   private static final long serialVersionUID = -8306847581430345712L;
+  @DeltaField
   private Assertion assertion;
   private Path context;
 

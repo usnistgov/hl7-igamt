@@ -407,11 +407,11 @@ export class GeneralConfigurationService {
     return null;
   }
 
-  arraySortByPosition(objectArray){
-    objectArray = _.sortBy(objectArray, function(item){ return item.data.position});
+  arraySortByPosition(objectArray, getter?){
+    objectArray = _.sortBy(objectArray, function(item){ return getter ? getter(item) : item.data.position});
     for(let child of objectArray){
       if(child.children){
-        child.children = this.arraySortByPosition(child.children);
+        child.children = this.arraySortByPosition(child.children, getter);
       }
     }
     return objectArray;

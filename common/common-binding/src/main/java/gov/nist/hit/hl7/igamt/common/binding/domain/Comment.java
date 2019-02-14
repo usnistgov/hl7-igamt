@@ -12,14 +12,18 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
 import java.util.Date;
+import gov.nist.diff.annotation.DeltaField;
 
 /**
  * @author jungyubw
  *
  */
 public class Comment {
+  @DeltaField
   private String description;
+  @DeltaField
   private String username;
+  @DeltaField
   private Date dateupdated;
 
   public Comment(String description, String username, Date dateupdated) {

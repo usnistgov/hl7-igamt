@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -45,6 +46,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
@@ -94,6 +96,9 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
+  
+  @Autowired
+  private InMemoryDomainExtentionService domainExtention;
 
   @Autowired
   CommonService commonService;
@@ -111,7 +116,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype findById(String key) {
-    return datatypeRepository.findById(key).orElse(null);
+	Datatype dt = this.domainExtention.findById(key, Datatype.class);
+    return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
   }
 
   @Override
@@ -130,7 +136,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public List<Datatype> findAll() {
-    return datatypeRepository.findAll();
+	  return Stream.concat(domainExtention.getAll(Datatype.class).stream(),datatypeRepository.findAll().stream())
+	  .collect(Collectors.toList());
   }
 
   @Override

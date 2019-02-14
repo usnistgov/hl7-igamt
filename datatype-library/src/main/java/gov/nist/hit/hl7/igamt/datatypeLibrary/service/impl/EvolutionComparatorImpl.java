@@ -23,7 +23,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DeltaService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaCell;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaRowData;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
@@ -34,7 +34,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
  *
  */
 @Service
-public class DeltaServiceImpl implements DeltaService {
+public class EvolutionComparatorImpl implements EvolutionComparatorService {
 
 
   @Autowired

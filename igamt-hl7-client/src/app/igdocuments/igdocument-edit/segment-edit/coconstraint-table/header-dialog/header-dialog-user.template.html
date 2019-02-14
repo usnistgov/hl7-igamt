@@ -4,7 +4,7 @@
     </p-header>
     <input type="text" style="width: 100%;" [(ngModel)]="header" placeholder="Column Label">
   <p-footer>
-    <button type="button" *ngIf="header && header.length > 0" (click)="addHeader()" class="btn btn-success" > Select </button>
+    <button type="button" [disabled]="!(header && header.length > 0)" (click)="addHeader()" class="btn btn-success" > Select </button>
   </p-footer>
 
 </p-dialog>

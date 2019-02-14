@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.segment.domain;
 
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.SubStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -7,7 +8,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 public class Field extends SubStructElement {
 
+  @DeltaField
   private int min;
+  @DeltaField
   private String max;
 
   public Field() {

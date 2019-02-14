@@ -186,15 +186,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope);
     where.andOperator(Criteria.where("domainInfo.version").is(version));
-
-    Aggregation agg = newAggregation(match(where), group("id.id").max("id.version").as("version"));
-
-    // Convert the aggregation result into a List
-    List<String> groupResults =
-        mongoTemplate.aggregate(agg, Valueset.class, String.class).getMappedResults();
-
-    Criteria where2 = Criteria.where("id").in(groupResults);
-    Query qry = Query.query(where2);
+    Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
     qry.fields().include("name");

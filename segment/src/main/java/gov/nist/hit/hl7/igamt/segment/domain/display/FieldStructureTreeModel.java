@@ -13,7 +13,8 @@ package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 
 /**
@@ -21,7 +22,9 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeMode
  *
  */
 public class FieldStructureTreeModel {
+  @DeltaIdentity
   private FieldDisplayDataModel data;
+  @DeltaField
   private Set<ComponentStructureTreeModel> children;
 
   public FieldDisplayDataModel getData() {
@@ -44,7 +47,8 @@ public class FieldStructureTreeModel {
    * @param componentStructureTreeModel
    */
   public void addComponent(ComponentStructureTreeModel componentStructureTreeModel) {
-    if(children == null) this.children = new HashSet<ComponentStructureTreeModel>();
+    if (children == null)
+      this.children = new HashSet<ComponentStructureTreeModel>();
     this.children.add(componentStructureTreeModel);
   }
 

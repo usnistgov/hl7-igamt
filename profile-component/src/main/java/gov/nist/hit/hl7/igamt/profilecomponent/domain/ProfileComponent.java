@@ -88,4 +88,10 @@ public class ProfileComponent extends Resource {
   public String getLabel() {
     return this.getName();
   }
+
+	@Override
+	public ProfileComponent clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }
