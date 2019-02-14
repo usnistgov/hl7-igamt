@@ -579,24 +579,16 @@ public class DatatypeServiceImpl implements DatatypeService {
                 for (Component sc : childDatatype.getComponents()) {
                   Datatype childChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                   if (childChildDt != null) {
-                    SubComponentStructureTreeModel subComponentStructureTreeModel =
-                        new SubComponentStructureTreeModel();
-                    SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(c);
+                    SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                    SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
                     scModel.setViewScope(ViewScope.DATATYPE);
                     scModel.setIdPath(c.getId() + "-" + sc.getId());
                     scModel.setPath(c.getPosition() + "-" + sc.getPosition());
                     scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
-                    StructureElementBinding childSeb =
-                        this.findStructureElementBindingByComponentIdFromStructureElementBinding(
-                            cSeb, sc.getId());
-                    if (childSeb != null)
-                      scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
-                          ViewScope.DATATYPE, 1, valueSetsMap));
-                    StructureElementBinding scSeb = this
-                        .findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
-                    if (scSeb != null)
-                      scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
-                          ViewScope.DATATYPE, 2, valueSetsMap));
+                    StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
+                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
+                    StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
+                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
                     subComponentStructureTreeModel.setData(scModel);
                     componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                   } else {
@@ -949,6 +941,7 @@ public class DatatypeServiceImpl implements DatatypeService {
         }
       }
     }
+    d.setBinding(this.makeLocationInfo(d));
     this.save(d);
   }
 
@@ -1131,7 +1124,7 @@ public class DatatypeServiceImpl implements DatatypeService {
    * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
    */
   @Override
-  public Binding makeLocationInfo(Datatype dt) {
+  public ResourceBinding makeLocationInfo(Datatype dt) {
     if(dt instanceof ComplexDatatype && dt.getBinding() != null) {
       for(StructureElementBinding seb : dt.getBinding().getChildren()){
         seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype)dt, seb));  
@@ -1151,11 +1144,13 @@ public class DatatypeServiceImpl implements DatatypeService {
     if(dt != null && dt.getComponents() != null) {
       for(Component c : dt.getComponents()) {
         if(c.getId().equals(seb.getElementId())){
-          
-          for(StructureElementBinding childSeb : seb.getChildren()){
-            Datatype childDT = this.findById(c.getRef().getId());
-            if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(makeLocationInfoForSubComponent((ComplexDatatype)childDT, childSeb));  
+          if(seb.getChildren() != null){
+            for(StructureElementBinding childSeb : seb.getChildren()){
+              Datatype childDT = this.findById(c.getRef().getId());
+              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(makeLocationInfoForSubComponent((ComplexDatatype)childDT, childSeb));  
+            }  
           }
+          
           
           return new LocationInfo(seb.getElementId(), LocationType.COMPONENT, c.getPosition(), c.getName());
         }

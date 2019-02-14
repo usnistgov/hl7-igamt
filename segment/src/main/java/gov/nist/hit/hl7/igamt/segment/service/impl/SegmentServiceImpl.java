@@ -842,6 +842,7 @@ public class SegmentServiceImpl implements SegmentService {
         }
       }
     }
+    s.setBinding(this.makeLocationInfo(s));
     this.save(s);
   }
 
@@ -1265,7 +1266,7 @@ public class SegmentServiceImpl implements SegmentService {
    * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#makeLocationInfo(gov.nist.hit.hl7.igamt.segment.domain.Segment)
    */
   @Override
-  public Binding makeLocationInfo(Segment s) {
+  public ResourceBinding makeLocationInfo(Segment s) {
     if(s.getBinding() != null) {
       for(StructureElementBinding seb : s.getBinding().getChildren()){
         seb.setLocationInfo(makeLocationInfoForField(s, seb));  
@@ -1285,12 +1286,12 @@ public class SegmentServiceImpl implements SegmentService {
     if(s != null && s.getChildren() != null) {
       for(Field f : s.getChildren()) {
         if(f.getId().equals(seb.getElementId())){
-          
-          for(StructureElementBinding childSeb : seb.getChildren()){
-            Datatype childDT = this.datatypeService.findById(f.getRef().getId());
-            if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
+          if(seb.getChildren() != null) {
+            for(StructureElementBinding childSeb : seb.getChildren()){
+              Datatype childDT = this.datatypeService.findById(f.getRef().getId());
+              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
+            }            
           }
-          
           return new LocationInfo(seb.getElementId(), LocationType.FIELD, f.getPosition(), f.getName());
         }
       }

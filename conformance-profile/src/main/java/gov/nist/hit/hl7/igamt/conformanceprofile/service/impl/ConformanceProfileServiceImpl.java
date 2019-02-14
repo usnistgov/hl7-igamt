@@ -1027,6 +1027,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         }
       }
     }
+    cp.setBinding(this.makeLocationInfo(cp));
     this.save(cp);
   }
   
@@ -1255,7 +1256,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#makeLocationInfo(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
    */
   @Override
-  public Binding makeLocationInfo(ConformanceProfile cp) {
+  public ResourceBinding makeLocationInfo(ConformanceProfile cp) {
     if(cp.getBinding() != null) {
       for(StructureElementBinding seb : cp.getBinding().getChildren()){
         seb.setLocationInfo(makeLocationInfoForGroupOrSegRef(cp.getChildren(), seb));  
@@ -1275,14 +1276,18 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       for(SegmentRefOrGroup sg : list) {
         if(sg.getId().equals(seb.getElementId())){
           if(sg instanceof Group){
-            for(StructureElementBinding childSeb : seb.getChildren()){
-              childSeb.setLocationInfo(this.makeLocationInfoForGroupOrSegRef( ((Group) sg).getChildren(), childSeb));  
+            if(seb.getChildren() != null) {
+              for(StructureElementBinding childSeb : seb.getChildren()){
+                childSeb.setLocationInfo(this.makeLocationInfoForGroupOrSegRef( ((Group) sg).getChildren(), childSeb));  
+              }  
             }
             return new LocationInfo(seb.getElementId(), LocationType.GROUP, sg.getPosition(), sg.getName());            
           }else if (sg instanceof SegmentRef){
             Segment s = this.segmentService.findById(((SegmentRef)sg).getRef().getId());
-            for(StructureElementBinding childSeb : seb.getChildren()){
-              childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));  
+            if(seb.getChildren() != null) {
+              for(StructureElementBinding childSeb : seb.getChildren()){
+                childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));  
+              }  
             }
             return new LocationInfo(seb.getElementId(), LocationType.SEGREF, sg.getPosition(), s.getLabel());     
           }
