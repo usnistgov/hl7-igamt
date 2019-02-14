@@ -95,18 +95,6 @@ export class ConformanceProfilesService {
         return promise;
     }
 
-    public saveConformanceProfileMetadata(id, metadata): Promise<any> {
-        return this.http.post('api/conformanceprofiles/' + id + '/metadata',metadata).toPromise();
-    }
-
-    public saveConformanceProfilePreDef(id, preDef): Promise<any> {
-        return this.http.post('api/conformanceprofiles/' + id + '/predef', preDef).toPromise();
-    }
-
-    public saveConformanceProfilePostDef(id, postDef): Promise<any> {
-        return this.http.post('api/conformanceprofiles/' + id + '/postdef', postDef).toPromise();
-    }
-
     public saveConformanceProfileCrossReferences(id, crossReference): Promise<any> {
         return null;
     }

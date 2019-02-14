@@ -138,52 +138,6 @@ public class ConformanceProfileController extends BaseController {
 
   }
 
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/predef", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
-      Authentication authentication)
-      throws ValidationException, ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = conformanceProfileService.savePredef(preDef);
-    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id,
-        conformanceProfile.getUpdateDate());
-  }
-
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/postdef", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
-      Authentication authentication)
-      throws ValidationException, ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = conformanceProfileService.savePostdef(postDef);
-    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id,
-        conformanceProfile.getUpdateDate());
-  }
-
-
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/metadata", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveConformanceProfileMetadata(@PathVariable("id") String id,
-      @RequestBody DisplayConformanceProfileMetadata displayMetadata, Authentication authentication)
-      throws ValidationException, ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile = conformanceProfileService.saveMetadata(displayMetadata);
-    return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id,
-        conformanceProfile.getUpdateDate());
-  }
-
-
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement",
-      method = RequestMethod.POST, produces = {"application/json"})
-  public ResponseMessage saveConformanceStatement(@PathVariable("id") String id,
-      Authentication authentication,
-      @RequestBody ConformanceProfileConformanceStatement conformanceStatement)
-      throws ConformanceProfileValidationException, ConformanceProfileNotFoundException {
-    ConformanceProfile conformanceProfile =
-        conformanceProfileService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
-        conformanceProfile.getUpdateDate());
-
-  }
-
-
 
   /**
    * 

@@ -23,12 +23,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
@@ -77,49 +79,7 @@ public interface SegmentService extends ResourceService {
 
   public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
-  public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment);
-
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
-
-  /**
-   * 
-   * @param predef
-   * @return
-   * @throws SegmentNotFoundException
-   */
-  public Segment savePredef(PreDef predef) throws SegmentNotFoundException;
-
-  /**
-   * 
-   * @param postdef
-   * @return
-   * @throws SegmentNotFoundException
-   */
-  public Segment savePostdef(PostDef postdef) throws SegmentNotFoundException;
-
-
-
-  /**
-   * Validate conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @throws SegmentValidationException
-   */
-  public void validate(SegmentConformanceStatement conformanceStatement)
-      throws SegmentValidationException;
-
-
-  /**
-   * Save the conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @return
-   * @throws SegmentNotFoundException
-   * @throws SegmentValidationException
-   */
-  public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
-      throws SegmentNotFoundException, SegmentValidationException;
-
 
   public Link cloneSegment(String compositeKey, HashMap<String, String> datatypesMap,
       HashMap<String, String> valuesetsMap, Link l, String username)
@@ -164,4 +124,8 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 
   public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+  
+  public Binding makeLocationInfo(Segment s);
+  
+  public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 }

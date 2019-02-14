@@ -14,39 +14,36 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-
 
 /**
  * @author jungyubw
  *
  */
 public class ResourceBinding extends Binding {
-  private Set<ConformanceStatement> conformanceStatements;
+  private Set<String> conformanceStatementIds;
 
   public ResourceBinding() {
     super();
   }
 
-  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<ConformanceStatement> conformanceStatements) {
+  public ResourceBinding(String elementId, Set<StructureElementBinding> children, Set<String> conformanceStatementIds) {
     super(elementId, children);
-    this.conformanceStatements = conformanceStatements;
+    this.conformanceStatementIds = conformanceStatementIds;
+  }
+  
+  public Set<String> getConformanceStatementIds() {
+    return conformanceStatementIds;
   }
 
-  public Set<ConformanceStatement> getConformanceStatements() {
-    return conformanceStatements;
+  public void setConformanceStatementIds(Set<String> conformanceStatementIds) {
+    this.conformanceStatementIds = conformanceStatementIds;
   }
 
-  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
-    this.conformanceStatements = conformanceStatements;
-  }
-
-
-  public void addConformanceStatement(ConformanceStatement conformanceStatement) {
-    if (conformanceStatements == null) {
-      this.conformanceStatements = new HashSet<ConformanceStatement>();
+  public void addConformanceStatement(String conformanceStatementId) {
+    if (conformanceStatementIds == null) {
+      this.conformanceStatementIds = new HashSet<String>();
     }
-    this.conformanceStatements.add(conformanceStatement);
+    this.conformanceStatementIds.add(conformanceStatementId);
 
   }
 }

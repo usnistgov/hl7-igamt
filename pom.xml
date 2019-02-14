@@ -112,7 +112,9 @@
 		<module>export-configuration</module>
 		<module>export</module>
 		<module>co-constraint</module>
+		<module>constraint</module>
 		<module>delta</module>
+		<module>diff-utils</module>
 	</modules>
   
 </project>
