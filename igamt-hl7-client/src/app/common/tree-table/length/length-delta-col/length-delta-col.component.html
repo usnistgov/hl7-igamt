@@ -1,0 +1,7 @@
+<app-delta-display [operation]="deltaOp()"
+                   [currentValue]="{ minLength : minLength.current, leaf: leaf.current, maxLength: maxLength.current }"
+                   [previousValue]="{ minLength : minLength.previous, leaf: leaf.previous, maxLength: maxLength.previous }">
+  <ng-template let-value>
+    <length-readonly-col [maxLength]="value.maxLength" [minLength]="value.minLength" [leaf]="value.leaf"></length-readonly-col>
+  </ng-template>
+</app-delta-display>

@@ -1,10 +1,14 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import gov.nist.diff.annotation.DeltaField;
+
 public class Ref {
+
+  @DeltaField
   private String id;
 
   public Ref() {
-    
+
   }
 
   public Ref(String id) {
@@ -24,6 +28,6 @@ public class Ref {
   public String toString() {
     return "Ref [id=" + id + "]";
   }
-  
+
 
 }

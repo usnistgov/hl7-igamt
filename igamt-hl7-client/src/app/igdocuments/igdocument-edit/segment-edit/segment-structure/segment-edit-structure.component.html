@@ -4,7 +4,7 @@
       <entity-header [elm]="segmentStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
       <div class="section-content">
-      <p-treeTable *ngIf="!segmentStructure.readOnly" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="600px">
+      <p-treeTable *ngIf="!segmentStructure.readOnly && !delta" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="600px">
             <ng-template pTemplate="caption">
                 <div style="text-align:right">
                     <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
@@ -156,6 +156,87 @@
                     </td>
                 </tr>
             </ng-template>
+        </p-treeTable>
+
+        <p-treeTable *ngIf="delta" [value]="delta.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}" scrollHeight="600px">
+          <ng-template pTemplate="caption">
+            <div style="text-align:right">
+              <p-multiSelect name="select" [options]="cols" [(ngModel)]="selectedColumns" optionLabel="header" (onChange)="reorderCols()" selectedItemsLabel="{0} columns selected" [style]="{minWidth: '200px'}" defaultLabel="Choose Columns"></p-multiSelect>
+            </div>
+          </ng-template>
+
+          <ng-template pTemplate="colgroup" let-columns>
+            <colgroup>
+              <col *ngFor="let col of columns" class="{{col.style}}">
+            </colgroup>
+          </ng-template>
+
+          <ng-template pTemplate="header" let-columns>
+            <tr>
+              <th *ngFor="let col of columns">
+                {{col.header}}
+              </th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body"  let-node="node" let-rowNode let-rowData="rowData" let-columns="columns">
+            <tr *ngIf="node['_.operation'] !== 'UNCHANGED'">
+              <td *ngFor="let col of columns; let i = index" [ngSwitch]="col.field">
+
+                <ng-container *ngSwitchCase="'name'">
+                  <i (click)="print(node);print(changeItems);"><app-name-delta-col [elmDeltaOp]="node['_.operation']" [type]="node.data.type?.current" [rowNode]="rowNode" [index] = "i" [position]="node.data.position" [description]="node.data.name"></app-name-delta-col></i>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'usage'">
+                  <app-usage-delta-col [usage]="node.data.usage" [bindings]="node.data.bindings"></app-usage-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'cardinality'">
+                  <app-cardinality-delta-col *ngIf="node.data.min && node.data.max" [min]="node.data.min" [max]="node.data.max"></app-cardinality-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'confLength'">
+                  <app-conflength-delta-col [confLength]="node.data.confLength" [leaf]="node.data.datatypeLabel.leaf"></app-conflength-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'length'">
+                  <app-length-delta-col [minLength]="node.data.minLength" [maxLength]="node.data.maxLength" [leaf]="node.data.datatypeLabel.leaf"></app-length-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'datatype'">
+                  <app-datatype-delta-col [ref]="node.data.ref" [datatypeLabel]="node.data.datatypeLabel" ></app-datatype-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchCase="'valueSet'">
+                  <app-valueset-delta-col [(bindings)]="node.data.bindings"></app-valueset-delta-col>
+                </ng-container>
+
+                <ng-container *ngSwitchDefault="">
+                  <!--{{node.data.usage | json}}-->
+                </ng-container>
+
+                <!--<ng-container *ngSwitchCase="'valueSet'">-->
+                  <!--<valueset-readonly-col [(bindings)]="node.data.bindings"></valueset-readonly-col>-->
+                <!--</ng-container>-->
+
+                <!--<ng-container *ngSwitchCase="'singleCode'">-->
+                  <!--<singlecode-readonly-col [(bindings)]="node.data.bindings"></singlecode-readonly-col>-->
+                <!--</ng-container>-->
+
+                <!--<ng-container *ngSwitchCase="'constantValue'">-->
+                  <!--<constantvalue-readonly-col [(bindings)]="node.data.bindings"></constantvalue-readonly-col>-->
+                <!--</ng-container>-->
+
+                <!--<ng-container *ngSwitchCase="'textDef'">-->
+                  <!--<textdef-readonly-col [text]="node.data.text"></textdef-readonly-col>-->
+                <!--</ng-container>-->
+
+                <!--<ng-container *ngSwitchCase="'comment'">-->
+                  <!--<comment-readonly-col [(bindings)]="node.data.bindings"></comment-readonly-col>-->
+                <!--</ng-container>-->
+              </td>
+            </tr>
+          </ng-template>
         </p-treeTable>
       </div>
     </form>

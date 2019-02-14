@@ -1,0 +1,30 @@
+.first-priority {
+  color: #0607f4;
+  font-weight: 400;
+}
+
+.second-priority {
+  color: #0ef413;
+  font-weight: 400;
+}
+
+.third-priority {
+  color: #f41005;
+  font-weight: 400;
+}
+
+.fourth-priority{
+  color: #a7d6a9;
+  font-weight: 400;
+}
+
+.label-USER {
+  background-color: green;
+  font-weight: 400;
+  color: white;
+}
+
+.label-HL7 {
+  background-color: #f4867e;
+  font-weight: 400;
+}

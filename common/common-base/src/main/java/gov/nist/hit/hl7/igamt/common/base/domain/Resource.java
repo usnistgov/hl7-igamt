@@ -34,6 +34,7 @@ public abstract class Resource extends AbstractDomain {
     this.postDef = postDef;
   }
   
+  public abstract Resource clone();
   
   protected void complete(Resource elm) {
 		

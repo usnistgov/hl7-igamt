@@ -1,0 +1,7 @@
+<app-delta-display [operation]="confLength['_.operation']"
+                   [currentValue]="{ confLength : confLength.current, leaf: leaf.current }"
+                   [previousValue]="{ confLength : confLength.previous, leaf: leaf.previous }">
+  <ng-template let-value>
+    <conflength-readonly-col [confLength]="value.confLength" [leaf]="value.leaf"></conflength-readonly-col>
+  </ng-template>
+</app-delta-display>

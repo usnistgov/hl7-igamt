@@ -1,7 +1,7 @@
 /**
  * Created by hnt5 on 10/30/17.
  */
-import {NgModule}     from '@angular/core';
+import {NgModule} from '@angular/core';
 
 import {FormsModule} from '@angular/forms';
 import {DisplayBadgeComponent} from "../common/badge/display-badge.component";
@@ -73,6 +73,14 @@ import {PredicateReadonlyColComponent} from "../common/tree-table/predicate/pred
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
 import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.component';
+import {NameDeltaColComponent} from '../common/tree-table/name/name-delta-col/name-delta-col.component';
+import {CardinalityDeltaColComponent} from '../common/tree-table/cardinality/cardinality-delta-col/cardinality-delta-col.component';
+import {DeltaDisplayComponent} from '../common/delta/delta-display/delta-display.component';
+import {UsageDeltaColComponent} from '../common/tree-table/usage/usage-delta-col/usage-delta-col.component';
+import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/conflength-delta-col/conflength-delta-col.component';
+import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
+import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
+import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
 
 @NgModule({
   imports: [
@@ -92,7 +100,9 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     DragDropModule,
     OrganizationChartModule,
     TreeTableModule,
-    KeyFilterModule,MessageModule,MessagesModule,
+    KeyFilterModule,
+    MessageModule,
+    MessagesModule,
     DndListModule,
     SelectButtonModule
 
@@ -143,6 +153,14 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     PatternDialogComponent,
     CommentReadonlyColComponent,
     ElementLabelComponent,
+    DeltaDisplayComponent,
+    NameDeltaColComponent,
+    CardinalityDeltaColComponent,
+    UsageDeltaColComponent,
+    ConflengthDeltaColComponent,
+    LengthDeltaColComponent,
+    DatatypeDeltaColComponent,
+    ValuesetDeltaColComponent,
     PredicateColComponent,
     PredicateReadonlyColComponent
   ],
@@ -162,9 +180,9 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     EditSimplePropositionConstraintComponent,
     EditComplexConstraintComponent,
     DisplayPathComponent,
-    CrossReferenceComponent,DatatypeListManagerComponent,
+    CrossReferenceComponent,
+    DatatypeListManagerComponent,
     DisplayMenuComponent,
-
     NameColComponent,
     UsageColComponent,
     UsageReadonlyColComponent,
@@ -191,9 +209,17 @@ import {PatternDialogComponent} from '../common/pattern-dialog/pattern-dialog.co
     PatternEditorDemoComponent,
     PatternDialogComponent,
     ElementLabelComponent,
+    DeltaDisplayComponent,
+    NameDeltaColComponent,
+    CardinalityDeltaColComponent,
+    UsageDeltaColComponent,
+    ConflengthDeltaColComponent,
+    LengthDeltaColComponent,
+    DatatypeDeltaColComponent,
+    ValuesetDeltaColComponent,
     PredicateColComponent,
     PredicateReadonlyColComponent
   ],
-  providers:[DatatypeColService, SegmentColService]
+  providers: [DatatypeColService, SegmentColService]
 })
 export class UtilsModule {}

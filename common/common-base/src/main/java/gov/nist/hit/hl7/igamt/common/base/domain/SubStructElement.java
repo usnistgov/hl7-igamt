@@ -1,11 +1,16 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import gov.nist.diff.annotation.DeltaField;
 
 public class SubStructElement extends StructureElement {
 
+  @DeltaField
   private String maxLength;
+  @DeltaField
   private String minLength;
+  @DeltaField
   private String confLength;
+  @DeltaField
   private Ref ref;
 
   public static final String NA = "NA";

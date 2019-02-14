@@ -1,0 +1,7 @@
+<app-delta-display [operation]="deltaOp()"
+                   [currentValue]="{ min : _min.current, max: _max.current }"
+                   [previousValue]="{ min : _min.previous, max: _max.previous }">
+  <ng-template let-cardinality>
+    <cardinality-readonly-col [(max)]="cardinality.max" [(min)]="cardinality.min"></cardinality-readonly-col>
+  </ng-template>
+</app-delta-display>

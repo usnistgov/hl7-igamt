@@ -13,16 +13,18 @@ package gov.nist.hit.hl7.igamt.segment.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class SegmentStructureDisplay extends SectionInfo{
+public class SegmentStructureDisplay extends SectionInfo {
 
+  @DeltaField
   private Set<FieldStructureTreeModel> structure;
+  @DeltaField
   private String name;
 
   public String getId() {
@@ -58,11 +60,11 @@ public class SegmentStructureDisplay extends SectionInfo{
     this.structure.add(fieldStructureTreeModel);
   }
 
-public String getName() {
-	return name;
-}
+  public String getName() {
+    return name;
+  }
 
-public void setName(String name) {
-	this.name = name;
-}
+  public void setName(String name) {
+    this.name = name;
+  }
 }

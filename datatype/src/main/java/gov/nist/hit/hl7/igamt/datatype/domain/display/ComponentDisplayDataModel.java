@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
@@ -47,9 +47,12 @@ public class ComponentDisplayDataModel extends Component {
   private String idPath;
   private String path;
 
+  @DeltaField
   private DatatypeLabel datatypeLabel;
+  @DeltaField
   private Set<BindingDisplay> bindings;
 
+  @DeltaField
   private ViewScope viewScope;
 
   public String getIdPath() {
@@ -106,6 +109,6 @@ public class ComponentDisplayDataModel extends Component {
     return "ComponentDisplayDataModel [idPath=" + idPath + ", path=" + path + ", datatypeLabel="
         + datatypeLabel + ", bindings=" + bindings + ", viewScope=" + viewScope + "]";
   }
-  
-  
+
+
 }

@@ -64,4 +64,10 @@ public class CompositeProfileStructure extends Resource {
     return this.getName();
   }
 
+@Override
+public Resource clone() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
 }

@@ -64,7 +64,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DeltaService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
@@ -90,7 +90,7 @@ public class DatatypeLibraryController {
   private DatatypeService datatypeService;
 
   @Autowired
-  private DeltaService deltaService;
+  private EvolutionComparatorService deltaService;
   @Autowired
 
   DatatypeClassificationService datatypeClassificationService;

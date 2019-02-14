@@ -15,7 +15,7 @@ package gov.nist.hit.hl7.igamt.compositeprofile.domain;
  * 
  * Created by Jungyub Woo on Mar 15, 2018.
  */
-public class OrderedProfileComponentLink {
+public class OrderedProfileComponentLink implements Comparable<OrderedProfileComponentLink> {
 
   private int position;
   private String profileComponentId;
@@ -38,5 +38,10 @@ public class OrderedProfileComponentLink {
 
   public void setProfileComponentId(String profileComponentId) {
     this.profileComponentId = profileComponentId;
+  }
+
+  @Override
+  public int compareTo(OrderedProfileComponentLink o) {
+    return this.position - o.position;
   }
 }
