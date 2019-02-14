@@ -5,6 +5,7 @@ public class Link {
   private int position;
   private DomainInfo domainInfo;
   private Type type;
+  private String username;
 
   public Link(String id, int position) {
     super();
@@ -99,6 +100,14 @@ public class Link {
     l.setType(this.getType());
 
     return l;
+  }
+
+  public String getUsername() {
+    return username;
+  }
+
+  public void setUsername(String username) {
+    this.username = username;
   }
 
 

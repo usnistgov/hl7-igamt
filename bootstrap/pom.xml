@@ -6,7 +6,6 @@
 
 	<groupId>gov.nist.hit.hl7</groupId>
 	<artifactId>bootstrap</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>bootstrap</name>
 	<description>Application runner</description>
    <parent>
@@ -50,7 +49,10 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-config</artifactId>
 		</dependency>
-
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
 		<dependency>
 			<groupId>io.jsonwebtoken</groupId>
 			<artifactId>jjwt</artifactId>
@@ -61,7 +63,7 @@
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-jwt</artifactId>
     			<version>1.0.8.RELEASE</version>
-    </dependency>
+        </dependency>
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>conformance-profile</artifactId>
@@ -86,14 +88,11 @@
 			<version>0.0.1-SNAPSHOT</version>
 
 		</dependency>
-		
 	  	<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>web-export</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-
 		</dependency>  
-
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>common-config</artifactId>

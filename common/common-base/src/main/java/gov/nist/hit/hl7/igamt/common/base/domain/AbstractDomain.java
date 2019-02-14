@@ -19,7 +19,7 @@ public abstract class AbstractDomain{
   private String createdFrom;
   private String authorNotes;
   private String usageNotes;
-
+  private Type type;
 
   @CreatedDate
   private Date creationDate;
@@ -157,6 +157,7 @@ public abstract class AbstractDomain{
 	elm.createdFrom = createdFrom;
 	elm.creationDate = creationDate;
 	elm.updateDate = updateDate;
+	elm.setType(type);
 	elm.from = id;
   }
 
@@ -174,6 +175,14 @@ public String getUsageNotes() {
 
 public void setUsageNotes(String usageNotes) {
 	this.usageNotes = usageNotes;
+}
+
+public Type getType() {
+  return type;
+}
+
+public void setType(Type type) {
+  this.type = type;
 }
 
   

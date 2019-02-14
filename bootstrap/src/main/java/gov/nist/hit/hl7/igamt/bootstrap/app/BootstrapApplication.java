@@ -1,7 +1,10 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.util.List;
 import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -15,9 +18,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.*;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
@@ -25,6 +31,10 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
+import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
+import gov.nist.hit.hl7.igamt.xreference.model.ResourceInfo;
+import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
 @SpringBootApplication
 @EnableMongoAuditing
@@ -45,8 +55,12 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  ConfigService sharedConstantService;
 //  
+ 
+//  @Autowired
+//  MessageEventFacory messageEventFactory;
+  
   @Autowired
-  MessageEventFacory messageEventFactory;
+  RelationShipService testCache;
 
   @Autowired
   DatatypeLibraryService dataypeLibraryService;
@@ -83,6 +97,7 @@ public class BootstrapApplication implements CommandLineRunner {
     templateMessage.setSubject("NIST HL7 Auth Notification");
     return templateMessage;
   }
+  
 
   // @Bean(name = "multipartResolver")
   // public CommonsMultipartResolver multipartResolver() {
@@ -204,6 +219,34 @@ public class BootstrapApplication implements CommandLineRunner {
 //   System.out.println("ENd of Classifying dts");
 //  
 //   }
+  
+@PostConstruct
+void testCache() {
+  
+  dataypeService.findAll();
+  
+  ResourceInfo info = new ResourceInfo();
+  info.setId("user");
+  info.setDomainInfo(null);
+  info.setType(null);
+  
+  ResourceInfo info1 = new ResourceInfo();
+  info1.setId("user1");
+  info1.setDomainInfo(null);
+  info1.setType(null);
+  
+  
+  
+  testCache.save(new RelationShip(info, info1, ReferenceType.COCONSTRAINTS, "test"));
+  testCache.save(new RelationShip(info, info1, ReferenceType.DYNAMICMAPPING, "test"));
+  
+  List<RelationShip> r =testCache.findAllDependencies("user");
+  System.out.println(r);
+  
+  
+
+
+}
 
 
 
