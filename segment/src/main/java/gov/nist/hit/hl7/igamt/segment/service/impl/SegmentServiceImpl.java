@@ -1300,7 +1300,7 @@ public class SegmentServiceImpl implements SegmentService {
               if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
             }            
           }
-          return new LocationInfo(seb.getElementId(), LocationType.FIELD, f.getPosition(), f.getName());
+          return new LocationInfo(LocationType.FIELD, f.getPosition(), f.getName());
         }
       }
     }

@@ -129,21 +129,21 @@ public class BindingHandler {
         if (oldObject instanceof Message) {
           Message oldMessage = (Message) oldObject;
           newAssertionConformanceStatement.setLevel(Level.CONFORMANCEPROFILE);
-          newAssertionConformanceStatement.setSourceId(oldMessage.getId());
+          newAssertionConformanceStatement.addSourceId(oldMessage.getId());
           newAssertionConformanceStatement.setStructureId(oldMessage.getStructID());
         }else if (oldObject instanceof Group) {
           Group oldGroup = (Group) oldObject;
           newAssertionConformanceStatement.setLevel(Level.GROUP);
-          newAssertionConformanceStatement.setSourceId(oldGroup.getId());
+          newAssertionConformanceStatement.addSourceId(oldGroup.getId());
         }else if (oldObject instanceof Segment) {
           Segment oldSegment = (Segment) oldObject;
           newAssertionConformanceStatement.setLevel(Level.SEGMENT);
-          newAssertionConformanceStatement.setSourceId(oldSegment.getId());
+          newAssertionConformanceStatement.addSourceId(oldSegment.getId());
           newAssertionConformanceStatement.setStructureId(oldSegment.getName());
         }else if (oldObject instanceof Datatype) {
           Datatype oldDatatype = (Datatype) oldObject;
           newAssertionConformanceStatement.setLevel(Level.DATATYPE);
-          newAssertionConformanceStatement.setSourceId(oldDatatype.getId());
+          newAssertionConformanceStatement.addSourceId(oldDatatype.getId());
           newAssertionConformanceStatement.setStructureId(oldDatatype.getName());
         }
         newAssertionConformanceStatement = this.conformanceStatementRepository.save(newAssertionConformanceStatement);
@@ -192,21 +192,21 @@ public class BindingHandler {
       if (levelObject instanceof Message) {
         Message oldMessage = (Message) levelObject;
         newAssertionPredicate.setLevel(Level.CONFORMANCEPROFILE);
-        newAssertionPredicate.setSourceId(oldMessage.getId());
+        newAssertionPredicate.addSourceId(oldMessage.getId());
         newAssertionPredicate.setStructureId(oldMessage.getStructID());
       }else if (levelObject instanceof Group) {
         Group oldGroup = (Group) levelObject;
         newAssertionPredicate.setLevel(Level.GROUP);
-        newAssertionPredicate.setSourceId(oldGroup.getId());
+        newAssertionPredicate.addSourceId(oldGroup.getId());
       }else if (levelObject instanceof Segment) {
         Segment oldSegment = (Segment) levelObject;
         newAssertionPredicate.setLevel(Level.SEGMENT);
-        newAssertionPredicate.setSourceId(oldSegment.getId());
+        newAssertionPredicate.addSourceId(oldSegment.getId());
         newAssertionPredicate.setStructureId(oldSegment.getName());
       }else if (levelObject instanceof Datatype) {
         Datatype oldDatatype = (Datatype) levelObject;
         newAssertionPredicate.setLevel(Level.DATATYPE);
-        newAssertionPredicate.setSourceId(oldDatatype.getId());
+        newAssertionPredicate.addSourceId(oldDatatype.getId());
         newAssertionPredicate.setStructureId(oldDatatype.getName());
       }
       
@@ -305,7 +305,7 @@ public class BindingHandler {
     if (target instanceof Field) {
       Field f = (Field) target;
       seb.setElementId(f.getId());
-      seb.setLocationInfo(new LocationInfo(f.getId(), LocationType.FIELD, f.getPosition(), f.getName()));
+      seb.setLocationInfo(new LocationInfo(LocationType.FIELD, f.getPosition(), f.getName()));
       if (f.getDatatype() != null && f.getDatatype().getId() != null) {
         Datatype childDatatype = null;
         Optional<Datatype> optional = datatypeRepository.findById(f.getDatatype().getId());
@@ -327,7 +327,7 @@ public class BindingHandler {
     } else if (target instanceof Component) {
       Component c = (Component) target;
       seb.setElementId(c.getId());
-      seb.setLocationInfo(new LocationInfo(c.getId(), LocationType.COMPONENT, c.getPosition(), c.getName()));
+      seb.setLocationInfo(new LocationInfo(LocationType.COMPONENT, c.getPosition(), c.getName()));
       if (c != null && c.getDatatype() != null && c.getDatatype().getId() != null) {
         Datatype childDatatype = null;
         try{
@@ -355,7 +355,7 @@ public class BindingHandler {
           childSegment = optional.get();
         }
         if (childSegment != null) {
-          seb.setLocationInfo(new LocationInfo(sr.getId(), LocationType.SEGREF, sr.getPosition(), childSegment.getLabel()));
+          seb.setLocationInfo(new LocationInfo(LocationType.SEGREF, sr.getPosition(), childSegment.getLabel()));
           if (childSegment.getFields() != null && childSegment.getFields().size() > 0) {
             for (Field childF : childSegment.getFields()) {
               String childPath = path + "." + childF.getPosition();
@@ -368,7 +368,7 @@ public class BindingHandler {
     } else if (target instanceof Group) {
       Group g = (Group) target;
       seb.setElementId(g.getId());
-      seb.setLocationInfo(new LocationInfo(g.getId(), LocationType.GROUP, g.getPosition(), g.getName()));
+      seb.setLocationInfo(new LocationInfo(LocationType.GROUP, g.getPosition(), g.getName()));
       if (g.getChildren() != null && g.getChildren().size() > 0) {
         for (SegmentRefOrGroup child : g.getChildren()) {
           String childPath = path + "." + child.getPosition();

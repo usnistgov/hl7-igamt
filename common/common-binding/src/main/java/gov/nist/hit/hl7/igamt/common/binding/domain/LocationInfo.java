@@ -16,7 +16,6 @@ package gov.nist.hit.hl7.igamt.common.binding.domain;
  *
  */
 public class LocationInfo {
-  private String id;
   private LocationType type;
   private int position;
   private String name;
@@ -25,20 +24,11 @@ public class LocationInfo {
     super();
   }
 
-  public LocationInfo(String id, LocationType type, int position, String name) {
+  public LocationInfo(LocationType type, int position, String name) {
     super();
-    this.id = id;
     this.type = type;
     this.position = position;
     this.name = name;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public LocationType getType() {

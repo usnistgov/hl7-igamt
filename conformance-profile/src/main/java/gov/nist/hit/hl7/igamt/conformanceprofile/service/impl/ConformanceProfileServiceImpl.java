@@ -1281,7 +1281,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                 childSeb.setLocationInfo(this.makeLocationInfoForGroupOrSegRef( ((Group) sg).getChildren(), childSeb));  
               }  
             }
-            return new LocationInfo(seb.getElementId(), LocationType.GROUP, sg.getPosition(), sg.getName());            
+            return new LocationInfo(LocationType.GROUP, sg.getPosition(), sg.getName());            
           }else if (sg instanceof SegmentRef){
             Segment s = this.segmentService.findById(((SegmentRef)sg).getRef().getId());
             if(seb.getChildren() != null) {
@@ -1289,7 +1289,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                 childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));  
               }  
             }
-            return new LocationInfo(seb.getElementId(), LocationType.SEGREF, sg.getPosition(), s.getLabel());     
+            return new LocationInfo(LocationType.SEGREF, sg.getPosition(), s.getLabel());     
           }
         }
       }
