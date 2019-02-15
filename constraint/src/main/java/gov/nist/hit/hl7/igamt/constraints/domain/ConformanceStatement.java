@@ -36,6 +36,9 @@ public class ConformanceStatement {
   private ConstraintType type;
   protected String identifier;
   private Path context;
+  private Level level;
+  private String structureId;
+  private String sourceId;
 
   public ConformanceStatement() {
     super();
@@ -82,6 +85,30 @@ public class ConformanceStatement {
       if(cs.getAssertion() != null) return cs.getAssertion().getDescription();
     }
     return null;
+  }
+
+  public Level getLevel() {
+    return level;
+  }
+
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
+  public String getStructureId() {
+    return structureId;
+  }
+
+  public void setStructureId(String structureId) {
+    this.structureId = structureId;
+  }
+
+  public String getSourceId() {
+    return sourceId;
+  }
+
+  public void setSourceId(String sourceId) {
+    this.sourceId = sourceId;
   }
 
 

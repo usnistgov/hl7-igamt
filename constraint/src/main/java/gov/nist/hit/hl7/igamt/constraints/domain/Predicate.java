@@ -34,6 +34,9 @@ public abstract class Predicate {
   protected ConstraintType type;
   protected Usage trueUsage;
   protected Usage falseUsage;
+  private Level level;
+  private String structureId;
+  private String sourceId;
 
   public Predicate() {
     super();
@@ -80,6 +83,30 @@ public abstract class Predicate {
       if(cp.getAssertion() != null) return cp.getAssertion().getDescription();
     }
     return null;
+  }
+
+  public Level getLevel() {
+    return level;
+  }
+
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
+  public String getStructureId() {
+    return structureId;
+  }
+
+  public void setStructureId(String structureId) {
+    this.structureId = structureId;
+  }
+
+  public String getSourceId() {
+    return sourceId;
+  }
+
+  public void setSourceId(String sourceId) {
+    this.sourceId = sourceId;
   }
 
 

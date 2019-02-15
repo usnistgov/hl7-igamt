@@ -27,8 +27,13 @@ import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.Conformanc
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.constraints.Predicate;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetStrength;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
 
@@ -40,6 +45,12 @@ public class BindingHandler {
 
   @Autowired
   private SegmentRepository segmentRepository;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
+  
+  @Autowired
+  private PredicateRepository predicateRepository;
 
   public BindingHandler(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
@@ -64,7 +75,7 @@ public class BindingHandler {
       for (SegmentRefOrGroup srog : oldMessage.getChildren()) {
         String path = "" + srog.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldObject, path, srog));
+          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog));
         }
       }
       oldConformanceStatements = oldMessage.getConformanceStatements();
@@ -74,7 +85,7 @@ public class BindingHandler {
       for (SegmentRefOrGroup srog : oldGroup.getChildren()) {
         String path = "" + srog.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldObject, path, srog));
+          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog));
         }
       }
       oldConformanceStatements = oldGroup.getConformanceStatements();
@@ -85,7 +96,7 @@ public class BindingHandler {
       for (Field f : oldSegment.getFields()) {
         String path = "" + f.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldSegment, path, f));
+          rb.addChild(constructStructureElementBinding(oldSegment, oldSegment, path, f));
         }
       }
       oldConformanceStatements = oldSegment.getConformanceStatements();
@@ -96,7 +107,7 @@ public class BindingHandler {
       for (Component c : oldDatatype.getComponents()) {
         String path = "" + c.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldDatatype, path, c));
+          rb.addChild(constructStructureElementBinding(oldDatatype, oldDatatype, path, c));
         }
       }
       oldConformanceStatements = oldDatatype.getConformanceStatements();
@@ -107,35 +118,46 @@ public class BindingHandler {
      */
     if (oldConformanceStatements != null) {
       for (ConformanceStatement oldConformanceStatement : oldConformanceStatements) {
-        if (oldConformanceStatement.getAssertion() != null
-            && !oldConformanceStatement.getAssertion().equals("")) {
-          gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement newAssertionConformanceStatement = new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement();
-          newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          newAssertionConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
-          newAssertionConformanceStatement.setAssertionScript(oldConformanceStatement.getAssertion());
-          
-//          newAssertionConformanceStatement
-//              .setAssertion(cHandler.constructAssertionObj(oldConformanceStatement.getAssertion(),
-//                  oldConformanceStatement.getDescription(), oldObject, "Assertion"));
-          rb.addConformanceStatement(newAssertionConformanceStatement);
-        } else {
-          gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement newFreeConformanceStatement =
-              new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement();
-          newFreeConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
-          newFreeConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
-          rb.addConformanceStatement(newFreeConformanceStatement);
+        gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement newAssertionConformanceStatement = new gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement();
+        newAssertionConformanceStatement.setIdentifier(oldConformanceStatement.getConstraintId());
+        newAssertionConformanceStatement.setFreeText(oldConformanceStatement.getDescription());
+        
+        if (oldConformanceStatement.getAssertion() != null && !oldConformanceStatement.getAssertion().equals("")) {
+          newAssertionConformanceStatement.setAssertionScript(oldConformanceStatement.getAssertion());  
         }
+        
+        if (oldObject instanceof Message) {
+          Message oldMessage = (Message) oldObject;
+          newAssertionConformanceStatement.setLevel(Level.CONFORMANCEPROFILE);
+          newAssertionConformanceStatement.setSourceId(oldMessage.getId());
+          newAssertionConformanceStatement.setStructureId(oldMessage.getStructID());
+        }else if (oldObject instanceof Group) {
+          Group oldGroup = (Group) oldObject;
+          newAssertionConformanceStatement.setLevel(Level.GROUP);
+          newAssertionConformanceStatement.setSourceId(oldGroup.getId());
+        }else if (oldObject instanceof Segment) {
+          Segment oldSegment = (Segment) oldObject;
+          newAssertionConformanceStatement.setLevel(Level.SEGMENT);
+          newAssertionConformanceStatement.setSourceId(oldSegment.getId());
+          newAssertionConformanceStatement.setStructureId(oldSegment.getName());
+        }else if (oldObject instanceof Datatype) {
+          Datatype oldDatatype = (Datatype) oldObject;
+          newAssertionConformanceStatement.setLevel(Level.DATATYPE);
+          newAssertionConformanceStatement.setSourceId(oldDatatype.getId());
+          newAssertionConformanceStatement.setStructureId(oldDatatype.getName());
+        }
+        newAssertionConformanceStatement = this.conformanceStatementRepository.save(newAssertionConformanceStatement);
+        rb.addConformanceStatement(newAssertionConformanceStatement.getId());
       }
     }
 
-    if (rb.getChildren() != null || rb.getConformanceStatements() != null)
+    if (rb.getChildren() != null || rb.getConformanceStatementIds() != null)
       return rb;
 
     return null;
   }
 
-  private StructureElementBinding constructStructureElementBinding(Object refObj, String path,
-      Object target) {
+  private StructureElementBinding constructStructureElementBinding(Object levelObject, Object refObj, String path, Object target) {
     StructureElementBinding seb = new StructureElementBinding();
 
     /*
@@ -157,28 +179,39 @@ public class BindingHandler {
      */
     Predicate oldPredicate = this.findPredicate(refObj, path);
     if (oldPredicate != null) {
+      
+      gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate newAssertionPredicate = new gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate();
+      newAssertionPredicate.setFalseUsage(ConversionUtil.convertUsage(oldPredicate.getFalseUsage()));
+      newAssertionPredicate.setTrueUsage(ConversionUtil.convertUsage(oldPredicate.getTrueUsage()));
+      newAssertionPredicate.setFreeText(oldPredicate.getDescription());
+      
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
-
-        gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate newAssertionPredicate =
-            new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate();
-        newAssertionPredicate
-            .setFalseUsage(ConversionUtil.convertUsage(oldPredicate.getFalseUsage()));
-        newAssertionPredicate
-            .setTrueUsage(ConversionUtil.convertUsage(oldPredicate.getTrueUsage()));
-        newAssertionPredicate.setFreeText(oldPredicate.getDescription());
         newAssertionPredicate.setAssertion(oldPredicate.getAssertion());
-//        newAssertionPredicate.setAssertion(cHandler.constructAssertionObj(
-//            oldPredicate.getAssertion(), oldPredicate.getDescription(), refObj, "Condition"));
-        seb.setPredicate(newAssertionPredicate);
-      } else {
-        gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate newFreeTextPredicate =
-            new gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate();
-        newFreeTextPredicate
-            .setFalseUsage(ConversionUtil.convertUsage(oldPredicate.getFalseUsage()));
-        newFreeTextPredicate.setTrueUsage(ConversionUtil.convertUsage(oldPredicate.getTrueUsage()));
-        newFreeTextPredicate.setFreeText(oldPredicate.getDescription());
-        seb.setPredicate(newFreeTextPredicate);
       }
+      
+      if (levelObject instanceof Message) {
+        Message oldMessage = (Message) levelObject;
+        newAssertionPredicate.setLevel(Level.CONFORMANCEPROFILE);
+        newAssertionPredicate.setSourceId(oldMessage.getId());
+        newAssertionPredicate.setStructureId(oldMessage.getStructID());
+      }else if (levelObject instanceof Group) {
+        Group oldGroup = (Group) levelObject;
+        newAssertionPredicate.setLevel(Level.GROUP);
+        newAssertionPredicate.setSourceId(oldGroup.getId());
+      }else if (levelObject instanceof Segment) {
+        Segment oldSegment = (Segment) levelObject;
+        newAssertionPredicate.setLevel(Level.SEGMENT);
+        newAssertionPredicate.setSourceId(oldSegment.getId());
+        newAssertionPredicate.setStructureId(oldSegment.getName());
+      }else if (levelObject instanceof Datatype) {
+        Datatype oldDatatype = (Datatype) levelObject;
+        newAssertionPredicate.setLevel(Level.DATATYPE);
+        newAssertionPredicate.setSourceId(oldDatatype.getId());
+        newAssertionPredicate.setStructureId(oldDatatype.getName());
+      }
+      
+      newAssertionPredicate = this.predicateRepository.save(newAssertionPredicate);
+      seb.setPredicateId(newAssertionPredicate.getId());
     }
 
     if (target instanceof Component || target instanceof Field) {
@@ -272,6 +305,7 @@ public class BindingHandler {
     if (target instanceof Field) {
       Field f = (Field) target;
       seb.setElementId(f.getId());
+      seb.setLocationInfo(new LocationInfo(f.getId(), LocationType.FIELD, f.getPosition(), f.getName()));
       if (f.getDatatype() != null && f.getDatatype().getId() != null) {
         Datatype childDatatype = null;
         Optional<Datatype> optional = datatypeRepository.findById(f.getDatatype().getId());
@@ -285,7 +319,7 @@ public class BindingHandler {
             for (Component childC : childDatatype.getComponents()) {
               String childPath = path + "." + childC.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(refObj, childPath, childC));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC));
             }
           }
         }
@@ -293,6 +327,7 @@ public class BindingHandler {
     } else if (target instanceof Component) {
       Component c = (Component) target;
       seb.setElementId(c.getId());
+      seb.setLocationInfo(new LocationInfo(c.getId(), LocationType.COMPONENT, c.getPosition(), c.getName()));
       if (c != null && c.getDatatype() != null && c.getDatatype().getId() != null) {
         Datatype childDatatype = null;
         try{
@@ -305,7 +340,7 @@ public class BindingHandler {
             for (Component childC : childDatatype.getComponents()) {
               String childPath = path + "." + childC.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(refObj, childPath, childC));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC));
             }
           }
         }
@@ -320,11 +355,12 @@ public class BindingHandler {
           childSegment = optional.get();
         }
         if (childSegment != null) {
+          seb.setLocationInfo(new LocationInfo(sr.getId(), LocationType.SEGREF, sr.getPosition(), childSegment.getLabel()));
           if (childSegment.getFields() != null && childSegment.getFields().size() > 0) {
             for (Field childF : childSegment.getFields()) {
               String childPath = path + "." + childF.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(refObj, childPath, childF));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childF));
             }
           }
         }
@@ -332,11 +368,12 @@ public class BindingHandler {
     } else if (target instanceof Group) {
       Group g = (Group) target;
       seb.setElementId(g.getId());
+      seb.setLocationInfo(new LocationInfo(g.getId(), LocationType.GROUP, g.getPosition(), g.getName()));
       if (g.getChildren() != null && g.getChildren().size() > 0) {
         for (SegmentRefOrGroup child : g.getChildren()) {
           String childPath = path + "." + child.getPosition();
           if (isNeedToDive(childPath, refObj))
-            seb.addChild(constructStructureElementBinding(refObj, childPath, child));
+            seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, child));
         }
       }
     }
