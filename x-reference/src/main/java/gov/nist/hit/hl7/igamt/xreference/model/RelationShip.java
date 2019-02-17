@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.xreference.model;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.index.Indexed;
 
 
 @RedisHash
@@ -9,22 +9,22 @@ public class RelationShip{
   @Id
   private String id; 
   
-  private ResourceInfo uses; 
+  @Indexed private ResourceInfo uses; 
   
-  private ResourceInfo usedIn; 
+  @Indexed private ResourceInfo usedIn; 
   
   private ReferenceType referenceType; 
     
-  private String path;
+  @Indexed private String path;
   
   public String getPath() {
     return path;
   }
 
-  public RelationShip(ResourceInfo uses, ResourceInfo usedBy, ReferenceType referenceType, String path) {
+  public RelationShip(ResourceInfo uses, ResourceInfo usedIn, ReferenceType referenceType, String path) {
     super();
     this.uses = uses;
-    this.usedIn = usedBy;
+    this.usedIn = usedIn;
     this.referenceType = referenceType;
     this.path = path;
   }
@@ -45,12 +45,20 @@ public class RelationShip{
     return usedIn;
   }
 
-  public void setUsedIn(ResourceInfo usedBy) {
-    this.usedIn = usedBy;
+  public void setUsedIn(ResourceInfo usedIn) {
+    this.usedIn = usedIn;
   } 
   
 
-  public ReferenceType getReferenceType() {
+  public String getId() {
+	return id;
+}
+
+public void setId(String id) {
+	this.id = id;
+}
+
+public ReferenceType getReferenceType() {
     return referenceType;
   }
 

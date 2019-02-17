@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.xreference.model;
 
+import org.springframework.data.redis.core.index.Indexed;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
@@ -9,7 +11,7 @@ public class ResourceInfo {
   private String label;
   private String username;
   private Type type;
-  private String id; 
+  @Indexed private String id; 
   
   
   public ResourceInfo() {

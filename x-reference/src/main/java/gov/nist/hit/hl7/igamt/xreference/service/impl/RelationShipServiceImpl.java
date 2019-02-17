@@ -6,9 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
 import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
-import gov.nist.hit.hl7.igamt.xreference.repository.RelationShipRepository;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
+import gov.nist.hit.hl7.xreference.igamt.repository.RelationShipRepository;
 @Service
 public class RelationShipServiceImpl implements RelationShipService {
   
@@ -46,6 +47,22 @@ public class RelationShipServiceImpl implements RelationShipService {
   public void saveAll(List<RelationShip> relations){
     repo.saveAll(relations);
   }
+@Override
+public List<RelationShip> findAll() {
+	// TODO Auto-generated method stub
+	System.out.println(repo.findAll());
+	return (List<RelationShip>) repo.findAll();
+}
+@Override
+public void deleteAll() {
+	// TODO Auto-generated method stub
+	repo.deleteAll();
+}
+@Override
+public List<RelationShip> findByPath(String path) {
+	// TODO Auto-generated method stub
+	return repo.findByPath(path);
+}
 
 
 }

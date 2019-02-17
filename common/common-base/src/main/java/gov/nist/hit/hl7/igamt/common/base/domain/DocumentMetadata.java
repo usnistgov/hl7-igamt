@@ -120,7 +120,6 @@ public class DocumentMetadata {
     clone.setTitle(title);
     clone.setTopics(topics);
     return clone;
-
   }
 
 }

@@ -17,16 +17,11 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.*;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
-import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
@@ -73,8 +68,7 @@ public class BootstrapApplication implements CommandLineRunner {
   
   @Autowired
   DatatypeClassificationService datatypeClassificationService;
-
-
+  
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
@@ -98,12 +92,17 @@ public class BootstrapApplication implements CommandLineRunner {
     return templateMessage;
   }
   
-
-  // @Bean(name = "multipartResolver")
-  // public CommonsMultipartResolver multipartResolver() {
-  // CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
-  // return multipartResolver;
-  // }
+//
+//   @Bean(name = "multipartResolver")
+//   public CommonsMultipartResolver multipartResolver() {
+//   CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+//   return multipartResolver;
+//   }
+   
+//   @Bean
+//   public GridFsTemplate gridFsTemplate() throws Exception {
+//       return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());
+//   }
   // @Bean
   // public FilterRegistrationBean jwtFilter() {
   // final FilterRegistrationBean registrationBean = new FilterRegistrationBean();Datatype
@@ -219,11 +218,12 @@ public class BootstrapApplication implements CommandLineRunner {
 //   System.out.println("ENd of Classifying dts");
 //  
 //   }
-  
+//  
 @PostConstruct
 void testCache() {
-  
-  dataypeService.findAll();
+
+	  testCache.deleteAll();
+
   
   ResourceInfo info = new ResourceInfo();
   info.setId("user");
@@ -236,12 +236,31 @@ void testCache() {
   info1.setType(null);
   
   
+  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+
   
-  testCache.save(new RelationShip(info, info1, ReferenceType.COCONSTRAINTS, "test"));
-  testCache.save(new RelationShip(info, info1, ReferenceType.DYNAMICMAPPING, "test"));
+  testCache.save(r1);
+  testCache.save(r2);
   
-  List<RelationShip> r =testCache.findAllDependencies("user");
-  System.out.println(r);
+  System.out.println(testCache.findAll().size());
+  
+  List<RelationShip> dep =testCache.findAllDependencies("user");
+  List<RelationShip>  refs=testCache.findCrossReferences("user");
+  
+  List<RelationShip>  byType=testCache.findByPath("test");
+  List<RelationShip>  all=testCache.findAll();
+  
+  for( RelationShip r :all) {
+	  System.out.println(r.getId());
+  }
+
+ 
+  
+  
+  
+  System.out.println(dep);
+  System.out.println(refs);
   
   
 

@@ -1,6 +1,8 @@
 spring:
   application:
     name: hl7-igamt
+  main: 
+    allow-bean-definition-overriding: true
 server: 
     port: 8091
     contextPath: /
