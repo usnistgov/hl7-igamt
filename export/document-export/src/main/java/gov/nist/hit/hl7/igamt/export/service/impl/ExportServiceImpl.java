@@ -49,6 +49,7 @@ public class ExportServiceImpl implements ExportService {
   public InputStream exportSerializedElementToHtml(String serializedElement, String xsltPath,
       ExportParameters exportParameters) throws ExportException {
     try {
+    	System.out.println("XML FINALE : "+serializedElement);
       File htmlFile = TransformationUtil.doTransformToTempHtml(serializedElement,
           xsltPath != null ? xsltPath : GLOBAL_STYLESHEET, exportParameters);
       InputStream htmlInputStream = FileUtils.openInputStream(htmlFile); 
@@ -59,6 +60,7 @@ public class ExportServiceImpl implements ExportService {
       throw new ExportException(exception);
     }
   }
+  
 
   public String convert(InputStream inputStream, Charset charset) throws IOException {
 		

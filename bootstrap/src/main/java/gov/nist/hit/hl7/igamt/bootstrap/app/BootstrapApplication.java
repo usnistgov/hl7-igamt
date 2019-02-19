@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -28,6 +29,7 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 
 @SpringBootApplication
 @EnableMongoAuditing
@@ -127,6 +129,18 @@ public class BootstrapApplication implements CommandLineRunner {
 
 
   }
+  
+  
+  @Autowired
+  CoConstraintService coConstraintService;
+  
+//  @PostConstruct
+//  public void testExcelExport() {
+//	  System.out.println("HT IS THE MAN");
+//	   coConstraintService.exportToExcel("5bfc38946c6f05d0f646ccda");
+//	   }
+  
+
   // @PostConstruct
   // void converAccounts() {
   //// try {
