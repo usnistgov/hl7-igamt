@@ -218,6 +218,19 @@ export class DatatypeEditConformanceStatementsComponent implements WithSave{
         return false;
     }
 
+    copyCS(cs) {
+        if(cs){
+            this.datatypeConformanceStatements.conformanceStatements.push(cs);
+            this.datatypeConformanceStatements.availableConformanceStatements = _.without(this.datatypeConformanceStatements.availableConformanceStatements, cs);
+            let item:any = {};
+            item.location = cs.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = cs;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
+    }
+
     printCS(cs){
         console.log(cs);
     }

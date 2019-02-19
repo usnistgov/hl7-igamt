@@ -217,6 +217,19 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
         return false;
     }
 
+    copyCS(cs) {
+        if(cs){
+            this.segmentConformanceStatements.conformanceStatements.push(cs);
+            this.segmentConformanceStatements.availableConformanceStatements = _.without(this.segmentConformanceStatements.availableConformanceStatements, cs);
+            let item:any = {};
+            item.location = cs.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = cs;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
+    }
+
     printCS(cs){
         console.log(cs);
     }

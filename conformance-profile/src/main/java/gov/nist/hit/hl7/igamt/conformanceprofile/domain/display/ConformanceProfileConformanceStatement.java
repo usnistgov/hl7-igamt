@@ -15,6 +15,7 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String messageType;
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
+  private Set<ConformanceStatement> availableConformanceStatements;
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
   private HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap;
   private HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap;
@@ -83,6 +84,14 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   public void setAssociatedDTConformanceStatementMap(
       HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap) {
     this.associatedDTConformanceStatementMap = associatedDTConformanceStatementMap;
+  }
+
+  public Set<ConformanceStatement> getAvailableConformanceStatements() {
+    return availableConformanceStatements;
+  }
+
+  public void setAvailableConformanceStatements(Set<ConformanceStatement> availableConformanceStatements) {
+    this.availableConformanceStatements = availableConformanceStatements;
   }
 
 

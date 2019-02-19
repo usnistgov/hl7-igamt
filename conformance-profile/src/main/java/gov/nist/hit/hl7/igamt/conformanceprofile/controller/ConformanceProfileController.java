@@ -127,14 +127,14 @@ public class ConformanceProfileController extends BaseController {
 	    return display;
   }
 
-  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement",
+  @RequestMapping(value = "/api/conformanceprofiles/{id}/conformancestatement/{did}",
       method = RequestMethod.GET, produces = {"application/json"})
 
   public ConformanceProfileConformanceStatement getConformanceProfileConformanceStatement(
-      @PathVariable("id") String id, Authentication authentication)
+      @PathVariable("id") String id, @PathVariable("did") String did, Authentication authentication)
       throws ConformanceProfileNotFoundException {
     ConformanceProfile conformanceProfile = findById(id);
-    return conformanceProfileService.convertDomainToConformanceStatement(conformanceProfile, getReadOnly(authentication, conformanceProfile));
+    return conformanceProfileService.convertDomainToConformanceStatement(conformanceProfile, did, getReadOnly(authentication, conformanceProfile));
 
   }
 
@@ -170,7 +170,7 @@ public class ConformanceProfileController extends BaseController {
       throws DatatypeException, IOException, ForbiddenOperationException {
     ConformanceProfile cp = this.conformanceProfileService.findById(id);
     validateSaveOperation(cp);
-    this.conformanceProfileService.applyChanges(cp, cItems);
+    this.conformanceProfileService.applyChanges(cp, cItems, documentId);
     EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
     entityChangeDomain.setDocumentId(documentId);
     entityChangeDomain.setDocumentType(DocumentType.IG);

@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -44,6 +45,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
@@ -123,6 +126,9 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   ValuesetService valuesetService;
+  
+  @Autowired
+  ConformanceStatementRepository conformanceStatementRepository;
 
 
 
@@ -718,6 +724,16 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
     
+    if(clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
+      for(String csId: clone.getBinding().getConformanceStatementIds()){
+        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
+        if(container.isPresent()){
+          container.get().addSourceId(clone.getId());
+          this.conformanceStatementRepository.save(container.get());
+        }
+      }
+    }
+    
     ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getConformanceProfileRegistry().getChildren().size()+1));
     ig=igService.save(ig);
     
@@ -744,6 +760,17 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = segmentService.save(clone);
+    
+    if(clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
+      for(String csId: clone.getBinding().getConformanceStatementIds()){
+        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
+        if(container.isPresent()){
+          container.get().addSourceId(clone.getId());
+          this.conformanceStatementRepository.save(container.get());
+        }
+      }
+    }
+    
     ig.getSegmentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size()+1));
     ig=igService.save(ig);
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createSegmentNode(clone, 0));
@@ -770,6 +797,17 @@ public class IGDocumentController extends BaseController {
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = datatypeService.save(clone);
+    
+    if(clone.getBinding() != null && clone.getBinding().getConformanceStatementIds() != null) {
+      for(String csId: clone.getBinding().getConformanceStatementIds()){
+        Optional<ConformanceStatement> container = this.conformanceStatementRepository.findById(csId);
+        if(container.isPresent()){
+          container.get().addSourceId(clone.getId());
+          this.conformanceStatementRepository.save(container.get());
+        }
+      }
+    }
+    
     ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size()+1));
     ig=igService.save(ig);
     return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createDatatypeNode(clone, 0));

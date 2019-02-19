@@ -59,6 +59,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
@@ -703,7 +704,7 @@ public class SegmentServiceImpl implements SegmentService {
    * hl7.igamt.segment.domain.Segment, java.util.List)
    */
   @Override
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
     	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
@@ -838,6 +839,10 @@ public class SegmentServiceImpl implements SegmentService {
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         if (item.getChangeType().equals(ChangeType.ADD)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          cs.addSourceId(s.getId());
+          cs.setStructureId(s.getName());
+          cs.setLevel(Level.SEGMENT);
+          cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           s.getBinding().addConformanceStatement(cs.getId());
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
@@ -863,12 +868,14 @@ public class SegmentServiceImpl implements SegmentService {
     String toBeDeleted = null;
     for (String id : s.getBinding().getConformanceStatementIds()) {
       ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
-      if (cs.getIdentifier().equals(location))
+      if (cs.getIdentifier().equals(location)){
         toBeDeleted = id;
+        if(cs.getSourceIds() != null) cs.getSourceIds().remove(s.getId());
+        this.conformanceStatementRepository.save(cs);
+      }
     }
 
-    if (toBeDeleted != null)
-      s.getBinding().getConformanceStatementIds().remove(toBeDeleted);
+    if (toBeDeleted != null) s.getBinding().getConformanceStatementIds().remove(toBeDeleted);
     return toBeDeleted;
   }
 
@@ -1305,5 +1312,18 @@ public class SegmentServiceImpl implements SegmentService {
       }
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#collectAvaliableConformanceStatements(java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId, String segmentName) {
+    Set<ConformanceStatement> found = this.conformanceStatementRepository.findByIgDocumentIdAndStructureId(documentId, segmentName);
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    for(ConformanceStatement cs : found){
+      if(!cs.getSourceIds().contains(segmentId)) result.add(cs);
+    }
+    return result;
   }
 }

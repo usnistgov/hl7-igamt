@@ -272,6 +272,19 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
         return false;
     }
 
+    copyCS(cs) {
+        if(cs){
+            this.messageConformanceStatements.conformanceStatements.push(cs);
+            this.messageConformanceStatements.availableConformanceStatements = _.without(this.messageConformanceStatements.availableConformanceStatements, cs);
+            let item:any = {};
+            item.location = cs.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = cs;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
+    }
+
     printCS(cs){
         console.log(cs);
     }
