@@ -221,10 +221,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  
 @PostConstruct
 void testCache() {
+	testCache.deleteAll();
 
-	  testCache.deleteAll();
-
-  
   ResourceInfo info = new ResourceInfo();
   info.setId("user");
   info.setDomainInfo(null);
@@ -254,19 +252,9 @@ void testCache() {
   for( RelationShip r :all) {
 	  System.out.println(r.getId());
   }
-
- 
-  
-  
-  
   System.out.println(dep);
   System.out.println(refs);
-  
-  
-
 
 }
-
-
 
 }

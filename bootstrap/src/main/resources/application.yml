@@ -5,7 +5,8 @@ spring:
     allow-bean-definition-overriding: true
 server: 
     port: 8091
-    contextPath: /
+    servlet:
+      context-path: /
     error:
       include-stacktrace: never
     connection-timeout: 60000
