@@ -1159,7 +1159,7 @@ public class DatatypeServiceImpl implements DatatypeService {
           }
           
           
-          return new LocationInfo(seb.getElementId(), LocationType.COMPONENT, c.getPosition(), c.getName());
+          return new LocationInfo(LocationType.COMPONENT, c.getPosition(), c.getName());
         }
       }
     }
@@ -1175,7 +1175,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     if(dt != null && dt.getComponents() != null) {
       for(Component c : dt.getComponents()) {
         if(c.getId().equals(seb.getElementId())){          
-          return new LocationInfo(seb.getElementId(), LocationType.SUBCOMPONENT, c.getPosition(), c.getName());
+          return new LocationInfo(LocationType.SUBCOMPONENT, c.getPosition(), c.getName());
         }
       }
     }

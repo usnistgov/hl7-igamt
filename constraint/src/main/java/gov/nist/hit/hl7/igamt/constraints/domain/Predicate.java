@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
+import java.util.HashSet;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -34,6 +36,10 @@ public abstract class Predicate {
   protected ConstraintType type;
   protected Usage trueUsage;
   protected Usage falseUsage;
+  private Level level;
+  private String structureId;
+  private HashSet<String> sourceIds;
+  private String igDocumentId;
 
   public Predicate() {
     super();
@@ -82,5 +88,46 @@ public abstract class Predicate {
     return null;
   }
 
+  public Level getLevel() {
+    return level;
+  }
 
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
+  public String getStructureId() {
+    return structureId;
+  }
+
+  public void setStructureId(String structureId) {
+    this.structureId = structureId;
+  }
+
+  public HashSet<String> getSourceIds() {
+    return sourceIds;
+  }
+
+  public void setSourceIds(HashSet<String> sourceIds) {
+    this.sourceIds = sourceIds;
+  }
+
+  public String getIgDocumentId() {
+    return igDocumentId;
+  }
+
+  public void setIgDocumentId(String igDocumentId) {
+    this.igDocumentId = igDocumentId;
+  }
+
+  public void addSourceId(String sourceId) {
+    if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
+    this.sourceIds.add(sourceId);
+  }
+
+  public void removeSourceId(String sourceId) {
+    if(this.sourceIds != null) {
+      this.sourceIds.remove(sourceId);
+    }
+  }
 }
