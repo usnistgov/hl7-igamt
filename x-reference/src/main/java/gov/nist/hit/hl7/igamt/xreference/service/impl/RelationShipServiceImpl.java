@@ -3,10 +3,7 @@ package gov.nist.hit.hl7.igamt.xreference.service.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
-
-import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
 import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 import gov.nist.hit.hl7.xreference.igamt.repository.RelationShipRepository;
@@ -22,18 +19,18 @@ public class RelationShipServiceImpl implements RelationShipService {
   @Override
   public List<RelationShip> findAllDependencies(String id){
     
-   return repo.findByUsedInId(id);
+   return repo.findByParent(id);
     
   }
   @Override
   public void deleteDependencies(String id){
     
-    repo.deleteByUsedInId(id);
+    repo.deleteByParent(id);
      
   }
   @Override
   public List<RelationShip> findCrossReferences(String id){
-    return repo.findByUsesId(id);
+    return repo.findByChild(id);
   }
   
   

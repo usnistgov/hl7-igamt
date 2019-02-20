@@ -28,25 +28,21 @@
    
     </dependency>
     
-    			<dependency>
+    	<dependency>
      	<groupId>gov.nist.hit.hl7</groupId>
      	<artifactId>common-exception</artifactId>
 		<version>0.0.1-SNAPSHOT</version>
-   
     </dependency>
-   
-		
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>serialization</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 		
-<!-- 		<dependency>
-		 <groupId>gov.nist.hit.hl7</groupId>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>x-reference</artifactId>
-			<version>${parent.version}</version>
-		</dependency> -->
-		
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

@@ -31,6 +31,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
+import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 /**
  *
@@ -156,7 +157,6 @@ public interface DatatypeService {
    */
   public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
   
-  
   public List<Datatype> findDisplayFormatByIds(Set<String> ids);
 
   public List<Datatype> findFlavors(Set<String> ids, String id, String name);
@@ -167,5 +167,6 @@ public interface DatatypeService {
 
   public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
+  public Set<RelationShip> collectDependencies(Datatype dt);
 
 }

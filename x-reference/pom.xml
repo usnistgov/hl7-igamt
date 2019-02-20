@@ -18,13 +18,6 @@
 	</properties>
 
 	<dependencies>
-		 
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>conformance-profile</artifactId>
-			<version>${project.parent.version}</version>
-		</dependency>
-
 	</dependencies>
 	<build>
 		<pluginManagement>

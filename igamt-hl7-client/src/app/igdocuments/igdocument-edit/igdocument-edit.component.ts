@@ -668,7 +668,6 @@ export class IgDocumentEditComponent {
           this.tocService.setTreeModelInDB(this.tree.treeModel);
         }
       )
-
   };
 
   deleteConformanceProfile(node){
@@ -679,8 +678,7 @@ export class IgDocumentEditComponent {
       ext:node.data.data.ext,
       type:node.data.data.type,
       node:node.data.data
-    })
-      .subscribe(
+    }).subscribe(
         id => {
           this.tocService.deleteNodeById(id);
           this.tocService.setTreeModelInDB(this.tree.treeModel);

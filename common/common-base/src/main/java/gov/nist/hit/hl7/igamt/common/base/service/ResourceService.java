@@ -20,5 +20,4 @@ public interface ResourceService {
 
   public void delete(String key);
 
-
 }

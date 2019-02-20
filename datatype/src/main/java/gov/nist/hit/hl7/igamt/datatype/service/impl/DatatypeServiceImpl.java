@@ -34,7 +34,6 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -76,6 +75,8 @@ import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
+import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 
 /**
@@ -1132,6 +1133,23 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     return null;
   }
+
+@Override
+public Set<RelationShip> collectDependencies(Datatype elm) {
+	
+    Set<RelationShip> used = new HashSet<RelationShip>();
+    if(elm instanceof ComplexDatatype) {
+      ComplexDatatype complex= (ComplexDatatype)elm;
+      for(Component c : complex.getComponents()) {
+        if(c.getRef() !=null && c.getRef().getId() !=null) {
+            used.add(new RelationShip(c.getRef().getId(), elm.getId(), c.getPosition()+"", ReferenceType.STRUCTURE));
+            
+        }
+      }
+    	}
+    	return used;
+  }
+
 
 
 

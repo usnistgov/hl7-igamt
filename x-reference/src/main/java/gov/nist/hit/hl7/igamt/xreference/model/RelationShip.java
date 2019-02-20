@@ -1,70 +1,69 @@
 package gov.nist.hit.hl7.igamt.xreference.model;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.index.Indexed;
 
-
 @RedisHash
-public class RelationShip{
-  @Id
-  private String id; 
-  
-  @Indexed private ResourceInfo uses; 
-  
-  @Indexed private ResourceInfo usedIn; 
-  
-  private ReferenceType referenceType; 
-    
-  @Indexed private String path;
-  
-  public String getPath() {
-    return path;
-  }
+public class RelationShip {
+	public RelationShip(String child, String parent, String path, ReferenceType referenceType) {
+		super();
+		this.child = child;
+		this.parent = parent;
+		this.path = path;
+		this.referenceType = referenceType;
+	}
 
-  public RelationShip(ResourceInfo uses, ResourceInfo usedIn, ReferenceType referenceType, String path) {
-    super();
-    this.uses = uses;
-    this.usedIn = usedIn;
-    this.referenceType = referenceType;
-    this.path = path;
-  }
+	@Id
+	private String id;
+	@Indexed
+	private String child;
+	@Indexed
+	private String parent;
+	private String path;
+	private ReferenceType referenceType;
 
-  public void setPath(String path) {
-    this.path = path;
-  }
 
-  public ResourceInfo getUses() {
-    return uses;
-  }
+	public String getId() {
+		return id;
+	}
 
-  public void setUses(ResourceInfo uses) {
-    this.uses = uses;
-  }
+	public void setId(String id) {
+		this.id = id;
+	}
 
-  public ResourceInfo getUsedIn() {
-    return usedIn;
-  }
+	public String getChild() {
+		return child;
+	}
 
-  public void setUsedIn(ResourceInfo usedIn) {
-    this.usedIn = usedIn;
-  } 
-  
+	public void setChild(String child) {
+		this.child = child;
+	}
 
-  public String getId() {
-	return id;
-}
+	public String getParent() {
+		return parent;
+	}
 
-public void setId(String id) {
-	this.id = id;
-}
+	public void setParent(String parent) {
+		this.parent = parent;
+	}
 
-public ReferenceType getReferenceType() {
-    return referenceType;
-  }
+	public ReferenceType getReferenceType() {
+		return referenceType;
+	}
 
-  public void setReferenceType(ReferenceType referenceType) {
-    this.referenceType = referenceType;
-  }
-  
+	public void setReferenceType(ReferenceType referenceType) {
+		this.referenceType = referenceType;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public void setPath(String path) {
+		this.path = path;
+	}
+
+	
 
 }

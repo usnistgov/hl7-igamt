@@ -91,6 +91,8 @@ import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
+import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 
 /**
@@ -1293,5 +1295,17 @@ public class SegmentServiceImpl implements SegmentService {
 
     List<Segment> segments = mongoTemplate.find(qry, Segment.class);
     return segments;
+  }
+  @Override
+  public Set<RelationShip> collectDependencies(Segment elm) {
+  	
+      Set<RelationShip> used = new HashSet<RelationShip>();
+        for(Field f : elm.getChildren()) {
+          if(f.getRef() !=null && f.getRef().getId() !=null) {
+              used.add(new RelationShip(f.getRef().getId(), elm.getId(), f.getPosition()+"", ReferenceType.STRUCTURE));
+              
+          }   
+  	 }
+		return used;
   }
 }

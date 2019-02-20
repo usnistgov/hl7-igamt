@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 /**
  *
@@ -161,4 +162,6 @@ public interface SegmentService extends ResourceService {
   public List<Segment> findFlavors(Set<String> ids, String id, String name);
 
   public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+
+  public Set<RelationShip> collectDependencies(Segment elm);
 }
