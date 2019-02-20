@@ -28,7 +28,6 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
 import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
 import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
-import gov.nist.hit.hl7.igamt.xreference.model.ResourceInfo;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
 @SpringBootApplication
@@ -219,42 +218,42 @@ public class BootstrapApplication implements CommandLineRunner {
 //  
 //   }
 //  
-@PostConstruct
-void testCache() {
-	testCache.deleteAll();
-
-  ResourceInfo info = new ResourceInfo();
-  info.setId("user");
-  info.setDomainInfo(null);
-  info.setType(null);
-  
-  ResourceInfo info1 = new ResourceInfo();
-  info1.setId("user1");
-  info1.setDomainInfo(null);
-  info1.setType(null);
-  
-  
-  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
-  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
-
-  
-  testCache.save(r1);
-  testCache.save(r2);
-  
-  System.out.println(testCache.findAll().size());
-  
-  List<RelationShip> dep =testCache.findAllDependencies("user");
-  List<RelationShip>  refs=testCache.findCrossReferences("user");
-  
-  List<RelationShip>  byType=testCache.findByPath("test");
-  List<RelationShip>  all=testCache.findAll();
-  
-  for( RelationShip r :all) {
-	  System.out.println(r.getId());
-  }
-  System.out.println(dep);
-  System.out.println(refs);
-
-}
+//@PostConstruct
+//void testCache() {
+//	testCache.deleteAll();
+//
+//  ResourceInfo info = new ResourceInfo();
+//  info.setId("user");
+//  info.setDomainInfo(null);
+//  info.setType(null);
+//  
+//  ResourceInfo info1 = new ResourceInfo();
+//  info1.setId("user1");
+//  info1.setDomainInfo(null);
+//  info1.setType(null);
+//  
+//  
+//  RelationShip r1 = new RelationShip(info, info1, ReferenceType.STRUCTURE, "test");
+//  RelationShip r2 = new RelationShip(info1, info, ReferenceType.STRUCTURE, "test");
+//
+//  
+//  testCache.save(r1);
+//  testCache.save(r2);
+//  
+//  System.out.println(testCache.findAll().size());
+//  
+//  List<RelationShip> dep =testCache.findAllDependencies("user");
+//  List<RelationShip>  refs=testCache.findCrossReferences("user");
+//  
+//  List<RelationShip>  byType=testCache.findByPath("test");
+//  List<RelationShip>  all=testCache.findAll();
+//  
+//  for( RelationShip r :all) {
+//	  System.out.println(r.getId());
+//  }
+//  System.out.println(dep);
+//  System.out.println(refs);
+//
+//}
 
 }
