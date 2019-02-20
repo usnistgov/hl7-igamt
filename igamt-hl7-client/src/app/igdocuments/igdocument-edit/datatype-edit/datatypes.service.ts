@@ -96,32 +96,10 @@ export class DatatypesService {
         return promise;
     }
 
-    public saveDatatypeMetadata(id, metadata): Promise<any> {
-        return this.http.post('api/datatypes/' + id + '/metadata',metadata).toPromise();
-    }
-
-    public saveDatatypeStructure(id, structure): Promise<any> {
-        return this.http.post('api/datatypes/' + id + '/structure',structure).toPromise();
-    }
-
-    public saveDatatypePreDef(id, preDef): Promise<any> {
-        return this.http.post('api/datatypes/' + id + '/predef', preDef).toPromise();
-    }
-
-    public saveDatatypePostDef(id, postDef): Promise<any> {
-        return this.http.post('api/datatypes/' + id + '/postdef', postDef).toPromise();
-    }
-
     public saveDatatypeCrossReferences(id, crossReference): Promise<any> {
         return null;
     }
 
-    public saveDatatypeConformanceStatements(id, conformanceStatements): Promise<any> {
-        return this.http.post('api/datatypes/' + id + '/conformancestatement', conformanceStatements).toPromise();
-    }
-    // public saveDatatype(id, dId, cItem): Promise<any> {
-    // return  this.http.post('api/datatypes/' + id + '/document/' + dId + '/save',cItem).toPromise();
-    // }
     public save(id, cItem): Promise<any> {
       let igId= this.tocService.getIgId();
       let httpParams = new HttpParams().append("dId", igId);

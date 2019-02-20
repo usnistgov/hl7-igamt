@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
@@ -44,23 +46,32 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.display.BindingDisplay;
-import gov.nist.hit.hl7.igamt.common.binding.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
@@ -72,7 +83,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldDisplayDataModel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
@@ -91,8 +101,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
+
 
 
 /**
@@ -105,6 +114,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
+  
+  @Autowired
+  private InMemoryDomainExtentionService domainExtention;
 
   @Autowired
   private CoConstraintService coConstraintService;
@@ -120,10 +132,17 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private CodeSystemService codeSystemService;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
+  
+  @Autowired
+  private PredicateRepository predicateRepository;
 
   @Override
   public Segment findById(String key) {
-    return segmentRepository.findById(key).orElse(null);
+	Segment segment = this.domainExtention.findById(key, Segment.class);
+    return segment == null ? segmentRepository.findById(key).orElse(null) : segment;
   }
 
   @Override
@@ -142,7 +161,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public List<Segment> findAll() {
-    return segmentRepository.findAll();
+	return Stream.concat(this.domainExtention.getAll(Segment.class).stream(), segmentRepository.findAll().stream())
+	.collect(Collectors.toList());
   }
 
   @Override
@@ -482,28 +502,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public SegmentConformanceStatement convertDomainToConformanceStatement(Segment segment) {
-    if (segment != null) {
-      SegmentConformanceStatement result = new SegmentConformanceStatement();
-      result.setId(segment.getId());
-      result.setScope(segment.getDomainInfo().getScope());
-      result.setVersion(segment.getDomainInfo().getVersion());
-      if (segment.getExt() != null) {
-        result.setLabel(segment.getName() + segment.getExt());
-      } else {
-        result.setLabel(segment.getName());
-      }
-
-      result.setName(segment.getName());
-      result.setUpdateDate(segment.getUpdateDate());
-
-      result.setConformanceStatements(segment.getBinding().getConformanceStatements());
-      return result;
-    }
-    return null;
-  }
-
-  @Override
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment) {
     if (segment != null) {
       SegmentDynamicMapping result = new SegmentDynamicMapping();
@@ -584,23 +582,6 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
 
-
-
-  /**
-   * TODO: anything more to validate ??
-   */
-  @Override
-  public void validate(SegmentConformanceStatement conformanceStatement)
-      throws SegmentValidationException {
-    if (conformanceStatement != null) {
-      for (ConformanceStatement statement : conformanceStatement.getConformanceStatements()) {
-        if (StringUtils.isEmpty(statement.getIdentifier())) {
-          throw new SegmentValidationException("conformance statement identifier is missing");
-        }
-      }
-    }
-  }
-
   /**
    * TODO: anything more to validate ??
    */
@@ -608,42 +589,6 @@ public class SegmentServiceImpl implements SegmentService {
   public void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException {
     if (dynamicMapping != null) {
     }
-  }
-
-
-  @Override
-  public Segment savePredef(PreDef predef) throws SegmentNotFoundException {
-    Segment segment = findById(predef.getId());
-    if (segment == null) {
-      throw new SegmentNotFoundException(predef.getId());
-    }
-    segment.setPreDef(predef.getPreDef());
-    return save(segment);
-  }
-
-  @Override
-  public Segment savePostdef(PostDef postdef) throws SegmentNotFoundException {
-    Segment segment = findById(postdef.getId());
-    if (segment == null) {
-      throw new SegmentNotFoundException(postdef.getId());
-    }
-    segment.setPostDef(postdef.getPostDef());
-    return save(segment);
-  }
-
-
-
-
-  @Override
-  public Segment saveConformanceStatement(SegmentConformanceStatement conformanceStatement)
-      throws SegmentNotFoundException, SegmentValidationException {
-    validate(conformanceStatement);
-    Segment segment = findById(conformanceStatement.getId());
-    if (segment == null) {
-      throw new SegmentNotFoundException(conformanceStatement.getId());
-    }
-    segment.getBinding().setConformanceStatements(conformanceStatement.getConformanceStatements());
-    return save(segment);
   }
 
   /*
@@ -895,17 +840,20 @@ public class SegmentServiceImpl implements SegmentService {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         if (item.getChangeType().equals(ChangeType.ADD)) {
-          s.getBinding()
-              .addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          cs = this.conformanceStatementRepository.save(cs);
+          s.getBinding().addConformanceStatement(cs.getId());
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
-          item.setOldPropertyValue(this.deleteConformanceStatementById(s, item.getLocation()));
+          item.setOldPropertyValue(item.getLocation());
+          this.deleteConformanceStatementById(s, item.getLocation());
         } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
-          item.setOldPropertyValue(this.deleteConformanceStatementById(s, item.getLocation()));
-          s.getBinding()
-              .addConformanceStatement(mapper.readValue(jsonInString, ConformanceStatement.class));
+          ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          cs = this.conformanceStatementRepository.save(cs);
         }
       }
     }
+    s.setBinding(this.makeLocationInfo(s));
     this.save(s);
   }
 
@@ -914,15 +862,16 @@ public class SegmentServiceImpl implements SegmentService {
    * @param location
    * @return
    */
-  private ConformanceStatement deleteConformanceStatementById(Segment s, String location) {
-    ConformanceStatement toBeDeleted = null;
-    for (ConformanceStatement cs : s.getBinding().getConformanceStatements()) {
+  private String deleteConformanceStatementById(Segment s, String location) {
+    String toBeDeleted = null;
+    for (String id : s.getBinding().getConformanceStatementIds()) {
+      ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
       if (cs.getIdentifier().equals(location))
-        toBeDeleted = cs;
+        toBeDeleted = id;
     }
 
     if (toBeDeleted != null)
-      s.getBinding().getConformanceStatements().remove(toBeDeleted);
+      s.getBinding().getConformanceStatementIds().remove(toBeDeleted);
     return toBeDeleted;
   }
 
@@ -1074,9 +1023,10 @@ public class SegmentServiceImpl implements SegmentService {
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    bindingDisplay.setPredicate(seb.getPredicate());
-    bindingDisplay
-        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    
+    
     return bindingDisplay;
   }
 
@@ -1302,10 +1252,74 @@ public class SegmentServiceImpl implements SegmentService {
       Set<RelationShip> used = new HashSet<RelationShip>();
         for(Field f : elm.getChildren()) {
           if(f.getRef() !=null && f.getRef().getId() !=null) {
-              used.add(new RelationShip(f.getRef().getId(), elm.getId(), f.getPosition()+"", ReferenceType.STRUCTURE));
+              used.add(new RelationShip(new ReferenceIndentifier(f.getRef().getId(),Type.DATATYPE), new ReferenceIndentifier(elm.getId(),Type.SEGMENT), f.getPosition()+""));
               
           }   
   	 }
 		return used;
+  }
+
+
+  @Override
+  public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if(segment.getDomainInfo().getScope().equals(Scope.USER)) {
+      for(Field f : segment.getChildren()) {
+        Datatype dt = this.datatypeService.findById(f.getRef().getId());
+        if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
+          if(dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null && dt.getBinding().getConformanceStatementIds().size() > 0) {
+            if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE, dt.getId(), dt.getLabel()));
+            this.datatypeService.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
+          }
+        }
+      }      
+    }    
+  }
+  
+  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        result.add(this.conformanceStatementRepository.findById(id).get());
+      }
+    }
+    
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#makeLocationInfo(gov.nist.hit.hl7.igamt.segment.domain.Segment)
+   */
+  @Override
+  public ResourceBinding makeLocationInfo(Segment s) {
+    if(s.getBinding() != null) {
+      for(StructureElementBinding seb : s.getBinding().getChildren()){
+        seb.setLocationInfo(makeLocationInfoForField(s, seb));  
+      }
+      return s.getBinding();
+    }
+    return null;
+  }
+
+  /**
+   * @param s
+   * @param seb
+   * @return
+   */
+  @Override
+  public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb) {
+    if(s != null && s.getChildren() != null) {
+      for(Field f : s.getChildren()) {
+        if(f.getId().equals(seb.getElementId())){
+          if(seb.getChildren() != null) {
+            for(StructureElementBinding childSeb : seb.getChildren()){
+              Datatype childDT = this.datatypeService.findById(f.getRef().getId());
+              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
+            }            
+          }
+          return new LocationInfo(LocationType.FIELD, f.getPosition(), f.getName());
+        }
+      }
+    }
+    return null;
   }
 }

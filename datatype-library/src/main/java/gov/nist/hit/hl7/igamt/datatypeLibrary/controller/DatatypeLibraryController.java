@@ -64,7 +64,7 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.model.TreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryDisplayConverterService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
-import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DeltaService;
+import gov.nist.hit.hl7.igamt.datatypeLibrary.service.EvolutionComparatorService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.DeltaTreeNode;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.util.EvolutionPropertie;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddDatatypeResponseObject;
@@ -73,8 +73,8 @@ import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.wrappers.CreatingWrapper;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
-import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
-import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
+//import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
+//import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
 
 
 /**
@@ -90,7 +90,7 @@ public class DatatypeLibraryController {
   private DatatypeService datatypeService;
 
   @Autowired
-  private DeltaService deltaService;
+  private EvolutionComparatorService deltaService;
   @Autowired
 
   DatatypeClassificationService datatypeClassificationService;
@@ -101,9 +101,9 @@ public class DatatypeLibraryController {
   @Autowired
   DatatypeLibraryDisplayConverterService displayConverterService;
 
-
-  @Autowired
-  private XRefService xRefService;
+//
+//  @Autowired
+//  private XRefService xRefService;
 
 
   private static final String DATATYPE_DELETED = "DATATYPE_DELETED";
@@ -402,10 +402,10 @@ public class DatatypeLibraryController {
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException,
       DatatypeLibraryNotFoundException {
-    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
-    if (xreferences != null && !xreferences.isEmpty()) {
-      throw new XReferenceFoundException(datatypeId, xreferences);
-    }
+//    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
+//    if (xreferences != null && !xreferences.isEmpty()) {
+//      throw new XReferenceFoundException(datatypeId, xreferences);
+//    }
     DatatypeLibrary library = findLibraryById(id);
     Link found = findLinkById(datatypeId, library.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -437,23 +437,23 @@ public class DatatypeLibraryController {
     }
 
   }
-
-  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",
-      method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
-      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-      Authentication authentication)
-      throws IGNotFoundException, XReferenceException, DatatypeLibraryNotFoundException {
-    DatatypeLibrary library = findLibraryById(id);
-    if (library != null) {
-      Set<String> filterDatatypeIds = gatherIds(library);
-      Map<String, List<CrossRefsNode>> results =
-          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds);
-      return results;
-    } else {
-      throw new DatatypeLibraryNotFoundException("Cannot found Id Library");
-    }
-  }
+//
+//  @RequestMapping(value = "/api/datatype-library/{id}/datatypes/{datatypeId}/crossref",
+//      method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
+//      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
+//      Authentication authentication)
+//      throws IGNotFoundException, XReferenceException, DatatypeLibraryNotFoundException {
+//    DatatypeLibrary library = findLibraryById(id);
+//    if (library != null) {
+//      Set<String> filterDatatypeIds = gatherIds(library);
+//      Map<String, List<CrossRefsNode>> results =
+//          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds);
+//      return results;
+//    } else {
+//      throw new DatatypeLibraryNotFoundException("Cannot found Id Library");
+//    }
+//  }
 
   private Set<String> gatherIds(DatatypeLibrary library) {
     Set<String> results = new HashSet<String>();

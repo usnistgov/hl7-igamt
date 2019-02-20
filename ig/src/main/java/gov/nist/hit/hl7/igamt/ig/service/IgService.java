@@ -14,6 +14,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
@@ -56,6 +57,12 @@ List<Ig> findAllUsersIG();
 List<Ig> findAllPreloadedIG();
 
 public void delete(Ig ig);
+
+/**
+ * @param igdoument
+ * @return
+ */
+public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
 
 
 

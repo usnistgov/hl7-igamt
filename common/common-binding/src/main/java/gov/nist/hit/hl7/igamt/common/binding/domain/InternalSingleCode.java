@@ -1,8 +1,12 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import gov.nist.diff.annotation.DeltaField;
+
 public class InternalSingleCode {
 
+  @DeltaField
   private String codeSystemId;
+  @DeltaField
   private String codeId;
 
   public String getCodeSystemId() {

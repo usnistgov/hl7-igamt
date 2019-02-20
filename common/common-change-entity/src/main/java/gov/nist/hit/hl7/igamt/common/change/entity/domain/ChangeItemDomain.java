@@ -102,6 +102,13 @@ public class ChangeItemDomain implements Comparable<ChangeItemDomain> {
     return this.getPosition() - o.getPosition();
   }
 
+  @Override
+  public String toString() {
+    return "ChangeItemDomain [location=" + location + ", propertyType=" + propertyType
+        + ", propertyValue=" + propertyValue + ", oldPropertyValue=" + oldPropertyValue
+        + ", changeType=" + changeType + ", position=" + position + "]";
+  }
+
 
 
 }

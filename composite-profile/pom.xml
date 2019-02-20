@@ -20,5 +20,10 @@
 			<artifactId>profile-component</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>conformance-profile</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 </project>

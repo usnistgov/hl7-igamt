@@ -1,8 +1,12 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import gov.nist.diff.annotation.DeltaField;
+
 public class ExternalSingleCode {
 
+  @DeltaField
   private String value;
+  @DeltaField
   private String codeSystem;
 
   public ExternalSingleCode() {

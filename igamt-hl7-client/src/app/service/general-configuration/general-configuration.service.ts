@@ -48,6 +48,8 @@ export class GeneralConfigurationService {
 
   _assertionModes: any[];
 
+  _predicateTypes : any[];
+
   _constraintTypes: any[];
 
   _extensibilityOptions:any[];
@@ -63,6 +65,12 @@ export class GeneralConfigurationService {
     this._constraintTypes = [
       {label: 'SIMPLE', value: 'simple', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'SIMPLE + Proposition Patterns', value: 'simple-proposition', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'COMPLEX', value: 'complex', icon: 'fa fa-fw fa-file-code-o'},
+      {label: 'Free', value: 'free', icon: 'fa fa-fw fa-file-text-o'}
+    ];
+
+    this._predicateTypes = [
+      {label: 'SIMPLE', value: 'simple', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'COMPLEX', value: 'complex', icon: 'fa fa-fw fa-file-code-o'},
       {label: 'Free', value: 'free', icon: 'fa fa-fw fa-file-text-o'}
     ];
@@ -399,11 +407,11 @@ export class GeneralConfigurationService {
     return null;
   }
 
-  arraySortByPosition(objectArray){
-    objectArray = _.sortBy(objectArray, function(item){ return item.data.position});
+  arraySortByPosition(objectArray, getter?){
+    objectArray = _.sortBy(objectArray, function(item){ return getter ? getter(item) : item.data.position});
     for(let child of objectArray){
       if(child.children){
-        child.children = this.arraySortByPosition(child.children);
+        child.children = this.arraySortByPosition(child.children, getter);
       }
     }
     return objectArray;

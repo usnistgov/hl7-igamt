@@ -2,7 +2,8 @@ package gov.nist.hit.hl7.igamt.xreference.service;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+
 
 public interface RelationShipService {
   

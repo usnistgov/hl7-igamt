@@ -12,9 +12,7 @@
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
 import java.util.Set;
-
 import org.springframework.data.mongodb.core.mapping.Document;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 
 
@@ -42,7 +40,11 @@ public class CodeSystemLibrary extends Resource {
   public String getLabel() {
     return this.getName();
   }
-  
-  
+
+  @Override
+  public Resource clone() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

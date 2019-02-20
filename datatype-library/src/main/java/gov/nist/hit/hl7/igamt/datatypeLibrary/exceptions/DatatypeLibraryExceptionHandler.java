@@ -24,15 +24,15 @@ import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 public class DatatypeLibraryExceptionHandler {
 
 
-  @ResponseBody
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({XReferenceFoundException.class})
-  public ResponseMessage<Map<String, List<Document>>> handleXReferenceFoundException(
-      XReferenceFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
-    message.setData(exception.getXreferences());
-    return message;
-  }
+//  @ResponseBody
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  @ExceptionHandler({XReferenceFoundException.class})
+//  public ResponseMessage<Map<String, List<Document>>> handleXReferenceFoundException(
+//      XReferenceFoundException exception) {
+//    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+//    message.setData(exception.getXreferences());
+//    return message;
+//  }
 
   @ResponseBody
   @ResponseStatus(HttpStatus.BAD_REQUEST)

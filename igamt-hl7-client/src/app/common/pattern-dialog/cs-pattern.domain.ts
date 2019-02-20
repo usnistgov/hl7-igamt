@@ -175,6 +175,8 @@ export class BinaryOperator extends Operator {
   public write() {
     if (this.data.type === 'IF-THEN') {
       return ' IF ( ' + this.getLeft().write() + ' ) THEN ( ' + this.getRight().write() + ' ) ';
+    }else if (this.data.type === 'NOT') {
+      return ' NOT ( ' + this.getLeft().write() + ' )';
     }
     return ' ( ' + this.getLeft().write() + ' ) ' + this.data.type + ' ( ' + this.getRight().write() + ' ) ';
   }

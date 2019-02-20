@@ -36,7 +36,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
-import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -58,6 +57,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
@@ -88,8 +88,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
-import gov.nist.hit.hl7.igamt.xreference.model.CrossRefsNode;
-import gov.nist.hit.hl7.igamt.xreference.service.XRefService;
+
 
 @RestController
 public class IGDocumentController extends BaseController {
@@ -112,8 +111,6 @@ public class IGDocumentController extends BaseController {
   @Autowired
   CrudService crudService;
 
-  @Autowired
-  private XRefService xRefService;
 
   @Autowired
   DatatypeService datatypeService;
@@ -159,6 +156,12 @@ public class IGDocumentController extends BaseController {
       }
     }
     return result;  
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement",method = RequestMethod.GET, produces = {"application/json"})
+  public IgDocumentConformanceStatement getIgDocumentConformanceStatement(@PathVariable("id") String id, Authentication authentication) throws IGNotFoundException {
+    Ig igdoument = findIgById(id);
+    return igService.convertDomainToConformanceStatement(igdoument);
   }
   
   @RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {"application/json"})
@@ -489,22 +492,22 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceException
    */
-  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref",
-      method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
-      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-      Authentication authentication) throws IGNotFoundException, XReferenceException {
-    Ig ig = igService.findById(id);
-    if (ig != null) {
-      Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
-      Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
-      Map<String, List<CrossRefsNode>> results =
-          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
-      return results;
-    } else {
-      throw new IGNotFoundException("Cannot find Id document");
-    }
-  }
+//  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref",
+//      method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
+//      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
+//      Authentication authentication) throws IGNotFoundException, XReferenceException {
+//    Ig ig = igService.findById(id);
+//    if (ig != null) {
+//      Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
+//      Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
+//      Map<String, List<CrossRefsNode>> results =
+//          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
+//      return results;
+//    } else {
+//      throw new IGNotFoundException("Cannot find Id document");
+//    }
+//  }
 
   /**
    * 
@@ -515,18 +518,18 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceException
    */
-  @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/crossref",
-      method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody Map<String, List<CrossRefsNode>> findSegmentCrossRef(
-      @PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
-      Authentication authentication) throws IGNotFoundException, XReferenceException {
-    Ig ig = findIgById(id);
-    Set<String> filterConformanceProfileIds =
-        gatherIds(ig.getConformanceProfileRegistry().getChildren());
-    Map<String, List<CrossRefsNode>> results =
-        xRefService.getSegmentReferences(segmentId, filterConformanceProfileIds);
-    return results;
-  }
+//  @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/crossref",
+//      method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody Map<String, List<CrossRefsNode>> findSegmentCrossRef(
+//      @PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
+//      Authentication authentication) throws IGNotFoundException, XReferenceException {
+//    Ig ig = findIgById(id);
+//    Set<String> filterConformanceProfileIds =
+//        gatherIds(ig.getConformanceProfileRegistry().getChildren());
+//    Map<String, List<CrossRefsNode>> results =
+//        xRefService.getSegmentReferences(segmentId, filterConformanceProfileIds);
+//    return results;
+//  }
 
 
   /**
@@ -538,20 +541,20 @@ public class IGDocumentController extends BaseController {
    * @throws IGNotFoundException
    * @throws XReferenceException
    */
-  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/crossref",
-      method = RequestMethod.GET, produces = {"application/json"})
-  public @ResponseBody Map<String, List<CrossRefsNode>> findValueSetCrossRef(
-      @PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
-      Authentication authentication) throws IGNotFoundException, XReferenceException {
-    Ig ig = findIgById(id);
-    Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
-    Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
-    Set<String> filterConformanceProfileIds =
-        gatherIds(ig.getConformanceProfileRegistry().getChildren());
-    Map<String, List<CrossRefsNode>> results = xRefService.getValueSetReferences(id, filterDatatypeIds,
-        filterSegmentIds, filterConformanceProfileIds);
-    return results;
-  }
+//  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/crossref",
+//      method = RequestMethod.GET, produces = {"application/json"})
+//  public @ResponseBody Map<String, List<CrossRefsNode>> findValueSetCrossRef(
+//      @PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
+//      Authentication authentication) throws IGNotFoundException, XReferenceException {
+//    Ig ig = findIgById(id);
+//    Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
+//    Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
+//    Set<String> filterConformanceProfileIds =
+//        gatherIds(ig.getConformanceProfileRegistry().getChildren());
+//    Map<String, List<CrossRefsNode>> results = xRefService.getValueSetReferences(id, filterDatatypeIds,
+//        filterSegmentIds, filterConformanceProfileIds);
+//    return results;
+//  }
 
 
   /**
@@ -569,10 +572,10 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage deleteDatatype(@PathVariable("id") String id,
       @PathVariable("datatypeId") String datatypeId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
-    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
-    if (xreferences != null && !xreferences.isEmpty()) {
-      throw new XReferenceFoundException(datatypeId, xreferences);
-    }
+//    Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id, datatypeId, authentication);
+//    if (xreferences != null && !xreferences.isEmpty()) {
+//      throw new XReferenceFoundException(datatypeId, xreferences);
+//    }
     Ig ig = findIgById(id);
     Link found = findLinkById(datatypeId, ig.getDatatypeRegistry().getChildren());
     if (found != null) {
@@ -604,10 +607,10 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage deleteSegment(@PathVariable("id") String id,
       @PathVariable("segmentId") String segmentId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
-    Map<String, List<CrossRefsNode>> xreferences = findSegmentCrossRef(id, segmentId, authentication);
-    if (xreferences != null && !xreferences.isEmpty()) {
-      throw new XReferenceFoundException(segmentId, xreferences);
-    }
+  //  Map<String, List<CrossRefsNode>> xreferences = findSegmentCrossRef(id, segmentId, authentication);
+//    if (xreferences != null && !xreferences.isEmpty()) {
+//      throw new XReferenceFoundException(segmentId, xreferences);
+//    }
     Ig ig = findIgById(id);
     Link found = findLinkById(segmentId, ig.getSegmentRegistry().getChildren());
     if (found != null) {
@@ -638,10 +641,10 @@ public class IGDocumentController extends BaseController {
   public ResponseMessage deleteValueSet(@PathVariable("id") String id,
       @PathVariable("valuesetId") String valuesetId, Authentication authentication)
       throws IGNotFoundException, XReferenceFoundException, XReferenceException {
-    Map<String, List<CrossRefsNode>> xreferences = findValueSetCrossRef(id, valuesetId, authentication);
-    if (xreferences != null && !xreferences.isEmpty()) {
-      throw new XReferenceFoundException(valuesetId, xreferences);
-    }
+//    Map<String, List<CrossRefsNode>> xreferences = findValueSetCrossRef(id, valuesetId, authentication);
+//    if (xreferences != null && !xreferences.isEmpty()) {
+//      throw new XReferenceFoundException(valuesetId, xreferences);
+//    }
     Ig ig = findIgById(id);
     Link found = findLinkById(valuesetId, ig.getValueSetRegistry().getChildren());
     if (found != null) {

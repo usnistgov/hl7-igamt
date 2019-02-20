@@ -2,6 +2,7 @@
  * Created by Jungyub on 10/26/17.
  */
 import {Component, Input} from "@angular/core";
+import {GeneralConfigurationService} from "../../service/general-configuration/general-configuration.service";
 import { ControlContainer, NgForm } from '@angular/forms';
 
 @Component({
@@ -12,9 +13,13 @@ import { ControlContainer, NgForm } from '@angular/forms';
 })
 export class EditFreeConstraintComponent {
   @Input() constraint : any;
+  @Input() isPredicate : boolean;
   advanced:boolean = false;
+  cUsages:any;
 
 
-  constructor(){}
-  ngOnInit(){}
+  constructor(private configService : GeneralConfigurationService){}
+  ngOnInit(){
+    this.cUsages = this.configService._cUsages;
+  }
 }

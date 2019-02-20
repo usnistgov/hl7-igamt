@@ -53,21 +53,21 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  MessageEventFacory messageEventFactory;
   
-  @Autowired
-  RelationShipService testCache;
+//  @Autowired
+//  RelationShipService testCache;
 
-  @Autowired
-  DatatypeLibraryService dataypeLibraryService;
-
-  @Autowired
-  DatatypeClassifier datatypeClassifier;
-  
-  @Autowired
-  DatatypeService dataypeService;
-  
-  @Autowired
-  DatatypeClassificationService datatypeClassificationService;
-  
+//  @Autowired
+//  DatatypeLibraryService dataypeLibraryService;
+//
+//  @Autowired
+//  DatatypeClassifier datatypeClassifier;
+//  
+//  @Autowired
+//  DatatypeService dataypeService;
+//  
+//  @Autowired
+//  DatatypeClassificationService datatypeClassificationService;
+//  
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
