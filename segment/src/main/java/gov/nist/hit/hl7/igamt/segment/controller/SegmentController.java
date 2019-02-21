@@ -2,9 +2,9 @@ package gov.nist.hit.hl7.igamt.segment.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -42,16 +42,14 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
-import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentConformanceStatement;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentDynamicMapping;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
@@ -77,6 +75,10 @@ public class SegmentController extends BaseController {
   EntityChangeService entityChangeService;
   @Autowired
   CoConstraintService coConstraintService;
+
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
+
 
   public SegmentController() {}
 
@@ -107,13 +109,19 @@ public class SegmentController extends BaseController {
     
     ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-    if(segment.getBinding() !=null) {
-    	cfs=segment.getBinding().getConformanceStatements();
+    if(segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
+        for(String csId : segment.getBinding().getConformanceStatementIds()){
+          cfs.add(conformanceStatementRepository.findById(csId).get());
+        }
     }
-    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs);
+    
+    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.SEGMENT);
-    return  conformanceStatementDisplay;
+    return conformanceStatementDisplay;
   }
+
 
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -168,73 +176,6 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
 
   }
 
-
-
-  // @RequestMapping(value = "/api/segments/{id}/structure", method = RequestMethod.POST,
-  // produces = {"application/json"})
-  // public ResponseMessage saveStucture(@PathVariable("id") String id,
-  // @RequestBody SegmentStructure structure, Authentication authentication)
-  // throws ValidationException, SegmentException, ForbiddenOperationException,
-  // SegmentNotFoundException {
-  // log.debug("Saving segment with id=" + id);
-  // if (!Scope.HL7STANDARD.equals(structure.getScope())) {
-  // Segment segment = segmentService.convertToSegment(structure);
-  // if (segment == null) {
-  // throw new SegmentNotFoundException(id);
-  // }
-  // segment = segmentService.save(segment);
-  // return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, id, segment.getUpdateDate());
-  // } else {
-  // throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
-  // }
-  // }
-
-//  @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.POST,
-//      produces = {"application/json"})
-//  public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
-//      Authentication authentication) throws ValidationException, SegmentNotFoundException {
-//    Segment segment = segmentService.savePredef(preDef);
-//    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, segment.getUpdateDate());
-//  }
-//
-//  @RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.POST,
-//      produces = {"application/json"})
-//  public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
-//      Authentication authentication) throws ValidationException, SegmentNotFoundException {
-//    Segment segment = segmentService.savePostdef(postDef);
-//    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, segment.getUpdateDate());
-//  }
-
-@RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
-public void exportCoConstraintsToExcel(@PathVariable("id") String id,
-		HttpServletResponse response) throws ExportException {
-	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	if (authentication != null) {
-		String username = authentication.getPrincipal().toString();
-		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
-		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-		response.setHeader("Content-disposition",
-				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-		try {
-			response.getOutputStream().write(excelFile.toByteArray());
-		} catch (IOException e) {
-			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-		}
-	} else {
-		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-	}
-}
-
-  @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveConformanceStatement(@PathVariable("id") String id,
-      Authentication authentication, @RequestBody SegmentConformanceStatement conformanceStatement)
-      throws SegmentValidationException, SegmentNotFoundException {
-    Segment segment = segmentService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
-        segment.getUpdateDate());
-  }
-
   @RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.POST,
       produces = {"application/json"})
   public ResponseMessage saveDynamicMapping(@PathVariable("id") String id,
@@ -243,8 +184,6 @@ public void exportCoConstraintsToExcel(@PathVariable("id") String id,
     Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
     return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
   }
-
-
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -315,6 +254,27 @@ public void exportCoConstraintsToExcel(@PathVariable("id") String id,
       throw new SegmentException(e);
     }
   }
+  
+  @RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
+  public void exportCoConstraintsToExcel(@PathVariable("id") String id,
+  		HttpServletResponse response) throws ExportException {
+  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  	if (authentication != null) {
+  		String username = authentication.getPrincipal().toString();
+  		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
+  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  		response.setHeader("Content-disposition",
+  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+  		try {
+  			response.getOutputStream().write(excelFile.toByteArray());
+  		} catch (IOException e) {
+  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+  		}
+  	} else {
+  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+  	}
+  }
+
 
   @RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST,
 	      produces = {"application/json"})
@@ -399,6 +359,7 @@ public void exportCoConstraintsToExcel(@PathVariable("id") String id,
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
     }
   }
+  
 
 
 }

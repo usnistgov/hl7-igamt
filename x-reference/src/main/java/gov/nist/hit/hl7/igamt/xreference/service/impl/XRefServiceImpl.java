@@ -31,14 +31,11 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.Assertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.IfThenAssertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.NotAssertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.OperatorAssertion;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.assertion.SingleAssertion;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
@@ -56,7 +53,8 @@ public class XRefServiceImpl extends XRefService {
   @Autowired
   private MongoTemplate mongoTemplate;
 
-
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
   @Override
   public Map<String, List<CrossRefsNode>> getDatatypeReferences(String id, Set<String> filterDatatypeIds,
@@ -542,12 +540,9 @@ return XReferenceUtil.processSegments(segments, id);
     }
     return results;
   }
-
   
   public List<CrossRefsNode> processResourceBindingCrossReference(ResourceBinding binding, String id , CrossRefsLabel parent){
-	  
-	  
-	  Set<ConformanceStatement> conformanceStatements = binding.getConformanceStatements();
+	  Set<ConformanceStatement> conformanceStatements = this.collectCS(binding.getConformanceStatementIds());
 	  List<CrossRefsNode> nodes=new ArrayList<CrossRefsNode>();
 	  for(ConformanceStatement cf : conformanceStatements) {
 		  CrossRefsNode node= processConformanceStatement(cf, id, parent);
@@ -558,12 +553,16 @@ return XReferenceUtil.processSegments(segments, id);
 	return nodes;
   }
   
-
-  
-  
-  
-  
-  
+  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        result.add(this.conformanceStatementRepository.findById(id).get());
+      }
+    }
+    
+    return result;
+  }
 
   private CrossRefsNode processConformanceStatement(ConformanceStatement cf, String id,CrossRefsLabel parent) {
 	if( cf instanceof AssertionConformanceStatement) {

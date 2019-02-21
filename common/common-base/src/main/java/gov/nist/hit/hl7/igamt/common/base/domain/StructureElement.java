@@ -1,18 +1,27 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.diff.annotation.DeltaIdentity;
+
 public class StructureElement {
+
   private String id;
+  @DeltaField
   private String name;
+  @DeltaIdentity
   private int position;
+  @DeltaField
   private Usage usage;
+  @DeltaField
   private Type type;
+  @DeltaField
   private String text;
   private boolean custom = false;
-  
+
   public StructureElement() {
     super();
   }
-  
+
   public StructureElement(String id, String name, int position, Usage usage, Type type, String text,
       boolean custom) {
     super();
@@ -24,47 +33,60 @@ public class StructureElement {
     this.text = text;
     this.custom = custom;
   }
-  
-  
+
+
   public int getPosition() {
     return position;
   }
+
   public void setPosition(int position) {
     this.position = position;
   }
+
   public Usage getUsage() {
     return usage;
   }
+
   public void setUsage(Usage usage) {
     this.usage = usage;
   }
+
   public String getText() {
     return text;
   }
+
   public void setText(String text) {
     this.text = text;
   }
+
   public boolean isCustom() {
     return custom;
   }
+
   public void setCustom(boolean custom) {
     this.custom = custom;
   }
+
   public Type getType() {
     return type;
   }
+
   public void setType(Type type) {
     this.type = type;
   }
+
   public String getId() {
     return id;
   }
+
   public void setId(String id) {
     this.id = id;
   }
+
   public String getName() {
     return name;
   }
+
   public void setName(String name) {
     this.name = name;
   }

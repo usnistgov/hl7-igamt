@@ -25,9 +25,7 @@ X
 </table>
 <entity-header [elm]="display"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
-<a class="btn btn-success" target="_blank" [href]="'api/segments/'+ table.id +'/coconstraints/export'" >
-  Export To Excel
-</a>
+<button style="margin-right: 10px; margin-bottom: 5px;" pButton class="green-btn pull-right" (click)="exportExcel()" label="Export To Excel" ></button>
 
 <div class="section-content cc-div" style="overflow-x: scroll; width: 100%; margin-top: 40px;" *ngIf="table">
   <form #ccForm="ngForm">

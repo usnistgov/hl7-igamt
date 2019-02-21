@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
+import java.util.HashMap;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 
 
 
@@ -14,6 +16,8 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
   private String structId;
   private Set<ConformanceStatement> conformanceStatements;
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
+  private HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap;
+  private HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap;
 
   public String getName() {
     return name;
@@ -63,6 +67,23 @@ public class ConformanceProfileConformanceStatement extends SectionInfo {
     this.structure = structure;
   }
 
+  public HashMap<String, ConformanceStatementsContainer> getAssociatedSEGConformanceStatementMap() {
+    return associatedSEGConformanceStatementMap;
+  }
+
+  public void setAssociatedSEGConformanceStatementMap(
+      HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap) {
+    this.associatedSEGConformanceStatementMap = associatedSEGConformanceStatementMap;
+  }
+
+  public HashMap<String, ConformanceStatementsContainer> getAssociatedDTConformanceStatementMap() {
+    return associatedDTConformanceStatementMap;
+  }
+
+  public void setAssociatedDTConformanceStatementMap(
+      HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap) {
+    this.associatedDTConformanceStatementMap = associatedDTConformanceStatementMap;
+  }
 
 
 }

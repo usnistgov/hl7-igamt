@@ -21,11 +21,13 @@ export class EditComplexConstraintComponent  implements OnInit{
   @Input() structure : any;
   @Input() groupName: string;
   @Input() level: string;
+  @Input() isPredicate : boolean;
 
   selected:Pattern;
 
   propsotions:any[] = [];
   declarations:any[] = [];
+  cUsages:any[] [];
 
   constructor(private configService : GeneralConfigurationService){}
 
@@ -125,7 +127,7 @@ export class EditComplexConstraintComponent  implements OnInit{
       return a;
     }else if(current.data.type === 'NOT'){
       let a:any  = {mode:"NOT"};
-      a.child = this.generateAssertion(_.find(current.children, function(child){ return child.data.position === i; }));
+      a.child = this.generateAssertion(_.find(current.children, function(child){ return child.data.position === 0; }));
       return a;
     }else if(current.data.type === 'P'){
       let a:any  = {mode:"SIMPLE"};
@@ -144,6 +146,7 @@ export class EditComplexConstraintComponent  implements OnInit{
   ngOnInit() {
     this.declarations = [];
     this.propsotions = [];
+    this.cUsages = this.configService._cUsages;
     console.log(this.constraint);
     var pattern = this.load(this.constraint.assertion, 'D', null, 0);
     console.log(pattern);

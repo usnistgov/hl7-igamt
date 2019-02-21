@@ -19,13 +19,19 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
  */
 public class CompositeProfile extends Resource {
 
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
-  @Override
-  public String getLabel() {
-    return this.getName();
-  }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
+	 */
+	@Override
+	public String getLabel() {
+		return this.getName();
+	}
+
+	@Override
+	public Resource clone() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

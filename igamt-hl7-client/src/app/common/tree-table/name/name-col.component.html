@@ -1,15 +1,14 @@
-
 <p-treeTableToggler [rowNode]="rowNode" *ngIf="index === 0"></p-treeTableToggler>
 
-    <span *ngIf="type === 'field' || type === 'FIELD'"  class="badge label-field">F</span>
-    <span *ngIf="type === 'component' || type === 'COMPONENT'" class="badge label-component">C</span>
-    <span *ngIf="type === 'subcomponent' || type === 'SUBCOMPONENT'" class="badge label-sub-component">S</span>
-    <span *ngIf="type === 'segment' || type === 'SEGMENT'" class="badge label-segment">S</span>
-    <span *ngIf="type === 'segmentref' || type === 'SEGMENTREF'" class="badge label-segment">S</span>
-    <span *ngIf="type === 'group' || type === 'GROUP'" class="badge label-group">G</span>
-    <span *ngIf="type === 'datatype'" class="badge label-datatype">D</span>
-    <span *ngIf="type === 'message' || type === 'MESSAGE'" class="badge label-message">M</span>
-    <span *ngIf="type === 'document'" class="badge label-ig">IG</span>
+<span *ngIf="type === 'field' || type === 'FIELD'"  class="badge label-field">F</span>
+<span *ngIf="type === 'component' || type === 'COMPONENT'" class="badge label-component">C</span>
+<span *ngIf="type === 'subcomponent' || type === 'SUBCOMPONENT'" class="badge label-sub-component">S</span>
+<span *ngIf="type === 'segment' || type === 'SEGMENT'" class="badge label-segment">S</span>
+<span *ngIf="type === 'segmentref' || type === 'SEGMENTREF'" class="badge label-segment">S</span>
+<span *ngIf="type === 'group' || type === 'GROUP'" class="badge label-group">G</span>
+<span *ngIf="type === 'datatype'" class="badge label-datatype">D</span>
+<span *ngIf="type === 'message' || type === 'MESSAGE'" class="badge label-message">M</span>
+<span *ngIf="type === 'document'" class="badge label-ig">IG</span>
 
-    {{position}}. {{description}}
+{{position}}. {{description}}
 

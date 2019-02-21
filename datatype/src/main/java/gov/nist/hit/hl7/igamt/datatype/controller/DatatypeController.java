@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.datatype.controller;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,17 +26,18 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
-import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.DocumentType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityChangeDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.EntityType;
 import gov.nist.hit.hl7.igamt.common.config.service.EntityChangeService;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.model.ConformanceStatementDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
@@ -61,6 +63,9 @@ public class DatatypeController extends BaseController {
 
   @Autowired
   private CommonService commonService;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
   private static final String STRUCTURE_SAVED = "STRUCTURE_SAVED";
   private static final String PREDEF_SAVED = "PREDEF_SAVED";
@@ -143,45 +148,16 @@ public class DatatypeController extends BaseController {
     
     ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-    if(datatype.getBinding() !=null) {
-    	cfs=datatype.getBinding().getConformanceStatements();
+    if(datatype.getBinding() != null && datatype.getBinding().getConformanceStatementIds() != null) {
+    	for(String csId : datatype.getBinding().getConformanceStatementIds()){
+    	  cfs.add(conformanceStatementRepository.findById(csId).get());
+    	}
     }
-    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs);
+    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.DATATYPE);
     return  conformanceStatementDisplay;
-  }
-
-
-  @RequestMapping(value = "/api/datatypes/{id}/predef", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage savePredef(@PathVariable("id") String id, @RequestBody PreDef preDef,
-      Authentication authentication) throws ValidationException, DatatypeNotFoundException {
-    Datatype datatype = datatypeService.savePredef(preDef);
-    return new ResponseMessage(Status.SUCCESS, PREDEF_SAVED, id, datatype.getUpdateDate());
-  }
-
-  @RequestMapping(value = "/api/datatypes/{id}/postdef", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage savePostdef(@PathVariable("id") String id, @RequestBody PostDef postDef,
-      Authentication authentication) throws ValidationException, DatatypeNotFoundException {
-    System.out.println(postDef.getPostDef());
-    Datatype datatype = datatypeService.savePostdef(postDef);
-
-    return new ResponseMessage(Status.SUCCESS, POSTDEF_SAVED, id, datatype.getUpdateDate());
-  }
-
-
-
-  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.POST,
-      produces = {"application/json"})
-  public ResponseMessage saveConformanceStatement(@PathVariable("id") String id,
-      Authentication authentication, @RequestBody DatatypeConformanceStatement conformanceStatement)
-      throws DatatypeValidationException, DatatypeNotFoundException {
-
-    Datatype Datatype = datatypeService.saveConformanceStatement(conformanceStatement);
-    return new ResponseMessage(Status.SUCCESS, CONFORMANCESTATEMENT_SAVED, id,
-        Datatype.getUpdateDate());
-
   }
 
 

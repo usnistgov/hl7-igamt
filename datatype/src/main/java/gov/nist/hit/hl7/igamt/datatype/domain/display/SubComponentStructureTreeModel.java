@@ -11,11 +11,15 @@
  */
 package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
+import gov.nist.diff.annotation.DeltaIdentity;
+
 /**
  * @author jungyubw
  *
  */
 public class SubComponentStructureTreeModel {
+
+  @DeltaIdentity
   private SubComponentDisplayDataModel data;
 
   public SubComponentDisplayDataModel getData() {

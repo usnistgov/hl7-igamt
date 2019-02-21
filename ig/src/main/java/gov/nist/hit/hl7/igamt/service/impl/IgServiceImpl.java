@@ -11,9 +11,7 @@ import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
-
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -26,6 +24,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -35,15 +34,18 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
-import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -84,6 +86,9 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   CompositeProfileStructureService compositeProfileServie;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
 
 
   @Autowired
@@ -169,7 +174,8 @@ public class IgServiceImpl implements IgService {
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     List<SectionTemplate> igTemplates =
-        objectMapper.readValue(IgServiceImpl.class.getResourceAsStream("/IgTemplate.json"), new TypeReference<List<SectionTemplate>>() {});
+        objectMapper.readValue(IgServiceImpl.class.getResourceAsStream("/IgTemplate.json"),
+            new TypeReference<List<SectionTemplate>>() {});
     Ig emptyIg = new Ig();
     emptyIg.setMetadata(new DocumentMetadata());
     Set<TextSection> content = new HashSet<TextSection>();
@@ -227,11 +233,11 @@ public class IgServiceImpl implements IgService {
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     return igs;
   }
-  
+
   @Override
   @PreAuthorize("hasAuthority('ADMIN')")
   public List<Ig> findAllUsersIG() {
-    Criteria where = Criteria.where("domainInfo.scope").is(Scope.USER);                                              
+    Criteria where = Criteria.where("domainInfo.scope").is(Scope.USER);
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -243,8 +249,8 @@ public class IgServiceImpl implements IgService {
     List<Ig> igs = mongoTemplate.find(qry, Ig.class);
     return igs;
   }
-  
-  
+
+
   @Override
   public List<Ig> findAllPreloadedIG() {
     Criteria where = Criteria.where("domainInfo.scope").is(Scope.PRELOADED);
@@ -358,15 +364,20 @@ public class IgServiceImpl implements IgService {
     HashMap<String, String> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
     HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
 
-    newIg.setValueSetRegistry(copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
-    newIg.setDatatypeRegistry(copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
-    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(), valuesetsMap,datatypesMap, segmentsMap, username));
-    newIg.setConformanceProfileRegistry(copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,datatypesMap, segmentsMap, conformanceProfilesMap, username));
+    newIg.setValueSetRegistry(
+        copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
+    newIg.setDatatypeRegistry(
+        copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
+    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(), valuesetsMap,
+        datatypesMap, segmentsMap, username));
+    newIg.setConformanceProfileRegistry(
+        copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,
+            datatypesMap, segmentsMap, conformanceProfilesMap, username));
 
     this.save(newIg);
     return newIg;
   }
-  
+
   /**
    * @param conformanceProfileRegistry
    * @param valuesetsMap
@@ -375,16 +386,15 @@ public class IgServiceImpl implements IgService {
    * @param username
    * @return
    */
-  
+
   private ConformanceProfileRegistry copyConformanceProfileRegistry(
-      ConformanceProfileRegistry conformanceProfileRegistry,
-      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
-      HashMap<String, String> segmentsMap,
+      ConformanceProfileRegistry conformanceProfileRegistry, HashMap<String, String> valuesetsMap,
+      HashMap<String, String> datatypesMap, HashMap<String, String> segmentsMap,
       HashMap<String, String> conformanceProfilesMap, String username) {
-	  
+
     // TODO Auto-generated method stub
     // TODO Auto-generated method stub
-	  
+
     ConformanceProfileRegistry newReg = new ConformanceProfileRegistry();
     HashSet<Link> children = new HashSet<Link>();
     for (Link l : conformanceProfileRegistry.getChildren()) {
@@ -410,8 +420,7 @@ public class IgServiceImpl implements IgService {
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
       HashMap<String, String> segmentsMap, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, String username)
-      throws CoConstraintSaveException {
+      HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -434,8 +443,7 @@ public class IgServiceImpl implements IgService {
    * @return
    */
   private DatatypeRegistry copyDatatypeRegistry(DatatypeRegistry datatypeRegistry,
-      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
-      String username) {
+      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username) {
     // TODO Auto-generated method stub
     DatatypeRegistry newReg = new DatatypeRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -474,128 +482,166 @@ public class IgServiceImpl implements IgService {
   }
 
   private HashMap<String, String> getNewIdsMap(Registry reg) {
-	  
+
     HashMap<String, String> map = new HashMap<String, String>();
-    if(reg !=null && reg.getChildren() !=null) {
-    for (Link l : reg.getChildren()) {
-    	if(l.getDomainInfo()==null) {
-    		System.out.println(l.getId());
-    	}
-      if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
-        map.put(l.getId(), new ObjectId().toString());
+    if (reg != null && reg.getChildren() != null) {
+      for (Link l : reg.getChildren()) {
+        if (l.getDomainInfo() == null) {
+          System.out.println(l.getId());
+        }
+        if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
+          map.put(l.getId(), new ObjectId().toString());
+        }
+
       }
-      
     }
-   }
     return map;
   }
 
-@Override
-public void delete(Ig ig) {
+  @Override
+  public void delete(Ig ig) {
 
-	if(ig.getDomainInfo()!=null) {
-		ig.getDomainInfo().setScope(Scope.ARCHIVED);
-	}
-	archiveConformanceProfiles(ig.getConformanceProfileRegistry());
-	archiveCompositePrfile(ig.getCompositeProfileRegistry());
-	archiveProfileComponents(ig.getProfileComponentRegistry());
-	try {
-		archiveSegmentRegistry(ig.getSegmentRegistry());
-	} catch (ValidationException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
-	archiveDatatypeRegistry(ig.getDatatypeRegistry());
-	archiveValueSetRegistry(ig.getValueSetRegistry());
-	this.save(ig);
+    if (ig.getDomainInfo() != null) {
+      ig.getDomainInfo().setScope(Scope.ARCHIVED);
+    }
+    archiveConformanceProfiles(ig.getConformanceProfileRegistry());
+    archiveCompositePrfile(ig.getCompositeProfileRegistry());
+    archiveProfileComponents(ig.getProfileComponentRegistry());
+    try {
+      archiveSegmentRegistry(ig.getSegmentRegistry());
+    } catch (ValidationException e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    archiveDatatypeRegistry(ig.getDatatypeRegistry());
+    archiveValueSetRegistry(ig.getValueSetRegistry());
+    this.save(ig);
 
-}
+  }
 
-private void archiveCompositePrfile(CompositeProfileRegistry compositeProfileRegistry) {
-	// TODO Auto-generated method stub
-	for(Link l: compositeProfileRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			CompositeProfileStructure el  = compositeProfileServie.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				compositeProfileServie.save(el);
-			}
-		}
-	}
-	
-}
+  private void archiveCompositePrfile(CompositeProfileRegistry compositeProfileRegistry) {
+    // TODO Auto-generated method stub
+    for (Link l : compositeProfileRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        CompositeProfileStructure el = compositeProfileServie.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          compositeProfileServie.save(el);
+        }
+      }
+    }
 
-private void archiveValueSetRegistry(ValueSetRegistry valueSetRegistry) {
-	// TODO Auto-generated method stub
-	for(Link l: valueSetRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			Valueset el  = valueSetService.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				valueSetService.save(el);
-			}
-		}
-	}
-}
+  }
 
-private void archiveDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
-	// TODO Auto-generated method stub
-	for(Link l: datatypeRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			Datatype el  = datatypeService.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				datatypeService.save(el);
-			}
-		}
-	}
-}
+  private void archiveValueSetRegistry(ValueSetRegistry valueSetRegistry) {
+    // TODO Auto-generated method stub
+    for (Link l : valueSetRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        Valueset el = valueSetService.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          valueSetService.save(el);
+        }
+      }
+    }
+  }
 
-private void archiveSegmentRegistry(SegmentRegistry segmentRegistry) throws ValidationException {
-	// TODO Auto-generated method stub
-	for(Link l: segmentRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			Segment el  = segmentService.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				segmentService.save(el);
-			}
-		}
-	}
-}
+  private void archiveDatatypeRegistry(DatatypeRegistry datatypeRegistry) {
+    // TODO Auto-generated method stub
+    for (Link l : datatypeRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        Datatype el = datatypeService.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          datatypeService.save(el);
+        }
+      }
+    }
+  }
 
-private void archiveProfileComponents(ProfileComponentRegistry profileComponentRegistry) {
-	// TODO Auto-generated method stub
-	for(Link l: profileComponentRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			ProfileComponent el  = profileComponentService.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				profileComponentService.save(el);
-			}
-		}
-	}	
-}
+  private void archiveSegmentRegistry(SegmentRegistry segmentRegistry) throws ValidationException {
+    // TODO Auto-generated method stub
+    for (Link l : segmentRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        Segment el = segmentService.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          segmentService.save(el);
+        }
+      }
+    }
+  }
 
-private void archiveConformanceProfiles(ConformanceProfileRegistry compositeProfileRegistry) {
-	// TODO Auto-generated method stub
-	for(Link l: compositeProfileRegistry.getChildren()) {
-		if(l.getDomainInfo()!=null && l.getDomainInfo().getScope().equals(Scope.USER)) {
-			l.getDomainInfo().setScope(Scope.ARCHIVED);
-			ConformanceProfile el  = conformanceProfileService.findById(l.getId());
-			if(el != null) {
-				el.getDomainInfo().setScope(Scope.ARCHIVED);
-				conformanceProfileService.save(el);
-			}
-		}
-	}
-}
+  private void archiveProfileComponents(ProfileComponentRegistry profileComponentRegistry) {
+    // TODO Auto-generated method stub
+    for (Link l : profileComponentRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        ProfileComponent el = profileComponentService.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          profileComponentService.save(el);
+        }
+      }
+    }
+  }
 
+  private void archiveConformanceProfiles(ConformanceProfileRegistry compositeProfileRegistry) {
+    // TODO Auto-generated method stub
+    for (Link l : compositeProfileRegistry.getChildren()) {
+      if (l.getDomainInfo() != null && l.getDomainInfo().getScope().equals(Scope.USER)) {
+        l.getDomainInfo().setScope(Scope.ARCHIVED);
+        ConformanceProfile el = conformanceProfileService.findById(l.getId());
+        if (el != null) {
+          el.getDomainInfo().setScope(Scope.ARCHIVED);
+          conformanceProfileService.save(el);
+        }
+      }
+    }
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.ig.service.IgService#convertDomainToConformanceStatement(gov.nist.hit.
+   * hl7.igamt.ig.domain.Ig)
+   */
+  @Override
+  public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument) {
+    HashMap<String, ConformanceStatementsContainer> associatedMSGConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
+    
+    for(Link link : igdoument.getConformanceProfileRegistry().getChildren()){
+      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
+      if(cp.getBinding() != null && cp.getBinding().getConformanceStatementIds() != null && cp.getBinding().getConformanceStatementIds().size() > 0){
+        associatedMSGConformanceStatementMap.put(cp.getIdentifier(), new ConformanceStatementsContainer(this.collectCS(cp.getBinding().getConformanceStatementIds()), Type.CONFORMANCEPROFILE, link.getId(), cp.getIdentifier()));
+      }
+      this.conformanceProfileService.convertDomainToContextStructure(cp, associatedSEGConformanceStatementMap, associatedDTConformanceStatementMap);
+    }
+    
+    IgDocumentConformanceStatement igDocumentConformanceStatement = new IgDocumentConformanceStatement();
+    igDocumentConformanceStatement.setAssociatedDTConformanceStatementMap(associatedDTConformanceStatementMap);
+    igDocumentConformanceStatement.setAssociatedSEGConformanceStatementMap(associatedSEGConformanceStatementMap);
+    igDocumentConformanceStatement.setAssociatedMSGConformanceStatementMap(associatedMSGConformanceStatementMap);
+    return igDocumentConformanceStatement;
+  }
+
+  private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        result.add(this.conformanceStatementRepository.findById(id).get());
+      }
+    }
+    
+    return result;
+  }
 
 
 }

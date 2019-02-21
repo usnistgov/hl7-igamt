@@ -22,24 +22,26 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
+import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 
 /**
  *
- * @author Maxence Lefort on Mar 1, 2018.
+ * @author Jungyub Woo on Feb 1, 2019.
  */
 public interface DatatypeService {
 
   public Datatype findById(String id);
-
 
   public Datatype create(Datatype datatype);
 
@@ -63,8 +65,7 @@ public interface DatatypeService {
 
   public List<Datatype> findByName(String name);
 
-  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
-      String version, String name);
+  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
   public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 
@@ -78,84 +79,17 @@ public interface DatatypeService {
 
   public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
 
-  /**
-   * 
-   * @param predef
-   * @return
-   * @throws DatatypeNotFoundException
-   */
-  public Datatype savePredef(PreDef predef) throws DatatypeNotFoundException;
-
-  /**
-   * 
-   * @param postdef
-   * @return
-   * @throws DatatypeNotFoundException
-   */
-  public Datatype savePostdef(PostDef postdef) throws DatatypeNotFoundException;
-
-
-  /**
-   * Validate conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @throws DatatypeValidationException
-   */
-  public void validate(DatatypeConformanceStatement conformanceStatement)
-      throws DatatypeValidationException;
-
-
-  /**
-   * Save the conformance statements of the segment
-   * 
-   * @param conformanceStatement
-   * @return
-   * @throws DatatypeNotFoundException
-   * @throws DatatypeValidationException
-   */
-  public Datatype saveConformanceStatement(DatatypeConformanceStatement conformanceStatement)
-      throws DatatypeNotFoundException, DatatypeValidationException;
-
-  /**
-   * @param scope
-   * @param hl7Version
-   * @return
-   */
   List<Datatype> findByScopeAndVersion(String scope, String hl7Version);
 
-  /**
-   * @param name
-   * @param version
-   * @param scope
-   * @return
-   */
   List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
 
   Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-  /**
-   * @param datatypesMap
-   * @param valuesetsMap
-   * @param l
-   * @return
-   */
-  public Link cloneDatatype(HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username);
+  public Link cloneDatatype(HashMap<String, String> datatypesMap, HashMap<String, String> valuesetsMap, Link l, String username);
 
-  /**
-   * @param datatype
-   * @param idPath
-   * @param path
-   * @return
-   */
   public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
-  /**
-   * @param datatype
-   * @return
-   */
   public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
-  
   
   public List<Datatype> findDisplayFormatByIds(Set<String> ids);
 
@@ -167,5 +101,9 @@ public interface DatatypeService {
 
   public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
 
+  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+  
+  public Binding makeLocationInfo(Datatype dt);
 
+  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
 }

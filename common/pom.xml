@@ -22,7 +22,6 @@
 	</dependencies>
 	<modules>
 		<module>common-base</module>
-		<module>common-constraint</module>
 		<module>common-binding</module>
 		<module>common-config</module>
 		<module>common-change-entity</module>

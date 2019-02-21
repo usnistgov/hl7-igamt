@@ -117,7 +117,7 @@
             <span  [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>
             <context-menu  #conformanceProfilesContextMenu>
               <ng-template contextMenuItem (execute)="addMessage(node)">
-                <i class="fa fa-plus"></i>Add Conformance Profile
+                <i class="fa fa-plus"></i>Add Conformance Profiles
               </ng-template>
             </context-menu>
             </div>
@@ -163,6 +163,31 @@
                 <i class="fa fa-plus"></i> Add Segments
               </ng-template>
             </context-menu>
+
+            <context-menu  #segmentContextMenu>
+              <ng-template contextMenuItem (execute)="addSegments()">
+                <i class="fa fa-plus"></i> Add Segments
+              </ng-template>
+              <!--<ng-template contextMenuItem  [subMenu]="segmentRegistryOrderContextMenu">-->
+                <!--Order By-->
+              <!--</ng-template>-->
+
+              <!--<context-menu #segmentRegistryOrderContextMenu>-->
+                <!--<ng-template contextMenuItem (execute)="addSegments()">-->
+                  <!--By Name-->
+                <!--</ng-template>-->
+                <!--<ng-template contextMenuItem (execute)="addSegments()">-->
+                  <!--HL7 First-->
+                <!--</ng-template>-->
+                <!--<ng-template contextMenuItem  (execute)="addSegments()">-->
+                  <!--HL7 First-->
+
+                <!--</ng-template>-->
+              <!--</context-menu>-->
+
+            </context-menu>
+
+
           </div>
           </ng-container>
 
@@ -185,17 +210,13 @@
               <ng-template contextMenuItem (execute)="copyConformanceProfile(node)">
                 <i class="fa fa-copy"></i> Create Flavor
               </ng-template>
-              <!--<ng-template contextMenuItem (execute)="deleteConformanceProfile(node)">-->
-                <!--<i class="fa fa-remove"></i> Delete-->
-              <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
           </ng-container>
 
 
           <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-            <span>  {{node.data.data.label}}</span>
-            <!--<display-menu [elm]="node.data.data"></display-menu>-->
+            <span>{{node.data.data.label}}</span>
           </ng-container>
 
 

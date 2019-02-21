@@ -64,6 +64,11 @@
               <constantvalue-col *ngIf="configService.isConstantValueAllow(node.data.datatypeLabel.name, node.data.position, node.parent, datatypeStructure.name, node.data.type,node.data.datatypeLabel.leaf)" [(bindings)]="node.data.bindings" [idPath]="node.data.idPath" [sourceId]= "datatypeStructure.id" [viewScope]="node.data.viewScope" [(changeItems)]="changeItems"></constantvalue-col>
             </ng-container>
 
+            <ng-container *ngSwitchCase="'predicate'">
+              <predicate-col *ngIf="node.data.type === 'COMPONENT' && node.data.usage === 'C'" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id" [structure]="datatypeStructure"></predicate-col>
+              <!--<usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>-->
+            </ng-container>
+
             <ng-container *ngSwitchCase="'textDef'">
               <textdef-col *ngIf="node.data.type === 'COMPONENT'" [(text)]="node.data.text" [(changeItems)] = "changeItems" [idPath]="node.data.idPath"></textdef-col>
               <textdef-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [text]="node.data.text"></textdef-readonly-col>

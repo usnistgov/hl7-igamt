@@ -17,6 +17,7 @@ export class EditSimpleConstraintComponent {
   @Input() structure : any;
   @Input() groupName: string;
   @Input() level: string;
+  @Input() isPredicate : boolean;
 
   needContext:boolean = false;
 
@@ -26,6 +27,7 @@ export class EditSimpleConstraintComponent {
   occurenceTypes:any[];
   declarativeTypes:any[];
   declarativeCTypes:any[];
+  cUsages:any[];
 
   constructor(private configService : GeneralConfigurationService){}
 
@@ -37,6 +39,7 @@ export class EditSimpleConstraintComponent {
     this.occurenceTypes = this.configService._occurenceTypes;
     this.declarativeTypes = this.configService._declarativeTypes;
     this.declarativeCTypes = this.configService._declarativeCTypes;
+    this.cUsages = this.configService._cUsages;
 
     if(this.level === 'CONFORMANCEPROFILE'){
       this.needContext = true;
