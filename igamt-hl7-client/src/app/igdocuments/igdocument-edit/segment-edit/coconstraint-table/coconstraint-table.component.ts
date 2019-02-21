@@ -98,6 +98,10 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     });
   }
 
+  exportExcel() {
+    window.open('api/segments/'+ this.table.id +'/coconstraints/export', '_blank');
+  }
+  
   filterDynCodeFromIg(datatypes, codes) {
     const filtered = [];
 
