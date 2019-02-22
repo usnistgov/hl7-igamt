@@ -23,6 +23,7 @@ public class SectionInfo {
   protected boolean readOnly;
   @DeltaField
   protected String description;
+  protected String from;
 
   public String getLabel() {
     return label;
@@ -106,6 +107,15 @@ public class SectionInfo {
     section.setLabel(elm.getLabel());
     section.setDomainInfo(elm.getDomainInfo());
     section.setDescription(elm.getDescription());
+    section.setFrom(elm.getFrom());
+  }
+
+  public String getFrom() {
+    return from;
+  }
+
+  public void setFrom(String from) {
+    this.from = from;
   }
 
   public String getDescription() {

@@ -158,10 +158,16 @@ private ExportConfiguration exportConfiguration;
               fieldElement
                   .addAttribute(new Attribute("position", String.valueOf(field.getPosition())));
               if (field.getRef() != null && field.getRef().getId() != null) {
-                if (this.datatypesNamesMap.containsKey(field.getRef().getId())) {
-                  fieldElement.addAttribute(
-                      new Attribute("datatype", this.datatypesNamesMap.get(field.getRef().getId())));
-                } else {
+                if (this.datatypesMap.containsKey(field.getRef().getId())) {
+                	Datatype dt = this.datatypesMap.get(field.getRef().getId());
+              if(this.datatypesMap.get(field.getRef().getId()).getExt()==null || this.datatypesMap.get(field.getRef().getId()).getExt().isEmpty()) {  	
+            	  fieldElement.addAttribute(
+                          new Attribute("datatype", this.datatypesMap.get(field.getRef().getId()).getName()));
+              }else {
+            	  fieldElement.addAttribute(
+                          new Attribute("datatype", this.datatypesMap.get(field.getRef().getId()).getName() + "_" +this.datatypesMap.get(field.getRef().getId()).getExt()));
+              }
+              } else {
                   throw new DatatypeNotFoundException(field.getRef().getId());
                 }
               }

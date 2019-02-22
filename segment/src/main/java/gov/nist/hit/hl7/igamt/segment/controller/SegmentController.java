@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -8,10 +9,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +46,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -63,10 +69,15 @@ public class SegmentController extends BaseController {
 
   @Autowired
   SegmentService segmentService;
+  
   @Autowired
   CoConstraintService coconstraintService;
+  
   @Autowired
   EntityChangeService entityChangeService;
+
+  @Autowired
+  CoConstraintService coConstraintService;
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
@@ -255,6 +266,27 @@ public class SegmentController extends BaseController {
       throw new SegmentException(e);
     }
   }
+  
+  @RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
+  public void exportCoConstraintsToExcel(@PathVariable("id") String id,
+  		HttpServletResponse response) throws ExportException {
+  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  	if (authentication != null) {
+  		String username = authentication.getPrincipal().toString();
+  		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
+  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  		response.setHeader("Content-disposition",
+  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+  		try {
+  			response.getOutputStream().write(excelFile.toByteArray());
+  		} catch (IOException e) {
+  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+  		}
+  	} else {
+  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+  	}
+  }
+
 
   @RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST,
       produces = {"application/json"})

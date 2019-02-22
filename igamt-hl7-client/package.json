@@ -47,6 +47,7 @@
     "ngx-drag-and-drop-lists": "1.1.3",
     "ngx-modal-dialog": "^2.0.1",
     "node-sass": "^4.11.0",
+    "ngx-slide-toggle": "^0.1.1",
     "popper.js": "^1.12.9",
     "primeicons": "^1.0.0-beta.10",
     "primeng": "6.1.2",

@@ -17,7 +17,7 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule, ToggleButtonModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
@@ -82,6 +82,10 @@ import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-
 import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
 import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
 import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conformanceprofile-edit/conformance-profiles.service";
+import {SlideToggleModule} from 'ngx-slide-toggle';
+import {DeltaService} from '../common/delta/service/delta.service';
+import {DeltaResolver} from '../common/delta/service/delta.resolver';
+import {DeltaHeaderComponent} from '../common/delta/delta-header/delta-header.component';
 
 @NgModule({
   imports: [
@@ -106,8 +110,9 @@ import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conform
     MessagesModule,
     DndListModule,
     SelectButtonModule,
-    ScrollPanelModule
-
+    ScrollPanelModule,
+    SlideToggleModule,
+    ToggleButtonModule
   ],
   declarations: [
     DisplayBadgeComponent,
@@ -127,7 +132,6 @@ import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conform
     DisplayPathComponent,
     CrossReferenceComponent,
     DatatypeListManagerComponent,
-
     NameColComponent,
     UsageColComponent,
     UsageReadonlyColComponent,
@@ -163,7 +167,8 @@ import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conform
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
-    PredicateColComponent
+    PredicateColComponent,
+    DeltaHeaderComponent
   ],
 
   exports: [
@@ -220,7 +225,10 @@ import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conform
     ValuesetDeltaColComponent,
     PredicateColComponent
   ],
-  providers: [DatatypeColService, SegmentColService, ConformanceProfilesService]
+  providers: [DatatypeColService, SegmentColService, ConformanceProfilesService,
+    PredicateColComponent, DeltaService, DeltaResolver,
+    DeltaHeaderComponent
+  ]
 
 })
 export class UtilsModule {}

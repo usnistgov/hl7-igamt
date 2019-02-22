@@ -2,12 +2,13 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 
 public class Group extends SegmentRefOrGroup {
 
+  @DeltaField
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
 
   public Group() {

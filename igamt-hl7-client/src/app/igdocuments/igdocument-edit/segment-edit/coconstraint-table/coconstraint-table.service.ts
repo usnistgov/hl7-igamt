@@ -14,8 +14,8 @@ import {HttpClient} from '@angular/common/http';
  */
 
 export interface CoConstraintDisplay {
-  data : CoConstraintTable,
-  [index : string] : any
+  data: CoConstraintTable;
+  [index: string]: any;
 }
 
 
@@ -45,8 +45,8 @@ export class CoConstraintTableService {
         }
     }
 
-    async saveCoConstraintTable(c: CoConstraintTable, segmentId: string) : Promise<CoConstraintTable>  {
-        const table : CoConstraintTable = await this.$http.post<CoConstraintTable>('api/segments/' + segmentId + '/coconstraints', c).toPromise();
+    async saveCoConstraintTable(c: CoConstraintTable, segmentId: string): Promise<CoConstraintTable>  {
+        const table: CoConstraintTable = await this.$http.post<CoConstraintTable>('api/segments/' + segmentId + '/coconstraints', c).toPromise();
         return table;
     }
 
@@ -149,7 +149,7 @@ export class CoConstraintTableService {
         for (const binding of compatible){
           const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
           for (const code of codes){
-            if (code.usage === 'R' || code.usage === 'P'){
+            if (code.usage === 'R' || code.usage === 'P') {
               bound_codes.push(code);
             }
           }
@@ -216,12 +216,11 @@ export class CoConstraintTableService {
 
         if (header.content.type && header.content.type === CCSelectorType.IGNORE){
             tmpl = header.template;
-        }
-        else {
+        } else {
             tmpl = header.content.type;
         }
 
-        switch (tmpl){
+        switch (tmpl) {
 
             case CCSelectorType.VALUE :
             case CellTemplate.DATATYPE :

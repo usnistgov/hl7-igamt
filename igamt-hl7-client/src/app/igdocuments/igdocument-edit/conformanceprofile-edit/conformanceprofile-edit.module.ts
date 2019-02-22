@@ -26,6 +26,7 @@ import {ConformanceprofileEditConformancestatementsResolver} from "./conformance
 import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
 import {ConformanceProfilesService} from "./conformance-profiles.service";
 import {MultiSelectModule} from 'primeng/multiselect';
+import { ConformanceprofileDeltaComponent } from './conformanceprofile-delta/conformanceprofile-delta.component';
 
 @NgModule({
     imports: [
@@ -48,7 +49,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
         MessageModule
     ],
     providers : [ConformanceprofileEditMetadatResolver, ConformanceprofileEditPostdefResolver, ConformanceprofileEditPredefResolver, ConformanceprofileEditStructureResolver, ConformanceprofileEditConformancestatementsResolver,ConformanceProfilesService],
-    declarations: [ConformanceprofileEditMetadataComponent, ConformanceprofileEditPostdefComponent, ConformanceprofileEditPredefComponent, ConformanceprofileEditStructureComponent, ConformanceprofileEditConformancestatementsComponent],
+    declarations: [ConformanceprofileEditMetadataComponent, ConformanceprofileEditPostdefComponent, ConformanceprofileEditPredefComponent, ConformanceprofileEditStructureComponent, ConformanceprofileEditConformancestatementsComponent, ConformanceprofileDeltaComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class ConformanceprofileEditModule {}

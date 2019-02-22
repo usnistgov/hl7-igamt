@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -55,7 +55,9 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
 
   private Ref ref;
 
+  @DeltaField
   private SegmentLabel segmentLabel;
+  @DeltaField
   private Set<BindingDisplay> bindings;
 
   private ViewScope viewScope;
