@@ -161,6 +161,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 
 			XSSFWorkbook workbook = new XSSFWorkbook();
 			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
+			
 
 			CoConstraintTableHeaders headers = coConstraintTable.getHeaders();
 			CoConstraintTableContent content = coConstraintTable.getContent();
@@ -180,6 +181,10 @@ public class CoConstraintServiceImpl implements CoConstraintService {
             ifHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             ifHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
             ifHeaderStyle.setFont(ifHeaderFont);
+            ifHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
+            ifHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
+            ifHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
+            ifHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
 
             
             CellStyle thenHeaderStyle = workbook.createCellStyle();
@@ -187,6 +192,10 @@ public class CoConstraintServiceImpl implements CoConstraintService {
             thenHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             thenHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
             thenHeaderStyle.setFont(thenHeaderFont);
+            thenHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
+            thenHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
+            thenHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
+            thenHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
 
 
             CellStyle userHeaderStyle = workbook.createCellStyle();
@@ -194,6 +203,18 @@ public class CoConstraintServiceImpl implements CoConstraintService {
             userHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
             userHeaderStyle.setAlignment(CellStyle.ALIGN_CENTER);
             userHeaderStyle.setFont(thenHeaderFont);
+            userHeaderStyle.setBorderBottom(BorderStyle.MEDIUM);
+            userHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
+            userHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
+            userHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
+            
+            CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
+            usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
+            usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
+            usageAndCardinalityStyle.setBorderTop(BorderStyle.MEDIUM);
+            usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
+            usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
+            
 			//Counting headers
 			int headerCount = countNumberOfColumnInSelector(headers.getSelectors())+ countNumberOfColumnInData(headers.getData())+headers.getUser().size();
 			System.out.println("hERE " +headers.getUser().size());
@@ -201,13 +222,19 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 			int rowNumber = 0;
 			int headerCellNumber = 0;
 			Row headerRow = sheet.createRow(rowNumber++);
+			Row headerRow2 = sheet.createRow(rowNumber++);
 			Cell usageHeaderCell = headerRow.createCell(headerCellNumber++);
 			usageHeaderCell.setCellValue("Usage");
+			usageHeaderCell.setCellStyle(usageAndCardinalityStyle);
+			Cell usageHeaderCell2 = headerRow2.createCell(headerCellNumber);
+			usageHeaderCell2.setCellValue("Usage");
+			usageHeaderCell2.setCellStyle(usageAndCardinalityStyle);
 			sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
 			
 			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
-			cardinalityHeaderCell.setCellValue("Cardinality");
+			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
 			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
+			cardinalityHeaderCell.setCellValue("Cardinality");
 			headerCellNumber++;
 			
 			Cell ifCell = headerRow.createCell(headerCellNumber);
@@ -225,15 +252,18 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 			userCell.setCellValue("USER");
 			userCell.setCellStyle(userHeaderStyle);
 			
-			Row headerRow2 = sheet.createRow(rowNumber++);
 			headerCellNumber=3;
 			for (CoConstraintTableHeader coConstraintTableHeader : headers.getSelectors()) {
 				if(coConstraintTableHeader.getContent().getType().equals(CellType.Code)) {
 					Cell cell = headerRow2.createCell(headerCellNumber++);
 					cell.setCellValue(coConstraintTableHeader.getLabel());
+					Cell cell2 = headerRow2.createCell(headerCellNumber++);
+					cell2.setCellValue(coConstraintTableHeader.getLabel());
 					cell.setCellStyle(ifHeaderStyle);
+					cell2.setCellStyle(ifHeaderStyle);
 					sheet.addMergedRegion(new CellRangeAddress(1,1,cell.getColumnIndex(),cell.getColumnIndex()+1));
-					headerCellNumber++;
+//					cell.setCellStyle(ifHeaderStyle);
+//					headerCellNumber++;
 				}else {
 					Cell cell = headerRow2.createCell(headerCellNumber++);
 					cell.setCellValue(coConstraintTableHeader.getLabel());
@@ -242,11 +272,14 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 			}
 			for (CoConstraintTableHeader coConstraintTableHeader : headers.getData()) {
 				if(coConstraintTableHeader.getTemplate() != null && coConstraintTableHeader.getTemplate().equals(CellTemplateType.Varies)) {
-					Cell cell = headerRow2.createCell(headerCellNumber++);
-					cell.setCellValue(coConstraintTableHeader.getLabel());
-					cell.setCellStyle(thenHeaderStyle);
-					sheet.addMergedRegion(new CellRangeAddress(1,1,cell.getColumnIndex(),cell.getColumnIndex()+1));
-					headerCellNumber++;
+					Cell cell1 = headerRow2.createCell(headerCellNumber++);
+					cell1.setCellValue(coConstraintTableHeader.getLabel());
+					cell1.setCellStyle(thenHeaderStyle);
+					Cell cell2 = headerRow2.createCell(headerCellNumber++);
+					cell2.setCellValue(coConstraintTableHeader.getLabel());
+					cell2.setCellStyle(thenHeaderStyle);
+					sheet.addMergedRegion(new CellRangeAddress(1,1,cell1.getColumnIndex(),cell2.getColumnIndex()));
+//					headerCellNumber++;
 				}else {
 					Cell cell = headerRow2.createCell(headerCellNumber++);
 					cell.setCellValue(coConstraintTableHeader.getLabel());
@@ -282,10 +315,24 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 //				 XSSFFont groupHeaderStyle = workbook.createFont();
 //				 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 //				 thenHeaderFont.setBold(true);
+				
+				XSSFFont groupHeaderFont = workbook.createFont();
+				groupHeaderFont.setFontHeightInPoints((short) 19);
+				groupHeaderFont.setBold(true);
+//				groupHeaderFont.setColor(HSSFColor.WHITE.index);
+
 			      
 	            CellStyle headerGroupStyle = workbook.createCellStyle();
-	            headerGroupStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+	            headerGroupStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
 	            headerGroupStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	            headerGroupStyle.setBorderBottom(BorderStyle.THICK);
+	            headerGroupStyle.setBorderTop(BorderStyle.THICK);
+	            headerGroupStyle.setBorderRight(BorderStyle.THICK);
+	            headerGroupStyle.setBorderLeft(BorderStyle.THICK);
+	            headerGroupStyle.setFont(groupHeaderFont);
+	            headerGroupStyle.setAlignment(CellStyle.ALIGN_CENTER);
+
+
 	            
 				Row headerGroupRow = sheet.createRow(rowNumber++);
 				int cellNumber = 0;
@@ -303,13 +350,16 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 				cardinalityCell2.setCellStyle(headerGroupStyle);
 				Cell groupNameCell = headerGroupRow.createCell(cellNumber++);
 				groupNameCell.setCellValue(coConstraintTableGroup.getData().getName());
-				groupNameCell.setCellStyle(thenHeaderStyle);
+				groupNameCell.setCellStyle(headerGroupStyle);
 				sheet.addMergedRegion(new CellRangeAddress(rowNumber-1,rowNumber-1,cellNumber-1,cellNumber+headerCount-2));
 				for (CoConstraintTableRow coConstraintTableRow : coConstraintTableGroup.getContent().getFree()) {
 					serializeRowToExcel(workbook,coConstraintTable, coConstraintTableRow, sheet, rowNumber++);
 				}
-	            sheet.setDisplayGridlines(true);
-
+				sheet.setDisplayGridlines(true);
+				sheet.setPrintGridlines(true);
+			
+				System.out.println("look1 :" + sheet.isDisplayGridlines());
+				System.out.println("look2 :" + sheet.isPrintGridlines());
 
 			}
 
@@ -330,6 +380,9 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 			for(int i = 0; i <= headerCount+22; i++) {
 				sheet.autoSizeColumn(i);
 			}
+			
+		
+
 		}
 
 		return null;
@@ -349,24 +402,47 @@ public class CoConstraintServiceImpl implements CoConstraintService {
            ifRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
            ifRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
            ifRowStyle.setFont(tableRowFont);
+           ifRowStyle.setBorderBottom(BorderStyle.MEDIUM);
+           ifRowStyle.setBorderTop(BorderStyle.MEDIUM);
+           ifRowStyle.setBorderRight(BorderStyle.MEDIUM);
+           ifRowStyle.setBorderLeft(BorderStyle.MEDIUM);
            
            CellStyle thenRowStyle = workbook.createCellStyle();
            thenRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
            thenRowStyle.setFont(tableRowFont);
+           thenRowStyle.setBorderBottom(BorderStyle.MEDIUM);
+           thenRowStyle.setBorderTop(BorderStyle.MEDIUM);
+           thenRowStyle.setBorderRight(BorderStyle.MEDIUM);
+           thenRowStyle.setBorderLeft(BorderStyle.MEDIUM);
 
            CellStyle userRowStyle = workbook.createCellStyle();
            userRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
            userRowStyle.setFont(tableRowFont);
+           userRowStyle.setBorderBottom(BorderStyle.MEDIUM);
+           userRowStyle.setBorderTop(BorderStyle.MEDIUM);
+           userRowStyle.setBorderRight(BorderStyle.MEDIUM);
+           userRowStyle.setBorderLeft(BorderStyle.MEDIUM);
+           
+           CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
+           usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
+           usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
+           usageAndCardinalityStyle.setBorderTop(BorderStyle.MEDIUM);
+           usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
+           usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
 
            
 		Row row = sheet.createRow(rowNumber);
 		int cellNumber = 0;
 		Cell usageCell = row.createCell(cellNumber++);
 		usageCell.setCellValue(coConstraintTableRow.getRequirements().getUsage().name());
+		usageCell.setCellStyle(usageAndCardinalityStyle);
 		Cell cardinalityCell1 = row.createCell(cellNumber++);
 		cardinalityCell1.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMin());
+		cardinalityCell1.setCellStyle(usageAndCardinalityStyle);
 		Cell cardinalityCell2 = row.createCell(cellNumber++);
 		cardinalityCell2.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMax());
+		cardinalityCell2.setCellStyle(usageAndCardinalityStyle);
+
 
 		for (CoConstraintTableHeader coConstraintTableHeader : coConstraintTable.getHeaders().getSelectors()) {
 			for (String cellId : coConstraintTableRow.getCells().keySet()) {
@@ -400,14 +476,16 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 							value.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)).split("\\|")[1]);
 							location.setCellStyle(thenRowStyle);
 							value.setCellStyle(thenRowStyle);
+							location.setCellStyle(thenRowStyle);
 						}else {
-							Cell cell = row.createCell(cellNumber++);
-							cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
-							cell.setCellStyle(thenRowStyle);
-							sheet.addMergedRegion(new CellRangeAddress(rowNumber,rowNumber,cell.getColumnIndex(),cell.getColumnIndex()+1));
-							cellNumber++;
+							Cell cell1 = row.createCell(cellNumber++);
+							cell1.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
+							cell1.setCellStyle(thenRowStyle);
+							Cell cell2 = row.createCell(cellNumber++);
+							cell2.setCellStyle(thenRowStyle);
+							sheet.addMergedRegion(new CellRangeAddress(rowNumber,rowNumber,cell1.getColumnIndex(),cell2.getColumnIndex()));
+//							cellNumber++;
 						}
-
 					}else {
 						Cell cell = row.createCell(cellNumber++);
 						cell.setCellValue(writeValueToCell(coConstraintTableRow.getCells().get(cellId)));
