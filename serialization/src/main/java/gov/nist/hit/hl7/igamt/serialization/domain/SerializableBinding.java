@@ -17,6 +17,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
@@ -25,12 +27,14 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.AssertionPredicate;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextConformanceStatement;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.FreeTextPredicate;
-import gov.nist.hit.hl7.igamt.common.constraint.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.DateSerializationUtil;
 import nu.xom.Attribute;
@@ -47,6 +51,12 @@ public class SerializableBinding extends SerializableElement {
   private Map<String, String> idPathMap;
   private Set<Element> conformanceStatements;
   private Set<Element> predicates;
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository;
+  
+  @Autowired
+  private PredicateRepository predicateRepository;
 
   /**
    * @param binding
@@ -80,11 +90,10 @@ public class SerializableBinding extends SerializableElement {
         }
       }
       if (binding instanceof ResourceBinding) {
-        if (((ResourceBinding) binding).getConformanceStatements() != null) {
-          for (ConformanceStatement conformanceStatement : ((ResourceBinding) binding)
-              .getConformanceStatements()) {
-            Element conformanceStatementElement =
-                this.serializeConformanceStatement(conformanceStatement);
+        if (((ResourceBinding) binding).getConformanceStatementIds() != null) {
+          for (String id : ((ResourceBinding) binding).getConformanceStatementIds()) {
+            ConformanceStatement conformanceStatement = this.conformanceStatementRepository.findById(id).get();
+            Element conformanceStatementElement = this.serializeConformanceStatement(conformanceStatement);
             if (conformanceStatementElement != null) {
               this.conformanceStatements.add(conformanceStatementElement);
               bindingElement.appendChild(conformanceStatementElement);
@@ -174,8 +183,8 @@ public class SerializableBinding extends SerializableElement {
         structureElementBindingElement.addAttribute(
             new Attribute("constantValue", structureElementBinding.getConstantValue()));
       }
-      if (structureElementBinding.getPredicate() != null) {
-        Element predicateElement = this.serializePredicate(structureElementBinding.getPredicate());
+      if (structureElementBinding.getPredicateId() != null) {
+        Element predicateElement = this.serializePredicate(structureElementBinding.getPredicateId());
         if (predicateElement != null) {
           this.predicates.add(predicateElement);
           structureElementBindingElement.appendChild(predicateElement);
@@ -302,25 +311,30 @@ public class SerializableBinding extends SerializableElement {
    * @param predicate
    * @return
    */
-  private Element serializePredicate(Predicate predicate) {
-    Element predicateElement = new Element("Predicate");
-    predicateElement.addAttribute(new Attribute("true",
-        predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
-    predicateElement.addAttribute(new Attribute("codeSystem",
-        predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
-    if (predicate instanceof AssertionPredicate) {
-      if (((AssertionPredicate) predicate).getAssertion() != null) {
-        String description = ((AssertionPredicate) predicate).getAssertion().getDescription();
-        predicateElement
-            .addAttribute(new Attribute("description", description != null ? description : ""));
-      }
-    } else if (predicate instanceof FreeTextPredicate) {
-      predicateElement.addAttribute(new Attribute("description",
-          ((FreeTextPredicate) predicate).getFreeText() != null
-              ? ((FreeTextPredicate) predicate).getFreeText()
-              : ""));
+  private Element serializePredicate(String predicateId) {
+    if(predicateId != null){
+      Predicate predicate = this.predicateRepository.findById(predicateId).get();
+      Element predicateElement = new Element("Predicate");
+      predicateElement.addAttribute(new Attribute("true",
+          predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
+      predicateElement.addAttribute(new Attribute("codeSystem",
+          predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
+      if (predicate instanceof AssertionPredicate) {
+        if (((AssertionPredicate) predicate).getAssertion() != null) {
+          String description = ((AssertionPredicate) predicate).getAssertion().getDescription();
+          predicateElement
+              .addAttribute(new Attribute("description", description != null ? description : ""));
+        }
+      } else if (predicate instanceof FreeTextPredicate) {
+        predicateElement.addAttribute(new Attribute("description",
+            ((FreeTextPredicate) predicate).getFreeText() != null
+                ? ((FreeTextPredicate) predicate).getFreeText()
+                : ""));
+      }      
+      return predicateElement;
     }
-    return predicateElement;
+
+    return null;
   }
 
 }

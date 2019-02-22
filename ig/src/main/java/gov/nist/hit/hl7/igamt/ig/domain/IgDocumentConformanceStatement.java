@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.ig.domain;
 
 import java.util.HashMap;
 
-import gov.nist.hit.hl7.igamt.common.constraint.domain.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 
 /**
  * @author jungyubw
