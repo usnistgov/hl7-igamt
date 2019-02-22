@@ -311,9 +311,8 @@ export class IgDocumentEditComponent {
 
       this.items =  [
         {label: 'Add Section', icon: 'fa-plus', command :(event)=>{
-
           //console.log(event);
-        }
+          }
         }
       ];
 
@@ -552,8 +551,6 @@ export class IgDocumentEditComponent {
           toDistribute.segments=segments;
           this.distributeResult(toDistribute);
           this.router.navigate(["./"+"segment"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
-
-
         }
       )
   };
@@ -567,7 +564,6 @@ export class IgDocumentEditComponent {
       ext:node.data.data.ext,
       type:node.data.data.type,
       namingIndicators:existing
-
     })
       .subscribe(
         result => {
@@ -577,8 +573,6 @@ export class IgDocumentEditComponent {
           toDistribute.valueSets=valueSets;
           this.distributeResult(toDistribute);
           this.router.navigate(["./"+"valueset"+"/"+result.id+"/metadata"],{ preserveQueryParams:true,relativeTo:this.sp, preserveFragment:true});
-
-
         }
       )
 
@@ -702,7 +696,7 @@ export class IgDocumentEditComponent {
       }
     )
   }
-  ngOnDestroy() {
+  ngOnDestroy(){
     if (this.tree) {
       this.tree=null;
     }

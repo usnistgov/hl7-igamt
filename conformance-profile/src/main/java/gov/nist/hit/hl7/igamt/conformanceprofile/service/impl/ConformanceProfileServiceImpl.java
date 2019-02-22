@@ -41,6 +41,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
@@ -49,6 +51,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -96,8 +99,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 
 /**
@@ -127,6 +128,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   
   @Autowired
   private PredicateRepository predicateRepository;
+  
+  @Autowired
+  private BindingService bindingService;
 
 
   @Override
@@ -1298,20 +1302,24 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     return null;
   }
-  
-  private Set<RelationShip> collectDependencies(ConformanceProfile cp) {
+  @Override
+  public Set<RelationShip> collectDependencies(ConformanceProfile cp) {
 		// TODO Auto-generated method stub
 		Set<RelationShip> used = new HashSet<RelationShip>();
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
 			if (segOrgroup instanceof SegmentRef) {
 				SegmentRef ref = (SegmentRef) segOrgroup;
 				if (ref.getRef() != null && ref.getRef().getId() != null)
-					used.add(new RelationShip(ref.getRef().getId(), cp.getId(), ref.getPosition() + "",
-							ReferenceType.STRUCTURE));
+					used.add(new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT), new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), ref.getPosition() + ""));
 			} else {
 				processSegmentorGroup(cp.getId(), segOrgroup, used, segOrgroup.getPosition() + "");
 			}
 		}
+		if(cp.getBinding()!=null) {
+			Set<RelationShip> bindingDependencies = bindingService.collectDependencies(new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE), cp.getBinding());
+			used.addAll(bindingDependencies);
+		}
+		
 		return used;
 
 	}
@@ -1322,9 +1330,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		if (segOrgroup instanceof SegmentRef) {
 			SegmentRef ref = (SegmentRef) segOrgroup;
 			if (ref.getRef() != null && ref.getRef().getId() != null) {
-				used.add(new RelationShip(ref.getRef().getId(), profileId, path + "." + ref.getPosition() + "",
-						ReferenceType.STRUCTURE));
-
+				used.add(new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT), new ReferenceIndentifier(profileId, Type.CONFORMANCEPROFILE), path + "." + ref.getPosition()));
 			}
 		} else if (segOrgroup instanceof Group) {
 			Group g = (Group) segOrgroup;
@@ -1335,6 +1341,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		}
 
 	}
+
+	@Override
+	public List<ConformanceProfile> findByIdIn(Set<String> ids) {
+		// TODO Auto-generated method stub
+		return conformanceProfileRepository.findByIdIn(ids);
+	}
+
 }
 
 

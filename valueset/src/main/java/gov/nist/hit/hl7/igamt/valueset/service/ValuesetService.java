@@ -139,4 +139,6 @@ public interface ValuesetService {
    */
   Link cloneValueSet(String newkey, Link l, String username);
 
+  public List<Valueset> findByIdIn(Set<String> linksAsIds);
+
 }

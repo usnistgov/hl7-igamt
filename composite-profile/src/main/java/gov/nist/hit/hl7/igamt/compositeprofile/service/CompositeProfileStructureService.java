@@ -12,8 +12,10 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service;
 
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 
 /**
  * 
@@ -34,4 +36,6 @@ public interface CompositeProfileStructureService {
   public void delete(String id);
 
   public void removeCollection();
+
+  public List<CompositeProfile> findAllById(Set<String> linksAsIds);
 }

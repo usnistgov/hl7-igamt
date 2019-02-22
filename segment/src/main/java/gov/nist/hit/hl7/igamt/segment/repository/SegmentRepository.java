@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.segment.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -44,6 +45,8 @@ public interface SegmentRepository extends MongoRepository<Segment, String> {
 
   @Query(value = "{ '_id._id' : ?0 }")
   List<Segment> findLatestById(ObjectId id, Sort sort);
+
+  List<Segment> findByIdIn(Set<String> ids);
 
 
 }

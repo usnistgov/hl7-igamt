@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -64,5 +65,11 @@ public interface ConformanceProfileRepository
   public List<ConformanceProfile> findLatestById(ObjectId id, Sort sort);
 
   public ConformanceProfile findOneById(String key);
+  
+  public List<ConformanceProfile> findAllById(List<String> id);
+
+  public List<ConformanceProfile> findByIdIn(Set<String> ids);
+  
+  
 
 }

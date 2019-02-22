@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.datatype.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -51,4 +52,5 @@ public interface DatatypeRepository extends MongoRepository<Datatype, String> {
 
   @Query(value = "{ 'domainInfo.scope' : ?0 }")
   List<Datatype> findByScope(Scope scope);
+  List<Datatype> findByIdIn(Set<String> ids);
 }

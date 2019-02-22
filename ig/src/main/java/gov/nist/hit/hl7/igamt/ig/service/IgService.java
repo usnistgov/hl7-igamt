@@ -13,6 +13,7 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -52,17 +53,15 @@ public interface IgService {
 
   UpdateResult updateAttribute(String id, String attributeName, Object value);
 
-List<Ig> findAllUsersIG();
+  public List<Ig> findAllUsersIG();
 
-List<Ig> findAllPreloadedIG();
+  public List<Ig> findAllPreloadedIG();
 
-public void delete(Ig ig);
+  public void delete(Ig ig);
 
-/**
- * @param igdoument
- * @return
- */
-public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
+  public IgDocumentConformanceStatement convertDomainToConformanceStatement(Ig igdoument);
+
+  public IGContentMap collectData(Ig igdoument);
 
 
 

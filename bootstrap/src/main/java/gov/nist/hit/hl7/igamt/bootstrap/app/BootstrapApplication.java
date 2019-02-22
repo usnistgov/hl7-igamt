@@ -1,8 +1,10 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -22,12 +24,13 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
+import com.sun.jna.platform.win32.OaIdl.IDLDESC;
+
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassificationService;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeClassifier;
 import gov.nist.hit.hl7.igamt.datatypeLibrary.service.DatatypeLibraryService;
-import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
 @SpringBootApplication
@@ -62,8 +65,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  DatatypeClassifier datatypeClassifier;
 //  
-//  @Autowired
-//  DatatypeService dataypeService;
+  @Autowired
+  DatatypeService dataypeService;
 //  
 //  @Autowired
 //  DatatypeClassificationService datatypeClassificationService;
@@ -256,4 +259,5 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //}
 
+ 
 }

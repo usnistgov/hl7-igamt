@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Registry {
 
@@ -29,5 +30,16 @@ public class Registry {
     return type;
   }
 
+  
+  public Set<String> getLinksAsIds(){
+	  
+			Set<String> ret = this.children.stream()
+					.map( element -> {
+						return element.getId();
+					})
+					.collect(Collectors.toSet());
+			
+			return ret;
+  }
 
 }

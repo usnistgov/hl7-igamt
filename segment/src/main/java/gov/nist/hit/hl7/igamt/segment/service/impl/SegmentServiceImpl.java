@@ -57,6 +57,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -78,6 +79,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataMod
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingInfo;
+import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CodeInfo;
@@ -126,6 +128,9 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   DatatypeService datatypeService;
+  
+  @Autowired
+  BindingService bindingService;
 
   @Autowired
   ValuesetService valueSetService;
@@ -1255,12 +1260,30 @@ public class SegmentServiceImpl implements SegmentService {
               used.add(new RelationShip(new ReferenceIndentifier(f.getRef().getId(),Type.DATATYPE), new ReferenceIndentifier(elm.getId(),Type.SEGMENT), f.getPosition()+""));
               
           }   
-  	 }
+        }
+        if(elm.getDynamicMappingInfo() !=null) {
+        		collectDynamicMappingDependencies(elm.getId(),elm.getDynamicMappingInfo(),used);
+        }
+        if(elm.getBinding() !=null) {
+          	Set<RelationShip> bindingDependencies = bindingService.collectDependencies(new ReferenceIndentifier(elm.getId(),Type.SEGMENT), elm.getBinding());
+            used.addAll(bindingDependencies);
+
+        }        
 		return used;
   }
 
 
-  @Override
+  private void collectDynamicMappingDependencies(String id, DynamicMappingInfo dynamicMappingInfo,
+		Set<RelationShip> used) {
+	// TODO Auto-generated method stub
+	  for(DynamicMappingItem item:dynamicMappingInfo.getItems()) {
+		 if(item.getDatatypeId() !=null) {
+          used.add(new RelationShip(new ReferenceIndentifier(item.getDatatypeId(),Type.DATATYPE), new ReferenceIndentifier(id,Type.SEGMENT), Type.DYNAMICMAPPING.getValue()));
+		 }
+	  }
+ }
+
+@Override
   public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
     if(segment.getDomainInfo().getScope().equals(Scope.USER)) {
       for(Field f : segment.getChildren()) {
@@ -1322,4 +1345,10 @@ public class SegmentServiceImpl implements SegmentService {
     }
     return null;
   }
+
+@Override
+public List<Segment> findByIdIn(Set<String> ids) {
+	// TODO Auto-generated method stub
+	return segmentRepository.findByIdIn(ids);
+}
 }

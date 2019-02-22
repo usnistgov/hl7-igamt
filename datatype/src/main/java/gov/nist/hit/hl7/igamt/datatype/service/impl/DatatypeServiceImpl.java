@@ -46,6 +46,8 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
@@ -54,6 +56,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
+import gov.nist.hit.hl7.igamt.common.binding.service.BindingService;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
@@ -83,8 +86,7 @@ import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
-import gov.nist.hit.hl7.igamt.xreference.model.ReferenceType;
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
+
 
 
 /**
@@ -114,6 +116,8 @@ public class DatatypeServiceImpl implements DatatypeService {
   
   @Autowired
   private PredicateRepository predicateRepository;
+  @Autowired
+  BindingService bindingService;
 
   @Override
   public Datatype findById(String key) {
@@ -1115,11 +1119,16 @@ public Set<RelationShip> collectDependencies(Datatype elm) {
       ComplexDatatype complex= (ComplexDatatype)elm;
       for(Component c : complex.getComponents()) {
         if(c.getRef() !=null && c.getRef().getId() !=null) {
-            used.add(new RelationShip(c.getRef().getId(), elm.getId(), c.getPosition()+"", ReferenceType.STRUCTURE));
+            used.add(new RelationShip(new ReferenceIndentifier(c.getRef().getId(),Type.DATATYPE), new ReferenceIndentifier(elm.getId(),Type.DATATYPE), c.getPosition()+""));
             
         }
       }
+      
     	}
+    if(elm.getBinding() !=null) {
+    	Set<RelationShip> bindingDependencies = bindingService.collectDependencies(new ReferenceIndentifier(elm.getId(),Type.DATATYPE), elm.getBinding());	
+    used.addAll(bindingDependencies);
+    	}  
     	return used;
   }
 
@@ -1199,4 +1208,10 @@ public Set<RelationShip> collectDependencies(Datatype elm) {
     }
     return null;
   }
+
+@Override
+public List<Datatype> findByIdIn( Set<String> linksAsIds) {
+	// TODO Auto-generated method stub
+	return datatypeRepository.findByIdIn(linksAsIds);
+}
 }

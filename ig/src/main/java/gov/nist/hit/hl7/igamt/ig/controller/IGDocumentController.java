@@ -36,6 +36,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -56,6 +57,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingMessagesWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
@@ -325,15 +327,24 @@ public class IGDocumentController extends BaseController {
    * @return
    * @throws IGNotFoundException
    * @throws IGConverterException
+ * @throws ResourceNotFoundException 
    */
   @RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET,
       produces = {"application/json"})
 
   public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id,
-      Authentication authentication) throws IGNotFoundException, IGConverterException {
+      Authentication authentication) throws IGNotFoundException, IGConverterException, ResourceNotFoundException {
 
     Ig igdoument = findIgById(id);
-    IGDisplay ret = displayConverter.convertDomainToModel(igdoument);
+    
+    IGContentMap igData = igService.collectData(igdoument);
+    
+   
+    
+    
+    
+    
+    IGDisplay ret = displayConverter.convertDomainToModel(igdoument,igData);
     return ret;
   }
 
@@ -1018,5 +1029,8 @@ public class IGDocumentController extends BaseController {
     }
     return ig;
   }
+  
+  
+  
 
 }

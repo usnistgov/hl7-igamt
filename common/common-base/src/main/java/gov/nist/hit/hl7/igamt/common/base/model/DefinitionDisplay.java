@@ -16,10 +16,10 @@ public class DefinitionDisplay extends SectionInfo {
 	}
 	public void  build(Resource obj, SectionType type, boolean readOnly) {
 		super.complete(this, obj, type, readOnly);
-		if(type.equals(SectionType.POSTDEF)) {
+		if(type.equals(SectionType.POSTDEF)){
 			this.text=obj.getPostDef();
 
-		}else if (type.equals(SectionType.PREDEF))  {
+		}else if (type.equals(SectionType.PREDEF)){
 			this.text=obj.getPreDef();
 		}		
 	}

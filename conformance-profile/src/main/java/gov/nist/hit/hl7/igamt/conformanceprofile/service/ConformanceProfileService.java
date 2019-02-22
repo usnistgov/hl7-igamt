@@ -16,10 +16,12 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
@@ -124,4 +126,7 @@ public interface ConformanceProfileService {
 
   
   public Binding makeLocationInfo(ConformanceProfile cp);
+  
+  public Set<RelationShip> collectDependencies(ConformanceProfile cp);
+  List<ConformanceProfile> findByIdIn(Set<String> set);
 }

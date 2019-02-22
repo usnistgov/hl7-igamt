@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -34,9 +35,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
-import gov.nist.hit.hl7.igamt.xreference.model.RelationShip;
 
 
 /**
@@ -109,4 +107,5 @@ public interface DatatypeService {
   public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
   public Binding makeLocationInfo(Datatype dt);
   public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
+  public List<Datatype> findByIdIn(Set<String> linksAsIds);
 }

@@ -129,4 +129,6 @@ public interface SegmentService extends ResourceService {
   public Binding makeLocationInfo(Segment s);
   
   public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+
+  public List<Segment> findByIdIn(Set<String> linksAsIds);
 }

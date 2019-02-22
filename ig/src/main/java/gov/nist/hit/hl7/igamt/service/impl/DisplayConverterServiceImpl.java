@@ -14,7 +14,10 @@ package gov.nist.hit.hl7.igamt.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+
+import javax.management.loading.MLet;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,7 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -30,6 +34,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
@@ -92,7 +97,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private TreeNode createTextSectionNode(TextSection s, Ig ig) throws IGConverterException {
+  private TreeNode createTextSectionNode(TextSection s, Ig ig, IGContentMap igData) throws IGConverterException, ResourceNotFoundException {
     TreeNode t = new TreeNode();
     TextSectionData sectionTree = new TextSectionData();
     sectionTree.setLabel(s.getLabel());
@@ -114,7 +119,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
         for (TextSection section : s.getChildren()) {
           if (s instanceof TextSection) {
             TextSection sect = section;
-            children.add(createTextSectionNode(sect, ig));
+            children.add(createTextSectionNode(sect, ig,igData));
           }
 
         }
@@ -123,7 +128,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
         t.setChildren(children);
       }
     } else {
-      t.setChildren(generateChildrenByType(s, s.getType(), ig));
+      t.setChildren(generateChildrenByType(s, s.getType(), ig, igData));
     }
 
     return t;
@@ -165,29 +170,31 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
   /**
    * @param s
    * @param type
+ * @param igData 
    * @return
+ * @throws ResourceNotFoundException 
    */
-  private List<TreeNode> generateChildrenByType(TextSection s, Type type, Ig ig) {
+  private List<TreeNode> generateChildrenByType(TextSection s, Type type, Ig ig, IGContentMap igData) throws ResourceNotFoundException {
     // TODO Auto-generated method stub
     List<TreeNode> sectionChildren = new ArrayList<TreeNode>();
 
     if (type.equals(Type.PROFILECOMPONENTREGISTRY)) {
-      sectionChildren = createPcsNodes(ig.getProfileComponentRegistry().getChildren());
+    	//      sectionChildren = createPcsNodes(ig.getProfileComponentRegistry().getChildren());
 
     } else if (type.equals(Type.CONFORMANCEPROFILEREGISTRY)) {
-      sectionChildren = createCpsNodes(ig.getConformanceProfileRegistry().getChildren());
+      sectionChildren = createCpsNodes(ig.getConformanceProfileRegistry().getChildren(), igData.getConformanceProfiles());
 
     } else if (type.equals(Type.COMPOSITEPROFILEREGISTRY)) {
-      sectionChildren = createCompositeProfileNodes(ig.getCompositeProfileRegistry().getChildren());
+     // sectionChildren = createCompositeProfileNodes(ig.getCompositeProfileRegistry().getChildren());
 
     } else if (type.equals(Type.SEGMENTREGISTRY)) {
-      sectionChildren = createSegmentsNodes(ig.getSegmentRegistry().getChildren());
+      sectionChildren = createSegmentsNodes(ig.getSegmentRegistry().getChildren(), igData.getSegments());
 
     } else if (type.equals(Type.DATATYPEREGISTRY)) {
-      sectionChildren = createDatatypesNodes(ig.getDatatypeRegistry().getChildren());
+      sectionChildren = createDatatypesNodes(ig.getDatatypeRegistry().getChildren(), igData.getDatatypes());
 
     } else if (type.equals(Type.VALUESETREGISTRY)) {
-      sectionChildren = createValueSetsNodes(ig.getValueSetRegistry().getChildren());
+      sectionChildren = createValueSetsNodes(ig.getValueSetRegistry().getChildren(),igData.getValuesets());
 
     }
     sectionChildren.sort((h1, h2) -> h1.compareTo(h2));
@@ -198,36 +205,35 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private List<TreeNode> createDatatypesNodes(Set<Link> children) {
+  private List<TreeNode> createDatatypesNodes(Set<Link> children, Map<String, Datatype> map) throws ResourceNotFoundException {
     // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Datatype dt = datatypeService.findById(l.getId());
-      if (dt != null) {
-
-
-        Nodes.add(createDatatypeNode(dt, l.getPosition()));
-      }
+    	if(map.containsKey(l.getId())) {    	  
+        nodes.add(createDatatypeNode(map.get(l.getId()), l.getPosition()));
+    }else {
+    		throw new ResourceNotFoundException(l.getId(), Type.DATATYPE);
     }
+    	}
 
-    return Nodes;
+    return nodes;
   }
 
-  private List<TreeNode> createSegmentsNodes(Set<Link> children) {
+  private List<TreeNode> createSegmentsNodes(Set<Link> children, Map<String, Segment> map) throws ResourceNotFoundException {
     // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Segment segment = segmentService.findById(l.getId());
-      if (segment != null) {
-        // addChildrenByType(node, Type.SEGMENT);
-        Nodes.add(createSegmentNode(segment, l.getPosition()));
-      }
+    	if(map.containsKey(l.getId())) {
+    	    nodes.add(createSegmentNode( map.get(l.getId()), l.getPosition()));
+    	}else {
+    		throw new ResourceNotFoundException(l.getId(), Type.SEGMENT);
+    	  }
     }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
+    nodes.sort((h1, h2) -> h1.compareTo(h2));
 
-    return Nodes;
+    return nodes;
   }
 
 
@@ -235,17 +241,17 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
   private List<TreeNode> createCompositeProfileNodes(Set<Link> children) {
 
     // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
       CompositeProfileStructure compositeProfile = compositeProfileServie.findById(l.getId());
       if (compositeProfile != null) {
-        Nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
+        nodes.add(createCompositeProfileNode(compositeProfile, l.getPosition()));
       }
     }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
+    nodes.sort((h1, h2) -> h1.compareTo(h2));
 
-    return Nodes;
+    return nodes;
   }
 
   /**
@@ -308,22 +314,21 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private List<TreeNode> createValueSetsNodes(Set<Link> children) {
+  private List<TreeNode> createValueSetsNodes(Set<Link> children, Map<String, Valueset> map) throws ResourceNotFoundException {
 
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      Valueset vs = valueSetService.findById(l.getId());
-      if (vs != null) {
-
-        // addChildrenByType(node, Type.VALUESET);
-        Nodes.add(createValueSetNode(vs, l.getPosition()));
-      }
+    	if(map.containsKey(l.getId())) {
+        nodes.add(createValueSetNode(map.get(l.getId()), l.getPosition()));
+      
+    }else {
+    		throw new ResourceNotFoundException(l.getId(), Type.DATATYPE);
     }
-    Nodes.sort((h1, h2) -> h1.compareTo(h2));
+    }
+    nodes.sort((h1, h2) -> h1.compareTo(h2));
 
-    return Nodes;
-
+    return nodes;
 
   }
 
@@ -349,20 +354,21 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
 
 
 
-  private List<TreeNode> createCpsNodes(Set<Link> children) {
+  private List<TreeNode> createCpsNodes(Set<Link> children, Map<String, ConformanceProfile> map) throws ResourceNotFoundException {
     // TODO Auto-generated method stub
     // TODO Auto-generated method stub
-    List<TreeNode> Nodes = new ArrayList<TreeNode>();
+    List<TreeNode> nodes = new ArrayList<TreeNode>();
     // TODO Auto-generated method stub
     for (Link l : children) {
-      ConformanceProfile confromanceProfile = conformanceProfileService.findById(l.getId());
-      if (confromanceProfile != null) {
-
-        Nodes.add(createCpNode(confromanceProfile, l.getPosition()));
-      }
+    		if(map.containsKey(l.getId())) {
+    			ConformanceProfile confromanceProfile = map.get(l.getId());
+    	        nodes.add(createCpNode(confromanceProfile, l.getPosition()));
+    		}else {
+    			throw new ResourceNotFoundException(l.getId(),Type.CONFORMANCEPROFILE);
+    		}
     }
 
-    return Nodes;
+    return nodes;
   }
 
 
@@ -397,7 +403,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
    * .igamt.ig.domain.Ig)
    */
   @Override
-  public IGDisplay convertDomainToModel(Ig ig) throws IGConverterException {
+  public IGDisplay convertDomainToModel(Ig ig, IGContentMap igData) throws IGConverterException, ResourceNotFoundException {
     // TODO Auto-generated method stub
     IGDisplay igDisplay = new IGDisplay();
     igDisplay.setMetadata(ig.getMetadata());
@@ -405,7 +411,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     igDisplay.setDateUpdated(ig.getUpdateDate());
     List<TreeNode> firstLevel = new ArrayList<TreeNode>();
     for (TextSection s : ig.getContent()) {
-      firstLevel.add(createTextSectionNode(s, ig));
+      firstLevel.add(createTextSectionNode(s, ig,igData));
     }
     firstLevel.sort((h1, h2) -> h1.compareTo(h2));
     igDisplay.setToc(firstLevel);

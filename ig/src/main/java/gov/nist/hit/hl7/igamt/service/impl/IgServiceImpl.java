@@ -7,7 +7,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
@@ -44,6 +47,7 @@ import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementReposit
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -643,5 +647,43 @@ public class IgServiceImpl implements IgService {
     return result;
   }
 
+@Override
+public IGContentMap collectData(Ig ig) {
+	IGContentMap contentMap= new IGContentMap();
+
+	List<ConformanceProfile> conformanceProfiles = conformanceProfileService.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
+	
+    Map<String, ConformanceProfile> conformanceProfilesMap = conformanceProfiles.stream().collect(
+            Collectors.toMap(x -> x.getId(), x->x));
+    contentMap.setConformanceProfiles(conformanceProfilesMap);
+	
+    
+	List<Segment> segments = segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());
+	  Map<String, Segment> segmentsMap = segments.stream().collect(
+	            Collectors.toMap(x -> x.getId(), x->x));
+	  
+	  contentMap.setSegments(segmentsMap);
+
+
+	List<Datatype> datatypes = datatypeService.findByIdIn(ig.getDatatypeRegistry().getLinksAsIds());
+	  Map<String, Datatype> datatypesMap = datatypes.stream().collect(
+	            Collectors.toMap(x -> x.getId(), x->x));
+	  contentMap.setDatatypes(datatypesMap);
+	  
+	List<Valueset> valuesets= valueSetService.findByIdIn(ig.getValueSetRegistry().getLinksAsIds());
+	  Map<String, Valueset> valuesetsMap = valuesets.stream().collect(
+	            Collectors.toMap(x -> x.getId(), x->x));
+	  
+	  contentMap.setValuesets(valuesetsMap);
+//	  
+//	List<CompositeProfile> compositeProfiles = compositeProfileServie.findAllById(ig.getCompositeProfileRegistry().getLinksAsIds());
+//	    Map<String, CompositeProfile> compositeProfilesMap = compositeProfiles.stream().collect(
+//	            Collectors.toMap(x -> x.getId(), x->x));
+//	    contentMap.setCompositeProfiles(compositeProfilesMap);
+//	    
+	    
+	  
+	  return contentMap;
+}
 
 }

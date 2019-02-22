@@ -550,4 +550,10 @@ public class ValuesetServiceImpl implements ValuesetService {
     this.save(elm);
     return newLink;
   }
+
+@Override
+public List<Valueset> findByIdIn(Set<String> ids) {
+	// TODO Auto-generated method stub
+	return valuesetRepository.findByIdIn(ids);
+}
 }

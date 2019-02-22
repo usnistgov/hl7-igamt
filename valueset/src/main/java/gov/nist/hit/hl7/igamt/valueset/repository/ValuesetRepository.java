@@ -14,6 +14,7 @@
 package gov.nist.hit.hl7.igamt.valueset.repository;
 
 import java.util.List;
+import java.util.Set;
 
 import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
@@ -49,4 +50,6 @@ public interface ValuesetRepository extends MongoRepository<Valueset, String> {
 
   @Query(value = "{ '_id._id' : ?0 }")
   List<Valueset> findLatestById(ObjectId id, Sort sort);
+
+  List<Valueset> findByIdIn(Set<String> ids);
 }
