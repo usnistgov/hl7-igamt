@@ -40,6 +40,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
@@ -90,6 +91,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
+import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
 
 @RestController
@@ -97,6 +99,8 @@ public class IGDocumentController extends BaseController {
 
   @Autowired
   IgService igService;
+  
+  @Autowired RelationShipService relationShipService;
 
   @Autowired
   IgExportService igExportService;
@@ -338,13 +342,14 @@ public class IGDocumentController extends BaseController {
     Ig igdoument = findIgById(id);
     
     IGContentMap igData = igService.collectData(igdoument);
-    
    
-    
-    
-    
-    
     IGDisplay ret = displayConverter.convertDomainToModel(igdoument,igData);
+    
+    igService.buildDependencies(igData);
+    
+//    List<RelationShip> relationShip=relationShipService.findAll();
+//    System.out.println(relationShip);
+//    
     return ret;
   }
 
@@ -362,7 +367,6 @@ public class IGDocumentController extends BaseController {
   public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
       @RequestBody List<TreeNode> toc, Authentication authentication)
       throws IGNotFoundException, IGUpdateException {
-
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
 

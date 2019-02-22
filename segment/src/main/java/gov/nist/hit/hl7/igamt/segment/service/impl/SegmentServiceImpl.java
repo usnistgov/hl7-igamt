@@ -1261,7 +1261,7 @@ public class SegmentServiceImpl implements SegmentService {
               
           }   
         }
-        if(elm.getDynamicMappingInfo() !=null) {
+        if(elm.getDynamicMappingInfo() != null) {
         		collectDynamicMappingDependencies(elm.getId(),elm.getDynamicMappingInfo(),used);
         }
         if(elm.getBinding() !=null) {
@@ -1276,10 +1276,12 @@ public class SegmentServiceImpl implements SegmentService {
   private void collectDynamicMappingDependencies(String id, DynamicMappingInfo dynamicMappingInfo,
 		Set<RelationShip> used) {
 	// TODO Auto-generated method stub
+	  if(dynamicMappingInfo.getItems() !=null) {
 	  for(DynamicMappingItem item:dynamicMappingInfo.getItems()) {
 		 if(item.getDatatypeId() !=null) {
           used.add(new RelationShip(new ReferenceIndentifier(item.getDatatypeId(),Type.DATATYPE), new ReferenceIndentifier(id,Type.SEGMENT), Type.DYNAMICMAPPING.getValue()));
 		 }
+	  }
 	  }
  }
 

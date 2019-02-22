@@ -64,6 +64,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
 
 @Service("igService")
 public class IgServiceImpl implements IgService {
@@ -97,6 +98,9 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   ValuesetService valueSetService;
+  
+  @Autowired
+  RelationShipService relationshipService;
 
   @Override
   public Ig findById(String id) {
@@ -681,9 +685,25 @@ public IGContentMap collectData(Ig ig) {
 //	            Collectors.toMap(x -> x.getId(), x->x));
 //	    contentMap.setCompositeProfiles(compositeProfilesMap);
 //	    
-	    
-	  
 	  return contentMap;
-}
+	}
+
+	@Override
+	public void buildDependencies(IGContentMap contentMap){
+				
+		for(ConformanceProfile p: contentMap.getConformanceProfiles().values()) {
+			relationshipService.saveAll(conformanceProfileService.collectDependencies(p));
+		}
+		for(Segment s: contentMap.getSegments().values()) {
+			relationshipService.saveAll(segmentService.collectDependencies(s));
+		}
+		for(Datatype d: contentMap.getDatatypes().values()) {
+			relationshipService.saveAll(datatypeService.collectDependencies(d));
+		}
+	
+	}
+
+
+
 
 }

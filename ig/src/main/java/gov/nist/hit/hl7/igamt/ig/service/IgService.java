@@ -63,6 +63,8 @@ public interface IgService {
 
   public IGContentMap collectData(Ig igdoument);
 
+  void buildDependencies(IGContentMap contentMap);
+
 
 
 }

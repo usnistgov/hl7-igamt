@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.xreference.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,13 +43,12 @@ public class RelationShipServiceImpl implements RelationShipService {
   
   
   @Override
-  public void saveAll(List<RelationShip> relations){
+  public void saveAll(Set<RelationShip> relations){
     repo.saveAll(relations);
   }
 @Override
 public List<RelationShip> findAll() {
 	// TODO Auto-generated method stub
-	System.out.println(repo.findAll());
 	return (List<RelationShip>) repo.findAll();
 }
 @Override
