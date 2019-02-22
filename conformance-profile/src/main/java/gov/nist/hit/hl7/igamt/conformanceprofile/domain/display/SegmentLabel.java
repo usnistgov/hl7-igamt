@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 
 /**
@@ -19,9 +20,13 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
  */
 public class SegmentLabel {
   private String id;
+  @DeltaField
   private String label;
+  @DeltaField
   private DomainInfo domainInfo;
+  @DeltaField
   private String name;
+  @DeltaField
   private String ext;
 
   public String getId() {

@@ -13,17 +13,16 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceProfileStructureDisplay extends SectionInfo{
+public class ConformanceProfileStructureDisplay extends SectionInfo {
 
-
+  @DeltaField
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
 
   public Set<SegmentRefOrGroupStructureTreeModel> getStructure() {

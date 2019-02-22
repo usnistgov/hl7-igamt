@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
@@ -46,6 +46,7 @@ public class GroupDisplayModel extends SegmentRefOrGroupDisplayModel {
   private String idPath;
   private String path;
 
+  @DeltaField
   private Set<BindingDisplay> bindings;
 
   private ViewScope viewScope;

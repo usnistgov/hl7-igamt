@@ -37,6 +37,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
 
 
 import {TreeTableModule} from 'primeng/primeng';
+import { DatatypeDeltaComponent } from './datatype-delta/datatype-delta.component';
 
 @NgModule({
   imports: [
@@ -59,7 +60,7 @@ import {TreeTableModule} from 'primeng/primeng';
     FroalaViewModule.forRoot()
   ],
   providers : [DatatypeCrossRefResolver,DatatypesService, DatatypeEditPostdefResolver, DatatypeEditPredefResolver, DatatypeEditMetadataResolver, DatatypeEditStructureResolver, DatatypeEditConformanceStatementsResolver],
-  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent, DatatypeDeltaComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

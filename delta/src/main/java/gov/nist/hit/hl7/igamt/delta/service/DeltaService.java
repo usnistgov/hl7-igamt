@@ -1,17 +1,13 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
-import gov.nist.diff.domain.DeltaObject;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.delta.domain.DiffableResult;
+import gov.nist.hit.hl7.igamt.delta.domain.EntityDelta;
 
 public interface DeltaService {
 
-  DeltaObject<ConformanceProfileStructureDisplay> conformanceProfileDelta(String idA, String idB)
-      throws Exception;
+  <T> EntityDelta<T> computeDelta(Type type, String documentId, String entityId) throws Exception;
 
-  DeltaObject<SegmentStructureDisplay> segmentDelta(String idA, String idB) throws Exception;
-
-  DeltaObject<DatatypeStructureDisplay> datatypeDelta(String idA, String idB) throws Exception;
+  DiffableResult diffable(Type type, String ig, String source, String target);
 
 }

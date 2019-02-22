@@ -18,6 +18,7 @@ export  class TocService{
   activeNode :BehaviorSubject<any> =new BehaviorSubject(null);
   metadata :BehaviorSubject<any> =new BehaviorSubject(null);
   pathTree :BehaviorSubject<any> =new BehaviorSubject(null);
+  sourceIg: string;
   treeModel :TreeModel;
   igId:any;
 
@@ -27,6 +28,11 @@ export  class TocService{
   setIgId(igId){
 
   this.igId=igId;
+  };
+
+  setSourceIg(id) {
+    console.log(id);
+    this.sourceIg = id;
   };
 
   getIgId(){
@@ -56,7 +62,7 @@ export  class TocService{
          resolve(true);
         });
       });
-  })
+  });
   };
 
   getPathTree(){

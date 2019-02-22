@@ -12,6 +12,7 @@ import {ConformanceProfilesService} from "../conformance-profiles.service";
 import {HasFroala} from "../../../../configuration/has-froala";
 import {GeneralConfigurationService} from "../../../../service/general-configuration/general-configuration.service";
 import {Columns} from "../../../../common/constants/columns";
+import {DeltaService, DiffableResult} from '../../../../common/delta/service/delta.service';
 
 @Component({
     templateUrl : './conformanceprofile-edit-structure.component.html',
@@ -25,17 +26,19 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     conformanceprofileStructure:any;
     changeItems:any[]=[];
     backup:any;
+    diff: DiffableResult;
 
     @ViewChild('editForm')
     private editForm: NgForm;
 
     cols= Columns.messageColumns;
-    selectedColumns=Columns.messageColumns;
+    selectedColumns= Columns.messageColumns;
 
     constructor(private route: ActivatedRoute,
                 private router : Router,
                 private configService : GeneralConfigurationService,
-                private conformanceProfilesService : ConformanceProfilesService) {
+                private conformanceProfilesService : ConformanceProfilesService,
+                private delta: DeltaService) {
         super();
     }
 
@@ -46,6 +49,9 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
         this.route.data.map(data =>data.conformanceprofileStructure).subscribe(x=>{
             x.structure = this.configService.arraySortByPosition(x.structure);
             this.backup = x;
+            this.delta.diffable('CONFORMANCEPROFILE', this.igId, x.from, this.conformanceprofileId).subscribe(
+              diffData => this.diff = diffData
+            );
             this.conformanceprofileStructure=__.cloneDeep(this.backup);
         });
     }

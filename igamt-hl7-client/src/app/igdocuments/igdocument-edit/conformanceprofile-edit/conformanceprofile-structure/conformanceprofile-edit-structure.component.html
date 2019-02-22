@@ -1,6 +1,6 @@
 <div *ngIf="conformanceprofileStructure">
     <form #editForm="ngForm">
-      <entity-header [elm]="conformanceprofileStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+      <entity-header [elm]="conformanceprofileStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()" [differential]="diff?.diffable" [diffToggled]="false"></entity-header>
 
       <div class="section-content">
 

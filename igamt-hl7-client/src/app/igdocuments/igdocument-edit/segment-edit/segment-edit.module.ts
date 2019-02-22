@@ -42,10 +42,9 @@ import {
   DataListModule,
   DataTableModule,
   DragDropModule,
-  InputSwitchModule,
   OrganizationChartModule,
   PickListModule,
-  RadioButtonModule
+  RadioButtonModule, ToggleButtonModule
 } from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {SegmentsService} from "./segments.service";
@@ -58,6 +57,9 @@ import {MultiSelectModule} from 'primeng/multiselect';
 import {UniqueCoConstraintDirective} from '../../../formValidators/unique-coconstraint.directive';
 import {MaxCardinalityDirective} from '../../../formValidators/max-cardinality.directive';
 import {MinCardinalityDirective} from '../../../formValidators/min-cardinality.directive';
+import {SlideToggleModule} from 'ngx-slide-toggle';
+import {DeltaService} from '../../../common/delta/service/delta.service';
+import {SegmentDeltaComponent} from './segment-delta/segment-delta.component';
 
 @NgModule({
     imports: [
@@ -84,14 +86,13 @@ import {MinCardinalityDirective} from '../../../formValidators/min-cardinality.d
         TableModule,
         FroalaEditorModule.forRoot(),
         FroalaViewModule.forRoot(),
-        MessageModule,
-        InputSwitchModule
+        MessageModule
     ],
   exports: [CoConstraintTableComponent, UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective],
 
-    providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver],
+    providers : [SegmentTreeNodeService, CoConstraintTableService, SegmentEditMetadatResolver, SegmentEditStructureResolver, SegmentEditPredefResolver, SegmentEditPostdefResolver, SegmentEditConformanceStatementsResolver, SegmentsService,SegmentCrossRefResolver, SegmentEditDynamicMappingResolver, DeltaService],
     declarations: [
-      UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective,
+      UniqueCoConstraintDirective, MaxCardinalityDirective, MinCardinalityDirective, SegmentDeltaComponent,
       ValueSetBindingPickerComponent, SegmentTreeComponent, RegisterFormModelDirective, CoConstraintTableComponent, SegmentEditMetadataComponent, SegmentEditStructureComponent, SegmentEditPredefComponent, SegmentEditPostdefComponent, SegmentEditConformanceStatementsComponent, CCHeaderDialogDmComponent, CCHeaderDialogUserComponent,SegmentCrossRefComponent, SegmentEditDynamicMappingComponent],
     schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })

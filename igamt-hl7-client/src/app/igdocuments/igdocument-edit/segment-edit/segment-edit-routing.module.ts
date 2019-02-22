@@ -19,21 +19,27 @@ import {SegmentCrossRefComponent} from "./segment-cross-ref/segment-cross-ref.co
 import {SegmentCrossRefResolver} from "./segment-cross-ref/segment-cross-ref.resolver";
 import {SegmentEditDynamicMappingResolver} from "./segment-dynamicmapping/segment-edit-dynamicmapping.resolver";
 import {SegmentEditDynamicMappingComponent} from "./segment-dynamicmapping/segment-edit-dynamicmapping.component";
+import {DeltaResolver} from '../../../common/delta/service/delta.resolver';
+import {SegmentDeltaComponent} from './segment-delta/segment-delta.component';
 
 @NgModule({
   imports: [
     RouterModule.forChild([
       {
         path: ':segmentId',
-        component: SegmentEditStructureComponent,
-        canDeactivate: [SaveFormsGuard],
-        resolve: {segmentStructure: SegmentEditStructureResolver}
+        redirectTo: ':segmentId/structure'
       },
       {
         path: ':segmentId/metadata',
         component: SegmentEditMetadataComponent,
         canDeactivate: [SaveFormsGuard],
         resolve: {segmentMetadata: SegmentEditMetadatResolver}
+      },
+      {
+        path: ':segmentId/delta',
+        component: SegmentDeltaComponent,
+        canDeactivate: [SaveFormsGuard],
+        resolve: {delta: DeltaResolver}
       },
       {
         path: ':segmentId/preDef',

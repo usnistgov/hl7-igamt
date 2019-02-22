@@ -52,7 +52,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
   dndGroups: boolean;
   table: CoConstraintTable;
   tableId: any;
-  display:any;
+  display: any;
   config: any;
   activeType: string;
   ceBindingLocations: any;
@@ -72,7 +72,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     this._segment = value;
     const ctrl = this;
     this.ccTableService.getCCTableForSegment(this._segment).then(function (display) {
-      ctrl.display= display;
+      ctrl.display = display;
       ctrl.table = ctrl.display.data;
       ctrl.backUp = _.cloneDeep(ctrl.table);
       if (ctrl.table.segment === 'OBX') {
@@ -211,7 +211,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
       varies: field.content.varies
     }).subscribe(
       result => {
-        if((<VSCell> obj[key]).vs !== result) this.ccFormVar.form.markAsDirty();
+        if ((<VSCell> obj[key]).vs !== result) this.ccFormVar.form.markAsDirty();
         (<VSCell> obj[key]).vs = result;
 
       }

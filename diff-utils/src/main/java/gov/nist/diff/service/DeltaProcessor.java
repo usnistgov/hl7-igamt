@@ -53,18 +53,12 @@ public class DeltaProcessor {
   public <T> DeltaArray<T> arrayDelta(Collection<T> a, Collection<T> b, DeltaMode mode)
       throws IllegalArgumentException, IllegalAccessException, UnassignableDeltaFieldException {
     DeltaArray<T> array = new DeltaArray<>(this.action(a, b));
-    Class<?> type = this.collectionClassType(a, b);
-
-    if (type == null)
-      return array;
-
-    List<DeltaKey> keyFields = processIdentity(type);
 
     List<T> aList = a == null ? new ArrayList<>() : new ArrayList<>(a);
     List<T> bList = b == null ? new ArrayList<>() : new ArrayList<>(b);
 
-    List<Map<String, String>> aKeys = this.processIdentity(aList, keyFields);
-    List<Map<String, String>> bKeys = this.processIdentity(bList, keyFields);
+    List<Map<String, String>> aKeys = this.processIdentity(aList);
+    List<Map<String, String>> bKeys = this.processIdentity(bList);
 
     List<Integer> matchedB = new ArrayList<>();
 
@@ -170,18 +164,23 @@ public class DeltaProcessor {
         || clazz.isEnum();
   }
 
-  private <T> List<Map<String, String>> processIdentity(List<T> a, List<DeltaKey> keys) {
+  private <T> List<Map<String, String>> processIdentity(List<T> a) {
     List<Map<String, String>> indexes = new ArrayList<>();
-    boolean hasKeys = keys != null && keys.size() > 0;
+    Map<Class<?>, List<DeltaKey>> keysMap = new HashMap<>();
     boolean hasElm = a != null && a.size() > 0;
     if (hasElm) {
       for (int i = 0; i < a.size(); i++) {
         Map<String, String> key = new HashMap<>();
-        if (hasKeys) {
+        if (!keysMap.containsKey(a.get(i).getClass())) {
+          keysMap.put(a.get(i).getClass(), processIdentity(a.get(i).getClass()));
+        }
+        List<DeltaKey> keys = keysMap.get(a.get(i).getClass());
+        if (keys.size() > 0) {
           key = processIdentity(a.get(i), keys);
         } else {
           key.put("&index", i + "");
         }
+        key.put("&class", a.get(i).getClass().getName());
         indexes.add(key);
       }
     }

@@ -13,19 +13,12 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.group;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
-
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
@@ -541,10 +534,9 @@ public class ValuesetServiceImpl implements ValuesetService {
   @Override
   public Link cloneValueSet(String newkey, Link l, String username) {
     Valueset old = this.findById(l.getId());
-    Valueset elm=old.clone();
+    Valueset elm = old.clone();
     Link newLink = new Link();
     newLink = l.clone(newkey);
-    elm.setFrom(elm.getId());
     elm.setId(newkey);
     elm.setUsername(username);
     this.save(elm);
