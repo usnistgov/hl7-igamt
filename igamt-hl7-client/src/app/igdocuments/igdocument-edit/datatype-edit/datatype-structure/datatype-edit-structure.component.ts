@@ -14,6 +14,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {Columns} from "../../../../common/constants/columns";
 import {Types} from "../../../../common/constants/types";
+import {DeltaService, DiffableResult} from '../../../../common/delta/service/delta.service';
 
 @Component({
   selector : 'datatype-edit',
@@ -28,6 +29,7 @@ export class DatatypeEditStructureComponent implements WithSave{
   datatypeStructure:any;
   changeItems:any[];
   backup:any;
+  diff: DiffableResult;
 
   @ViewChild('editForm')
   private editForm: NgForm;
@@ -39,7 +41,8 @@ export class DatatypeEditStructureComponent implements WithSave{
   constructor(private route: ActivatedRoute,
               private router : Router,
               private configService : GeneralConfigurationService,
-              private datatypesService : DatatypesService){
+              private datatypesService : DatatypesService,
+              private delta: DeltaService){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -56,6 +59,9 @@ export class DatatypeEditStructureComponent implements WithSave{
       x.structure = this.configService.arraySortByPosition(x.structure);
       this.datatypeStructure = {};
       this.datatypeStructure = x;
+      this.delta.diffable('DATATYPE', this.igId, x.from, this.datatypeId).subscribe(
+        diffData => this.diff = diffData
+      );
       this.backup=__.cloneDeep(this.datatypeStructure);
     });
   }

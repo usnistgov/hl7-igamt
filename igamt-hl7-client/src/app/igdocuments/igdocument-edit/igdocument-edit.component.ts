@@ -150,16 +150,11 @@ export class IgDocumentEditComponent {
 
   }
 
-
-
-
-
   ngOnInit() {
     //console.log("Calling on Init");
     this.igId= this.sp.snapshot.params["igId"];
     this.sp.data.map(data =>data.currentIg).subscribe(x=>{
       this.tocService.setIgId(this.igId);
-
       this.igId=x.id;
       this.ig= x;
       this.nodes=this.ig.toc;

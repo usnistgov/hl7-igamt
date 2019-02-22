@@ -30,3 +30,8 @@
 .text-small {
   font-size : 13px;
 }
+
+.badge-diff {
+  background-color: #3e51b6;
+  color: white;
+}
