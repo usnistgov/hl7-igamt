@@ -27,5 +27,10 @@
   		<artifactId>datatype</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   	</dependency>
+  	<dependency>
+  		<groupId>gov.nist.hit.hl7</groupId>
+  		<artifactId>ig</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  	</dependency>
   </dependencies>
 </project>

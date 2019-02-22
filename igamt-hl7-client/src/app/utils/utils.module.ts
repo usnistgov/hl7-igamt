@@ -17,7 +17,7 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule, ToggleButtonModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
@@ -81,6 +81,10 @@ import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/confl
 import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
 import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
 import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
+import {SlideToggleModule} from 'ngx-slide-toggle';
+import {DeltaService} from '../common/delta/service/delta.service';
+import {DeltaResolver} from '../common/delta/service/delta.resolver';
+import {DeltaHeaderComponent} from '../common/delta/delta-header/delta-header.component';
 
 @NgModule({
   imports: [
@@ -104,8 +108,9 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     MessageModule,
     MessagesModule,
     DndListModule,
-    SelectButtonModule
-
+    SelectButtonModule,
+    SlideToggleModule,
+    ToggleButtonModule
   ],
   declarations: [
     DisplayBadgeComponent,
@@ -125,7 +130,6 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DisplayPathComponent,
     CrossReferenceComponent,
     DatatypeListManagerComponent,
-
     NameColComponent,
     UsageColComponent,
     UsageReadonlyColComponent,
@@ -162,7 +166,8 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
     PredicateColComponent,
-    PredicateReadonlyColComponent
+    PredicateReadonlyColComponent,
+    DeltaHeaderComponent
   ],
 
   exports: [
@@ -218,8 +223,9 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
     PredicateColComponent,
-    PredicateReadonlyColComponent
+    PredicateReadonlyColComponent,
+    DeltaHeaderComponent
   ],
-  providers: [DatatypeColService, SegmentColService]
+  providers: [DatatypeColService, SegmentColService, DeltaService, DeltaResolver]
 })
 export class UtilsModule {}

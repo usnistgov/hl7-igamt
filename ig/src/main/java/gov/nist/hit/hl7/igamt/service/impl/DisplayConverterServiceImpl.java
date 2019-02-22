@@ -15,10 +15,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
@@ -403,6 +401,8 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     igDisplay.setMetadata(ig.getMetadata());
     igDisplay.setAuthor(ig.getUsername());
     igDisplay.setDateUpdated(ig.getUpdateDate());
+    System.out.println("[IG FROM] " + ig.getFrom());
+    igDisplay.setSourceIg(ig.getFrom());
     List<TreeNode> firstLevel = new ArrayList<TreeNode>();
     for (TextSection s : ig.getContent()) {
       firstLevel.add(createTextSectionNode(s, ig));

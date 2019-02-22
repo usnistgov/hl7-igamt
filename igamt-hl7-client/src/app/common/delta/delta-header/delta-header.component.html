@@ -1,0 +1,23 @@
+<table class="table table-striped" style="text-align: center;">
+  <tr>
+    <th style="text-align: center;">Source</th>
+    <th></th>
+    <th style="text-align: center;">Target</th>
+  </tr>
+  <tr>
+    <td style="text-align: center; vertical-align: middle;"><display-badge [type]="'document'"></display-badge>{{data?.sourceDocument.metadata.title}} / <element-label [label]="data?.sourceEntity.label" [domainInfo]="data?.sourceEntity.domainInfo"></element-label></td>
+    <td style="text-align: center; vertical-align: middle;">
+      <i class="fa fa-arrow-right"></i><br>
+      <i class="fa fa-arrow-left"></i>
+    </td>
+    <td style="text-align: center; vertical-align: middle;"><display-badge [type]="'document'"></display-badge>{{title}} / <element-label [label]="data?.targetEntity.label" [domainInfo]="data?.targetEntity.domainInfo"></element-label></td>
+  </tr>
+  <tr>
+    <th colspan="3">Legend</th>
+  </tr>
+  <tr>
+    <td class="delta-previous"><strong>- DELETED</strong></td>
+    <td style="background-color: #fff0c4;"><strong>* CHANGED</strong></td>
+    <td class="delta-current"><strong>+ ADDED</strong></td>
+  </tr>
+</table>

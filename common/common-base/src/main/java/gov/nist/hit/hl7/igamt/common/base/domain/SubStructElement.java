@@ -10,7 +10,6 @@ public class SubStructElement extends StructureElement {
   private String minLength;
   @DeltaField
   private String confLength;
-  @DeltaField
   private Ref ref;
 
   public static final String NA = "NA";

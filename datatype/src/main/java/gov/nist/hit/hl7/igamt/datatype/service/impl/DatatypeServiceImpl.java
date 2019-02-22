@@ -106,7 +106,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype findById(String key) {
-	Datatype dt = this.domainExtention.findById(key, Datatype.class);
+    Datatype dt = this.domainExtention.findById(key, Datatype.class);
     return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
   }
 
@@ -126,8 +126,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public List<Datatype> findAll() {
-	  return Stream.concat(domainExtention.getAll(Datatype.class).stream(),datatypeRepository.findAll().stream())
-	  .collect(Collectors.toList());
+    return Stream.concat(domainExtention.getAll(Datatype.class).stream(),
+        datatypeRepository.findAll().stream()).collect(Collectors.toList());
   }
 
   @Override
@@ -293,7 +293,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope)
-            .andOperator(Criteria.where("domainInfo.version").is(version));
+        .andOperator(Criteria.where("domainInfo.version").is(version));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -347,7 +347,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     ValidationUtil.validateLength(f.getMinLength(), f.getMaxLength());
     ValidationUtil.validateConfLength(f.getConfLength());
   }
-
 
 
 
@@ -410,11 +409,11 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
-    Link newLink = new Link();
+    Link newLink = l.clone(null);
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-      ;
+
 
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
@@ -575,13 +574,14 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly) {
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype,
+      boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     DatatypeStructureDisplay result = new DatatypeStructureDisplay();
-    
-    result.complete(result, datatype, SectionType.STRUCTURE,readOnly);
+
+    result.complete(result, datatype, SectionType.STRUCTURE, readOnly);
     if (datatype.getExt() != null) {
       result.setLabel(datatype.getName() + "_" + datatype.getExt());
     } else {
@@ -861,28 +861,26 @@ public class DatatypeServiceImpl implements DatatypeService {
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-    	
-    	
-    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
-    		item.setOldPropertyValue(d.getPreDef());
-    		d.setPreDef((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
-    		item.setOldPropertyValue(d.getPostDef());
-    		d.setPostDef((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-    		item.setOldPropertyValue(d.getAuthorNotes());
-    		d.setAuthorNotes((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-    		item.setOldPropertyValue(d.getUsageNotes());
-    		d.setUsageNotes((String)item.getPropertyValue());
-    	}
-      	else if(item.getPropertyType().equals(PropertyType.EXT)) {
-    		item.setOldPropertyValue(d.getExt());
-    		d.setExt((String)item.getPropertyValue());
-    	}
-    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
+
+
+      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+        item.setOldPropertyValue(d.getPreDef());
+        d.setPreDef((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+        item.setOldPropertyValue(d.getPostDef());
+        d.setPostDef((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+        item.setOldPropertyValue(d.getAuthorNotes());
+        d.setAuthorNotes((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+        item.setOldPropertyValue(d.getUsageNotes());
+        d.setUsageNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
+        item.setOldPropertyValue(d.getExt());
+        d.setExt((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Component c = this.findComponentById(d, item.getLocation());
         if (c != null) {
           item.setOldPropertyValue(c.getUsage());
@@ -1142,22 +1140,27 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {    
-    if(datatype.getDomainInfo().getScope().equals(Scope.USER)) {
-      if(datatype instanceof ComplexDatatype) {
-        ComplexDatatype cDT = (ComplexDatatype)datatype;
-        for(Component c : cDT.getComponents()) {
+  public void collectAssoicatedConformanceStatements(Datatype datatype,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDT = (ComplexDatatype) datatype;
+        for (Component c : cDT.getComponents()) {
           Datatype dt = this.findById(c.getRef().getId());
-          if(dt != null){
-            if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
-              if(dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null && dt.getBinding().getConformanceStatements().size() > 0) {
-                if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(), Type.DATATYPE, dt.getId(), dt.getLabel()));
+          if (dt != null) {
+            if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
+              if (dt.getBinding() != null && dt.getBinding().getConformanceStatements() != null
+                  && dt.getBinding().getConformanceStatements().size() > 0) {
+                if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
+                  associatedConformanceStatementMap.put(dt.getLabel(),
+                      new ConformanceStatementsContainer(dt.getBinding().getConformanceStatements(),
+                          Type.DATATYPE, dt.getId(), dt.getLabel()));
                 this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
               }
-            }            
+            }
           }
 
-        }  
+        }
       }
     }
   }

@@ -13,6 +13,7 @@ import {SegmentsService} from "../segments.service";
 import {IgDocumentService} from "../../ig-document.service";
 import {Columns} from "../../../../common/constants/columns";
 import {Types} from "../../../../common/constants/types";
+import {DeltaService, DiffableResult} from '../../../../common/delta/service/delta.service';
 
 @Component({
     selector : 'segment-edit',
@@ -26,6 +27,7 @@ export class SegmentEditStructureComponent implements WithSave {
     segmentStructure:any;
     changeItems:any[];
     backup:any;
+    diff: DiffableResult;
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -35,10 +37,11 @@ export class SegmentEditStructureComponent implements WithSave {
     documentType=Types.IGDOCUMENT;
 
     constructor(private route: ActivatedRoute,
-                private router : Router,
-                private configService : GeneralConfigurationService,
-                private segmentsService : SegmentsService,
-                private igDocumentService : IgDocumentService){
+                private router: Router,
+                private configService: GeneralConfigurationService,
+                private segmentsService: SegmentsService,
+                private igDocumentService: IgDocumentService,
+                private delta: DeltaService) {
         router.events.subscribe(event => {
             if (event instanceof NavigationEnd ) {
                 this.currentUrl=event.url;
@@ -50,13 +53,19 @@ export class SegmentEditStructureComponent implements WithSave {
         this.changeItems = [];
         this.segmentId = this.route.snapshot.params["segmentId"];
         this.igId = this.router.url.split("/")[2];
-
         this.route.data.map(data =>data.segmentStructure).subscribe(x=>{
             x.structure = this.configService.arraySortByPosition(x.structure);
             this.segmentStructure = {};
             this.segmentStructure = x;
-            this.backup=__.cloneDeep(this.segmentStructure);
+            this.delta.diffable('SEGMENT', this.igId, x.from, this.segmentId).subscribe(
+              diffData => this.diff = diffData
+            );
+          this.backup=__.cloneDeep(this.segmentStructure);
         });
+    }
+
+    toggleDiff(event) {
+      console.log(event);
     }
 
     reset(){
