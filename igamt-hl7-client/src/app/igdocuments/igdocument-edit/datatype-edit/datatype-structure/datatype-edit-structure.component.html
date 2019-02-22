@@ -33,8 +33,8 @@
             </ng-container>
 
             <ng-container *ngSwitchCase="'usage'">
-              <usage-col *ngIf="node.data.type === 'COMPONENT'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id"></usage-col>
-              <usage-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+              <usage-col *ngIf="node.data.type === 'COMPONENT'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="datatypeStructure.id"></usage-col>
+              <usage-readonly-col *ngIf="node.data.type !== 'COMPONENT'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [idPath]="node.data.idPath"></usage-readonly-col>
             </ng-container>
 
             <ng-container *ngSwitchCase="'length'">

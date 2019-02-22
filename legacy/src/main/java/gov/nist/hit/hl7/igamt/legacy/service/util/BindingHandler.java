@@ -186,7 +186,7 @@ public class BindingHandler {
       newAssertionPredicate.setFreeText(oldPredicate.getDescription());
       
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
-        newAssertionPredicate.setAssertion(oldPredicate.getAssertion());
+        newAssertionPredicate.setAssertionScript(oldPredicate.getAssertion());
       }
       
       if (levelObject instanceof Message) {

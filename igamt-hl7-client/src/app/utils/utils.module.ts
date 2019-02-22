@@ -69,7 +69,6 @@ import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.ser
 import {SegmentColComponent} from "../common/tree-table/segment/segment-col.component";
 import {SegmentColService} from "../common/tree-table/segment/segment-col.service";
 import {PredicateColComponent} from "../common/tree-table/predicate/predicate-col.component";
-import {PredicateReadonlyColComponent} from "../common/tree-table/predicate/predicate-readonly-col.component";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -82,6 +81,7 @@ import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/confl
 import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
 import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
 import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
+import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conformanceprofile-edit/conformance-profiles.service";
 
 @NgModule({
   imports: [
@@ -163,8 +163,7 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
-    PredicateColComponent,
-    PredicateReadonlyColComponent
+    PredicateColComponent
   ],
 
   exports: [
@@ -219,9 +218,9 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
-    PredicateColComponent,
-    PredicateReadonlyColComponent
+    PredicateColComponent
   ],
-  providers: [DatatypeColService, SegmentColService]
+  providers: [DatatypeColService, SegmentColService, ConformanceProfilesService]
+
 })
 export class UtilsModule {}

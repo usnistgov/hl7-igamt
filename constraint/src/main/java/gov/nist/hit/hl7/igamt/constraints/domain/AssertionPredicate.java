@@ -28,7 +28,6 @@ public class AssertionPredicate extends Predicate implements Serializable{
   private static final long serialVersionUID = -8306847581430345712L;
   @DeltaField
   private Assertion assertion;
-  private Path context;
 
   public AssertionPredicate() {
     super();
@@ -43,11 +42,4 @@ public class AssertionPredicate extends Predicate implements Serializable{
     this.assertion = assertion;
   }
 
-  public Path getContext() {
-    return context;
-  }
-
-  public void setContext(Path context) {
-    this.context = context;
-  }
 }

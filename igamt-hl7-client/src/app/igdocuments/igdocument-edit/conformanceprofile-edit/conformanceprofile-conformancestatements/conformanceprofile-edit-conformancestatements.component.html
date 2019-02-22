@@ -190,6 +190,12 @@
             <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
                 <div class="ui-g ui-fluid">
                     <div class="ui-g-12 ui-md-2">
+                        <label>Editor Type: </label>
+                    </div>
+                    <div class="ui-g-12 ui-md-10">
+                        <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedConformanceStatement.displayType" (onChange)="changeType()"></p-selectButton>
+                    </div>
+                    <div class="ui-g-12 ui-md-2">
                         <label>Context: </label>
                     </div>
                     <div class="ui-g-12 ui-md-10">
@@ -203,13 +209,6 @@
                         <div *ngIf="showContextTree && messageConformanceStatements">
                             <app-cs-segment-tree [tree]="messageConformanceStatements" (select)="selectTargetElementLocationForContext($event)"></app-cs-segment-tree>
                         </div>
-                    </div>
-
-                    <div class="ui-g-12 ui-md-2">
-                        <label>Editor Type: </label>
-                    </div>
-                    <div class="ui-g-12 ui-md-10">
-                        <p-selectButton name="type" [options]="constraintTypes" [(ngModel)]="selectedConformanceStatement.displayType" (onChange)="changeType()"></p-selectButton>
                     </div>
                 </div>
 

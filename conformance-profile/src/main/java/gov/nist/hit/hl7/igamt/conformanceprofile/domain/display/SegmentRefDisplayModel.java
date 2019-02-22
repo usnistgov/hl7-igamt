@@ -16,8 +16,10 @@ import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 import gov.nist.hit.hl7.igamt.common.base.domain.display.ViewScope;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.BindingDisplay;
 
 /**
@@ -47,6 +49,9 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
 
   private String idPath;
   private String path;
+  private Usage trueUsage;
+  private Usage falseUsage;
+  private Predicate predicate;
 
   private Ref ref;
 
@@ -109,5 +114,29 @@ public class SegmentRefDisplayModel extends SegmentRefOrGroupDisplayModel {
   public void addBinding(BindingDisplay binding) {
     if (this.bindings == null) this.bindings = new HashSet<BindingDisplay>();
     this.bindings.add(binding);
+  }
+
+  public Usage getTrueUsage() {
+    return trueUsage;
+  }
+
+  public void setTrueUsage(Usage trueUsage) {
+    this.trueUsage = trueUsage;
+  }
+
+  public Usage getFalseUsage() {
+    return falseUsage;
+  }
+
+  public void setFalseUsage(Usage falseUsage) {
+    this.falseUsage = falseUsage;
+  }
+
+  public Predicate getPredicate() {
+    return predicate;
+  }
+
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
   }
 }
