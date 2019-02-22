@@ -14,6 +14,7 @@ import {ButtonModule} from 'primeng/button';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 import {DatatypeEditStructureComponent} from "./datatype-structure/datatype-edit-structure.component";
 import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformancestatements/datatype-edit-conformancestatements.component";
@@ -48,6 +49,7 @@ import {TreeTableModule} from 'primeng/primeng';
     DatatypeEditRoutingModule,
     UtilsModule,
     ButtonModule,
+    ScrollPanelModule,
     TreeTableModule,
     AccordionModule,
     SelectButtonModule,

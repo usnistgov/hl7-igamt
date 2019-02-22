@@ -41,6 +41,7 @@ import {DisplayMenuComponent} from "../common/display-menu/display-menu.componen
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {SelectButtonModule} from 'primeng/selectbutton';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 import {NameColComponent} from "../common/tree-table/name/name-col.component";
 import {UsageColComponent} from "../common/tree-table/usage/usage-col.component";
@@ -104,7 +105,8 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     MessageModule,
     MessagesModule,
     DndListModule,
-    SelectButtonModule
+    SelectButtonModule,
+    ScrollPanelModule
 
   ],
   declarations: [
