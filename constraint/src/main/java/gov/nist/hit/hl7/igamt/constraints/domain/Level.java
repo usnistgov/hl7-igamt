@@ -9,49 +9,13 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.binding.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
 
 /**
  * @author jungyubw
  *
  */
-public class LocationInfo {
-  private LocationType type;
-  private int position;
-  private String name;
+public enum Level {
 
-  public LocationInfo() {
-    super();
-  }
-
-  public LocationInfo(LocationType type, int position, String name) {
-    super();
-    this.type = type;
-    this.position = position;
-    this.name = name;
-  }
-
-  public LocationType getType() {
-    return type;
-  }
-
-  public void setType(LocationType type) {
-    this.type = type;
-  }
-
-  public int getPosition() {
-    return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
+  DATATYPE, SEGMENT, CONFORMANCEPROFILE, GROUP
 }

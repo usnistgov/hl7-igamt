@@ -11,15 +11,14 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
+import java.util.HashSet;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
-import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
-import gov.nist.hit.hl7.igamt.constraints.domain.ConstraintType;
-import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
@@ -36,6 +35,10 @@ public class ConformanceStatement {
   private ConstraintType type;
   protected String identifier;
   private Path context;
+  private Level level;
+  private String structureId;
+  private HashSet<String> sourceIds;
+  private String igDocumentId;
 
   public ConformanceStatement() {
     super();
@@ -84,5 +87,46 @@ public class ConformanceStatement {
     return null;
   }
 
+  public Level getLevel() {
+    return level;
+  }
 
+  public void setLevel(Level level) {
+    this.level = level;
+  }
+
+  public String getStructureId() {
+    return structureId;
+  }
+
+  public void setStructureId(String structureId) {
+    this.structureId = structureId;
+  }
+
+  public String getIgDocumentId() {
+    return igDocumentId;
+  }
+
+  public void setIgDocumentId(String igDocumentId) {
+    this.igDocumentId = igDocumentId;
+  }
+
+  public HashSet<String> getSourceIds() {
+    return sourceIds;
+  }
+
+  public void setSourceIds(HashSet<String> sourceIds) {
+    this.sourceIds = sourceIds;
+  }
+
+  public void addSourceId(String sourceId) {
+    if(this.sourceIds == null) this.sourceIds = new HashSet<String>();
+    this.sourceIds.add(sourceId);
+  }
+
+  public void removeSourceId(String sourceId) {
+    if(this.sourceIds != null) {
+      this.sourceIds.remove(sourceId);
+    }
+  }
 }
