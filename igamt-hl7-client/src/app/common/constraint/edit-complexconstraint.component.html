@@ -1,62 +1,40 @@
-<div [ngModelGroup]="groupName">
-    <div *ngIf="!isPredicate" class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-2">
-            <label for="id">ID: </label>
-        </div>
-        <div class="ui-g-12 ui-md-10">
-            <input id="id" name="id" class="form-control" required [(ngModel)]="constraint.identifier" type="text" #id="ngModel"/>
-            <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
-                <div *ngIf="id.errors.required">
-                    ID is required.
+<p-scrollPanel [style]="{width: '100%', height: '400px'}">
+    <div [ngModelGroup]="groupName">
+        <div *ngIf="!isPredicate" class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label for="id">ID: </label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <input id="id" name="id" class="form-control" required [(ngModel)]="constraint.identifier" type="text" #id="ngModel"/>
+                <div *ngIf="id.invalid && (id.dirty || id.touched)" class="alert alert-danger">
+                    <div *ngIf="id.errors.required">
+                        ID is required.
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div *ngIf="isPredicate" class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-2">
-            <label for="id">True Usage: </label>
-        </div>
-        <div class="ui-g-12 ui-md-10">
-            <p-dropdown [options]="cUsages" [autoWidth]="false" id="tUsage" name="tUsage" required [(ngModel)]="constraint.trueUsage" [style]="{'width' : '25%'}" #tUsage="ngModel"></p-dropdown>
-            <div *ngIf="tUsage.invalid && (tUsage.dirty || tUsage.touched)" class="alert alert-danger">
-                <div *ngIf="tUsage.errors.required">
-                    True Usage is required.
-                </div>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label for="id">Pattern Definition: </label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <div [innerHTML]="write(selected)"></div>
+                <i class="fa fa-pencil" (click)="edit(selected)"></i>
             </div>
         </div>
-    </div>
-    <div *ngIf="isPredicate" class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-2">
-            <label for="id">False Usage: </label>
-        </div>
-        <div class="ui-g-12 ui-md-10">
-            <p-dropdown [options]="cUsages" [autoWidth]="false"  id="fUsage" name="fUsage" required [(ngModel)]="constraint.falseUsage" [style]="{'width' : '25%'}" #fUsage="ngModel"></p-dropdown>
-            <div *ngIf="fUsage.invalid && (fUsage.dirty || fUsage.touched)" class="alert alert-danger">
-                <div *ngIf="fUsage.errors.required">
-                    True Usage is required.
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="ui-g ui-fluid">
-        <div class="ui-g-12 ui-md-2">
-            <label for="id">Pattern Definition: </label>
-        </div>
-        <div class="ui-g-12 ui-md-10">
-            <div [innerHTML]="write(selected)"></div>
-            <i class="fa fa-pencil" (click)="edit(selected)"></i>
-        </div>
-    </div>
 
-    <div *ngFor="let p of propsotions">
-        <strong>{{p.id}}</strong><br>
-        <edit-simple-proposition [assertion]="p" [structure]="structure" [groupName]="p.id"></edit-simple-proposition>
-    </div>
+        <div *ngFor="let p of propsotions">
+            <strong>{{p.id}}</strong><br>
+            <edit-simple-proposition [assertion]="p" [structure]="structure" [groupName]="p.id"></edit-simple-proposition>
+        </div>
 
-    <div *ngFor="let d of declarations">
-        <strong>{{d.id}}</strong><br>
-        <edit-simple-constraint [assertion]="d" [structure]="structure" [groupName]="d.id"></edit-simple-constraint>
+        <div *ngFor="let d of declarations">
+            <strong>{{d.id}}</strong><br>
+            <edit-simple-constraint [assertion]="d" [structure]="structure" [isPredicate]="isPredicate" [groupName]="d.id"></edit-simple-constraint>
+        </div>
     </div>
-</div>
+</p-scrollPanel>
+
+
 
 <app-pattern-dialog></app-pattern-dialog>

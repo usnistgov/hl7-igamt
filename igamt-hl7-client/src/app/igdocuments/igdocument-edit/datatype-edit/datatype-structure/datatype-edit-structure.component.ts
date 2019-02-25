@@ -86,6 +86,7 @@ export class DatatypeEditStructureComponent implements WithSave{
   }
 
   save(){
+    this.datatypeId = this.route.snapshot.params["datatypeId"];
     return new Promise((resolve, reject)=> {
       this.datatypesService.save(this.datatypeId, this.changeItems).then(saved => {
         this.backup = __.cloneDeep(this.datatypeStructure);

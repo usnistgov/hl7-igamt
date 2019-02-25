@@ -53,6 +53,7 @@ public abstract class Binding {
   }
 
   public Set<StructureElementBinding> getChildren() {
+    if(children == null) children = new HashSet<StructureElementBinding>();
     return children;
   }
 

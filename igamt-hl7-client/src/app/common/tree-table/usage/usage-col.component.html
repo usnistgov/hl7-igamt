@@ -1,6 +1,6 @@
 <p-dropdown *ngIf="usage !== 'C'" [options]="usages" id="{{idPath}}-usage" name="{{idPath}}-usage" required [(ngModel)]="usage" (onChange)="onUsageChange()" appendTo="body" [style]="{'width' : '100%'}"></p-dropdown>
 <div *ngIf="usage === 'C'">
     <p-dropdown [options]="usages" id="{{idPath}}-usage" name="{{idPath}}-usage" required [(ngModel)]="usage" appendTo="body" (onChange)="onUsageChange()" [style]="{'width' : '30%'}"></p-dropdown>
-    (<p-dropdown [options]="cUsages" id="{{idPath}}-tUsage" name="{{idPath}}-tUsage" required [(ngModel)]="currentPredicate.trueUsage" appendTo="body" [style]="{'width' : '25%'}"></p-dropdown>/
-    <p-dropdown [options]="cUsages" id="{{idPath}}-fUsage" name="{{idPath}}-fUsage" required [(ngModel)]="currentPredicate.falseUsage" appendTo="body" [style]="{'width' : '25%'}"></p-dropdown>)
+    (<p-dropdown [options]="cUsages" id="{{idPath}}-tUsage" name="{{idPath}}-tUsage" required [(ngModel)]="trueUsage" (onChange)="onTrueUsageChange()" appendTo="body" [style]="{'width' : '25%'}"></p-dropdown>/
+    <p-dropdown [options]="cUsages" id="{{idPath}}-fUsage" name="{{idPath}}-fUsage" required [(ngModel)]="falseUsage" (onChange)="onFalseUsageChange()" appendTo="body" [style]="{'width' : '25%'}"></p-dropdown>)
 </div>

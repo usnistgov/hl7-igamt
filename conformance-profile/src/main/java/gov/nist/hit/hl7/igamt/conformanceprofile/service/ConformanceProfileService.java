@@ -88,7 +88,7 @@ public interface ConformanceProfileService {
       ConformanceProfile conformanceProfile);
 
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile, boolean readOnly);
+      ConformanceProfile conformanceProfile, String documentId, boolean readOnly);
 
 
   public void validate(DisplayConformanceProfileMetadata metadata)
@@ -114,7 +114,7 @@ public interface ConformanceProfileService {
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
   
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
 
   /**
    * @param conformanceProfile

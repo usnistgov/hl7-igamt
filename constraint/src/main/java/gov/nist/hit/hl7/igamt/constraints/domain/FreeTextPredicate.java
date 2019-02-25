@@ -24,7 +24,7 @@ public class FreeTextPredicate extends Predicate  implements Serializable{
    */
   private static final long serialVersionUID = 8137080477013985379L;
   private String freeText;
-  private String assertion;
+  private String assertionScript;
 
   public FreeTextPredicate() {
     super();
@@ -39,11 +39,12 @@ public class FreeTextPredicate extends Predicate  implements Serializable{
     this.freeText = freeText;
   }
 
-  public String getAssertion() {
-    return assertion;
+  public String getAssertionScript() {
+    return assertionScript;
   }
 
-  public void setAssertion(String assertion) {
-    this.assertion = assertion;
+  public void setAssertionScript(String assertionScript) {
+    this.assertionScript = assertionScript;
   }
+
 }

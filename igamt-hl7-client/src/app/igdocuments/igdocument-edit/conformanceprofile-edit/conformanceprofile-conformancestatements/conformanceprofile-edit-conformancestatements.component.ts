@@ -123,16 +123,22 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
             this.selectedConformanceStatement.assertion = {};
             this.selectedConformanceStatement.type = "ASSERTION";
             this.selectedConformanceStatement.assertion = {mode:"SIMPLE"};
+            this.selectedConformanceStatement.freeText = undefined;
+            this.selectedConformanceStatement.assertionScript = undefined;
         }else if(this.selectedConformanceStatement.displayType == 'free'){
             this.selectedConformanceStatement.assertion = undefined;
             this.selectedConformanceStatement.type = "FREE";
         }else if(this.selectedConformanceStatement.displayType == 'simple-proposition'){
+            this.selectedConformanceStatement.freeText = undefined;
+            this.selectedConformanceStatement.assertionScript = undefined;
             this.selectedConformanceStatement.assertion = {};
             this.selectedConformanceStatement.type = "ASSERTION";
             this.selectedConformanceStatement.assertion = {mode:"IFTHEN"};
             this.selectedConformanceStatement.assertion.ifAssertion = {mode:"SIMPLE"};
             this.selectedConformanceStatement.assertion.thenAssertion = {mode:"SIMPLE"};
         }else if(this.selectedConformanceStatement.displayType == 'complex'){
+            this.selectedConformanceStatement.freeText = undefined;
+            this.selectedConformanceStatement.assertionScript = undefined;
             this.selectedConformanceStatement.assertion = {};
             this.selectedConformanceStatement.type = "ASSERTION";
         }
@@ -270,6 +276,19 @@ export class ConformanceprofileEditConformancestatementsComponent  implements Wi
 
         if(found) return true;
         return false;
+    }
+
+    copyCS(cs) {
+        if(cs){
+            this.messageConformanceStatements.conformanceStatements.push(cs);
+            this.messageConformanceStatements.availableConformanceStatements = _.without(this.messageConformanceStatements.availableConformanceStatements, cs);
+            let item:any = {};
+            item.location = cs.identifier;
+            item.propertyType = 'STATEMENT';
+            item.propertyValue = cs;
+            item.changeType = "ADD";
+            this.changeItems.push(item);
+        }
     }
 
     printCS(cs){

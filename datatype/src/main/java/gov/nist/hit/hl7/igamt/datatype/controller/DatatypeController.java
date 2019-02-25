@@ -140,9 +140,9 @@ public class DatatypeController extends BaseController {
 
   }
 
-  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement/{did}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
+  public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id, @PathVariable("did") String did,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
     
@@ -153,9 +153,12 @@ public class DatatypeController extends BaseController {
     	  cfs.add(conformanceStatementRepository.findById(csId).get());
     	}
     }
+    
+    Set<ConformanceStatement> acs = this.datatypeService.collectAvaliableConformanceStatements(did, datatype.getId(), datatype.getName());
+    
     HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
-    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, acs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.DATATYPE);
     return  conformanceStatementDisplay;
   }
@@ -189,7 +192,7 @@ public class DatatypeController extends BaseController {
       throws DatatypeException, IOException, ForbiddenOperationException {
     Datatype dt = this.datatypeService.findById(id);
     validateSaveOperation(dt);
-    this.datatypeService.applyChanges(dt, cItems);
+    this.datatypeService.applyChanges(dt, cItems, documentId);
     EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
     entityChangeDomain.setDocumentId(documentId);
     entityChangeDomain.setDocumentType(DocumentType.IG);

@@ -87,7 +87,8 @@ export class DatatypesService {
 
     public getDatatypeConformanceStatements(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
-            return this.http.get('api/datatypes/' + id + '/conformancestatement').toPromise().then(serverDatatypeConformanceStatement=>{
+            let igId= this.tocService.getIgId();
+            return this.http.get('api/datatypes/' + id + '/conformancestatement/' + igId).toPromise().then(serverDatatypeConformanceStatement=>{
                 resolve(serverDatatypeConformanceStatement);
             }, error => {
                 this.igErrorService.showError(error);
