@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 /**
  * @author jungyubw
@@ -33,9 +34,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 public abstract class Predicate {
   @Id
   private String id;
+  private String identifier;
   protected ConstraintType type;
   protected Usage trueUsage;
   protected Usage falseUsage;
+  private Path context;
   private Level level;
   private String structureId;
   private HashSet<String> sourceIds;
@@ -129,5 +132,21 @@ public abstract class Predicate {
     if(this.sourceIds != null) {
       this.sourceIds.remove(sourceId);
     }
+  }
+
+  public Path getContext() {
+    return context;
+  }
+
+  public void setContext(Path context) {
+    this.context = context;
+  }
+
+  public String getIdentifier() {
+    return identifier;
+  }
+
+  public void setIdentifier(String identifier) {
+    this.identifier = identifier;
   }
 }

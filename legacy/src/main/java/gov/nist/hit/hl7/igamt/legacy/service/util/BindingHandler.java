@@ -7,6 +7,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Comment;
@@ -36,9 +38,13 @@ import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementReposit
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
+import gov.nist.hit.hl7.igamt.legacy.service.config.ApplicationConfig;
 
 
 public class BindingHandler {
+  
+  static AbstractApplicationContext context =
+      new AnnotationConfigApplicationContext(ApplicationConfig.class);
 
   @Autowired
   private DatatypeRepository datatypeRepository;
@@ -47,10 +53,10 @@ public class BindingHandler {
   private SegmentRepository segmentRepository;
   
   @Autowired
-  private ConformanceStatementRepository conformanceStatementRepository;
+  private ConformanceStatementRepository conformanceStatementRepository = context.getBean(ConformanceStatementRepository.class);
   
   @Autowired
-  private PredicateRepository predicateRepository;
+  private PredicateRepository predicateRepository = context.getBean(PredicateRepository.class);
 
   public BindingHandler(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
@@ -186,7 +192,7 @@ public class BindingHandler {
       newAssertionPredicate.setFreeText(oldPredicate.getDescription());
       
       if (oldPredicate.getAssertion() != null && !oldPredicate.getAssertion().equals("")) {
-        newAssertionPredicate.setAssertion(oldPredicate.getAssertion());
+        newAssertionPredicate.setAssertionScript(oldPredicate.getAssertion());
       }
       
       if (levelObject instanceof Message) {

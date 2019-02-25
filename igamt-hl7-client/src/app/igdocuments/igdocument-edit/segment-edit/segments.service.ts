@@ -73,7 +73,8 @@ export class SegmentsService {
 
   public getSegmentConformanceStatements(id): Promise<any> {
     const promise = new Promise<any>((resolve, reject) => {
-      return this.http.get('api/segments/' + id + '/conformancestatement').toPromise().then(serverSegmentConformancestatement=>{
+      let igId= this.tocService.getIgId();
+      return this.http.get('api/segments/' + id + '/conformancestatement/' + igId).toPromise().then(serverSegmentConformancestatement=>{
         resolve(serverSegmentConformancestatement);
     }, error => {
       this.igErrorService.showError(error);

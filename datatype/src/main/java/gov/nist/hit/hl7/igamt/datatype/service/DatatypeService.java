@@ -26,6 +26,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -99,11 +100,13 @@ public interface DatatypeService {
 
   public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
 
-  public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
+  public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
 
   public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
   
   public Binding makeLocationInfo(Datatype dt);
 
   public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
+  
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId, String datatypeName);
 }

@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +70,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileVal
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
@@ -294,7 +297,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Override
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile, boolean readOnly) {
+      ConformanceProfile conformanceProfile, String documentId, boolean readOnly) {
     if (conformanceProfile != null) {
       ConformanceProfileConformanceStatement result = new ConformanceProfileConformanceStatement();
       result.complete(result, conformanceProfile, SectionType.CONFORMANCESTATEMENTS, readOnly);
@@ -315,9 +318,23 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         cfs = this.collectCS(conformanceProfile.getBinding().getConformanceStatementIds());
       }
       result.setConformanceStatements(cfs);
+      result.setAvailableConformanceStatements(this.collectAvaliableConformanceStatements(
+          documentId, conformanceProfile.getId(), conformanceProfile.getStructID()));
       return result;
     }
     return null;
+  }
+
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId,
+      String messageId, String structureId) {
+    Set<ConformanceStatement> found = this.conformanceStatementRepository
+        .findByIgDocumentIdAndStructureId(documentId, structureId);
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    for (ConformanceStatement cs : found) {
+      if (!cs.getSourceIds().contains(messageId))
+        result.add(cs);
+    }
+    return result;
   }
 
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
@@ -419,14 +436,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       HashMap<String, String> segmentsMap, Link l, String username) {
     ConformanceProfile old = this.findById(l.getId());
     ConformanceProfile elm = old.clone();
-    Link newLink = new Link();
-    newLink.setId(key);
+    Link newLink = l.clone(key);
     updateDependencies(elm, segmentsMap, valuesetsMap);
     elm.setId(newLink.getId());
     elm.setUsername(username);
     this.save(elm);
     return newLink;
-
   }
 
   /**
@@ -537,6 +552,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         }
       }
     }
+
     result.setType(Type.CONFORMANCEPROFILE);
     return result;
   }
@@ -611,9 +627,20 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       segmentRefDisplayModel.setPath(parentPath + "-" + segmentRef.getPosition());
     StructureElementBinding childSeb =
         this.findStructureElementBindingByIdFromBinding(parentBinding, segmentRef.getId());
-    if (childSeb != null)
+    if (childSeb != null) {
       segmentRefDisplayModel.addBinding(this.createBindingDisplay(childSeb, conformanceProfileId,
           ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
+      if (childSeb.getPredicateId() != null) {
+        Optional<Predicate> op = this.predicateRepository.findById(childSeb.getPredicateId());
+        if (op.isPresent() && op.get().getTrueUsage() != null && op.get().getFalseUsage() != null) {
+          segmentRefDisplayModel.setTrueUsage(op.get().getTrueUsage());
+          segmentRefDisplayModel.setFalseUsage(op.get().getFalseUsage());
+          segmentRefDisplayModel.setPredicate(op.get());
+          if (op.get().getIdentifier() != null)
+            segmentRefDisplayModel.getPredicate().setIdentifier(segmentRefDisplayModel.getIdPath());
+        }
+      }
+    }
     segmentRefDisplayModel.setViewScope(ViewScope.CONFORMANCEPROFILE);
     Segment s = this.segmentService.findById(segmentRef.getRef().getId());
 
@@ -632,14 +659,39 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
             StructureElementBinding childChildSeb =
                 this.findStructureElementBindingByIdFromBinding(childSeb, f.getId());
-            if (childChildSeb != null)
+            if (childChildSeb != null) {
               fModel.addBinding(this.createBindingDisplay(childChildSeb, conformanceProfileId,
                   ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
+              if (childChildSeb.getPredicateId() != null) {
+                Optional<Predicate> op =
+                    this.predicateRepository.findById(childChildSeb.getPredicateId());
+                if (op.isPresent() && op.get().getTrueUsage() != null
+                    && op.get().getFalseUsage() != null) {
+                  fModel.setTrueUsage(op.get().getTrueUsage());
+                  fModel.setFalseUsage(op.get().getFalseUsage());
+                  fModel.setPredicate(op.get());
+                  if (op.get().getIdentifier() != null)
+                    fModel.getPredicate().setIdentifier(fModel.getIdPath());
+                }
+              }
+            }
             StructureElementBinding fSeb =
                 this.findStructureElementBindingByFieldIdForSegment(s, f.getId());
-            if (fSeb != null)
+            if (fSeb != null) {
               fModel.addBinding(
                   this.createBindingDisplay(fSeb, s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
+              if (fSeb.getPredicateId() != null) {
+                Optional<Predicate> op = this.predicateRepository.findById(fSeb.getPredicateId());
+                if (op.isPresent() && op.get().getTrueUsage() != null
+                    && op.get().getFalseUsage() != null) {
+                  fModel.setTrueUsage(op.get().getTrueUsage());
+                  fModel.setFalseUsage(op.get().getFalseUsage());
+                  fModel.setPredicate(op.get());
+                  if (op.get().getIdentifier() != null)
+                    fModel.getPredicate().setIdentifier(f.getId());
+                }
+              }
+            }
             fieldStructureTreeModel.setData(fModel);
 
             if (childDt instanceof ComplexDatatype) {
@@ -659,20 +711,59 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                     cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                     StructureElementBinding childChildChildSeb =
                         this.findStructureElementBindingByIdFromBinding(childChildSeb, c.getId());
-                    if (childChildChildSeb != null)
+                    if (childChildChildSeb != null) {
                       cModel.addBinding(this.createBindingDisplay(childChildChildSeb,
                           conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
+                      if (childChildChildSeb.getPredicateId() != null) {
+                        Optional<Predicate> op =
+                            this.predicateRepository.findById(childChildChildSeb.getPredicateId());
+                        if (op.isPresent() && op.get().getTrueUsage() != null
+                            && op.get().getFalseUsage() != null) {
+                          cModel.setTrueUsage(op.get().getTrueUsage());
+                          cModel.setFalseUsage(op.get().getFalseUsage());
+                          cModel.setPredicate(op.get());
+                          if (op.get().getIdentifier() != null)
+                            cModel.getPredicate().setIdentifier(cModel.getIdPath());
+                        }
+                      }
+                    }
                     StructureElementBinding childFSeb =
                         this.findStructureElementBindingByComponentIdFromStructureElementBinding(
                             fSeb, c.getId());
-                    if (childFSeb != null)
+                    if (childFSeb != null) {
                       cModel.addBinding(this.createBindingDisplay(childFSeb, s.getId(),
                           ViewScope.SEGMENT, 2, valueSetsMap));
+                      if (childFSeb.getPredicateId() != null) {
+                        Optional<Predicate> op =
+                            this.predicateRepository.findById(childFSeb.getPredicateId());
+                        if (op.isPresent() && op.get().getTrueUsage() != null
+                            && op.get().getFalseUsage() != null) {
+                          cModel.setTrueUsage(op.get().getTrueUsage());
+                          cModel.setFalseUsage(op.get().getFalseUsage());
+                          cModel.setPredicate(op.get());
+                          if (op.get().getIdentifier() != null)
+                            cModel.getPredicate().setIdentifier(f.getId() + "-" + c.getId());
+                        }
+                      }
+                    }
                     StructureElementBinding cSeb = this
                         .findStructureElementBindingByComponentIdForDatatype(childDt, c.getId());
-                    if (cSeb != null)
+                    if (cSeb != null) {
                       cModel.addBinding(this.createBindingDisplay(cSeb, childDt.getId(),
                           ViewScope.DATATYPE, 3, valueSetsMap));
+                      if (cSeb.getPredicateId() != null) {
+                        Optional<Predicate> op =
+                            this.predicateRepository.findById(cSeb.getPredicateId());
+                        if (op.isPresent() && op.get().getTrueUsage() != null
+                            && op.get().getFalseUsage() != null) {
+                          cModel.setTrueUsage(op.get().getTrueUsage());
+                          cModel.setFalseUsage(op.get().getFalseUsage());
+                          cModel.setPredicate(op.get());
+                          if (op.get().getIdentifier() != null)
+                            cModel.getPredicate().setIdentifier(c.getId());
+                        }
+                      }
+                    }
                     componentStructureTreeModel.setData(cModel);
                     if (childChildDt instanceof ComplexDatatype) {
                       ComplexDatatype componentDatatype = (ComplexDatatype) childChildDt;
@@ -687,6 +778,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                             SubComponentDisplayDataModel scModel =
                                 new SubComponentDisplayDataModel(sc);
                             scModel.setViewScope(ViewScope.SEGMENT);
+
                             scModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId()
                                 + "-" + c.getId() + "-" + sc.getId());
                             scModel.setPath(
@@ -695,28 +787,82 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                             StructureElementBinding childChildChildChildSeb =
                                 this.findStructureElementBindingByIdFromBinding(childChildChildSeb,
                                     sc.getId());
-                            if (childChildChildChildSeb != null)
+                            if (childChildChildChildSeb != null) {
                               scModel.addBinding(this.createBindingDisplay(childChildChildChildSeb,
                                   conformanceProfileId, ViewScope.CONFORMANCEPROFILE, 1,
                                   valueSetsMap));
+                              if (childChildChildChildSeb.getPredicateId() != null) {
+                                Optional<Predicate> op = this.predicateRepository
+                                    .findById(childChildChildChildSeb.getPredicateId());
+                                if (op.isPresent() && op.get().getTrueUsage() != null
+                                    && op.get().getFalseUsage() != null) {
+                                  scModel.setTrueUsage(op.get().getTrueUsage());
+                                  scModel.setFalseUsage(op.get().getFalseUsage());
+                                  scModel.setPredicate(op.get());
+                                  if (op.get().getIdentifier() != null)
+                                    scModel.getPredicate().setIdentifier(scModel.getIdPath());
+                                }
+                              }
+                            }
                             StructureElementBinding childChildFSeb =
                                 this.findStructureElementBindingByComponentIdFromStructureElementBinding(
                                     childFSeb, sc.getId());
-                            if (childChildFSeb != null)
+                            if (childChildFSeb != null) {
                               scModel.addBinding(this.createBindingDisplay(childChildFSeb,
                                   s.getId(), ViewScope.SEGMENT, 2, valueSetsMap));
+                              if (childChildFSeb.getPredicateId() != null) {
+                                Optional<Predicate> op = this.predicateRepository
+                                    .findById(childChildFSeb.getPredicateId());
+                                if (op.isPresent() && op.get().getTrueUsage() != null
+                                    && op.get().getFalseUsage() != null) {
+                                  scModel.setTrueUsage(op.get().getTrueUsage());
+                                  scModel.setFalseUsage(op.get().getFalseUsage());
+                                  scModel.setPredicate(op.get());
+                                  if (op.get().getIdentifier() != null)
+                                    scModel.getPredicate().setIdentifier(
+                                        f.getId() + "-" + c.getId() + "-" + sc.getId());
+                                }
+                              }
+                            }
                             StructureElementBinding childCSeb =
                                 this.findStructureElementBindingByComponentIdFromStructureElementBinding(
                                     cSeb, sc.getId());
-                            if (childCSeb != null)
+                            if (childCSeb != null) {
                               scModel.addBinding(this.createBindingDisplay(childCSeb,
                                   childDt.getId(), ViewScope.DATATYPE, 3, valueSetsMap));
+                              if (childCSeb.getPredicateId() != null) {
+                                Optional<Predicate> op =
+                                    this.predicateRepository.findById(childCSeb.getPredicateId());
+                                if (op.isPresent() && op.get().getTrueUsage() != null
+                                    && op.get().getFalseUsage() != null) {
+                                  scModel.setTrueUsage(op.get().getTrueUsage());
+                                  scModel.setFalseUsage(op.get().getFalseUsage());
+                                  scModel.setPredicate(op.get());
+                                  if (op.get().getIdentifier() != null)
+                                    scModel.getPredicate()
+                                        .setIdentifier(c.getId() + "-" + sc.getId());
+                                }
+                              }
+                            }
                             StructureElementBinding scSeb =
                                 this.findStructureElementBindingByComponentIdForDatatype(
                                     childChildDt, sc.getId());
-                            if (scSeb != null)
+                            if (scSeb != null) {
                               scModel.addBinding(this.createBindingDisplay(scSeb,
                                   childChildDt.getId(), ViewScope.DATATYPE, 4, valueSetsMap));
+                              if (scSeb.getPredicateId() != null) {
+                                Optional<Predicate> op =
+                                    this.predicateRepository.findById(scSeb.getPredicateId());
+                                if (op.isPresent() && op.get().getTrueUsage() != null
+                                    && op.get().getFalseUsage() != null) {
+                                  scModel.setTrueUsage(op.get().getTrueUsage());
+                                  scModel.setFalseUsage(op.get().getFalseUsage());
+                                  scModel.setPredicate(op.get());
+                                  if (op.get().getIdentifier() != null)
+                                    scModel.getPredicate().setIdentifier(sc.getId());
+                                }
+                              }
+                            }
                             subComponentStructureTreeModel.setData(scModel);
                             componentStructureTreeModel
                                 .addSubComponent(subComponentStructureTreeModel);
@@ -779,9 +925,20 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
     StructureElementBinding childSeb =
         this.findStructureElementBindingByIdFromBinding(parentBinding, group.getId());
-    if (childSeb != null)
+    if (childSeb != null) {
       groupDisplayModel.addBinding(this.createBindingDisplay(childSeb, conformanceProfileId,
           ViewScope.CONFORMANCEPROFILE, 1, valueSetsMap));
+      if (childSeb.getPredicateId() != null) {
+        Optional<Predicate> op = this.predicateRepository.findById(childSeb.getPredicateId());
+        if (op.isPresent() && op.get().getTrueUsage() != null && op.get().getFalseUsage() != null) {
+          groupDisplayModel.setTrueUsage(op.get().getTrueUsage());
+          groupDisplayModel.setFalseUsage(op.get().getFalseUsage());
+          groupDisplayModel.setPredicate(op.get());
+          if (op.get().getIdentifier() != null)
+            groupDisplayModel.getPredicate().setIdentifier(groupDisplayModel.getIdPath());
+        }
+      }
+    }
 
     result.setData(groupDisplayModel);
 
@@ -827,8 +984,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if (seb.getPredicateId() != null)
-      bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+
+    if (seb.getPredicateId() != null) {
+      Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
+      if (op.isPresent())
+        bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    }
     bindingDisplay
         .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
@@ -918,7 +1079,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   @Override
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems)
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId)
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
@@ -1027,6 +1188,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         if (item.getChangeType().equals(ChangeType.ADD)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          cs.addSourceId(cp.getId());
+          cs.setStructureId(cp.getName());
+          cs.setLevel(Level.DATATYPE);
+          cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           cp.getBinding().addConformanceStatement(cs.getId());
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
@@ -1034,8 +1199,51 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           this.deleteConformanceStatementById(cp, item.getLocation());
         } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          if (cs.getId() != null) {
+            item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          }
+          cs.addSourceId(cp.getId());
+          cs.setStructureId(cp.getName());
+          cs.setLevel(Level.DATATYPE);
+          cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
+        }
+      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
+        if (item.getChangeType().equals(ChangeType.ADD)) {
+          Predicate p = mapper.readValue(jsonInString, Predicate.class);
+          p.addSourceId(cp.getId());
+          p.setStructureId(cp.getName());
+          p.setLevel(Level.DATATYPE);
+          p.setIgDocumentId(documentId);
+          p = this.predicateRepository.save(p);
+          seb.setPredicateId(p.getId());
+        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
+          item.setOldPropertyValue(item.getLocation());
+          if (seb.getPredicateId() != null) {
+            Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
+            if (op.isPresent()) {
+              Predicate p = op.get();
+              p.removeSourceId(cp.getId());
+              this.predicateRepository.save(p);
+            }
+            item.setOldPropertyValue(seb.getPredicateId());
+            seb.setPredicateId(null);
+          }
+
+        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
+          Predicate p = mapper.readValue(jsonInString, Predicate.class);
+          if (cp.getId() != null) {
+            item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));
+          }
+          p.addSourceId(cp.getId());
+          p.setStructureId(cp.getName());
+          p.setLevel(Level.DATATYPE);
+          p.setIgDocumentId(documentId);
+          p = this.predicateRepository.save(p);
         }
       }
     }
@@ -1074,6 +1282,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
       if (cs.getIdentifier().equals(location))
         toBeDeleted = id;
+      if (cs.getSourceIds() != null)
+        cs.getSourceIds().remove(cp.getId());
+      this.conformanceStatementRepository.save(cs);
     }
 
     if (toBeDeleted != null)
