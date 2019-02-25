@@ -31,6 +31,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
@@ -59,7 +61,11 @@ public class DatatypeConversionServiceImpl implements ConversionService {
 
   private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
 
-
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository = context.getBean(ConformanceStatementRepository.class);
+  
+  @Autowired
+  private PredicateRepository predicateRepository = context.getBean(PredicateRepository.class);
 
   @Override
   public void convert() {
@@ -156,7 +162,7 @@ public class DatatypeConversionServiceImpl implements ConversionService {
     }
 
     convertedDatatype
-        .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype));
+        .setBinding(new BindingHandler(oldDatatypeRepository).convertResourceBinding(oldDatatype, conformanceStatementRepository, predicateRepository));
     return convertedDatatype;
   }
 

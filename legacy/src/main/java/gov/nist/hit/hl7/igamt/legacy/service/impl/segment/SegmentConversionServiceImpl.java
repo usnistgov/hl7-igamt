@@ -28,6 +28,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.PublicationInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 import gov.nist.hit.hl7.igamt.legacy.service.util.BindingHandler;
@@ -53,6 +55,12 @@ public class SegmentConversionServiceImpl implements ConversionService {
   @Autowired
   private DatatypeRepository oldDatatypeRepository =
       (DatatypeRepository) legacyContext.getBean("datatypeRepository");
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository = context.getBean(ConformanceStatementRepository.class);
+  
+  @Autowired
+  private PredicateRepository predicateRepository = context.getBean(PredicateRepository.class);
 
   private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
 
@@ -155,7 +163,7 @@ public class SegmentConversionServiceImpl implements ConversionService {
     }
 
     convertedSegment.setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
-        .convertResourceBinding(oldSegment));
+        .convertResourceBinding(oldSegment, conformanceStatementRepository, predicateRepository));
     return convertedSegment;
   }
 
