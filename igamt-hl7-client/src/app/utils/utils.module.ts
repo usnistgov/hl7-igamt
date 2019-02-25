@@ -223,11 +223,11 @@ import {DeltaHeaderComponent} from '../common/delta/delta-header/delta-header.co
     LengthDeltaColComponent,
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
-    PredicateColComponent
+    PredicateColComponent,
+    DeltaHeaderComponent
   ],
   providers: [DatatypeColService, SegmentColService, ConformanceProfilesService,
     PredicateColComponent, DeltaService, DeltaResolver,
-    DeltaHeaderComponent
   ]
 
 })
