@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 
 public class ConformanceStatementDisplay extends SectionInfo {
   private Set<ConformanceStatement> conformanceStatements;
+  private Set<ConformanceStatement> availableConformanceStatements;
   private HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap;
   private String name;
 
@@ -37,11 +38,20 @@ public class ConformanceStatementDisplay extends SectionInfo {
     this.associatedConformanceStatementMap = associatedConformanceStatementMap;
   }
   
-  public void complete(Resource elm, SectionType type, boolean readOnly, Set<ConformanceStatement> conformanceStatements, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+
+  public Set<ConformanceStatement> getAvailableConformanceStatements() {
+    return availableConformanceStatements;
+  }
+
+  public void setAvailableConformanceStatements(Set<ConformanceStatement> availableConformanceStatements) {
+    this.availableConformanceStatements = availableConformanceStatements;
+  }
+
+  public void complete(Resource elm, SectionType type, boolean readOnly, Set<ConformanceStatement> conformanceStatements, Set<ConformanceStatement> availableConformanceStatements, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
     super.complete(this, elm, type, readOnly);
     this.setConformanceStatements(conformanceStatements);
+    this.setAvailableConformanceStatements(availableConformanceStatements);
     this.setAssociatedConformanceStatementMap(associatedConformanceStatementMap);
     this.name = elm.getName();
   }
-
 }

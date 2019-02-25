@@ -62,7 +62,6 @@ export class ConformanceProfilesService {
 
     public getConformanceProfilePostDef(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
-
             this.http.get('api/conformanceprofiles/' + id + '/postdef').toPromise().then(serverConformanceProfilePostDef => {
                 resolve(serverConformanceProfilePostDef);
             }
@@ -86,7 +85,8 @@ export class ConformanceProfilesService {
 
     public getConformanceProfileConformanceStatements(id): Promise<any> {
         const promise = new Promise<any>((resolve, reject) => {
-            this.http.get('api/conformanceprofiles/' + id + '/conformancestatement').toPromise().then(serverConformanceProfileConformanceStatement => {
+            let igId= this.tocService.getIgId();
+            this.http.get('api/conformanceprofiles/' + id + '/conformancestatement/' + igId).toPromise().then(serverConformanceProfileConformanceStatement => {
                 resolve(serverConformanceProfileConformanceStatement);
             }).catch(function (e) {
 

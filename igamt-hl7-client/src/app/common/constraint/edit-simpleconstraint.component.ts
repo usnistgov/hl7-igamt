@@ -35,7 +35,12 @@ export class EditSimpleConstraintComponent {
     if(!this.assertion) this.assertion = {};
     if(!this.assertion.complement) this.assertion.complement = {};
     if(!this.assertion.subject) this.assertion.subject = {};
-    this.verbs = this.configService._simpleConstraintVerbs;
+    if(this.isPredicate) {
+      this.verbs = this.configService._propsotionVerbs;
+    }else {
+      this.verbs = this.configService._simpleConstraintVerbs;
+    }
+
     this.occurenceTypes = this.configService._occurenceTypes;
     this.declarativeTypes = this.configService._declarativeTypes;
     this.declarativeCTypes = this.configService._declarativeCTypes;

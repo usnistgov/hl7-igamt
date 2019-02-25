@@ -33,8 +33,8 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'usage'">
-                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id"></usage-col>
-                            <usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>
+                            <usage-col *ngIf="node.data.type === 'FIELD'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id"></usage-col>
+                            <usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [(usage)]="node.data.usage" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [idPath]="node.data.idPath"></usage-readonly-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'cardinality'">
@@ -69,8 +69,7 @@
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'predicate'">
-                            <predicate-col *ngIf="node.data.type === 'FIELD'" [(bindings)]="node.data.bindings" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id"></predicate-col>
-                            <!--<usage-readonly-col *ngIf="node.data.type !== 'FIELD'" [usage]="node.data.usage" [bindings]="node.data.bindings" [idPath]="node.data.idPath"></usage-readonly-col>-->
+                            <predicate-col *ngIf="node.data.usage === 'C'" [(trueUsage)]="node.data.trueUsage" [(falseUsage)]="node.data.falseUsage" [(predicate)]="node.data.predicate" [(changeItems)] = "changeItems" [idPath]="node.data.idPath" [viewScope]="node.data.viewScope" [sourceId]="segmentStructure.id" [structure]="segmentStructure"></predicate-col>
                         </ng-container>
 
                         <ng-container *ngSwitchCase="'textDef'">

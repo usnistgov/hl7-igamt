@@ -47,6 +47,44 @@
                     </p-table>
                 </p-accordionTab>
 
+                <p-accordionTab header="List of Available Conformance Statements" [selected]="true">
+                    <p-table [columns]="cols" [value]="segmentConformanceStatements.availableConformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th style="width:3em"></th>
+                                <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
+                                    {{col.header}}
+                                    <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
+                                </th>
+                                <th *ngIf="!segmentConformanceStatements.readOnly" style="width:15em" pReorderableColumn>Actions</th>
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                            <tr [pReorderableRow]="index">
+                                <td>
+                                    <i class="fa fa-bars" pReorderableRowHandle></i>
+                                </td>
+                                <td *ngFor="let col of columns" class="ui-resizable-column">
+                                    <div *ngIf="col.field === 'identifier'">
+                                        {{rowData[col.field]}}
+                                    </div>
+                                    <div *ngIf="col.field === 'description'">
+                                        <div *ngIf="rowData['type'] === 'FREE'">
+                                            {{rowData['freeText']}}
+                                        </div>
+                                        <div *ngIf="rowData['type'] === 'ASSERTION'">
+                                            {{rowData['assertion'].description}}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td *ngIf="!segmentConformanceStatements.readOnly">
+                                    <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-plus" label="Copy" (click)="copyCS(rowData)"></button>
+                                </td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </p-accordionTab>
+
                 <p-accordionTab header="Associated Datatype Conformance Statements" [selected]="true">
                     <div *ngIf="keys">
                         <div *ngFor="let key of keys">

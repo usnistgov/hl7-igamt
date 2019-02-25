@@ -1,19 +1,20 @@
 <div class="ui-g ui-fluid">
     <div class="ui-g-12 ui-md-10">
-        <div *ngIf="currentPredicate && currentPredicate.type === 'ASSERTION' && currentPredicate.assertion">
-            <span>{{currentPredicate.assertion.description}}</span>
+        <div *ngIf="predicate && predicate.type === 'ASSERTION' && predicate.assertion">
+            <span>{{predicate.assertion.description}}</span>
         </div>
-        <div *ngIf="currentPredicate && currentPredicate.type === 'FREE'">
-            <span>{{currentPredicate.freeText}}</span>
+        <div *ngIf="predicate && predicate.type === 'FREE'">
+            <span>{{predicate.freeText}}</span>
         </div>
     </div>
-    <div class="ui-g-12 ui-md-2">
+    <div *ngIf="!isReadOnly()" class="ui-g-12 ui-md-2">
+        <i *ngIf="predicate && predicate.type" class="fa fa-times" (click)="deletePredicate()"></i>
         <i class="fa fa-pencil" (click)="editPredicate()"></i>
     </div>
 </div>
 
-<p-dialog [(visible)]="cpEditor" header="Conditional Predicate Editor"
-          styleClass="pattern-dialog"
+<p-dialog *ngIf="cpEditor" [(visible)]="cpEditor" header="Conditional Predicate Editor"
+          styleClass="pattern-dialog" [contentStyle]="{'overflow':'visible'}"
           [modal]="true" [responsive]="false" [minWidth]="1400" [minHeight]="750" width="1400"
           [baseZIndex]="8000" [closable]="false" [closeOnEscape]="false" appendTo="body">
     <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
@@ -26,6 +27,52 @@
             </div>
         </div>
 
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label>True Usage: {{trueUsage}}</label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <p-dropdown [options]="cUsages" [autoWidth]="false" id="tUsage" name="tUsage" required [(ngModel)]="trueUsage" [style]="{'width' : '25%'}" #tUsage="ngModel"></p-dropdown>
+                <div *ngIf="tUsage.invalid && (tUsage.dirty || tUsage.touched)" class="alert alert-danger">
+                    <div *ngIf="tUsage.errors.required">
+                        True Usage is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label>False Usage: </label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <p-dropdown [options]="cUsages" [autoWidth]="false"  id="fUsage" name="fUsage" required [(ngModel)]="falseUsage" [style]="{'width' : '25%'}" #fUsage="ngModel"></p-dropdown>
+                <div *ngIf="fUsage.invalid && (fUsage.dirty || fUsage.touched)" class="alert alert-danger">
+                    <div *ngIf="fUsage.errors.required">
+                        True Usage is required.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="viewScope === 'CONFORMANCEPROFILE'" class="ui-g ui-fluid">
+            <div class="ui-g-12 ui-md-2">
+                <label>Context: </label>
+            </div>
+            <div class="ui-g-12 ui-md-10">
+                <div *ngIf="selectedCP.context">
+                    <i class="fa fa-pencil" (click)="editContextTree()">{{getLocationLabel(selectedCP.context)}}</i>
+                </div>
+                <div *ngIf="!selectedCP.context">
+                    <i class="fa fa-pencil" (click)="editContextTree()">{{messageConformanceStatements.label}}</i>
+                </div>
+
+                <div *ngIf="showContextTree && messageConformanceStatements">
+                    <app-cs-segment-tree [tree]="messageConformanceStatements" (select)="selectTargetElementLocationForContext($event)"></app-cs-segment-tree>
+                </div>
+            </div>
+        </div>
+
+
         <div *ngIf="selectedCP.displayType">
             <edit-free-constraint *ngIf="selectedCP.displayType === 'free'" [constraint]="selectedCP" [isPredicate]="true"></edit-free-constraint>
             <edit-simple-constraint *ngIf="selectedCP.displayType === 'simple'" [constraint]="selectedCP" [assertion]="selectedCP.assertion" [structure]="structure" [groupName]="'simple'" [isPredicate]="true"></edit-simple-constraint>
@@ -34,7 +81,7 @@
     </div>
 
     <p-footer>
-        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="submitCS()"></button>
+        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="submitCP()"></button>
         <button pButton type="button" label="Reset" class="ui-button-raised red-btn pull-right" (click)="resetEdit()"></button>
         <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardEdit()"></button>
     </p-footer>
