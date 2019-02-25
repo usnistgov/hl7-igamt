@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,10 +31,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
@@ -48,7 +45,6 @@ import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -78,7 +74,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -96,7 +91,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
-  
+
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
 
@@ -110,13 +105,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
-  
+
   @Autowired
   private PredicateRepository predicateRepository;
 
   @Override
   public Datatype findById(String key) {
-	Datatype dt = this.domainExtention.findById(key, Datatype.class);
+    Datatype dt = this.domainExtention.findById(key, Datatype.class);
     return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
   }
 
@@ -136,8 +131,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public List<Datatype> findAll() {
-	  return Stream.concat(domainExtention.getAll(Datatype.class).stream(),datatypeRepository.findAll().stream())
-	  .collect(Collectors.toList());
+    return Stream.concat(domainExtention.getAll(Datatype.class).stream(),
+        datatypeRepository.findAll().stream()).collect(Collectors.toList());
   }
 
   @Override
@@ -303,7 +298,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope)
-            .andOperator(Criteria.where("domainInfo.version").is(version));
+        .andOperator(Criteria.where("domainInfo.version").is(version));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -337,7 +332,8 @@ public class DatatypeServiceImpl implements DatatypeService {
       }
       result.setName(datatype.getName());
       if (datatype.getBinding() != null)
-        result.setConformanceStatements(this.collectCS(datatype.getBinding().getConformanceStatementIds()));
+        result.setConformanceStatements(
+            this.collectCS(datatype.getBinding().getConformanceStatementIds()));
       return result;
     }
     return null;
@@ -351,12 +347,12 @@ public class DatatypeServiceImpl implements DatatypeService {
    */
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if(conformanceStatementIds != null){
-      for(String id : conformanceStatementIds){
+    if (conformanceStatementIds != null) {
+      for (String id : conformanceStatementIds) {
         result.add(this.conformanceStatementRepository.findById(id).get());
       }
     }
-    
+
     return result;
   }
 
@@ -380,11 +376,11 @@ public class DatatypeServiceImpl implements DatatypeService {
 
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
-    Link newLink = new Link();
+    Link newLink = l.clone(null);
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-      ;
+
 
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
@@ -396,6 +392,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     return newLink;
 
   }
+
+
 
   private void updateDependencies(Datatype elm, HashMap<String, String> datatypesMap,
       HashMap<String, String> valuesetsMap) {
@@ -545,13 +543,14 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly) {
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype,
+      boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     DatatypeStructureDisplay result = new DatatypeStructureDisplay();
-    
-    result.complete(result, datatype, SectionType.STRUCTURE,readOnly);
+
+    result.complete(result, datatype, SectionType.STRUCTURE, readOnly);
     if (datatype.getExt() != null) {
       result.setLabel(datatype.getName() + "_" + datatype.getExt());
     } else {
@@ -586,16 +585,24 @@ public class DatatypeServiceImpl implements DatatypeService {
                 for (Component sc : childDatatype.getComponents()) {
                   Datatype childChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                   if (childChildDt != null) {
-                    SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                    SubComponentStructureTreeModel subComponentStructureTreeModel =
+                        new SubComponentStructureTreeModel();
                     SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
                     scModel.setViewScope(ViewScope.DATATYPE);
                     scModel.setIdPath(c.getId() + "-" + sc.getId());
                     scModel.setPath(c.getPosition() + "-" + sc.getPosition());
                     scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
-                    StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
-                    StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
-                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+                    StructureElementBinding childSeb =
+                        this.findStructureElementBindingByComponentIdFromStructureElementBinding(
+                            cSeb, sc.getId());
+                    if (childSeb != null)
+                      scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
+                          ViewScope.DATATYPE, 1, valueSetsMap));
+                    StructureElementBinding scSeb = this
+                        .findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
+                    if (scSeb != null)
+                      scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
+                          ViewScope.DATATYPE, 2, valueSetsMap));
                     subComponentStructureTreeModel.setData(scModel);
                     componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                   } else {
@@ -625,8 +632,10 @@ public class DatatypeServiceImpl implements DatatypeService {
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    if (seb.getPredicateId() != null)
+      bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    bindingDisplay
+        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
   }
 
@@ -822,28 +831,26 @@ public class DatatypeServiceImpl implements DatatypeService {
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-    	
-    	
-    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
-    		item.setOldPropertyValue(d.getPreDef());
-    		d.setPreDef((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
-    		item.setOldPropertyValue(d.getPostDef());
-    		d.setPostDef((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-    		item.setOldPropertyValue(d.getAuthorNotes());
-    		d.setAuthorNotes((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-    		item.setOldPropertyValue(d.getUsageNotes());
-    		d.setUsageNotes((String)item.getPropertyValue());
-    	}
-      	else if(item.getPropertyType().equals(PropertyType.EXT)) {
-    		item.setOldPropertyValue(d.getExt());
-    		d.setExt((String)item.getPropertyValue());
-    	}
-    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
+
+
+      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+        item.setOldPropertyValue(d.getPreDef());
+        d.setPreDef((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+        item.setOldPropertyValue(d.getPostDef());
+        d.setPostDef((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+        item.setOldPropertyValue(d.getAuthorNotes());
+        d.setAuthorNotes((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+        item.setOldPropertyValue(d.getUsageNotes());
+        d.setUsageNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
+        item.setOldPropertyValue(d.getExt());
+        d.setExt((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Component c = this.findComponentById(d, item.getLocation());
         if (c != null) {
           item.setOldPropertyValue(c.getUsage());
@@ -1107,34 +1114,44 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {    
-    if(datatype.getDomainInfo().getScope().equals(Scope.USER)) {
-      if(datatype instanceof ComplexDatatype) {
-        ComplexDatatype cDT = (ComplexDatatype)datatype;
-        for(Component c : cDT.getComponents()) {
+  public void collectAssoicatedConformanceStatements(Datatype datatype,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDT = (ComplexDatatype) datatype;
+        for (Component c : cDT.getComponents()) {
           Datatype dt = this.findById(c.getRef().getId());
-          if(dt != null){
-            if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
-              if(dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null && dt.getBinding().getConformanceStatementIds().size() > 0) {
-                if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE, dt.getId(), dt.getLabel()));
+          if (dt != null) {
+            if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
+              if (dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null
+                  && dt.getBinding().getConformanceStatementIds().size() > 0) {
+                if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
+                  associatedConformanceStatementMap.put(dt.getLabel(),
+                      new ConformanceStatementsContainer(
+                          this.collectCS(dt.getBinding().getConformanceStatementIds()),
+                          Type.DATATYPE, dt.getId(), dt.getLabel()));
                 this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
               }
-            }            
+            }
           }
 
-        }  
+        }
       }
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt
+   * .datatype.domain.Datatype)
    */
   @Override
   public ResourceBinding makeLocationInfo(Datatype dt) {
-    if(dt instanceof ComplexDatatype && dt.getBinding() != null) {
-      for(StructureElementBinding seb : dt.getBinding().getChildren()){
-        seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype)dt, seb));  
+    if (dt instanceof ComplexDatatype && dt.getBinding() != null) {
+      for (StructureElementBinding seb : dt.getBinding().getChildren()) {
+        seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype) dt, seb));
       }
       return dt.getBinding();
     }
@@ -1147,18 +1164,21 @@ public class DatatypeServiceImpl implements DatatypeService {
    * @return
    */
   @Override
-  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb) {
-    if(dt != null && dt.getComponents() != null) {
-      for(Component c : dt.getComponents()) {
-        if(c.getId().equals(seb.getElementId())){
-          if(seb.getChildren() != null){
-            for(StructureElementBinding childSeb : seb.getChildren()){
+  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt,
+      StructureElementBinding seb) {
+    if (dt != null && dt.getComponents() != null) {
+      for (Component c : dt.getComponents()) {
+        if (c.getId().equals(seb.getElementId())) {
+          if (seb.getChildren() != null) {
+            for (StructureElementBinding childSeb : seb.getChildren()) {
               Datatype childDT = this.findById(c.getRef().getId());
-              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(makeLocationInfoForSubComponent((ComplexDatatype)childDT, childSeb));  
-            }  
+              if (childDT instanceof ComplexDatatype)
+                childSeb.setLocationInfo(
+                    makeLocationInfoForSubComponent((ComplexDatatype) childDT, childSeb));
+            }
           }
-          
-          
+
+
           return new LocationInfo(LocationType.COMPONENT, c.getPosition(), c.getName());
         }
       }
@@ -1171,10 +1191,11 @@ public class DatatypeServiceImpl implements DatatypeService {
    * @param childSeb
    * @return
    */
-  private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt, StructureElementBinding seb) {
-    if(dt != null && dt.getComponents() != null) {
-      for(Component c : dt.getComponents()) {
-        if(c.getId().equals(seb.getElementId())){          
+  private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt,
+      StructureElementBinding seb) {
+    if (dt != null && dt.getComponents() != null) {
+      for (Component c : dt.getComponents()) {
+        if (c.getId().equals(seb.getElementId())) {
           return new LocationInfo(LocationType.SUBCOMPONENT, c.getPosition(), c.getName());
         }
       }

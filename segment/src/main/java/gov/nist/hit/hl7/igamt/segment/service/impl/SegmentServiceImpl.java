@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,9 +32,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -48,7 +45,6 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -111,7 +107,7 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private SegmentRepository segmentRepository;
-  
+
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
 
@@ -129,16 +125,16 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Autowired
   private CodeSystemService codeSystemService;
-  
+
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
-  
+
   @Autowired
   private PredicateRepository predicateRepository;
 
   @Override
   public Segment findById(String key) {
-	Segment segment = this.domainExtention.findById(key, Segment.class);
+    Segment segment = this.domainExtention.findById(key, Segment.class);
     return segment == null ? segmentRepository.findById(key).orElse(null) : segment;
   }
 
@@ -158,8 +154,8 @@ public class SegmentServiceImpl implements SegmentService {
 
   @Override
   public List<Segment> findAll() {
-	return Stream.concat(this.domainExtention.getAll(Segment.class).stream(), segmentRepository.findAll().stream())
-	.collect(Collectors.toList());
+    return Stream.concat(this.domainExtention.getAll(Segment.class).stream(),
+        segmentRepository.findAll().stream()).collect(Collectors.toList());
   }
 
   @Override
@@ -219,12 +215,13 @@ public class SegmentServiceImpl implements SegmentService {
    * @deprecated. Use segment.toStructure()
    */
   @Override
-  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly) {
+  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment,
+      boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     SegmentStructureDisplay result = new SegmentStructureDisplay();
-    result.complete(result, segment, SectionType.STRUCTURE,readOnly);
+    result.complete(result, segment, SectionType.STRUCTURE, readOnly);
     result.setName(segment.getName());
     if (segment.getExt() != null) {
       result.setLabel(segment.getName() + "_" + segment.getExt());
@@ -430,12 +427,10 @@ public class SegmentServiceImpl implements SegmentService {
 
 
 
-
-
   @Override
   public PreDef convertDomainToPredef(Segment segment) {
     if (segment != null) {
-    	
+
       PreDef result = new PreDef();
       result.setId(segment.getId());
       result.setScope(segment.getDomainInfo().getScope());
@@ -602,13 +597,12 @@ public class SegmentServiceImpl implements SegmentService {
     Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
 
-    Link newLink = new Link();
-    newLink.setId(key);
-    elm.setFrom(elm.getId());
+    Link newLink = l.clone(key);
     elm.setId(newLink.getId());
-    updateDependencies(elm, datatypesMap, valuesetsMap, username);
 
+    updateDependencies(elm, datatypesMap, valuesetsMap, username);
     this.save(elm);
+    updateCoConstraint(elm, obj, datatypesMap, valuesetsMap, username);
     return newLink;
 
   }
@@ -633,15 +627,11 @@ public class SegmentServiceImpl implements SegmentService {
       }
     }
     updateBindings(elm.getBinding(), valuesetsMap);
-    updateCoConstraint(elm, datatypesMap, valuesetsMap, username);
-
-
-
   }
 
-  private void updateCoConstraint(Segment elm, HashMap<String, String> datatypesMap,
+  private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> datatypesMap,
       HashMap<String, String> valuesetsMap, String username) throws CoConstraintSaveException {
-    CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(elm.getId());
+    CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
     if (cc != null) {
       CoConstraintTable cc_ =
           coConstraintService.clone(datatypesMap, valuesetsMap, elm.getId(), cc);
@@ -706,26 +696,25 @@ public class SegmentServiceImpl implements SegmentService {
   public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
-    		item.setOldPropertyValue(s.getPreDef());
-    		s.setPreDef((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
-    		item.setOldPropertyValue(s.getPostDef());
-    		s.setPostDef((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-    		item.setOldPropertyValue(s.getAuthorNotes());
-    		s.setAuthorNotes((String)item.getPropertyValue());
-    	}
-    	else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-    		item.setOldPropertyValue(s.getUsageNotes());
-    		s.setUsageNotes((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.EXT)) {
-    		item.setOldPropertyValue(s.getExt());
-    		s.setExt((String)item.getPropertyValue());
-    	}
-    	
-    	else  if (item.getPropertyType().equals(PropertyType.USAGE)) {
+      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+        item.setOldPropertyValue(s.getPreDef());
+        s.setPreDef((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+        item.setOldPropertyValue(s.getPostDef());
+        s.setPostDef((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+        item.setOldPropertyValue(s.getAuthorNotes());
+        s.setAuthorNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+        item.setOldPropertyValue(s.getUsageNotes());
+        s.setUsageNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
+        item.setOldPropertyValue(s.getExt());
+        s.setExt((String) item.getPropertyValue());
+      }
+
+      else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Field f = this.findFieldById(s, item.getLocation());
         if (f != null) {
           item.setOldPropertyValue(f.getUsage());
@@ -1020,10 +1009,12 @@ public class SegmentServiceImpl implements SegmentService {
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
-    
-    
+    if (seb.getPredicateId() != null)
+      bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    bindingDisplay
+        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+
+
     return bindingDisplay;
   }
 
@@ -1189,14 +1180,14 @@ public class SegmentServiceImpl implements SegmentService {
     ids.forEach(id -> results.add(new ObjectId(id)));
     return results;
   }
-  
+
   private SegmentSelectItem createItem(Segment seg) {
     // TODO Auto-generated method stub
-    SegmentSelectItem item = new SegmentSelectItem(seg.getLabel(),this.createSegmentLabel(seg));
+    SegmentSelectItem item = new SegmentSelectItem(seg.getLabel(), this.createSegmentLabel(seg));
     return item;
-    
-}
-  
+
+  }
+
   private SegmentLabel createSegmentLabel(Segment seg) {
     SegmentLabel label = new SegmentLabel();
     label.setDomainInfo(seg.getDomainInfo());
@@ -1245,39 +1236,50 @@ public class SegmentServiceImpl implements SegmentService {
   }
 
   @Override
-  public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
-    if(segment.getDomainInfo().getScope().equals(Scope.USER)) {
-      for(Field f : segment.getChildren()) {
+  public void collectAssoicatedConformanceStatements(Segment segment,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if (segment.getDomainInfo().getScope().equals(Scope.USER)) {
+      for (Field f : segment.getChildren()) {
         Datatype dt = this.datatypeService.findById(f.getRef().getId());
-        if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
-          if(dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null && dt.getBinding().getConformanceStatementIds().size() > 0) {
-            if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE, dt.getId(), dt.getLabel()));
-            this.datatypeService.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
+        if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
+          if (dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null
+              && dt.getBinding().getConformanceStatementIds().size() > 0) {
+            if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
+              associatedConformanceStatementMap.put(dt.getLabel(),
+                  new ConformanceStatementsContainer(
+                      this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE,
+                      dt.getId(), dt.getLabel()));
+            this.datatypeService.collectAssoicatedConformanceStatements(dt,
+                associatedConformanceStatementMap);
           }
         }
-      }      
-    }    
+      }
+    }
   }
-  
+
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if(conformanceStatementIds != null){
-      for(String id : conformanceStatementIds){
+    if (conformanceStatementIds != null) {
+      for (String id : conformanceStatementIds) {
         result.add(this.conformanceStatementRepository.findById(id).get());
       }
     }
-    
+
     return result;
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#makeLocationInfo(gov.nist.hit.hl7.igamt.segment.domain.Segment)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.segment.service.SegmentService#makeLocationInfo(gov.nist.hit.hl7.igamt.
+   * segment.domain.Segment)
    */
   @Override
   public ResourceBinding makeLocationInfo(Segment s) {
-    if(s.getBinding() != null) {
-      for(StructureElementBinding seb : s.getBinding().getChildren()){
-        seb.setLocationInfo(makeLocationInfoForField(s, seb));  
+    if (s.getBinding() != null) {
+      for (StructureElementBinding seb : s.getBinding().getChildren()) {
+        seb.setLocationInfo(makeLocationInfoForField(s, seb));
       }
       return s.getBinding();
     }
@@ -1291,14 +1293,16 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb) {
-    if(s != null && s.getChildren() != null) {
-      for(Field f : s.getChildren()) {
-        if(f.getId().equals(seb.getElementId())){
-          if(seb.getChildren() != null) {
-            for(StructureElementBinding childSeb : seb.getChildren()){
+    if (s != null && s.getChildren() != null) {
+      for (Field f : s.getChildren()) {
+        if (f.getId().equals(seb.getElementId())) {
+          if (seb.getChildren() != null) {
+            for (StructureElementBinding childSeb : seb.getChildren()) {
               Datatype childDT = this.datatypeService.findById(f.getRef().getId());
-              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(this.datatypeService.makeLocationInfoForComponent((ComplexDatatype)childDT, childSeb));  
-            }            
+              if (childDT instanceof ComplexDatatype)
+                childSeb.setLocationInfo(this.datatypeService
+                    .makeLocationInfoForComponent((ComplexDatatype) childDT, childSeb));
+            }
           }
           return new LocationInfo(LocationType.FIELD, f.getPosition(), f.getName());
         }

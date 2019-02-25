@@ -22,15 +22,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -68,7 +65,6 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.GroupStructureTr
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentRefDisplayModel;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.SegmentRefStructureTreeModel;
-import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
@@ -84,8 +80,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.ComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DisplayValuesetBinding;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -119,10 +113,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
   @Autowired
   ValuesetService valuesetService;
-  
+
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
-  
+
   @Autowired
   private PredicateRepository predicateRepository;
 
@@ -246,7 +240,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setMessageType(conformanceProfile.getMessageType());
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
-     // result.setAuthorNotes(conformanceProfile.getComment());
+      // result.setAuthorNotes(conformanceProfile.getComment());
       return result;
     }
     return null;
@@ -309,11 +303,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       result.setName(conformanceProfile.getName());
       result.setStructId(conformanceProfile.getStructID());
       result.setType(Type.CONFORMANCEPROFILE);
-      result.setAssociatedDTConformanceStatementMap(new HashMap<String, ConformanceStatementsContainer>());
-      result.setAssociatedSEGConformanceStatementMap(new HashMap<String, ConformanceStatementsContainer>());
-      result.setStructure(this.convertDomainToContextStructure(conformanceProfile, result.getAssociatedSEGConformanceStatementMap(), result.getAssociatedDTConformanceStatementMap()).getChildren());
-      Set<ConformanceStatement> cfs= new HashSet<ConformanceStatement>();
-      if(conformanceProfile.getBinding()!=null) {
+      result.setAssociatedDTConformanceStatementMap(
+          new HashMap<String, ConformanceStatementsContainer>());
+      result.setAssociatedSEGConformanceStatementMap(
+          new HashMap<String, ConformanceStatementsContainer>());
+      result.setStructure(this.convertDomainToContextStructure(conformanceProfile,
+          result.getAssociatedSEGConformanceStatementMap(),
+          result.getAssociatedDTConformanceStatementMap()).getChildren());
+      Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
+      if (conformanceProfile.getBinding() != null) {
         cfs = this.collectCS(conformanceProfile.getBinding().getConformanceStatementIds());
       }
       result.setConformanceStatements(cfs);
@@ -321,18 +319,18 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     return null;
   }
-  
+
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if(conformanceStatementIds != null){
-      for(String id : conformanceStatementIds){
+    if (conformanceStatementIds != null) {
+      for (String id : conformanceStatementIds) {
         result.add(this.conformanceStatementRepository.findById(id).get());
       }
     }
-    
+
     return result;
   }
-  
+
   private void validateMsgStructElement(MsgStructElement f) throws ValidationException {
     if (f instanceof SegmentRef) {
       validateSegmentRef((SegmentRef) f);
@@ -542,18 +540,19 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     result.setType(Type.CONFORMANCEPROFILE);
     return result;
   }
-  
-  
+
+
   @Override
-  public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly) {
+  public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(
+      ConformanceProfile conformanceProfile, String contextId, boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
     HashMap<String, Segment> segmentsMap = new HashMap<String, Segment>();
 
     ConformanceProfileStructureDisplay result = new ConformanceProfileStructureDisplay();
     result.complete(result, conformanceProfile, SectionType.STRUCTURE, readOnly);
-    
-    Group g = this.findGroup(conformanceProfile.getChildren(), contextId);    
+
+    Group g = this.findGroup(conformanceProfile.getChildren(), contextId);
     String label = g.getName();
     result.setLabel(label);
     if (g.getChildren() != null && g.getChildren().size() > 0) {
@@ -580,13 +579,15 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    */
   private Group findGroup(Set<SegmentRefOrGroup> list, String contextId) {
     String[] splits = contextId.split("\\-");
-    
+
     for (SegmentRefOrGroup sog : list) {
-      if(sog instanceof Group){
-        Group g = (Group)sog;
-        if(g.getId().equals(splits[0])){
-          if(splits.length > 1) return findGroup(g.getChildren(), contextId.replaceAll( splits[0] + "-", ""));
-          else return g;  
+      if (sog instanceof Group) {
+        Group g = (Group) sog;
+        if (g.getId().equals(splits[0])) {
+          if (splits.length > 1)
+            return findGroup(g.getChildren(), contextId.replaceAll(splits[0] + "-", ""));
+          else
+            return g;
         }
       }
 
@@ -626,7 +627,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             FieldStructureTreeModel fieldStructureTreeModel = new FieldStructureTreeModel();
             FieldDisplayDataModel fModel = new FieldDisplayDataModel(f);
             fModel.setViewScope(ViewScope.SEGMENT);
-            fModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-"+ f.getId());
+            fModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId());
             fModel.setPath(f.getPosition() + "");
             fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
             StructureElementBinding childChildSeb =
@@ -652,7 +653,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                         new ComponentStructureTreeModel();
                     ComponentDisplayDataModel cModel = new ComponentDisplayDataModel(c);
                     cModel.setViewScope(ViewScope.SEGMENT);
-                    cModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId() + "-" + c.getId());
+                    cModel.setIdPath(
+                        segmentRefDisplayModel.getIdPath() + "-" + f.getId() + "-" + c.getId());
                     cModel.setPath(f.getPosition() + "-" + c.getPosition());
                     cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
                     StructureElementBinding childChildChildSeb =
@@ -685,7 +687,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
                             SubComponentDisplayDataModel scModel =
                                 new SubComponentDisplayDataModel(sc);
                             scModel.setViewScope(ViewScope.SEGMENT);
-                            scModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId() + "-" + c.getId() + "-" + sc.getId());
+                            scModel.setIdPath(segmentRefDisplayModel.getIdPath() + "-" + f.getId()
+                                + "-" + c.getId() + "-" + sc.getId());
                             scModel.setPath(
                                 f.getPosition() + "-" + c.getPosition() + "-" + sc.getPosition());
                             scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
@@ -824,8 +827,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+    if (seb.getPredicateId() != null)
+      bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    bindingDisplay
+        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
   }
 
@@ -917,41 +922,42 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
-    		item.setOldPropertyValue(cp.getPreDef());
-    		cp.setPreDef((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
-    		item.setOldPropertyValue(cp.getPostDef());
-    		cp.setPostDef((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-    		item.setOldPropertyValue(cp.getAuthorNotes());
-    		cp.setAuthorNotes((String)item.getPropertyValue());
-    	}
-    	else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-    		item.setOldPropertyValue(cp.getUsageNotes());
-    		cp.setUsageNotes((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.INDENTIFIER)) {
-    		item.setOldPropertyValue(cp.getIdentifier());
-    		cp.setIdentifier((String)item.getPropertyValue());
-    	}
-    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+        item.setOldPropertyValue(cp.getPreDef());
+        cp.setPreDef((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+        item.setOldPropertyValue(cp.getPostDef());
+        cp.setPostDef((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+        item.setOldPropertyValue(cp.getAuthorNotes());
+        cp.setAuthorNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+        item.setOldPropertyValue(cp.getUsageNotes());
+        cp.setUsageNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.INDENTIFIER)) {
+        item.setOldPropertyValue(cp.getIdentifier());
+        cp.setIdentifier((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null) {
           item.setOldPropertyValue(srog.getUsage());
           srog.setUsage(Usage.valueOf((String) item.getPropertyValue()));
         }
       } else if (item.getPropertyType().equals(PropertyType.SEGMENTREF)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null && srog instanceof SegmentRef) {
-          SegmentRef sr = (SegmentRef)srog;
+          SegmentRef sr = (SegmentRef) srog;
           item.setOldPropertyValue(sr.getRef());
           ObjectMapper mapper = new ObjectMapper();
           String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
           sr.setRef(mapper.readValue(jsonInString, Ref.class));
         }
       } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMIN)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null) {
           item.setOldPropertyValue(srog.getMin());
           if (item.getPropertyValue() == null) {
@@ -961,7 +967,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           }
         }
       } else if (item.getPropertyType().equals(PropertyType.CARDINALITYMAX)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null) {
           item.setOldPropertyValue(srog.getMax());
           if (item.getPropertyValue() == null) {
@@ -974,13 +981,17 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         System.out.println(item);
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
         item.setOldPropertyValue(seb.getValuesetBindings());
-        seb.setValuesetBindings(this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
+        seb.setValuesetBindings(
+            this.convertDisplayValuesetBinding(new HashSet<DisplayValuesetBinding>(
+                Arrays.asList(mapper.readValue(jsonInString, DisplayValuesetBinding[].class)))));
       } else if (item.getPropertyType().equals(PropertyType.SINGLECODE)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
         item.setOldPropertyValue(seb.getExternalSingleCode());
         seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
       } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
@@ -993,7 +1004,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           seb.setConstantValue((String) item.getPropertyValue());
         }
       } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
-        SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
         if (srog != null) {
           item.setOldPropertyValue(srog.getText());
           if (item.getPropertyValue() == null) {
@@ -1030,23 +1042,27 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     cp.setBinding(this.makeLocationInfo(cp));
     this.save(cp);
   }
-  
+
   /**
    * @param children
    * @param location
    * @return
    */
-  private SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children, String idPath) {
+  private SegmentRefOrGroup findSegmentRefOrGroupById(Set<SegmentRefOrGroup> children,
+      String idPath) {
     if (idPath.contains("-")) {
-      for(SegmentRefOrGroup srog : children){
-        if(srog instanceof Group){
-          Group g = (Group)srog;
-          if(srog.getId().equals(idPath.split("\\-")[0])) return this.findSegmentRefOrGroupById(g.getChildren(), idPath.replace(idPath.split("\\-")[0] + "-", ""));          
+      for (SegmentRefOrGroup srog : children) {
+        if (srog instanceof Group) {
+          Group g = (Group) srog;
+          if (srog.getId().equals(idPath.split("\\-")[0]))
+            return this.findSegmentRefOrGroupById(g.getChildren(),
+                idPath.replace(idPath.split("\\-")[0] + "-", ""));
         }
       }
-    }else{
-      for(SegmentRefOrGroup srog : children){
-        if(srog.getId().equals(idPath)) return srog;
+    } else {
+      for (SegmentRefOrGroup srog : children) {
+        if (srog.getId().equals(idPath))
+          return srog;
       }
     }
     return null;
@@ -1064,7 +1080,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       cp.getBinding().getConformanceStatementIds().remove(toBeDeleted);
     return toBeDeleted;
   }
-  
+
   private Set<ValuesetBinding> convertDisplayValuesetBinding(
       HashSet<DisplayValuesetBinding> displayValuesetBindings) {
     if (displayValuesetBindings != null) {
@@ -1080,8 +1096,9 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     return null;
   }
-  
-  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(ConformanceProfile cp, String location) {
+
+  private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
+      ConformanceProfile cp, String location) {
     if (cp.getBinding() == null) {
       ResourceBinding binding = new ResourceBinding();
       binding.setElementId(cp.getId());
@@ -1089,7 +1106,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
     return this.findAndCreateStructureElementBindingByIdPath(cp.getBinding(), location);
   }
-  
+
   private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
       ResourceBinding binding, String location) {
     if (binding.getChildren() == null) {
@@ -1129,7 +1146,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
   }
-  
+
   private StructureElementBinding findAndCreateStructureElementBindingByIdPath(
       StructureElementBinding binding, String location) {
     if (binding.getChildren() == null) {
@@ -1170,29 +1187,42 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#convertDomainToContextStructure(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#
+   * convertDomainToContextStructure(gov.nist.hit.hl7.igamt.conformanceprofile.domain.
+   * ConformanceProfile)
    */
   @Override
-  public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap, HashMap<String, ConformanceStatementsContainer> dtMap) {
+  public ConformanceProfileStructureTreeModel convertDomainToContextStructure(
+      ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap,
+      HashMap<String, ConformanceStatementsContainer> dtMap) {
     ConformanceProfileStructureTreeModel result = new ConformanceProfileStructureTreeModel();
     result.setData(new ConformanceProfileDisplayModel(conformanceProfile));
 
     if (conformanceProfile.getChildren() != null && conformanceProfile.getChildren().size() > 0) {
       for (SegmentRefOrGroup sog : conformanceProfile.getChildren()) {
         if (sog instanceof SegmentRef) {
-          SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
-          SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)sog);
+          SegmentRefStructureTreeModel segmentRefStructureTreeModel =
+              new SegmentRefStructureTreeModel();
+          SegmentRefDisplayModel segmentRefDisplayModel =
+              new SegmentRefDisplayModel((SegmentRef) sog);
           Segment s = this.segmentService.findById(((SegmentRef) sog).getRef().getId());
-          
-          if(s.getDomainInfo().getScope().equals(Scope.USER)) {
-            if(s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null && s.getBinding().getConformanceStatementIds().size() > 0) {
-              if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT, s.getId(), s.getLabel()));
+
+          if (s.getDomainInfo().getScope().equals(Scope.USER)) {
+            if (s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null
+                && s.getBinding().getConformanceStatementIds().size() > 0) {
+              if (!segMap.containsKey(s.getLabel()))
+                segMap.put(s.getLabel(),
+                    new ConformanceStatementsContainer(
+                        this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT,
+                        s.getId(), s.getLabel()));
             }
-            
+
             this.segmentService.collectAssoicatedConformanceStatements(s, dtMap);
           }
-          
+
           segmentRefDisplayModel.setName(s.getName());
           segmentRefDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
           segmentRefDisplayModel.setPath("1-" + sog.getPosition());
@@ -1200,7 +1230,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           result.addChild(segmentRefStructureTreeModel);
         } else if (sog instanceof Group) {
           GroupStructureTreeModel groupStructureTreeModel = new GroupStructureTreeModel();
-          GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)sog);
+          GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group) sog);
           groupDisplayModel.setIdPath(conformanceProfile.getId() + "-" + sog.getId());
           groupDisplayModel.setPath("1-" + sog.getPosition());
           updateChild(groupStructureTreeModel, groupDisplayModel, sog, segMap, dtMap);
@@ -1213,53 +1243,66 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   }
 
   /**
-   * @param map 
+   * @param map
    * @param groupStructureTreeModel
    * @param groupDisplayModel
    * @param sog
    */
   private void updateChild(GroupStructureTreeModel parentStructureTreeModel,
-      GroupDisplayModel parentDisplayModel, SegmentRefOrGroup parent, HashMap<String, ConformanceStatementsContainer> segMap , HashMap<String, ConformanceStatementsContainer> dtMap) {
-    for(SegmentRefOrGroup child : ((Group)parent).getChildren()){
-      if(child instanceof Group){
+      GroupDisplayModel parentDisplayModel, SegmentRefOrGroup parent,
+      HashMap<String, ConformanceStatementsContainer> segMap,
+      HashMap<String, ConformanceStatementsContainer> dtMap) {
+    for (SegmentRefOrGroup child : ((Group) parent).getChildren()) {
+      if (child instanceof Group) {
         GroupStructureTreeModel groupStructureTreeModel = new GroupStructureTreeModel();
-        GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group)child);
+        GroupDisplayModel groupDisplayModel = new GroupDisplayModel((Group) child);
         groupDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
         groupDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());
         updateChild(groupStructureTreeModel, groupDisplayModel, child, segMap, dtMap);
         groupStructureTreeModel.setData(groupDisplayModel);
         parentStructureTreeModel.addGroup(groupStructureTreeModel);
-      }else if(child instanceof SegmentRef){
-        SegmentRefStructureTreeModel segmentRefStructureTreeModel = new SegmentRefStructureTreeModel();
-        SegmentRefDisplayModel segmentRefDisplayModel = new SegmentRefDisplayModel((SegmentRef)child);
+      } else if (child instanceof SegmentRef) {
+        SegmentRefStructureTreeModel segmentRefStructureTreeModel =
+            new SegmentRefStructureTreeModel();
+        SegmentRefDisplayModel segmentRefDisplayModel =
+            new SegmentRefDisplayModel((SegmentRef) child);
         Segment s = this.segmentService.findById(((SegmentRef) child).getRef().getId());
-        
-        if(s.getDomainInfo().getScope().equals(Scope.USER)) {
-          if(s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null && s.getBinding().getConformanceStatementIds().size() > 0) {
-            if(!segMap.containsKey(s.getLabel())) segMap.put(s.getLabel(), new ConformanceStatementsContainer(this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT, s.getId(), s.getLabel()));
+
+        if (s.getDomainInfo().getScope().equals(Scope.USER)) {
+          if (s.getBinding() != null && s.getBinding().getConformanceStatementIds() != null
+              && s.getBinding().getConformanceStatementIds().size() > 0) {
+            if (!segMap.containsKey(s.getLabel()))
+              segMap.put(s.getLabel(),
+                  new ConformanceStatementsContainer(
+                      this.collectCS(s.getBinding().getConformanceStatementIds()), Type.SEGMENT,
+                      s.getId(), s.getLabel()));
           }
-          
+
           this.segmentService.collectAssoicatedConformanceStatements(s, dtMap);
         }
-        
+
         segmentRefDisplayModel.setName(s.getName());
         segmentRefDisplayModel.setIdPath(parentDisplayModel.getIdPath() + "-" + child.getId());
         segmentRefDisplayModel.setPath(parentDisplayModel.getPath() + "-" + child.getPosition());
         segmentRefStructureTreeModel.setData(segmentRefDisplayModel);
-        parentStructureTreeModel.addSegment(segmentRefStructureTreeModel);        
+        parentStructureTreeModel.addSegment(segmentRefStructureTreeModel);
       }
     }
-    
+
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#makeLocationInfo(gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#makeLocationInfo(
+   * gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile)
    */
   @Override
   public ResourceBinding makeLocationInfo(ConformanceProfile cp) {
-    if(cp.getBinding() != null) {
-      for(StructureElementBinding seb : cp.getBinding().getChildren()){
-        seb.setLocationInfo(makeLocationInfoForGroupOrSegRef(cp.getChildren(), seb));  
+    if (cp.getBinding() != null && cp.getBinding().getChildren() != null) {
+      for (StructureElementBinding seb : cp.getBinding().getChildren()) {
+        seb.setLocationInfo(makeLocationInfoForGroupOrSegRef(cp.getChildren(), seb));
       }
       return cp.getBinding();
     }
@@ -1271,25 +1314,27 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param seb
    * @return
    */
-  private LocationInfo makeLocationInfoForGroupOrSegRef(Set<SegmentRefOrGroup> list, StructureElementBinding seb) {
-    if(list != null) {
-      for(SegmentRefOrGroup sg : list) {
-        if(sg.getId().equals(seb.getElementId())){
-          if(sg instanceof Group){
-            if(seb.getChildren() != null) {
-              for(StructureElementBinding childSeb : seb.getChildren()){
-                childSeb.setLocationInfo(this.makeLocationInfoForGroupOrSegRef( ((Group) sg).getChildren(), childSeb));  
-              }  
+  private LocationInfo makeLocationInfoForGroupOrSegRef(Set<SegmentRefOrGroup> list,
+      StructureElementBinding seb) {
+    if (list != null) {
+      for (SegmentRefOrGroup sg : list) {
+        if (sg.getId().equals(seb.getElementId())) {
+          if (sg instanceof Group) {
+            if (seb.getChildren() != null) {
+              for (StructureElementBinding childSeb : seb.getChildren()) {
+                childSeb.setLocationInfo(
+                    this.makeLocationInfoForGroupOrSegRef(((Group) sg).getChildren(), childSeb));
+              }
             }
-            return new LocationInfo(LocationType.GROUP, sg.getPosition(), sg.getName());            
-          }else if (sg instanceof SegmentRef){
-            Segment s = this.segmentService.findById(((SegmentRef)sg).getRef().getId());
-            if(seb.getChildren() != null) {
-              for(StructureElementBinding childSeb : seb.getChildren()){
-                childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));  
-              }  
+            return new LocationInfo(LocationType.GROUP, sg.getPosition(), sg.getName());
+          } else if (sg instanceof SegmentRef) {
+            Segment s = this.segmentService.findById(((SegmentRef) sg).getRef().getId());
+            if (seb.getChildren() != null) {
+              for (StructureElementBinding childSeb : seb.getChildren()) {
+                childSeb.setLocationInfo(this.segmentService.makeLocationInfoForField(s, childSeb));
+              }
             }
-            return new LocationInfo(LocationType.SEGREF, sg.getPosition(), s.getLabel());     
+            return new LocationInfo(LocationType.SEGREF, sg.getPosition(), s.getLabel());
           }
         }
       }
