@@ -8,10 +8,10 @@ import {TocService} from "../service/toc.service";
 import {MessageService} from "primeng/components/common/messageservice";
 import {HasFroala} from "../../../configuration/has-froala";
 @Component({
-  templateUrl: './igdocument-metadata.component.html'
+  templateUrl: './igdocument-conformancestatement.component.html'
 })
 
-export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,WithSave{
+export class IgDocumentConformanceStatementComponent extends HasFroala implements OnInit ,WithSave{
 
   metaData:any;
   backup:any;
@@ -27,9 +27,10 @@ export class IgDocumentMetadataComponent extends HasFroala implements OnInit ,Wi
   }
 
   ngOnInit() {
-    this.sp.data.map(data =>data.metadata).subscribe(x=>{
-      this.metaData= x;
-      this.backup=_.cloneDeep(this.metaData);
+    this.sp.data.map(data =>data.igcs).subscribe(x => {
+      console.log(x);
+      // this.metaData= x;
+      // this.backup=_.cloneDeep(this.metaData);
     });
   }
 

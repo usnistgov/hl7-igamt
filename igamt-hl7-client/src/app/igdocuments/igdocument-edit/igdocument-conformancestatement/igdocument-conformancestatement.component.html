@@ -1,0 +1,12 @@
+
+<form  #editForm="ngForm" novalidate>
+
+  <div class="ui-g-12"  style="margin-bottom: 30px;float:right">
+    <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
+    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
+  </div>
+
+  <div class="ui-g-12">
+    IG Document Conformance Statement
+  </div>
+</form>

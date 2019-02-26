@@ -39,6 +39,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -617,13 +618,14 @@ public class IgServiceImpl implements IgService {
     HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     
-    for(Link link : igdoument.getConformanceProfileRegistry().getChildren()){
-      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
-      if(cp.getBinding() != null && cp.getBinding().getConformanceStatementIds() != null && cp.getBinding().getConformanceStatementIds().size() > 0){
-        associatedMSGConformanceStatementMap.put(cp.getIdentifier(), new ConformanceStatementsContainer(this.collectCS(cp.getBinding().getConformanceStatementIds()), Type.CONFORMANCEPROFILE, link.getId(), cp.getIdentifier()));
-      }
-      this.conformanceProfileService.convertDomainToContextStructure(cp, associatedSEGConformanceStatementMap, associatedDTConformanceStatementMap);
+    
+    Set<ConformanceStatement> allIGCSs = this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
+    for(ConformanceStatement cs : allIGCSs) {
+      System.out.println(cs);
+      associatedSEGConformanceStatementMap.put("AAAA", new ConformanceStatementsContainer());
+      
     }
+    
     
     IgDocumentConformanceStatement igDocumentConformanceStatement = new IgDocumentConformanceStatement();
     igDocumentConformanceStatement.setAssociatedDTConformanceStatementMap(associatedDTConformanceStatementMap);

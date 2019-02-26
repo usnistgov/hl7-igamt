@@ -2,6 +2,7 @@ import {NgModule, CUSTOM_ELEMENTS_SCHEMA}     from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {IgDocumentEditComponent} from './igdocument-edit.component';
 import {IgDocumentMetadataComponent} from './igdocument-metadata/igdocument-metadata.component';
+import {IgDocumentConformanceStatementComponent} from './igdocument-conformancestatement/igdocument-conformancestatement.component';
 import {SectionComponent} from './section/section.component';
 import {IgDocumentEditRoutingModule} from './igdocument-edit-routing.module';
 import {AccordionModule, ButtonModule, TabViewModule, GrowlModule} from 'primeng/primeng';
@@ -27,6 +28,7 @@ import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import {PanelMenuModule} from 'primeng/panelmenu';
 import { ToolbarModule } from 'primeng/primeng';
 import {IgMetaDataResolver} from "./igdocument-metadata/IgMetaDataResolver.resolver";
+import {IgConformancestatementResolver} from "./igdocument-conformancestatement/igConformancestatementResolver.resolver";
 import {FileUploadModule} from "primeng/components/fileupload/fileupload";
 import {SegmentEditModule} from "./segment-edit/segment-edit.module";
 import {DatatypeEditModule} from "./datatype-edit/datatype-edit.module";
@@ -107,14 +109,23 @@ import {SidebarModule} from 'primeng/sidebar';
   ],
 	declarations: [
 		IgDocumentEditComponent,
-    IgDocumentMetadataComponent,
-    SectionComponent, TocComponent, AddConformanceProfileComponent, AddSegmentComponent, AddDatatypeComponent, AddValueSetComponent, CopyElementComponent, IgErrorComponent, DeleteElementComponent
+        IgDocumentMetadataComponent,
+        IgDocumentConformanceStatementComponent,
+        SectionComponent,
+        TocComponent,
+        AddConformanceProfileComponent,
+        AddSegmentComponent,
+        AddDatatypeComponent,
+        AddValueSetComponent,
+        CopyElementComponent,
+        IgErrorComponent,
+        DeleteElementComponent
   ],
   entryComponents: [
 
   ],
   providers : [
-      ConstraintsService, TocService, TreeDragDropService, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver,SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
+      ConstraintsService, TocService, TreeDragDropService, IgConformancestatementResolver, IgdocumentEditResolver, SectionResolver, IgMetaDataResolver , SaveFormsGuard,ConfirmationService, IgDocumentAddingService,ExportService,CopyService,IgDocumentService, IgErrorService,IgErrorResolver, LoadingService,DeleteElementService
   ],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
