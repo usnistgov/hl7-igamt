@@ -437,7 +437,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     ConformanceProfile old = this.findById(l.getId());
     ConformanceProfile elm = old.clone();
     Link newLink = l.clone(key);
-    updateDependencies(elm, segmentsMap, valuesetsMap);
+    updateDependencies(elm,valuesetsMap,segmentsMap);
     elm.setId(newLink.getId());
     elm.setUsername(username);
     this.save(elm);
@@ -449,8 +449,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    * @param datatypesMap
    * @param valuesetsMap
    */
-  private void updateDependencies(ConformanceProfile elm, HashMap<String, String> segmentsMap,
-      HashMap<String, String> valuesetsMap) {
+  private void updateDependencies(ConformanceProfile elm,
+      HashMap<String, String> valuesetsMap, HashMap<String, String> segmentsMap) {
     // TODO Auto-generated method stub
 
     updateBindings(elm.getBinding(), valuesetsMap);
@@ -484,17 +484,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   private void processCp(ConformanceProfile cp, HashMap<String, String> segmentsMap) {
     // TODO Auto-generated method stub
     for (MsgStructElement segOrgroup : cp.getChildren()) {
-      if (segOrgroup instanceof SegmentRef) {
-        SegmentRef ref = (SegmentRef) segOrgroup;
-        if (ref.getRef() != null && ref.getRef().getId() != null) {
-          if (segmentsMap.containsKey(ref.getRef().getId())) {
-            ref.setId(segmentsMap.get(ref.getRef().getId()));
-          }
-        }
-      } else {
         processSegmentorGroup(segOrgroup, segmentsMap);
       }
-    }
 
   }
 
@@ -505,7 +496,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       SegmentRef ref = (SegmentRef) segOrgroup;
       if (ref.getRef() != null && ref.getRef().getId() != null) {
         if (segmentsMap.containsKey(ref.getRef().getId())) {
-          ref.setId(segmentsMap.get(ref.getRef().getId()));
+            ref.getRef().setId(segmentsMap.get(ref.getRef().getId()));
         }
 
       }
@@ -1096,7 +1087,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
         item.setOldPropertyValue(cp.getUsageNotes());
         cp.setUsageNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.INDENTIFIER)) {
+      } else if (item.getPropertyType().equals(PropertyType.IDENTIFIER)) {
         item.setOldPropertyValue(cp.getIdentifier());
         cp.setIdentifier((String) item.getPropertyValue());
       } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
