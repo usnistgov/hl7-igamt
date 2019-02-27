@@ -82,8 +82,8 @@ public interface SegmentService extends ResourceService {
 
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
-  public Link cloneSegment(String compositeKey, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username)
+  public Link cloneSegment(String compositeKey,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+       Link l, String username)
       throws CoConstraintSaveException;
 
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)

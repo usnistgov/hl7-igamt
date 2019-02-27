@@ -10,7 +10,7 @@ public interface CoConstraintService {
 
   public CoConstraintTable getCoConstraintForSegment(String id);
 
-  public CoConstraintTable clone(Map<String, String> datatypes, Map<String, String> valueSets,
+  public CoConstraintTable clone(Map<String, String> valueSets,Map<String, String> datatypes, 
       String segmentId, CoConstraintTable cc);
 
   public Map<String, String> references(CoConstraintTable cc);
