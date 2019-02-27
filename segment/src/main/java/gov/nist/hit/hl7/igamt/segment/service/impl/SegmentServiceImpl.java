@@ -639,7 +639,7 @@ public class SegmentServiceImpl implements SegmentService {
 
     Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
-
+    elm.setOrigin(elm.getFrom());
     Link newLink = l.clone(key);
     elm.setId(newLink.getId());
 

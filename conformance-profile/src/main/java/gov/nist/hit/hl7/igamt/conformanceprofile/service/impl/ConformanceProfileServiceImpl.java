@@ -436,6 +436,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       HashMap<String, String> segmentsMap, Link l, String username) {
     ConformanceProfile old = this.findById(l.getId());
     ConformanceProfile elm = old.clone();
+    elm.setOrigin(elm.getFrom());
     Link newLink = l.clone(key);
     updateDependencies(elm,valuesetsMap,segmentsMap);
     elm.setId(newLink.getId());
