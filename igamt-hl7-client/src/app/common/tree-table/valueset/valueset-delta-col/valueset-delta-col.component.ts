@@ -40,9 +40,12 @@ export class ValuesetDeltaColComponent implements OnInit {
     if (this.bindings) {
       for (var i in this.bindings) {
         if (this.bindings[i].valuesetBindings && this.bindings[i].valuesetBindings.length > 0) {
-          if (!this.currentBindings) this.currentBindings = __.cloneDeep(this.bindings[i]);
-          else {
-            if (this.currentBindings.priority > this.bindings[i].priority) this.currentBindings = __.cloneDeep(this.bindings[i]);
+          if (!this.currentBindings) {
+            this.currentBindings = __.cloneDeep(this.bindings[i]);
+          } else {
+            if (this.currentBindings.priority > this.bindings[i].priority) {
+              this.currentBindings = __.cloneDeep(this.bindings[i]);
+            }
           }
         }
       }

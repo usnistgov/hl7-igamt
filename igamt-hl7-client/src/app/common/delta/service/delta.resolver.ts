@@ -21,7 +21,7 @@ export  class DeltaResolver implements Resolve<EntityDelta> {
           this.expand(entityDelta.delta.structure);
           entityDelta.delta.structure = this.filterUnchanged(entityDelta.delta.structure);
           entityDelta.delta.structure = this.configService.arraySortByPosition(entityDelta.delta.structure, (item) => {
-            return item['_.deltakey']['data.position'];
+            return +item['_.deltakey']['data.position'];
           });
           return entityDelta;
         })
