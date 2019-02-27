@@ -14,7 +14,7 @@ export class AddDatatypeComponent extends PrimeDialogAdapter {
 
 
   hl7Versions: any[];
-  id="";
+  id = "";
   sources: any;
   dest: any[] = [];
   namingIndicators = [];

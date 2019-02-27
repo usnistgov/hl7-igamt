@@ -373,8 +373,8 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public Link cloneDatatype(HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username) {
+  public Link cloneDatatype(HashMap<String, String> valuesetsMap,
+      HashMap<String, String> datatypesMap, Link l, String username) {
     // TODO Auto-generated method stub
 
     Datatype old = this.findById(l.getId());
@@ -383,8 +383,6 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-
-
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
       datatypesMap.put(l.getId(), newKey);
@@ -398,8 +396,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
 
-  private void updateDependencies(Datatype elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap) {
+  private void updateDependencies(Datatype elm, HashMap<String, String> valuesetsMap ,
+      HashMap<String, String> datatypesMap) {
     // TODO Auto-generated method stub
 
     if (elm instanceof ComplexDatatype) {
