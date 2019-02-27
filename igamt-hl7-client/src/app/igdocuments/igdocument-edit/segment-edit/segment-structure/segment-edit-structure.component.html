@@ -1,7 +1,7 @@
 <div *ngIf="segmentStructure">
     <form #editForm="ngForm">
 
-      <entity-header [elm]="segmentStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()" [differential]="diff?.diffable" [diffToggled]="false" ></entity-header>
+      <entity-header [elm]="segmentStructure"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()" [differential]="diffable" [diffToggled]="false" ></entity-header>
 
       <div class="section-content">
       <p-treeTable *ngIf="!segmentStructure.readOnly" [value]="segmentStructure.structure" [scrollable]="true"  [columns]="selectedColumns" [style]="{width:'100%'}"  scrollHeight="600px">

@@ -16,6 +16,6 @@
   <div class="ui-g-4" >
     <button  *ngIf="!elm.readOnly" style="float:right" (click)="saveParent()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="!hasChanged || !canSave"></button>
     <button  *ngIf="!elm.readOnly" style="float:right" (click)="resetParent()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="!hasChanged" ></button>
-    <button  [disabled]="hasChanged" style="float:right" *ngIf="_delta" [label]="_differential ? 'Structure' : 'Differential'" [class]="_differential ? 'green-btn' : ''" (click)="toggle()" pButton type="button" ></button>
+    <button  [disabled]="hasChanged" style="float:right" [icon]="_differential ? 'fa fa-table' : ''" *ngIf="_delta" [label]="_differential ? 'Structure' : 'Differential'" [class]="_differential ? 'green-btn' : ''" (click)="toggle()" pButton type="button" ></button>
   </div>
 </div>

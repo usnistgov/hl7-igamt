@@ -27,6 +27,7 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
     changeItems:any[]=[];
     backup:any;
     diff: DiffableResult;
+    diffable: boolean;
 
     @ViewChild('editForm')
     private editForm: NgForm;
@@ -52,6 +53,7 @@ export class ConformanceprofileEditStructureComponent extends HasFroala implemen
             this.delta.diffable('CONFORMANCEPROFILE', this.igId, x.from, this.conformanceprofileId).subscribe(
               diffData => this.diff = diffData
             );
+            this.diffable = !!x.origin;
             this.conformanceprofileStructure=__.cloneDeep(this.backup);
         });
     }
