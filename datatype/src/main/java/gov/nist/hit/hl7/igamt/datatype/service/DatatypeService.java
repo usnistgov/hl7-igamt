@@ -86,7 +86,7 @@ public interface DatatypeService {
 
   Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-  public Link cloneDatatype(HashMap<String, String> datatypesMap, HashMap<String, String> valuesetsMap, Link l, String username);
+  public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l, String username);
 
   public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 

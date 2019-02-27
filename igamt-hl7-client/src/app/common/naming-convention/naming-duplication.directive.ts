@@ -11,13 +11,17 @@ export class NamingDuplicationDirective implements Validator {
 
   @Input() label: string;// without extension
 
-
-
   constructor() {
+
+    console.log("Naming Duplication called");
 
   }
 
   validate(control: AbstractControl): {[key: string]: any} | null {
+
+    console.log("Validation Directive === === ==== ");
+    console.log(this.existing);
+
     return !this.isDuplicated(this.label+control.value) ? null: {'duplicated': {value: control.value}};
 
   }
@@ -29,7 +33,7 @@ export class NamingDuplicationDirective implements Validator {
     console.log(label);
     console.log(this.existing);
     let exist= _.filter(this.existing, function(o) { return o==label });
-    return exist.length>1;
-
+    console.log(exist);
+    return exist.length>0;
   }
 }

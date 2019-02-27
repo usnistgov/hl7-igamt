@@ -38,6 +38,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeConstraints;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimePredicate;
@@ -73,6 +75,12 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
       context.getBean(ConformanceProfileRepository.class);
 
   private AccountRepository accountRepository = userContext.getBean(AccountRepository.class);
+  
+  @Autowired
+  private ConformanceStatementRepository conformanceStatementRepository = context.getBean(ConformanceStatementRepository.class);
+  
+  @Autowired
+  private PredicateRepository predicateRepository = context.getBean(PredicateRepository.class);
 
   @Override
   public void convert() {
@@ -131,7 +139,7 @@ public class ConformanceProfileConversionServiceImpl implements ConversionServic
     // TODO replace binding and set username
     convertedConformanceProfile
         .setBinding(new BindingHandler(oldSegmentRepository, oldDatatypeRepository)
-            .convertResourceBinding(oldMessage));
+            .convertResourceBinding(oldMessage, this.conformanceStatementRepository, this.predicateRepository));
     if (oldMessage.getAccountId() != null) {
       Account acc = accountRepository.findByAccountId(oldMessage.getAccountId());
       if (acc != null && acc.getAccountId() != null) {

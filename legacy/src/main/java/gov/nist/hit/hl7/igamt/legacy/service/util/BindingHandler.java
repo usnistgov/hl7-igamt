@@ -7,8 +7,6 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.AbstractApplicationContext;
 
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Code;
 import gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Comment;
@@ -38,25 +36,17 @@ import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementReposit
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.legacy.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.legacy.service.config.ApplicationConfig;
+import gov.nist.hit.hl7.igamt.legacy.service.ConversionService;
 
 
-public class BindingHandler {
+public class BindingHandler implements ConversionService{
   
-  static AbstractApplicationContext context =
-      new AnnotationConfigApplicationContext(ApplicationConfig.class);
 
   @Autowired
   private DatatypeRepository datatypeRepository;
 
   @Autowired
   private SegmentRepository segmentRepository;
-  
-  @Autowired
-  private ConformanceStatementRepository conformanceStatementRepository = context.getBean(ConformanceStatementRepository.class);
-  
-  @Autowired
-  private PredicateRepository predicateRepository = context.getBean(PredicateRepository.class);
 
   public BindingHandler(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
@@ -71,7 +61,7 @@ public class BindingHandler {
     this.datatypeRepository = datatypeRepository;
   }
 
-  public ResourceBinding convertResourceBinding(Object oldObject) {
+  public ResourceBinding convertResourceBinding(Object oldObject, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     ResourceBinding rb = new ResourceBinding();
     List<ConformanceStatement> oldConformanceStatements = null;
 
@@ -81,7 +71,7 @@ public class BindingHandler {
       for (SegmentRefOrGroup srog : oldMessage.getChildren()) {
         String path = "" + srog.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog));
+          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog, predicateRepository));
         }
       }
       oldConformanceStatements = oldMessage.getConformanceStatements();
@@ -91,7 +81,7 @@ public class BindingHandler {
       for (SegmentRefOrGroup srog : oldGroup.getChildren()) {
         String path = "" + srog.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog));
+          rb.addChild(constructStructureElementBinding(oldObject, oldObject, path, srog, predicateRepository));
         }
       }
       oldConformanceStatements = oldGroup.getConformanceStatements();
@@ -102,7 +92,7 @@ public class BindingHandler {
       for (Field f : oldSegment.getFields()) {
         String path = "" + f.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldSegment, oldSegment, path, f));
+          rb.addChild(constructStructureElementBinding(oldSegment, oldSegment, path, f, predicateRepository));
         }
       }
       oldConformanceStatements = oldSegment.getConformanceStatements();
@@ -113,7 +103,7 @@ public class BindingHandler {
       for (Component c : oldDatatype.getComponents()) {
         String path = "" + c.getPosition();
         if (isNeedToDive(path, oldObject)) {
-          rb.addChild(constructStructureElementBinding(oldDatatype, oldDatatype, path, c));
+          rb.addChild(constructStructureElementBinding(oldDatatype, oldDatatype, path, c, predicateRepository));
         }
       }
       oldConformanceStatements = oldDatatype.getConformanceStatements();
@@ -152,7 +142,7 @@ public class BindingHandler {
           newAssertionConformanceStatement.addSourceId(oldDatatype.getId());
           newAssertionConformanceStatement.setStructureId(oldDatatype.getName());
         }
-        newAssertionConformanceStatement = this.conformanceStatementRepository.save(newAssertionConformanceStatement);
+        newAssertionConformanceStatement = conformanceStatementRepository.save(newAssertionConformanceStatement);
         rb.addConformanceStatement(newAssertionConformanceStatement.getId());
       }
     }
@@ -163,7 +153,7 @@ public class BindingHandler {
     return null;
   }
 
-  private StructureElementBinding constructStructureElementBinding(Object levelObject, Object refObj, String path, Object target) {
+  private StructureElementBinding constructStructureElementBinding(Object levelObject, Object refObj, String path, Object target, PredicateRepository predicateRepository) {
     StructureElementBinding seb = new StructureElementBinding();
 
     /*
@@ -216,7 +206,7 @@ public class BindingHandler {
         newAssertionPredicate.setStructureId(oldDatatype.getName());
       }
       
-      newAssertionPredicate = this.predicateRepository.save(newAssertionPredicate);
+      newAssertionPredicate = predicateRepository.save(newAssertionPredicate);
       seb.setPredicateId(newAssertionPredicate.getId());
     }
 
@@ -325,7 +315,7 @@ public class BindingHandler {
             for (Component childC : childDatatype.getComponents()) {
               String childPath = path + "." + childC.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC, predicateRepository));
             }
           }
         }
@@ -346,7 +336,7 @@ public class BindingHandler {
             for (Component childC : childDatatype.getComponents()) {
               String childPath = path + "." + childC.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childC, predicateRepository));
             }
           }
         }
@@ -366,7 +356,7 @@ public class BindingHandler {
             for (Field childF : childSegment.getFields()) {
               String childPath = path + "." + childF.getPosition();
               if (isNeedToDive(childPath, refObj))
-                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childF));
+                seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, childF, predicateRepository));
             }
           }
         }
@@ -379,7 +369,7 @@ public class BindingHandler {
         for (SegmentRefOrGroup child : g.getChildren()) {
           String childPath = path + "." + child.getPosition();
           if (isNeedToDive(childPath, refObj))
-            seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, child));
+            seb.addChild(constructStructureElementBinding(levelObject, refObj, childPath, child, predicateRepository));
         }
       }
     }
@@ -623,5 +613,14 @@ public class BindingHandler {
 
   public void setDatatypeRepository(DatatypeRepository datatypeRepository) {
     this.datatypeRepository = datatypeRepository;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.legacy.service.ConversionService#convert()
+   */
+  @Override
+  public void convert() {
+    // TODO Auto-generated method stub
+    
   }
 }

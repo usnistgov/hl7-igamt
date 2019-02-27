@@ -24,10 +24,8 @@ export class LoginComponent {
       if (x==true) {
         console.log("test");
         let redirect = this.authService.redirectUrl;
-        // Redirect the user
         if(redirect) {
           this.router.navigate([redirect]);
-        }else{ this.router.navigate(["/"]);
         }
       }
     }

@@ -13,12 +13,10 @@
 
   <div>
     <ng-container *ngFor="let selected of getSelected()">
-
       <label class="badge cp-badge" (click)="unselect(selected)" *ngIf="!selected.children">
         <span style="background-color: red; border-radius: 25%" class="mini-badge">{{selected.parent.data.hl7Version}}</span>    {{selected.data.name}}-{{selected.data.parentStructId}}
         <i class="fa fa-remove cp-remove"></i>
       </label>
-
     </ng-container>
   </div>
 
@@ -88,8 +86,6 @@
     <!--</tr>-->
     <!--</ng-template>-->
   </p-table>
-
-
 
   <p-footer>
     <p-button    styleClass="green-btn" [disabled] ="selectedEvents.length==0" (onClick)="addMessages()" label="Submit" icon="fa fa-check" iconPos="left"></p-button>

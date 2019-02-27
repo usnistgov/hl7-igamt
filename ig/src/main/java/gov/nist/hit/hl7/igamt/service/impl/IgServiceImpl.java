@@ -364,17 +364,15 @@ public class IgServiceImpl implements IgService {
     HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
 
 
+
     newIg.setValueSetRegistry(
         copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
     newIg.setDatatypeRegistry(
         copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
-    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(), segmentsMap, valuesetsMap,
-        datatypesMap, username));
+    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),valuesetsMap,datatypesMap,segmentsMap, username));
     newIg.setConformanceProfileRegistry(
         copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,
             datatypesMap, segmentsMap, conformanceProfilesMap, username));
-
-    this.save(newIg);
     return newIg;
   }
 
@@ -402,7 +400,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            conformanceProfilesMap.get(l.getId()), segmentsMap, valuesetsMap, l, username));
+            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username));
       }
     }
     newReg.setChildren(children);
@@ -419,8 +417,8 @@ public class IgServiceImpl implements IgService {
    * @throws CoConstraintSaveException
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-      HashMap<String, String> segmentsMap, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
+      HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
+      HashMap<String, String> segmentsMap, String username) throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -428,8 +426,8 @@ public class IgServiceImpl implements IgService {
       if (!segmentsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()), datatypesMap,
-            valuesetsMap, l, username));
+        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
+            valuesetsMap,datatypesMap, l, username));
       }
     }
     newReg.setChildren(children);
@@ -451,7 +449,7 @@ public class IgServiceImpl implements IgService {
       if (!datatypesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.datatypeService.cloneDatatype(datatypesMap, valuesetsMap, l, username));
+        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username));
       }
     }
 
@@ -482,7 +480,7 @@ public class IgServiceImpl implements IgService {
   }
 
   private HashMap<String, String> getNewIdsMap(Registry reg) {
-    HashMap<String, String> map = new HashMap<String, String>();
+	  HashMap<String, String> map = new HashMap<String, String>();
     if (reg != null && reg.getChildren() != null) {
       for (Link l : reg.getChildren()) {
         if (l.getDomainInfo().getScope().equals(Scope.USER)) {
