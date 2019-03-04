@@ -883,7 +883,7 @@ public class SegmentServiceImpl implements SegmentService {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
           cs.addSourceId(s.getId());
           cs.setStructureId(s.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.SEGMENT);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           s.getBinding().addConformanceStatement(cs.getId());
@@ -897,7 +897,7 @@ public class SegmentServiceImpl implements SegmentService {
           }
           cs.addSourceId(s.getId());
           cs.setStructureId(s.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.SEGMENT);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
         }
@@ -909,7 +909,7 @@ public class SegmentServiceImpl implements SegmentService {
           Predicate cp = mapper.readValue(jsonInString, Predicate.class);
           cp.addSourceId(s.getId());
           cp.setStructureId(s.getName());
-          cp.setLevel(Level.DATATYPE);
+          cp.setLevel(Level.SEGMENT);
           cp.setIgDocumentId(documentId);
           cp = this.predicateRepository.save(cp);
           seb.setPredicateId(cp.getId());
@@ -933,7 +933,7 @@ public class SegmentServiceImpl implements SegmentService {
           }
           cp.addSourceId(s.getId());
           cp.setStructureId(s.getName());
-          cp.setLevel(Level.DATATYPE);
+          cp.setLevel(Level.SEGMENT);
           cp.setIgDocumentId(documentId);
           cp = this.predicateRepository.save(cp);
         }

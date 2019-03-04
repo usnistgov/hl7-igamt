@@ -622,11 +622,77 @@ public class IgServiceImpl implements IgService {
     Set<ConformanceStatement> allIGCSs = this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
     for(ConformanceStatement cs : allIGCSs) {
       System.out.println(cs);
-      associatedSEGConformanceStatementMap.put("AAAA", new ConformanceStatementsContainer());
-      
+      if(cs.getLevel().equals(Level.DATATYPE)) {
+        if(cs.getSourceIds() != null && cs.getSourceIds().size() > 0) {
+          for(String dtId : cs.getSourceIds()) {
+            Datatype dt = this.datatypeService.findById(dtId);
+            if(dt != null) {
+              if (associatedDTConformanceStatementMap.containsKey(dtId)) {
+                associatedDTConformanceStatementMap.get(dtId).getConformanceStatements().add(cs);
+              } else {
+                ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.DATATYPE, dtId, dt.getLabel());
+                csc.getConformanceStatements().add(cs);
+                associatedDTConformanceStatementMap.put(dtId, csc);
+              }  
+            }
+          }
+        }else {
+          if (associatedDTConformanceStatementMap.containsKey("NotAssociated")) {
+            associatedDTConformanceStatementMap.get("NotAssociated").getConformanceStatements().add(cs);
+          } else {
+            ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.DATATYPE, "NotAssociated", "Not associated");
+            csc.getConformanceStatements().add(cs);
+            associatedDTConformanceStatementMap.put("NotAssociated", csc);
+          } 
+        }
+      } else if(cs.getLevel().equals(Level.SEGMENT)) {
+        if(cs.getSourceIds() != null && cs.getSourceIds().size() > 0) {
+          for(String segId : cs.getSourceIds()) {
+            Segment s = this.segmentService.findById(segId);
+            if(s != null) {
+              if (associatedSEGConformanceStatementMap.containsKey(segId)) {
+                associatedSEGConformanceStatementMap.get(segId).getConformanceStatements().add(cs);
+              } else {
+                ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.SEGMENT, segId, s.getLabel());
+                csc.getConformanceStatements().add(cs);
+                associatedSEGConformanceStatementMap.put(segId, csc);
+              }  
+            }
+          }
+        }else {
+          if (associatedSEGConformanceStatementMap.containsKey("NotAssociated")) {
+            associatedSEGConformanceStatementMap.get("NotAssociated").getConformanceStatements().add(cs);
+          } else {
+            ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.SEGMENT, "NotAssociated", "Not associated");
+            csc.getConformanceStatements().add(cs);
+            associatedSEGConformanceStatementMap.put("NotAssociated", csc);
+          } 
+        }
+      } else if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+        if(cs.getSourceIds() != null && cs.getSourceIds().size() > 0) {
+          for(String cpId : cs.getSourceIds()) {
+            ConformanceProfile cp = this.conformanceProfileService.findById(cpId);
+            if(cp != null) {
+              if (associatedMSGConformanceStatementMap.containsKey(cpId)) {
+                associatedMSGConformanceStatementMap.get(cpId).getConformanceStatements().add(cs);
+              } else {
+                ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.CONFORMANCEPROFILE, cpId, cp.getLabel());
+                csc.getConformanceStatements().add(cs);
+                associatedMSGConformanceStatementMap.put(cpId, csc);
+              }  
+            }
+          }
+        }else {
+          if (associatedMSGConformanceStatementMap.containsKey("NotAssociated")) {
+            associatedMSGConformanceStatementMap.get("NotAssociated").getConformanceStatements().add(cs);
+          } else {
+            ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.CONFORMANCEPROFILE, "NotAssociated", "Not associated");
+            csc.getConformanceStatements().add(cs);
+            associatedMSGConformanceStatementMap.put("NotAssociated", csc);
+          } 
+        }
+      }
     }
-    
-    
     IgDocumentConformanceStatement igDocumentConformanceStatement = new IgDocumentConformanceStatement();
     igDocumentConformanceStatement.setAssociatedDTConformanceStatementMap(associatedDTConformanceStatementMap);
     igDocumentConformanceStatement.setAssociatedSEGConformanceStatementMap(associatedSEGConformanceStatementMap);

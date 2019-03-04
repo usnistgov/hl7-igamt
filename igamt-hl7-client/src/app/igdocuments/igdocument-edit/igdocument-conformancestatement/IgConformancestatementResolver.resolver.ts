@@ -26,8 +26,6 @@ export  class IgConformancestatementResolver implements Resolve<any>{
                     this.igDocumentService.getIGDocumentConformanceStatements(id).then(data => {
                         resolve(data);
                     }, err => {
-                        console.log("WOOO");
-                        console.log(err);
                         this.router.navigate(["/404"]);
                     });
 
