@@ -1111,7 +1111,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
           cs.addSourceId(cp.getId());
           cs.setStructureId(cp.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           cp.getBinding().addConformanceStatement(cs.getId());
@@ -1125,7 +1125,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           }
           cs.addSourceId(cp.getId());
           cs.setStructureId(cp.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
         }
@@ -1137,7 +1137,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           Predicate p = mapper.readValue(jsonInString, Predicate.class);
           p.addSourceId(cp.getId());
           p.setStructureId(cp.getName());
-          p.setLevel(Level.DATATYPE);
+          p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);
           seb.setPredicateId(p.getId());
@@ -1161,7 +1161,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
           }
           p.addSourceId(cp.getId());
           p.setStructureId(cp.getName());
-          p.setLevel(Level.DATATYPE);
+          p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);
         }

@@ -43,8 +43,12 @@ import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
+import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -55,6 +59,8 @@ import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
 import gov.nist.hit.hl7.igamt.profilecomponent.service.ProfileComponentService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
@@ -627,12 +633,12 @@ public class IgServiceImpl implements IgService {
           for(String dtId : cs.getSourceIds()) {
             Datatype dt = this.datatypeService.findById(dtId);
             if(dt != null) {
-              if (associatedDTConformanceStatementMap.containsKey(dtId)) {
-                associatedDTConformanceStatementMap.get(dtId).getConformanceStatements().add(cs);
+              if (associatedDTConformanceStatementMap.containsKey(dt.getLabel())) {
+                associatedDTConformanceStatementMap.get(dt.getLabel()).getConformanceStatements().add(cs);
               } else {
                 ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.DATATYPE, dtId, dt.getLabel());
                 csc.getConformanceStatements().add(cs);
-                associatedDTConformanceStatementMap.put(dtId, csc);
+                associatedDTConformanceStatementMap.put(dt.getLabel(), csc);
               }  
             }
           }
@@ -650,12 +656,12 @@ public class IgServiceImpl implements IgService {
           for(String segId : cs.getSourceIds()) {
             Segment s = this.segmentService.findById(segId);
             if(s != null) {
-              if (associatedSEGConformanceStatementMap.containsKey(segId)) {
-                associatedSEGConformanceStatementMap.get(segId).getConformanceStatements().add(cs);
+              if (associatedSEGConformanceStatementMap.containsKey(s.getLabel())) {
+                associatedSEGConformanceStatementMap.get(s.getLabel()).getConformanceStatements().add(cs);
               } else {
                 ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.SEGMENT, segId, s.getLabel());
                 csc.getConformanceStatements().add(cs);
-                associatedSEGConformanceStatementMap.put(segId, csc);
+                associatedSEGConformanceStatementMap.put(s.getLabel(), csc);
               }  
             }
           }
@@ -673,12 +679,12 @@ public class IgServiceImpl implements IgService {
           for(String cpId : cs.getSourceIds()) {
             ConformanceProfile cp = this.conformanceProfileService.findById(cpId);
             if(cp != null) {
-              if (associatedMSGConformanceStatementMap.containsKey(cpId)) {
-                associatedMSGConformanceStatementMap.get(cpId).getConformanceStatements().add(cs);
+              if (associatedMSGConformanceStatementMap.containsKey(cp.getLabel())) {
+                associatedMSGConformanceStatementMap.get(cp.getLabel()).getConformanceStatements().add(cs);
               } else {
                 ConformanceStatementsContainer csc = new ConformanceStatementsContainer(new HashSet<ConformanceStatement>(), Type.CONFORMANCEPROFILE, cpId, cp.getLabel());
                 csc.getConformanceStatements().add(cs);
-                associatedMSGConformanceStatementMap.put(cpId, csc);
+                associatedMSGConformanceStatementMap.put(cp.getLabel(), csc);
               }  
             }
           }
@@ -697,6 +703,45 @@ public class IgServiceImpl implements IgService {
     igDocumentConformanceStatement.setAssociatedDTConformanceStatementMap(associatedDTConformanceStatementMap);
     igDocumentConformanceStatement.setAssociatedSEGConformanceStatementMap(associatedSEGConformanceStatementMap);
     igDocumentConformanceStatement.setAssociatedMSGConformanceStatementMap(associatedMSGConformanceStatementMap);
+    
+    for(Link msgLink : igdoument.getConformanceProfileRegistry().getChildren()){
+      ConformanceProfile msg = this.conformanceProfileService.findById(msgLink.getId());
+      if(msg != null && msg.getDomainInfo() != null){
+        ConformanceProfileLabel conformanceProfileLabel = new ConformanceProfileLabel();
+        conformanceProfileLabel.setDomainInfo(msg.getDomainInfo());
+        conformanceProfileLabel.setId(msg.getId());
+        conformanceProfileLabel.setLabel(msg.getLabel());
+        conformanceProfileLabel.setName(msg.getName());
+        igDocumentConformanceStatement.addUsersConformanceProfileSelectItem(new ConformanceProfileSelectItem(msg.getLabel(), conformanceProfileLabel));
+      }
+    }
+    
+    for(Link segLink : igdoument.getSegmentRegistry().getChildren()){
+      Segment seg = this.segmentService.findById(segLink.getId());
+      if(seg != null && seg.getDomainInfo() != null && seg.getDomainInfo().getScope() != null && seg.getDomainInfo().getScope().equals(Scope.USER)){
+        SegmentLabel segmentLabel = new SegmentLabel();
+        segmentLabel.setDomainInfo(seg.getDomainInfo());
+        segmentLabel.setExt(seg.getExt());
+        segmentLabel.setId(seg.getId());
+        segmentLabel.setLabel(seg.getLabel());
+        segmentLabel.setName(seg.getName());
+        igDocumentConformanceStatement.addUsersSegmentSelectItem(new SegmentSelectItem(seg.getLabel(), segmentLabel));
+      }
+    }
+    
+    for(Link dtLink : igdoument.getDatatypeRegistry().getChildren()){
+      Datatype dt = this.datatypeService.findById(dtLink.getId());
+      if(dt != null && dt.getDomainInfo() != null && dt.getDomainInfo().getScope() != null && dt.getDomainInfo().getScope().equals(Scope.USER)){
+        DatatypeLabel datatypeLabel = new DatatypeLabel();
+        datatypeLabel.setDomainInfo(dt.getDomainInfo());
+        datatypeLabel.setExt(dt.getExt());
+        datatypeLabel.setId(dt.getId());
+        datatypeLabel.setLabel(dt.getLabel());
+        datatypeLabel.setName(dt.getName());
+        igDocumentConformanceStatement.addUsersDatatypeSelectItem(new DatatypeSelectItem(dt.getLabel(), datatypeLabel));
+      }
+    }
+    
     return igDocumentConformanceStatement;
   }
 

@@ -1,12 +1,164 @@
+<div *ngIf="conformanceStatementData">
+  <form #editForm="ngForm">
+    <entity-header [elm]="conformanceStatementData"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
+    <div class="section-content">
+      <p-accordion>
+        <p-accordionTab header="ConformanceProfile Conformance Statements" [selected]="true">
+          <div *ngIf="msgKeys">
+            <div *ngFor="let key of msgKeys">
+              <label>{{key}}</label>
+              <p-table [columns]="cols" [value]="conformanceStatementData.associatedMSGConformanceStatementMap[key].conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th style="width:3em"></th>
+                    <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
+                      {{col.header}}
+                      <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th *ngIf="!conformanceStatementData.readOnly" style="width:15em" pReorderableColumn>Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                  <tr [pReorderableRow]="index">
+                    <td>
+                      <i class="fa fa-bars" pReorderableRowHandle></i>
+                    </td>
+                    <td *ngFor="let col of columns" class="ui-resizable-column">
+                      <div *ngIf="col.field === 'identifier'">
+                        {{rowData[col.field]}}
+                      </div>
+                      <div *ngIf="col.field === 'description'">
+                        <div *ngIf="rowData['type'] === 'FREE'">
+                          {{rowData['freeText']}}
+                        </div>
+                        <div *ngIf="rowData['type'] === 'ASSERTION'">
+                          {{rowData['assertion'].description}}
+                        </div>
+                      </div>
+                    </td>
+                    <td *ngIf="!conformanceStatementData.readOnly">
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteMSGCS(rowData)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="copyMSGCS(rowData);"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <br/>
+            </div>
+          </div>
+        </p-accordionTab>
 
-<form  #editForm="ngForm" novalidate>
+        <p-accordionTab header="Segment Conformance Statements" [selected]="true">
+          <div *ngIf="segKeys">
+            <div *ngFor="let key of segKeys">
+              <label>{{key}}</label>
+              <p-table [columns]="cols" [value]="conformanceStatementData.associatedSEGConformanceStatementMap[key].conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th style="width:3em"></th>
+                    <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
+                      {{col.header}}
+                      <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th *ngIf="!conformanceStatementData.readOnly" style="width:15em" pReorderableColumn>Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                  <tr [pReorderableRow]="index">
+                    <td>
+                      <i class="fa fa-bars" pReorderableRowHandle></i>
+                    </td>
+                    <td *ngFor="let col of columns" class="ui-resizable-column">
+                      <div *ngIf="col.field === 'identifier'">
+                        {{rowData[col.field]}}
+                      </div>
+                      <div *ngIf="col.field === 'description'">
+                        <div *ngIf="rowData['type'] === 'FREE'">
+                          {{rowData['freeText']}}
+                        </div>
+                        <div *ngIf="rowData['type'] === 'ASSERTION'">
+                          {{rowData['assertion'].description}}
+                        </div>
+                      </div>
+                    </td>
+                    <td *ngIf="!conformanceStatementData.readOnly">
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteSEGCS(rowData)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="copySEGCS(rowData);"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <br/>
+            </div>
+          </div>
+        </p-accordionTab>
 
-  <div class="ui-g-12"  style="margin-bottom: 30px;float:right">
-    <button  style="float:right" (click)="save()"  pButton type="button" label="save" class="green-btn" icon="fa fa-floppy-o" [disabled]="editForm.invalid ||!editForm.dirty"></button>
-    <button  style="float:right"  (click)="reset()" pButton type="button" label="reset" class="red-btn" icon="fa fa-refresh" [disabled]="editForm.invalid ||!editForm.dirty" ></button>
-  </div>
+        <p-accordionTab header="Datatype Conformance Statements" [selected]="true">
+          <div *ngIf="dtKeys">
+            <div *ngFor="let key of dtKeys">
+              <label>{{key}}</label>
+              <p-table [columns]="cols" [value]="conformanceStatementData.associatedDTConformanceStatementMap[key].conformanceStatements" [reorderableColumns]="true" [resizableColumns]="true">
+                <ng-template pTemplate="header" let-columns>
+                  <tr>
+                    <th style="width:3em"></th>
+                    <th *ngFor="let col of columns" pReorderableColumn [pSortableColumn]="col.sort" [ngStyle]="col.colStyle" pResizableColumn>
+                      {{col.header}}
+                      <p-sortIcon *ngIf="col.colStyle" [field]="col.field"></p-sortIcon>
+                    </th>
+                    <th *ngIf="!conformanceStatementData.readOnly" style="width:15em" pReorderableColumn>Actions</th>
+                  </tr>
+                </ng-template>
+                <ng-template pTemplate="body" let-rowData let-columns="columns" let-index="rowIndex">
+                  <tr [pReorderableRow]="index">
+                    <td>
+                      <i class="fa fa-bars" pReorderableRowHandle></i>
+                    </td>
+                    <td *ngFor="let col of columns" class="ui-resizable-column">
+                      <div *ngIf="col.field === 'identifier'">
+                        {{rowData[col.field]}}
+                      </div>
+                      <div *ngIf="col.field === 'description'">
+                        <div *ngIf="rowData['type'] === 'FREE'">
+                          {{rowData['freeText']}}
+                        </div>
+                        <div *ngIf="rowData['type'] === 'ASSERTION'">
+                          {{rowData['assertion'].description}}
+                        </div>
+                      </div>
+                    </td>
+                    <td *ngIf="!conformanceStatementData.readOnly">
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteDTCS(rowData, key)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="openDialogForCopyDTCS(rowData, key);"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <br/>
+            </div>
+          </div>
+        </p-accordionTab>
+      </p-accordion>
+    </div>
 
-  <div class="ui-g-12">
-    IG Document Conformance Statement
-  </div>
-</form>
+    <p-dialog [(visible)]="copyDTDialog" header="Copy To other Datatype"
+              styleClass="pattern-dialog"
+              [modal]="true" [responsive]="false" [minWidth]="500"
+              [baseZIndex]="8000" [closable]="false" [closeOnEscape]="false" appendTo="body">
+      <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
+        <div class="ui-g ui-fluid">
+          <div class="ui-g-12 ui-md-2">
+            <label>Copy To: </label>
+          </div>
+          <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="conformanceStatementData.usersDatatypesSelectItems" appendTo="body" name="toDT" [(ngModel)]="toDT"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <p-footer>
+        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="copyCS()"></button>
+        <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardEdit()"></button>
+      </p-footer>
+    </p-dialog>
+  </form>
+
+</div>
