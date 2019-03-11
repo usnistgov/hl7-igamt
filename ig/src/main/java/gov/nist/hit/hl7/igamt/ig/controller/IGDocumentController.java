@@ -997,7 +997,8 @@ public class IGDocumentController extends BaseController {
     Ig ig = findIgById(id);
     Ig clone = this.igService.clone(ig, username);
     clone.getDomainInfo().setScope(Scope.USER);
-    ig = igService.save(ig);
+    clone.getMetadata().setTitle(clone.getMetadata().getTitle()+"[clone]");
+    clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(),
         false, clone.getUpdateDate(), clone.getId());
   }

@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -17,14 +16,12 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -93,7 +90,7 @@ public class IgServiceImpl implements IgService {
 
   @Autowired
   CompositeProfileStructureService compositeProfileServie;
-  
+
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
@@ -360,28 +357,29 @@ public class IgServiceImpl implements IgService {
   public Ig clone(Ig ig, String username) throws CoConstraintSaveException {
     Ig newIg = new Ig();
     newIg.setId(null);
+    newIg.setFrom(ig.getId());
     newIg.setMetadata(ig.getMetadata().clone());
     newIg.setContent(ig.getContent());
     newIg.setUsername(username);
     newIg.setDomainInfo(ig.getDomainInfo());
     newIg.getDomainInfo().setScope(Scope.USER);
 
-    HashMap<String, String> conformanceProfilesMap = getNewIdsMap(ig.getCompositeProfileRegistry());
+    HashMap<String, String> conformanceProfilesMap =
+        getNewIdsMap(ig.getConformanceProfileRegistry());
     HashMap<String, String> valuesetsMap = getNewIdsMap(ig.getValueSetRegistry());
     HashMap<String, String> datatypesMap = getNewIdsMap(ig.getDatatypeRegistry());
     HashMap<String, String> segmentsMap = getNewIdsMap(ig.getSegmentRegistry());
+
+
 
     newIg.setValueSetRegistry(
         copyValueSetRegistry(ig.getValueSetRegistry(), valuesetsMap, username));
     newIg.setDatatypeRegistry(
         copyDatatypeRegistry(ig.getDatatypeRegistry(), valuesetsMap, datatypesMap, username));
-    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(), valuesetsMap,
-        datatypesMap, segmentsMap, username));
+    newIg.setSegmentRegistry(copySegmentRegistry(ig.getSegmentRegistry(),valuesetsMap,datatypesMap,segmentsMap, username));
     newIg.setConformanceProfileRegistry(
         copyConformanceProfileRegistry(ig.getConformanceProfileRegistry(), valuesetsMap,
             datatypesMap, segmentsMap, conformanceProfilesMap, username));
-
-    this.save(newIg);
     return newIg;
   }
 
@@ -409,7 +407,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            conformanceProfilesMap.get(l.getId()), segmentsMap, valuesetsMap, l, username));
+            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username));
       }
     }
     newReg.setChildren(children);
@@ -426,8 +424,8 @@ public class IgServiceImpl implements IgService {
    * @throws CoConstraintSaveException
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
-      HashMap<String, String> segmentsMap, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
+      HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
+      HashMap<String, String> segmentsMap, String username) throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -435,8 +433,8 @@ public class IgServiceImpl implements IgService {
       if (!segmentsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()), datatypesMap,
-            valuesetsMap, l, username));
+        children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
+            valuesetsMap,datatypesMap, l, username));
       }
     }
     newReg.setChildren(children);
@@ -458,7 +456,7 @@ public class IgServiceImpl implements IgService {
       if (!datatypesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.datatypeService.cloneDatatype(datatypesMap, valuesetsMap, l, username));
+        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username));
       }
     }
 
@@ -489,17 +487,12 @@ public class IgServiceImpl implements IgService {
   }
 
   private HashMap<String, String> getNewIdsMap(Registry reg) {
-
-    HashMap<String, String> map = new HashMap<String, String>();
+	  HashMap<String, String> map = new HashMap<String, String>();
     if (reg != null && reg.getChildren() != null) {
       for (Link l : reg.getChildren()) {
-        if (l.getDomainInfo() == null) {
-          System.out.println(l.getId());
-        }
-        if (l.getDomainInfo().getScope().toString().equals(Scope.USER.toString())) {
+        if (l.getDomainInfo().getScope().equals(Scope.USER)) {
           map.put(l.getId(), new ObjectId().toString());
         }
-
       }
     }
     return map;
@@ -624,7 +617,6 @@ public class IgServiceImpl implements IgService {
     HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     
-    
     Set<ConformanceStatement> allIGCSs = this.conformanceStatementRepository.findByIgDocumentId(igdoument.getId());
     for(ConformanceStatement cs : allIGCSs) {
       System.out.println(cs);
@@ -741,18 +733,17 @@ public class IgServiceImpl implements IgService {
         igDocumentConformanceStatement.addUsersDatatypeSelectItem(new DatatypeSelectItem(dt.getLabel(), datatypeLabel));
       }
     }
-    
     return igDocumentConformanceStatement;
   }
 
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if(conformanceStatementIds != null){
-      for(String id : conformanceStatementIds){
+    if (conformanceStatementIds != null) {
+      for (String id : conformanceStatementIds) {
         result.add(this.conformanceStatementRepository.findById(id).get());
       }
     }
-    
+
     return result;
   }
 

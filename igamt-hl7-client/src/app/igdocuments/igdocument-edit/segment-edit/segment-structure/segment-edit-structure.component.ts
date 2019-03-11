@@ -28,7 +28,7 @@ export class SegmentEditStructureComponent implements WithSave {
     changeItems:any[];
     backup:any;
     diff: DiffableResult;
-
+    diffable: boolean;
     @ViewChild('editForm')
     private editForm: NgForm;
 
@@ -60,7 +60,8 @@ export class SegmentEditStructureComponent implements WithSave {
             this.delta.diffable('SEGMENT', this.igId, x.from, this.segmentId).subscribe(
               diffData => this.diff = diffData
             );
-          this.backup=__.cloneDeep(this.segmentStructure);
+            this.diffable = !!x.origin;
+            this.backup=__.cloneDeep(this.segmentStructure);
         });
     }
 
