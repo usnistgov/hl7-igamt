@@ -1391,7 +1391,8 @@ public class SegmentServiceImpl implements SegmentService {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
     if(conformanceStatementIds != null){
       for(String id : conformanceStatementIds){
-        result.add(this.conformanceStatementRepository.findById(id).get());
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
     

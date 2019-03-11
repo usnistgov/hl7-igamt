@@ -711,7 +711,7 @@ public class IgServiceImpl implements IgService {
         conformanceProfileLabel.setDomainInfo(msg.getDomainInfo());
         conformanceProfileLabel.setId(msg.getId());
         conformanceProfileLabel.setLabel(msg.getLabel());
-        conformanceProfileLabel.setName(msg.getName());
+        conformanceProfileLabel.setName(msg.getStructID());
         igDocumentConformanceStatement.addUsersConformanceProfileSelectItem(new ConformanceProfileSelectItem(msg.getLabel(), conformanceProfileLabel));
       }
     }

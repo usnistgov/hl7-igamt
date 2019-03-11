@@ -37,8 +37,8 @@
                       </div>
                     </td>
                     <td *ngIf="!conformanceStatementData.readOnly">
-                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteMSGCS(rowData)"></button>
-                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="copyMSGCS(rowData);"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-trash" label="Delete" (click)="deleteMSGCS(rowData, key)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="openDialogForCopyMSGCS(rowData, key);"></button>
                     </td>
                   </tr>
                 </ng-template>
@@ -82,8 +82,8 @@
                       </div>
                     </td>
                     <td *ngIf="!conformanceStatementData.readOnly">
-                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteSEGCS(rowData)"></button>
-                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="copySEGCS(rowData);"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-trash" label="Delete" (click)="deleteSEGCS(rowData, key)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="openDialogForCopySEGCS(rowData, key);"></button>
                     </td>
                   </tr>
                 </ng-template>
@@ -127,7 +127,7 @@
                       </div>
                     </td>
                     <td *ngIf="!conformanceStatementData.readOnly">
-                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-times" label="Delete" (click)="deleteDTCS(rowData, key)"></button>
+                      <button pButton style="float: right" type="button"  class="ui-button-warning" icon="fa fa-trash" label="Delete" (click)="deleteDTCS(rowData, key)"></button>
                       <button pButton style="float: right" type="button"  class="ui-button-info" icon="fa fa-copy" label="Copy" (click)="openDialogForCopyDTCS(rowData, key);"></button>
                     </td>
                   </tr>
@@ -141,22 +141,59 @@
     </div>
 
     <p-dialog [(visible)]="copyDTDialog" header="Copy To other Datatype"
-              styleClass="pattern-dialog"
               [modal]="true" [responsive]="false" [minWidth]="500"
-              [baseZIndex]="8000" [closable]="false" [closeOnEscape]="false" appendTo="body">
+              [closable]="false" [closeOnEscape]="false" appendTo="body">
       <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
         <div class="ui-g ui-fluid">
           <div class="ui-g-12 ui-md-2">
             <label>Copy To: </label>
           </div>
           <div class="ui-g-12 ui-md-10">
-            <p-dropdown [options]="conformanceStatementData.usersDatatypesSelectItems" appendTo="body" name="toDT" [(ngModel)]="toDT"></p-dropdown>
+            <p-dropdown [options]="listSiblingDTs" [autoWidth]="false" appendTo="body" name="toDT" [(ngModel)]="toDT"></p-dropdown>
           </div>
         </div>
       </div>
       <p-footer>
-        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="copyCS()"></button>
-        <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardEdit()"></button>
+        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="copyCSForDT()"></button>
+        <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardCopyCSForDT()"></button>
+      </p-footer>
+    </p-dialog>
+
+    <p-dialog [(visible)]="copySEGDialog" header="Copy To other Segment"
+              [modal]="true" [responsive]="false" [minWidth]="500"
+              [closable]="false" [closeOnEscape]="false" appendTo="body">
+      <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
+        <div class="ui-g ui-fluid">
+          <div class="ui-g-12 ui-md-2">
+            <label>Copy To: </label>
+          </div>
+          <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="listSiblingSEGs" [autoWidth]="false" appendTo="body" name="toDT" [(ngModel)]="toSEG"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <p-footer>
+        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="copyCSForSEG()"></button>
+        <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardCopyCSForSEG()"></button>
+      </p-footer>
+    </p-dialog>
+
+    <p-dialog [(visible)]="copyMSGDialog" header="Copy To other ConformanceProfile"
+              [modal]="true" [responsive]="false" [minWidth]="500"
+              [closable]="false" [closeOnEscape]="false" appendTo="body">
+      <div style="width: 100%; height: 100%; margin: auto; background-color: white;" >
+        <div class="ui-g ui-fluid">
+          <div class="ui-g-12 ui-md-2">
+            <label>Copy To: </label>
+          </div>
+          <div class="ui-g-12 ui-md-10">
+            <p-dropdown [options]="listSiblingMSGs" [autoWidth]="false" appendTo="body" name="toMSG" [(ngModel)]="toMSG"></p-dropdown>
+          </div>
+        </div>
+      </div>
+      <p-footer>
+        <button pButton type="button" label="OK" class="ui-button-raised green-btn pull-right" (click)="copyCSForMSG()"></button>
+        <button pButton type="button" label="Discard" class="ui-button-raised ui-button-primary pull-right" (click)="discardCopyCSForMSG()"></button>
       </p-footer>
     </p-dialog>
   </form>

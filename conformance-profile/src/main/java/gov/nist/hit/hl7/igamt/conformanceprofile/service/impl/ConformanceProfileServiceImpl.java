@@ -341,7 +341,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
     if (conformanceStatementIds != null) {
       for (String id : conformanceStatementIds) {
-        result.add(this.conformanceStatementRepository.findById(id).get());
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
 
@@ -1017,7 +1018,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
         item.setOldPropertyValue(cp.getUsageNotes());
         cp.setUsageNotes((String) item.getPropertyValue());
-      } else if (item.getPropertyType().equals(PropertyType.INDENTIFIER)) {
+      } else if (item.getPropertyType().equals(PropertyType.IDENTIFIER)) {
         item.setOldPropertyValue(cp.getIdentifier());
         cp.setIdentifier((String) item.getPropertyValue());
       } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
@@ -1110,7 +1111,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (item.getChangeType().equals(ChangeType.ADD)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
           cs.addSourceId(cp.getId());
-          cs.setStructureId(cp.getName());
+          cs.setStructureId(cp.getStructID());
           cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
@@ -1124,7 +1125,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));  
           }
           cs.addSourceId(cp.getId());
-          cs.setStructureId(cp.getName());
+          cs.setStructureId(cp.getStructID());
           cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
@@ -1136,7 +1137,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (item.getChangeType().equals(ChangeType.ADD)) {
           Predicate p = mapper.readValue(jsonInString, Predicate.class);
           p.addSourceId(cp.getId());
-          p.setStructureId(cp.getName());
+          p.setStructureId(cp.getStructID());
           p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);
@@ -1160,7 +1161,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));  
           }
           p.addSourceId(cp.getId());
-          p.setStructureId(cp.getName());
+          p.setStructureId(cp.getStructID());
           p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);

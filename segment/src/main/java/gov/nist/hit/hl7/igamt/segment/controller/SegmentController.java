@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -116,7 +117,8 @@ public class SegmentController extends BaseController {
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
     if (segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
       for (String csId : segment.getBinding().getConformanceStatementIds()) {
-        cfs.add(conformanceStatementRepository.findById(csId).get());
+        Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
+        if(cs.isPresent()) cfs.add(cs.get());
       }
     }
 
