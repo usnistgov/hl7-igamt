@@ -503,26 +503,20 @@ public class IGDocumentController extends BaseController {
    * @param id
    * @param datatypeId
    * @param authentication
+ * @return 
    * @return
    * @throws IGNotFoundException
    * @throws XReferenceException
    */
-//  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref",
-//      method = RequestMethod.GET, produces = {"application/json"})
-//  public @ResponseBody Map<String, List<CrossRefsNode>> findDatatypeCrossRef(
-//      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
-//      Authentication authentication) throws IGNotFoundException, XReferenceException {
-//    Ig ig = igService.findById(id);
-//    if (ig != null) {
-//      Set<String> filterDatatypeIds = gatherIds(ig.getDatatypeRegistry().getChildren());
-//      Set<String> filterSegmentIds = gatherIds(ig.getSegmentRegistry().getChildren());
-//      Map<String, List<CrossRefsNode>> results =
-//          xRefService.getDatatypeReferences(datatypeId, filterDatatypeIds, filterSegmentIds);
-//      return results;
-//    } else {
-//      throw new IGNotFoundException("Cannot find Id document");
-//    }
-//  }
+  @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref",
+      method = RequestMethod.GET, produces = {"application/json"})
+  public @ResponseBody List<RelationShip> findDatatypeCrossRef(
+      @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
+      Authentication authentication) throws IGNotFoundException, XReferenceException {
+	  
+	 return this.relationShipService.findCrossReferences(datatypeId);
+    
+  }
 
   /**
    * 

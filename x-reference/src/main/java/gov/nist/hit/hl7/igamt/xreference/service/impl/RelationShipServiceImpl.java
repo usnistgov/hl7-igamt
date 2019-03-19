@@ -15,26 +15,21 @@ public class RelationShipServiceImpl implements RelationShipService {
   
   @Autowired
   RelationShipRepository repo;
-  
 
-  
   @Override
   public List<RelationShip> findAllDependencies(String id){
-    
    return repo.findByParentId(id);
-    
   }
+  
   @Override
   public void deleteDependencies(String id){
-    
     repo.deleteByParentId(id);
-     
   }
+  
   @Override
   public List<RelationShip> findCrossReferences(String id){
     return repo.findByChildId(id);
   }
-  
   
   @Override
   public RelationShip save(RelationShip relation){
@@ -46,21 +41,21 @@ public class RelationShipServiceImpl implements RelationShipService {
   public void saveAll(Set<RelationShip> relations){
     repo.saveAll(relations);
   }
-@Override
-public List<RelationShip> findAll() {
-	// TODO Auto-generated method stub
+  
+  @Override
+  public List<RelationShip> findAll() {
 	return (List<RelationShip>) repo.findAll();
-}
-@Override
-public void deleteAll() {
-	// TODO Auto-generated method stub
+  }
+  
+  @Override
+  public void deleteAll() {
 	repo.deleteAll();
-}
-@Override
-public List<RelationShip> findByPath(String path) {
-	// TODO Auto-generated method stub
+  }
+  
+  @Override
+  public List<RelationShip> findByPath(String path) {
 	return repo.findByPath(path);
-}
+  }
 
 
 }

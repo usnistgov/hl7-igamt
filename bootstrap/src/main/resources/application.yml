@@ -3,6 +3,7 @@ spring:
     name: hl7-igamt
   main: 
     allow-bean-definition-overriding: true
+
 server: 
     port: 8091
     servlet:
@@ -21,13 +22,6 @@ logging:
   path: /var/log/hl7-igamt/
   exception-conversion-word: '%wEx'
   
-security:
-    headers:
-      frame: true
-      xss: true
-      hsts: all
-    enable-csrf: false
-    
 db:
   name: igamt-hl7
   port: 27017

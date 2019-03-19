@@ -167,6 +167,7 @@ export  class TocService{
 
 
 
+
   findDirectChildByType(nodes, type){
 
     for(let i=0;i<nodes.length; i++){
@@ -350,14 +351,10 @@ export  class TocService{
   changeIds(newData){
     newData.id= UUID.UUID();
     if(newData.children && newData.children.length){
-
         for(let i=0; i< newData.children.length; i++){
-
           this.changeIds(newData.children[i]);
-
         }
     }
-
   }
 
   saveNodes(id,nodes,resolve, reject){

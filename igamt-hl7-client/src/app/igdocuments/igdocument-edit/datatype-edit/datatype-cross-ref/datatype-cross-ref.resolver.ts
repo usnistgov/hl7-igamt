@@ -13,6 +13,7 @@ import {Observable} from "rxjs";
 import {observable} from "rxjs/symbol/observable";
 import {forEach} from "@angular/router/src/utils/collection";
 import {TocService} from "../../service/toc.service";
+import {RelationShip} from "../../../../common/relationship/relationship";
 
 @Injectable()
 export  class DatatypeCrossRefResolver implements Resolve<any>{
@@ -24,7 +25,7 @@ export  class DatatypeCrossRefResolver implements Resolve<any>{
     let datatypeId= route.params["datatypeId"];
     let igId= route.parent.parent.params["igId"];
 
-    return this.http.get( "api/igdocuments/"+igId+"/datatypes/"+datatypeId+"/crossref");
+    return this.http.get<RelationShip[]>( "api/igdocuments/"+igId+"/datatypes/"+datatypeId+"/crossref");
 
   }
 }

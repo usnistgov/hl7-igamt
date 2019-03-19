@@ -127,6 +127,7 @@ import {ReportService} from "./dialog-wrapper/report.service";
 import {DisplayService} from "./display/display.service";
 import { ElementLabelComponent } from './common/element-label/element-label.component';
 import { ValuesetDeltaColComponent } from './common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
+import {CrossReferenceService} from "./common/cross-reference/cross-reference.service";
 
 @NgModule({
     imports: [
@@ -266,7 +267,7 @@ ChipsModule,
         ClientErrorHandlerService,
         ConfirmationService,
         ReportService,
-    DisplayService
+        DisplayService,CrossReferenceService
   ],
     bootstrap: [AppComponent]
 })

@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
+import {TocService} from "../../service/toc.service";
+import {TreeNode} from "angular-tree-component";
+import {CrossReferenceService} from "../../../../common/cross-reference/cross-reference.service";
+import {RelationShip} from "../../../../common/relationship/relationship";
 
 @Component({
   selector: 'app-datatype-cross-ref',
@@ -9,21 +13,23 @@ import {ActivatedRoute, Router} from "@angular/router";
 export class DatatypeCrossRefComponent implements OnInit {
 
 
-  crossRefs:any;
+  crossRefs : any;
+  relations : RelationShip[];
 
-  constructor(private activeRoute: ActivatedRoute, private  router : Router) { }
+  constructor(private activeRoute: ActivatedRoute, private tocService : TocService, private crossReferenceService: CrossReferenceService) {
 
-  ngOnInit() {
+  }
 
-    this.activeRoute.data.map(data =>data.refs).subscribe(x=>{
 
-      this.crossRefs=x;
+  ngOnInit () {
 
+    this.activeRoute.data.map(data =>data.refs).subscribe( x  => {
+
+      //this.crossRefs= this.crossReferenceService.getReferenceNodes(this.relations, this.tocService.getTreeModel());
 
     });
+  }
 
 
 
   }
-
-}

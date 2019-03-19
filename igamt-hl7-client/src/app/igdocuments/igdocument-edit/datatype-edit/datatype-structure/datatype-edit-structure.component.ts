@@ -39,7 +39,7 @@ export class DatatypeEditStructureComponent implements WithSave{
   constructor(private route: ActivatedRoute,
               private router : Router,
               private configService : GeneralConfigurationService,
-              private datatypesService : DatatypesService){
+              private datatypesService : DatatypesService, private tocService: TocService){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -51,7 +51,6 @@ export class DatatypeEditStructureComponent implements WithSave{
     this.changeItems = [];
     this.datatypeId = this.route.snapshot.params["datatypeId"];
     this.igId = this.router.url.split("/")[2];
-
     this.route.data.map(data =>data.datatypeStructure).subscribe(x=>{
       x.structure = this.configService.arraySortByPosition(x.structure);
       this.datatypeStructure = {};

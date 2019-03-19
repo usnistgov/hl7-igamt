@@ -29,7 +29,6 @@ import {UUID} from "angular2-uuid";
 })
 export class IgDocumentEditComponent {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
-
   @ViewChild(AddConformanceProfileComponent) addCps: AddConformanceProfileComponent;
   @ViewChild(AddSegmentComponent) addSegs: AddSegmentComponent;
   @ViewChild(AddDatatypeComponent) addDts: AddDatatypeComponent;

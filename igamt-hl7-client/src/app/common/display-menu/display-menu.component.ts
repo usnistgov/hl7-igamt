@@ -73,7 +73,7 @@ export class DisplayMenuComponent {
 
     }
 
-   // ret.push(  new SubMenu("crossRef"+"/"+this.elm.id,"crossRef","Cross Reference", "fa fa-list"));
+   ret.push(  new SubMenu("crossRef"+"/"+this.elm.id,"crossRef","Cross Reference", "fa fa-list"));
 
 
   return ret;

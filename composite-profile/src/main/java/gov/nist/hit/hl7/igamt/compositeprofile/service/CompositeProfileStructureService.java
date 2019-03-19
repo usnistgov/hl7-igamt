@@ -36,6 +36,4 @@ public interface CompositeProfileStructureService {
   public void delete(String id);
 
   public void removeCollection();
-
-  public List<CompositeProfile> findAllById(Set<String> linksAsIds);
 }

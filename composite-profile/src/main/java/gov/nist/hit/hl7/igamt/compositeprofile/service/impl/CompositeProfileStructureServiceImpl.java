@@ -12,11 +12,13 @@
 package gov.nist.hit.hl7.igamt.compositeprofile.service.impl;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
+import gov.nist.hit.hl7.igamt.compositeprofile.model.CompositeProfile;
 import gov.nist.hit.hl7.igamt.compositeprofile.repository.CompositeProfileStructureRepository;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
 
