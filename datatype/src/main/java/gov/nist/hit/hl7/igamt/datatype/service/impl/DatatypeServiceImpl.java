@@ -1410,6 +1410,5 @@ public class DatatypeServiceImpl implements DatatypeService {
         }
       }
     }
-    
   }
 }
