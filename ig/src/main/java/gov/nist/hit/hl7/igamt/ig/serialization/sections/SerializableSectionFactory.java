@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileR
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.serialization.SerializableConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.serialization.SerializableDatatypeRegistry;
@@ -55,7 +56,7 @@ public class SerializableSectionFactory {
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration, CoConstraintService coConstraintService) {
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration, CoConstraintService coConstraintService, ConformanceStatementRepository conformanceStatementRepository) {
     SerializableSection serializableSection = null;
     if (Type.TEXT.equals(section.getType())) {
       serializableSection = new SerializableTextSection((TextSection) section, level);
@@ -64,7 +65,7 @@ public class SerializableSectionFactory {
           valuesetsMap, valuesetNamesMap, valuesetLabelMap, segmentsMap, conformanceProfilesMap, valueSetRegistry,
           datatypeRegistry, segmentRegistry, conformanceProfileRegistry, profileComponentRegistry,
           compositeProfileRegistry, bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
-          bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration, coConstraintService);
+          bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration, coConstraintService, conformanceStatementRepository);
     } else if (Type.DATATYPEREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeDatatypeTable()) {
       serializableSection = new SerializableDatatypeRegistry(section, level, datatypeRegistry,
@@ -78,12 +79,12 @@ public class SerializableSectionFactory {
     } else if (Type.SEGMENTREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeSegmentTable()) {
       serializableSection = new SerializableSegmentRegistry(section, level, segmentRegistry,
-          segmentsMap,datatypesMap, datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedSegments, bindedFields, coConstraintService, exportConfiguration);
+          segmentsMap,datatypesMap, datatypeNamesMap, valuesetNamesMap, valuesetLabelMap, bindedSegments, bindedFields, coConstraintService, exportConfiguration, conformanceStatementRepository);
       }
     } else if (Type.CONFORMANCEPROFILEREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeMessageTable()) {
       serializableSection = new SerializableConformanceProfileRegistry(section, level,
-          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, valuesetLabelMap, bindedGroupsAndSegmentRefs);
+          conformanceProfileRegistry, conformanceProfilesMap, segmentsMap, valuesetNamesMap, valuesetLabelMap, bindedGroupsAndSegmentRefs, conformanceStatementRepository);
       }
     } else if (Type.PROFILECOMPONENTREGISTRY.equals(section.getType())) {
       if(exportConfiguration.isIncludeProfileComponentTable()) {

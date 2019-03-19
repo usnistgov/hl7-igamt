@@ -5,7 +5,7 @@
         <xsl:param name="type"/>
         <xsl:param name="displayPeriod"/>
         <xsl:choose>
-            <xsl:when test="$mode='inlineSegment' or $mode='inlineDatatype'">
+            <xsl:when test="$mode='inlineSegment' or $mode='inlineDatatype'">            
                 <xsl:variable name="predicateColSpan" select="4"></xsl:variable>
                 <xsl:choose>
                     <xsl:when test="$mode='inlineSegment'">
@@ -43,17 +43,19 @@
                     </xsl:element>
                 </xsl:element>
             </xsl:when>
-            <xsl:when test="$mode='standalone'">
+            <xsl:when test="$mode='standalone'">            
                 <xsl:element name="tr">
                     <xsl:attribute name="class">
                         <xsl:text>.contentTr</xsl:text>
                     </xsl:attribute>
-                    <xsl:if test="$type='cs'">
+<!--                     <xsl:if test="count(ConformanceStatement)  &gt; 0">
+ -->                                  
                         <xsl:element name="td">
                             <xsl:value-of select="@identifier" />
                         </xsl:element>
-                    </xsl:if>
-                    <xsl:if test="$type='pre'">
+       
+<!--                     </xsl:if>
+ -->                    <xsl:if test="$type='pre'">
                         <xsl:element name="td">
                             <xsl:value-of select="@location"></xsl:value-of>
                         </xsl:element>

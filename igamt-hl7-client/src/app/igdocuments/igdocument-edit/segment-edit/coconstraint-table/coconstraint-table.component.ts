@@ -136,7 +136,7 @@ export class CoConstraintTableComponent implements OnInit, WithSave {
     if (!empty) {
       return 'initial';
     } else {
-      return 200 + x * 250;
+      return 200 + x * 350;
     }
   }
 

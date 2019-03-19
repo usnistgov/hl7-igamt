@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableConstraints;
 import gov.nist.hit.hl7.igamt.serialization.domain.SerializableRegistry;
@@ -44,6 +45,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   private Map<String, Segment> segmentsMap;
   private Set<String> bindedGroupsAndSegmentRefs;
   private Set<SerializableConformanceProfile> serializableConformanceProfiles;
+  private ConformanceStatementRepository conformanceStatementRepository;
 
   /**
    * @param section
@@ -51,7 +53,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
   public SerializableConformanceProfileRegistry(Section section, int level,
       ConformanceProfileRegistry conformanceProfileRegistry,
       Map<String, ConformanceProfile> conformanceProfilesMap, Map<String, Segment> segmentsMap,
-      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedGroupsAndSegmentRefs) {
+      Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedGroupsAndSegmentRefs, ConformanceStatementRepository conformanceStatementRepository) {
     super(section, level, conformanceProfileRegistry);
     this.conformanceProfilesMap = conformanceProfilesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -59,6 +61,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
     this.segmentsMap = segmentsMap;
     this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
     this.serializableConformanceProfiles = new HashSet<>();
+    this.conformanceStatementRepository = conformanceStatementRepository;
   }
 
   /*
@@ -80,7 +83,7 @@ public class SerializableConformanceProfileRegistry extends SerializableRegistry
               SerializableConformanceProfile serializableConformanceProfile =
                   new SerializableConformanceProfile(conformanceProfile,
                       String.valueOf(conformanceProfileLink.getPosition()), this.getChildLevel(),
-                      this.valuesetNamesMap, this.valuesetLabelMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs);
+                      this.valuesetNamesMap, this.valuesetLabelMap, this.segmentsMap, this.bindedGroupsAndSegmentRefs, this.conformanceStatementRepository);
               if(serializableConformanceProfile != null) {
                 this.serializableConformanceProfiles.add(serializableConformanceProfile);
                 Element conformanceProfileElement = serializableConformanceProfile.serialize();

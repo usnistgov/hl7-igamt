@@ -107,6 +107,24 @@
 				<xsl:call-template name="displayMessageSegmentsOrGroups" />
 			</xsl:element>
 		</xsl:element>
+		<xsl:if test="count(Binding/ConformanceStatement)  &gt; 0">
+ <!-- 			<xsl:if test="count(./Constraint[@Type='cs']) &gt; 0">
+ -->				<xsl:element name="br" />
+				<xsl:call-template name="Constraint">
+					<xsl:with-param name="title">
+						<xsl:text>Conformance Statements</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="constraintMode">
+						<xsl:text>standalone</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="type">
+						<xsl:text>cs</xsl:text>
+					</xsl:with-param>
+					<xsl:with-param name="headerLevel">
+						<xsl:text>h4</xsl:text>
+					</xsl:with-param>
+				</xsl:call-template>
+ 			</xsl:if>
 		<xsl:call-template name="MessageConstraint">
 			<xsl:with-param name="constraintType">
 				<xsl:text>cs</xsl:text>

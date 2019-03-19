@@ -143,8 +143,8 @@ public class IgExportServiceImpl implements IgExportService {
           exportFontConfigurationService.getExportFontConfiguration(username);
       String xmlContent =
           igSerializationService.serializeIgDocument(igDocument, exportConfiguration);  
-//      System.out.println("XmlContent in IgExportService is : " + xmlContent);
-      	// TODO add app infoservice to get app version
+      System.out.println("XmlContent in IgExportService is : " + xmlContent);
+//      	 TODO add app infoservice to get app version
       ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),
           igDocument.getName(), igDocument.getMetadata().getCoverPicture(), exportConfiguration,
           exportFontConfiguration, "2.0_beta");

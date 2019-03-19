@@ -434,13 +434,13 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 		Row row = sheet.createRow(rowNumber);
 		int cellNumber = 0;
 		Cell usageCell = row.createCell(cellNumber++);
-		usageCell.setCellValue(coConstraintTableRow.getRequirements().getUsage().name());
+		usageCell.setCellValue("   " + coConstraintTableRow.getRequirements().getUsage().name()+"   ");
 		usageCell.setCellStyle(usageAndCardinalityStyle);
 		Cell cardinalityCell1 = row.createCell(cellNumber++);
-		cardinalityCell1.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMin());
+		cardinalityCell1.setCellValue("   " +coConstraintTableRow.getRequirements().getCardinality().getMin()+"   ");
 		cardinalityCell1.setCellStyle(usageAndCardinalityStyle);
 		Cell cardinalityCell2 = row.createCell(cellNumber++);
-		cardinalityCell2.setCellValue(coConstraintTableRow.getRequirements().getCardinality().getMax());
+		cardinalityCell2.setCellValue("   " +coConstraintTableRow.getRequirements().getCardinality().getMax()+"   ");
 		cardinalityCell2.setCellStyle(usageAndCardinalityStyle);
 
 
@@ -506,7 +506,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 
 		cellNumber = 0;
 		for(int i = 0; i <= 922; i++) {
-			sheet.autoSizeColumn(i);
+			sheet.autoSizeColumn(i,true);
 		}
 
 	}

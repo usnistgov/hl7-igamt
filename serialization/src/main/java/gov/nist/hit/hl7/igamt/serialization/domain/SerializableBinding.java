@@ -52,23 +52,28 @@ public class SerializableBinding extends SerializableElement {
   private Set<Element> conformanceStatements;
   private Set<Element> predicates;
   
-  @Autowired
-  private ConformanceStatementRepository conformanceStatementRepository;
+//  @Autowired
+//  private ConformanceStatementRepository conformanceStatementRepository;
+  
+//  ConformanceStatementRepository conformanceStatementRepository = new ConformanceStatementRepository();
   
   @Autowired
   private PredicateRepository predicateRepository;
+private ConformanceStatementRepository conformanceStatementRepository;
 
   /**
    * @param binding
+ * @param conformanceStatementRepository 
    */
   public SerializableBinding(Binding binding, Map<String, String> idPathMap,
-      Map<String, String> valuesetNamesMap) {
-    super("binding" + binding.getElementId(), "1", "Bindings");
+      Map<String, String> valuesetNamesMap, ConformanceStatementRepository conformanceStatementRepository) {
+    super("binding" + binding.getElementId(), "1", "Bindings");   
     this.binding = binding;
     this.valuesetNamesMap = valuesetNamesMap;
     this.idPathMap = idPathMap;
     this.conformanceStatements = new HashSet<>();
     this.predicates = new HashSet<>();
+    this.conformanceStatementRepository=conformanceStatementRepository;
   }
 
   /*

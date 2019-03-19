@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraints;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -55,6 +56,7 @@ public class SerializableSegment extends SerializableResource {
   private Set<String> bindedFields;
   private CoConstraintService coConstraintService;
 private ExportConfiguration exportConfiguration;
+private ConformanceStatementRepository conformanceStatementRepository;
 
   /**
    * @param segment
@@ -64,7 +66,7 @@ private ExportConfiguration exportConfiguration;
    */
   public SerializableSegment(Segment segment, String position, int level,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypesNamesMap, Map<String, String> valuesetNamesMap,
-      Map<String, String> valuesetLabelMap, Set<String> bindedFields,CoConstraintService coConstraintService, ExportConfiguration exportConfiguration) {
+      Map<String, String> valuesetLabelMap, Set<String> bindedFields,CoConstraintService coConstraintService, ExportConfiguration exportConfiguration, ConformanceStatementRepository conformanceStatementRepository) {
     super(segment, position);
     this.datatypesNamesMap = datatypesNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -74,6 +76,7 @@ private ExportConfiguration exportConfiguration;
     this.coConstraintService=coConstraintService;
     this.datatypesMap=datatypesMap;
     this.exportConfiguration=exportConfiguration;
+    this.conformanceStatementRepository=conformanceStatementRepository;
   }
 
   @Override
@@ -97,7 +100,8 @@ private ExportConfiguration exportConfiguration;
       }
       if (segment.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap);
+            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap,this.conformanceStatementRepository);
+
         if (bindingElement != null) {
           segmentElement.appendChild(bindingElement);
         }

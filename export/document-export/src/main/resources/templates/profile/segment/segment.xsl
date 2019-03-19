@@ -163,9 +163,9 @@
 				</xsl:element>
 			</xsl:element>
 		</xsl:element>
-		<xsl:if test="count(Constraint) &gt; 0">
-			<xsl:if test="count(./Constraint[@Type='cs']) &gt; 0">
-				<xsl:element name="br" />
+ 		<xsl:if test="count(Binding/ConformanceStatement)  &gt; 0">
+ <!-- 			<xsl:if test="count(./Constraint[@Type='cs']) &gt; 0">
+ -->				<xsl:element name="br" />
 				<xsl:call-template name="Constraint">
 					<xsl:with-param name="title">
 						<xsl:text>Conformance Statements</xsl:text>
@@ -180,8 +180,8 @@
 						<xsl:text>h4</xsl:text>
 					</xsl:with-param>
 				</xsl:call-template>
-			</xsl:if>
-			<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
+ 			</xsl:if>
+ 		<xsl:if test="count(./Constraint[@Type='pre'])  &gt; 0">
 				<xsl:element name="br" />
 				<xsl:call-template name="Constraint">
 					<xsl:with-param name="title">
@@ -198,8 +198,8 @@
 					</xsl:with-param>
 				</xsl:call-template>
 			</xsl:if>
-		</xsl:if>
-
+<!-- 		</xsl:if>
+ -->
 		<xsl:apply-templates select="./coconstraints" />
 		<xsl:apply-templates select="./Binding/ValueSetBindingList" />
 		<xsl:apply-templates select="./DynamicMapping" />
