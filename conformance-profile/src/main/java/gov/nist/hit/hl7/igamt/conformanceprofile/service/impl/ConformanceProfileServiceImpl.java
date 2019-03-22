@@ -548,6 +548,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
 
     result.setType(Type.CONFORMANCEPROFILE);
+    result.setName(conformanceProfile.getStructID());
     return result;
   }
 
