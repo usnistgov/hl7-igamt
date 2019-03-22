@@ -24,6 +24,7 @@ public class SectionInfo {
   @DeltaField
   protected String description;
   protected String from;
+  protected String origin;
 
   public String getLabel() {
     return label;
@@ -108,9 +109,19 @@ public class SectionInfo {
     section.setDomainInfo(elm.getDomainInfo());
     section.setDescription(elm.getDescription());
     section.setFrom(elm.getFrom());
+    section.setOrigin(elm.getOrigin());
   }
 
-  public String getFrom() {
+
+  public String getOrigin() {
+	return origin;
+  }
+
+  public void setOrigin(String origin) {
+	this.origin = origin;
+  }
+
+public String getFrom() {
     return from;
   }
 

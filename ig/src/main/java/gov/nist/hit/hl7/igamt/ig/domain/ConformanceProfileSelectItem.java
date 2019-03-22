@@ -9,31 +9,37 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.change.entity.domain;
+package gov.nist.hit.hl7.igamt.ig.domain;
+
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 
 /**
  * @author jungyubw
  *
  */
-public enum PropertyType {
-  //METDATA
-  EXT, AUTHORNOTES,USAGENOTES,IDENTIFIER, BINDINGIDENTIFIER,
+public class ConformanceProfileSelectItem {
+  private String label;
+  private ConformanceProfileLabel value;
   
-  //PRETEXT
-  PREDEF,
+  public ConformanceProfileSelectItem(String label, ConformanceProfileLabel value) {
+    super();
+    this.label = label;
+    this.value = value;
+  }
   
-  //POSTTEXT
-  POSTDEF,
   
-  //DYNAMICMAPPING
-  MAPPINGITEM,
+  public String getLabel() {
+    return label;
+  }
+  public void setLabel(String label) {
+    this.label = label;
+  }
+  public ConformanceProfileLabel getValue() {
+    return value;
+  }
+  public void setValue(ConformanceProfileLabel value) {
+    this.value = value;
+  }
   
-  //CONFORMANCESTATEMENT
-  STATEMENT, PATTERN,
   
-  //COCONSTRAINT
-  COCONSTRAINT,
-  
-  //STRUCTURE
-  USAGE, TRUEUSAGE, FALSEUSAGE, CARDINALITYMIN, CARDINALITYMAX, LENGTHMIN, LENGTHMAX, CONFLENGTH, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, DEFINITIONTEXT, COMMENT, SEGMENTREF
 }

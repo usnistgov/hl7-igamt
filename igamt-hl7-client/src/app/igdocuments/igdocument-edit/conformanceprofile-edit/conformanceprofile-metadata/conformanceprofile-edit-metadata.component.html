@@ -18,7 +18,7 @@
             <label class="metadata-label ui-g-2">
                 Identifier
             </label>
-            <input name="identifier" id="identifier" pInputText type="text" class="ui-g-10" #ext="ngModel" [(ngModel)]="conformanceprofileMetadata.identifier" />
+            <input name="identifier" id="identifier" pInputText type="text" (change)="createChanges(conformanceprofileMetadata, backup)"  class="ui-g-10" #ext="ngModel" [(ngModel)]="conformanceprofileMetadata.identifier" />
         </div>
 
         <div class="ui-g input-box">

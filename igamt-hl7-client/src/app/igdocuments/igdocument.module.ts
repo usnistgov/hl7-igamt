@@ -20,7 +20,6 @@ import {DataViewModule} from "primeng/components/dataview/dataview";
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {ConfirmationService} from 'primeng/api';
 import {DeltaService} from '../common/delta/service/delta.service';
-import { SegmentDeltaComponent } from './igdocument-edit/segment-edit/segment-delta/segment-delta.component';
 
 @NgModule({
 	imports: [

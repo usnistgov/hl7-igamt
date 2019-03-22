@@ -56,6 +56,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
@@ -633,19 +634,19 @@ public class SegmentServiceImpl implements SegmentService {
    * java.util.HashMap, gov.nist.hit.hl7.igamt.common.base.domain.Link, java.lang.String)
    */
   @Override
-  public Link cloneSegment(String key, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username)
+  public Link cloneSegment(String key,
+      HashMap<String, String> valuesetsMap,HashMap<String, String> datatypesMap, Link l, String username)
       throws CoConstraintSaveException {
 
     Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
-
+    elm.setOrigin(elm.getFrom());
     Link newLink = l.clone(key);
     elm.setId(newLink.getId());
 
-    updateDependencies(elm, datatypesMap, valuesetsMap, username);
+    updateDependencies(elm,valuesetsMap, datatypesMap, username);
     this.save(elm);
-    updateCoConstraint(elm, obj, datatypesMap, valuesetsMap, username);
+    updateCoConstraint(elm, obj,valuesetsMap, datatypesMap, username);
     return newLink;
 
   }
@@ -656,8 +657,8 @@ public class SegmentServiceImpl implements SegmentService {
    * @param valuesetsMap
    * @throws CoConstraintSaveException
    */
-  private void updateDependencies(Segment elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, String username) throws CoConstraintSaveException {
+  private void updateDependencies(Segment elm,
+      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
     // TODO Auto-generated method stub
 
     for (Field f : elm.getChildren()) {
@@ -672,12 +673,12 @@ public class SegmentServiceImpl implements SegmentService {
     updateBindings(elm.getBinding(), valuesetsMap);
   }
 
-  private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, String username) throws CoConstraintSaveException {
+  private void updateCoConstraint(Segment elm, Segment old,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+       String username) throws CoConstraintSaveException {
     CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
     if (cc != null) {
       CoConstraintTable cc_ =
-          coConstraintService.clone(datatypesMap, valuesetsMap, elm.getId(), cc);
+          coConstraintService.clone(valuesetsMap, datatypesMap,elm.getId(), cc);
       coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
     }
 
@@ -872,7 +873,7 @@ public class SegmentServiceImpl implements SegmentService {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
           cs.addSourceId(s.getId());
           cs.setStructureId(s.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.SEGMENT);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           s.getBinding().addConformanceStatement(cs.getId());
@@ -886,7 +887,7 @@ public class SegmentServiceImpl implements SegmentService {
           }
           cs.addSourceId(s.getId());
           cs.setStructureId(s.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setLevel(Level.SEGMENT);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
         }
@@ -898,7 +899,7 @@ public class SegmentServiceImpl implements SegmentService {
           Predicate cp = mapper.readValue(jsonInString, Predicate.class);
           cp.addSourceId(s.getId());
           cp.setStructureId(s.getName());
-          cp.setLevel(Level.DATATYPE);
+          cp.setLevel(Level.SEGMENT);
           cp.setIgDocumentId(documentId);
           cp = this.predicateRepository.save(cp);
           seb.setPredicateId(cp.getId());
@@ -922,7 +923,7 @@ public class SegmentServiceImpl implements SegmentService {
           }
           cp.addSourceId(s.getId());
           cp.setStructureId(s.getName());
-          cp.setLevel(Level.DATATYPE);
+          cp.setLevel(Level.SEGMENT);
           cp.setIgDocumentId(documentId);
           cp = this.predicateRepository.save(cp);
         }
@@ -1387,9 +1388,10 @@ public class SegmentServiceImpl implements SegmentService {
 
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if (conformanceStatementIds != null) {
-      for (String id : conformanceStatementIds) {
-        result.add(this.conformanceStatementRepository.findById(id).get());
+    if(conformanceStatementIds != null){
+      for(String id : conformanceStatementIds){
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
 
@@ -1450,5 +1452,52 @@ public class SegmentServiceImpl implements SegmentService {
       if(!cs.getSourceIds().contains(segmentId)) result.add(cs);
     }
     return result;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#findDisplayPredicates(java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
+    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.SEGMENT);
+    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
+    if(predicates != null){
+      for(Predicate p : predicates){
+        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
+          Optional<Segment> o = this.segmentRepository.findById(sourceId);
+          if(o.isPresent()){
+            DisplayPredicate dp = new DisplayPredicate();
+            dp.setPredicate(p);
+            Segment s = o.get();
+            if(s.getBinding() != null && s.getBinding().getChildren() != null){
+              this.markLocation(dp, s.getBinding().getChildren(), s.getName(), p.getId());
+            }
+            result.add(dp);            
+          }
+        }
+      }
+    }
+    return result;
+  }
+  
+  private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
+    for(StructureElementBinding seb: children){
+      if(seb.getPredicateId() != null && seb.getPredicateId().equals(pid)){
+        if(seb.getLocationInfo().getType().equals(LocationType.FIELD)){
+          dp.setLocation(location + "-" + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");  
+        }else{
+          dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");  
+        }
+        
+      }else {
+        if(seb.getChildren() != null){
+          if(seb.getLocationInfo().getType().equals(LocationType.FIELD)){
+            this.markLocation(dp, seb.getChildren(), location + "-" + seb.getLocationInfo().getPosition(), pid);
+          }else{
+            this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
+          }
+        }
+      }
+    }
   }
 }

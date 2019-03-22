@@ -27,6 +27,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -86,7 +88,7 @@ public interface DatatypeService {
 
   Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-  public Link cloneDatatype(HashMap<String, String> datatypesMap, HashMap<String, String> valuesetsMap, Link l, String username);
+  public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l, String username);
 
   public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
@@ -109,4 +111,6 @@ public interface DatatypeService {
   public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
   
   public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId, String datatypeName);
+  
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 }

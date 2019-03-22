@@ -16,6 +16,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -30,6 +31,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 
 /**
@@ -124,4 +126,6 @@ public interface ConformanceProfileService {
 
   
   public Binding makeLocationInfo(ConformanceProfile cp);
+  
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 }

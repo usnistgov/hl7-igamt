@@ -71,7 +71,8 @@ export class ConformanceprofileEditMetadataComponent extends HasFroala implement
     }
 
     save(): Promise<any>{
-        return new Promise((resolve, reject)=>{
+      this.createChanges(this.conformanceprofileMetadata,this.backup);
+      return new Promise((resolve, reject)=>{
                 let treeModel=this.tocService.getTreeModel();
                 let node = treeModel.getNodeById(this.conformanceprofileId);
                 node.data.data.label= this.conformanceprofileMetadata.name;

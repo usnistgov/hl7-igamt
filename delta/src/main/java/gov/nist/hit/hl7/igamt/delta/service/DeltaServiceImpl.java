@@ -41,7 +41,7 @@ public class DeltaServiceImpl implements DeltaService {
       java.util.function.Function<String, E> repository) throws Exception {
 
     E target = repository.apply(id);
-    E source = repository.apply(target.getFrom());
+    E source = repository.apply(target.getOrigin());
     DeltaProcessor processor = new DeltaProcessor();
 
     if (target == null || source == null) {

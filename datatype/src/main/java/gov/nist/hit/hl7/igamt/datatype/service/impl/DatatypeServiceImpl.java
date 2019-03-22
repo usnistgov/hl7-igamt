@@ -56,6 +56,7 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
@@ -352,7 +353,8 @@ public class DatatypeServiceImpl implements DatatypeService {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
     if (conformanceStatementIds != null) {
       for (String id : conformanceStatementIds) {
-        result.add(this.conformanceStatementRepository.findById(id).get());
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
 
@@ -373,18 +375,17 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public Link cloneDatatype(HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username) {
+  public Link cloneDatatype(HashMap<String, String> valuesetsMap,
+      HashMap<String, String> datatypesMap, Link l, String username) {
     // TODO Auto-generated method stub
 
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
     Link newLink = l.clone(null);
+    elm.setOrigin(elm.getFrom());
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-
-
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
       datatypesMap.put(l.getId(), newKey);
@@ -398,8 +399,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
 
-  private void updateDependencies(Datatype elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap) {
+  private void updateDependencies(Datatype elm, HashMap<String, String> valuesetsMap ,
+      HashMap<String, String> datatypesMap) {
     // TODO Auto-generated method stub
 
     if (elm instanceof ComplexDatatype) {
@@ -1371,5 +1372,43 @@ public class DatatypeServiceImpl implements DatatypeService {
         result.add(cs);
     }
     return result;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findDisplayPredicates(java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
+    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.DATATYPE);
+    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
+    if(predicates != null){
+      for(Predicate p : predicates){
+        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
+          Optional<Datatype> o = this.datatypeRepository.findById(sourceId);
+          if(o.isPresent()){
+            DisplayPredicate dp = new DisplayPredicate();
+            dp.setPredicate(p);
+            Datatype dt = o.get();
+            if(dt.getBinding() != null && dt.getBinding().getChildren() != null){
+              this.markLocation(dp, dt.getBinding().getChildren(), dt.getName(), p.getId());
+            }
+            result.add(dp);            
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
+    for(StructureElementBinding seb: children){
+      if(seb.getPredicateId() != null && seb.getPredicateId().equals(pid)){
+        dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");
+      }else {
+        if(seb.getChildren() != null){
+          this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
+        }
+      }
+    }
   }
 }

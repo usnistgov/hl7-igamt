@@ -12,8 +12,12 @@
 package gov.nist.hit.hl7.igamt.ig.domain;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 
 /**
  * @author jungyubw
@@ -23,26 +27,75 @@ public class IgDocumentConformanceStatement {
   private HashMap<String, ConformanceStatementsContainer> associatedMSGConformanceStatementMap;
   private HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap;
   private HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap;
-  
+
+  private Set<DatatypeSelectItem> usersDatatypesSelectItems;
+  private Set<SegmentSelectItem> usersSegmentSelectItems;
+  private Set<ConformanceProfileSelectItem> usersConformanceProfileSelectItems;
+
   public HashMap<String, ConformanceStatementsContainer> getAssociatedMSGConformanceStatementMap() {
     return associatedMSGConformanceStatementMap;
   }
+
   public void setAssociatedMSGConformanceStatementMap(
       HashMap<String, ConformanceStatementsContainer> associatedMSGConformanceStatementMap) {
     this.associatedMSGConformanceStatementMap = associatedMSGConformanceStatementMap;
   }
+
   public HashMap<String, ConformanceStatementsContainer> getAssociatedSEGConformanceStatementMap() {
     return associatedSEGConformanceStatementMap;
   }
+
   public void setAssociatedSEGConformanceStatementMap(
       HashMap<String, ConformanceStatementsContainer> associatedSEGConformanceStatementMap) {
     this.associatedSEGConformanceStatementMap = associatedSEGConformanceStatementMap;
   }
+
   public HashMap<String, ConformanceStatementsContainer> getAssociatedDTConformanceStatementMap() {
     return associatedDTConformanceStatementMap;
   }
+
   public void setAssociatedDTConformanceStatementMap(
       HashMap<String, ConformanceStatementsContainer> associatedDTConformanceStatementMap) {
     this.associatedDTConformanceStatementMap = associatedDTConformanceStatementMap;
+  }
+
+  public Set<DatatypeSelectItem> getUsersDatatypesSelectItems() {
+    return usersDatatypesSelectItems;
+  }
+
+  public void setUsersDatatypesSelectItems(
+      Set<DatatypeSelectItem> usersDatatypesSelectItems) {
+    this.usersDatatypesSelectItems = usersDatatypesSelectItems;
+  }
+  
+  public void addUsersDatatypeSelectItem(DatatypeSelectItem item){
+    if(this.usersDatatypesSelectItems == null) this.usersDatatypesSelectItems = new HashSet<DatatypeSelectItem>();
+    this.usersDatatypesSelectItems.add(item);
+  }
+
+  public Set<SegmentSelectItem> getUsersSegmentSelectItems() {
+    return usersSegmentSelectItems;
+  }
+
+  public void setUsersSegmentSelectItems(Set<SegmentSelectItem> usersSegmentSelectItems) {
+    this.usersSegmentSelectItems = usersSegmentSelectItems;
+  }
+  
+  public void addUsersSegmentSelectItem(SegmentSelectItem item){
+    if(this.usersSegmentSelectItems == null) this.usersSegmentSelectItems = new HashSet<SegmentSelectItem>();
+    this.usersSegmentSelectItems.add(item);
+  }
+
+  public Set<ConformanceProfileSelectItem> getUsersConformanceProfileSelectItems() {
+    return usersConformanceProfileSelectItems;
+  }
+
+  public void setUsersConformanceProfileSelectItems(Set<ConformanceProfileSelectItem> usersConformanceProfileSelectItems) {
+    this.usersConformanceProfileSelectItems = usersConformanceProfileSelectItems;
+  }
+  
+  public void addUsersConformanceProfileSelectItem(ConformanceProfileSelectItem item){
+    if(this.usersConformanceProfileSelectItems == null) this.usersConformanceProfileSelectItems = new HashSet<ConformanceProfileSelectItem>();
+    this.usersConformanceProfileSelectItems.add(item);
   }
 }

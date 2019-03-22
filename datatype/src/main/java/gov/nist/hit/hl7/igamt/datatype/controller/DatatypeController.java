@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -39,14 +39,10 @@ import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDis
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @RestController
@@ -150,7 +146,8 @@ public class DatatypeController extends BaseController {
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
     if(datatype.getBinding() != null && datatype.getBinding().getConformanceStatementIds() != null) {
     	for(String csId : datatype.getBinding().getConformanceStatementIds()){
-    	  cfs.add(conformanceStatementRepository.findById(csId).get());
+    	  Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
+    	  if(cs.isPresent()) cfs.add(cs.get());
     	}
     }
     

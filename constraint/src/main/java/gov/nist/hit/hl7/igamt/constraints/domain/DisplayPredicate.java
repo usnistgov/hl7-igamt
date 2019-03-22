@@ -9,31 +9,47 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.common.change.entity.domain;
+package gov.nist.hit.hl7.igamt.constraints.domain;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
  * @author jungyubw
  *
  */
-public enum PropertyType {
-  //METDATA
-  EXT, AUTHORNOTES,USAGENOTES,IDENTIFIER, BINDINGIDENTIFIER,
+public class DisplayPredicate {
+
+  private Predicate predicate;
+  private String location;
   
-  //PRETEXT
-  PREDEF,
+  public Predicate getPredicate() {
+    return predicate;
+  }
   
-  //POSTTEXT
-  POSTDEF,
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
+  }
   
-  //DYNAMICMAPPING
-  MAPPINGITEM,
+  public String getLocation() {
+    return location;
+  }
   
-  //CONFORMANCESTATEMENT
-  STATEMENT, PATTERN,
+  public void setLocation(String location) {
+    this.location = location;
+  }
   
-  //COCONSTRAINT
-  COCONSTRAINT,
+  public Usage getTrueUsage(){
+    if(predicate != null) return this.predicate.getTrueUsage();
+    return null;
+  }
   
-  //STRUCTURE
-  USAGE, TRUEUSAGE, FALSEUSAGE, CARDINALITYMIN, CARDINALITYMAX, LENGTHMIN, LENGTHMAX, CONFLENGTH, DATATYPE, VALUESET, SINGLECODE, CONSTANTVALUE, PREDICATE, DEFINITIONTEXT, COMMENT, SEGMENTREF
+  public Usage getFalseUsage(){
+    if(predicate != null) return this.predicate.getFalseUsage();
+    return null;
+  }
+  
+  public String getDescription(){
+    if(predicate != null) return this.predicate.generateDescription();
+    return null;
+  }
 }

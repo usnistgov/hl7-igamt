@@ -118,7 +118,7 @@ public class CoConstraintServiceImpl implements CoConstraintService {
 	}
 
 	@Override
-	public CoConstraintTable clone(Map<String, String> datatypes, Map<String, String> valueSets, String segmentId,
+	public CoConstraintTable clone(Map<String, String> valueSets,Map<String, String> datatypes, String segmentId,
 			CoConstraintTable cc) {
 		CoConstraintTable clone = cc.clone();
 		clone.setId(segmentId);

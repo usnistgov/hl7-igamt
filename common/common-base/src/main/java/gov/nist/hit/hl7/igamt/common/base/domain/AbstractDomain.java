@@ -19,6 +19,7 @@ public abstract class AbstractDomain{
   private String createdFrom;
   private String authorNotes;
   private String usageNotes;
+  private String origin;
 
 
   @CreatedDate
@@ -158,6 +159,7 @@ public abstract class AbstractDomain{
 	elm.creationDate = creationDate;
 	elm.updateDate = updateDate;
 	elm.from = id;
+	elm.origin = origin;
   }
 
 public String getAuthorNotes() {
@@ -174,6 +176,14 @@ public String getUsageNotes() {
 
 public void setUsageNotes(String usageNotes) {
 	this.usageNotes = usageNotes;
+}
+
+public String getOrigin() {
+	return origin;
+}
+
+public void setOrigin(String origin) {
+	this.origin = origin;
 }
 
   
