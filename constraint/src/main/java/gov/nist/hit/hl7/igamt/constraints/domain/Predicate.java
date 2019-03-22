@@ -43,6 +43,7 @@ public abstract class Predicate {
   private String structureId;
   private HashSet<String> sourceIds;
   private String igDocumentId;
+  private String location;
 
   public Predicate() {
     super();
@@ -148,5 +149,13 @@ public abstract class Predicate {
 
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
+  }
+
+  public String getLocation() {
+    return location;
+  }
+
+  public void setLocation(String location) {
+    this.location = location;
   }
 }

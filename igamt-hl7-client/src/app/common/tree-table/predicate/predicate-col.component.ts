@@ -153,6 +153,7 @@ export class PredicateColComponent {
     this.selectedCP.trueUsage = this.trueUsage;
     this.selectedCP.falseUsage = this.falseUsage;
     this.selectedCP.identifier = this.idPath;
+    this.selectedCP.location = this.generateLocation(this.idPath, this.structure.structure, this.structure.name);
     if(this.selectedCP.type === 'ASSERTION') {
       this.constraintsService.generateDescriptionForSimpleAssertion(this.selectedCP.assertion, this.structure, 'D');
       this.selectedCP.assertion.description = 'IF ' + this.selectedCP.assertion.description;
@@ -179,6 +180,31 @@ export class PredicateColComponent {
     this.predicateChange.emit(this.predicate);
     this.selectedCP = {};
     this.cpEditor = false;
+  }
+
+  generateLocation(idPath, children, path){
+    for(var child of children){
+      if(idPath === child.data.id) {
+        if(child.data.type === 'FIELD'){
+          return path + '-' + child.data.position + '(' + child.data.name + ')';
+        }else if(child.data.type === 'COMPONENT' || child.data.type === 'SUBCOMPONENT'){
+          return path + '.' + child.data.position + '(' + child.data.name + ')';
+        }else {
+          return path + '.' + child.data.name;
+        }
+
+      }
+      if(idPath.startsWith(child.data.id)) {
+        if(child.data.type === 'FIELD'){
+          return this.generateLocation(idPath.replace(child.data.id + '-', ''), child.children, path + '-' + child.data.position);
+        }else if(child.data.type === 'COMPONENT' || child.data.type === 'SUBCOMPONENT') {
+          return this.generateLocation(idPath.replace(child.data.id + '-', ''), child.children, path + '.' + child.data.position);
+        }else {
+          return this.generateLocation(idPath.replace(child.data.id + '-', ''), child.children, path + '.' + child.data.name);
+        }
+      }
+    }
+    return path;
   }
 
   editContextTree(){
