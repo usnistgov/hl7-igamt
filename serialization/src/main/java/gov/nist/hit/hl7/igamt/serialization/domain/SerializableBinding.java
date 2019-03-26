@@ -57,16 +57,17 @@ public class SerializableBinding extends SerializableElement {
   
 //  ConformanceStatementRepository conformanceStatementRepository = new ConformanceStatementRepository();
   
-  @Autowired
-  private PredicateRepository predicateRepository;
+
 private ConformanceStatementRepository conformanceStatementRepository;
+private PredicateRepository predicateRepository;
 
   /**
    * @param binding
  * @param conformanceStatementRepository 
+ * @param predicateRepository 
    */
   public SerializableBinding(Binding binding, Map<String, String> idPathMap,
-      Map<String, String> valuesetNamesMap, ConformanceStatementRepository conformanceStatementRepository) {
+      Map<String, String> valuesetNamesMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     super("binding" + binding.getElementId(), "1", "Bindings");   
     this.binding = binding;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -74,6 +75,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
     this.conformanceStatements = new HashSet<>();
     this.predicates = new HashSet<>();
     this.conformanceStatementRepository=conformanceStatementRepository;
+    this.predicateRepository=predicateRepository;
   }
 
   /*
@@ -320,9 +322,12 @@ private ConformanceStatementRepository conformanceStatementRepository;
     if(predicateId != null){
       Predicate predicate = this.predicateRepository.findById(predicateId).get();
       Element predicateElement = new Element("Predicate");
-      predicateElement.addAttribute(new Attribute("true",
+//      System.out.println("Regarde ici samurai : "+ predicate.getLocation());
+      predicateElement.addAttribute(new Attribute("location",
+              predicate.getLocation() != null ? predicate.getLocation() : ""));
+      predicateElement.addAttribute(new Attribute("trueUsage",
           predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
-      predicateElement.addAttribute(new Attribute("codeSystem",
+      predicateElement.addAttribute(new Attribute("falseUsage",
           predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
       if (predicate instanceof AssertionPredicate) {
         if (((AssertionPredicate) predicate).getAssertion() != null) {

@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileNotFoundException;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -75,7 +76,10 @@ public class IgSerializationServiceImpl implements IgSerializationService {
   private ConformanceProfileService conformanceProfileService;
   
   @Autowired
-  CoConstraintService coConstraintService;	
+  CoConstraintService coConstraintService;
+  
+  @Autowired
+  private PredicateRepository predicateRepository;
   
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
@@ -117,7 +121,8 @@ public class IgSerializationServiceImpl implements IgSerializationService {
       SerializableIG serializableIG = new SerializableIG(igDocument, "1", datatypesMap,
           valuesetsMap, segmentsMap, conformanceProfilesMap, exportConfiguration,
           this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
-          this.bindedDatatypes, this.bindedComponents, this.bindedValueSets,this.coConstraintService, this.conformanceStatementRepository);
+          this.bindedDatatypes, this.bindedComponents, this.bindedValueSets,this.coConstraintService, 
+          this.conformanceStatementRepository, this.predicateRepository);
       return serializableIG.serialize().toXML();
     } catch (Exception exception) {
       throw new SerializationException(exception, Type.IGDOCUMENT,

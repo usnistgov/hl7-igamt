@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileR
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -68,9 +69,11 @@ public class SerializableProfile extends SerializableSection {
   private Set<Element> predicates = new HashSet<>();
   private CoConstraintService coConstraintService;
   private ConformanceStatementRepository conformanceStatementRepository;
+  private PredicateRepository predicateRepository;
 
   /**
    * @param section
+ * @param predicateRepository 
    */
   public SerializableProfile(Section section, int level, Map<String, Datatype> datatypesMap,
       Map<String, String> datatypeNamesMap, Map<String, SerializableValuesetStructure> valuesetsMap,
@@ -81,7 +84,9 @@ public class SerializableProfile extends SerializableSection {
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration, CoConstraintService coConstraintService, ConformanceStatementRepository conformanceStatementRepository) {
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration,
+      CoConstraintService coConstraintService, ConformanceStatementRepository conformanceStatementRepository,
+      PredicateRepository predicateRepository) {
     super(section, level);
     this.datatypesMap = datatypesMap;
     this.datatypeNamesMap = datatypeNamesMap;
@@ -106,6 +111,7 @@ public class SerializableProfile extends SerializableSection {
     this.exportConfiguration = exportConfiguration;
     this.coConstraintService=coConstraintService;
     this.conformanceStatementRepository = conformanceStatementRepository;
+    this.predicateRepository = predicateRepository;
   }
 
   /*
@@ -124,7 +130,8 @@ public class SerializableProfile extends SerializableSection {
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 this.bindedGroupsAndSegmentRefs, this.bindedFields, this.bindedSegments,
-                this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration, this.coConstraintService, this.conformanceStatementRepository);
+                this.bindedDatatypes, this.bindedComponents, this.bindedValueSets, this.exportConfiguration,
+                this.coConstraintService, this.conformanceStatementRepository, this.predicateRepository);
         if (childSection != null) {
           Element childSectionElement = childSection.serialize();
           if (childSectionElement != null) {

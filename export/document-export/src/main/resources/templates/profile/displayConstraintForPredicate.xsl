@@ -2,7 +2,9 @@
     <xsl:import href="/templates/profile/conformanceStatementHeader.xsl"/>
     <xsl:import href="/templates/profile/predicateHeader.xsl"/>
     <xsl:import href="/templates/profile/constraintContent.xsl"/>
-    <xsl:template name="displayConstraint">
+        <xsl:import href="/templates/profile/predicateConstraintContent.xsl"/>
+   
+    <xsl:template name="displayConstraintForPredicate">
         <xsl:param name="title"/>
         <xsl:param name="type"/>
         <xsl:param name="constraintMode"/>
@@ -20,8 +22,10 @@
                 <xsl:attribute name="summary">
                     <xsl:value-of select="$type"></xsl:value-of>
                 </xsl:attribute>
-                <xsl:choose>
-                    <xsl:when test="$type='cs'">
+<!--                 <xsl:choose>
+ -->                   <!--  <xsl:if test="count(Binding/ConformanceStatement)  &gt; 0">    
+                     			                    <xsl:text>Je suis dans count dans displayconstraint dans conformanceStatment </xsl:text>
+                                   
                          <xsl:call-template name="conformanceStatementHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="Binding/ConformanceStatement">
@@ -35,13 +39,15 @@
                                 </xsl:call-template>
                             </xsl:for-each>
                         </xsl:element>
-                     </xsl:when>
-                     <xsl:when test="$type='pre'">
+                     </xsl:if> -->
+			<xsl:if test="count(Binding/StructureElementBindings/StructureElementBinding/Predicate)  &gt; 0">
+<!-- 			                    			                    <xsl:text>Je suis dans count dans displayconstraint dans predicate </xsl:text>
+ -->			
                         <xsl:call-template name="predicateHeader"/>
                         <xsl:element name="tbody">
                             <xsl:for-each select="Binding/StructureElementBindings/StructureElementBinding/Predicate">
-                                 <xsl:sort select="@identifier" data-type="text" order="ascending" />
-                                 <xsl:call-template name="ConstraintContent">
+                                <xsl:sort select="@identifier" data-type="text" order="ascending" />
+                                <xsl:call-template name="PredicateConstraintContent">
                                     <xsl:with-param name="mode" select="$constraintMode"/>
                                     <xsl:with-param name="type" select="$type"/>
                                     <xsl:with-param name="displayPeriod">
@@ -50,9 +56,9 @@
                                 </xsl:call-template>
                             </xsl:for-each>
                         </xsl:element>
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:element>
+                    </xsl:if>
+<!--                 </xsl:choose>
+ -->            </xsl:element>
         </xsl:element>
     </xsl:template>
 

@@ -23,6 +23,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.serialization.SerializableCoConstraints;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -57,6 +58,7 @@ public class SerializableSegment extends SerializableResource {
   private CoConstraintService coConstraintService;
 private ExportConfiguration exportConfiguration;
 private ConformanceStatementRepository conformanceStatementRepository;
+private PredicateRepository predicateRepository;
 
   /**
    * @param segment
@@ -66,7 +68,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
    */
   public SerializableSegment(Segment segment, String position, int level,
       Map<String, Datatype> datatypesMap, Map<String, String> datatypesNamesMap, Map<String, String> valuesetNamesMap,
-      Map<String, String> valuesetLabelMap, Set<String> bindedFields,CoConstraintService coConstraintService, ExportConfiguration exportConfiguration, ConformanceStatementRepository conformanceStatementRepository) {
+      Map<String, String> valuesetLabelMap, Set<String> bindedFields,CoConstraintService coConstraintService, ExportConfiguration exportConfiguration, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     super(segment, position);
     this.datatypesNamesMap = datatypesNamesMap;
     this.valuesetNamesMap = valuesetNamesMap;
@@ -77,6 +79,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
     this.datatypesMap=datatypesMap;
     this.exportConfiguration=exportConfiguration;
     this.conformanceStatementRepository=conformanceStatementRepository;
+    this.predicateRepository=predicateRepository;
   }
 
   @Override
@@ -100,7 +103,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
       }
       if (segment.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap,this.conformanceStatementRepository);
+            super.serializeResourceBinding(segment.getBinding(), this.valuesetNamesMap,this.conformanceStatementRepository, this.predicateRepository);
 
         if (bindingElement != null) {
           segmentElement.appendChild(bindingElement);

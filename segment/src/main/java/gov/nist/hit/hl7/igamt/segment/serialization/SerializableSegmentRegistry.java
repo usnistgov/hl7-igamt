@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
@@ -52,6 +53,7 @@ public class SerializableSegmentRegistry extends SerializableRegistry {
   private CoConstraintService coConstraintService;
   private ExportConfiguration exportConfiguration;
 private ConformanceStatementRepository conformanceStatementRepository;
+private PredicateRepository predicateRepository;
   
   /**
    * @param section
@@ -62,7 +64,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
 		  Map<String, Segment> segmentsMap, Map<String, Datatype> datatypesMap, Map<String, String> datatypeNamesMap,
 		  Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Set<String> bindedSegments,
 		  Set<String> bindedFields, CoConstraintService coConstraintService, ExportConfiguration exportConfiguration, 
-		  ConformanceStatementRepository conformanceStatementRepository) {
+		  ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
 	  super(section, level, segmentRegistry);
 	  this.segmentsMap = segmentsMap;
 	  this.datatypeNamesMap = datatypeNamesMap;
@@ -75,6 +77,7 @@ private ConformanceStatementRepository conformanceStatementRepository;
 	  this.coConstraintService=coConstraintService;
 	  this.exportConfiguration=exportConfiguration;
 	  this.conformanceStatementRepository=conformanceStatementRepository;
+	  this.predicateRepository=predicateRepository;
   }
 
   /*
@@ -96,7 +99,8 @@ private ConformanceStatementRepository conformanceStatementRepository;
                 System.out.println("Segment name :" + segment.getName() + segment.getExt());
                 SerializableSegment serializableSegment =
                     new SerializableSegment(segment, String.valueOf(segmentLink.getPosition()), this.getChildLevel(),
-                        this.datatypesMap, this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields, this.coConstraintService,this.exportConfiguration, this.conformanceStatementRepository);
+                        this.datatypesMap, this.datatypeNamesMap, this.valuesetNamesMap, this.valuesetLabelMap, this.bindedFields,
+                        this.coConstraintService,this.exportConfiguration, this.conformanceStatementRepository, this.predicateRepository);
                 if (serializableSegment != null) {
                   Element segmentElement = serializableSegment.serialize();
                   if (segmentElement != null) {

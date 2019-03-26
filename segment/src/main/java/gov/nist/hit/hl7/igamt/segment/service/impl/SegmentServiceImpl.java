@@ -1457,28 +1457,8 @@ public class SegmentServiceImpl implements SegmentService {
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.segment.service.SegmentService#findDisplayPredicates(java.lang.String, java.lang.String)
    */
-  @Override
-  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
-    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.SEGMENT);
-    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
-    if(predicates != null){
-      for(Predicate p : predicates){
-        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
-          Optional<Segment> o = this.segmentRepository.findById(sourceId);
-          if(o.isPresent()){
-            DisplayPredicate dp = new DisplayPredicate();
-            dp.setPredicate(p);
-            Segment s = o.get();
-            if(s.getBinding() != null && s.getBinding().getChildren() != null){
-              this.markLocation(dp, s.getBinding().getChildren(), s.getName(), p.getId());
-            }
-            result.add(dp);            
-          }
-        }
-      }
-    }
-    return result;
-  }
+
+    
   
   private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
     for(StructureElementBinding seb: children){

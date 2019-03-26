@@ -1551,29 +1551,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
   /* (non-Javadoc)
    * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#findDisplayPredicates(java.lang.String, java.lang.String)
    */
-  @Override
-  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
-    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.CONFORMANCEPROFILE);
-    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
-    if(predicates != null){
-      for(Predicate p : predicates){
-        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
-          Optional<ConformanceProfile> o = this.conformanceProfileRepository.findById(sourceId);
-          if(o.isPresent()){
-            DisplayPredicate dp = new DisplayPredicate();
-            dp.setPredicate(p);
-            ConformanceProfile m = o.get();
-            if(m.getBinding() != null && m.getBinding().getChildren() != null){
-              this.markLocation(dp, m.getBinding().getChildren(), m.getLabel(), p.getId());
-            }
-            result.add(dp);            
-          }
-        }
-      }
-    }
-    return result;
-  }
-  
   private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
     for(StructureElementBinding seb: children){
       if(seb.getPredicateId() != null && seb.getPredicateId().equals(pid)){

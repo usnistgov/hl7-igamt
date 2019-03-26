@@ -21,6 +21,7 @@ import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileR
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
@@ -50,7 +51,9 @@ public class SectionSerializationUtil {
       ProfileComponentRegistry profileComponentRegistry,
       CompositeProfileRegistry compositeProfileRegistry, Set<String> bindedGroupsAndSegmentRefs,
       Set<String> bindedFields, Set<String> bindedSegments, Set<String> bindedDatatypes,
-      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration,CoConstraintService coConstraintService, ConformanceStatementRepository conformanceStatementRepository) throws SerializationException {
+      Set<String> bindedComponents, Set<String> bindedValueSets, ExportConfiguration exportConfiguration,
+      CoConstraintService coConstraintService, ConformanceStatementRepository conformanceStatementRepository, 
+      PredicateRepository predicateRepository) throws SerializationException {
     if (section != null) {
       try {
         SerializableSection serializableSection =
@@ -59,7 +62,8 @@ public class SectionSerializationUtil {
                 conformanceProfilesMap, valueSetRegistry, datatypeRegistry, segmentRegistry,
                 conformanceProfileRegistry, profileComponentRegistry, compositeProfileRegistry,
                 bindedGroupsAndSegmentRefs, bindedFields, bindedSegments,
-                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration, coConstraintService, conformanceStatementRepository);
+                bindedDatatypes, bindedComponents, bindedValueSets, exportConfiguration, coConstraintService,
+                conformanceStatementRepository, predicateRepository);
         if (serializableSection != null) {
           return serializableSection.serialize();
         }

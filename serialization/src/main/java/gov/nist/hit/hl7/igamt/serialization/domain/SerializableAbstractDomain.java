@@ -19,6 +19,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.serialization.exception.SerializationException;
 import gov.nist.hit.hl7.igamt.serialization.util.FroalaSerializationUtil;
 import nu.xom.Attribute;
@@ -91,14 +92,15 @@ public abstract class SerializableAbstractDomain extends SerializableElement {
   /**
    * @param binding
  * @param conformanceStatementRepository 
+ * @param predicateRepository 
    * @return
    * @throws SerializationException
    */
   public Element serializeResourceBinding(ResourceBinding binding,
-      Map<String, String> valuesetNamesMap, ConformanceStatementRepository conformanceStatementRepository) throws SerializationException {
+      Map<String, String> valuesetNamesMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) throws SerializationException {
     Map<String, String> pathLocationMap = this.getIdPathMap();
     if(binding != null) {
-	    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap, conformanceStatementRepository);
+	    this.serializableBinding = new SerializableBinding(binding, pathLocationMap, valuesetNamesMap, conformanceStatementRepository, predicateRepository);
 	    return this.serializableBinding.serialize();
     }
     return null;

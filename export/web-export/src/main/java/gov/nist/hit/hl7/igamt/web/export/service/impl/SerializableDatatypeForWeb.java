@@ -63,7 +63,7 @@ public class SerializableDatatypeForWeb extends SerializableResource {
           datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
       if (datatype.getBinding() != null) {
         Element bindingElement =
-            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);
+            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap, null, null);
         if (bindingElement != null) {
           datatypeElement.appendChild(bindingElement);
         }

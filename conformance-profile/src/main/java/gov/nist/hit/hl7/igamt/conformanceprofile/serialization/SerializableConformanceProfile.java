@@ -26,6 +26,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.segment.domain.Field;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
@@ -48,20 +49,24 @@ public class SerializableConformanceProfile extends SerializableResource {
   private Set<String> bindedGroupsAndSegmentRefs;
   private int level;
   private ConformanceStatementRepository conformanceStatementRepository;
+  private PredicateRepository predicateRepository;
 
   /**
    * @param resource
    * @param position
  * @param conformanceStatementRepository 
+ * @param predicateRepository 
    */
   public SerializableConformanceProfile(ConformanceProfile conformanceProfile, String position,
-      int level, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Map<String, Segment> segmentsMap, Set<String> bindedGroupsAndSegmentRefs, ConformanceStatementRepository conformanceStatementRepository) {
+      int level, Map<String, String> valuesetNamesMap, Map<String, String> valuesetLabelMap, Map<String, Segment> segmentsMap,
+      Set<String> bindedGroupsAndSegmentRefs, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     super(conformanceProfile, position);
     this.valuesetNamesMap = valuesetNamesMap;
     this.segmentsMap = segmentsMap;
     this.bindedGroupsAndSegmentRefs = bindedGroupsAndSegmentRefs;
     this.level = level;
     this.conformanceStatementRepository = conformanceStatementRepository;
+    this.predicateRepository=predicateRepository;
   }
 
   @Override
@@ -79,7 +84,8 @@ public class SerializableConformanceProfile extends SerializableResource {
             conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
         conformanceProfileElement.addAttribute(new Attribute("structID",
             conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
-        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap, this.conformanceStatementRepository);
+        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap,
+        		this.conformanceStatementRepository, this.predicateRepository);
         if (bindingElement != null) {
           conformanceProfileElement.appendChild(bindingElement);
         }
