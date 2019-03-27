@@ -1101,8 +1101,12 @@ public class SegmentServiceImpl implements SegmentService {
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if (seb.getPredicateId() != null)
-      bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    if (seb.getPredicateId() != null) {
+    		if(this.predicateRepository.findById(seb.getPredicateId()).isPresent()) {
+    			bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());		
+    		}
+    }
+      
     bindingDisplay
         .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
 

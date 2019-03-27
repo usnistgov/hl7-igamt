@@ -319,10 +319,9 @@ private PredicateRepository predicateRepository;
    * @return
    */
   private Element serializePredicate(String predicateId) {
-    if(predicateId != null){
+    if(predicateId != null && this.predicateRepository.findById(predicateId).isPresent()){
       Predicate predicate = this.predicateRepository.findById(predicateId).get();
       Element predicateElement = new Element("Predicate");
-//      System.out.println("Regarde ici samurai : "+ predicate.getLocation());
       predicateElement.addAttribute(new Attribute("location",
               predicate.getLocation() != null ? predicate.getLocation() : ""));
       predicateElement.addAttribute(new Attribute("trueUsage",
