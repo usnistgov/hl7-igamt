@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
+import gov.nist.diff.annotation.DeltaField;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,13 +12,12 @@ import java.util.Set;
  */
 public class ComplexDatatype extends Datatype {
 
+  @DeltaField
   private Set<Component> components = new HashSet<Component>();
 
   public ComplexDatatype() {
     super();
   }
-
-
 
   public Set<Component> getComponents() {
     return components;
@@ -31,16 +32,11 @@ public class ComplexDatatype extends Datatype {
     ComplexDatatype clone = new ComplexDatatype();
     complete(clone);
     return clone;
-
-  };
+  }
 
   void complete (ComplexDatatype elm) {
-	  super.complete(elm);
-	  elm.components=this.getComponents();
-	  
+    super.complete(elm);
+    elm.components=this.getComponents();
   }
-  
-  
-  
 
 }

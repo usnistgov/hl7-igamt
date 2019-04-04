@@ -86,8 +86,11 @@ public class InMemoryDomainExtentionServiceImpl implements InMemoryDomainExtenti
 	
 	@Override
 	public <T extends Resource> T findById(String id, Class<T> as) {
-		Resource resource = resources.get(id);
-		return resource != null ? this.cloneAndCast(resource, as) : null;
+		if(id != null) {
+			Resource resource = resources.get(id);
+			return resource != null ? this.cloneAndCast(resource, as) : null;
+		}
+		return null;
 	}
 	
 	@Override

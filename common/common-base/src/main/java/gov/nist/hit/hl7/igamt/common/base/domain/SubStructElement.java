@@ -14,12 +14,9 @@ public class SubStructElement extends StructureElement {
 
   public static final String NA = "NA";
 
-
-
   public SubStructElement() {
     super();
   }
-
 
   public SubStructElement(String id, String name, int position, Usage usage, Type type, String text,
       boolean custom, String maxLength, String minLength, String confLength, Ref ref) {

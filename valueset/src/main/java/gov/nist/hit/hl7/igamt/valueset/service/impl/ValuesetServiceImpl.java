@@ -535,6 +535,7 @@ public class ValuesetServiceImpl implements ValuesetService {
   public Link cloneValueSet(String newkey, Link l, String username) {
     Valueset old = this.findById(l.getId());
     Valueset elm = old.clone();
+    elm.setOrigin(elm.getFrom());
     Link newLink = new Link();
     newLink = l.clone(newkey);
     elm.setId(newkey);

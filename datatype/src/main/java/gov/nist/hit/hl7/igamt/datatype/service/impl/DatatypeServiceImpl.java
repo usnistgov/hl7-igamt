@@ -380,6 +380,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
     Link newLink = l.clone(null);
+    elm.setOrigin(elm.getFrom());
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {

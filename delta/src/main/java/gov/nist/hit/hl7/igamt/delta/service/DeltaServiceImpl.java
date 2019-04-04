@@ -1,5 +1,10 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
+import gov.nist.diff.domain.DeltaAction;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.PrimitiveDatatype;
+import gov.nist.hit.hl7.igamt.delta.domain.IGDelta;
+import gov.nist.hit.hl7.igamt.delta.domain.Tuple;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,103 +27,157 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 @Service
 public class DeltaServiceImpl implements DeltaService {
 
-  @Autowired
-  public ConformanceProfileService conformanceProfileService;
-  @Autowired
-  public SegmentService segmentService;
-  @Autowired
-  public DatatypeService datatypeService;
-  @Autowired
-  public IgRepository igRepository;
-  @Autowired
-  public IgService igService;
+    @Autowired
+    public ConformanceProfileService conformanceProfileService;
+    @Autowired
+    public SegmentService segmentService;
+    @Autowired
+    public DatatypeService datatypeService;
+    @Autowired
+    public IgRepository igRepository;
+    @Autowired
+    public IgService igService;
 
-  public <T extends SectionInfo, E extends AbstractDomain> EntityDelta<T> compute(String id,
-      AbstractDomain document, Function<E, Boolean, T> converter,
-      java.util.function.Function<String, E> repository) throws Exception {
+    public <T extends SectionInfo, E extends AbstractDomain> EntityDelta<T> compute(String id,
+                                                                                    AbstractDomain document, Function<E, Boolean, T> converter,
+                                                                                    java.util.function.Function<String, E> repository) throws Exception {
 
-    E target = repository.apply(id);
-    E source = repository.apply(target.getFrom());
-    DeltaProcessor processor = new DeltaProcessor();
+        // Get TARGET from repository
+        E target = repository.apply(id);
 
-    if (target == null || source == null) {
-      throw new Exception();
-    } else {
-      T targetDisplayModel = converter.apply(target, true);
-      T sourceDisplayModel = converter.apply(source, true);
-
-      DeltaObject<T> delta =
-          processor.objectDelta(sourceDisplayModel, targetDisplayModel, DeltaMode.INCLUSIVE);
-      return new EntityDelta<>(document, sourceDisplayModel, targetDisplayModel, delta);
-    }
-  }
-
-
-
-  @Override
-  public DiffableResult diffable(Type type, String ig, String source, String target) {
-    boolean diffable;
-    switch (type) {
-      case SEGMENT:
-        diffable = !this.igRepository.segmentsInSameIg(this.convertToObjectd(ig),
-            this.convertToObjectd(source), this.convertToObjectd(target));
-        System.out
-            .println("[HTM] " + diffable + " ig " + ig + " source " + source + " target " + target);
-        if (diffable) {
-          Segment segment = this.segmentService.findById(source);
-          return new DiffableResult(diffable, segment);
+        if (target == null) {
+            throw new Exception("Target not found");
         }
-        break;
-      case DATATYPE:
-        diffable = !this.igRepository.datatypesInSameIg(this.convertToObjectd(ig),
-            this.convertToObjectd(source), this.convertToObjectd(target));
-        if (diffable) {
-          Datatype datatype = this.datatypeService.findById(source);
-          return new DiffableResult(diffable, datatype);
-        }
-        break;
-      case CONFORMANCEPROFILE:
-        diffable = !this.igRepository.conformanceProfilesInSameIg(this.convertToObjectd(ig),
-            this.convertToObjectd(source), this.convertToObjectd(target));
 
-        ConformanceProfile sourceP = this.conformanceProfileService.findById(source);
+        // Get SOURCE from repository using origin ID
+        E source = repository.apply(target.getOrigin());
 
-        if (diffable && sourceP.getDomainInfo().getScope().equals(Scope.USER)) {
-          ConformanceProfile confProfile = this.conformanceProfileService.findById(source);
-          return new DiffableResult(diffable, confProfile);
+
+        DeltaProcessor processor = new DeltaProcessor();
+
+        if (source == null) {
+            throw new Exception();
         }
-        break;
-      default:
-        return new DiffableResult();
+
+        // Convert TARGET and SOURCE to display
+        T targetDisplayModel = converter.apply(target, true);
+        T sourceDisplayModel = converter.apply(source, true);
+
+        // Calculate Delta Between Display Models
+        DeltaObject<T> delta =
+                processor.objectDelta(sourceDisplayModel, targetDisplayModel, DeltaMode.INCLUSIVE);
+        return new EntityDelta<>(document, sourceDisplayModel, targetDisplayModel, delta);
+
     }
 
-    return new DiffableResult();
-  }
-
-  private ObjectId convertToObjectd(String id) {
-    return new ObjectId(id);
-  }
-
-  @Override
-  public <T> EntityDelta<T> computeDelta(Type type, String documentId, String entityId)
-      throws Exception {
-    Ig sourceIg = this.igService.findById(documentId);
-    switch (type) {
-      case SEGMENT:
-        return (EntityDelta<T>) this.compute(entityId, sourceIg,
-            this.segmentService::convertDomainToDisplayStructure, this.segmentService::findById);
-      case DATATYPE:
-        return (EntityDelta<T>) this.compute(entityId, sourceIg,
-            this.datatypeService::convertDomainToStructureDisplay, this.datatypeService::findById);
-      case CONFORMANCEPROFILE:
-        return (EntityDelta<T>) this.compute(entityId, sourceIg,
-            this.conformanceProfileService::convertDomainToDisplayStructure,
-            this.conformanceProfileService::findById);
+    @Override
+    public <T> EntityDelta<T> computeDelta(Type type, String documentId, String entityId)
+            throws Exception {
+        Ig sourceIg = this.igService.findById(documentId);
+        switch (type) {
+            case SEGMENT:
+                return (EntityDelta<T>) this.compute(
+                        entityId,
+                        sourceIg,
+                        this.segmentService::convertDomainToDisplayStructure,
+                        this.segmentService::findById
+                );
+            case DATATYPE:
+                return (EntityDelta<T>) this.compute(
+                        entityId,
+                        sourceIg,
+                        this.datatypeService::convertDomainToStructureDisplay,
+                        this.datatypeService::findById
+                );
+            case CONFORMANCEPROFILE:
+                return (EntityDelta<T>) this.compute(
+                        entityId,
+                        sourceIg,
+                        this.conformanceProfileService::convertDomainToDisplayStructure,
+                        this.conformanceProfileService::findById
+                );
+        }
+        return null;
     }
-    return null;
-  }
+
+    @Override
+    public IGDelta computeIgDelta(String igId) throws Exception {
+        DeltaProcessor processor = new DeltaProcessor();
+        Ig ig = this.igService.findById(igId);
+        Map<String, Datatype> datatypeMap = new HashMap<>();
+        if (ig != null) {
+            Ig origin = this.igService.findById(ig.getOrigin());
+            Map<String, Datatype> originDT = origin
+                    .getDatatypeRegistry()
+                    .getChildren()
+                    .stream()
+                    .map( link -> this.datatypeService.findById(link.getId()))
+                    .collect(Collectors.toMap(dt -> dt.getId(), dt -> dt));
+
+
+            Map<Datatype, Set<Datatype>> datatypesCrossRef = this.datatypeCrossRef(ig, datatypeMap);
+        }
+        return null;
+    }
+
+    public Map<String, DeltaAction> processDatatypesDelta(Map<String, Datatype> datatypeMap, Map<Datatype, Set<Datatype>> xref, Map<String, DeltaAction> actions, List<String> originIds) {
+        DeltaProcessor processor = new DeltaProcessor();
+        xref
+                .entrySet()
+                .stream()
+                .filter(e -> e.getValue().size() > 0)
+                .map(e -> e.getKey().getId())
+                .forEach(id -> {
+                    Datatype datatype = datatypeMap.get(id);
+                    if(datatype.getOrigin() != null) {
+
+
+                    } else {
+                        actions.put(id, DeltaAction.ADDED);
+                    }
+                });
+        return null;
+    }
+
+    Map<Datatype, Set<Datatype>> datatypeCrossRef(Ig ig, Map<String, Datatype> datatypeMap) {
+        return ig.getDatatypeRegistry().getChildren()
+                .stream()
+                .filter(link -> !link.getDomainInfo().getScope().equals(Scope.USER))
+                .map(link -> {
+                    Datatype datatype = this.datatypeService.findById(link.getId());
+                    datatypeMap.put(datatype.getId(), datatype);
+
+                    if (datatype instanceof ComplexDatatype) {
+                        return ((ComplexDatatype) datatype)
+                                .getComponents()
+                                .stream()
+                                .map(component -> {
+                                    if(!datatypeMap.containsKey(component.getRef().getId())) {
+                                        Datatype dt = this.datatypeService.findById(component.getRef().getId());
+                                        datatypeMap.put(dt.getId(), dt);
+                                        return dt;
+                                    } else {
+                                        return datatypeMap.get(component.getRef().getId());
+                                    }
+                                })
+                                .collect(Collectors.collectingAndThen(
+                                        Collectors.toSet(),
+                                        set -> {
+                                            return new Tuple<Datatype, Set<Datatype>>(datatype, set);
+                                        }
+                                ));
+                    } else {
+                        return new Tuple<Datatype, Set<Datatype>>(datatype, new HashSet<>());
+                    }
+                })
+                .collect(Collectors.toMap( e -> e.getKey(), e -> e.getValue()));
+    }
 }
 

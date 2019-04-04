@@ -26,12 +26,4 @@ public class DeltaController {
     return deltaService.computeDelta(type, ig, id);
   }
 
-  @RequestMapping(value = "/api/delta/{type}/{igId}/diffable/{idSource}/{idTarget}",
-      method = RequestMethod.GET, produces = {"application/json"})
-  public DiffableResult diffable(@PathVariable("type") Type type, @PathVariable("igId") String ig,
-      @PathVariable("idSource") String source, @PathVariable("idTarget") String target,
-      Authentication authentication) throws Exception {
-    return this.deltaService.diffable(type, ig, source, target);
-  }
-
 }

@@ -31,11 +31,9 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 @Document(collection = "datatype")
 public class Datatype extends Resource {
 
-
   private String ext;
   private String purposeAndUse;
   private ResourceBinding binding;
-
 
   public ResourceBinding getBinding() {
     return binding;
@@ -78,23 +76,16 @@ public class Datatype extends Resource {
 
   @Override
   public Datatype clone() {
-
     Datatype clone = new Datatype();
     complete(clone);
     return clone;
-
   }
 
-public void complete(Datatype elm) {
-	super.complete(elm);
-	elm.ext = ext;
-	elm.purposeAndUse = purposeAndUse;
-	elm.binding = binding;
-}
-
-
-  
-  
-  
+  public void complete(Datatype elm) {
+    super.complete(elm);
+    elm.ext = ext;
+    elm.purposeAndUse = purposeAndUse;
+    elm.binding = binding;
+  }
 
 }

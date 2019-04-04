@@ -1,13 +1,14 @@
 import {Injectable} from '@angular/core';
 import {
-    CoConstraintTable, CCSelectorType, CellTemplate, CCHeader, CCRow, DataCell,
-    VSCell, CodeCell, VariesCell, CCCell
+  CoConstraintTable, CCSelectorType, CellTemplate, CCHeader, CCRow, DataCell,
+  VSCell, CodeCell, VariesCell, CCCell
 } from './coconstraint.domain';
 import {Http} from '@angular/http';
 import {UUID} from 'angular2-uuid';
 import * as _ from 'lodash';
 import {TocService} from '../../service/toc.service';
 import {HttpClient} from '@angular/common/http';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 
 /**
  * Created by hnt5 on 10/11/17.
@@ -15,6 +16,7 @@ import {HttpClient} from '@angular/common/http';
 
 export interface CoConstraintDisplay {
   data: CoConstraintTable;
+
   [index: string]: any;
 }
 
@@ -22,239 +24,278 @@ export interface CoConstraintDisplay {
 @Injectable()
 export class CoConstraintTableService {
 
-    constructor(private $http: HttpClient,
-                private tocService: TocService) {}
+  constructor(private $http: HttpClient,
+              private tocService: TocService,
+              private formBuilder: FormBuilder) {
+  }
 
 
-    async getCCTableForSegment(segment: any): Promise<CoConstraintDisplay> {
-        if (!segment) {
-            return null;
+  async getCCTableForSegment(segment: any): Promise<CoConstraintDisplay> {
+    if (!segment) {
+      return null;
+    } else {
+      const display: CoConstraintDisplay = await this.fetch_coconstraint_table(segment.id);
+      if (!display.data) {
+        if (segment.name === 'OBX') {
+          display.data = await this.generate_obx_table(segment);
+          return display;
         } else {
-            const display: CoConstraintDisplay = await this.fetch_coconstraint_table(segment.id);
-            if (!display.data) {
-                if (segment.name === 'OBX') {
-                  display.data = await this.generate_obx_table(segment);
-                  return display;
-                } else {
-                  display.data = this.generate_generic_table(segment.name);
-                  return display;
-                }
-            } else {
-              return display;
-            }
+          display.data = this.generate_generic_table(segment.name);
+          return display;
         }
+      } else {
+        return display;
+      }
     }
+  }
 
-    async saveCoConstraintTable(c: CoConstraintTable, segmentId: string): Promise<CoConstraintTable>  {
-        const table: CoConstraintTable = await this.$http.post<CoConstraintTable>('api/segments/' + segmentId + '/coconstraints', c).toPromise();
-        return table;
-    }
+  async saveCoConstraintTable(c: CoConstraintTable, segmentId: string): Promise<CoConstraintTable> {
+    const table: CoConstraintTable = await this.$http.post<CoConstraintTable>('api/segments/' + segmentId + '/coconstraints', c).toPromise();
+    return table;
+  }
 
-    generate_generic_table(name: string): CoConstraintTable {
-        return {
-            supportGroups : false,
-            segment : name,
-            headers : {
-                selectors : [],
-                data : [],
-                user : []
-            },
-            content : {
-                free : [],
-                groups : []
-            }
-        };
-    }
-
-
-    async generate_obx_table(segment: any): Promise<CoConstraintTable> {
-        const tmp: CoConstraintTable = this.generate_generic_table(segment.name);
-        const obx3 = _.find(segment.structure, function (child) {
-          return child.data.position === 3;
-        });
-        const obx2 = _.find(segment.structure, function (child) {
-          return child.data.position === 2;
-        });
-
-        const obx3_dt = await this.tocService.getDatatypeById(obx3.data.ref.id);
-        const obx2_dt = await this.tocService.getDatatypeById(obx2.data.ref.id);
+  generate_generic_table(name: string): CoConstraintTable {
+    return {
+      supportGroups: false,
+      segment: name,
+      headers: {
+        selectors: [],
+        data: [],
+        user: []
+      },
+      content: {
+        free: [],
+        groups: []
+      }
+    };
+  }
 
 
-        tmp.supportGroups = true;
-        tmp.headers.selectors.push({
-            id : 'k3',
-            label : 'OBX-3',
-            keep : true,
-            content : {
-                type : CCSelectorType.CODE,
-                elmType : 'field',
-                path : '3[1]',
-                version : obx3_dt.data.domainInfo.version,
-                coded : true,
-                complex : true
-            }
-        });
-        tmp.headers.data.push({
-            id : 'k2',
-            label : 'OBX-2',
-            keep : true,
-            template : CellTemplate.DATATYPE,
-            content : {
-                type : CCSelectorType.VALUE,
-                elmType : 'field',
-                path : '2[1]',
-                version : obx2_dt.data.domainInfo.version,
-                coded : false,
-                complex : false
-            }
-        });
-        tmp.headers.data.push({
-            id : 'k2p1',
-            label : 'OBX-2',
-            keep : true,
-            template : CellTemplate.FLAVOR,
-            content : {
-                type : CCSelectorType.IGNORE,
-                elmType : 'field',
-                path : '5[1]'
-            }
-        });
-        tmp.headers.user.push({
-            id: 'xxx',
-            label: 'Comments',
-            template: CellTemplate.TEXTAREA
-        });
-        return tmp;
-    }
+  async generate_obx_table(segment: any): Promise<CoConstraintTable> {
+    const tmp: CoConstraintTable = this.generate_generic_table(segment.name);
+    const obx3 = _.find(segment.structure, function (child) {
+      return child.data.position === 3;
+    });
+    const obx2 = _.find(segment.structure, function (child) {
+      return child.data.position === 2;
+    });
 
-    async get_bound_codes(segment: any) {
+    const obx3_dt = await this.tocService.getDatatypeById(obx3.data.ref.id);
+    const obx2_dt = await this.tocService.getDatatypeById(obx2.data.ref.id);
 
-      console.log(segment);
-      const elm = _.filter(segment.structure, function (child) {
-        return child.data.position === 2;
+
+    tmp.supportGroups = true;
+    tmp.headers.selectors.push({
+      id: 'k3',
+      label: 'OBX-3',
+      keep: true,
+      content: {
+        type: CCSelectorType.CODE,
+        elmType: 'field',
+        path: '3[1]',
+        version: obx3_dt.data.domainInfo.version,
+        coded: true,
+        complex: true
+      }
+    });
+    tmp.headers.data.push({
+      id: 'k2',
+      label: 'OBX-2',
+      keep: true,
+      template: CellTemplate.DATATYPE,
+      content: {
+        type: CCSelectorType.VALUE,
+        elmType: 'field',
+        path: '2[1]',
+        version: obx2_dt.data.domainInfo.version,
+        coded: false,
+        complex: false
+      }
+    });
+    tmp.headers.data.push({
+      id: 'k2p1',
+      label: 'OBX-2',
+      keep: true,
+      template: CellTemplate.FLAVOR,
+      content: {
+        type: CCSelectorType.IGNORE,
+        elmType: 'field',
+        path: '5[1]'
+      }
+    });
+    tmp.headers.user.push({
+      id: 'xxx',
+      label: 'Comments',
+      template: CellTemplate.TEXTAREA
+    });
+    return tmp;
+  }
+
+  async get_bound_codes(segment: any) {
+    // Get field at location OBX-2
+    const elm = _.filter(segment.structure, function (child) {
+      return child.data.position === 2;
+    });
+
+    // Load codes from bindings OBX-2
+    if (elm !== null && elm.length === 1) {
+      const bound_codes: any[] = [];
+      const compatible = _.filter(elm[0].data.bindings.flatMap(x => x.valuesetBindings), function (o) {
+        return (o.valuesetLocations && (o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0));
       });
-
-      if (elm !== null && elm.length === 1) {
-
-        const bound_codes: any[] = [];
-        console.log(elm[0].data.bindings);
-        // let y = ;
-        console.log();
-        const compatible = _.filter(elm[0].data.bindings.flatMap(x => x.valuesetBindings), function (o) {
-          // // const vsBinding
-          // console.log(o);
-          return (o.valuesetLocations && (o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0));
-        });
-
-        for (const binding of compatible){
-          const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
-          for (const code of codes){
-            if (code.usage === 'R' || code.usage === 'P') {
-              bound_codes.push(code);
-            }
+      for (const binding of compatible) {
+        const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
+        for (const code of codes) {
+          if (code.usage === 'R' || code.usage === 'P') {
+            bound_codes.push(code);
           }
         }
-        return bound_codes;
       }
-      return [];
+      return bound_codes;
+    }
+    return [];
+  }
+
+  async fetch_coconstraint_table(id: string) {
+    try {
+      const table: CoConstraintDisplay = await this.$http.get<CoConstraintDisplay>('api/segments/' + id + '/coconstraints').toPromise();
+      return table;
+    } catch (e) {
+      return null;
+    }
+  }
+
+
+  new_line(selectors: any[], data: any[], user: any[]) {
+    const row: CCRow = {
+      id: UUID.UUID(),
+      cells: {},
+      requirements: null
+    };
+    this.init_req(row);
+
+    for (const header of selectors) {
+      this.init_cell(row, header);
+    }
+    for (const header of data) {
+      this.init_cell(row, header);
+    }
+    for (const header of user) {
+      this.init_cell(row, header);
     }
 
-    async fetch_coconstraint_table(id: string)  {
-      try {
-        const table: CoConstraintDisplay = await this.$http.get<CoConstraintDisplay>('api/segments/' + id + '/coconstraints').toPromise();
-        return table;
-      } catch (e) {
-        return null;
+    return row;
+  }
+
+  init_req(row) {
+    row.requirements = {
+      usage: 'R',
+      cardinality: {
+        min: 1,
+        max: '1'
       }
+    };
+  }
+
+  init_cell(row: CCRow, header: CCHeader) {
+
+    // --- USER
+    if (!header.content) {
+      row.cells[header.id] = <DataCell> {
+        value: '',
+        type: header.template
+      };
+      return;
     }
 
+    // --- RELEVANT FIELD
+    let tmpl: string;
 
-    new_line(selectors: any[], data: any[], user: any[]){
-        const row: CCRow = {
-            id : UUID.UUID(),
-            cells : {},
-            requirements : null
+    if (header.content.type && header.content.type === CCSelectorType.IGNORE) {
+      tmpl = header.template;
+    } else {
+      tmpl = header.content.type;
+    }
+
+    switch (tmpl) {
+
+      case CCSelectorType.VALUE :
+      case CellTemplate.DATATYPE :
+      case CellTemplate.FLAVOR :
+
+        row.cells[header.id] = <DataCell> {
+          value: '',
+          type: header.content.type
         };
-        this.init_req(row);
+        break;
 
-        for (const header of selectors){
-            this.init_cell(row, header);
-        }
-        for (const header of data){
-            this.init_cell(row, header);
-        }
-        for (const header of user){
-            this.init_cell(row, header);
-        }
-
-        return row;
-    }
-
-    init_req(row){
-        row.requirements = {
-            usage : 'R',
-                cardinality : {
-                min : 1,
-                    max : '1'
-            }
+      case CCSelectorType.VALUESET :
+        row.cells[header.id] = <VSCell> {
+          vs: [],
+          type: header.content.type
         };
+        break;
+
+      case CCSelectorType.CODE :
+        row.cells[header.id] = <CodeCell> {
+          value: '',
+          location: [1],
+          type: header.content.type
+        };
+        break;
+
+      case CellTemplate.VARIES :
+        row.cells[header.id] = <VariesCell> {
+          type: header.content.type,
+          value: null
+        };
+        break;
     }
+  }
 
-    init_cell(row: CCRow, header: CCHeader){
+  cellTemplate(row: CCRow, header: CCHeader) {
+    const useTemplate = !header.content || (header.content.type && header.content.type === CCSelectorType.IGNORE);
+    return useTemplate ? header.template : header.content.type;
+  }
 
-        // --- USER
-        if (!header.content){
-            row.cells[header.id] = <DataCell> {
-                value : '',
-                type  : header.template
-            };
-            return;
-        }
+  createRowForm(rowForm: FormGroup, row: CCRow, header: CCHeader) {
+    const template = this.cellTemplate(row, header);
+    const cellGroup: FormGroup = this.getFormCell(header, template, false);
+    rowForm.addControl(header.id, cellGroup);
+  }
 
-        // --- RELEVANT FIELD
-        let tmpl: string;
-
-        if (header.content.type && header.content.type === CCSelectorType.IGNORE){
-            tmpl = header.template;
-        } else {
-            tmpl = header.content.type;
-        }
-
-        switch (tmpl) {
-
-            case CCSelectorType.VALUE :
-            case CellTemplate.DATATYPE :
-            case CellTemplate.FLAVOR :
-
-                row.cells[header.id] = <DataCell> {
-                    value : '',
-                    type : header.content.type
-                };
-                break;
-
-            case CCSelectorType.VALUESET :
-                row.cells[header.id]  = <VSCell> {
-                    vs : [],
-                    type : header.content.type
-                };
-                break;
-
-            case CCSelectorType.CODE :
-                row.cells[header.id]  = <CodeCell> {
-                    value : '',
-                    location : [1],
-                    type : header.content.type
-                };
-                break;
-
-            case CellTemplate.VARIES :
-                row.cells[header.id]  = <VariesCell> {
-                    type : header.content.type,
-                    value : null
-                };
-                break;
-        }
+  getFormCell(header: CCHeader, template: String, required: boolean): FormGroup {
+    switch (template) {
+      case CellTemplate.TEXTAREA :
+        return this.formBuilder.group({
+          value : ['', Validators.required],
+          type: header.template
+        });
+      case CCSelectorType.VALUE :
+      case CellTemplate.DATATYPE :
+      case CellTemplate.FLAVOR :
+        return this.formBuilder.group({
+          value : ['', Validators.required],
+          type: header.content.type
+        });
+      case CCSelectorType.VALUESET :
+        return this.formBuilder.group({
+          vs: this.formBuilder.array([]),
+          type: header.content.type
+        });
+      case CCSelectorType.CODE :
+        return this.formBuilder.group({
+          value: ['', Validators.required],
+          location: [[1], Validators.required],
+          type: header.content.type
+        });
+      case CellTemplate.VARIES :
+        return this.formBuilder.group({
+          type: header.content.type,
+          value: null
+        });
     }
+  }
 
 
 }

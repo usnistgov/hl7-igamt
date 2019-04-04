@@ -30,7 +30,7 @@ export class DatatypeEditStructureComponent implements WithSave{
   changeItems:any[];
   backup:any;
   diff: DiffableResult;
-
+  diffable: boolean;
   @ViewChild('editForm')
   private editForm: NgForm;
 
@@ -62,6 +62,7 @@ export class DatatypeEditStructureComponent implements WithSave{
       this.delta.diffable('DATATYPE', this.igId, x.from, this.datatypeId).subscribe(
         diffData => this.diff = diffData
       );
+      this.diffable = !!x.origin;
       this.backup=__.cloneDeep(this.datatypeStructure);
     });
   }

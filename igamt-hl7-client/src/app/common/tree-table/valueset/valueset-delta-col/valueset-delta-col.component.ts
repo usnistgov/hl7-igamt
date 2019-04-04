@@ -20,7 +20,7 @@ export class ValuesetDeltaColComponent implements OnInit {
 
   ngOnInit() {
     this.initCurrentBinding();
-    // console.log(this.currentBindings);
+    console.log(this.currentBindings);
     if (this.currentBindings && this.currentBindings.valuesetBindings) {
       this.noChange = this.currentBindings.valuesetBindings.filter(elm => elm['_.operation'] === 'UNCHANGED');
       this.added = this.currentBindings.valuesetBindings.filter(elm => elm['_.operation'] === 'ADDED');
@@ -36,19 +36,15 @@ export class ValuesetDeltaColComponent implements OnInit {
   }
 
   initCurrentBinding() {
-    this.currentBindings = null;
+    let priority = 999;
     if (this.bindings) {
-      for (var i in this.bindings) {
-        if (this.bindings[i].valuesetBindings && this.bindings[i].valuesetBindings.length > 0) {
-          if (!this.currentBindings) {
-            this.currentBindings = __.cloneDeep(this.bindings[i]);
-          } else {
-            if (this.currentBindings.priority > this.bindings[i].priority) {
-              this.currentBindings = __.cloneDeep(this.bindings[i]);
-            }
-          }
+      for (const binding of this.bindings) {
+        if (binding.valuesetBindings && binding.valuesetBindings.length > 0 && binding.priority.current < priority) {
+          priority = binding.priority.current;
+          this.currentBindings = binding;
         }
       }
     }
+
   }
 }
