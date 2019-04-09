@@ -14,5 +14,7 @@ public interface ConformanceStatementRepository extends MongoRepository<Conforma
 	public Optional<ConformanceStatement> findById(String key);
 	
 	public Set<ConformanceStatement> findByIgDocumentIdAndStructureId(String igDocumentId, String structureId);
+	
+	public Set<ConformanceStatement> findByIgDocumentId(String igDocumentId);
 
 }

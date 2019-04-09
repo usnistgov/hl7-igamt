@@ -70,6 +70,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileVal
 import gov.nist.hit.hl7.igamt.conformanceprofile.repository.ConformanceProfileRepository;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
@@ -341,7 +342,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
     if (conformanceStatementIds != null) {
       for (String id : conformanceStatementIds) {
-        result.add(this.conformanceStatementRepository.findById(id).get());
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
 
@@ -546,6 +548,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     }
 
     result.setType(Type.CONFORMANCEPROFILE);
+    result.setName(conformanceProfile.getStructID());
     return result;
   }
 
@@ -1181,8 +1184,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (item.getChangeType().equals(ChangeType.ADD)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
           cs.addSourceId(cp.getId());
-          cs.setStructureId(cp.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setStructureId(cp.getStructID());
+          cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           cp.getBinding().addConformanceStatement(cs.getId());
@@ -1195,8 +1198,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
           }
           cs.addSourceId(cp.getId());
-          cs.setStructureId(cp.getName());
-          cs.setLevel(Level.DATATYPE);
+          cs.setStructureId(cp.getStructID());
+          cs.setLevel(Level.CONFORMANCEPROFILE);
           cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
         }
@@ -1208,8 +1211,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         if (item.getChangeType().equals(ChangeType.ADD)) {
           Predicate p = mapper.readValue(jsonInString, Predicate.class);
           p.addSourceId(cp.getId());
-          p.setStructureId(cp.getName());
-          p.setLevel(Level.DATATYPE);
+          p.setStructureId(cp.getStructID());
+          p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);
           seb.setPredicateId(p.getId());
@@ -1232,8 +1235,8 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));
           }
           p.addSourceId(cp.getId());
-          p.setStructureId(cp.getName());
-          p.setLevel(Level.DATATYPE);
+          p.setStructureId(cp.getStructID());
+          p.setLevel(Level.CONFORMANCEPROFILE);
           p.setIgDocumentId(documentId);
           p = this.predicateRepository.save(p);
         }
@@ -1543,6 +1546,64 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       }
     }
     return null;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService#findDisplayPredicates(java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
+    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.CONFORMANCEPROFILE);
+    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
+    if(predicates != null){
+      for(Predicate p : predicates){
+        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
+          Optional<ConformanceProfile> o = this.conformanceProfileRepository.findById(sourceId);
+          if(o.isPresent()){
+            DisplayPredicate dp = new DisplayPredicate();
+            dp.setPredicate(p);
+            ConformanceProfile m = o.get();
+            if(m.getBinding() != null && m.getBinding().getChildren() != null){
+              this.markLocation(dp, m.getBinding().getChildren(), m.getLabel(), p.getId());
+            }
+            result.add(dp);            
+          }
+        }
+      }
+    }
+    return result;
+  }
+  
+  private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
+    for(StructureElementBinding seb: children){
+      if(seb.getPredicateId() != null && seb.getPredicateId().equals(pid)){
+        if(seb.getLocationInfo().getType().equals(LocationType.GROUP)){
+          dp.setLocation(location + "." + seb.getLocationInfo().getName());  
+        }else if(seb.getLocationInfo().getType().equals(LocationType.SEGREF)){
+          dp.setLocation(location + "." + seb.getLocationInfo().getName());  
+        }else if(seb.getLocationInfo().getType().equals(LocationType.FIELD)){
+          dp.setLocation(location + "-" + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");  
+        }else if(seb.getLocationInfo().getType().equals(LocationType.COMPONENT)){
+          dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");  
+        }else if(seb.getLocationInfo().getType().equals(LocationType.SUBCOMPONENT)){
+          dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");  
+        }
+      }else {
+        if(seb.getChildren() != null){
+          if(seb.getLocationInfo().getType().equals(LocationType.GROUP)){
+            this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getName(), pid);
+          }else if(seb.getLocationInfo().getType().equals(LocationType.SEGREF)){
+            this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getName(), pid);
+          }else if(seb.getLocationInfo().getType().equals(LocationType.FIELD)){
+            this.markLocation(dp, seb.getChildren(), location + "-" + seb.getLocationInfo().getPosition(), pid);
+          }else if(seb.getLocationInfo().getType().equals(LocationType.COMPONENT)){
+            this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
+          }else if(seb.getLocationInfo().getType().equals(LocationType.SUBCOMPONENT)){
+            this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
+          }
+        }
+      }
+    }
   }
 }
 

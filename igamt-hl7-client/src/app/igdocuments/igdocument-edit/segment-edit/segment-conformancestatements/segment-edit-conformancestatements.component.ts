@@ -24,7 +24,7 @@ export class SegmentEditConformanceStatementsComponent  implements WithSave{
     segmentConformanceStatements:any;
     constraintTypes: any = [];
     assertionModes: any = [];
-    keys : any[] = []
+    keys : any[] = [];
     backup:any;
 
     selectedConformanceStatement: any = {};

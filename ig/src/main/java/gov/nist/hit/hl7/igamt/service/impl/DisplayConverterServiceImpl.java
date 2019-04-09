@@ -113,6 +113,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
           if (s instanceof TextSection) {
             TextSection sect = section;
             children.add(createTextSectionNode(sect, ig));
+            if(sect.getType().equals(Type.VALUESETREGISTRY)) children.add(this.createConformanceStatementNode(ig));
           }
 
         }
@@ -124,6 +125,17 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       t.setChildren(generateChildrenByType(s, s.getType(), ig));
     }
 
+    return t;
+  }
+  
+  private TreeNode createConformanceStatementNode(Ig ig){
+    TreeNode t = new TreeNode();
+    TextSectionData sectionTree = new TextSectionData();
+    sectionTree.setLabel("Conformance Statements");
+    sectionTree.setPosition(7);
+    sectionTree.setType(Type.CONFORMANCESTATEMENTREGISTRY);
+    sectionTree.setDescription("Conformance Statements Page");
+    t.setData(sectionTree);
     return t;
   }
 

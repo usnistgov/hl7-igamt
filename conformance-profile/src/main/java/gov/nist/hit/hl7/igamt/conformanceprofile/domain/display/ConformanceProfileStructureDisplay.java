@@ -24,6 +24,7 @@ public class ConformanceProfileStructureDisplay extends SectionInfo {
 
   @DeltaField
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
+  private String name;
 
   public Set<SegmentRefOrGroupStructureTreeModel> getStructure() {
     return structure;
@@ -43,5 +44,13 @@ public class ConformanceProfileStructureDisplay extends SectionInfo {
     if (this.structure == null)
       this.structure = new HashSet<SegmentRefOrGroupStructureTreeModel>();
     this.structure.add(segmentRefStructureTreeModel);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }
