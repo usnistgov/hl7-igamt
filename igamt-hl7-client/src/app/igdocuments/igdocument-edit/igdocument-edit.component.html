@@ -155,6 +155,11 @@
           </ng-container>
 
 
+          <ng-container *ngSwitchCase="'CONFORMANCESTATEMENTREGISTRY'">
+            <span routerLink="./conformancestatement"> {{getPath(node)}} {{node.data.data.label}}</span>
+          </ng-container>
+
+
           <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
           <div #segLib>
             <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.data.label}}</span>

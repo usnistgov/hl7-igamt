@@ -16,15 +16,23 @@ import {DatatypeEditPredefResolver} from './datatype-predef/datatype-edit-predef
 import {DatatypeEditMetadataResolver} from './datatype-metadata/datatype-edit-metadata.resolver';
 import {DatatypeEditStructureResolver} from './datatype-structure/datatype-edit-structure.resolver';
 import {DatatypeEditConformanceStatementsResolver} from './datatype-conformancestatements/datatype-edit-conformancestatements.resolver';
+import {SegmentDeltaComponent} from '../segment-edit/segment-delta/segment-delta.component';
+import {DeltaResolver} from '../../../common/delta/service/delta.resolver';
+import {DatatypeDeltaColComponent} from '../../../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
+import {DatatypeDeltaComponent} from './datatype-delta/datatype-delta.component';
 
 @NgModule({
   imports: [
     RouterModule.forChild([
         {
             path: ':datatypeId',
-            component: DatatypeEditStructureComponent,
-            canDeactivate: [SaveFormsGuard],
-            resolve: {datatypeStructure: DatatypeEditStructureResolver}
+            redirectTo: ':datatypeId/structure'
+        },
+        {
+          path: ':datatypeId/delta',
+          component: DatatypeDeltaComponent,
+          canDeactivate: [SaveFormsGuard],
+          resolve: {delta: DeltaResolver}
         },
         {
             path: ':datatypeId/metadata',
@@ -57,7 +65,7 @@ import {DatatypeEditConformanceStatementsResolver} from './datatype-conformances
             resolve: {datatypeConformanceStatements: DatatypeEditConformanceStatementsResolver, datatypeStructure: DatatypeEditStructureResolver}
         },
       {
-        path: ':datatypeId/crossRef', component: DatatypeCrossRefComponent,resolve: { refs : DatatypeCrossRefResolver}
+        path: ':datatypeId/crossRef', component: DatatypeCrossRefComponent, resolve: { refs : DatatypeCrossRefResolver}
       }
 
     ])

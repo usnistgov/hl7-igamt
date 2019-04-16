@@ -12,7 +12,6 @@ export class DatatypeDeltaColComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
-    // console.log(this.datatypeLabel[]);
   }
 
 }

@@ -32,44 +32,10 @@ export class IgDocumentService {
 
 
     public getIg(igId){
-
         return new Promise(
             (resolve , reject) => {
-
               this.initIgDocument(igId, resolve);
-
-
-              // this.indexedDbService.getIgDocument().then(  x => {
-              //
-              //
-              //
-              //           console.log("ID From DB");
-              //
-              //           if(x.id!==igId) {
-              //
-              //               // this.initToc(igId,resolve,reject);
-              //               this.initIgDocument(igId, resolve);
-              //
-              //           } else {
-              //               this.tocService.metadata.next(x.metadata);
-              //               this.tocService.igId=igId;
-              //               resolve(x);
-              //           }
-              //
-              //
-              //
-              //
-              //       },error =>{
-              //           this.initIgDocument(igId, resolve);
-              //
-              //           // this.initToc(igId,resolve,reject);
-              //       }
-              //  )
-
             })
-
-
-
     };
 
     initIgDocument(igId:any,resolve){
@@ -82,6 +48,9 @@ export class IgDocumentService {
                         ig.metadata=x["metadata"];
                         this.tocService.metadata.next(ig.metadata);
                         this.tocService.igId=igId;
+                        console.log('FROM');
+                        console.log(x);
+                        this.tocService.sourceIg = x['sourceIg'];
                         ig.toc=x["toc"];
                         this.indexedDbService.initIg(ig).then(
                             () => {
@@ -104,6 +73,18 @@ export class IgDocumentService {
             }
 
         );
+    }
+
+    public getIGDocumentConformanceStatements(igid): Promise<any> {
+        const promise = new Promise<any>((resolve, reject) => {
+            this.http.get('api/igdocuments/' + igid + '/conformancestatement').toPromise().then(conformanceStatements => {
+                resolve(conformanceStatements);
+            }, error => {
+                resolve();
+                this.error.redirect("Could not load ConformanceStatements for IG ("+ igid + ")");
+            });
+        });
+        return promise;
     }
 
     public getDatatypeLabels(igid): Promise<any> {

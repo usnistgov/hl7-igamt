@@ -14,12 +14,22 @@ import {ConformanceprofileEditStructureComponent} from "./conformanceprofile-str
 import {ConformanceprofileEditStructureResolver} from "./conformanceprofile-structure/conformanceprofile-edit-structure.resolver";
 import {ConformanceprofileEditConformancestatementsComponent} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.component";
 import {ConformanceprofileEditConformancestatementsResolver} from "./conformanceprofile-conformancestatements/conformanceprofile-edit-conformancestatements.resolver";
+import {DatatypeDeltaComponent} from '../datatype-edit/datatype-delta/datatype-delta.component';
+import {DeltaResolver} from '../../../common/delta/service/delta.resolver';
+import {ConformanceprofileDeltaComponent} from './conformanceprofile-delta/conformanceprofile-delta.component';
 
 @NgModule({
   imports: [
     RouterModule.forChild([
         {
-            path: ':conformanceprofileId', component: ConformanceprofileEditStructureComponent,  canDeactivate: [SaveFormsGuard],  resolve: { conformanceprofileStructure : ConformanceprofileEditStructureResolver}
+            path: ':conformanceprofileId',
+            redirectTo: ':conformanceprofileId/structure'
+        },
+        {
+          path: ':conformanceprofileId/delta',
+          component: ConformanceprofileDeltaComponent,
+          canDeactivate: [SaveFormsGuard],
+          resolve: {delta: DeltaResolver}
         },
         {
             path: ':conformanceprofileId/metadata', component: ConformanceprofileEditMetadataComponent,  canDeactivate: [SaveFormsGuard] ,resolve: { conformanceprofileMetadata : ConformanceprofileEditMetadatResolver}

@@ -13,7 +13,8 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
+import gov.nist.diff.annotation.DeltaIdentity;
 import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
 
 /**
@@ -21,7 +22,9 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.FieldStructureTreeModel;
  *
  */
 public class SegmentRefStructureTreeModel extends SegmentRefOrGroupStructureTreeModel {
+  @DeltaIdentity
   private SegmentRefDisplayModel data;
+  @DeltaField
   private Set<FieldStructureTreeModel> children;
 
   public SegmentRefStructureTreeModel() {

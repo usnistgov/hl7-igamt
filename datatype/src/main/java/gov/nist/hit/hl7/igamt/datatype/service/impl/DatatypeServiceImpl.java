@@ -20,10 +20,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
@@ -49,7 +48,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
@@ -61,6 +59,9 @@ import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeType;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
@@ -80,7 +81,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentDisplayDataModel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.SubComponentStructureTreeModel;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.repository.DatatypeRepository;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -99,7 +99,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private DatatypeRepository datatypeRepository;
-  
+
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
 
@@ -113,7 +113,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
-  
+
   @Autowired
   private PredicateRepository predicateRepository;
   @Autowired
@@ -121,7 +121,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Datatype findById(String key) {
-	Datatype dt = this.domainExtention.findById(key, Datatype.class);
+    Datatype dt = this.domainExtention.findById(key, Datatype.class);
     return dt == null ? datatypeRepository.findById(key).orElse(null) : dt;
   }
 
@@ -141,8 +141,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public List<Datatype> findAll() {
-	  return Stream.concat(domainExtention.getAll(Datatype.class).stream(),datatypeRepository.findAll().stream())
-	  .collect(Collectors.toList());
+    return Stream.concat(domainExtention.getAll(Datatype.class).stream(),
+        datatypeRepository.findAll().stream()).collect(Collectors.toList());
   }
 
   @Override
@@ -308,7 +308,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 
     Criteria where = Criteria.where("domainInfo.scope").is(scope)
-            .andOperator(Criteria.where("domainInfo.version").is(version));
+        .andOperator(Criteria.where("domainInfo.version").is(version));
     Query qry = Query.query(where);
     qry.fields().include("domainInfo");
     qry.fields().include("id");
@@ -342,7 +342,8 @@ public class DatatypeServiceImpl implements DatatypeService {
       }
       result.setName(datatype.getName());
       if (datatype.getBinding() != null)
-        result.setConformanceStatements(this.collectCS(datatype.getBinding().getConformanceStatementIds()));
+        result.setConformanceStatements(
+            this.collectCS(datatype.getBinding().getConformanceStatementIds()));
       return result;
     }
     return null;
@@ -356,12 +357,13 @@ public class DatatypeServiceImpl implements DatatypeService {
    */
   private Set<ConformanceStatement> collectCS(Set<String> conformanceStatementIds) {
     Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
-    if(conformanceStatementIds != null){
-      for(String id : conformanceStatementIds){
-        result.add(this.conformanceStatementRepository.findById(id).get());
+    if (conformanceStatementIds != null) {
+      for (String id : conformanceStatementIds) {
+        Optional<ConformanceStatement> cs = this.conformanceStatementRepository.findById(id);
+        if(cs.isPresent()) result.add(cs.get());
       }
     }
-    
+
     return result;
   }
 
@@ -379,18 +381,17 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public Link cloneDatatype(HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username) {
+  public Link cloneDatatype(HashMap<String, String> valuesetsMap,
+      HashMap<String, String> datatypesMap, Link l, String username) {
     // TODO Auto-generated method stub
 
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
-    Link newLink = new Link();
+    Link newLink = l.clone(null);
+    elm.setOrigin(elm.getFrom());
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
     } else {
-      ;
-
       String newKey = new ObjectId().toString();
       newLink.setId(newKey);
       datatypesMap.put(l.getId(), newKey);
@@ -402,8 +403,10 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   }
 
-  private void updateDependencies(Datatype elm, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap) {
+
+
+  private void updateDependencies(Datatype elm, HashMap<String, String> valuesetsMap ,
+      HashMap<String, String> datatypesMap) {
     // TODO Auto-generated method stub
 
     if (elm instanceof ComplexDatatype) {
@@ -466,9 +469,21 @@ public class DatatypeServiceImpl implements DatatypeService {
               cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
               StructureElementBinding cSeb =
                   this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-              if (cSeb != null)
+              if (cSeb != null) {
                 cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(),
                     ViewScope.DATATYPE, 2, valueSetsMap));
+                if (cSeb.getPredicateId() != null) {
+                  Optional<Predicate> op = this.predicateRepository.findById(cSeb.getPredicateId());
+                  if (op.isPresent() && op.get().getTrueUsage() != null
+                      && op.get().getFalseUsage() != null) {
+                    cModel.setTrueUsage(op.get().getTrueUsage());
+                    cModel.setFalseUsage(op.get().getFalseUsage());
+                    cModel.setPredicate(op.get());
+                    if (op.get().getIdentifier() != null)
+                      cModel.getPredicate().setIdentifier(c.getId());
+                  }
+                }
+              }
 
               componentStructureTreeModel.setData(cModel);
               if (childChildDt instanceof ComplexDatatype) {
@@ -489,15 +504,41 @@ public class DatatypeServiceImpl implements DatatypeService {
                       StructureElementBinding childCSeb =
                           this.findStructureElementBindingByComponentIdFromStructureElementBinding(
                               cSeb, sc.getId());
-                      if (childCSeb != null)
+                      if (childCSeb != null) {
                         scModel.addBinding(this.createBindingDisplay(childCSeb, datatype.getId(),
                             ViewScope.DATATYPE, 2, valueSetsMap));
+                        if (childCSeb.getPredicateId() != null) {
+                          Optional<Predicate> op =
+                              this.predicateRepository.findById(childCSeb.getPredicateId());
+                          if (op.isPresent() && op.get().getTrueUsage() != null
+                              && op.get().getFalseUsage() != null) {
+                            scModel.setTrueUsage(op.get().getTrueUsage());
+                            scModel.setFalseUsage(op.get().getFalseUsage());
+                            scModel.setPredicate(op.get());
+                            if (op.get().getIdentifier() != null)
+                              scModel.getPredicate().setIdentifier(c.getId() + "-" + sc.getId());
+                          }
+                        }
+                      }
                       StructureElementBinding scSeb =
                           this.findStructureElementBindingByComponentIdForDatatype(childChildDt,
                               sc.getId());
-                      if (scSeb != null)
+                      if (scSeb != null) {
                         scModel.addBinding(this.createBindingDisplay(scSeb, childChildDt.getId(),
                             ViewScope.DATATYPE, 3, valueSetsMap));
+                        if (scSeb.getPredicateId() != null) {
+                          Optional<Predicate> op =
+                              this.predicateRepository.findById(scSeb.getPredicateId());
+                          if (op.isPresent() && op.get().getTrueUsage() != null
+                              && op.get().getFalseUsage() != null) {
+                            scModel.setTrueUsage(op.get().getTrueUsage());
+                            scModel.setFalseUsage(op.get().getFalseUsage());
+                            scModel.setPredicate(op.get());
+                            if (op.get().getIdentifier() != null)
+                              scModel.getPredicate().setIdentifier(sc.getId());
+                          }
+                        }
+                      }
                       subComponentStructureTreeModel.setData(scModel);
                       componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                     } else {
@@ -533,9 +574,22 @@ public class DatatypeServiceImpl implements DatatypeService {
               scModel.setDatatypeLabel(this.createDatatypeLabel(childChildChildDt));
               StructureElementBinding scSeb =
                   this.findStructureElementBindingByComponentIdForDatatype(datatype, sc.getId());
-              if (scSeb != null)
+              if (scSeb != null) {
                 scModel.addBinding(this.createBindingDisplay(scSeb, datatype.getId(),
-                    ViewScope.DATATYPE, 3, valueSetsMap));
+                    ViewScope.DATATYPE, 2, valueSetsMap));
+                if (scSeb.getPredicateId() != null) {
+                  Optional<Predicate> op =
+                      this.predicateRepository.findById(scSeb.getPredicateId());
+                  if (op.isPresent() && op.get().getTrueUsage() != null
+                      && op.get().getFalseUsage() != null) {
+                    scModel.setTrueUsage(op.get().getTrueUsage());
+                    scModel.setFalseUsage(op.get().getFalseUsage());
+                    scModel.setPredicate(op.get());
+                    if (op.get().getIdentifier() != null)
+                      scModel.getPredicate().setIdentifier(sc.getId());
+                  }
+                }
+              }
               subComponentStructureTreeModel.setData(scModel);
               result.add(subComponentStructureTreeModel);
             } else {
@@ -550,13 +604,14 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly) {
+  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype,
+      boolean readOnly) {
     HashMap<String, Valueset> valueSetsMap = new HashMap<String, Valueset>();
     HashMap<String, Datatype> datatypesMap = new HashMap<String, Datatype>();
 
     DatatypeStructureDisplay result = new DatatypeStructureDisplay();
-    
-    result.complete(result, datatype, SectionType.STRUCTURE,readOnly);
+
+    result.complete(result, datatype, SectionType.STRUCTURE, readOnly);
     if (datatype.getExt() != null) {
       result.setLabel(datatype.getName() + "_" + datatype.getExt());
     } else {
@@ -579,9 +634,21 @@ public class DatatypeServiceImpl implements DatatypeService {
             cModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
             StructureElementBinding cSeb =
                 this.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
-            if (cSeb != null)
+            if (cSeb != null) {
               cModel.addBinding(this.createBindingDisplay(cSeb, datatype.getId(),
                   ViewScope.DATATYPE, 1, valueSetsMap));
+              if (cSeb.getPredicateId() != null) {
+                Optional<Predicate> op = this.predicateRepository.findById(cSeb.getPredicateId());
+                if (op.isPresent() && op.get().getTrueUsage() != null
+                    && op.get().getFalseUsage() != null) {
+                  cModel.setTrueUsage(op.get().getTrueUsage());
+                  cModel.setFalseUsage(op.get().getFalseUsage());
+                  cModel.setPredicate(op.get());
+                  if (op.get().getIdentifier() != null)
+                    cModel.getPredicate().setIdentifier(cModel.getIdPath());
+                }
+              }
+            }
             componentStructureTreeModel.setData(cModel);
 
             if (childDt instanceof ComplexDatatype) {
@@ -591,16 +658,53 @@ public class DatatypeServiceImpl implements DatatypeService {
                 for (Component sc : childDatatype.getComponents()) {
                   Datatype childChildDt = this.findDatatype(sc.getRef().getId(), datatypesMap);
                   if (childChildDt != null) {
-                    SubComponentStructureTreeModel subComponentStructureTreeModel = new SubComponentStructureTreeModel();
+                    SubComponentStructureTreeModel subComponentStructureTreeModel =
+                        new SubComponentStructureTreeModel();
                     SubComponentDisplayDataModel scModel = new SubComponentDisplayDataModel(sc);
                     scModel.setViewScope(ViewScope.DATATYPE);
                     scModel.setIdPath(c.getId() + "-" + sc.getId());
                     scModel.setPath(c.getPosition() + "-" + sc.getPosition());
                     scModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
-                    StructureElementBinding childSeb = this.findStructureElementBindingByComponentIdFromStructureElementBinding(cSeb, sc.getId());
-                    if (childSeb != null) scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(), ViewScope.DATATYPE, 1, valueSetsMap));
-                    StructureElementBinding scSeb = this.findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
-                    if (scSeb != null) scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(), ViewScope.DATATYPE, 2, valueSetsMap));
+
+                    StructureElementBinding childSeb =
+                        this.findStructureElementBindingByComponentIdFromStructureElementBinding(
+                            cSeb, sc.getId());
+                    if (childSeb != null) {
+                      scModel.addBinding(this.createBindingDisplay(childSeb, datatype.getId(),
+                          ViewScope.DATATYPE, 1, valueSetsMap));
+                      if (childSeb.getPredicateId() != null) {
+                        Optional<Predicate> op =
+                            this.predicateRepository.findById(childSeb.getPredicateId());
+                        if (op.isPresent() && op.get().getTrueUsage() != null
+                            && op.get().getFalseUsage() != null) {
+                          scModel.setTrueUsage(op.get().getTrueUsage());
+                          scModel.setFalseUsage(op.get().getFalseUsage());
+                          scModel.setPredicate(op.get());
+                          if (op.get().getIdentifier() != null)
+                            scModel.getPredicate().setIdentifier(scModel.getIdPath());
+                        }
+                      }
+                    }
+
+                    StructureElementBinding scSeb = this
+                        .findStructureElementBindingByComponentIdForDatatype(childDt, sc.getId());
+                    if (scSeb != null) {
+                      scModel.addBinding(this.createBindingDisplay(scSeb, childDt.getId(),
+                          ViewScope.DATATYPE, 2, valueSetsMap));
+                      if (scSeb.getPredicateId() != null) {
+                        Optional<Predicate> op =
+                            this.predicateRepository.findById(scSeb.getPredicateId());
+                        if (op.isPresent() && op.get().getTrueUsage() != null
+                            && op.get().getFalseUsage() != null) {
+                          scModel.setTrueUsage(op.get().getTrueUsage());
+                          scModel.setFalseUsage(op.get().getFalseUsage());
+                          scModel.setPredicate(op.get());
+                          if (op.get().getIdentifier() != null)
+                            scModel.getPredicate().setIdentifier(sc.getId());
+                        }
+                      }
+                    }
+
                     subComponentStructureTreeModel.setData(scModel);
                     componentStructureTreeModel.addSubComponent(subComponentStructureTreeModel);
                   } else {
@@ -630,8 +734,15 @@ public class DatatypeServiceImpl implements DatatypeService {
     bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-    if(seb.getPredicateId() != null) bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-    bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
+
+    if (seb.getPredicateId() != null) {
+      Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
+      if (op.isPresent())
+        bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
+    }
+
+    bindingDisplay
+        .setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
     return bindingDisplay;
   }
 
@@ -685,7 +796,7 @@ public class DatatypeServiceImpl implements DatatypeService {
     if (seb != null && seb.getChildren() != null) {
       for (StructureElementBinding child : seb.getChildren()) {
         if (child.getElementId().equals(cId))
-          return seb;
+          return child;
       }
     }
     return null;
@@ -823,32 +934,30 @@ public class DatatypeServiceImpl implements DatatypeService {
   }
 
   @Override
-  public void applyChanges(Datatype d, List<ChangeItemDomain> cItems)
+  public void applyChanges(Datatype d, List<ChangeItemDomain> cItems, String documentId)
       throws JsonProcessingException, IOException {
     Collections.sort(cItems);
     for (ChangeItemDomain item : cItems) {
-    	
-    	
-    	if(item.getPropertyType().equals(PropertyType.PREDEF)) {
-    		item.setOldPropertyValue(d.getPreDef());
-    		d.setPreDef((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.POSTDEF)) {
-    		item.setOldPropertyValue(d.getPostDef());
-    		d.setPostDef((String)item.getPropertyValue());
-    	}else if(item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
-    		item.setOldPropertyValue(d.getAuthorNotes());
-    		d.setAuthorNotes((String)item.getPropertyValue());
-    	
-    	}else if(item.getPropertyType().equals(PropertyType.USAGENOTES)) {
-    		item.setOldPropertyValue(d.getUsageNotes());
-    		d.setUsageNotes((String)item.getPropertyValue());
-    	}
-      	else if(item.getPropertyType().equals(PropertyType.EXT)) {
-    		item.setOldPropertyValue(d.getExt());
-    		d.setExt((String)item.getPropertyValue());
-    	}
-    	else if (item.getPropertyType().equals(PropertyType.USAGE)) {
+
+
+      if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+        item.setOldPropertyValue(d.getPreDef());
+        d.setPreDef((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+        item.setOldPropertyValue(d.getPostDef());
+        d.setPostDef((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+        item.setOldPropertyValue(d.getAuthorNotes());
+        d.setAuthorNotes((String) item.getPropertyValue());
+
+      } else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+        item.setOldPropertyValue(d.getUsageNotes());
+        d.setUsageNotes((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.EXT)) {
+        item.setOldPropertyValue(d.getExt());
+        d.setExt((String) item.getPropertyValue());
+      } else if (item.getPropertyType().equals(PropertyType.USAGE)) {
         Component c = this.findComponentById(d, item.getLocation());
         if (c != null) {
           item.setOldPropertyValue(c.getUsage());
@@ -941,6 +1050,10 @@ public class DatatypeServiceImpl implements DatatypeService {
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
         if (item.getChangeType().equals(ChangeType.ADD)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
+          cs.addSourceId(d.getId());
+          cs.setStructureId(d.getName());
+          cs.setLevel(Level.DATATYPE);
+          cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
           d.getBinding().addConformanceStatement(cs.getId());
         } else if (item.getChangeType().equals(ChangeType.DELETE)) {
@@ -948,8 +1061,51 @@ public class DatatypeServiceImpl implements DatatypeService {
           this.deleteConformanceStatementById(d, item.getLocation());
         } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
           ConformanceStatement cs = mapper.readValue(jsonInString, ConformanceStatement.class);
-          item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          if (cs.getId() != null) {
+            item.setOldPropertyValue(this.conformanceStatementRepository.findById(cs.getId()));
+          }
+          cs.addSourceId(d.getId());
+          cs.setStructureId(d.getName());
+          cs.setLevel(Level.DATATYPE);
+          cs.setIgDocumentId(documentId);
           cs = this.conformanceStatementRepository.save(cs);
+        }
+      } else if (item.getPropertyType().equals(PropertyType.PREDICATE)) {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+        StructureElementBinding seb =
+            this.findAndCreateStructureElementBindingByIdPath(d, item.getLocation());
+        if (item.getChangeType().equals(ChangeType.ADD)) {
+          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
+          cp.addSourceId(d.getId());
+          cp.setStructureId(d.getName());
+          cp.setLevel(Level.DATATYPE);
+          cp.setIgDocumentId(documentId);
+          cp = this.predicateRepository.save(cp);
+          seb.setPredicateId(cp.getId());
+        } else if (item.getChangeType().equals(ChangeType.DELETE)) {
+          item.setOldPropertyValue(item.getLocation());
+          if (seb.getPredicateId() != null) {
+            Optional<Predicate> op = this.predicateRepository.findById(seb.getPredicateId());
+            if (op.isPresent()) {
+              Predicate cp = op.get();
+              cp.removeSourceId(d.getId());
+              this.predicateRepository.save(cp);
+            }
+            item.setOldPropertyValue(seb.getPredicateId());
+            seb.setPredicateId(null);
+          }
+
+        } else if (item.getChangeType().equals(ChangeType.UPDATE)) {
+          Predicate cp = mapper.readValue(jsonInString, Predicate.class);
+          if (cp.getId() != null) {
+            item.setOldPropertyValue(this.predicateRepository.findById(cp.getId()));
+          }
+          cp.addSourceId(d.getId());
+          cp.setStructureId(d.getName());
+          cp.setLevel(Level.DATATYPE);
+          cp.setIgDocumentId(documentId);
+          cp = this.predicateRepository.save(cp);
         }
       }
     }
@@ -963,6 +1119,9 @@ public class DatatypeServiceImpl implements DatatypeService {
       ConformanceStatement cs = this.conformanceStatementRepository.findById(id).get();
       if (cs.getIdentifier().equals(location))
         toBeDeleted = id;
+      if (cs.getSourceIds() != null)
+        cs.getSourceIds().remove(d.getId());
+      this.conformanceStatementRepository.save(cs);
     }
 
     if (toBeDeleted != null)
@@ -1134,34 +1293,44 @@ public Set<RelationShip> collectDependencies(Datatype elm) {
 
 
   @Override
-  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {    
-    if(datatype.getDomainInfo().getScope().equals(Scope.USER)) {
-      if(datatype instanceof ComplexDatatype) {
-        ComplexDatatype cDT = (ComplexDatatype)datatype;
-        for(Component c : cDT.getComponents()) {
+  public void collectAssoicatedConformanceStatements(Datatype datatype,
+      HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap) {
+    if (datatype.getDomainInfo().getScope().equals(Scope.USER)) {
+      if (datatype instanceof ComplexDatatype) {
+        ComplexDatatype cDT = (ComplexDatatype) datatype;
+        for (Component c : cDT.getComponents()) {
           Datatype dt = this.findById(c.getRef().getId());
-          if(dt != null){
-            if(dt.getDomainInfo().getScope().equals(Scope.USER)) {
-              if(dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null && dt.getBinding().getConformanceStatementIds().size() > 0) {
-                if(!associatedConformanceStatementMap.containsKey(dt.getLabel())) associatedConformanceStatementMap.put(dt.getLabel(), new ConformanceStatementsContainer(this.collectCS(dt.getBinding().getConformanceStatementIds()), Type.DATATYPE, dt.getId(), dt.getLabel()));
+          if (dt != null) {
+            if (dt.getDomainInfo().getScope().equals(Scope.USER)) {
+              if (dt.getBinding() != null && dt.getBinding().getConformanceStatementIds() != null
+                  && dt.getBinding().getConformanceStatementIds().size() > 0) {
+                if (!associatedConformanceStatementMap.containsKey(dt.getLabel()))
+                  associatedConformanceStatementMap.put(dt.getLabel(),
+                      new ConformanceStatementsContainer(
+                          this.collectCS(dt.getBinding().getConformanceStatementIds()),
+                          Type.DATATYPE, dt.getId(), dt.getLabel()));
                 this.collectAssoicatedConformanceStatements(dt, associatedConformanceStatementMap);
               }
-            }            
+            }
           }
 
-        }  
+        }
       }
     }
   }
 
-  /* (non-Javadoc)
-   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt.datatype.domain.Datatype)
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#makeLocationInfo(gov.nist.hit.hl7.igamt
+   * .datatype.domain.Datatype)
    */
   @Override
   public ResourceBinding makeLocationInfo(Datatype dt) {
-    if(dt instanceof ComplexDatatype && dt.getBinding() != null) {
-      for(StructureElementBinding seb : dt.getBinding().getChildren()){
-        seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype)dt, seb));  
+    if (dt instanceof ComplexDatatype && dt.getBinding() != null) {
+      for (StructureElementBinding seb : dt.getBinding().getChildren()) {
+        seb.setLocationInfo(makeLocationInfoForComponent((ComplexDatatype) dt, seb));
       }
       return dt.getBinding();
     }
@@ -1174,18 +1343,21 @@ public Set<RelationShip> collectDependencies(Datatype elm) {
    * @return
    */
   @Override
-  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb) {
-    if(dt != null && dt.getComponents() != null) {
-      for(Component c : dt.getComponents()) {
-        if(c.getId().equals(seb.getElementId())){
-          if(seb.getChildren() != null){
-            for(StructureElementBinding childSeb : seb.getChildren()){
+  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt,
+      StructureElementBinding seb) {
+    if (dt != null && dt.getComponents() != null) {
+      for (Component c : dt.getComponents()) {
+        if (c.getId().equals(seb.getElementId())) {
+          if (seb.getChildren() != null) {
+            for (StructureElementBinding childSeb : seb.getChildren()) {
               Datatype childDT = this.findById(c.getRef().getId());
-              if(childDT instanceof ComplexDatatype) childSeb.setLocationInfo(makeLocationInfoForSubComponent((ComplexDatatype)childDT, childSeb));  
-            }  
+              if (childDT instanceof ComplexDatatype)
+                childSeb.setLocationInfo(
+                    makeLocationInfoForSubComponent((ComplexDatatype) childDT, childSeb));
+            }
           }
-          
-          
+
+
           return new LocationInfo(LocationType.COMPONENT, c.getPosition(), c.getName());
         }
       }
@@ -1198,10 +1370,11 @@ public Set<RelationShip> collectDependencies(Datatype elm) {
    * @param childSeb
    * @return
    */
-  private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt, StructureElementBinding seb) {
-    if(dt != null && dt.getComponents() != null) {
-      for(Component c : dt.getComponents()) {
-        if(c.getId().equals(seb.getElementId())){          
+  private LocationInfo makeLocationInfoForSubComponent(ComplexDatatype dt,
+      StructureElementBinding seb) {
+    if (dt != null && dt.getComponents() != null) {
+      for (Component c : dt.getComponents()) {
+        if (c.getId().equals(seb.getElementId())) {
           return new LocationInfo(LocationType.SUBCOMPONENT, c.getPosition(), c.getName());
         }
       }
@@ -1214,4 +1387,61 @@ public List<Datatype> findByIdIn( Set<String> linksAsIds) {
 	// TODO Auto-generated method stub
 	return datatypeRepository.findByIdIn(linksAsIds);
 }
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#collectAvaliableConformanceStatements(
+   * java.lang.String, java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId,
+      String datatypeId, String datatypeName) {
+    Set<ConformanceStatement> found = this.conformanceStatementRepository
+        .findByIgDocumentIdAndStructureId(documentId, datatypeName);
+    Set<ConformanceStatement> result = new HashSet<ConformanceStatement>();
+    for (ConformanceStatement cs : found) {
+      if (!cs.getSourceIds().contains(datatypeId))
+        result.add(cs);
+    }
+    return result;
+  }
+
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.datatype.service.DatatypeService#findDisplayPredicates(java.lang.String, java.lang.String)
+   */
+  @Override
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId) {
+    Set<Predicate> predicates = this.predicateRepository.findByIgDocumentIdAndLevel(documentId, Level.DATATYPE);
+    Set<DisplayPredicate> result = new HashSet<DisplayPredicate>();
+    if(predicates != null){
+      for(Predicate p : predicates){
+        if(p.getSourceIds() != null && p.getSourceIds().contains(sourceId)){
+          Optional<Datatype> o = this.datatypeRepository.findById(sourceId);
+          if(o.isPresent()){
+            DisplayPredicate dp = new DisplayPredicate();
+            dp.setPredicate(p);
+            Datatype dt = o.get();
+            if(dt.getBinding() != null && dt.getBinding().getChildren() != null){
+              this.markLocation(dp, dt.getBinding().getChildren(), dt.getName(), p.getId());
+            }
+            result.add(dp);            
+          }
+        }
+      }
+    }
+    return result;
+  }
+
+  private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
+    for(StructureElementBinding seb: children){
+      if(seb.getPredicateId() != null && seb.getPredicateId().equals(pid)){
+        dp.setLocation(location + "." + seb.getLocationInfo().getPosition() + "(" + seb.getLocationInfo().getName() + ")");
+      }else {
+        if(seb.getChildren() != null){
+          this.markLocation(dp, seb.getChildren(), location + "." + seb.getLocationInfo().getPosition(), pid);
+        }
+      }
+    }
+  }
 }

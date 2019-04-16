@@ -13,18 +13,18 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
  * @author jungyubw
  *
  */
-public class ConformanceProfileStructureDisplay extends SectionInfo{
+public class ConformanceProfileStructureDisplay extends SectionInfo {
 
-
+  @DeltaField
   private Set<SegmentRefOrGroupStructureTreeModel> structure;
+  private String name;
 
   public Set<SegmentRefOrGroupStructureTreeModel> getStructure() {
     return structure;
@@ -44,5 +44,13 @@ public class ConformanceProfileStructureDisplay extends SectionInfo{
     if (this.structure == null)
       this.structure = new HashSet<SegmentRefOrGroupStructureTreeModel>();
     this.structure.add(segmentRefStructureTreeModel);
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
   }
 }

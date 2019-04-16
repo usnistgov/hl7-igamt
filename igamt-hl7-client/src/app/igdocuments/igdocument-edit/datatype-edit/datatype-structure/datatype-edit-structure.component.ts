@@ -14,6 +14,7 @@ import {WithSave} from "../../../../guards/with.save.interface";
 import {NgForm} from "@angular/forms";
 import {Columns} from "../../../../common/constants/columns";
 import {Types} from "../../../../common/constants/types";
+import {DeltaService, DiffableResult} from '../../../../common/delta/service/delta.service';
 
 @Component({
   selector : 'datatype-edit',
@@ -28,7 +29,8 @@ export class DatatypeEditStructureComponent implements WithSave{
   datatypeStructure:any;
   changeItems:any[];
   backup:any;
-
+  diff: DiffableResult;
+  diffable: boolean;
   @ViewChild('editForm')
   private editForm: NgForm;
 
@@ -39,7 +41,8 @@ export class DatatypeEditStructureComponent implements WithSave{
   constructor(private route: ActivatedRoute,
               private router : Router,
               private configService : GeneralConfigurationService,
-              private datatypesService : DatatypesService, private tocService: TocService){
+              private datatypesService : DatatypesService,
+              private delta: DeltaService){
     router.events.subscribe(event => {
       if (event instanceof NavigationEnd ) {
         this.currentUrl=event.url;
@@ -51,10 +54,15 @@ export class DatatypeEditStructureComponent implements WithSave{
     this.changeItems = [];
     this.datatypeId = this.route.snapshot.params["datatypeId"];
     this.igId = this.router.url.split("/")[2];
+
     this.route.data.map(data =>data.datatypeStructure).subscribe(x=>{
       x.structure = this.configService.arraySortByPosition(x.structure);
       this.datatypeStructure = {};
       this.datatypeStructure = x;
+      this.delta.diffable('DATATYPE', this.igId, x.from, this.datatypeId).subscribe(
+        diffData => this.diff = diffData
+      );
+      this.diffable = !!x.origin;
       this.backup=__.cloneDeep(this.datatypeStructure);
     });
   }
@@ -79,6 +87,7 @@ export class DatatypeEditStructureComponent implements WithSave{
   }
 
   save(){
+    this.datatypeId = this.route.snapshot.params["datatypeId"];
     return new Promise((resolve, reject)=> {
       this.datatypesService.save(this.datatypeId, this.changeItems).then(saved => {
         this.backup = __.cloneDeep(this.datatypeStructure);

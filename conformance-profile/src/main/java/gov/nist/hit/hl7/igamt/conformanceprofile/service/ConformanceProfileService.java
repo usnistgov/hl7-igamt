@@ -32,6 +32,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConforman
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePostDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.DisplayConformanceProfilePreDef;
 import gov.nist.hit.hl7.igamt.conformanceprofile.exception.ConformanceProfileValidationException;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 
 /**
@@ -90,7 +91,7 @@ public interface ConformanceProfileService {
       ConformanceProfile conformanceProfile);
 
   public ConformanceProfileConformanceStatement convertDomainToConformanceStatement(
-      ConformanceProfile conformanceProfile, boolean readOnly);
+      ConformanceProfile conformanceProfile, String documentId, boolean readOnly);
 
 
   public void validate(DisplayConformanceProfileMetadata metadata)
@@ -116,7 +117,7 @@ public interface ConformanceProfileService {
   
   public ConformanceProfileStructureDisplay convertDomainToDisplayStructureFromContext(ConformanceProfile conformanceProfile, String contextId, boolean readOnly);
   
-  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
+  public void applyChanges(ConformanceProfile cp, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
 
   /**
    * @param conformanceProfile
@@ -124,9 +125,11 @@ public interface ConformanceProfileService {
    */
   public ConformanceProfileStructureTreeModel convertDomainToContextStructure(ConformanceProfile conformanceProfile, HashMap<String, ConformanceStatementsContainer> segMap, HashMap<String, ConformanceStatementsContainer> dtMap);
 
-  
   public Binding makeLocationInfo(ConformanceProfile cp);
   
   public Set<RelationShip> collectDependencies(ConformanceProfile cp);
+  
   List<ConformanceProfile> findByIdIn(Set<String> set);
+  
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 }

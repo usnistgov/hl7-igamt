@@ -1,6 +1,9 @@
 <app-valueset-binding-picker></app-valueset-binding-picker>
 <app-cc-header-dialog-dm [segment]="_segment"></app-cc-header-dialog-dm>
 <app-cc-header-dialog-user></app-cc-header-dialog-user>
+<!-- <a [disabled]="table.id && !hasChanged()" target="_blank" [href]="api/segments/"+ table.id +"/coconstraints/export">
+X
+</a> -->
 
 <tr #placeholder style="background-color: #b1dbfeba; border: 3px dashed darkgrey; text-align: center;">
   <td [attr.colspan]="groupHeaderSize(table)+4"
@@ -22,6 +25,7 @@
 </table>
 <entity-header [elm]="display"  (save)="save()" (reset)="reset()" [hasChanged]="hasChanged()" [canSave]="canSave()"></entity-header>
 
+<button style="margin-right: 10px; margin-bottom: 5px;" pButton class="green-btn pull-right" (click)="exportExcel()" label="Export To Excel" ></button>
 
 <div class="section-content cc-div" style="overflow-x: scroll; width: 100%; margin-top: 40px;" *ngIf="table">
   <form #ccForm="ngForm">

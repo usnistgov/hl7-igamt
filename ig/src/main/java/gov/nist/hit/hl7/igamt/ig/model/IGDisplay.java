@@ -3,7 +3,6 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 
 
@@ -11,6 +10,7 @@ public class IGDisplay {
 
   private DocumentMetadata metadata;
   private List<TreeNode> toc = new ArrayList<TreeNode>();
+  private String sourceIg;
   private Date dateUpdated;
   private String author;
 
@@ -49,5 +49,14 @@ public class IGDisplay {
   public void setToc(List<TreeNode> toc) {
     this.toc = toc;
   }
+
+  public String getSourceIg() {
+    return sourceIg;
+  }
+
+  public void setSourceIg(String sourceIg) {
+    this.sourceIg = sourceIg;
+  }
+
 
 }

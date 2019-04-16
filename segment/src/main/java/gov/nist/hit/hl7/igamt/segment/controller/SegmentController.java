@@ -1,17 +1,23 @@
 package gov.nist.hit.hl7.igamt.segment.controller;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +47,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -63,11 +70,16 @@ public class SegmentController extends BaseController {
 
   @Autowired
   SegmentService segmentService;
+  
   @Autowired
   CoConstraintService coconstraintService;
+  
   @Autowired
   EntityChangeService entityChangeService;
-  
+
+  @Autowired
+  CoConstraintService coConstraintService;
+
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
@@ -81,35 +93,44 @@ public class SegmentController extends BaseController {
   public SegmentStructureDisplay getSegmenDisplayStructure(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    return segmentService.convertDomainToDisplayStructure(segment, getReadOnly(authentication, segment));
+    return segmentService.convertDomainToDisplayStructure(segment,
+        getReadOnly(authentication, segment));
   }
-  
+
   @RequestMapping(value = "/api/segments/{id}/{idPath}/{path}/structure-by-ref",
       method = RequestMethod.GET, produces = {"application/json"})
   public Set<?> getComponentStructure(@PathVariable("id") String id,
-      @PathVariable("idPath") String idPath, @PathVariable("path") String path, Authentication authentication)
-      throws SegmentNotFoundException {
+      @PathVariable("idPath") String idPath, @PathVariable("path") String path,
+      Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
     return segmentService.convertSegmentStructurForMessage(segment, idPath, path);
   }
 
-  @RequestMapping(value = "/api/segments/{id}/conformancestatement", method = RequestMethod.GET,
-      produces = {"application/json"})
+  @RequestMapping(value = "/api/segments/{id}/conformancestatement/{did}",
+      method = RequestMethod.GET, produces = {"application/json"})
   public ConformanceStatementDisplay getSegmentConformanceStatement(@PathVariable("id") String id,
-      Authentication authentication) throws SegmentNotFoundException {
+      @PathVariable("did") String did, Authentication authentication)
+      throws SegmentNotFoundException {
     Segment segment = findById(id);
-    
-    ConformanceStatementDisplay conformanceStatementDisplay= new ConformanceStatementDisplay();
+
+    ConformanceStatementDisplay conformanceStatementDisplay = new ConformanceStatementDisplay();
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
-    if(segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
-        for(String csId : segment.getBinding().getConformanceStatementIds()){
-          cfs.add(conformanceStatementRepository.findById(csId).get());
-        }
+    if (segment.getBinding() != null && segment.getBinding().getConformanceStatementIds() != null) {
+      for (String csId : segment.getBinding().getConformanceStatementIds()) {
+        Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
+        if(cs.isPresent()) cfs.add(cs.get());
+      }
     }
-    
-    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
-    this.segmentService.collectAssoicatedConformanceStatements(segment, associatedConformanceStatementMap);
-    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, segment), cfs, associatedConformanceStatementMap);
+
+    Set<ConformanceStatement> acs = this.segmentService.collectAvaliableConformanceStatements(did,
+        segment.getId(), segment.getName());
+
+    HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap =
+        new HashMap<String, ConformanceStatementsContainer>();
+    this.segmentService.collectAssoicatedConformanceStatements(segment,
+        associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(segment, SectionType.CONFORMANCESTATEMENTS,
+        getReadOnly(authentication, segment), cfs, acs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.SEGMENT);
     return conformanceStatementDisplay;
   }
@@ -129,7 +150,7 @@ public class SegmentController extends BaseController {
   public DisplayMetadataSegment getSegmentMetadata(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    DisplayMetadataSegment display= new DisplayMetadataSegment();
+    DisplayMetadataSegment display = new DisplayMetadataSegment();
     display.complete(segment, SectionType.METADATA, getReadOnly(authentication, segment));
     return display;
 
@@ -137,33 +158,32 @@ public class SegmentController extends BaseController {
 
   @RequestMapping(value = "/api/segments/{id}/predef", method = RequestMethod.GET,
       produces = {"application/json"})
-  public DefinitionDisplay getSegmentPredef(@PathVariable("id") String id, Authentication authentication)
-      throws SegmentNotFoundException {
+  public DefinitionDisplay getSegmentPredef(@PathVariable("id") String id,
+      Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    DefinitionDisplay display= new DefinitionDisplay();
+    DefinitionDisplay display = new DefinitionDisplay();
     display.build(segment, SectionType.PREDEF, getReadOnly(authentication, segment));
     return display;
   }
 
-private boolean getReadOnly(Authentication authentication, Segment segment) {
-	// TODO Auto-generated method stub
-	if(segment.getUsername() ==null) {
-		return true;
-	}else {
-		return !segment.getUsername().equals(authentication.getName());
-	}
-	
-}
+  private boolean getReadOnly(Authentication authentication, Segment segment) {
+    // TODO Auto-generated method stub
+    if (segment.getUsername() == null) {
+      return true;
+    } else {
+      return !segment.getUsername().equals(authentication.getName());
+    }
+  }
 
 
-@RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/segments/{id}/postdef", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody DefinitionDisplay getSegmentPostdef(@PathVariable("id") String id,
       Authentication authentication) throws SegmentNotFoundException {
     Segment segment = findById(id);
-    DefinitionDisplay display= new DefinitionDisplay();
+    DefinitionDisplay display = new DefinitionDisplay();
     display.build(segment, SectionType.POSTDEF, getReadOnly(authentication, segment));
-   
+
     return display;
 
   }
@@ -181,16 +201,18 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
       produces = {"application/json"})
   @ResponseBody
   public CoConstraintTableDisplay getCoConstraints(@PathVariable("id") String id,
-      Authentication authentication) throws CoConstraintNotFoundException, SegmentNotFoundException {
-	  
-	    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
-	    
-	    Segment segment = findById(id);
-	    CoConstraintTableDisplay display= new CoConstraintTableDisplay();
-	    display.complete(display, segment, SectionType.COCONSTRAINTS, getReadOnly(authentication, segment));
-	    display.setData(table);
-	    return display;
-    
+      Authentication authentication)
+      throws CoConstraintNotFoundException, SegmentNotFoundException {
+
+    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
+
+    Segment segment = findById(id);
+    CoConstraintTableDisplay display = new CoConstraintTableDisplay();
+    display.complete(display, segment, SectionType.COCONSTRAINTS,
+        getReadOnly(authentication, segment));
+    display.setData(table);
+    return display;
+
   }
 
   @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
@@ -232,7 +254,7 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
     try {
       Segment s = this.segmentService.findById(id);
       validateSaveOperation(s);
-      this.segmentService.applyChanges(s, cItems);
+      this.segmentService.applyChanges(s, cItems, documentId);
       EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
       entityChangeDomain.setDocumentId(documentId);
       entityChangeDomain.setDocumentType(DocumentType.IG);
@@ -246,91 +268,114 @@ private boolean getReadOnly(Authentication authentication, Segment segment) {
       throw new SegmentException(e);
     }
   }
+  
+  @RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
+  public void exportCoConstraintsToExcel(@PathVariable("id") String id,
+  		HttpServletResponse response) throws ExportException {
+  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+  	if (authentication != null) {
+  		String username = authentication.getPrincipal().toString();
+  		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
+  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  		response.setHeader("Content-disposition",
+  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+  		try {
+  			response.getOutputStream().write(excelFile.toByteArray());
+  		} catch (IOException e) {
+  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+  		}
+  	} else {
+  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+  	}
+  }
+
 
   @RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST,
-	      produces = {"application/json"})
-	  @ResponseBody
-	  public ResponseMessage<?> SavePreDef(@PathVariable("id") String id,
-	      @RequestParam(name = "dId", required = true) String documentId, @RequestParam(name = "location", required = true) String location,
-	      @RequestBody String text, Authentication authentication)
-	      throws SegmentException, IOException, ValidationException {
-	    try {
-	      Segment s = this.segmentService.findById(id);
-	      ChangeItemDomain change = new ChangeItemDomain();
-	      change.setChangeType(ChangeType.UPDATE);
-	      change.setLocation(id);
-	      change.setPosition(-1);
-		  change.setPropertyType(PropertyType.PREDEF);
-		  change.setOldPropertyValue(s.getPreDef());
-	    	  s.setPreDef(text);
-	      change.setPropertyValue(text);
-	      validateSaveOperation(s);
-	     
-	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-	      entityChangeDomain.setDocumentId(documentId);
-	      entityChangeDomain.setDocumentType(DocumentType.IG);
-	      entityChangeDomain.setTargetId(id);
-	      entityChangeDomain.setTargetType(EntityType.SEGMENT);
-	      change.setChangeType(ChangeType.UPDATE);
-	      change.setLocation(id);
-	      change.setPosition(-1);
-	      change.setPropertyType(PropertyType.PREDEF);
-	      List<ChangeItemDomain> changeItems= new ArrayList<ChangeItemDomain>();
-	      entityChangeDomain.setChangeItems(changeItems);
-	      entityChangeDomain.setTargetVersion(s.getVersion());
-	      Segment saved = segmentService.save(s);
-	      entityChangeService.save(entityChangeDomain);
-	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(), saved.getUpdateDate());
-	    } catch (ForbiddenOperationException e) {
-	      throw new SegmentException(e);
-	    }
-	  }
+      produces = {"application/json"})
+  @ResponseBody
+  public ResponseMessage<?> SavePreDef(@PathVariable("id") String id,
+      @RequestParam(name = "dId", required = true) String documentId,
+      @RequestParam(name = "location", required = true) String location, @RequestBody String text,
+      Authentication authentication) throws SegmentException, IOException, ValidationException {
+    try {
+      Segment s = this.segmentService.findById(id);
+      ChangeItemDomain change = new ChangeItemDomain();
+      change.setChangeType(ChangeType.UPDATE);
+      change.setLocation(id);
+      change.setPosition(-1);
+      change.setPropertyType(PropertyType.PREDEF);
+      change.setOldPropertyValue(s.getPreDef());
+      s.setPreDef(text);
+      change.setPropertyValue(text);
+      validateSaveOperation(s);
+
+      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+      entityChangeDomain.setDocumentId(documentId);
+      entityChangeDomain.setDocumentType(DocumentType.IG);
+      entityChangeDomain.setTargetId(id);
+      entityChangeDomain.setTargetType(EntityType.SEGMENT);
+      change.setChangeType(ChangeType.UPDATE);
+      change.setLocation(id);
+      change.setPosition(-1);
+      change.setPropertyType(PropertyType.PREDEF);
+      List<ChangeItemDomain> changeItems = new ArrayList<ChangeItemDomain>();
+      entityChangeDomain.setChangeItems(changeItems);
+      entityChangeDomain.setTargetVersion(s.getVersion());
+      Segment saved = segmentService.save(s);
+      entityChangeService.save(entityChangeDomain);
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(),
+          saved.getUpdateDate());
+    } catch (ForbiddenOperationException e) {
+      throw new SegmentException(e);
+    }
+  }
 
   @RequestMapping(value = "/api/segments/{id}/postDef", method = RequestMethod.POST,
-	      produces = {"application/json"})
-	  @ResponseBody
-	  public ResponseMessage<?> savePostDef(@PathVariable("id") String id,
-	      @RequestParam(name = "dId", required = true) String documentId,
-	      @RequestBody String text, Authentication authentication)
-	      throws SegmentException, IOException, ValidationException {
-	    try {
-	      Segment s = this.segmentService.findById(id);
-	      ChangeItemDomain change = new ChangeItemDomain();
-	      change.setChangeType(ChangeType.UPDATE);
-	      change.setLocation(id);
-	      change.setPosition(-1);
-	 
-	    	  change.setPropertyType(PropertyType.POSTDEF);
-	    	  change.setOldPropertyValue(s.getPostDef());
-	    	  s.setPostDef(text);
-	      change.setPropertyValue(text);
-	      validateSaveOperation(s);
-	     
-	      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
-	      entityChangeDomain.setDocumentId(documentId);
-	      entityChangeDomain.setDocumentType(DocumentType.IG);
-	      entityChangeDomain.setTargetId(id);
-	      entityChangeDomain.setTargetType(EntityType.SEGMENT);
-	      change.setChangeType(ChangeType.UPDATE);
-	      change.setLocation(id);
-	      change.setPosition(-1);
-	      change.setPropertyType(PropertyType.PREDEF);
-	      List<ChangeItemDomain> changeItems= new ArrayList<ChangeItemDomain>();
-	      entityChangeDomain.setChangeItems(changeItems);
-	      entityChangeDomain.setTargetVersion(s.getVersion());
-	      Segment saved = segmentService.save(s);
-	      entityChangeService.save(entityChangeDomain);
-	      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(), saved.getUpdateDate());
-	    } catch (ForbiddenOperationException e) {
-	      throw new SegmentException(e);
-	    }
-	  }
+      produces = {"application/json"})
+  @ResponseBody
+  public ResponseMessage<?> savePostDef(@PathVariable("id") String id,
+      @RequestParam(name = "dId", required = true) String documentId, @RequestBody String text,
+      Authentication authentication) throws SegmentException, IOException, ValidationException {
+    try {
+      Segment s = this.segmentService.findById(id);
+      ChangeItemDomain change = new ChangeItemDomain();
+      change.setChangeType(ChangeType.UPDATE);
+      change.setLocation(id);
+      change.setPosition(-1);
+
+      change.setPropertyType(PropertyType.POSTDEF);
+      change.setOldPropertyValue(s.getPostDef());
+      s.setPostDef(text);
+      change.setPropertyValue(text);
+      validateSaveOperation(s);
+
+      EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
+      entityChangeDomain.setDocumentId(documentId);
+      entityChangeDomain.setDocumentType(DocumentType.IG);
+      entityChangeDomain.setTargetId(id);
+      entityChangeDomain.setTargetType(EntityType.SEGMENT);
+      change.setChangeType(ChangeType.UPDATE);
+      change.setLocation(id);
+      change.setPosition(-1);
+      change.setPropertyType(PropertyType.PREDEF);
+      List<ChangeItemDomain> changeItems = new ArrayList<ChangeItemDomain>();
+      entityChangeDomain.setChangeItems(changeItems);
+      entityChangeDomain.setTargetVersion(s.getVersion());
+      Segment saved = segmentService.save(s);
+      entityChangeService.save(entityChangeDomain);
+      return new ResponseMessage(Status.SUCCESS, STRUCTURE_SAVED, saved.getId(),
+          saved.getUpdateDate());
+    } catch (ForbiddenOperationException e) {
+      throw new SegmentException(e);
+    }
+  }
+
   private void validateSaveOperation(Segment s) throws ForbiddenOperationException {
     if (Scope.HL7STANDARD.equals(s.getDomainInfo().getScope())) {
       throw new ForbiddenOperationException("FORBIDDEN_SAVE_SEGMENT");
     }
   }
-  
+
 
 
 }

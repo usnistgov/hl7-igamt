@@ -19,6 +19,8 @@ import {InputTextModule} from "primeng/components/inputtext/inputtext";
 import {DataViewModule} from "primeng/components/dataview/dataview";
 import {ConfirmDialogModule} from 'primeng/confirmdialog';
 import {ConfirmationService} from 'primeng/api';
+import {DeltaService} from '../common/delta/service/delta.service';
+
 @NgModule({
 	imports: [
 		CommonModule,
@@ -52,7 +54,7 @@ import {ConfirmationService} from 'primeng/api';
 	],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ],
 	declarations: [IgDocumentListComponent],
-  providers:[Igsresolver,ConfirmationService]
+  providers:[Igsresolver,ConfirmationService, DeltaService]
 
 })
 export class IgDocumentModule {}

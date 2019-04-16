@@ -1,14 +1,14 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import gov.nist.diff.annotation.DeltaField;
 
-//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
-//@JsonSubTypes({@JsonSubTypes.Type(value = Group.class, name = "GROUP"),
-//    @JsonSubTypes.Type(value = SegmentRef.class, name = "SEGMENTREF")})
+// @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+// @JsonSubTypes({@JsonSubTypes.Type(value = Group.class, name = "GROUP"),
+// @JsonSubTypes.Type(value = SegmentRef.class, name = "SEGMENTREF")})
 public class MsgStructElement extends StructureElement {
-
+  @DeltaField
   private int min;
+  @DeltaField
   private String max;
 
   public MsgStructElement() {

@@ -1,7 +1,9 @@
 /**
  * Created by hnt5 on 10/30/17.
  */
-import {Component, Input, EventEmitter,Output} from "@angular/core";
+import {Component, Input, EventEmitter, Output} from "@angular/core";
+import {ActivatedRoute, Router} from '@angular/router';
+
 @Component({
   selector : 'entity-header',
   templateUrl : './entity-header.component.html',
@@ -9,17 +11,26 @@ import {Component, Input, EventEmitter,Output} from "@angular/core";
 })
 export class EntityHeaderComponent {
 
-  @Input()
-  elm : any;
-  @Input()
-  hasChanged :boolean;
-  @Input()
-  canSave:boolean;
-  sectionTypeDisplay : VisualRep;
+  @Input() elm: any;
+  @Input() hasChanged: boolean;
+  @Input() canSave: boolean;
+  sectionTypeDisplay: VisualRep;
+  _differential: boolean;
+  _delta: boolean;
 
   @Output() save = new EventEmitter<any>();
-
   @Output() reset = new EventEmitter<any>();
+  @Output() diff = new EventEmitter<boolean>();
+
+  constructor(private router: Router, private route: ActivatedRoute) {}
+
+  goToDIff(bool: boolean) {
+    if (bool) {
+      this.router.navigate(['../delta'], { relativeTo: this.route });
+    } else {
+      this.router.navigate( ['../structure'], { relativeTo: this.route });
+    }
+  }
 
   saveParent() {
     this.save.emit(true);
@@ -28,8 +39,19 @@ export class EntityHeaderComponent {
     this.reset.emit(true);
   }
 
+  @Input()
+  set differential(diff: boolean) {
+    this._delta = diff;
+  }
 
-  constructor(){}
+  @Input()
+  set diffToggled(diff: boolean) {
+    this._differential = diff;
+  }
+
+  toggle(event) {
+    this.goToDIff(!this._differential);
+  }
 
 
   ngOnInit(){

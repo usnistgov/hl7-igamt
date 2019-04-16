@@ -14,6 +14,7 @@ import {ButtonModule} from 'primeng/button';
 import {AccordionModule} from 'primeng/accordion';
 import {SelectButtonModule} from 'primeng/selectbutton';
 import {TableModule} from 'primeng/table';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 import {DatatypeEditStructureComponent} from "./datatype-structure/datatype-edit-structure.component";
 import {DatatypeEditConformanceStatementsComponent} from "./datatype-conformancestatements/datatype-edit-conformancestatements.component";
@@ -37,6 +38,7 @@ import {MultiSelectModule} from 'primeng/multiselect';
 
 
 import {TreeTableModule} from 'primeng/primeng';
+import { DatatypeDeltaComponent } from './datatype-delta/datatype-delta.component';
 
 @NgModule({
   imports: [
@@ -48,6 +50,7 @@ import {TreeTableModule} from 'primeng/primeng';
     DatatypeEditRoutingModule,
     UtilsModule,
     ButtonModule,
+    ScrollPanelModule,
     TreeTableModule,
     AccordionModule,
     SelectButtonModule,
@@ -59,7 +62,7 @@ import {TreeTableModule} from 'primeng/primeng';
     FroalaViewModule.forRoot()
   ],
   providers : [DatatypeCrossRefResolver,DatatypesService, DatatypeEditPostdefResolver, DatatypeEditPredefResolver, DatatypeEditMetadataResolver, DatatypeEditStructureResolver, DatatypeEditConformanceStatementsResolver],
-  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent],
+  declarations: [DatatypeEditStructureComponent, DatatypeEditConformanceStatementsComponent, DatatypeEditMetadataComponent, DatatypeEditPostdefComponent, DatatypeEditPredefComponent, DatatypeCrossRefComponent, DatatypeDeltaComponent],
   schemas : [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class DatatypeEditModule {}

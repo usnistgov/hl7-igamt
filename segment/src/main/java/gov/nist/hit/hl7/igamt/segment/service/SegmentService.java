@@ -28,6 +28,8 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.DisplayPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
@@ -81,8 +83,8 @@ public interface SegmentService extends ResourceService {
 
   public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
-  public Link cloneSegment(String compositeKey, HashMap<String, String> datatypesMap,
-      HashMap<String, String> valuesetsMap, Link l, String username)
+  public Link cloneSegment(String compositeKey,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+       Link l, String username)
       throws CoConstraintSaveException;
 
   public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
@@ -108,7 +110,7 @@ public interface SegmentService extends ResourceService {
    * @throws IOException
    */
 
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems) throws JsonProcessingException, IOException;
+  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
 
   /**
    * @param datatype
@@ -131,4 +133,8 @@ public interface SegmentService extends ResourceService {
   public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
 
   public List<Segment> findByIdIn(Set<String> linksAsIds);
+  
+  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId, String segmentName);
+  
+  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 }

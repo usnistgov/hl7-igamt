@@ -1,18 +1,25 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import gov.nist.diff.domain.DeltaMode;
 import gov.nist.diff.domain.DeltaObject;
 import gov.nist.diff.service.DeltaProcessor;
+import gov.nist.hit.hl7.igamt.common.base.domain.AbstractDomain;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.delta.domain.DiffableResult;
+import gov.nist.hit.hl7.igamt.delta.domain.EntityDelta;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
+import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
-import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 @Service
@@ -24,64 +31,94 @@ public class DeltaServiceImpl implements DeltaService {
   public SegmentService segmentService;
   @Autowired
   public DatatypeService datatypeService;
+  @Autowired
+  public IgRepository igRepository;
+  @Autowired
+  public IgService igService;
 
-  @Override
-  public DeltaObject<ConformanceProfileStructureDisplay> conformanceProfileDelta(String idA,
-      String idB) throws Exception {
+  public <T extends SectionInfo, E extends AbstractDomain> EntityDelta<T> compute(String id,
+      AbstractDomain document, Function<E, Boolean, T> converter,
+      java.util.function.Function<String, E> repository) throws Exception {
 
-    ConformanceProfile profileA = conformanceProfileService.findById(idA);
-    ConformanceProfile profileB = conformanceProfileService.findById(idB);
-    DeltaProcessor delta = new DeltaProcessor();
+    E target = repository.apply(id);
+    E source = repository.apply(target.getOrigin());
+    DeltaProcessor processor = new DeltaProcessor();
 
-    if (profileA == null || profileB == null) {
+    if (target == null || source == null) {
       throw new Exception();
     } else {
-      ConformanceProfileStructureDisplay profileDisplayA =
-          conformanceProfileService.convertDomainToDisplayStructure(profileA, true);
-      ConformanceProfileStructureDisplay profileDisplayB =
-          conformanceProfileService.convertDomainToDisplayStructure(profileB, true);
+      T targetDisplayModel = converter.apply(target, true);
+      T sourceDisplayModel = converter.apply(source, true);
 
-      return delta.objectDelta(profileDisplayA, profileDisplayB, DeltaMode.INCLUSIVE);
+      DeltaObject<T> delta =
+          processor.objectDelta(sourceDisplayModel, targetDisplayModel, DeltaMode.INCLUSIVE);
+      return new EntityDelta<>(document, sourceDisplayModel, targetDisplayModel, delta);
     }
   }
 
+
+
   @Override
-  public DeltaObject<SegmentStructureDisplay> segmentDelta(String idA, String idB)
-      throws Exception {
+  public DiffableResult diffable(Type type, String ig, String source, String target) {
+    boolean diffable;
+    switch (type) {
+      case SEGMENT:
+        diffable = !this.igRepository.segmentsInSameIg(this.convertToObjectd(ig),
+            this.convertToObjectd(source), this.convertToObjectd(target));
+        System.out
+            .println("[HTM] " + diffable + " ig " + ig + " source " + source + " target " + target);
+        if (diffable) {
+          Segment segment = this.segmentService.findById(source);
+          return new DiffableResult(diffable, segment);
+        }
+        break;
+      case DATATYPE:
+        diffable = !this.igRepository.datatypesInSameIg(this.convertToObjectd(ig),
+            this.convertToObjectd(source), this.convertToObjectd(target));
+        if (diffable) {
+          Datatype datatype = this.datatypeService.findById(source);
+          return new DiffableResult(diffable, datatype);
+        }
+        break;
+      case CONFORMANCEPROFILE:
+        diffable = !this.igRepository.conformanceProfilesInSameIg(this.convertToObjectd(ig),
+            this.convertToObjectd(source), this.convertToObjectd(target));
 
-    Segment segmentA = segmentService.findById(idA);
-    Segment segmentB = segmentService.findById(idB);
-    DeltaProcessor delta = new DeltaProcessor();
+        ConformanceProfile sourceP = this.conformanceProfileService.findById(source);
 
-    if (segmentA == null || segmentB == null) {
-      throw new Exception();
-    } else {
-      SegmentStructureDisplay segmentDisplayA =
-          segmentService.convertDomainToDisplayStructure(segmentA, true);
-      SegmentStructureDisplay segmentDisplayB =
-          segmentService.convertDomainToDisplayStructure(segmentB, true);
-
-      return delta.objectDelta(segmentDisplayA, segmentDisplayB, DeltaMode.INCLUSIVE);
+        if (diffable && sourceP.getDomainInfo().getScope().equals(Scope.USER)) {
+          ConformanceProfile confProfile = this.conformanceProfileService.findById(source);
+          return new DiffableResult(diffable, confProfile);
+        }
+        break;
+      default:
+        return new DiffableResult();
     }
+
+    return new DiffableResult();
+  }
+
+  private ObjectId convertToObjectd(String id) {
+    return new ObjectId(id);
   }
 
   @Override
-  public DeltaObject<DatatypeStructureDisplay> datatypeDelta(String idA, String idB)
+  public <T> EntityDelta<T> computeDelta(Type type, String documentId, String entityId)
       throws Exception {
-
-    Datatype datatypeA = datatypeService.findById(idA);
-    Datatype datatypeB = datatypeService.findById(idB);
-    DeltaProcessor delta = new DeltaProcessor();
-
-    if (datatypeA == null || datatypeB == null) {
-      throw new Exception();
-    } else {
-      DatatypeStructureDisplay datatypeDisplayA =
-          datatypeService.convertDomainToStructureDisplay(datatypeA, true);
-      DatatypeStructureDisplay datatypeDisplayB =
-          datatypeService.convertDomainToStructureDisplay(datatypeB, true);
-
-      return delta.objectDelta(datatypeDisplayA, datatypeDisplayB, DeltaMode.INCLUSIVE);
+    Ig sourceIg = this.igService.findById(documentId);
+    switch (type) {
+      case SEGMENT:
+        return (EntityDelta<T>) this.compute(entityId, sourceIg,
+            this.segmentService::convertDomainToDisplayStructure, this.segmentService::findById);
+      case DATATYPE:
+        return (EntityDelta<T>) this.compute(entityId, sourceIg,
+            this.datatypeService::convertDomainToStructureDisplay, this.datatypeService::findById);
+      case CONFORMANCEPROFILE:
+        return (EntityDelta<T>) this.compute(entityId, sourceIg,
+            this.conformanceProfileService::convertDomainToDisplayStructure,
+            this.conformanceProfileService::findById);
     }
+    return null;
   }
 }
+

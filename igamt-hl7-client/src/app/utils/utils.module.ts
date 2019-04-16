@@ -17,7 +17,7 @@ import {EntityHeaderComponent} from "../common/entity-header/entity-header.compo
 import {DisplayLabelComponent} from "../common/label/display-label.component";
 import {Routes, RouterModule, ActivatedRouteSnapshot} from "@angular/router";
 
-import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule} from 'primeng/primeng';
+import {ButtonModule, ProgressSpinnerModule, OrganizationChartModule, DragDropModule, ToggleButtonModule} from 'primeng/primeng';
 import {DndListModule} from 'ngx-drag-and-drop-lists';
 import {DisplayRefComponent} from "../common/tree-table-label/display-ref.component";
 import {DisplaySingleCodeComponent} from "../common/tree-table-label/display-singlecode.component";
@@ -41,6 +41,7 @@ import {DisplayMenuComponent} from "../common/display-menu/display-menu.componen
 import {RadioButtonModule} from "primeng/components/radiobutton/radiobutton";
 import {TreeTableModule} from "primeng/components/treetable/treetable";
 import {SelectButtonModule} from 'primeng/selectbutton';
+import {ScrollPanelModule} from 'primeng/scrollpanel';
 
 import {NameColComponent} from "../common/tree-table/name/name-col.component";
 import {UsageColComponent} from "../common/tree-table/usage/usage-col.component";
@@ -68,7 +69,6 @@ import {DatatypeColService} from "../common/tree-table/datatype/datatype-col.ser
 import {SegmentColComponent} from "../common/tree-table/segment/segment-col.component";
 import {SegmentColService} from "../common/tree-table/segment/segment-col.service";
 import {PredicateColComponent} from "../common/tree-table/predicate/predicate-col.component";
-import {PredicateReadonlyColComponent} from "../common/tree-table/predicate/predicate-readonly-col.component";
 
 import {CsSegmentTreeComponent} from '../common/cs-segment-tree/cs-segment-tree.component';
 import {PatternEditorDemoComponent} from '../common/pattern-editor-demo/pattern-editor-demo.component';
@@ -81,6 +81,11 @@ import {ConflengthDeltaColComponent} from '../common/tree-table/conflength/confl
 import {LengthDeltaColComponent} from '../common/tree-table/length/length-delta-col/length-delta-col.component';
 import {DatatypeDeltaColComponent} from '../common/tree-table/datatype/datatype-delta-col/datatype-delta-col.component';
 import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-delta-col/valueset-delta-col.component';
+import {ConformanceProfilesService} from "../igdocuments/igdocument-edit/conformanceprofile-edit/conformance-profiles.service";
+import {SlideToggleModule} from 'ngx-slide-toggle';
+import {DeltaService} from '../common/delta/service/delta.service';
+import {DeltaResolver} from '../common/delta/service/delta.resolver';
+import {DeltaHeaderComponent} from '../common/delta/delta-header/delta-header.component';
 
 @NgModule({
   imports: [
@@ -104,8 +109,10 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     MessageModule,
     MessagesModule,
     DndListModule,
-    SelectButtonModule
-
+    SelectButtonModule,
+    ScrollPanelModule,
+    SlideToggleModule,
+    ToggleButtonModule
   ],
   declarations: [
     DisplayBadgeComponent,
@@ -125,7 +132,6 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DisplayPathComponent,
     CrossReferenceComponent,
     DatatypeListManagerComponent,
-
     NameColComponent,
     UsageColComponent,
     UsageReadonlyColComponent,
@@ -162,7 +168,7 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
     PredicateColComponent,
-    PredicateReadonlyColComponent
+    DeltaHeaderComponent
   ],
 
   exports: [
@@ -218,8 +224,11 @@ import {ValuesetDeltaColComponent} from '../common/tree-table/valueset/valueset-
     DatatypeDeltaColComponent,
     ValuesetDeltaColComponent,
     PredicateColComponent,
-    PredicateReadonlyColComponent
+    DeltaHeaderComponent
   ],
-  providers: [DatatypeColService, SegmentColService]
+  providers: [DatatypeColService, SegmentColService, ConformanceProfilesService,
+    PredicateColComponent, DeltaService, DeltaResolver,
+  ]
+
 })
 export class UtilsModule {}

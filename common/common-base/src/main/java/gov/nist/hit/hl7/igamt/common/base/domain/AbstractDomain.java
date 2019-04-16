@@ -7,10 +7,18 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 
-public abstract class AbstractDomain{
+public abstract class AbstractDomain {
   @Id
   private String id;
+  @CreatedDate
+  private Date creationDate;
+  @LastModifiedDate
+  private Date updateDate;
   private String name;
+  private Type type;
+
+
+private String origin;
   private PublicationInfo publicationInfo;
   private DomainInfo domainInfo;
   private String username;
@@ -19,13 +27,6 @@ public abstract class AbstractDomain{
   private String createdFrom;
   private String authorNotes;
   private String usageNotes;
-  private Type type;
-
-  @CreatedDate
-  private Date creationDate;
-
-  @LastModifiedDate
-  private Date updateDate;
   private String from;
 
   @Version
@@ -159,6 +160,7 @@ public abstract class AbstractDomain{
 	elm.updateDate = updateDate;
 	elm.setType(type);
 	elm.from = id;
+	elm.origin = origin;
   }
 
 public String getAuthorNotes() {
@@ -173,21 +175,19 @@ public String getUsageNotes() {
 	return usageNotes;
 }
 
+
 public void setUsageNotes(String usageNotes) {
 	this.usageNotes = usageNotes;
-}
-
-public Type getType() {
-  return type;
 }
 
 public void setType(Type type) {
   this.type = type;
 }
+public Type getType() {
+	return type;
+}
 
-  
-  
-
-
-
+public void setOrigin(String origin) {
+	this.origin = origin;
+}
 }

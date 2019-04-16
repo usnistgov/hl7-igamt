@@ -94,6 +94,9 @@
         <span> {{getPath(node)}} {{node.data.data.label}}</span>
       </ng-container>
 
+      <ng-container *ngSwitchCase="'CONFORMANCESTATEMENTREGISTRY'">
+        <span> {{getPath(node)}} {{node.data.data.label}}</span>
+      </ng-container>
 
       <ng-container *ngSwitchCase="'SEGMENTRGISTRY'">
 

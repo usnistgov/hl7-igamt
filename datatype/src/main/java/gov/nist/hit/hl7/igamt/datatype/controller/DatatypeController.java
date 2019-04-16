@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.DefinitionDisplay;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
@@ -39,14 +39,10 @@ import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDis
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeConformanceStatement;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeDisplayMetadata;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
-import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
-import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeValidationException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @RestController
@@ -140,9 +136,9 @@ public class DatatypeController extends BaseController {
 
   }
 
-  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatypes/{id}/conformancestatement/{did}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id,
+  public ConformanceStatementDisplay getDatatypeConformanceStatement(@PathVariable("id") String id, @PathVariable("did") String did,
       Authentication authentication) throws DatatypeNotFoundException {
     Datatype datatype = findById(id);
     
@@ -150,12 +146,16 @@ public class DatatypeController extends BaseController {
     Set<ConformanceStatement> cfs = new HashSet<ConformanceStatement>();
     if(datatype.getBinding() != null && datatype.getBinding().getConformanceStatementIds() != null) {
     	for(String csId : datatype.getBinding().getConformanceStatementIds()){
-    	  cfs.add(conformanceStatementRepository.findById(csId).get());
+    	  Optional<ConformanceStatement> cs = conformanceStatementRepository.findById(csId);
+    	  if(cs.isPresent()) cfs.add(cs.get());
     	}
     }
+    
+    Set<ConformanceStatement> acs = this.datatypeService.collectAvaliableConformanceStatements(did, datatype.getId(), datatype.getName());
+    
     HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap = new HashMap<String, ConformanceStatementsContainer>();
     this.datatypeService.collectAssoicatedConformanceStatements(datatype, associatedConformanceStatementMap);
-    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, associatedConformanceStatementMap);
+    conformanceStatementDisplay.complete(datatype, SectionType.CONFORMANCESTATEMENTS, getReadOnly(authentication, datatype), cfs, acs, associatedConformanceStatementMap);
     conformanceStatementDisplay.setType(Type.DATATYPE);
     return  conformanceStatementDisplay;
   }
@@ -189,7 +189,7 @@ public class DatatypeController extends BaseController {
       throws DatatypeException, IOException, ForbiddenOperationException {
     Datatype dt = this.datatypeService.findById(id);
     validateSaveOperation(dt);
-    this.datatypeService.applyChanges(dt, cItems);
+    this.datatypeService.applyChanges(dt, cItems, documentId);
     EntityChangeDomain entityChangeDomain = new EntityChangeDomain();
     entityChangeDomain.setDocumentId(documentId);
     entityChangeDomain.setDocumentType(DocumentType.IG);

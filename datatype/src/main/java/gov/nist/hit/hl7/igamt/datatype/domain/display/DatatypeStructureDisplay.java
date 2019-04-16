@@ -13,7 +13,7 @@ package gov.nist.hit.hl7.igamt.datatype.domain.display;
 
 import java.util.HashSet;
 import java.util.Set;
-
+import gov.nist.diff.annotation.DeltaField;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
 
 /**
@@ -22,6 +22,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.SectionInfo;
  */
 public class DatatypeStructureDisplay extends SectionInfo {
 
+  @DeltaField
   private Set<ComponentStructureTreeModel> structure;
   private String name;
 

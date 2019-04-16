@@ -11,16 +11,45 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
-public class Constraint {
-  private ConstraintType type;
+import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
-  public ConstraintType getType() {
-    return type;
-  }
+/**
+ * @author jungyubw
+ *
+ */
+public class DisplayPredicate {
 
-  public void setType(ConstraintType type) {
-    this.type = type;
-  }
-
+  private Predicate predicate;
+  private String location;
   
+  public Predicate getPredicate() {
+    return predicate;
+  }
+  
+  public void setPredicate(Predicate predicate) {
+    this.predicate = predicate;
+  }
+  
+  public void setLocation(String location) {
+    this.location = location;
+  }
+  
+  public String getLocation() {
+    return location;
+  }
+  
+  public Usage getTrueUsage(){
+    if(predicate != null) return this.predicate.getTrueUsage();
+    return null;
+  }
+  
+  public Usage getFalseUsage(){
+    if(predicate != null) return this.predicate.getFalseUsage();
+    return null;
+  }
+  
+  public String getDescription(){
+    if(predicate != null) return this.predicate.generateDescription();
+    return null;
+  }
 }

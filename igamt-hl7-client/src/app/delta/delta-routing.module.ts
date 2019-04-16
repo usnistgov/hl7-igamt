@@ -1,4 +1,4 @@
-import {NgModule}     from '@angular/core';
+import {NgModule} from '@angular/core';
 import {RouterModule} from '@angular/router'
 import {DeltaComponent} from './delta.component';
 
@@ -9,7 +9,7 @@ import {DeltaComponent} from './delta.component';
 		])
 	],
 	exports: [
-		RouterModule
-	]
+	  RouterModule
+  ]
 })
 export class DeltaRoutingModule {}
