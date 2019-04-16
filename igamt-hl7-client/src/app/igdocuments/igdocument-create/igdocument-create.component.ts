@@ -25,7 +25,7 @@ export class IgDocumentCreateComponent {
 
   metaData: any= {};
   items: MenuItem[];
-  breadCurmp:MenuItem[];
+  breadCurmp: MenuItem[];
   path: MenuItem[];
 
   selectdNodeMap={};
@@ -50,32 +50,14 @@ export class IgDocumentCreateComponent {
   ngOnInit() {
 
     this.items = [
-      {
-      label: 'Meta Data ',
-
-      },
-      {
-        label: 'Conformane Profiles'
-      }
-
+      {label: 'Meta Data '},
+      {label: 'Conformane Profiles'}
       ];
 
-
-
-
     this.breadCurmp = [
-      {
-        label: 'IG Documents ',
-
-      },
-      {
-        label: 'Create New IG Document'
-      }
-
+      {label: 'IG Documents '},
+      {label: 'Create New IG Document'}
     ];
-
-
-
   }
 
   getMessages(v){
@@ -110,18 +92,13 @@ export class IgDocumentCreateComponent {
 
   create(){
     let wrapper:any ={};
-
-  wrapper.msgEvts=this.selectedEvents;
-  wrapper.metaData=this.metaData;
-
-
+    wrapper.msgEvts=this.selectedEvents;
+    wrapper.metaData=this.metaData;
     this.createService.createIntegrationProfile(wrapper).subscribe(
       res => {
          this.goTo(res);
       }
     )
-
-
   };
 
 

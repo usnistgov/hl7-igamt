@@ -3,6 +3,8 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,6 +19,7 @@ import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @SpringBootApplication
@@ -38,9 +41,9 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  ConfigService sharedConstantService;
 //  
- 
-//  @Autowired
-//  MessageEventFacory messageEventFactory;
+// 
+  @Autowired
+  MessageEventFacory messageEventFactory;
   
 //  @Autowired
 //  RelationShipService testCache;

@@ -4,7 +4,6 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class MessageEventTreeData {
   private String name;
-
   private String description;
   private String hl7Version;
   private Type type = Type.EVENTS;

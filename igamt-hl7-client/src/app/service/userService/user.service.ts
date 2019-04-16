@@ -20,9 +20,6 @@ export class UserService {
 
   create(user: any)  {
     return  this.http.post('api/register', user, { observe: 'response' });
-
-
-
   }
 
   update(user: any) {

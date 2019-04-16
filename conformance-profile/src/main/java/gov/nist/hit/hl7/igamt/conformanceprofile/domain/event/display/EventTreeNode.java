@@ -1,7 +1,7 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display;
 
 
-public class EventTreeNode  implements Comparable<EventTreeNode>{
+public class EventTreeNode implements Comparable<EventTreeNode>{
   EventTreeData data;
   private String name;
 

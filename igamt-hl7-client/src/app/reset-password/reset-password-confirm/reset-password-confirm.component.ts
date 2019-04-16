@@ -24,8 +24,6 @@ export class ResetPasswordConfirmComponent implements OnInit {
         this.confirmPassword,
         [this.passwordValidator(this.model.password)] )
     });
-
-
   }
 
   ngOnInit() {
@@ -40,8 +38,6 @@ export class ResetPasswordConfirmComponent implements OnInit {
       }, error=>{
         this.router.navigate(['/404']);
       })
-
-
   }
 
   passwordValidator(obj: string): ValidatorFn {

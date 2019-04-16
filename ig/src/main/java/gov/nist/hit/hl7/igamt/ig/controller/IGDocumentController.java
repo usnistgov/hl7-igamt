@@ -394,12 +394,12 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}",
       method = RequestMethod.GET, produces = {"application/json"})
 
-  public @ResponseBody List<MessageEventTreeNode> getMessageEvents(
+  public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
       @PathVariable("version") String version, Authentication authentication) {
     try {
+    		
       List<MessageEventTreeNode> ret = messageEventService.findByHl7Version(version);
-      return ret;
-
+      return new ResponseMessage<List<MessageEventTreeNode>>(Status.SUCCESS, null, null, null, false, null, ret);
     } catch (Exception e) {
       throw e;
     }

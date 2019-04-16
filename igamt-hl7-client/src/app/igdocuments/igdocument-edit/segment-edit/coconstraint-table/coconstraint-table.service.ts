@@ -3,7 +3,6 @@ import {
     CoConstraintTable, CCSelectorType, CellTemplate, CCHeader, CCRow, DataCell,
     VSCell, CodeCell, VariesCell, CCCell
 } from './coconstraint.domain';
-import {Http} from '@angular/http';
 import {UUID} from 'angular2-uuid';
 import * as _ from 'lodash';
 import {TocService} from '../../service/toc.service';
@@ -72,12 +71,12 @@ export class CoConstraintTableService {
         const obx3 = _.find(segment.structure, function (child) {
           return child.data.position === 3;
         });
-        const obx2 = _.find(segment.structure, function (child) {
+        const obx2:any = _.find(segment.structure, function (child) {
           return child.data.position === 2;
         });
 
-        const obx3_dt = await this.tocService.getDatatypeById(obx3.data.ref.id);
-        const obx2_dt = await this.tocService.getDatatypeById(obx2.data.ref.id);
+        const obx3_dt:any = await this.tocService.getDatatypeById(obx3.data.ref.id);
+        const obx2_dt:any = await this.tocService.getDatatypeById(obx2.data.ref.id);
 
 
         tmp.supportGroups = true;
@@ -140,14 +139,14 @@ export class CoConstraintTableService {
         console.log(elm[0].data.bindings);
         // let y = ;
         console.log();
-        const compatible = _.filter(elm[0].data.bindings.flatMap(x => x.valuesetBindings), function (o) {
+        const compatible: any = _.filter(elm[0].data.bindings.flatMap(x => x.valuesetBindings), function (o) {
           // // const vsBinding
           // console.log(o);
           return (o.valuesetLocations && (o.valuesetLocations.includes(1) || o.valuesetLocations.length === 0));
         });
 
         for (const binding of compatible){
-          const codes = await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
+          const codes: any= await this.$http.get<any[]>('/api/valuesets/' + binding.valuesetId + '/codes').toPromise();
           for (const code of codes){
             if (code.usage === 'R' || code.usage === 'P'){
               bound_codes.push(code);

@@ -70,7 +70,7 @@ export class SegmentTreeNodeService {
     };
 
     if (element.ref.id) {
-      const dt = await this.tocService.getDatatypeById(element.ref.id);
+      const dt :any= await this.tocService.getDatatypeById(element.ref.id);
       node.leaf = !dt.data.lazyLoading;
       node.selectable = true;
       node.data.version = dt.data.domainInfo.version;

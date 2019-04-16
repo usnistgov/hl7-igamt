@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.auth.controller;
 
 
 import java.io.IOException;
+import java.util.Date;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.auth.util.requests.ChangePasswordConfirmRequest;
 import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage;
+import gov.nist.hit.hl7.auth.util.requests.ConnectionResponseMessage.Status;
 import gov.nist.hit.hl7.auth.util.requests.LoginRequest;
 import gov.nist.hit.hl7.auth.util.requests.PasswordResetTokenResponse;
 import gov.nist.hit.hl7.auth.util.requests.RegistrationRequest;
@@ -55,15 +57,13 @@ public class AuthenticationController {
     }
   }
 
-
-
   @RequestMapping(value = "/api/register", method = RequestMethod.POST)
   public ConnectionResponseMessage<UserResponse> register(@RequestBody RegistrationRequest user)
       throws AuthenticationException {
     try {
 
       ConnectionResponseMessage<UserResponse> response = authService.register(user);
-      emailService.sendResgistrationEmail(user.getFullName(), user.getUsername(), user.getEmail());
+      emailService.sendResgistrationEmail(user.getFullname(), user.getUsername(), user.getEmail());
       return response;
 
     } catch (AuthenticationException e) {
@@ -72,8 +72,6 @@ public class AuthenticationController {
       throw e;
     }
   }
-
-
 
   @RequestMapping(value = "api/logout", method = RequestMethod.GET)
   @ResponseBody
@@ -85,7 +83,6 @@ public class AuthenticationController {
     res.addCookie(authCookie);
 
   }
-
 
   @RequestMapping(value = "api/authentication", method = RequestMethod.GET)
   @ResponseBody
@@ -121,12 +118,10 @@ public class AuthenticationController {
 
   @RequestMapping(value = "api/password/validatetoken", method = RequestMethod.POST)
   @ResponseBody
-  public void validateToken(HttpServletRequest req, HttpServletResponse res,
+  public ConnectionResponseMessage<Boolean> validateToken(HttpServletRequest req, HttpServletResponse res,
       @RequestBody String token) throws AuthenticationException {
-    authService.validateToken(token);
-
+	   return new  ConnectionResponseMessage<Boolean>(Status.SUCCESS, null, "token is Valid", null, false, new Date(), authService.validateToken(token));
   }
-
 
   @RequestMapping(value = "api/password/reset/confirm", method = RequestMethod.POST)
   @ResponseBody
@@ -156,7 +151,7 @@ public class AuthenticationController {
     String scheme = request.getScheme();
     String host = request.getHeader("Host");
 
-    return scheme + "://" + host + "/#/reset-password-confirm/" + token;
+    return scheme + "://" + host + "/reset-password-confirm/" + token;
   }
 
 

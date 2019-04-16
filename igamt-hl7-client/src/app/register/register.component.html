@@ -7,7 +7,7 @@
 
     <div class="ui-g" style="margin-top:30px">
 
-      <input name="fullname" id="fullname" placeholder="Full Name" formControlName="fullname" [(ngModel)]="model.fullname"  pInputText required class="ui-g-9">
+      <input name="fullname" id="fullname" placeholder="Full Name" formControlName="fullname"  pInputText required class="ui-g-9">
 
         <p-message severity="error" text="Name is required" *ngIf="fullname.invalid && (fullname.dirty || fullname.touched)"></p-message>
     </div>
@@ -15,18 +15,17 @@
     <div class="ui-g" style="margin-top:30px">
 
       <input name="username" id="username" pInputText placeholder="Username"
-             formControlName="username" required [(ngModel)]="model.username" class="ui-g-9">
+             formControlName="username" required class="ui-g-9">
 
       <div *ngIf="username.invalid && (username.dirty || username.touched)">
         <p-message severity="error" text="username is required" *ngIf="username.errors.required"></p-message>
-
       </div>
     </div>
 
     <div class="ui-g" style="margin-top:30px">
 
       <input name="email" id="email" pInputText placeholder="E-mail"
-             formControlName="email" required [(ngModel)]="model.email" class="ui-g-9">
+             formControlName="email" required  class="ui-g-9">
 
       <div *ngIf="email.invalid && (email.dirty || email.touched)">
 
@@ -55,7 +54,7 @@
 
     <div class="ui-g" style="margin-top:30px">
 
-      <input name="confirmPasswordForm" id="confirmPasswordForm" [(ngModel)]="confirmPassword" formControlName="confirmPasswordForm" placeholder="Confirm Password"  type="password" required  pInputText class="ui-g-9">
+      <input name="confirmPasswordForm" id="confirmPasswordForm" formControlName="confirmPasswordForm" placeholder="Confirm Password"  type="password" required  pInputText class="ui-g-9">
 
 
       <div *ngIf="confirmPasswordForm.invalid && (confirmPasswordForm.dirty || confirmPasswordForm.touched)">

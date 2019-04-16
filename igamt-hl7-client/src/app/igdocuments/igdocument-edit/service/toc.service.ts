@@ -100,7 +100,7 @@ export  class TocService{
 
   async getDatatypeById(id: string) {
     const list = await this.getDataypeList();
-    const elm = _.find(list, function (x) {
+    const elm: any = _.find(list, function (x :any) {
       return x.data.id === id;
     });
     return elm;
@@ -284,7 +284,7 @@ export  class TocService{
         return new Promise((resolve, reject)=> {
 
             this.getNodesList(Types.VALUESETREGISTRY).then( children =>{
-                    resolve(_.map(children, function (obj) {
+                    resolve(_.map(children, function (obj:any) {
                         return obj.data.bindingIdentifier;
                     }))
 

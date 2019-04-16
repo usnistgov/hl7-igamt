@@ -334,8 +334,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       // TODO Auto-generated catch block
       throw new AuthenticationException("Could not parse the error response");
     }
-
-
   }
 
 

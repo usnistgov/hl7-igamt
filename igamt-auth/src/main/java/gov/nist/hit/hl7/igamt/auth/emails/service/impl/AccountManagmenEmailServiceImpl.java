@@ -50,7 +50,7 @@ public class AccountManagmenEmailServiceImpl implements AccountManagmenEmailServ
     msg.setTo(email);
     msg.setSubject("IGAMT Registration");
     msg.setText(
-        "Dear " + fullname + " \n\n" + "****" + "Welcome To the ... " + "" + "\n\n" + "IGAMT TEAM");
+        "Dear " + fullname + " \n\n" + "****" + "Welcome To the NIST IGAMT Implementation Guide Authoring and Management " + "" + "\n\n" + "IGAMT TEAM");
 
     try {
       this.mailSender.send(msg);

@@ -36,9 +36,9 @@ export class AuthService {
   login(username,password): BehaviorSubject<boolean> {
     console.log(username);
     this.http.post<any>('api/login',{username:username,password:password}, {observe:'response'}).subscribe(data => {
-      console.log(data);
-      let token = data.headers.get('Authorization');
-      console.log(token);
+      // console.log(data);
+      // let token = data.headers.get('Authorization');
+      // console.log(token);
       this.currentUser.next(data.body.data);
       this.isLoggedIn.next(true);
       console.log(this.redirectUrl);
@@ -75,7 +75,6 @@ export class AuthService {
 
   getCurrentUser() {
 
-
     this.http.get<any>('api/authentication').toPromise().then( res  =>{
 
       console.log(res);
@@ -93,7 +92,6 @@ export class AuthService {
       }else{
         this.admin.next(false);
       }
-
 
     }, error=>{
       console.log("error");

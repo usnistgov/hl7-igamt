@@ -15,7 +15,6 @@ export class ResetPasswordService {
     return this.http.post('api/password/reset', email).toPromise();
   }
 
-
   validateToken(token){
 
     return this.http.post('api/password/validatetoken', token).toPromise();

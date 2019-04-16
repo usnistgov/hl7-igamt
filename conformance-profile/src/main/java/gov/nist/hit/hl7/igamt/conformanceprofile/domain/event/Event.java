@@ -7,8 +7,12 @@ public class Event {
   private String id;
   String name;
   String parentStructId;
-  final Type type = Type.EVENT;
-  private String hl7Version;
+  private Type type = Type.EVENT;
+  public void setType(Type type) {
+	this.type = type;
+}
+
+private String hl7Version;
 
   public Event() {
     super();
@@ -19,7 +23,7 @@ public class Event {
     this.id = id;
     this.name = event;
     this.parentStructId = parentStructId;
-    this.setHl7Version(hl7Version);
+    this.hl7Version=hl7Version;
   }
 
   public String getParentStructId() {
