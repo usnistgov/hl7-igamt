@@ -63,7 +63,7 @@ public class AuthenticationController {
     try {
 
       ConnectionResponseMessage<UserResponse> response = authService.register(user);
-      emailService.sendResgistrationEmail(user.getFullname(), user.getUsername(), user.getEmail());
+      emailService.sendResgistrationEmail(user.getFullName(), user.getUsername(), user.getEmail());
       return response;
 
     } catch (AuthenticationException e) {
@@ -103,7 +103,7 @@ public class AuthenticationController {
           authService.requestPasswordChange(email);
       if (response.getData() instanceof PasswordResetTokenResponse) {
         PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
-        emailService.sendResetTokenUrl(responseData.getFullname(), responseData.getUsername(),
+        emailService.sendResetTokenUrl(responseData.getFullName(), responseData.getUsername(),
             responseData.getEmail(), getUrl(req, responseData.getToken()));
         return response;
       } else {
@@ -134,7 +134,7 @@ public class AuthenticationController {
 
       if (response.getData() instanceof PasswordResetTokenResponse) {
         PasswordResetTokenResponse responseData = (PasswordResetTokenResponse) (response.getData());
-        emailService.sendRestPasswordSuccess(responseData.getFullname(), responseData.getUsername(),
+        emailService.sendRestPasswordSuccess(responseData.getFullName(), responseData.getUsername(),
             responseData.getEmail());
         return response;
       } else {

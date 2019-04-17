@@ -16,9 +16,7 @@ public abstract class AbstractDomain {
   private Date updateDate;
   private String name;
   private Type type;
-
-
-private String origin;
+  private String origin;
   private PublicationInfo publicationInfo;
   private DomainInfo domainInfo;
   private String username;
@@ -190,4 +188,8 @@ public Type getType() {
 public void setOrigin(String origin) {
 	this.origin = origin;
 }
+public String getOrigin() {
+	return origin;
+}
+
 }
