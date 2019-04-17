@@ -8,6 +8,7 @@ branches:
   - develop
 before_script:
   - cd igamt-hl7-client-v2
+  - npm install
   - npm install -g @angular/cli
 script:
 - ng lint
