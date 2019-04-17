@@ -1,0 +1,14 @@
+language: node_js
+node_js:
+  - "9"
+dist: trusty
+sudo: required
+branches:
+  only:
+  - develop
+before_script:
+  - cd igamt-hl7-client-v2
+  - npm install -g @angular/cli
+script:
+- ng lint
+- ng build --prod --base-href https://github.com/usnistgov/hl7-igamt/
