@@ -1,0 +1,13 @@
+@import '../../../../../assets/variables';
+
+.scope-badge-user {
+  background-color: $user_scope_color;
+}
+
+.scope-badge-hl7 {
+  background-color: $hl7_scope_color;
+}
+
+.scope-badge-preloaded {
+  background-color: $preloaded_scope_color;
+}

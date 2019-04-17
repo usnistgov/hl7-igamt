@@ -1,0 +1,11 @@
+<ng-container [ngSwitch]="scope">
+  <span *ngSwitchCase="'USER'" class="badge scope-badge-user">
+    USER <span style="color: white; font-size: 0.5em;">{{version}}</span>
+  </span>
+  <span *ngSwitchCase="'HL7'" class="badge scope-badge-hl7">
+    HL7 <span style="font-size: 0.9em; font-weight: 300;">{{version}}</span>
+  </span>
+  <span *ngSwitchCase="'PRELOADED'" class="badge scope-badge-preloaded">
+    PUBLISHED
+  </span>
+</ng-container>

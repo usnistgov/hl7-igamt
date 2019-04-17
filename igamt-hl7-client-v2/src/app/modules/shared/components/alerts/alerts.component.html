@@ -1,0 +1,5 @@
+<p *ngFor="let message of messages">
+  <ngb-alert [type]="alertType(message)" (close)="closeEmitter(message.id)" [dismissible]="message.options?.closable">
+    {{ message.message }}
+  </ngb-alert>
+</p>

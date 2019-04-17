@@ -1,0 +1,29 @@
+<ng-container [ngSwitch]="type">
+  <span *ngSwitchCase="'GROUP'" class="badge entity-badge-dark entity-badge-group">
+    G
+  </span>
+  <span *ngSwitchCase="'SEGMENT'" class="badge entity-badge-dark entity-badge-segment">
+    S
+  </span>
+  <span *ngSwitchCase="'FIELD'" class="badge entity-badge-dark entity-badge-field">
+    F
+  </span>
+  <span *ngSwitchCase="'COMPONENT'" class="badge entity-badge-dark entity-badge-component">
+    C
+  </span>
+  <span *ngSwitchCase="'SUBCOMPONENT'" class="badge entity-badge-dark entity-badge-subcomponent">
+    S
+  </span>
+  <span *ngSwitchCase="'DOCUMENT'" class="badge entity-badge-dark entity-badge-ig">
+    IG
+  </span>
+  <span *ngSwitchCase="'DATATYPE'" class="badge entity-badge-dark entity-badge-datatype">
+    DT
+  </span>
+  <span *ngSwitchCase="'VALUESET'" class="badge entity-badge-dark entity-badge-valueset">
+    VS
+  </span>
+  <span *ngSwitchCase="'CONFORMANCEPROFILE'" class="badge entity-badge-dark entity-badge-conformance-profile">
+    CP
+  </span>
+</ng-container>

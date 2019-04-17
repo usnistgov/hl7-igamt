@@ -1,0 +1,62 @@
+<div class="ig-list-layout">
+
+  <!-- ALERTS -->
+  <div class="alerts">
+    <app-alerts-container></app-alerts-container>
+  </div>
+
+  <!-- TITLE BAR -->
+  <div class="topbar">
+    <h5>HL7 Implementation Guide Documents List</h5>
+    <div class="btn-group btn-group-toggle border-gray" style="border-radius: 5px;" ngbRadioGroup name="radioBasic"
+      [(ngModel)]="_shadowViewType">
+      <label ngbButtonLabel class="btn-light no-focus">
+        <input ngbButton type="radio" value="USER" [routerLink]="[ '.' ]" [queryParams]="{ type : 'USER' }">
+        Owned
+      </label>
+      <label ngbButtonLabel class="btn-light no-focus">
+        <input ngbButton type="radio" value="PUBLISHED" [routerLink]="[ '.' ]" [queryParams]="{ type : 'PUBLISHED' }">
+        Public
+      </label>
+      <label ngbButtonLabel class="btn-light no-focus">
+        <input ngbButton type="radio" value="SHARED">
+        Shared With Me
+      </label>
+      <label ngbButtonLabel class="btn-light no-focus" *ngIf="isAdmin | async">
+        <input ngbButton type="radio" value="ALL" [routerLink]="[ '.' ]" [queryParams]="{ type : 'ALL' }">
+        All
+      </label>
+    </div>
+  </div>
+
+  <!-- FILTER INPUT -->
+  <div class="search-bar">
+
+    <p-dropdown [options]="sortOptions" [placeholder]="'Sort Criterion'" [(ngModel)]="sortProperty"
+      (ngModelChange)="sortPropertyChanged($event)" [autoDisplayFirst]="false">
+    </p-dropdown>
+    <button class="btn btn-sm btn-primary" style="height: 35px;" (click)="sortOrderChanged(!sortOrder.ascending)">
+      <i [class]="'fa ' + (sortOrder.ascending ? 'fa-arrow-down' : 'fa-arrow-up')"></i>
+    </button>
+
+    <div class="input-group" style="margin-left: 10px;">
+      <div class="input-group-prepend" style="height: 35px;">
+        <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"
+            [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"></i></span>
+      </div>
+      <input type="text" style="background-color: #f0f0f0; text-align: center; height: 35px;" class="form-control"
+        id="validationServerUsername" [(ngModel)]="filter" (ngModelChange)="filterTextChanged($event)"
+        placeholder="Filter" required>
+    </div>
+  </div>
+
+  <!-- IG LIST -->
+  <div class="ig-list">
+    <div>
+      <div *ngFor="let item of listItems | async" class="spacer">
+        <app-ig-list-item-card [igListItem]="item" [controls]="controls | async"></app-ig-list-item-card>
+      </div>
+    </div>
+  </div>
+
+</div>

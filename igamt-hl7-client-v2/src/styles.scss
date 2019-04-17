@@ -1,0 +1,78 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "./assets/variables";
+
+html {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  @extend %blue-bg;
+  height: 100%;
+  width: 100%;
+  font-family: Verdana,Geneva,sans-serif !important;
+}
+
+%page-container {
+  height: 100%;
+  width: 100%;
+}
+
+.page-container-pad {
+  @extend %page-container;
+  padding-top: $header_height;
+}
+
+.page-container-nopad {
+  @extend %page-container;
+}
+
+.no-pad {
+  padding: 0;
+}
+
+.fill_height {
+  height: 100%;
+}
+
+.form-label-lg{
+  font-weight: 700;
+}
+
+// APPLICATION MAIN LAYOUT
+.page-container-layout {
+  display: grid;
+  grid-template-columns: [page-content] 1fr;
+  grid-template-rows: [content-row] auto;
+}
+
+.page-content {
+  grid-column: page-content;
+  grid-row: content-row;
+  overflow: auto;
+}
+
+//-----
+
+//----- primeng
+.ui-progressbar {
+  height: 7px !important;
+  background-color: #ffd400 !important;
+}
+
+.ui-progressbar-value {
+  background-color: #be1600 !important;
+}
+
+.no-focus:focus {
+  outline: none;
+}
+
+.border-gray {
+  border: 1px solid #c1c1c1;
+}
+.ui-table-scrollable-body{
+  border-bottom: 1px solid #c1c1c1 !important;
+
+}

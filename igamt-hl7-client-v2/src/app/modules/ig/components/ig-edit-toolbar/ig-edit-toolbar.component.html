@@ -1,0 +1,24 @@
+<button type="button" class="btn btn-info toolbar-button">
+  <i class="fa fa-plug"></i>
+  Connect
+</button>
+<button type="button" class="btn btn-secondary toolbar-button">
+  <i class="fa fa-chevron-down"></i>
+  Export
+</button>
+<button type="button" class="btn btn-success toolbar-button" *ngIf="!viewOnly">
+  <i class="fa fa-check"></i>
+  Verify
+</button>
+<button type="button" class="btn btn-primary toolbar-button" *ngIf="!viewOnly">
+  <i class="fa fa-share"></i>
+  Share
+</button>
+<button type="button" class="btn btn-danger toolbar-button" *ngIf="!viewOnly">
+  <i class="fa fa-trash"></i>
+  Reset
+</button>
+<button type="button" class="btn btn-success toolbar-button" *ngIf="!viewOnly">
+  <i class="fa fa-save"></i>
+  Save
+</button>

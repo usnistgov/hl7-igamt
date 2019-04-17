@@ -1,0 +1,87 @@
+@import '../../../../../assets/variables';
+
+.wrapper {
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: [sidebar] 3fr [content-panel] 9fr [content-panel-end];
+  grid-template-rows: [alerts] minmax(min-content,max-content) [row-titlebar] 50px [row-toolbar] 55px [row-content] auto;
+  overflow: hidden;
+  color: #444;
+  height: 100%;
+  background-color: #d6d6d6e3;
+}
+
+.titlebar {
+  grid-column: sidebar / content-panel-end;
+  grid-row: row-titlebar;
+  padding: 5px;
+  background-color: white;
+  align-items: center;
+  justify-items: center;
+  display: flex;
+}
+.toolbar {
+  grid-column: sidebar / content-panel-end;
+  grid-row: row-toolbar;
+  grid-gap: 2px;
+  display: grid;
+  grid-template-columns: [toolbar-sidebar] 3fr [content-toolbar] 9fr [content-toolbar-end];
+  grid-template-rows: [row-titlebar] auto;
+}
+.sidebar {
+  grid-column: sidebar;
+  grid-row: row-content;
+  display: grid;
+  grid-gap: 2px;
+  grid-template-columns: [sidebar-content] auto;
+  grid-template-rows: [sidebar-header] 50px [sidebar-content-row] auto;
+  overflow: hidden;
+}
+
+.content {
+  grid-column: content-panel ;
+  grid-row: row-content;
+  display: grid;
+  grid-gap: 2px;
+  overflow: scroll;
+  grid-template-columns: [content-column] auto [content-column-end];
+  grid-template-rows: [content-titlebar] 50px [content-container] auto;
+}
+
+.titlebar-content {
+  grid-column: content-column / content-column-end;
+  grid-row: content-titlebar;
+  padding: 5px;
+  background-color: white;
+  align-items: center;
+  justify-items: center;
+  display: flex;
+}
+
+.toc-title {
+  grid-column: toolbar-sidebar;
+  grid-row: row-titlebar;
+  background-color: #fafafa;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-controls {
+  grid-column: content-toolbar;
+  grid-row: row-titlebar;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  background-color: white;
+  align-items: center;
+}
+
+.content-container {
+  grid-column: content-column;
+  grid-row: content-container;
+  padding: 10px;
+  overflow: scroll;
+  background-color: white;
+}

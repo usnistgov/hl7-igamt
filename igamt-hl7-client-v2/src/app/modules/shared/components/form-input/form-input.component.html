@@ -1,0 +1,9 @@
+<div class="form-group">
+  <label [for]="id" class="form-label-lg">{{label}}</label>
+  <input [type]="type" class="form-control" [id]="id" [name]="name" [placeholder]="placeholder" [required]="required"
+    [disabled]="disabled" [value]="value" (input)="valueChange($event.target.value)" (blur)="onTouch()">
+  <div *ngIf="control.invalid && (control.dirty || control.touched)" class="input-form-invalid-feedback"
+    style="margin-left: 10px;">
+    {{convertErrors()}}
+  </div>
+</div>

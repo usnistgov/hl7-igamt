@@ -1,0 +1,32 @@
+<div class="page-container-nopad">
+  <div class="wrapper">
+    <app-alerts-container></app-alerts-container>
+    <div class="titlebar">
+      <app-ig-edit-titlebar [metadata]="titleBar | async"></app-ig-edit-titlebar>
+    </div>
+    <div class="toolbar">
+      <div class="toc-title">
+        <h5 style="margin: 0;">Table of Content</h5>
+      </div>
+      <app-ig-edit-toolbar class="toolbar-controls"></app-ig-edit-toolbar>
+    </div>
+    <app-ig-edit-sidebar class="sidebar"></app-ig-edit-sidebar>
+    <div class="content">
+      <div class="titlebar-content">
+        <h4 class="title-text">
+          <app-scope-badge [scope]="'HL7'" [version]="'2.7.1'"></app-scope-badge>
+          <app-entity-bagde [type]="'SEGMENT'"></app-entity-bagde>
+          OBX
+        </h4>
+        <div style="margin-left: 20px;">
+          <app-metadata-date></app-metadata-date>
+        </div>
+        <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+        <h5 class="title-text"> Metadata </h5>
+      </div>
+      <div class="content-container">
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<nav class="navbar toolbar fixed-top">
+  <div style="position: relative;">
+    <img src="../../../../../assets/nist_logo.png" height="45px">
+    <a class="navbar-brand toolbar-name"> Implementation Guide Authoring and Management Tool
+      <span class="toolname-abbrv">(IGAMT)</span>
+    </a>
+  </div>
+  <nav class="nav-links-bar navbar navbar-expand-sm fixed-top">
+    <ul class="navbar-nav">
+      <li class="nav-item" routerLink="home" routerLinkActive="active">
+        <a class="nav-link">Home</a>
+      </li>
+      <li class="nav-item" [ngClass]="{'active': isIG | async }" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>IG Documents</span>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem [routerLink]="[ '/ig/create']" routerLinkActive="active-dropdown">
+            Create new IG document
+          </button>
+          <button [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'USER' }" routerLinkActive="active-dropdown"
+            ngbDropdownItem>
+            User's IG Documents
+          </button>
+          <button [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'PUBLISHED' }" routerLinkActive="active-dropdown"
+            ngbDropdownItem>
+            Published IG Documents
+          </button>
+          <button *ngIf="isAdmin | async" [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'ALL' }"
+            routerLinkActive="active-dropdown" ngbDropdownItem>
+            All IG Documents
+          </button>
+        </div>
+      </li>
+      <li class="nav-item" ngbDropdown>
+        <span class="nav-link" ngbDropdownToggle>Data Type Libraries</span>
+        <div ngbDropdownMenu>
+          <button ngbDropdownItem>Create Data Types Library</button>
+          <button ngbDropdownItem>User's Data Types Libraries</button>
+          <button ngbDropdownItem>Published Data Types Libraries</button>
+          <button ngbDropdownItem>Data Types Evolution</button>
+        </div>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#">Shared Elements</a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="#">
+          Configuration
+        </a>
+      </li>
+    </ul>
+    <app-user-management-header></app-user-management-header>
+  </nav>
+</nav>
+<div class="nav-progress-bar fixed-top" *ngIf="isLoading | async">
+  <p-progressBar mode="indeterminate"></p-progressBar>
+</div>

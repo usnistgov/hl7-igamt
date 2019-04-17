@@ -1,0 +1,22 @@
+  <div class="create-ig-layout">
+    <div class="title">
+      <h5>Create new IG Document</h5>
+    </div>
+    <div class="alerts">
+      <app-alerts-container></app-alerts-container>
+    </div>
+    <div class="metadata">
+      <form [formGroup] = "metaDataForm">
+      <app-form-input type="text" id="title" name="Title" formControlName="title"
+                      placeholder="IG Document Title" label="IG Document Title*">
+      </app-form-input>
+      </form>
+    </div>
+    <div class="messages">
+      <app-select-messages [table]="table$ | async "  [hl7Versions]=" hl7Version$ | async" (selected)="getVersion($event)" (messages)="setSelected($event)"></app-select-messages>
+     </div>
+
+    <div class="submit">
+      <button type="submit" class="btn btn-primary" (click)="submit()" [disabled]=" metaDataForm.invalid || !selectedEvents.length">Create IG Document</button>
+    </div>
+  </div>

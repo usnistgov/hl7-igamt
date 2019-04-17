@@ -1,0 +1,89 @@
+// Theme Colors
+$nist_dark_blue : #021a4c;
+$nist_light_blue : #739fff;
+$nist_dark_yellow : #F3C60D;
+$nist_light_yellow : #ffec9d;
+
+// Application Background
+%app-background {
+  @extend %blue-bg;
+}
+
+%blue-bg {
+  background: #1488CC;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #2B32B2, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #2B32B2, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+}
+
+// Sizes
+$header_toolname_height : 61;
+$header_links_height : 46;
+$header_height : $header_links_height + $header_toolname_height + 3 + px;
+
+$workspace_min_height : 700px;
+
+// Entity Badge Colors
+$ig_color: #b6006a;
+$group_color: #3dc43d;
+$segment_color: #001aff;
+$field_color: #ff9e1e;
+$component_color: #ffd900;
+$subcomponent_color: #87abf5;
+$datatype_color: rgb(240, 10, 10);
+$valueset_color: rgb(255, 0, 200);
+$comformance_profile_color: rgb(167, 90, 1);
+
+// Scope Badge Colors
+$hl7_scope_color : rgb(253, 150, 150);
+$user_scope_color : rgb(14, 158, 46);
+$preloaded_scope_color : rgb(125, 218, 255);
+
+.entity-badge-ig {
+  background-color: $ig_color !important;
+}
+
+.entity-badge-group {
+  background-color: $group_color !important;
+}
+
+.entity-badge-segment {
+  background-color: $segment_color !important;
+}
+
+.entity-badge-field {
+  background-color: $field_color !important;
+}
+
+.entity-badge-component {
+  background-color: $component_color !important;
+}
+
+.entity-badge-subcomponent {
+  background-color: $subcomponent_color !important;
+}
+
+.entity-badge-datatype {
+  background-color: $datatype_color !important;
+}
+
+.entity-badge-valueset {
+  background-color: $valueset_color !important;
+}
+
+.entity-badge-conformance-profile {
+  background-color: $comformance_profile_color !important;
+}
+
+// Page Container
+%page-wrapper {
+  background-color: #f7f7f7;
+  padding: 10px;
+  padding-top: 50px;
+  padding-left: 100px;
+  padding-right: 100px;
+  height: 100%;
+}
+
+.page-title {
+  margin-bottom: 50px;
+}

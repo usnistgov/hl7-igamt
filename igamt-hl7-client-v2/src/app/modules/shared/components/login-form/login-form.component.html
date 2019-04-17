@@ -1,0 +1,23 @@
+<form [formGroup]="loginForm">
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 40px;"> <i class="fa fa-user"></i> </span>
+      </div>
+      <input formControlName="username" class="form-control" placeholder="Username" type="username">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text" style="width: 40px;"> <i class="fa fa-key"></i> </span>
+      </div>
+      <input formControlName="password" class="form-control" placeholder="password" type="password">
+    </div>
+  </div>
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary btn-block" [disabled]="!loginForm.valid" (click)="submit()"> Login
+    </button>
+  </div>
+  <p class="text-center"><a class="btn" [routerLink]="['/reset-password']">Forgot password?</a></p>
+</form>

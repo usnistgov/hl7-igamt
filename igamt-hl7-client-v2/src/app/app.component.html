@@ -1,0 +1,14 @@
+<!-- Header -->
+<app-header></app-header>
+<p-blockUI [blocked]="blockUI | async"></p-blockUI>
+<div class="page-container-pad page-container-layout">
+
+  <!-- Content -->
+  <div class="page-content">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>
+<!-- Footer -->
+<footer></footer>
+<ng2-toasty [position]="'top-right'"></ng2-toasty>

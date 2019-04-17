@@ -1,0 +1,28 @@
+.sidebar-header {
+  grid-column: sidebar-content;
+  grid-row: sidebar-header;
+  background-color: #f7f7f7;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-content {
+  grid-column: sidebar-content;
+  grid-row: sidebar-content-row;
+  background-color: #f7f7f7;
+  overflow: scroll;
+  padding: 10px;
+}
+
+.filter {
+  flex-grow: 1;
+  margin-right: 5px;
+}
+
+.btn-text {
+  color: white;
+  border: 1px solid #e3e3e3;
+  font-weight: bold;
+}

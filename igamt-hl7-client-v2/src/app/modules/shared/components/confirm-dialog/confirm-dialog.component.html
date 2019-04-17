@@ -1,0 +1,6 @@
+<h2 mat-dialog-title>{{ data.action }}</h2>
+<mat-dialog-content>{{ data.question }}</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button class="btn btn-sm btn-secondary" style="margin-right: 5px;" [mat-dialog-close]="false">Cancel</button>
+  <button class="btn btn-sm btn-danger" [mat-dialog-close]="true">Yes</button>
+</mat-dialog-actions>

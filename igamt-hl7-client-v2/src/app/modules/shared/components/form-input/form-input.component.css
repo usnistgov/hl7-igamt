@@ -1,0 +1,9 @@
+.input-form-invalid-feedback{
+  width: 100%;
+  margin-top: .25rem;
+  font-size: 90%;
+  color: #dc3545;
+}
+input.ng-dirty.ng-invalid{
+  border:   1px solid #a80000;
+}
