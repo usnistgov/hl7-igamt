@@ -6,10 +6,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.servlet.http.HttpServletResponse;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -23,9 +24,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
+
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
@@ -59,6 +62,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.ig.domain.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
@@ -1005,6 +1009,16 @@ public class IGDocumentController extends BaseController {
     clone = igService.save(clone);
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig Cloned Successfully", clone.getId(),
         false, clone.getUpdateDate(), clone.getId());
+  }
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/datamodel", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody ResponseMessage<IgDataModel> dataModel(@PathVariable("id") String id,
+      Authentication authentication) throws Exception {
+    String username = authentication.getPrincipal().toString();
+    Ig ig = findIgById(id);
+    IgDataModel igDataModel = igService.generateDataModel(ig);
+    return new ResponseMessage<IgDataModel>(Status.SUCCESS, igDataModel, false);
   }
 
 
