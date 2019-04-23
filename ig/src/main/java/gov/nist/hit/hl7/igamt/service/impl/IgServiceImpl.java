@@ -45,21 +45,23 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItem;
 import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
-import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
-import gov.nist.hit.hl7.igamt.ig.domain.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
-import gov.nist.hit.hl7.igamt.ig.domain.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
-import gov.nist.hit.hl7.igamt.ig.domain.SegmentDataModel;
-import gov.nist.hit.hl7.igamt.ig.domain.ValuesetDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -88,7 +90,6 @@ public class IgServiceImpl implements IgService {
   @Autowired
   MongoTemplate mongoTemplate;
 
-
   @Autowired
   DatatypeService datatypeService;
 
@@ -101,14 +102,15 @@ public class IgServiceImpl implements IgService {
   @Autowired
   ProfileComponentService profileComponentService;
 
-
   @Autowired
   CompositeProfileStructureService compositeProfileServie;
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
 
-
+  @Autowired
+  private PredicateRepository predicateRepository;
+  
   @Autowired
   ValuesetService valueSetService;
   
@@ -831,12 +833,14 @@ public IGContentMap collectData(Ig ig) {
     Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
     Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
     Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
+    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap = new HashMap<String, ValuesetBindingDataModel>();
     
     for (Link link : ig.getValueSetRegistry().getChildren()) {
       Valueset vs = this.valueSetService.findById(link.getId());
       if(vs != null){
         ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
         valuesetDataModel.setModel(vs);
+        valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
         valuesets.add(valuesetDataModel);
       }else throw new Exception("Valueset is missing.");
     }
@@ -845,7 +849,7 @@ public IGContentMap collectData(Ig ig) {
       Datatype d = this.datatypeService.findById(link.getId());
       if(d != null){
         DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-        datatypeDataModel.putModel(d, valuesets);
+        datatypeDataModel.putModel(d, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         datatypes.add(datatypeDataModel);
       }else throw new Exception("Datatype is missing.");
     }
@@ -854,7 +858,7 @@ public IGContentMap collectData(Ig ig) {
       Segment s = this.segmentService.findById(link.getId());
       if(s != null){
         SegmentDataModel segmentDataModel = new SegmentDataModel();
-        segmentDataModel.putModel(s, valuesets);
+        segmentDataModel.putModel(s, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
         segmentDataModel.setCoConstraintTable(coConstraintTable);
         segments.add(segmentDataModel);
@@ -865,7 +869,7 @@ public IGContentMap collectData(Ig ig) {
       ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
       if(cp != null){
         ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-        conformanceProfileDataModel.putModel(cp, valuesets);
+        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         conformanceProfiles.add(conformanceProfileDataModel);
       }else throw new Exception("ConformanceProfile is missing.");
     }
