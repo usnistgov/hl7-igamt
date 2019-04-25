@@ -141,4 +141,6 @@ public interface ValuesetService {
 
   public List<Valueset> findByIdIn(Set<String> linksAsIds);
 
+public List<Valueset> findDisplayFormatByIds(Set<String> ids);
+
 }

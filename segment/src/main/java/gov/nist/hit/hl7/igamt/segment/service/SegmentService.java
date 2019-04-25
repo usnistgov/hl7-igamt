@@ -40,101 +40,105 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+
 /**
  *
  * @author Jungyub Woo on Mar 15, 2018 .
  */
 public interface SegmentService extends ResourceService {
 
+	public Segment findById(String id);
 
-  public Segment findById(String id);
+	public Segment create(Segment segment);
 
-  public Segment create(Segment segment);
+	public Segment save(Segment segment) throws ValidationException;
 
-  public Segment save(Segment segment) throws ValidationException;
+	public List<Segment> findAll();
 
-  public List<Segment> findAll();
+	public void delete(Segment segment);
 
-  public void delete(Segment segment);
+	public void removeCollection();
 
-  public void removeCollection();
+	public List<Segment> findByDomainInfoVersion(String version);
 
-  public List<Segment> findByDomainInfoVersion(String version);
+	public List<Segment> findByDomainInfoScope(String scope);
 
-  public List<Segment> findByDomainInfoScope(String scope);
+	public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-  public List<Segment> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	public List<Segment> findByName(String name);
 
-  public List<Segment> findByName(String name);
+	public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
-  public List<Segment> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope,
-      String version, String name);
+	public List<Segment> findByDomainInfoVersionAndName(String version, String name);
 
-  public List<Segment> findByDomainInfoVersionAndName(String version, String name);
+	public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
 
-  public List<Segment> findByDomainInfoScopeAndName(String scope, String name);
+	public PreDef convertDomainToPredef(Segment segment);
 
+	public PostDef convertDomainToPostdef(Segment segment);
 
-  public PreDef convertDomainToPredef(Segment segment);
+	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
-  public PostDef convertDomainToPostdef(Segment segment);
+	public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
-  public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
+	public Link cloneSegment(String compositeKey, HashMap<String, String> valuesetsMap,
+			HashMap<String, String> datatypesMap, Link l, String username) throws CoConstraintSaveException;
 
-  public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
+	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
+			throws SegmentNotFoundException, SegmentValidationException;
 
-  public Link cloneSegment(String compositeKey,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
-       Link l, String username)
-      throws CoConstraintSaveException;
+	/**
+	 * @param dynamicMapping
+	 * @throws SegmentValidationException
+	 */
+	void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
 
-  public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
-      throws SegmentNotFoundException, SegmentValidationException;
+	/**
+	 * @param segment
+	 * @return
+	 */
+	public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
 
-  /**
-   * @param dynamicMapping
-   * @throws SegmentValidationException
-   */
-  void validate(SegmentDynamicMapping dynamicMapping) throws SegmentValidationException;
+	/**
+	 * @param s
+	 * @param cItems
+	 * @return
+	 * @throws JsonProcessingException
+	 * @throws IOException
+	 */
 
-  /**
-   * @param segment
-   * @return
-   */
-  public SegmentStructureDisplay convertDomainToDisplayStructure(Segment segment, boolean readOnly);
+	public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId)
+			throws JsonProcessingException, IOException;
 
-  /**
-   * @param s
-   * @param cItems
-   * @return
-   * @throws JsonProcessingException
-   * @throws IOException
-   */
+	/**
+	 * @param datatype
+	 * @param idPath
+	 * @param path
+	 * @return
+	 */
+	public Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
 
-  public void applyChanges(Segment s, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
+	public List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
 
-  /**
-   * @param datatype
-   * @param idPath
-   * @param path
-   * @return
-   */
-  public Set<?> convertSegmentStructurForMessage(Segment segment, String idPath, String path);
-  
-  public List<SegmentSelectItemGroup> getSegmentFlavorsOptions(Set<String> ids, Segment s, String scope);
-  public List<Segment> findFlavors(Set<String> ids, String id, String name);
+	public List<Segment> findFlavors(Set<String> ids, String id, String name);
 
-  public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
+	public List<Segment> findNonFlavor(Set<String> ids, String id, String name);
 
-  public Set<RelationShip> collectDependencies(Segment elm);
-  public void collectAssoicatedConformanceStatements(Segment segment, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
-  
-  public Binding makeLocationInfo(Segment s);
-  
-  public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+	public Set<RelationShip> collectDependencies(Segment elm);
 
-  public List<Segment> findByIdIn(Set<String> linksAsIds);
-  
-  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId, String segmentName);
-  
-  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+	public void collectAssoicatedConformanceStatements(Segment segment,
+			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+
+	public Binding makeLocationInfo(Segment s);
+
+	public LocationInfo makeLocationInfoForField(Segment s, StructureElementBinding seb);
+
+	public List<Segment> findByIdIn(Set<String> linksAsIds);
+
+	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String segmentId,
+			String segmentName);
+
+	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+
+	public List<Segment> findDisplayFormatByIds(Set<String> ids);
 }

@@ -5,21 +5,22 @@
         <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
       </div>
       <input type="text" style="background-color: #f0f0f0; text-align: center;" class="form-control"
-        id="validationServerUsername" placeholder="Filter" required>
+        id="validationServerUsername" placeholder="Filter" required (keyup)="filterFn($event.target.value)">
+
     </div>
   </div>
   <div>
     <div class="btn-group mr-2" role="group">
-      <button type="button" class="btn btn-text entity-badge-conformance-profile">
+      <button type="button" class="btn btn-text entity-badge-conformance-profile" (click)="scrollTo('messages')">
         CP
       </button>
-      <button type="button" class="btn btn-text entity-badge-segment">
+      <button type="button" class="btn btn-text entity-badge-segment" (click)="scrollTo('segments')" >
         S
       </button>
-      <button type="button" class="btn btn-text entity-badge-datatype">
+      <button type="button" class="btn btn-text entity-badge-datatype" (click)="scrollTo('datatypes')">
         DT
       </button>
-      <button type="button" class="btn btn-text  entity-badge-valueset">
+      <button type="button" class="btn btn-text  entity-badge-valueset" (click)="scrollTo('valueSets')">
         VS
       </button>
     </div>
@@ -33,6 +34,6 @@
     </div> -->
   </div>
 </div>
-<div class="sidebar-content">
-
+<div class="sidebar-content" id="sidebar-content">
+<app-ig-toc [nodes]="nodes$ | async" (nodes_state)="update($event)"></app-ig-toc>
 </div>

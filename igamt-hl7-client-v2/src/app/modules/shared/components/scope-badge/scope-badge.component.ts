@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {Scope} from '../../constants/scope.enum';
 
 @Component({
   selector: 'app-scope-badge',
@@ -7,7 +8,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ScopeBadgeComponent implements OnInit {
 
-  @Input() scope: EntityScope;
+  @Input() scope: Scope;
   @Input() version: string;
 
   constructor() { }
@@ -19,5 +20,5 @@ export class ScopeBadgeComponent implements OnInit {
 
 export type EntityScope =
   'USER' |
-  'HL7' |
+  'HL7STANDARD' |
   'PRELOADED';

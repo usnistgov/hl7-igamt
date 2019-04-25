@@ -12,8 +12,9 @@
   grid-column: sidebar-content;
   grid-row: sidebar-content-row;
   background-color: #f7f7f7;
-  overflow: scroll;
-  padding: 10px;
+  overflow-x: scroll;
+  overflow-y: scroll;
+
 }
 
 .filter {

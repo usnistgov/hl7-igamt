@@ -1,4 +1,6 @@
-interface IgDocument {
+import {Type} from '../../../shared/constants/type.enum';
+
+export interface IgDocument {
   id: string;
   name?: any;
   publicationInfo?: any;
@@ -25,28 +27,48 @@ interface IgDocument {
   label?: any;
 }
 
-interface IRegistry {
+export interface IRegistry {
   children: IResource[];
   type: string;
 }
+export interface IGDisplayInfo {
+  ig: IgDocument;
+  segments: IDisplayElement[];
+  valueSets: IDisplayElement[];
+  datatypes: IDisplayElement[];
+  messages: IDisplayElement[];
+}
+export interface IDisplayElement {
+  id: string;
+  fixedName: string;
+  variableName: string;
+  description: string;
+  domainInfo: IDomainInfo;
+  type: Type;
+  leaf: boolean;
+  position?: number;
+  differantial: boolean;
+  children?: IDisplayElement[];
+  isExpanded: boolean;
+}
 
-interface IResource {
+export interface IResource {
   id: string;
   position: number;
   domainInfo: IDomainInfo;
   type?: any;
 }
 
-interface IContent {
+export interface IContent {
   id: string;
   description?: any;
-  type: string;
+  type: Type;
   position: number;
   label: string;
   children: IContent[];
 }
 
-interface IMetadata {
+export interface IMetadata {
   title: string;
   topics: string;
   specificationName: string;
@@ -58,7 +80,7 @@ interface IMetadata {
   scope?: any;
 }
 
-interface IDomainInfo {
+export interface IDomainInfo {
   version: any;
   compatibilityVersion: any[];
   scope: string;

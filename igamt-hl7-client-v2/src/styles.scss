@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "./assets/variables";
+@import '~angular-tree-component/dist/angular-tree-component.css';
 
 html {
   height: 100%;
@@ -75,4 +76,12 @@ body {
 .ui-table-scrollable-body{
   border-bottom: 1px solid #c1c1c1 !important;
 
+}
+
+// ---angular-tree-component---------
+
+element.style {
+}
+.tree-children {
+  overflow: unset;
 }

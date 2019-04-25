@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import {IDomainInfo} from '../../models/ig/ig-document.class';
 
 @Component({
   selector: 'app-ig-edit-titlebar',

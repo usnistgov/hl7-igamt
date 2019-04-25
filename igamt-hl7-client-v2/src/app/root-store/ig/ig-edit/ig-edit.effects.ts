@@ -6,6 +6,7 @@ import { of } from 'rxjs';
 import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/core/services/message.service';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
+import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
 import {
   IgEditActions,
@@ -26,11 +27,11 @@ export class IgEditEffects {
         blockUI: true,
       }));
 
-      return this.igService.getIg(action.id).pipe(
-        flatMap((ig: IgDocument) => {
+      return this.igService.getIgInfo(action.id).pipe(
+        flatMap((igInfo: IGDisplayInfo) => {
           return [
             new TurnOffLoader(),
-            new IgEditResolverLoadSuccess(ig),
+            new IgEditResolverLoadSuccess(igInfo),
           ];
         }),
         catchError((error: HttpErrorResponse) => {
