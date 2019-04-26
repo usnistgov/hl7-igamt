@@ -98,7 +98,7 @@ export class IgEditContainerComponent implements OnInit {
         name: 'description',
         viewOnly: false,
       },
-    }
+    };
   }
 
   ngOnInit() {

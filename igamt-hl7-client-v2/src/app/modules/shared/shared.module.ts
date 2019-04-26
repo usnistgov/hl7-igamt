@@ -5,10 +5,11 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { ToastyModule } from 'ng2-toasty';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
-import { CheckboxModule, RadioButtonModule, ChipsModule } from 'primeng/primeng';
+import { CheckboxModule, ChipsModule, RadioButtonModule } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { MessageService } from '../core/services/message.service';
 import { AlertsComponent } from './components/alerts/alerts.component';
@@ -17,6 +18,7 @@ import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.com
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { LoginFormComponent } from './components/login-form/login-form.component';
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
+import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
@@ -25,8 +27,6 @@ import { SelectMessagesComponent } from './components/select-messages/select-mes
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import { ConfigService } from './services/config.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
-import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
-import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 
 @NgModule({
   declarations: [

@@ -8,7 +8,7 @@ describe('IgEditActiveTitlebarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgEditActiveTitlebarComponent ]
+      declarations: [ IgEditActiveTitlebarComponent ],
     })
     .compileComponents();
   }));

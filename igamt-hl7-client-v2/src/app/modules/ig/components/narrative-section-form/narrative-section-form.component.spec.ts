@@ -8,7 +8,7 @@ describe('NarrativeSectionFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ NarrativeSectionFormComponent ]
+      declarations: [ NarrativeSectionFormComponent ],
     })
     .compileComponents();
   }));

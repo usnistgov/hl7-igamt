@@ -8,7 +8,7 @@ describe('MetadataFormComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ MetadataFormComponent ]
+      declarations: [ MetadataFormComponent ],
     })
     .compileComponents();
   }));

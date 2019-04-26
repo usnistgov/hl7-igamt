@@ -1,16 +1,16 @@
-import { Component, Input, OnInit, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 
 @Component({
   selector: 'app-metadata-form',
   templateUrl: './metadata-form.component.html',
-  styleUrls: ['./metadata-form.component.scss']
+  styleUrls: ['./metadata-form.component.scss'],
 })
 export class MetadataFormComponent implements OnInit {
 
   model: Array<{
     key: string;
-    data: MetadataField,
+    data: IMetadataField,
   }>;
   metadataForm: FormGroup;
   constructor() { }
@@ -37,10 +37,10 @@ export class MetadataFormComponent implements OnInit {
 }
 
 export type MetadataModel<T> = {
-  [P in keyof T]?: MetadataField;
+  [P in keyof T]?: IMetadataField;
 };
 
-export interface MetadataField {
+export interface IMetadataField {
   label: string;
   type: FieldType;
   value: any;

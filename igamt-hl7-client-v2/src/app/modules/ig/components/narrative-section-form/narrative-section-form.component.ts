@@ -4,7 +4,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 @Component({
   selector: 'app-narrative-section-form',
   templateUrl: './narrative-section-form.component.html',
-  styleUrls: ['./narrative-section-form.component.scss']
+  styleUrls: ['./narrative-section-form.component.scss'],
 })
 export class NarrativeSectionFormComponent implements OnInit {
 
