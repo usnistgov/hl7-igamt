@@ -54,7 +54,10 @@ body {
   overflow: auto;
 }
 
-//-----
+//----- Froala
+.fr-wrapper {
+  flex-grow: 1;
+}
 
 //----- primeng
 .ui-progressbar {
@@ -81,9 +84,17 @@ body {
 
 // ---angular-tree-component---------
 
-element.style {
-}
-
 .tree-children {
   overflow: unset;
+}
+.form-control-dropdown {
+  padding: 0 !important;
+}
+
+.string-list ul {
+  width: 100%;
+}
+
+.fr-box.fr-basic .fr-element {
+  min-height: 200px !important;
 }

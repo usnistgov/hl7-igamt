@@ -1,5 +1,5 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
+import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import {Type} from '../../../shared/constants/type.enum';
@@ -20,7 +20,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('cpLib') cpLib: ElementRef;
   @ViewChild('top') top: ElementRef;
   // TODO set type
-  options: {};
+  options;
   @Input()
   nodes: TreeNode[];
   @Output()
@@ -28,7 +28,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   constructor(private nodeHelperService: NodeHelperService) {
-    this.options = {
+   this.options = {
       allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
         node.data.type === Type.PROFILE,
@@ -36,16 +36,17 @@ export class IgTocComponent implements OnInit, AfterViewInit {
         mouse: {
           drop: (tree: TreeModel, node: TreeNode, $event: any, {from, to}) => {
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
               this.update();
             }
             if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
               this.update();
+
             }
           },
         },
       },
-      scrollContainer: this.getScrollContainer(),
-      scrollOnActivate: false,
     };
   }
 
@@ -142,6 +143,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   update() {
+    console.log(this.tree.treeModel);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
@@ -151,5 +153,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit() {
+
   }
+
 }

@@ -20,6 +20,10 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input()
   type: string;
   @Input()
+  options: any;
+  @Input()
+  viewOnly: boolean;
+  @Input()
   name: string;
   @Input()
   formControlName: string;
@@ -90,7 +94,6 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
         break;
       }
     }
-    console.log(errors);
     return errors;
   }
 

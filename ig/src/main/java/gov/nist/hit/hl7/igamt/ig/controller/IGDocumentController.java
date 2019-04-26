@@ -376,6 +376,23 @@ public class IGDocumentController extends BaseController {
   }
 
   /**
+   *
+   * @param id
+   * @param authentication
+   * @return
+   * @throws IGNotFoundException
+   * @throws IGConverterException
+   */
+  @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.GET,
+          produces = {"application/json"})
+
+  public @ResponseBody Ig getIg(@PathVariable("id") String id,
+                                              Authentication authentication) throws IGNotFoundException {
+
+    return findIgById(id);
+  }
+
+  /**
    * 
    * @param id
    * @param authentication

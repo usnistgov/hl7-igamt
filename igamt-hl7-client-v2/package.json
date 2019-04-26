@@ -32,11 +32,13 @@
     "@ngrx/store": "^7.3.0",
     "@ngrx/store-devtools": "^7.4.0",
     "angular-tree-component": "^8.3.0",
+    "angular-froala-wysiwyg": "^2.9.5",
     "bootstrap": "^4.3.1",
     "core-js": "^2.5.4",
     "font-awesome": "^4.7.0",
     "guid-typescript": "^1.0.9",
     "lodash": "^4.17.11",
+    "jquery": "^3.4.0",
     "ng2-toasty": "^4.0.3",
     "ngx-contextmenu": "^5.1.1",
     "primeflex": "^1.0.0-rc.1",
@@ -47,7 +49,7 @@
     "zone.js": "~0.8.26"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "^0.13.5",
+    "@angular-devkit/build-angular": "^0.13.8",
     "@angular/cli": "~7.0.2",
     "@angular/compiler-cli": "^7.2.9",
     "@angular/language-service": "~7.0.0",

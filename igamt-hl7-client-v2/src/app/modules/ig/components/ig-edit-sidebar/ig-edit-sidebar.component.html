@@ -1,4 +1,4 @@
-<div class="sidebar-header" style="text-align: center;">
+<div class="sidebar-filter" style="text-align: center;">
   <div class="filter">
     <div class="input-group">
       <div class="input-group-prepend">
@@ -6,32 +6,23 @@
       </div>
       <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
              placeholder="Filter" required style="background-color: #f0f0f0; text-align: center;" type="text">
-
     </div>
   </div>
-  <div>
-    <div class="btn-group mr-2" role="group">
-      <button (click)="scrollTo('messages')" class="btn btn-text entity-badge-conformance-profile" type="button">
-        CP
-      </button>
-      <button (click)="scrollTo('segments')" class="btn btn-text entity-badge-segment" type="button">
-        S
-      </button>
-      <button (click)="scrollTo('datatypes')" class="btn btn-text entity-badge-datatype" type="button">
-        DT
-      </button>
-      <button (click)="scrollTo('valueSets')" class="btn btn-text  entity-badge-valueset" type="button">
-        VS
-      </button>
-    </div>
-    <!-- <div>
-      <app-entity-bagde [type]="'CONFORMANCEPROFILE'"></app-entity-bagde>
-      <app-entity-bagde [type]="'SEGMENT'"></app-entity-bagde>
-    </div>
-    <div>
-      <app-entity-bagde [type]="'DATATYPE'"></app-entity-bagde>
-      <app-entity-bagde [type]="'VALUESET'"></app-entity-bagde>
-    </div> -->
+</div>
+<div class="sidebar-controls">
+  <div class="btn-group mr-2" role="group">
+    <button (click)="scrollTo('messages')" class="btn btn-text entity-badge-conformance-profile" type="button">
+      CP
+    </button>
+    <button (click)="scrollTo('segments')" class="btn btn-text entity-badge-segment" type="button">
+      S
+    </button>
+    <button (click)="scrollTo('datatypes')" class="btn btn-text entity-badge-datatype" type="button">
+      DT
+    </button>
+    <button (click)="scrollTo('valueSets')" class="btn btn-text  entity-badge-valueset" type="button">
+      VS
+    </button>
   </div>
 </div>
 <div class="sidebar-content" id="sidebar-content">

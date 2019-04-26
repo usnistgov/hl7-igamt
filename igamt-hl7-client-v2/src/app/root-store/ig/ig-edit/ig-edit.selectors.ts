@@ -216,7 +216,7 @@ export function buildTree(structure: IContent[], messageNodes: IDisplayElement[]
         break;
     }
   }
-  return ret;
+  return sort(ret);
 }
 
 export const selectStructure = createSelector(

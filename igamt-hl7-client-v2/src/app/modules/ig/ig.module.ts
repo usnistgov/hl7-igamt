@@ -11,6 +11,7 @@ import {IgEditEffects} from './../../root-store/ig/ig-edit/ig-edit.effects';
 import {CoreModule} from './../core/core.module';
 import {SharedModule} from './../shared/shared.module';
 import {CreateIGComponent} from './components/create-ig/create-ig.component';
+import {IgEditActiveTitlebarComponent} from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
 import {IgEditContainerComponent} from './components/ig-edit-container/ig-edit-container.component';
 import {IgEditSidebarComponent} from './components/ig-edit-sidebar/ig-edit-sidebar.component';
 import {IgEditTitlebarComponent} from './components/ig-edit-titlebar/ig-edit-titlebar.component';
@@ -18,6 +19,7 @@ import {IgEditToolbarComponent} from './components/ig-edit-toolbar/ig-edit-toolb
 import {IgListContainerComponent} from './components/ig-list-container/ig-list-container.component';
 import {IgListItemCardComponent} from './components/ig-list-item-card/ig-list-item-card.component';
 import {IgTocComponent} from './components/ig-toc/ig-toc.component';
+import {NarrativeSectionFormComponent} from './components/narrative-section-form/narrative-section-form.component';
 import {IgRoutingModule} from './ig-routing.module';
 import {IgEditResolverService} from './services/ig-edit-resolver.service';
 import {IgListService} from './services/ig-list.service';
@@ -33,6 +35,8 @@ import {IgService} from './services/ig.service';
     IgEditTitlebarComponent,
     CreateIGComponent,
     IgTocComponent,
+    NarrativeSectionFormComponent,
+    IgEditActiveTitlebarComponent,
   ], imports: [
     IgRoutingModule,
     EffectsModule.forFeature([IgListEffects, CreateIgEffects, IgEditEffects]),
@@ -56,6 +60,7 @@ import {IgService} from './services/ig.service';
     IgEditSidebarComponent,
     IgEditToolbarComponent,
     IgEditTitlebarComponent,
+    IgEditActiveTitlebarComponent,
   ],
 })
 export class IgModule {
