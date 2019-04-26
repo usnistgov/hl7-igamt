@@ -53,7 +53,10 @@ body {
   overflow: auto;
 }
 
-//-----
+//----- Froala
+.fr-wrapper {
+  flex-grow: 1;
+}
 
 //----- primeng
 .ui-progressbar {
@@ -75,4 +78,16 @@ body {
 .ui-table-scrollable-body{
   border-bottom: 1px solid #c1c1c1 !important;
 
+}
+
+.form-control-dropdown {
+  padding: 0 !important;
+}
+
+.string-list ul {
+  width: 100%;
+}
+
+.fr-box.fr-basic .fr-element {
+  min-height: 200px !important;
 }
