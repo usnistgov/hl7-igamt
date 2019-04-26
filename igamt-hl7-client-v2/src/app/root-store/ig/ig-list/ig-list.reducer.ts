@@ -1,7 +1,7 @@
-import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { IgListItem } from 'src/app/modules/ig/models/ig/ig-list-item.class';
-import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
-import { IgListActions, IgListActionTypes, IgListLoad } from './ig-list.actions';
+import {createEntityAdapter, EntityState} from '@ngrx/entity';
+import {IgListItem} from 'src/app/modules/ig/models/ig/ig-list-item.class';
+import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
+import {IgListActions, IgListActionTypes, IgListLoad} from './ig-list.actions';
 
 export interface IState extends EntityState<IgListItem> {
   viewType: IgListLoad;

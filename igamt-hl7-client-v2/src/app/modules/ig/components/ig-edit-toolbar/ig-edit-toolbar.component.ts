@@ -1,6 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Store} from '@ngrx/store';
+import {Subscription} from 'rxjs';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 
@@ -13,6 +13,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   viewOnly: boolean;
   subscription: Subscription;
+
   constructor(private store: Store<IGDisplayInfo>) {
     this.subscription = this.store.select(fromIgDocumentEdit.selectViewOnly).subscribe(
       (value) => this.viewOnly = value,

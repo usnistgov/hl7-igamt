@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 
 @Component({
   selector: 'app-metadata-date',
@@ -10,7 +10,8 @@ export class MetadataDateComponent implements OnInit {
   @Input() updateDate: Date;
   @Input() creationDate: Date;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }

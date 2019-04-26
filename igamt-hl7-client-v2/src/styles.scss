@@ -12,7 +12,7 @@ body {
   @extend %blue-bg;
   height: 100%;
   width: 100%;
-  font-family: Verdana,Geneva,sans-serif !important;
+  font-family: Verdana, Geneva, sans-serif !important;
 }
 
 %page-container {
@@ -37,7 +37,7 @@ body {
   height: 100%;
 }
 
-.form-label-lg{
+.form-label-lg {
   font-weight: 700;
 }
 
@@ -73,7 +73,8 @@ body {
 .border-gray {
   border: 1px solid #c1c1c1;
 }
-.ui-table-scrollable-body{
+
+.ui-table-scrollable-body {
   border-bottom: 1px solid #c1c1c1 !important;
 
 }
@@ -82,6 +83,7 @@ body {
 
 element.style {
 }
+
 .tree-children {
   overflow: unset;
 }

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgEditSidebarComponent } from './ig-edit-sidebar.component';
+import {IgEditSidebarComponent} from './ig-edit-sidebar.component';
 
 describe('IgEditSidebarComponent', () => {
   let component: IgEditSidebarComponent;
@@ -8,9 +8,9 @@ describe('IgEditSidebarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgEditSidebarComponent ],
+      declarations: [IgEditSidebarComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

@@ -1,135 +1,137 @@
-<div id = "toc-container" >
-<span  style="cursor: pointer">IGDocument Metadata</span>
-<tree-root [nodes]="nodes"  #treeroot [options]="options">
-  <ng-template #treeNodeTemplate let-node let-index="index">
-    <ng-container [ngSwitch]="node.data.type">
+<div id="toc-container">
+  <span style="cursor: pointer">IGDocument Metadata</span>
+  <tree-root #treeroot [nodes]="nodes" [options]="options">
+    <ng-template #treeNodeTemplate let-index="index" let-node>
+      <ng-container [ngSwitch]="node.data.type">
 
-      <ng-container *ngSwitchCase="'TEXT'">
-        <span [contextMenu]="textContextMenu" (click)="print()"> {{getPath(node)}} {{node.data.variableName}}</span>
-        <context-menu #textContextMenu>
-          <ng-template contextMenuItem (execute)="addSectionToNode(node)">
-            <i class="fa fa-plus"></i> Add Section
-          </ng-template>
-          <ng-template contextMenuItem (execute)="copySection(node)">
-            <i class="fa fa-copy"></i> Copy Section
-          </ng-template>
-          <ng-template contextMenuItem (execute)="deleteSection(node)">
-            <i class="fa fa-remove"></i> Delete Section
-          </ng-template>
-        </context-menu>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'PROFILE'">
-        <span (click)="print(node)"> {{getPath(node)}} {{node.data.variableName}}</span>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-        <span> {{getPath(node)}} {{node.data.variableName}}</span>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
-        <div #cpLib>
-          <span  [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
-          <context-menu  #conformanceProfilesContextMenu>
-            <ng-template contextMenuItem (execute)="addMessage(node)">
-              <i class="fa fa-plus"></i>Add Conformance Profiles
+        <ng-container *ngSwitchCase="'TEXT'">
+          <span (click)="print()" [contextMenu]="textContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+          <context-menu #textContextMenu>
+            <ng-template (execute)="addSectionToNode(node)" contextMenuItem>
+              <i class="fa fa-plus"></i> Add Section
+            </ng-template>
+            <ng-template (execute)="copySection(node)" contextMenuItem>
+              <i class="fa fa-copy"></i> Copy Section
+            </ng-template>
+            <ng-template (execute)="deleteSection(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete Section
             </ng-template>
           </context-menu>
-        </div>
-      </ng-container>
+        </ng-container>
 
-      <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
-        <div #compositePLib>
+        <ng-container *ngSwitchCase="'PROFILE'">
+          <span (click)="print()"> {{getPath(node)}} {{node.data.variableName}}</span>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
           <span> {{getPath(node)}} {{node.data.variableName}}</span>
-        </div>
-      </ng-container>
+        </ng-container>
 
-      <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
-        <div #dtLib>
-          <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
-          <context-menu  #addDatatypeContextMenu>
-            <ng-template contextMenuItem (execute)="addDatatypes()">
-              <i class="fa fa-plus"></i> Add HL7 Data Types
+        <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+          <div #cpLib>
+            <span [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <context-menu #conformanceProfilesContextMenu>
+              <ng-template (execute)="addMessage(node)" contextMenuItem>
+                <i class="fa fa-plus"></i>Add Conformance Profiles
+              </ng-template>
+            </context-menu>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
+          <div #compositePLib>
+            <span> {{getPath(node)}} {{node.data.variableName}}</span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+          <div #dtLib>
+            <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <context-menu #addDatatypeContextMenu>
+              <ng-template (execute)="addDatatypes()" contextMenuItem>
+                <i class="fa fa-plus"></i> Add HL7 Data Types
+              </ng-template>
+            </context-menu>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
+          <div #vsLib>
+            <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <context-menu #valueSetsContextMenu>
+              <ng-template (execute)="addValueSets()" contextMenuItem>
+                <i class="fa fa-plus"></i> Add Hl7 Value Sets
+              </ng-template>
+            </context-menu>
+          </div>
+        </ng-container>
+        <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
+          <div #segLib>
+            <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <context-menu #segmentContextMenu>
+              <ng-template (execute)="addSegments()" contextMenuItem>
+                <i class="fa fa-plus"></i> Add Segments
+              </ng-template>
+            </context-menu>
+            <context-menu #segmentContextMenu>
+              <ng-template (execute)="addSegments()" contextMenuItem>
+                <i class="fa fa-plus"></i> Add Segments
+              </ng-template>
+            </context-menu>
+          </div>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'DATATYPE'">
+          <app-display-section #rla="routerLinkActive" [element]="node.data"
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+          <context-menu #datatypeContextMenu>
+            <ng-template (execute)="copyDatatype(node)" contextMenuItem>
+              <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
           </context-menu>
-        </div>
-      </ng-container>
+          <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
+        </ng-container>
 
-      <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
-        <div #vsLib>
-          <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
-          <context-menu  #valueSetsContextMenu>
-            <ng-template contextMenuItem (execute)="addValueSets()">
-              <i class="fa fa-plus"></i> Add Hl7 Value Sets
+        <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+          <app-display-section #rla="routerLinkActive" [element]="node.data"
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+          <context-menu #conformanceProfileContextMenu>
+            <ng-template (execute)="copyConformanceProfile(node)" contextMenuItem>
+              <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
           </context-menu>
-        </div>
-      </ng-container>
-      <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
-        <div #segLib>
-          <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
-          <context-menu  #segmentContextMenu>
-            <ng-template contextMenuItem (execute)="addSegments()">
-              <i class="fa fa-plus"></i> Add Segments
+          <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+          <span>{{node.variableName}}</span>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'SEGMENT'">
+          <app-display-section [contextMenu]="segmentContextMenu" [element]="node.data"></app-display-section>
+          <context-menu #segmentContextMenu>
+            <ng-template (execute)="copySegment(node)" contextMenuItem>
+              <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
           </context-menu>
-          <context-menu  #segmentContextMenu>
-            <ng-template contextMenuItem (execute)="addSegments()">
-              <i class="fa fa-plus"></i> Add Segments
+          <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'VALUESET'">
+          <app-display-section [contextMenu]="valueSetContextMenu" [element]="node.data"></app-display-section>
+          <context-menu #valueSetContextMenu>
+            <ng-template (execute)="copyValueSet(node)" contextMenuItem>
+              <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
           </context-menu>
-        </div>
+          <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+        </ng-container>
+
       </ng-container>
+    </ng-template>
 
-      <ng-container *ngSwitchCase="'DATATYPE'">
-        <app-display-section [element]="node.data" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" #rla="routerLinkActive"></app-display-section>
-        <context-menu  #datatypeContextMenu>
-          <ng-template contextMenuItem (execute)="copyDatatype(node)">
-            <i class="fa fa-copy"></i> Create Flavor
-          </ng-template>
-        </context-menu>
-        <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-        <app-display-section [element]="node.data" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node" #rla="routerLinkActive"></app-display-section>
-        <context-menu  #conformanceProfileContextMenu>
-          <ng-template contextMenuItem (execute)="copyConformanceProfile(node)">
-            <i class="fa fa-copy"></i> Create Flavor
-          </ng-template>
-        </context-menu>
-        <app-toc-sub-menu [element]="node.data" ></app-toc-sub-menu>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-        <span>{{node.variableName}}</span>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'SEGMENT'">
-        <app-display-section [element]="node.data" [contextMenu]="segmentContextMenu"></app-display-section>
-        <context-menu  #segmentContextMenu>
-          <ng-template contextMenuItem (execute)="copySegment(node)">
-            <i class="fa fa-copy"></i> Create Flavor
-          </ng-template>
-        </context-menu>
-        <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'VALUESET'" >
-        <app-display-section [element]="node.data"  [contextMenu]="valueSetContextMenu" ></app-display-section>
-        <context-menu  #valueSetContextMenu>
-          <ng-template contextMenuItem (execute)="copyValueSet(node)">
-            <i class="fa fa-copy"></i> Create Flavor
-          </ng-template>
-        </context-menu>
-        <app-toc-sub-menu [element]="node.data"></app-toc-sub-menu>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
-      </ng-container>
-
-    </ng-container>
-  </ng-template>
-
-</tree-root>
+  </tree-root>
 </div>

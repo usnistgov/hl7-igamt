@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { IgTocService } from './ig-toc.service';
+import {IgTocService} from './ig-toc.service';
 
 describe('IgTocService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

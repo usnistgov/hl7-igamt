@@ -1,5 +1,5 @@
-import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
-import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {Component, EventEmitter, forwardRef, Input, OnInit, Output} from '@angular/core';
+import {AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
   selector: 'app-form-input',
@@ -35,11 +35,15 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   placeholder: any;
   disabled: boolean;
   control: AbstractControl;
-  onChange: any = () => { };
-  onTouch: any = () => { };
 
   constructor(private controlContainer: ControlContainer) {
     this.change = new EventEmitter<any>();
+  }
+
+  onChange: any = () => {
+  }
+
+  onTouch: any = () => {
   }
 
   registerOnChange(fn: any): void {

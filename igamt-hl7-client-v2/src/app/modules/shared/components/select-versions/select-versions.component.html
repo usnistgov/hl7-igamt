@@ -3,10 +3,11 @@
     <label>Hl7 Versions: </label>
   </div>
   <div class="radio-buttons">
-<ng-container *ngFor="let v of hl7Versions">
-    <p-radioButton styleClass="'radio-inline'" name="{{v}}" value="{{v}}" label="{{v}}" [(ngModel)]="selcetedVersion" (ngModelChange)="select($event)" [style]="{'margin-left': '10px'}">
-    </p-radioButton>
-</ng-container>
+    <ng-container *ngFor="let v of hl7Versions">
+      <p-radioButton (ngModelChange)="select($event)" [(ngModel)]="selcetedVersion" [style]="{'margin-left': '10px'}" label="{{v}}" name="{{v}}"
+                     styleClass="'radio-inline'" value="{{v}}">
+      </p-radioButton>
+    </ng-container>
 
   </div>
 </div>

@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { TocSubMenuComponent } from './toc-sub-menu.component';
+import {TocSubMenuComponent} from './toc-sub-menu.component';
 
 describe('TocSubMenuComponent', () => {
   let component: TocSubMenuComponent;
@@ -8,9 +8,9 @@ describe('TocSubMenuComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ TocSubMenuComponent ],
+      declarations: [TocSubMenuComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

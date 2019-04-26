@@ -4,7 +4,7 @@
   display: grid;
   grid-gap: 2px;
   grid-template-columns: [sidebar] 3fr [content-panel] 9fr [content-panel-end];
-  grid-template-rows: [alerts] minmax(min-content,max-content) [row-titlebar] 50px [row-toolbar] 55px [row-content] auto;
+  grid-template-rows: [alerts] minmax(min-content, max-content) [row-titlebar] 50px [row-toolbar] 55px [row-content] auto;
   overflow: hidden;
   color: #444;
   height: 100%;
@@ -20,6 +20,7 @@
   justify-items: center;
   display: flex;
 }
+
 .toolbar {
   grid-column: sidebar / content-panel-end;
   grid-row: row-toolbar;
@@ -28,6 +29,7 @@
   grid-template-columns: [toolbar-sidebar] 3fr [content-toolbar] 9fr [content-toolbar-end];
   grid-template-rows: [row-titlebar] auto;
 }
+
 .sidebar {
   grid-column: sidebar;
   grid-row: row-content;
@@ -39,7 +41,7 @@
 }
 
 .content {
-  grid-column: content-panel ;
+  grid-column: content-panel;
   grid-row: row-content;
   display: grid;
   grid-gap: 2px;

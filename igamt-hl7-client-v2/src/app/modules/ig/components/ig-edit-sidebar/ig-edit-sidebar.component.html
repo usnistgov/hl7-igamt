@@ -4,23 +4,23 @@
       <div class="input-group-prepend">
         <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
       </div>
-      <input type="text" style="background-color: #f0f0f0; text-align: center;" class="form-control"
-        id="validationServerUsername" placeholder="Filter" required (keyup)="filterFn($event.target.value)">
+      <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+             placeholder="Filter" required style="background-color: #f0f0f0; text-align: center;" type="text">
 
     </div>
   </div>
   <div>
     <div class="btn-group mr-2" role="group">
-      <button type="button" class="btn btn-text entity-badge-conformance-profile" (click)="scrollTo('messages')">
+      <button (click)="scrollTo('messages')" class="btn btn-text entity-badge-conformance-profile" type="button">
         CP
       </button>
-      <button type="button" class="btn btn-text entity-badge-segment" (click)="scrollTo('segments')" >
+      <button (click)="scrollTo('segments')" class="btn btn-text entity-badge-segment" type="button">
         S
       </button>
-      <button type="button" class="btn btn-text entity-badge-datatype" (click)="scrollTo('datatypes')">
+      <button (click)="scrollTo('datatypes')" class="btn btn-text entity-badge-datatype" type="button">
         DT
       </button>
-      <button type="button" class="btn btn-text  entity-badge-valueset" (click)="scrollTo('valueSets')">
+      <button (click)="scrollTo('valueSets')" class="btn btn-text  entity-badge-valueset" type="button">
         VS
       </button>
     </div>
@@ -35,5 +35,5 @@
   </div>
 </div>
 <div class="sidebar-content" id="sidebar-content">
-<app-ig-toc [nodes]="nodes$ | async" (nodes_state)="update($event)"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async"></app-ig-toc>
 </div>

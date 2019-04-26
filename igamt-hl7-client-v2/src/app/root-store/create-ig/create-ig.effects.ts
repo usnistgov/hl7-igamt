@@ -1,6 +1,6 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
 import {catchError, map, mergeMap} from 'rxjs/operators';
@@ -13,7 +13,9 @@ import {TurnOnLoader} from '../loader/loader.actions';
 import {
   CreateIg,
   CreateIgActions,
-  CreateIgActionTypes, CreateIgFailure, CreateIgSuccess,
+  CreateIgActionTypes,
+  CreateIgFailure,
+  CreateIgSuccess,
   LoadMessageEvents,
   LoadMessageEventsFailure,
   LoadMessageEventsSuccess,
@@ -31,7 +33,7 @@ export class CreateIgEffects {
       }));
       return this.igService.getMessagesByVersion(action.payload).pipe(
         map((resp: Message<MessageEventTreeNode[]>) => {
-         return new LoadMessageEventsSuccess(resp);
+          return new LoadMessageEventsSuccess(resp);
         })
         , catchError(
           (err: HttpErrorResponse) => {
@@ -104,6 +106,7 @@ export class CreateIgEffects {
       turnOffLoader: true,
     }),
   );
+
   constructor(private actions$: Actions<CreateIgActions>, private igService: IgService,
               private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService) {
   }

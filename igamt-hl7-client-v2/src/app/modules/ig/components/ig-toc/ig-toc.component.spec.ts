@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgTocComponent } from './ig-toc.component';
+import {IgTocComponent} from './ig-toc.component';
 
 describe('IgTocComponent', () => {
   let component: IgTocComponent;
@@ -8,9 +8,9 @@ describe('IgTocComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgTocComponent ],
+      declarations: [IgTocComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

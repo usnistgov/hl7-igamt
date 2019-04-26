@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgEditToolbarComponent } from './ig-edit-toolbar.component';
+import {IgEditToolbarComponent} from './ig-edit-toolbar.component';
 
 describe('IgEditToolbarComponent', () => {
   let component: IgEditToolbarComponent;
@@ -8,9 +8,9 @@ describe('IgEditToolbarComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgEditToolbarComponent ],
+      declarations: [IgEditToolbarComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

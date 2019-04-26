@@ -1,15 +1,16 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { Message } from 'src/app/modules/core/models/message/message.class';
-import { User } from '../models/user/user.class';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {Message} from 'src/app/modules/core/models/message/message.class';
+import {User} from '../models/user/user.class';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   login(username: string, password: string): Observable<Message<User>> {
     return this.http.post<Message<User>>('api/login', {
@@ -27,7 +28,7 @@ export class AuthenticationService {
   }
 
   updatePassword(token: string, password: string): Observable<Message<string>> {
-    return this.http.post<Message<string>>('api/password/reset/confirm', { token, password });
+    return this.http.post<Message<string>>('api/password/reset/confirm', {token, password});
   }
 
   checkAuthStatus(): Observable<User> {

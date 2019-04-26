@@ -1,6 +1,6 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {IDisplayElement} from '../../../ig/models/ig/ig-document.class';
 import {Icons} from '../../constants/icons.enum';
+import {IDisplayElement} from '../../models/display-element.interface';
 import {SubMenu} from '../../models/sub-menu.class';
 
 @Component({
@@ -12,16 +12,20 @@ export class TocSubMenuComponent implements OnInit {
   @Input() element: IDisplayElement;
 
   items: SubMenu[];
-  constructor() { }
+
+  constructor() {
+  }
+
   ngOnInit() {
-    if ( this.element.type) {
+    if (this.element.type) {
       this.items = this.getMenuItems();
     }
   }
+
   getMenuItems() {
     const type = this.element.type.toLowerCase();
     const ret: SubMenu[] = [];
-    ret.push( new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
+    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre definition', Icons.PRE));
 
@@ -31,7 +35,7 @@ export class TocSubMenuComponent implements OnInit {
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
 
-    if ( type === 'segment' && this.element.fixedName === 'OBX') {
+    if (type === 'segment' && this.element.fixedName === 'OBX') {
 
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
 

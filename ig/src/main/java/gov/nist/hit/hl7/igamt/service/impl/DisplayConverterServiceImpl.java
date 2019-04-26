@@ -142,7 +142,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     sectionTree.setPosition(s.getPosition());
     sectionTree.setType(s.getType());
     t.setId(s.getId());
-
     sectionTree.setDescription(s.getDescription());
     t.setData(sectionTree);
 
@@ -155,7 +154,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
           TextSection sect = section;
           children.add(createNarrativeNode(sect));
         }
-
       }
       children.sort((h1, h2) -> h1.compareTo(h2));
 

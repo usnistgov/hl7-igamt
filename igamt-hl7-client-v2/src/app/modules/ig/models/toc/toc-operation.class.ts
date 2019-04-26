@@ -1,9 +1,10 @@
-import {IDisplayElement} from '../ig/ig-document.class';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
 
 export interface IDeleteNode {
   subject: IDisplayElement;
   from: string;
 }
+
 export interface IModeNode {
   subject: IDisplayElement;
   from: string;
@@ -12,7 +13,7 @@ export interface IModeNode {
 }
 
 export interface IAddNodes {
-  subject: {[ k: string]: IDisplayElement[]};
+  subject: { [k: string]: IDisplayElement[] };
   to: string;
   index?: number;
 }

@@ -1,17 +1,17 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
+import {TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
 
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import {Type} from '../../../shared/constants/type.enum';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {NodeHelperService} from '../../../shared/services/node-helper.service';
-import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 
 @Component({
   selector: 'app-ig-toc',
   templateUrl: './ig-toc.component.html',
   styleUrls: ['./ig-toc.component.scss'],
 })
-export class IgTocComponent implements OnInit,  AfterViewInit {
+export class IgTocComponent implements OnInit, AfterViewInit {
 
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
@@ -19,36 +19,34 @@ export class IgTocComponent implements OnInit,  AfterViewInit {
   @ViewChild('segLib') segLib: ElementRef;
   @ViewChild('cpLib') cpLib: ElementRef;
   @ViewChild('top') top: ElementRef;
-  @ViewChild(TreeComponent) private tree: TreeComponent;
-
-  options = {
-    allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
-      node.data.type === Type.CONFORMANCEPROFILE ||
-      node.data.type === Type.PROFILE,
-    actionMapping: {
-      mouse: {
-        drop: (tree: TreeModel, node: TreeNode, $event: any, {from, to}) => {
-          if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
-            this.update();
-          }
-          if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
-            this.update();
-          }
-        },
-        click: TREE_ACTIONS.ACTIVATE,
-      },
-      scrollOnActivate: true,
-      scrollContainer: this.getScrollContainer(),
-    },
-  };
-
+  // TODO set type
+  options: {};
   @Input()
   nodes: TreeNode[];
-
   @Output()
-  nodes_state = new EventEmitter<IGDisplayInfo[]>();
+  nodeState = new EventEmitter<IDisplayElement[]>();
+  @ViewChild(TreeComponent) private tree: TreeComponent;
 
-  constructor( private nodeHelperService: NodeHelperService) {
+  constructor(private nodeHelperService: NodeHelperService) {
+    this.options = {
+      allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
+        node.data.type === Type.CONFORMANCEPROFILE ||
+        node.data.type === Type.PROFILE,
+      actionMapping: {
+        mouse: {
+          drop: (tree: TreeModel, node: TreeNode, $event: any, {from, to}) => {
+            if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
+              this.update();
+            }
+            if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
+              this.update();
+            }
+          },
+        },
+      },
+      scrollContainer: this.getScrollContainer(),
+      scrollOnActivate: false,
+    };
   }
 
   isOrphan(node: any) {
@@ -56,7 +54,7 @@ export class IgTocComponent implements OnInit,  AfterViewInit {
   }
 
   ngOnInit() {
-    console.log( this.tree.treeModel !== null && this.tree.treeModel );
+    console.log(this.tree.treeModel !== null && this.tree.treeModel);
   }
 
   print() {
@@ -67,13 +65,16 @@ export class IgTocComponent implements OnInit,  AfterViewInit {
     this.nodeHelperService.addNode(node);
     this.update();
   }
+
   addSectionToIG() {
     this.nodeHelperService.addNodeToRoot(this.tree.treeModel);
   }
+
   copySection(node) {
     this.nodeHelperService.cloneNode(node);
     this.update();
   }
+
   deleteSection(section) {
     this.nodeHelperService.deleteSection(section.id, this.tree.treeModel);
     this.update();
@@ -111,8 +112,9 @@ export class IgTocComponent implements OnInit,  AfterViewInit {
     const type = elm.type.toLowerCase();
     return './' + type + '/' + elm.id;
   }
+
   getPath(node) {
-    if ( node ) {
+    if (node) {
       if (this.isOrphan(node)) {
         return node.data.position + '.';
       } else {
@@ -120,31 +122,34 @@ export class IgTocComponent implements OnInit,  AfterViewInit {
       }
     }
   }
+
   scroll(type: string) {
     if (type === 'messages') {
       this.cpLib.nativeElement.scrollIntoView();
-
     } else if (type === 'segments') {
       this.segLib.nativeElement.scrollIntoView();
-
     } else if (type === 'datatypes') {
       this.dtLib.nativeElement.scrollIntoView();
-
     } else if (type === 'valueSets') {
       this.vsLib.nativeElement.scrollIntoView();
     }
   }
+
   filter(value: any) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService.getFilteringLabel(node.data.fixedName, node.data.variableName).startsWith(value);
     });
   }
+
   update() {
-    this.nodes_state.emit(this.tree.treeModel.nodes);
+    this.nodeState.emit(this.tree.treeModel.nodes);
   }
+
   getScrollContainer() {
-  return  document.getElementById('sidebar-content');
+
+    return document.getElementById('toc-container');
   }
+
   ngAfterViewInit() {
   }
-  }
+}

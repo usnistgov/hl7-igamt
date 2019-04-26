@@ -140,5 +140,4 @@ public interface SegmentService extends ResourceService {
 
 	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 
-	public List<Segment> findDisplayFormatByIds(Set<String> ids);
 }

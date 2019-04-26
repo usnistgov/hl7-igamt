@@ -1,6 +1,6 @@
-import { Action } from '@ngrx/store';
-import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
-import { IgListItem } from '../../../modules/ig/models/ig/ig-list-item.class';
+import {Action} from '@ngrx/store';
+import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
+import {IgListItem} from '../../../modules/ig/models/ig/ig-list-item.class';
 
 export enum IgListActionTypes {
   LoadIgList = '[IgList] Load Ig List Items',
@@ -15,34 +15,46 @@ export type IgListLoad = 'USER' | 'PUBLISHED' | 'ALL';
 
 export class LoadIgList implements Action {
   readonly type = IgListActionTypes.LoadIgList;
+
   constructor(readonly payload: {
     type: IgListLoad,
-  }) { }
+  }) {
+  }
 }
 
 export class UpdateIgList implements Action {
   readonly type = IgListActionTypes.UpdateIgList;
-  constructor(readonly payload: IgListItem[]) { }
+
+  constructor(readonly payload: IgListItem[]) {
+  }
 }
 
 export class DeleteIgListItemRequest implements Action {
   readonly type = IgListActionTypes.DeleteIgListItemRequest;
-  constructor(readonly id: string) { }
+
+  constructor(readonly id: string) {
+  }
 }
 
 export class DeleteIgListItemSuccess implements Action {
   readonly type = IgListActionTypes.DeleteIgListItemSuccess;
-  constructor(readonly id: string) { }
+
+  constructor(readonly id: string) {
+  }
 }
 
 export class SelectIgListViewType implements Action {
   readonly type = IgListActionTypes.SelectIgListViewType;
-  constructor(readonly viewType: IgListLoad) { }
+
+  constructor(readonly viewType: IgListLoad) {
+  }
 }
 
 export class SelectIgListSortOption implements Action {
   readonly type = IgListActionTypes.SelectIgListSortOption;
-  constructor(readonly sortOption: ISortOptions) { }
+
+  constructor(readonly sortOption: ISortOptions) {
+  }
 }
 
 export type IgListActions =

@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { passwordValidator } from '../../validators/password-validator';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {passwordValidator} from '../../validators/password-validator';
 
 @Component({
   selector: 'app-new-password-form',

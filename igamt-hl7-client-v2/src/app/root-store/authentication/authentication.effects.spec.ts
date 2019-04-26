@@ -1,8 +1,6 @@
-import { inject, TestBed } from '@angular/core/testing';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Observable } from 'rxjs';
+import {TestBed} from '@angular/core/testing';
 
-import { AuthenticationEffects } from './authentication.effects';
+import {AuthenticationEffects} from './authentication.effects';
 
 describe('AuthenticationEffects', () => {
   let effects: AuthenticationEffects;

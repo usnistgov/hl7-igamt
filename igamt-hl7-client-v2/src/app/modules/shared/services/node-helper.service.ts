@@ -1,32 +1,30 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {TreeModel, TreeNode} from 'angular-tree-component';
-import {UUID} from 'angular2-uuid';
+import {Guid} from 'guid-typescript';
 import * as _ from 'lodash';
-import {IDisplayElement} from '../../ig/models/ig/ig-document.class';
 import {Type} from '../constants/type.enum';
+import {IDisplayElement} from '../models/display-element.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class NodeHelperService {
 
-  constructor() {}
+  constructor() {
+  }
 
   cloneNode(treeNode: TreeNode) {
 
     const newData: IDisplayElement = _.cloneDeep(treeNode.data);
-    newData.id = UUID.UUID();
-    if (newData) {
-      newData.id = UUID.UUID();
-      newData.variableName = newData.variableName + '-copy';
-    }
+    newData.id = Guid.create().toString();
+    newData.variableName = newData.variableName + '-copy';
     this.changeIds(newData);
     treeNode.parent.data.children.push(newData);
   }
 
   changeIds(newData: IDisplayElement) {
-    newData.id = UUID.UUID();
-    if ( newData.children && newData.children.length ) {
+    newData.id = Guid.create().toString();
+    if (newData.children && newData.children.length) {
       for (const child of  newData.children) {
         this.changeIds(child);
       }
@@ -35,23 +33,24 @@ export class NodeHelperService {
 
   deleteSection(id, treeModel: TreeModel) {
     const node = treeModel.getNodeById(id);
-    if ( node ) {
+    if (node) {
       const parentNode = node.realParent ? node.realParent : node.treeModel.virtualRoot;
       _.remove(parentNode.data.children, (child: any) => {
         return child.id === node.id;
       });
 
-      if (node.parent &&  node.parent.data && node.parent.data.children.length === 0) {
+      if (node.parent && node.parent.data && node.parent.data.children.length === 0) {
         node.parent.data.hasChildren = false;
       }
     }
   }
+
   createNewNode(): IDisplayElement {
     return {
       description: '',
-      id: UUID.UUID(),
+      id: Guid.create().toString(),
       domainInfo: null,
-      differantial: false,
+      differential: false,
       variableName: 'New Section',
       children: [],
       type: Type.TEXT,
@@ -60,14 +59,14 @@ export class NodeHelperService {
       position: 0,
       isExpanded: true,
     };
-
   }
 
   addNode(node: TreeNode) {
-    if ( node.children ) {
+    if (node.children) {
       node.data.children.push(this.createNewNode());
     }
   }
+
   addNodeToRoot(tree: TreeModel) {
     tree.nodes.push(this.createNewNode());
   }

@@ -1,14 +1,12 @@
 import {Dictionary} from '@ngrx/entity';
 import {createSelector} from '@ngrx/store';
-import {
-  IContent,
-  IDisplayElement,
-  IgDocument,
-  IRegistry,
-  IResource,
-} from '../../../modules/ig/models/ig/ig-document.class';
+import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
 import {Scope} from '../../../modules/shared/constants/scope.enum';
 import {Type} from '../../../modules/shared/constants/type.enum';
+import {IContent} from '../../../modules/shared/models/content.interface';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
+import {IRegistry} from '../../../modules/shared/models/registry.interface';
+import {IResource} from '../../../modules/shared/models/resource.interface';
 import {selectIgEdit} from '../ig.reducer';
 import {ITitleBarMetadata} from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
 import {igElementAdapter, IState} from './ig-edit.reducer';
@@ -119,32 +117,32 @@ export const selectMessagesEntites = createSelector(
 export const selectValueSetsNodes = createSelector(
   selectValueSetsEntities,
   selectValueSetRegistry,
-  (messages: Dictionary<IDisplayElement> , registry: IRegistry ) => {
-    return registry.children.sort((a: IResource, b: IResource ) => a.position - b.position).map((link) => messages[link.id]);
+  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
   },
 );
 
 export const selectSegmentsNodes = createSelector(
   selectSegmentsEntites,
   selectSegmentRegistry,
-  (messages: Dictionary<IDisplayElement> , registry: IRegistry ) => {
-    return registry.children.sort((a: IResource, b: IResource ) => a.position - b.position).map((link) => messages[link.id]);
+  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
   },
 );
 
 export const selectDatatypesNodes = createSelector(
   selectDatatypesEntites,
   selectDatatypeRegistry,
-  (messages: Dictionary<IDisplayElement> , registry: IRegistry ) => {
-    return registry.children.sort((a: IResource, b: IResource ) => a.position - b.position).map((link) => messages[link.id]);
+  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
   },
 );
 
 export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
-  (messages: Dictionary<IDisplayElement> , registry: IRegistry ) => {
-    return registry.children.sort((a: IResource, b: IResource ) => a.position - b.position).map((link) => messages[link.id]);
+  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
   },
 );
 
@@ -153,7 +151,7 @@ function initializeIDisplayElement(section: IContent) {
     description: section.description,
     id: section.id,
     domainInfo: null,
-    differantial: false,
+    differential: false,
     variableName: section.label,
     children: [],
     type: section.type,
@@ -164,11 +162,11 @@ function initializeIDisplayElement(section: IContent) {
   };
 }
 
-function sort(children: IDisplayElement[] ) {
-  return children.sort((a: IDisplayElement, b: IDisplayElement ) => a.position - b.position);
+function sort(children: IDisplayElement[]) {
+  return children.sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
 }
 
-function createNarativeSection(section: IContent): IDisplayElement  {
+function createNarativeSection(section: IContent): IDisplayElement {
   const ret = initializeIDisplayElement(section);
   if (section.children && section.children.length > 0) {
     for (const child of section.children) {
@@ -178,6 +176,7 @@ function createNarativeSection(section: IContent): IDisplayElement  {
   ret.children = sort(ret.children);
   return ret;
 }
+
 function createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
   const ret = initializeIDisplayElement(section);
   if (section.children && section.children.length > 0) {
@@ -208,12 +207,13 @@ export function buildTree(structure: IContent[], messageNodes: IDisplayElement[]
   for (const section of structure) {
     switch (section.type) {
       case Type.TEXT:
-            ret.push(createNarativeSection(section));
-            break;
+        ret.push(createNarativeSection(section));
+        break;
       case Type.PROFILE:
-            ret.push(createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes));
-            break;
-      default: break;
+        ret.push(createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes));
+        break;
+      default:
+        break;
     }
   }
   return ret;

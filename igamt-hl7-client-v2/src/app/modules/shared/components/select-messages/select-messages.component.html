@@ -1,108 +1,115 @@
 <div class="select-message-container">
-    <p-table #dt1 [value]="table" dataKey="data.name"  scrollable="true"  scrollHeight="100%" [style]="{'overflow':'hidden', 'grid-area': 'loaded'}">
-      <ng-template pTemplate="caption">
+  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" dataKey="data.name" scrollHeight="100%"
+           scrollable="true">
+    <ng-template pTemplate="caption">
 
 
-        <app-select-versions [hl7Versions]=" hl7Versions" (selected)="select($event)"></app-select-versions>
+      <app-select-versions (selected)="select($event)" [hl7Versions]=" hl7Versions"></app-select-versions>
 
-        <div style="text-align: left">
-          <div class="input-group" style="margin-left: 10px;">
-            <div class="input-group-prepend" style="height: 35px;">
-              <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
-            </div>
-            <input type="text" style="background-color: #f0f0f0; text-align: center; height: 35px;" class="form-control"  (input)="filterTable($event.target.value)"
-                   placeholder="Filter" required>
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
           </div>
+          <input (input)="filterTable($event.target.value)" class="form-control" placeholder="Filter"
+                 required
+                 style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
         </div>
-      </ng-template>
-      <ng-template pTemplate="header" let-columns>
-        <tr>
-          <th style="width:100px">
-            Message Structure
-          </th>
-          <th>
-            Description
-          </th>
-          <th>
-            Message Event
-          </th>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="body"  let-node="node" let-rowNode let-expanded="expanded" let-rowData let-columns="columns" let-index="rowIndex">
-        <tr>
-          <td style="width:100px">
-            {{rowData.data.name}}
-          </td>
+      </div>
+    </ng-template>
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th style="width:100px">
+          Message Structure
+        </th>
+        <th>
+          Description
+        </th>
+        <th>
+          Message Event
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData let-rowNode
+                 pTemplate="body">
+      <tr>
+        <td style="width:100px">
+          {{rowData.data.name}}
+        </td>
 
 
-          <td>
-            {{rowData.data.description}}
-          </td>
+        <td>
+          {{rowData.data.description}}
+        </td>
 
-          <td>
+        <td>
 
-            <ng-container  *ngFor="let i of rowData.children">
-              <label class="checkbox-inline" style="margin-left: 10px;"> <input  type="checkbox" [checked]="isSelected(i.data)" (change)="toggleEvent(i.data)"/>
-                {{i.data.name}}</label>
-            </ng-container>
+          <ng-container *ngFor="let i of rowData.children">
+            <label class="checkbox-inline" style="margin-left: 10px;"> <input (change)="toggleEvent(i.data)"
+                                                                              [checked]="isSelected(i.data)"
+                                                                              type="checkbox"/>
+              {{i.data.name}}</label>
+          </ng-container>
 
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
-    <p-table #dt [value]="selectedEvents" dataKey="data.name" [globalFilterFields]="['data.name', 'hl7Version', 'name']" scrollable="true" scrollHeight="100%"  [style]="{'overflow':'hidden', 'grid-area': 'loaded'}">
-        <ng-template pTemplate="caption">
-          <div style="text-align: left">
-            <label> Selected Conformance Profiles </label>
-            <div class="input-group" style="margin-left: 10px;">
-              <div class="input-group-prepend" style="height: 35px;">
-                <span class="input-group-text"><i class="fa fa-filter"></i></span>
-              </div>
-              <input type="text" style="background-color: #f0f0f0; text-align: center; height: 35px;" class="form-control" (input)="dt.filterGlobal($event.target.value, 'contains')" placeholder="Filter" required>
-            </div>
+  <p-table #dt [globalFilterFields]="['data.name', 'hl7Version', 'name']" [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="selectedEvents"
+           dataKey="data.name" scrollHeight="100%" scrollable="true">
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <label> Selected Conformance Profiles </label>
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text"><i class="fa fa-filter"></i></span>
           </div>
-        </ng-template>
-        <ng-template pTemplate="header" let-columns>
-          <tr>
-            <th style="width:2.5em"></th>
-            <th>
-              Message Structure
-            </th>
-            <th>
-              Message Event
-            </th>
-            <th>
-              Hl7 Version
-            </th>
-            <th>
-              Actions
-            </th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body"  let-node="node" let-rowData let-columns="columns" let-index="rowIndex">
-          <tr [pReorderableRow]="index">
-            <td style="width:2.5em">
-              <i class="fa fa-bars" pReorderableRowHandle></i>
-            </td>
-            <td>
-              {{rowData.parentStructId}}
-            </td>
-            <td>
-              {{rowData.name}}
-            </td>
+          <input (input)="dt.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+                 required style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th style="width:2.5em"></th>
+        <th>
+          Message Structure
+        </th>
+        <th>
+          Message Event
+        </th>
+        <th>
+          Hl7 Version
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-index="rowIndex" let-node="node" let-rowData pTemplate="body">
+      <tr [pReorderableRow]="index">
+        <td style="width:2.5em">
+          <i class="fa fa-bars" pReorderableRowHandle></i>
+        </td>
+        <td>
+          {{rowData.parentStructId}}
+        </td>
+        <td>
+          {{rowData.name}}
+        </td>
 
-            <td>
-              {{rowData.hl7Version}}
-            </td>
-            <td>
-              <button class="btn btn-sm btn-danger" (click)="unselect(rowData)">
-                <i [class]="'fa fa-remove'"></i>
-              </button>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
+        <td>
+          {{rowData.hl7Version}}
+        </td>
+        <td>
+          <button (click)="unselect(rowData)" class="btn btn-sm btn-danger">
+            <i [class]="'fa fa-remove'"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
 
 </div>
 

@@ -1,15 +1,14 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
-import { _throw } from 'rxjs-compat/observable/throw';
-import { catchError, concatMap, map, mergeMap } from 'rxjs/operators';
-import { Message } from 'src/app/modules/core/models/message/message.class';
-import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import { TurnOnLoader } from '../loader/loader.actions';
-import { User } from './../../modules/core/models/user/user.class';
-import { AuthenticationService } from './../../modules/core/services/authentication.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Store} from '@ngrx/store';
+import {of} from 'rxjs';
+import {catchError, concatMap, map, mergeMap} from 'rxjs/operators';
+import {Message} from 'src/app/modules/core/models/message/message.class';
+import {RxjsStoreHelperService} from 'src/app/modules/shared/services/rxjs-store-helper.service';
+import {TurnOnLoader} from '../loader/loader.actions';
+import {User} from './../../modules/core/models/user/user.class';
+import {AuthenticationService} from './../../modules/core/services/authentication.service';
 import {
   AuthenticationActions,
   AuthenticationActionTypes,
@@ -22,19 +21,13 @@ import {
   ResetPasswordRequestFailure,
   ResetPasswordRequestSuccess,
   UpdateAuthStatus,
-  UpdatePasswordRequest, UpdatePasswordRequestFailure,
+  UpdatePasswordRequest,
+  UpdatePasswordRequestFailure,
   UpdatePasswordRequestSuccess,
 } from './authentication.actions';
 
 @Injectable()
 export class AuthenticationEffects {
-
-  constructor(
-    private actions$: Actions<AuthenticationActions>,
-    private store: Store<any>,
-    private authService: AuthenticationService,
-    private helper: RxjsStoreHelperService,
-  ) { }
 
   // Triggered when a login attempt is made
   @Effect()
@@ -54,7 +47,6 @@ export class AuthenticationEffects {
       );
     }),
   );
-
   // Triggered when the application is bootstraped to check if user is already logged in (through Cookies)
   @Effect()
   checkAuthStatus$ = this.actions$.pipe(
@@ -75,7 +67,6 @@ export class AuthenticationEffects {
       }));
     }),
   );
-
   // Triggered when the user requests a logout
   @Effect()
   logoutRequest$ = this.actions$.pipe(
@@ -87,7 +78,6 @@ export class AuthenticationEffects {
       return new LogoutSuccess();
     }),
   );
-
   // Triggered when the logout is successful
   @Effect()
   logoutSuccess$ = this.actions$.pipe(
@@ -99,7 +89,6 @@ export class AuthenticationEffects {
       }),
     ),
   );
-
   // Triggered when a reset password request is made
   @Effect()
   resetPasswordRequest$ = this.actions$.pipe(
@@ -118,7 +107,6 @@ export class AuthenticationEffects {
       );
     }),
   );
-
   // Triggered when a update password request is made
   @Effect()
   updatePasswordRequest$ = this.actions$.pipe(
@@ -137,9 +125,6 @@ export class AuthenticationEffects {
       );
     }),
   );
-
-  // ---------------- LOGIN SUCCESS/FAILURE ----------------
-
   @Effect()
   loginSuccess$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.LoginSuccess),
@@ -157,6 +142,7 @@ export class AuthenticationEffects {
     }),
   );
 
+  // ---------------- LOGIN SUCCESS/FAILURE ----------------
   @Effect()
   loginFailure$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.LoginFailure),
@@ -176,9 +162,6 @@ export class AuthenticationEffects {
       },
     }),
   );
-
-  // ---------------- UPDATE PASSWORD SUCCESS/FAILURE ----------------
-
   @Effect()
   updatePasswordRequestFailure$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.UpdatePasswordRequestFailure),
@@ -191,6 +174,7 @@ export class AuthenticationEffects {
     }),
   );
 
+  // ---------------- UPDATE PASSWORD SUCCESS/FAILURE ----------------
   @Effect()
   updatePasswordRequestSuccess$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.UpdatePasswordRequestSuccess),
@@ -202,9 +186,6 @@ export class AuthenticationEffects {
       },
     }),
   );
-
-  // ---------------- RESET PASSWORD SUCCESS/FAILURE ----------------
-
   @Effect()
   resetPasswordRequestFailure$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.ResetPasswordRequestFailure),
@@ -217,6 +198,7 @@ export class AuthenticationEffects {
     }),
   );
 
+  // ---------------- RESET PASSWORD SUCCESS/FAILURE ----------------
   @Effect()
   resetPasswordRequestSuccess$ = this.actions$.pipe(
     ofType(AuthenticationActionTypes.ResetPasswordRequestSuccess),
@@ -228,5 +210,13 @@ export class AuthenticationEffects {
       },
     }),
   );
+
+  constructor(
+    private actions$: Actions<AuthenticationActions>,
+    private store: Store<any>,
+    private authService: AuthenticationService,
+    private helper: RxjsStoreHelperService,
+  ) {
+  }
 
 }

@@ -1,19 +1,21 @@
 import {createEntityAdapter, EntityState} from '@ngrx/entity';
-import {IContent, IDisplayElement, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
+import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
 import {Type} from '../../../modules/shared/constants/type.enum';
+import {IContent} from '../../../modules/shared/models/content.interface';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
 import {IgEditActions, IgEditActionTypes} from './ig-edit.actions';
 
 export interface IState {
   document: IgDocument;
-  segments:  EntityState<IDisplayElement>;
+  segments: EntityState<IDisplayElement>;
   valueSets: EntityState<IDisplayElement>;
   datatypes: EntityState<IDisplayElement>;
-  messages:  EntityState<IDisplayElement>;
+  messages: EntityState<IDisplayElement>;
 }
 
 export const initialState: IState = {
   document: null,
-  segments:  {
+  segments: {
     entities: {},
     ids: [],
   },
@@ -21,11 +23,11 @@ export const initialState: IState = {
     entities: {},
     ids: [],
   },
-  datatypes:  {
+  datatypes: {
     entities: {},
     ids: [],
   },
-  messages:   {
+  messages: {
     entities: {},
     ids: [],
   },
@@ -52,7 +54,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       };
     case IgEditActionTypes.UpdateSections:
       return {
-        ... state, document: {... state.document, content: updateSections(action.payload)},
+        ...state, document: {...state.document, content: updateSections(action.payload)},
       };
 
     default:
@@ -67,7 +69,7 @@ function updatePositions(children: IContent[]) {
 }
 
 function createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number): IContent {
-  const ret =   {
+  const ret = {
     id: iDisplayElement.id,
     description: iDisplayElement.description,
     type: iDisplayElement.type,
@@ -75,24 +77,24 @@ function createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number):
     label: iDisplayElement.variableName,
     children: [],
   };
-  if ( iDisplayElement.type === Type.TEXT || iDisplayElement.type === Type.PROFILE ) {
-      ret.children = updateSections(iDisplayElement.children);
-    }
-  return ret;
-}
-
-export  function updateSections(children: IDisplayElement[]) {
-  const ret: IContent[] = [];
-  for (let i = 0; i < children.length ;  i++) {
-      ret.push(createSectionFromIDisplay(children[i], i));
+  if (iDisplayElement.type === Type.TEXT || iDisplayElement.type === Type.PROFILE) {
+    ret.children = updateSections(iDisplayElement.children);
   }
   return ret;
 }
 
-export function removeNode(children: IContent[] , node: IDisplayElement) {
+export function updateSections(children: IDisplayElement[]) {
+  const ret: IContent[] = [];
+  for (let i = 0; i < children.length; i++) {
+    ret.push(createSectionFromIDisplay(children[i], i));
+  }
+  return ret;
+}
+
+export function removeNode(children: IContent[], node: IDisplayElement) {
 
   for (let i = 0; i < children.length; i++) {
-    if ( node.id === children[i].id ) {
+    if (node.id === children[i].id) {
       children.splice(i, 1);
       updatePositions(children);
       return true;

@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { LoginPageRequest } from 'src/app/root-store/authentication/authentication.actions';
-import { ClearAll } from 'src/app/root-store/page-messages/page-messages.actions';
-import { LoginRequest } from './../../../../root-store/authentication/authentication.actions';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {LoginPageRequest} from 'src/app/root-store/authentication/authentication.actions';
+import {ClearAll} from 'src/app/root-store/page-messages/page-messages.actions';
+import {LoginRequest} from './../../../../root-store/authentication/authentication.actions';
 import * as fromAuth from './../../../../root-store/authentication/authentication.reducer';
 
 @Component({
@@ -14,6 +14,7 @@ import * as fromAuth from './../../../../root-store/authentication/authenticatio
 export class LoginComponent implements OnInit {
 
   goTo: string;
+
   constructor(private store: Store<fromAuth.IState>, private router: Router, private route: ActivatedRoute) {
     this.goTo = 'home';
   }

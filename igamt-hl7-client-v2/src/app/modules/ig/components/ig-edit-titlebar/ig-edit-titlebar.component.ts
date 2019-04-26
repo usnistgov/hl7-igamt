@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import {IDomainInfo} from '../../models/ig/ig-document.class';
+import {Component, Input, OnInit} from '@angular/core';
+import {IDomainInfo} from '../../../shared/models/domain-info.interface';
 
 @Component({
   selector: 'app-ig-edit-titlebar',
@@ -9,7 +9,9 @@ import {IDomainInfo} from '../../models/ig/ig-document.class';
 export class IgEditTitlebarComponent implements OnInit {
 
   @Input() metadata: ITitleBarMetadata;
-  constructor() { }
+
+  constructor() {
+  }
 
   ngOnInit() {
   }

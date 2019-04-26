@@ -1,6 +1,6 @@
 <nav class="navbar toolbar fixed-top">
   <div style="position: relative;">
-    <img src="../../../../../assets/nist_logo.png" height="45px">
+    <img height="45px" src="../../../../../assets/nist_logo.png">
     <a class="navbar-brand toolbar-name"> Implementation Guide Authoring and Management Tool
       <span class="toolname-abbrv">(IGAMT)</span>
     </a>
@@ -10,22 +10,22 @@
       <li class="nav-item" routerLink="home" routerLinkActive="active">
         <a class="nav-link">Home</a>
       </li>
-      <li class="nav-item" [ngClass]="{'active': isIG | async }" ngbDropdown>
+      <li [ngClass]="{'active': isIG | async }" class="nav-item" ngbDropdown>
         <span class="nav-link" ngbDropdownToggle>IG Documents</span>
         <div ngbDropdownMenu>
-          <button ngbDropdownItem [routerLink]="[ '/ig/create']" routerLinkActive="active-dropdown">
+          <button [routerLink]="[ '/ig/create']" ngbDropdownItem routerLinkActive="active-dropdown">
             Create new IG document
           </button>
-          <button [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'USER' }" routerLinkActive="active-dropdown"
-            ngbDropdownItem>
+          <button [queryParams]="{ type : 'USER' }" [routerLink]="[ '/ig/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
             User's IG Documents
           </button>
-          <button [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'PUBLISHED' }" routerLinkActive="active-dropdown"
-            ngbDropdownItem>
+          <button [queryParams]="{ type : 'PUBLISHED' }" [routerLink]="[ '/ig/list']" ngbDropdownItem
+                  routerLinkActive="active-dropdown">
             Published IG Documents
           </button>
-          <button *ngIf="isAdmin | async" [routerLink]="[ '/ig/list']" [queryParams]="{ type : 'ALL' }"
-            routerLinkActive="active-dropdown" ngbDropdownItem>
+          <button *ngIf="isAdmin | async" [queryParams]="{ type : 'ALL' }" [routerLink]="[ '/ig/list']"
+                  ngbDropdownItem routerLinkActive="active-dropdown">
             All IG Documents
           </button>
         </div>
@@ -53,6 +53,6 @@
     <app-user-management-header></app-user-management-header>
   </nav>
 </nav>
-<div class="nav-progress-bar fixed-top" *ngIf="isLoading | async">
+<div *ngIf="isLoading | async" class="nav-progress-bar fixed-top">
   <p-progressBar mode="indeterminate"></p-progressBar>
 </div>

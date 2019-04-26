@@ -1,7 +1,8 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Action } from '@ngrx/store';
-import {IDisplayElement, IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Action} from '@ngrx/store';
+import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
 import {IAddNodes, IDeleteNode} from '../../../modules/ig/models/toc/toc-operation.class';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
@@ -14,38 +15,50 @@ export enum IgEditActionTypes {
 
 export class IgEditResolverLoad implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoad;
+
   constructor(readonly id: string) {
   }
 }
 
 export class IgEditResolverLoadSuccess implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadSuccess;
+
   constructor(readonly igInfo: IGDisplayInfo) {
   }
 }
 
 export class IgEditResolverLoadFailure implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadFailure;
+
   constructor(readonly error: HttpErrorResponse) {
   }
 }
 
 export class UpdateSections implements Action {
   readonly type = IgEditActionTypes.UpdateSections;
+
   constructor(readonly payload: IDisplayElement[]) {
   }
 }
 
 export class IgEditTocAddNodes implements Action {
   readonly type = IgEditActionTypes.IgEditTocAddNodes;
+
   constructor(readonly payload: IAddNodes) {
   }
 }
 
 export class IgEditDeleteNode implements Action {
   readonly type = IgEditActionTypes.IgEditDeleteNode;
+
   constructor(readonly payload: IDeleteNode) {
   }
 }
 
-export type IgEditActions = IgEditResolverLoad | IgEditResolverLoadSuccess | IgEditResolverLoadFailure |UpdateSections |IgEditTocAddNodes | IgEditDeleteNode;
+export type IgEditActions =
+  IgEditResolverLoad
+  | IgEditResolverLoadSuccess
+  | IgEditResolverLoadFailure
+  | UpdateSections
+  | IgEditTocAddNodes
+  | IgEditDeleteNode;

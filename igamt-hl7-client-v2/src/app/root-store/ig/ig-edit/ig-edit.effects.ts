@@ -1,13 +1,13 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { of } from 'rxjs';
-import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
-import { MessageService } from 'src/app/modules/core/services/message.service';
-import { IgService } from 'src/app/modules/ig/services/ig.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {Store} from '@ngrx/store';
+import {of} from 'rxjs';
+import {catchError, flatMap, map, switchMap} from 'rxjs/operators';
+import {MessageService} from 'src/app/modules/core/services/message.service';
+import {IgService} from 'src/app/modules/ig/services/ig.service';
 import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
-import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
+import {TurnOffLoader, TurnOnLoader} from '../../loader/loader.actions';
 import {
   IgEditActions,
   IgEditActionTypes,
@@ -57,6 +57,7 @@ export class IgEditEffects {
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
-  ) { }
+  ) {
+  }
 
 }
