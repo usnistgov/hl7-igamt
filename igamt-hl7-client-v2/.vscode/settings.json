@@ -1,4 +1,8 @@
 {
   "editor.formatOnSave": true,
-  "prettier.singleQuote": true
+  "prettier.singleQuote": true,
+  "editor.fontLigatures": true,
+  "editor.fontFamily": "Fira Code",
+  "editor.fontSize": 13,
+  "editor.defaultFormatter": "EditorConfig.EditorConfig"
 }

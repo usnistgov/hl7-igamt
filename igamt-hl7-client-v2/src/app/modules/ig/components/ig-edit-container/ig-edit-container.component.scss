@@ -33,11 +33,10 @@
   display: grid;
   grid-gap: 2px;
   color: #444;
-  height: 100%;
   background-color: #d6d6d6e3;
   grid-template-columns: [sidebar] 2fr [container] 8fr;
   grid-template-rows: [page-container-row] auto;
-
+  overflow: hidden;
 }
 
 .container-section {
@@ -47,17 +46,17 @@
   display: grid;
   grid-gap: 2px;
   color: #444;
-  height: 100%;
   background-color: #d6d6d6e3;
   grid-template-columns: 1fr;
   grid-template-rows: [toolbar] 50px  [titlebar] 50px [page-container-content] auto;
+  overflow: hidden;
 }
 
 .sidebar {
   grid-column: sidebar;
   grid-row: page-container-row;
   background-color: #d6d6d6e3;
-
+  overflow: hidden;
 }
 
 .titlebar-content {
