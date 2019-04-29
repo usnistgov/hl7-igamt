@@ -849,7 +849,7 @@ public IGContentMap collectData(Ig ig) {
       Datatype d = this.datatypeService.findById(link.getId());
       if(d != null){
         DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-        datatypeDataModel.putModel(d, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         datatypes.add(datatypeDataModel);
       }else throw new Exception("Datatype is missing.");
     }
@@ -858,7 +858,7 @@ public IGContentMap collectData(Ig ig) {
       Segment s = this.segmentService.findById(link.getId());
       if(s != null){
         SegmentDataModel segmentDataModel = new SegmentDataModel();
-        segmentDataModel.putModel(s, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
         segmentDataModel.setCoConstraintTable(coConstraintTable);
         segments.add(segmentDataModel);
@@ -869,7 +869,7 @@ public IGContentMap collectData(Ig ig) {
       ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
       if(cp != null){
         ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
         conformanceProfiles.add(conformanceProfileDataModel);
       }else throw new Exception("ConformanceProfile is missing.");
     }

@@ -25,6 +25,8 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 
 /**
@@ -34,13 +36,15 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 public class SegmentDataModel {
   private Segment model;
 
-  private Set<ConformanceStatement> conformanceStatementMap = new HashSet<ConformanceStatement>();
+  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
   private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
   private Map<String, Set<Comment>> commentMap = new HashMap<String, Set<Comment>>();
   private Map<String, String> constantValueMap = new HashMap<String, String>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
   private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
   private CoConstraintTable coConstraintTable = new CoConstraintTable();
+  
+  private Set<FieldDataModel> fieldDataModels = new HashSet<FieldDataModel>();
 
   public Segment getModel() {
     return model;
@@ -48,15 +52,6 @@ public class SegmentDataModel {
 
   public void setModel(Segment model) {
     this.model = model;
-  }
-
-  public Set<ConformanceStatement> getConformanceStatementMap() {
-    return conformanceStatementMap;
-  }
-
-  public void setConformanceStatementMap(
-      Set<ConformanceStatement> conformanceStatementMap) {
-    this.conformanceStatementMap = conformanceStatementMap;
   }
 
   public Map<String, Predicate> getPredicateMap() {
@@ -113,19 +108,39 @@ public class SegmentDataModel {
    * @param conformanceStatementRepository
    * @param predicateRepository
    */
-  public void putModel(Segment s, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+  public void putModel(Segment s, DatatypeService datatypeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     this.model = s;
     
     if (s.getBinding() != null){
       if(s.getBinding().getConformanceStatementIds() != null){
         for(String csId: s.getBinding().getConformanceStatementIds()){
-          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatementMap.add(cs));
+          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
         }
       }
     }
     
     if (s.getBinding().getChildren() != null) {
       this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    }
+    
+    if(s.getChildren() != null) {
+      s.getChildren().forEach(f -> {
+        String key = f.getPosition() + "";
+        if(f.getRef() != null && f.getRef().getId() != null){
+          Datatype childDt = datatypeService.findById(f.getRef().getId());
+          if(childDt != null) {
+            this.fieldDataModels.add(new FieldDataModel(
+                f, 
+                this.predicateMap.get(key), 
+                this.commentMap.get(key),
+                this.constantValueMap.get(key),
+                this.singleCodeMap.get(key),
+                this.valuesetMap.get(key),
+                new DatatypeBindingDataModel(childDt)
+                ));    
+          }
+        }
+      });
     }
   }
 
@@ -180,5 +195,21 @@ public class SegmentDataModel {
       }
     }
     
+  }
+
+  public Set<ConformanceStatement> getConformanceStatements() {
+    return conformanceStatements;
+  }
+
+  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+    this.conformanceStatements = conformanceStatements;
+  }
+
+  public Set<FieldDataModel> getFieldDataModels() {
+    return fieldDataModels;
+  }
+
+  public void setFieldDataModels(Set<FieldDataModel> fieldDataModels) {
+    this.fieldDataModels = fieldDataModels;
   }
 }

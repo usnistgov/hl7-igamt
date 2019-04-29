@@ -25,6 +25,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 /**
  * @author jungyubw
@@ -38,7 +39,11 @@ public class ConformanceProfileDataModel {
   private Map<String, Set<Comment>> commentMap = new HashMap<String, Set<Comment>>();
   private Map<String, String> constantValueMap = new HashMap<String, String>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
-  private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
+  private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
+      new HashMap<String, Set<ValuesetBindingDataModel>>();
+
+  private Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
+      new HashSet<SegmentRefOrGroupDataModel>();
 
   public ConformanceProfile getModel() {
     return model;
@@ -52,8 +57,7 @@ public class ConformanceProfileDataModel {
     return conformanceStatementMap;
   }
 
-  public void setConformanceStatementMap(
-      Set<ConformanceStatement>conformanceStatementMap) {
+  public void setConformanceStatementMap(Set<ConformanceStatement> conformanceStatementMap) {
     this.conformanceStatementMap = conformanceStatementMap;
   }
 
@@ -104,65 +108,89 @@ public class ConformanceProfileDataModel {
   public void putModel(ConformanceProfile cp,
       Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,
       ConformanceStatementRepository conformanceStatementRepository,
-      PredicateRepository predicateRepository) {
+      PredicateRepository predicateRepository, SegmentService segmentService) {
     this.model = cp;
-    
-    if (cp.getBinding() != null){
-      if(cp.getBinding().getConformanceStatementIds() != null){
-        for(String csId: cp.getBinding().getConformanceStatementIds()){
-          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatementMap.add(cs));
+
+    if (cp.getBinding() != null) {
+      if (cp.getBinding().getConformanceStatementIds() != null) {
+        for (String csId : cp.getBinding().getConformanceStatementIds()) {
+          conformanceStatementRepository.findById(csId)
+              .ifPresent(cs -> this.conformanceStatementMap.add(cs));
         }
       }
     }
-    
+
     if (cp.getBinding().getChildren() != null) {
-      this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+      this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
+          valuesetBindingDataModelMap);
     }
+
+    if (cp.getChildren() != null) {
+      cp.getChildren().forEach(child -> {
+        this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, null,
+            this.predicateMap, this.commentMap, segmentService));
+      });
+    }
+
   }
 
-  private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+  private void popPathBinding(Set<StructureElementBinding> sebs, String path,
+      PredicateRepository predicateRepository,
+      Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
     for (StructureElementBinding seb : sebs) {
       String key;
-      if(path == null){
+      if (path == null) {
         key = seb.getLocationInfo().getPosition() + "";
-      }else {
+      } else {
         key = path + "." + seb.getLocationInfo().getPosition();
       }
-      
-      if(seb.getComments() != null && seb.getComments().size() > 0){
+
+      if (seb.getComments() != null && seb.getComments().size() > 0) {
         this.commentMap.put(key, seb.getComments());
       }
-      
-      if(seb.getPredicateId() != null){
-        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+
+      if (seb.getPredicateId() != null) {
+        predicateRepository.findById(seb.getPredicateId())
+            .ifPresent(cp -> this.predicateMap.put(key, cp));
       }
-      
-      if(seb.getConstantValue() != null){
+
+      if (seb.getConstantValue() != null) {
         this.constantValueMap.put(key, seb.getConstantValue());
       }
-      
-      if(seb.getExternalSingleCode() != null){
+
+      if (seb.getExternalSingleCode() != null) {
         this.singleCodeMap.put(key, seb.getExternalSingleCode());
       }
-      
-      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+
+      if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {
         Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for(ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if(valuesetBindingDataModel != null) {
+        for (ValuesetBinding vb : seb.getValuesetBindings()) {
+          ValuesetBindingDataModel valuesetBindingDataModel =
+              valuesetBindingDataModelMap.get(vb.getValuesetId());
+          if (valuesetBindingDataModel != null) {
             valuesetBindingDataModel.setValuesetBinding(vb);
             vbdm.add(valuesetBindingDataModel);
           }
         }
-        
-        if(vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);          
+
+        if (vbdm != null && vbdm.size() > 0) {
+          this.valuesetMap.put(key, vbdm);
         }
       }
-      
+
       if (seb.getChildren() != null) {
-        this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+        this.popPathBinding(seb.getChildren(), key, predicateRepository,
+            valuesetBindingDataModelMap);
       }
     }
+  }
+
+  public Set<SegmentRefOrGroupDataModel> getSegmentRefOrGroupDataModels() {
+    return segmentRefOrGroupDataModels;
+  }
+
+  public void setSegmentRefOrGroupDataModels(
+      Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels) {
+    this.segmentRefOrGroupDataModels = segmentRefOrGroupDataModels;
   }
 }
