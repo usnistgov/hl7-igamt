@@ -1,3 +1,7 @@
+.toc-container{
+  padding-bottom: 8px;
+  display: grid;
+}
 .node-content-wrapper, .tree-children {
   position: relative;
 }
@@ -27,8 +31,8 @@
 .tree-children::after {
   border-left: 1px solid lightgrey;
   height: 100%;
-  top: -15px;
-  left: -15px;
+  top: 0px;
+  left: 0px;
 }
 
 tree-node:last-child > .tree-node > .tree-children::after {

@@ -33,7 +33,18 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   update($event: IDisplayElement[]) {
-    console.log($event);
     this.store.dispatch(new UpdateSections($event));
+  }
+
+  addSection() {
+    this.toc.addSectionToIG();
+  }
+
+  collapseAll() {
+    this.toc.collapseAll();
+  }
+
+  expandAll() {
+    this.toc.expandAll();
   }
 }

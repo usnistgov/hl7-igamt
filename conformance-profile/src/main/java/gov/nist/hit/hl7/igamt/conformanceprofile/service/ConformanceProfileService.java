@@ -133,5 +133,4 @@ public interface ConformanceProfileService {
   
   public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
 
-  public List<ConformanceProfile> findDisplayFormatByIds(Set<String> ids);
 }

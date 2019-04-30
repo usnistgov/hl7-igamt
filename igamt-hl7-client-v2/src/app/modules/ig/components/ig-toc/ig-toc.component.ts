@@ -5,6 +5,7 @@ import {ContextMenuComponent} from 'ngx-contextmenu';
 import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {NodeHelperService} from '../../../shared/services/node-helper.service';
+import {IClickInfo} from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
@@ -42,7 +43,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
             if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
               this.update();
-
             }
           },
         },
@@ -69,6 +69,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   addSectionToIG() {
     this.nodeHelperService.addNodeToRoot(this.tree.treeModel);
+    this.update();
   }
 
   copySection(node) {
@@ -156,4 +157,15 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   }
 
+  expandAll() {
+    this.tree.treeModel.expandAll();
+  }
+
+  collapseAll() {
+    this.tree.treeModel.collapseAll();
+  }
+
+  select($event: IClickInfo) {
+    console.log($event);
+  }
 }
