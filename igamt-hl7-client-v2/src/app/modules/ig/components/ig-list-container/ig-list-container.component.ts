@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map, withLatestFrom } from 'rxjs/operators';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material/dialog';
+import {ActivatedRoute, Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {map, withLatestFrom} from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import {
   DeleteIgListItemRequest,
@@ -14,12 +14,12 @@ import {
 } from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
-import { IgListItem } from '../../models/ig/ig-list-item.class';
-import { IgService } from '../../services/ig.service';
-import { Message } from './../../../core/models/message/message.class';
-import { MessageService } from './../../../core/services/message.service';
-import { ConfirmDialogComponent } from './../../../shared/components/confirm-dialog/confirm-dialog.component';
-import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.component';
+import {IgListItem} from '../../models/ig/ig-list-item.class';
+import {IgService} from '../../services/ig.service';
+import {Message} from './../../../core/models/message/message.class';
+import {MessageService} from './../../../core/services/message.service';
+import {ConfirmDialogComponent} from './../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {IgListItemControl} from './../ig-list-item-card/ig-list-item-card.component';
 
 @Component({
   selector: 'app-ig-list-container',
@@ -52,7 +52,7 @@ export class IgListContainerComponent implements OnInit {
     private ig: IgService) {
 
     // Store Selectors
-    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: this.filter });
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, {filter: this.filter});
     this.viewType = this.store.select(fromIgList.selectViewType);
     this.isAdmin = this.store.select(fromAuth.selectIsAdmin);
     this.username = this.store.select(fromAuth.selectUsername);
@@ -175,7 +175,7 @@ export class IgListContainerComponent implements OnInit {
 
   // On Filter Text Changed
   filterTextChanged(text: string) {
-    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, { filter: text });
+    this.listItems = this.store.select(fromIgList.selectIgListViewFilteredAndSorted, {filter: text});
   }
 
   // On Sort Property Changed

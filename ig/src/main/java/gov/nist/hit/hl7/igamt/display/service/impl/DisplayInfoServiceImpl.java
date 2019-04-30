@@ -1,0 +1,169 @@
+package gov.nist.hit.hl7.igamt.display.service.impl;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.registry.ConformanceProfileRegistry;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.domain.registry.DatatypeRegistry;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
+import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
+import gov.nist.hit.hl7.igamt.ig.domain.Ig;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
+import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+
+@Service
+public class DisplayInfoServiceImpl implements DisplayInfoService {
+	
+	  @Autowired
+	  ConformanceProfileService conformanceProfileService;
+
+	  @Autowired
+	  DatatypeService datatypeService;
+
+	  @Autowired
+	  SegmentService segmentService;
+
+	  @Autowired
+	  ValuesetService valuesetService;
+
+
+	@Override
+	public IGDisplayInfo covertIgToDisplay(Ig ig) {
+		IGDisplayInfo ret = new IGDisplayInfo();
+		ret.setIg(ig);
+		ret.setMessages(convertConformanceProfileRegistry(ig.getConformanceProfileRegistry()));
+		ret.setSegments(convertSegmentRegistry(ig.getSegmentRegistry()));
+		ret.setDatatypes(convertDatatypeRegistry(ig.getDatatypeRegistry()));
+		ret.setValueSets(convertValueSetRegistry(ig.getValueSetRegistry()));
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertDatatypeRegistry(DatatypeRegistry registry) {
+		Set<String> ids= this.gatherIds(registry.getChildren());
+		List<Datatype> datatypes= datatypeService.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes) {
+			ret.add(convertDatatype(dt));
+		}
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry) {
+		Set<String> ids= this.gatherIds(registry.getChildren());
+		List<ConformanceProfile> conformanceProfiles = this.conformanceProfileService.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(ConformanceProfile cf : conformanceProfiles) {
+			ret.add(convertConformanceProfile(cf));
+		}
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry) {
+		Set<String> ids= this.gatherIds(registry.getChildren());
+		List<Segment> segments = this.segmentService.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Segment seg : segments) {
+			ret.add(convertSegment(seg));
+		}
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry) {
+		Set<String> ids= this.gatherIds(registry.getChildren());
+		List<Valueset> valueSets= this.valuesetService.findByIdIn(ids);
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Valueset vs : valueSets) {
+			ret.add(convertValueSet(vs));
+		}
+		return ret;	
+	}
+
+	@Override
+	public DisplayElement convertDatatype(Datatype datatype) {
+		
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(datatype.getId());
+		displayElement.setDomainInfo(datatype.getDomainInfo());
+		displayElement.setFixedName(datatype.getName());
+		displayElement.setDescription(datatype.getDescription());
+		displayElement.setDifferantial(datatype.getOrigin() !=null);
+		displayElement.setLeaf(!(datatype instanceof ComplexDatatype));
+		displayElement.setVariableName(datatype.getExt());
+		displayElement.setType(Type.DATATYPE);
+		
+		return displayElement;
+		
+	}
+
+	@Override
+	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile) {
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(conformanceProfile.getId());
+		displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
+		displayElement.setDescription(conformanceProfile.getDescription());
+		displayElement.setFixedName(conformanceProfile.getName());
+		displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
+		displayElement.setLeaf(false);
+		displayElement.setVariableName(conformanceProfile.getIdentifier());
+		displayElement.setType(Type.CONFORMANCEPROFILE);
+		
+		return displayElement;
+		
+	}
+
+	@Override
+	public DisplayElement convertSegment(Segment segment) {
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(segment.getId());
+		displayElement.setDomainInfo(segment.getDomainInfo());
+		displayElement.setDescription(segment.getDescription());
+		displayElement.setFixedName(segment.getName());
+		displayElement.setDifferantial(segment.getOrigin() !=null);
+		displayElement.setLeaf(false);
+		displayElement.setVariableName(segment.getExt());
+		displayElement.setType(Type.SEGMENT);
+		
+		return displayElement;
+	}
+
+	@Override
+	public DisplayElement convertValueSet(Valueset valueset) {
+		DisplayElement displayElement= new DisplayElement();
+		displayElement.setId(valueset.getId());
+		displayElement.setDomainInfo(valueset.getDomainInfo());
+		displayElement.setDescription(valueset.getName());
+		displayElement.setDifferantial(valueset.getOrigin() !=null);
+		displayElement.setLeaf(false);
+		displayElement.setVariableName(valueset.getBindingIdentifier());
+		displayElement.setType(Type.VALUESET);
+		
+		return displayElement;
+	}
+
+	private Set<String> gatherIds(Set<Link> links) {
+		Set<String> results = new HashSet<String>();
+		links.forEach(link -> results.add(link.getId()));
+		return results;
+	}
+
+}

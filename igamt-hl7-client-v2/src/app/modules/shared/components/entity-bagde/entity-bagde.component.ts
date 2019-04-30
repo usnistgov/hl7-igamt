@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
+import {Type} from '../../constants/type.enum';
 
 @Component({
   selector: 'app-entity-bagde',
@@ -7,22 +8,12 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class EntityBagdeComponent implements OnInit {
 
-  @Input() type: EntityType;
+  @Input() type: Type;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
 }
-
-export type EntityType =
-  'CONFORMANCEPROFILE' |
-  'GROUP' |
-  'SEGMENT' |
-  'FIELD' |
-  'COMPONENT' |
-  'SUBCOMPONENT' |
-  'DOCUMENT' |
-  'DATATYPE' |
-  'VALUESET';

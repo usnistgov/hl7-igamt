@@ -132,4 +132,6 @@ public interface ConformanceProfileService {
   List<ConformanceProfile> findByIdIn(Set<String> set);
   
   public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+
+  public List<ConformanceProfile> findDisplayFormatByIds(Set<String> ids);
 }

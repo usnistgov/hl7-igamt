@@ -34,5 +34,10 @@ key:
 auth:
   url: http://localhost:8090
    
-
-  
+email:
+   port: 25
+   protocol: smtp
+   host: smtp.nist.gov
+   admin: robert.snelick@nist.gov
+   from: hl7-igamt@nist.gov
+   subject: NIST HL7 Auth Notification

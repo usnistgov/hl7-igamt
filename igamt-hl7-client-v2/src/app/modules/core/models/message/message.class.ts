@@ -1,5 +1,5 @@
-import { TemplateRef } from '@angular/core';
-import { Guid } from 'guid-typescript';
+import {TemplateRef} from '@angular/core';
+import {Guid} from 'guid-typescript';
 
 export interface IMessage<T> {
   readonly status: MessageType;
@@ -8,7 +8,8 @@ export interface IMessage<T> {
 }
 
 export class Message<T = any> implements IMessage<T> {
-  constructor(readonly status: MessageType, readonly text: string, readonly data: T) { }
+  constructor(readonly status: MessageType, readonly text: string, readonly data: T) {
+  }
 }
 
 export class UserMessage<T = any> {

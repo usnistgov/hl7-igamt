@@ -1,4 +1,4 @@
-import { initialState, reducer } from './ig-edit.reducer';
+import {initialState, reducer} from './ig-edit.reducer';
 
 describe('IgEdit Reducer', () => {
   describe('an unknown action', () => {

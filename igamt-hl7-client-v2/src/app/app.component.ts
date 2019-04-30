@@ -1,8 +1,7 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { BootstrapCheckAuthStatus } from './root-store/authentication/authentication.actions';
-import {LoadConfig, LoadConfigFailure} from './root-store/config/config.actions';
+import {Component, OnInit} from '@angular/core';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {BootstrapCheckAuthStatus} from './root-store/authentication/authentication.actions';
 import * as fromLoader from './root-store/loader/loader.reducer';
 
 @Component({

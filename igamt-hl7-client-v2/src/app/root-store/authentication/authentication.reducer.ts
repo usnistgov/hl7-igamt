@@ -1,7 +1,7 @@
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { User } from './../../modules/core/models/user/user.class';
-import { AuthenticationActions, AuthenticationActionTypes } from './authentication.actions';
-import { IState } from './authentication.reducer';
+import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {User} from './../../modules/core/models/user/user.class';
+import {AuthenticationActions, AuthenticationActionTypes} from './authentication.actions';
+import {IState} from './authentication.reducer';
 
 export interface IState {
   isLoggedIn: boolean;

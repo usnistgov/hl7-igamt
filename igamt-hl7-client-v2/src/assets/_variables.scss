@@ -1,8 +1,8 @@
 // Theme Colors
-$nist_dark_blue : #021a4c;
-$nist_light_blue : #739fff;
-$nist_dark_yellow : #F3C60D;
-$nist_light_yellow : #ffec9d;
+$nist_dark_blue: #021a4c;
+$nist_light_blue: #739fff;
+$nist_dark_yellow: #F3C60D;
+$nist_light_yellow: #ffec9d;
 
 // Application Background
 %app-background {
@@ -10,17 +10,17 @@ $nist_light_yellow : #ffec9d;
 }
 
 %blue-bg {
-  background: #1488CC;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #2B32B2, #1488CC);  /* Chrome 10-25, Safari 5.1-6 */
+  background: #1488CC; /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #2B32B2, #1488CC); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(to right, #2B32B2, #1488CC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 // Sizes
-$header_toolname_height : 61;
-$header_links_height : 46;
-$header_height : $header_links_height + $header_toolname_height + 3 + px;
+$header_toolname_height: 61;
+$header_links_height: 46;
+$header_height: $header_links_height + $header_toolname_height + 3 + px;
 
-$workspace_min_height : 700px;
+$workspace_min_height: 700px;
 
 // Entity Badge Colors
 $ig_color: #b6006a;
@@ -34,9 +34,9 @@ $valueset_color: rgb(255, 0, 200);
 $comformance_profile_color: rgb(167, 90, 1);
 
 // Scope Badge Colors
-$hl7_scope_color : rgb(253, 150, 150);
-$user_scope_color : rgb(14, 158, 46);
-$preloaded_scope_color : rgb(125, 218, 255);
+$hl7_scope_color: rgb(253, 150, 150);
+$user_scope_color: rgb(14, 158, 46);
+$preloaded_scope_color: rgb(125, 218, 255);
 
 .entity-badge-ig {
   background-color: $ig_color !important;

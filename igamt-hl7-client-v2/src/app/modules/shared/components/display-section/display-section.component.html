@@ -1,0 +1,10 @@
+<div class="label-grid">
+  <app-scope-badge [scope]="element.domainInfo.scope" [version]="element.domainInfo.version">
+  </app-scope-badge>
+  <span> {{ getDisplayLabel() }}
+    <ng-container *ngIf=" !hideDescription && element.description">
+         {{'-' + element.description }}
+  </ng-container>
+  </span>
+</div>
+

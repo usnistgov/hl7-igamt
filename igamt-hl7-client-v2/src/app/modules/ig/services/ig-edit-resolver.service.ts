@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {filter, take} from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {IgDocument} from '../models/ig/ig-document.class';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IgEditResolverService implements Resolve<any> {
 
-  constructor(private store: Store<fromIgEdit.IState>) { }
+  constructor(private store: Store<fromIgEdit.IState>) {
+  }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> {
     const igId = route.params['id'];

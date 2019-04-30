@@ -1,7 +1,5 @@
-import { routerReducer, RouterReducerState } from '@ngrx/router-store';
-import {
-  ActionReducerMap,
-} from '@ngrx/store';
+import {routerReducer, RouterReducerState} from '@ngrx/router-store';
+import {ActionReducerMap} from '@ngrx/store';
 import * as fromAuth from './authentication/authentication.reducer';
 import * as fromConfig from './config/config.reducer';
 import * as formCreateIg from './create-ig/create-ig.reducer';

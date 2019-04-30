@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {FormControl, FormGroup, Validators} from '@angular/forms';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
@@ -27,7 +27,7 @@ export class CreateIGComponent implements OnInit {
     this.table$ = this.store.select(fromCreateIg.getLoadedMessageEventsState);
     this.hl7Version$ = this.store.select(config.getHl7Versions);
     this.metaDataForm = new FormGroup({
-      title: new FormControl('', [Validators.required] ),
+      title: new FormControl('', [Validators.required]),
     });
   }
 
@@ -44,8 +44,8 @@ export class CreateIGComponent implements OnInit {
 
   submit() {
     const model: IDocumentCreationWrapper = {
-      metadata: this.metaDataForm.getRawValue() , scope: Scope.USER,
-      msgEvts: this.selectedEvents ,
+      metadata: this.metaDataForm.getRawValue(), scope: Scope.USER,
+      msgEvts: this.selectedEvents,
     };
     this.store.dispatch(new CreateIg(model));
   }

@@ -1,16 +1,16 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { EffectsModule } from '@ngrx/effects';
-import { StoreRouterConnectingModule } from '@ngrx/router-store';
-import { StoreModule } from '@ngrx/store';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { ToastyModule } from 'ng2-toasty';
-import { environment } from '../environments/environment';
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { CoreModule } from './modules/core/core.module';
-import { reducers } from './root-store';
+import {NgModule} from '@angular/core';
+import {BrowserModule} from '@angular/platform-browser';
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import {EffectsModule} from '@ngrx/effects';
+import {StoreRouterConnectingModule} from '@ngrx/router-store';
+import {StoreModule} from '@ngrx/store';
+import {StoreDevtoolsModule} from '@ngrx/store-devtools';
+import {ToastyModule} from 'ng2-toasty';
+import {environment} from '../environments/environment';
+import {AppRoutingModule} from './app-routing.module';
+import {AppComponent} from './app.component';
+import {CoreModule} from './modules/core/core.module';
+import {reducers} from './root-store';
 import {ConfigEffects} from './root-store/config/config.effects';
 
 @NgModule({
@@ -33,9 +33,9 @@ import {ConfigEffects} from './root-store/config/config.effects';
     CoreModule,
     ToastyModule,
   ],
-  providers: [
-  ],
+  providers: [],
   bootstrap: [AppComponent],
   exports: [],
 })
-export class AppModule { }
+export class AppModule {
+}

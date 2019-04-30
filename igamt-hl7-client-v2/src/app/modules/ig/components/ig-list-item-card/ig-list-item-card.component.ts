@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { IgListItem } from '../../models/ig/ig-list-item.class';
+import {Component, Input, OnInit} from '@angular/core';
+import {IgListItem} from '../../models/ig/ig-list-item.class';
 
 @Component({
   selector: 'app-ig-list-item-card',
@@ -12,7 +12,8 @@ export class IgListItemCardComponent implements OnInit {
   @Input() controls: IgListItemControl[];
   moreInfo: boolean;
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit() {
     this.moreInfo = false;

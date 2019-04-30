@@ -1,17 +1,18 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Inject, Injectable } from '@angular/core';
-import { MessageType, UserMessage } from 'src/app/modules/core/models/message/message.class';
-import { Notify } from 'src/app/root-store/notification/notification.actions';
-import { DEFAULT_MESSAGE_OPTION } from '../../shared/shared-injection-token';
-import { AddMessage } from './../../../root-store/page-messages/page-messages.actions';
-import { IUserMessageOptions, Message } from './../models/message/message.class';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Inject, Injectable} from '@angular/core';
+import {MessageType, UserMessage} from 'src/app/modules/core/models/message/message.class';
+import {Notify} from 'src/app/root-store/notification/notification.actions';
+import {DEFAULT_MESSAGE_OPTION} from '../../shared/shared-injection-token';
+import {AddMessage} from './../../../root-store/page-messages/page-messages.actions';
+import {IUserMessageOptions, Message} from './../models/message/message.class';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MessageService {
 
-  constructor(@Inject(DEFAULT_MESSAGE_OPTION) private defaultOptions: IUserMessageOptions) { }
+  constructor(@Inject(DEFAULT_MESSAGE_OPTION) private defaultOptions: IUserMessageOptions) {
+  }
 
   messageTypeToAlert(status: MessageType): NgbAlertType {
     switch (status) {
@@ -26,10 +27,6 @@ export class MessageService {
       default:
         return 'dark';
     }
-  }
-
-  private mergeOptions(options: IUserMessageOptions): IUserMessageOptions {
-    return Object.assign(Object.assign({}, this.defaultOptions), options);
   }
 
   // tslint:disable-next-line: no-identical-functions
@@ -90,6 +87,10 @@ export class MessageService {
 
   messageTypeGuard(obj: any) {
     return obj && obj.status && obj.text;
+  }
+
+  private mergeOptions(options: IUserMessageOptions): IUserMessageOptions {
+    return Object.assign(Object.assign({}, this.defaultOptions), options);
   }
 }
 

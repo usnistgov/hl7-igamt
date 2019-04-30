@@ -2,9 +2,6 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
 import java.util.Properties;
-
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -15,7 +12,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.data.mongodb.config.EnableMongoAuditing;
+import org.springframework.core.env.Environment;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
@@ -32,6 +29,15 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 public class BootstrapApplication implements CommandLineRunner {
 
+	private static final String EMAIL_PORT = "email.port";
+	private static final String EMAIL_PROTOCOL = "email.protocol";
+	private static final String EMAIL_HOST = "email.host";
+	private static final String EMAIL_ADMIN = "email.admin";
+	private static final String EMAIL_FROM = "email.from";
+	private static final String EMAIL_SUBJECT = "email.subject";
+	private static final String EMAIL_SMTP_AUTH = "email.smtp.auth";
+	private static final String EMAIL_DEBUG = "email.debug";
+	
   public static void main(String[] args) {
     SpringApplication.run(BootstrapApplication.class, args);
 
@@ -44,6 +50,8 @@ public class BootstrapApplication implements CommandLineRunner {
 // 
   @Autowired
   MessageEventFacory messageEventFactory;
+  @Autowired
+  Environment env;
   
 //  @Autowired
 //  RelationShipService testCache;
@@ -60,15 +68,17 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  DatatypeClassificationService datatypeClassificationService;
 //  
+
+  
   @Bean
   public JavaMailSenderImpl mailSender() {
     JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
-    mailSender.setHost("smtp.nist.gov");
-    mailSender.setPort(25);
-    mailSender.setProtocol("smtp");
+    mailSender.setHost(env.getProperty(EMAIL_HOST));
+    mailSender.setPort(Integer.valueOf(env.getProperty(EMAIL_PORT)));
+    mailSender.setProtocol(env.getProperty(EMAIL_PROTOCOL));
     Properties javaMailProperties = new Properties();
-    javaMailProperties.setProperty("mail.smtp.auth", "false");
-    javaMailProperties.setProperty("mail.debug", "true");
+//    javaMailProperties.setProperty("email.smtp.auth", env.getProperty(EMAIL_SMTP_AUTH));
+//    javaMailProperties.setProperty("mail.debug", env.getProperty(EMAIL_DEBUG));
 
     mailSender.setJavaMailProperties(javaMailProperties);
     return mailSender;
@@ -78,8 +88,8 @@ public class BootstrapApplication implements CommandLineRunner {
   public org.springframework.mail.SimpleMailMessage templateMessage() {
     org.springframework.mail.SimpleMailMessage templateMessage =
         new org.springframework.mail.SimpleMailMessage();
-    templateMessage.setFrom("hl7-auth@nist.gov");
-    templateMessage.setSubject("NIST HL7 Auth Notification");
+    templateMessage.setFrom(env.getProperty(EMAIL_FROM));
+    templateMessage.setSubject(env.getProperty(EMAIL_SUBJECT));
     return templateMessage;
   }
   

@@ -1,8 +1,8 @@
-import { inject, TestBed } from '@angular/core/testing';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Observable } from 'rxjs';
+import {TestBed} from '@angular/core/testing';
+import {provideMockActions} from '@ngrx/effects/testing';
+import {Observable} from 'rxjs';
 
-import { CreateIgEffects } from './create-ig.effects';
+import {CreateIgEffects} from './create-ig.effects';
 
 describe('CreateIgEffects', () => {
   const actions$: Observable<any> = null;

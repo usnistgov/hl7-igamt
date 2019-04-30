@@ -1,7 +1,7 @@
-import { createEntityAdapter, EntityState } from '@ngrx/entity';
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { UserMessage } from '../../modules/core/models/message/message.class';
-import { PageMessagesActions, PageMessagesActionTypes } from './page-messages.actions';
+import {createEntityAdapter, EntityState} from '@ngrx/entity';
+import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {UserMessage} from '../../modules/core/models/message/message.class';
+import {PageMessagesActions, PageMessagesActionTypes} from './page-messages.actions';
 
 export interface IState extends EntityState<UserMessage> {
 }
@@ -19,7 +19,7 @@ export function reducer(state = initialState, action: PageMessagesActions): ISta
       return pageMessagesAdapter.removeOne(action.id, state);
 
     case PageMessagesActionTypes.ClearAll:
-      return pageMessagesAdapter.removeAll({ ...state });
+      return pageMessagesAdapter.removeAll({...state});
 
     case PageMessagesActionTypes.AddMessage:
       return pageMessagesAdapter.addOne(action.payload, state);

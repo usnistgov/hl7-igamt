@@ -1,5 +1,5 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 import {Message} from '../../modules/core/models/message/message.class';
 import {Hl7Config} from '../../modules/shared/models/config.class';
 
@@ -24,6 +24,7 @@ export class LoadConfigSuccess implements Action {
 
 export class LoadConfigFailure implements Action {
   readonly type = ConfigActionTypes.LoadConfigFailure;
+
   constructor(readonly payload: HttpErrorResponse) {
   }
 }

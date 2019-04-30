@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgListItemCardComponent } from './ig-list-item-card.component';
+import {IgListItemCardComponent} from './ig-list-item-card.component';
 
 describe('IgListItemCardComponent', () => {
   let component: IgListItemCardComponent;
