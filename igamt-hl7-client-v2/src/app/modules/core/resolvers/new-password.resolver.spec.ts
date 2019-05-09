@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { NewPasswordResolver } from './new-password.resolver';
+import {NewPasswordResolver} from './new-password.resolver';
 
 describe('NewPasswordResolver', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

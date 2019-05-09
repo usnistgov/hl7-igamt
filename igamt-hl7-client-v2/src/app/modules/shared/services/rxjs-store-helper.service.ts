@@ -1,19 +1,20 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Action } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { flatMap } from 'rxjs/operators';
-import { TurnOffLoader } from 'src/app/root-store/loader/loader.actions';
-import { ClearAll } from 'src/app/root-store/page-messages/page-messages.actions';
-import { Message, UserMessage } from './../../core/models/message/message.class';
-import { MessageService } from './../../core/services/message.service';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Action} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {flatMap} from 'rxjs/operators';
+import {TurnOffLoader} from 'src/app/root-store/loader/loader.actions';
+import {ClearAll} from 'src/app/root-store/page-messages/page-messages.actions';
+import {Message, UserMessage} from './../../core/models/message/message.class';
+import {MessageService} from './../../core/services/message.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class RxjsStoreHelperService {
 
-  constructor(private messageService: MessageService) { }
+  constructor(private messageService: MessageService) {
+  }
 
   finalize<E extends any, T extends Messageable = Message>(options: IFinalize<E, T>):
     (source: Observable<E>) => Observable<Action> {

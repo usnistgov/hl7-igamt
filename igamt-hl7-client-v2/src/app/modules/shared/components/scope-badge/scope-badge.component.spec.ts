@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { ScopeBadgeComponent } from './scope-badge.component';
+import {ScopeBadgeComponent} from './scope-badge.component';
 
 describe('ScopeBadgeComponent', () => {
   let component: ScopeBadgeComponent;

@@ -1,6 +1,5 @@
-
-import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { LoaderActions, LoaderActionTypes } from './loader.actions';
+import {createFeatureSelector, createSelector} from '@ngrx/store';
+import {LoaderActions, LoaderActionTypes} from './loader.actions';
 
 export interface IState {
   isLoading: boolean;

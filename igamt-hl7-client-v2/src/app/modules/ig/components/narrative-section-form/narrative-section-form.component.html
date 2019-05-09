@@ -1,0 +1,7 @@
+<form [formGroup]="sectionForm" style="display: flex; flex-direction: column; height: 100%;">
+  <app-form-input name="Title" label="Title" id="title" type="text" formControlName="title" placeholder="Section title">
+  </app-form-input>
+  <label for="content"><strong>Content</strong></label>
+  <div id="content" [froalaEditor] formControlName="content"
+    style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+</form>

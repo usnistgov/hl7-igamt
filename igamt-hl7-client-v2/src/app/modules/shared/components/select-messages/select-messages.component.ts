@@ -12,14 +12,15 @@ export class SelectMessagesComponent implements OnInit {
   @Input()
   table: any;
   @ViewChild('dt1') tableRef: Table;
-  selectedEvents:  EventTreeData[] = [];
+  selectedEvents: EventTreeData[] = [];
   @Output() selected = new EventEmitter<string>();
   @Output() messages = new EventEmitter<EventTreeData[]>();
   selectedVersion: string;
   @Input()
   hl7Versions: string[] = [];
 
-  constructor() {}
+  constructor() {
+  }
 
   filterTable(value) {
     this.tableRef.filteredValue = [];
@@ -38,17 +39,19 @@ export class SelectMessagesComponent implements OnInit {
 
   ngOnInit() {
   }
+
   isSelected(event) {
-    for ( const item of this.selectedEvents) {
-      if ( item.id === event.id && item.name === event.name) {
+    for (const item of this.selectedEvents) {
+      if (item.id === event.id && item.name === event.name) {
         return true;
       }
     }
     return false;
   }
+
   toggleEvent(event) {
-    for ( let i = 0; i < this.selectedEvents.length; i++) {
-      if ( this.selectedEvents[i].id === event.id && this.selectedEvents[i].name === event.name) {
+    for (let i = 0; i < this.selectedEvents.length; i++) {
+      if (this.selectedEvents[i].id === event.id && this.selectedEvents[i].name === event.name) {
         this.selectedEvents.splice(i, 1);
         return;
       }
@@ -64,6 +67,7 @@ export class SelectMessagesComponent implements OnInit {
       this.messages.emit(this.selectedEvents);
     }
   }
+
   select($event: any) {
     this.selectedVersion = $event;
     this.selected.emit($event);

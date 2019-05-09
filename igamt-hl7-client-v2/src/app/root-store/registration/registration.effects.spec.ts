@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { RegistrationEffects } from './registration.effects';
+import {RegistrationEffects} from './registration.effects';
 
 describe('RegistrationEffects', () => {
   let effects: RegistrationEffects;

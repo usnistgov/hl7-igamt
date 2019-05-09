@@ -5,5 +5,5 @@ import {IDocumentMetaData} from './document-metadata.interface';
 export interface IDocumentCreationWrapper {
   metadata: IDocumentMetaData;
   scope: Scope;
-  msgEvts:  EventTreeData[];
+  msgEvts: EventTreeData[];
 }

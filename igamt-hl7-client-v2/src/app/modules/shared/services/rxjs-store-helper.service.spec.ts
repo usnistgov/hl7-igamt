@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { RxjsStoreHelperService } from './rxjs-store-helper.service';
+import {RxjsStoreHelperService} from './rxjs-store-helper.service';
 
 describe('RxjsStoreHelperService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

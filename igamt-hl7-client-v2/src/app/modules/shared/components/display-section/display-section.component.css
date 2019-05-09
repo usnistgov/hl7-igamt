@@ -1,0 +1,5 @@
+.label-grid {
+  display: grid;
+  grid-template-columns: fit-content(10%) max-content;
+  align-content: flex-start;
+}

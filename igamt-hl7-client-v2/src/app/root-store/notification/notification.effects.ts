@@ -1,10 +1,10 @@
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { ToastOptions, ToastyService } from 'ng2-toasty';
-import { tap } from 'rxjs/operators';
-import { MessageType } from 'src/app/modules/core/models/message/message.class';
-import { MessageService } from 'src/app/modules/core/services/message.service';
-import { NotificationActions, NotificationActionTypes } from './notification.actions';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
+import {ToastOptions, ToastyService} from 'ng2-toasty';
+import {tap} from 'rxjs/operators';
+import {MessageType} from 'src/app/modules/core/models/message/message.class';
+import {MessageService} from 'src/app/modules/core/services/message.service';
+import {NotificationActions, NotificationActionTypes} from './notification.actions';
 
 @Injectable()
 export class NotificationEffects {
@@ -46,7 +46,8 @@ export class NotificationEffects {
     private actions$: Actions<NotificationActions>,
     private messageService: MessageService,
     private toastyService: ToastyService,
-  ) { }
+  ) {
+  }
 
 }
 

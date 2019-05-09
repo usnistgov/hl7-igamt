@@ -1,6 +1,6 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { MessageService, NgbAlertType } from 'src/app/modules/core/services/message.service';
-import { UserMessage } from '../../../core/models/message/message.class';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {MessageService, NgbAlertType} from 'src/app/modules/core/services/message.service';
+import {UserMessage} from '../../../core/models/message/message.class';
 
 @Component({
   selector: 'app-alerts',

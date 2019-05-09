@@ -1,4 +1,4 @@
-import { initialState, reducer } from './loader.reducer';
+import {initialState, reducer} from './loader.reducer';
 
 describe('Loader Reducer', () => {
   describe('an unknown action', () => {

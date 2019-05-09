@@ -1,7 +1,7 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { AbstractControl, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { IRegistration } from 'src/app/modules/core/models/user/registration.class';
-import { passwordValidator } from '../../validators/password-validator';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {AbstractControl, FormControl, FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {IRegistration} from 'src/app/modules/core/models/user/registration.class';
+import {passwordValidator} from '../../validators/password-validator';
 
 @Component({
   selector: 'app-register-form',
@@ -84,7 +84,7 @@ export class RegisterFormComponent implements OnInit {
 
   signedConfidentialityAgreementValidator(): ValidatorFn {
     return (control: AbstractControl): { [key: string]: any } => {
-      return !control.value ? { unsigned: { value: control.value } } : null;
+      return !control.value ? {unsigned: {value: control.value}} : null;
     };
   }
 

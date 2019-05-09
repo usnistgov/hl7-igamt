@@ -1,6 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AlertsComponent } from './alerts.component';
+import {async, TestBed} from '@angular/core/testing';
 
 describe('AlertsContainerComponent', () => {
   beforeEach(async(() => {

@@ -50,6 +50,8 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.IGDisplayInfo;
+import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddIngInfo;
@@ -116,7 +118,6 @@ public class IGDocumentController extends BaseController {
   @Autowired
   CrudService crudService;
 
-
   @Autowired
   DatatypeService datatypeService;
 
@@ -128,6 +129,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   ConformanceStatementRepository conformanceStatementRepository;
+  
+  @Autowired
+  DisplayInfoService displayInfoService;
 
 
 
@@ -369,6 +373,23 @@ public class IGDocumentController extends BaseController {
 //    System.out.println(relationShip);
 //    
     return ret;
+  }
+
+  /**
+   *
+   * @param id
+   * @param authentication
+   * @return
+   * @throws IGNotFoundException
+   * @throws IGConverterException
+   */
+  @RequestMapping(value = "/api/igdocuments/{id}", method = RequestMethod.GET,
+          produces = {"application/json"})
+
+  public @ResponseBody Ig getIg(@PathVariable("id") String id,
+                                              Authentication authentication) throws IGNotFoundException {
+
+    return findIgById(id);
   }
 
   /**
@@ -1018,6 +1039,20 @@ public class IGDocumentController extends BaseController {
     return new ResponseMessage<String>(Status.SUCCESS, "", "Ig deleted Successfully", ig.getId(),
         false, ig.getUpdateDate(), ig.getId());
   }
+  
+
+  @RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET,
+      produces = {"application/json"})
+  public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id,
+      Authentication authentication) throws IGNotFoundException {
+
+    Ig ig = findIgById(id);
+    displayInfoService.covertIgToDisplay(ig);
+    return  displayInfoService.covertIgToDisplay(ig);
+  }
+  
+  
+  
 
   /**
    * 

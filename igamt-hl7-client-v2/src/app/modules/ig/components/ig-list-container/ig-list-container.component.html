@@ -8,22 +8,22 @@
   <!-- TITLE BAR -->
   <div class="topbar">
     <h5>HL7 Implementation Guide Documents List</h5>
-    <div class="btn-group btn-group-toggle border-gray" style="border-radius: 5px;" ngbRadioGroup name="radioBasic"
-      [(ngModel)]="_shadowViewType">
-      <label ngbButtonLabel class="btn-light no-focus">
-        <input ngbButton type="radio" value="USER" [routerLink]="[ '.' ]" [queryParams]="{ type : 'USER' }">
+    <div [(ngModel)]="_shadowViewType" class="btn-group btn-group-toggle border-gray" name="radioBasic" ngbRadioGroup
+         style="border-radius: 5px;">
+      <label class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'USER' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="USER">
         Owned
       </label>
-      <label ngbButtonLabel class="btn-light no-focus">
-        <input ngbButton type="radio" value="PUBLISHED" [routerLink]="[ '.' ]" [queryParams]="{ type : 'PUBLISHED' }">
+      <label class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'PUBLISHED' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="PUBLISHED">
         Public
       </label>
-      <label ngbButtonLabel class="btn-light no-focus">
+      <label class="btn-light no-focus" ngbButtonLabel>
         <input ngbButton type="radio" value="SHARED">
         Shared With Me
       </label>
-      <label ngbButtonLabel class="btn-light no-focus" *ngIf="isAdmin | async">
-        <input ngbButton type="radio" value="ALL" [routerLink]="[ '.' ]" [queryParams]="{ type : 'ALL' }">
+      <label *ngIf="isAdmin | async" class="btn-light no-focus" ngbButtonLabel>
+        <input [queryParams]="{ type : 'ALL' }" [routerLink]="[ '.' ]" ngbButton type="radio" value="ALL">
         All
       </label>
     </div>
@@ -32,21 +32,21 @@
   <!-- FILTER INPUT -->
   <div class="search-bar">
 
-    <p-dropdown [options]="sortOptions" [placeholder]="'Sort Criterion'" [(ngModel)]="sortProperty"
-      (ngModelChange)="sortPropertyChanged($event)" [autoDisplayFirst]="false">
+    <p-dropdown (ngModelChange)="sortPropertyChanged($event)" [(ngModel)]="sortProperty" [autoDisplayFirst]="false"
+                [options]="sortOptions" [placeholder]="'Sort Criterion'">
     </p-dropdown>
-    <button class="btn btn-sm btn-primary" style="height: 35px;" (click)="sortOrderChanged(!sortOrder.ascending)">
+    <button (click)="sortOrderChanged(!sortOrder.ascending)" class="btn btn-sm btn-primary" style="height: 35px;">
       <i [class]="'fa ' + (sortOrder.ascending ? 'fa-arrow-down' : 'fa-arrow-up')"></i>
     </button>
 
     <div class="input-group" style="margin-left: 10px;">
       <div class="input-group-prepend" style="height: 35px;">
-        <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"
-            [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"></i></span>
+        <span class="input-group-text" id="inputGroupPrepend3"><i [ngStyle]="{'color': filter && filter !== '' ? '#00c31b' : ''}"
+                                                                  class="fa fa-filter"></i></span>
       </div>
-      <input type="text" style="background-color: #f0f0f0; text-align: center; height: 35px;" class="form-control"
-        id="validationServerUsername" [(ngModel)]="filter" (ngModelChange)="filterTextChanged($event)"
-        placeholder="Filter" required>
+      <input (ngModelChange)="filterTextChanged($event)" [(ngModel)]="filter" class="form-control"
+             id="validationServerUsername" placeholder="Filter" required
+             style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
     </div>
   </div>
 
@@ -54,7 +54,7 @@
   <div class="ig-list">
     <div>
       <div *ngFor="let item of listItems | async" class="spacer">
-        <app-ig-list-item-card [igListItem]="item" [controls]="controls | async"></app-ig-list-item-card>
+        <app-ig-list-item-card [controls]="controls | async" [igListItem]="item"></app-ig-list-item-card>
       </div>
     </div>
   </div>

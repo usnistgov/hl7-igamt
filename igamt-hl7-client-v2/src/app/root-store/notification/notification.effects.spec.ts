@@ -1,8 +1,6 @@
-import { inject, TestBed } from '@angular/core/testing';
-import { provideMockActions } from '@ngrx/effects/testing';
-import { Observable } from 'rxjs';
+import {TestBed} from '@angular/core/testing';
 
-import { NotificationEffects } from './notification.effects';
+import {NotificationEffects} from './notification.effects';
 
 describe('NotificationEffects', () => {
   let effects: NotificationEffects;

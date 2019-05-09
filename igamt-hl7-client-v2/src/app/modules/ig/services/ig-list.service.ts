@@ -1,23 +1,27 @@
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { IgListItem } from '../models/ig/ig-list-item.class';
-import { IgListLoad } from './../../../root-store/ig/ig-list/ig-list.actions';
-import { Message } from './../../core/models/message/message.class';
+import {HttpClient} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {map} from 'rxjs/operators';
+import {IgListItem} from '../models/ig/ig-list-item.class';
+import {IgListLoad} from './../../../root-store/ig/ig-list/ig-list.actions';
+import {Message} from './../../core/models/message/message.class';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IgListService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
   loadTypeToAPI(type: IgListLoad): 'PRIVATE' | 'PUBLIC' | 'ALL' {
     switch (type) {
-      case 'USER': return 'PRIVATE';
-      case 'PUBLISHED': return 'PUBLIC';
-      case 'ALL': return 'ALL';
+      case 'USER':
+        return 'PRIVATE';
+      case 'PUBLISHED':
+        return 'PUBLIC';
+      case 'ALL':
+        return 'ALL';
     }
   }
 

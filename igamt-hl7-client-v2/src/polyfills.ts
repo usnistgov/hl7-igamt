@@ -38,7 +38,7 @@
  * If the application will be indexed by Google Search, the following is required.
  * Googlebot uses a renderer based on Chrome 41.
  * https://developers.google.com/search/docs/guides/rendering
-**/
+ **/
 // import 'core-js/es6/array';
 
 /** IE10 and IE11 requires the following for NgClass support on SVG elements */
@@ -73,7 +73,7 @@
 /***************************************************************************************************
  * Zone JS is required by default for Angular itself.
  */
-import 'zone.js/dist/zone';  // Included with Angular CLI.
+import 'zone.js/dist/zone'; // Included with Angular CLI.
 
 /***************************************************************************************************
  * APPLICATION IMPORTS

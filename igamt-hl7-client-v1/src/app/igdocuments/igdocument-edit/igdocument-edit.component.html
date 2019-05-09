@@ -41,7 +41,7 @@
     <button   pButton type="button" label="share"  icon="fa fa-share"></button>
 
     <button  pButton type="button" label="Connect to Gvt" class="blue-btn" icon="fa fa-check"></button>
-    <p-splitButton   label="Export"  icon="fa fa-download" [model]="exportModel"></p-splitButton>
+    <p-splitButton label="Export" icon="fa fa-download" [model]="exportModel"></p-splitButton>
   </div>
 
 
@@ -76,9 +76,7 @@
       </div>
     </p-header>
     <div class="toc-panel-body">
-
-    <span  style="cursor: pointer" (click)="goToMetaData()">IGDocument Metadata</span>
-    <tree-root [nodes]="nodes"  #treeroot [options]="options">
+      <tree-root [nodes]="nodes"  #treeroot [options]="options">
 
       <ng-template #treeNodeTemplate let-node let-index="index">
         <ng-container [ngSwitch]="node.data.data.type">
@@ -236,9 +234,6 @@
               <!--</ng-template>-->
             </context-menu>
             <display-menu [elm]="node.data.data" *ngIf="rla.isActive"></display-menu>
-
-
-
           </ng-container>
 
           <ng-container *ngSwitchCase="'VALUESET'" >

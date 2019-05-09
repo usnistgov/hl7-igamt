@@ -549,4 +549,10 @@ public List<Valueset> findByIdIn(Set<String> ids) {
 	// TODO Auto-generated method stub
 	return valuesetRepository.findByIdIn(ids);
 }
+
+@Override
+public List<Valueset> findDisplayFormatByIds(Set<String> ids) {
+	// TODO Auto-generated method stub
+	return null;
+}
 }

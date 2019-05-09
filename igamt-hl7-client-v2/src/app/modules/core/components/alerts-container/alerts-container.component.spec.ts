@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { AlertsContainerComponent } from './alerts-container.component';
+import {AlertsContainerComponent} from './alerts-container.component';
 
 describe('AlertsContainerComponent', () => {
   let component: AlertsContainerComponent;

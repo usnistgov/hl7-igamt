@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgListContainerComponent } from './ig-list-container.component';
+import {IgListContainerComponent} from './ig-list-container.component';
 
 describe('IgListContainerComponent', () => {
   let component: IgListContainerComponent;

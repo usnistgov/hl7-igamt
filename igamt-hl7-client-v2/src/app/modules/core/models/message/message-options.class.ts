@@ -1,5 +1,6 @@
-import { IUserMessageOptions } from './message.class';
+import {IUserMessageOptions} from './message.class';
 
 export class DefaultUserMessageOptions {
-  constructor(readonly options: IUserMessageOptions) { }
+  constructor(readonly options: IUserMessageOptions) {
+  }
 }
