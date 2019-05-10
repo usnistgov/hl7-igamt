@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.event;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEventTreeNode;
 
@@ -27,4 +28,6 @@ public interface MessageEventService {
   public MessageEvent save(MessageEvent ev);
 
   public List<MessageEventTreeNode> findByHl7Version(String hl7Version);
+  
+  public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list);
 }

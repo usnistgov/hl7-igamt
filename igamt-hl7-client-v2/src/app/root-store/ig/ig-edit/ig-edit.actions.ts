@@ -9,48 +9,48 @@ export enum IgEditActionTypes {
   IgEditResolverLoadSuccess = '[Ig Edit Resolver] Ig Load Success',
   IgEditResolverLoadFailure = '[Ig Edit Resolver] Ig Load Failure',
   UpdateSections = '[Ig Edit TOC] Update Sections',
-  IgEditTocAddNodes = '[Ig Edit TOC] Add Node',
+  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   IgEditDeleteNode = '[Ig Edit TOC] Delete Node',
+  AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
 }
 
 export class IgEditResolverLoad implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoad;
-
   constructor(readonly id: string) {
   }
 }
 
 export class IgEditResolverLoadSuccess implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadSuccess;
-
   constructor(readonly igInfo: IGDisplayInfo) {
   }
 }
 
 export class IgEditResolverLoadFailure implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadFailure;
-
   constructor(readonly error: HttpErrorResponse) {
   }
 }
 
 export class UpdateSections implements Action {
   readonly type = IgEditActionTypes.UpdateSections;
-
   constructor(readonly payload: IDisplayElement[]) {
   }
 }
 
-export class IgEditTocAddNodes implements Action {
-  readonly type = IgEditActionTypes.IgEditTocAddNodes;
-
+export class IgEditTocAddResource implements Action {
+  readonly type = IgEditActionTypes.IgEditTocAddResource;
   constructor(readonly payload: IAddNodes) {
+  }
+}
+export class AddResourceSuccess implements Action {
+  readonly type = IgEditActionTypes.AddResourceSuccess;
+  constructor(readonly payload: IGDisplayInfo) {
   }
 }
 
 export class IgEditDeleteNode implements Action {
   readonly type = IgEditActionTypes.IgEditDeleteNode;
-
   constructor(readonly payload: IDeleteNode) {
   }
 }
@@ -60,5 +60,6 @@ export type IgEditActions =
   | IgEditResolverLoadSuccess
   | IgEditResolverLoadFailure
   | UpdateSections
-  | IgEditTocAddNodes
+  | IgEditTocAddResource
+  | AddResourceSuccess
   | IgEditDeleteNode;

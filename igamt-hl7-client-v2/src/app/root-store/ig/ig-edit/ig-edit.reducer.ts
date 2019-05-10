@@ -52,6 +52,21 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       return {
         ...state,
       };
+    case IgEditActionTypes.AddResourceSuccess:
+      return {
+        ...state,
+        document: { ...state.document, conformanceProfileRegistry: action.payload.ig.conformanceProfileRegistry,
+          datatypeRegistry: action.payload.ig.datatypeRegistry,
+          segmentRegistry: action.payload.ig.segmentRegistry,
+          valueSetRegistry: action.payload.ig.valueSetRegistry,
+          content: state.document.content,
+        },
+        datatypes: igElementAdapter.upsertMany(action.payload.datatypes, state.datatypes),
+        segments: igElementAdapter.upsertMany(action.payload.segments, state.segments),
+        messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
+        valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
+      };
+
     case IgEditActionTypes.UpdateSections:
       return {
         ...state, document: {...state.document, content: updateSections(action.payload)},

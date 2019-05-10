@@ -87,7 +87,7 @@ public class CrudServiceImpl implements CrudService {
     Set<String> segmentIds = getConformanceProfileResourceDependenciesIds(cp);
     AddSegmentResponseObject formSegment = addSegments(segmentIds, ig);
     ret.getSegments().addAll((formSegment.getSegments()));
-    ret.getDatatypesMap().addAll(formSegment.getDatatypesMap());
+    ret.getDatatypes().addAll(formSegment.getDatatypesMap());
     for (Valueset vs : formSegment.getValueSets()) {
       ret.getValueSets().add(vs);
 
@@ -163,8 +163,6 @@ public class CrudServiceImpl implements CrudService {
       }
     }
     return ret;
-
-
   }
 
   private void addDependecies(Segment segment, Ig ig, AddSegmentResponseObject ret)
@@ -232,11 +230,10 @@ public class CrudServiceImpl implements CrudService {
   @Override
   public AddDatatypeResponseObject addDatatypes(Set<String> ids, Ig ig) throws AddingException {
     // TODO Auto-generated method stub
-    DatatypeRegistry reg = ig.getDatatypeRegistry();
     AddDatatypeResponseObject ret = new AddDatatypeResponseObject();
-    if (reg != null) {
-      if (reg.getChildren() != null) {
-        Set<String> existants = mapLinkToId(reg.getChildren());
+    if (ig.getDatatypeRegistry() != null) {
+      if (ig.getDatatypeRegistry().getChildren() != null) {
+        Set<String> existants = mapLinkToId(ig.getDatatypeRegistry().getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
           Datatype datatype = datatypeService.findById(id);
@@ -245,9 +242,7 @@ public class CrudServiceImpl implements CrudService {
               ComplexDatatype p = (ComplexDatatype) datatype;
               if (p.getBinding() != null) {
                 Set<String> vauleSetBindingIds = processBinding(p.getBinding());
-
                 AddValueSetResponseObject valueSetAdded = addValueSets(vauleSetBindingIds, ig);
-
                 for (Valueset vs : valueSetAdded.getValueSets()) {
                   if (!ret.getValueSets().contains(vs)) {
                     ret.getValueSets().add(vs);
@@ -256,15 +251,14 @@ public class CrudServiceImpl implements CrudService {
               }
               Set<String> datatypeIds = getDatatypeResourceDependenciesIds(p);
               addDatatypes(datatypeIds, ig, ret);
-
-
             }
-            if (datatype.getId() != null) {
               Link link = new Link(datatype.getId(), datatype.getDomainInfo(),
-                  reg.getChildren().size() + 1);
+            		  ig.getDatatypeRegistry().getChildren().size() + 1);
               ret.getDatatypes().add(datatype);
-              reg.getChildren().add(link);
-            }
+              ig.getDatatypeRegistry().getChildren().add(link);
+            
+          }else {
+        	  throw new AddingException("Could not find Datatype with id : "+id);
           }
         }
       }
@@ -276,10 +270,9 @@ public class CrudServiceImpl implements CrudService {
   public void addDatatypes(Set<String> ids, Ig ig, AddDatatypeResponseObject ret)
       throws AddingException {
     // TODO Auto-generated method stub
-    DatatypeRegistry reg = ig.getDatatypeRegistry();
-    if (reg != null) {
-      if (reg.getChildren() != null) {
-        Set<String> existants = mapLinkToId(reg.getChildren());
+    if (ig.getDatatypeRegistry() != null) {
+      if (ig.getDatatypeRegistry().getChildren() != null) {
+        Set<String> existants = mapLinkToId(ig.getDatatypeRegistry().getChildren());
         ids.removeAll(existants);
         for (String id : ids) {
           Datatype datatype = datatypeService.findById(id);
@@ -294,20 +287,15 @@ public class CrudServiceImpl implements CrudService {
               }
             }
             Link link =
-                new Link(datatype.getId(), datatype.getDomainInfo(), reg.getChildren().size() + 1);
-            reg.getChildren().add(link);
+                new Link(datatype.getId(), datatype.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1);
+            ig.getDatatypeRegistry().getChildren().add(link);
             ret.getDatatypes().add(datatype);
             if (datatype instanceof ComplexDatatype) {
               ComplexDatatype p = (ComplexDatatype) datatype;
               addDatatypes(getDatatypeResourceDependenciesIds(p), ig, ret);
-              System.out.println("putting In Library" + p.getId());
-              reg.getChildren().add(link);
             }
           } else {
-
-
             throw new AddingException("Could not find Datata type  with id " + id);
-
           }
         }
       }
@@ -380,7 +368,7 @@ public class CrudServiceImpl implements CrudService {
 
     orderRegistry(ig.getSegmentRegistry(), ordredSegment);
     System.out.println(ig.getDatatypeRegistry().getChildren().size());
-    List<AbstractDomain> ordredDatatypes = ret.getDatatypesMap().stream()
+    List<AbstractDomain> ordredDatatypes = ret.getDatatypes().stream()
         .sorted((Datatype t1, Datatype t2) -> t1.getName().compareTo(t2.getName()))
         .collect(Collectors.toList());
     orderRegistry(ig.getDatatypeRegistry(), ordredDatatypes);

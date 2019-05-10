@@ -13,28 +13,19 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
 
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
-
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 
 /**
  * @author ena3
  *
  */
 public class AddingMessagesWrapper {
-  private List<Event> msgEvts;
+  private List<AddingInfo> msgEvts;
   private String id;
 
   public AddingMessagesWrapper() {
     super();
     // TODO Auto-generated constructor stub
-  }
-
-  public List<Event> getMsgEvts() {
-    return msgEvts;
-  }
-
-  public void setMsgEvts(List<Event> msgEvts) {
-    this.msgEvts = msgEvts;
   }
 
   public String getId() {
@@ -45,10 +36,18 @@ public class AddingMessagesWrapper {
     this.id = id;
   }
 
-  public AddingMessagesWrapper(List<Event> msgEvts, String id) {
+  public AddingMessagesWrapper(List<AddingInfo> msgEvts, String id) {
     super();
-    this.msgEvts = msgEvts;
+    this.setMsgEvts(msgEvts);
     this.id = id;
+  }
+
+  public List<AddingInfo> getMsgEvts() {
+	return msgEvts;
+  }
+
+  public void setMsgEvts(List<AddingInfo> msgEvts) {
+	this.msgEvts = msgEvts;
   }
 
 

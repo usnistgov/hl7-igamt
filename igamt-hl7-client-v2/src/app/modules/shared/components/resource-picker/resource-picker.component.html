@@ -1,0 +1,10 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<app-select-messages (messages)="selected($event)" (selected)="data.versionChange($event)" [hl7Versions]="data.hl7Versions"
+                     [table]="data.data | async "></app-select-messages>
+<mat-dialog-actions>
+  <button (click)="cancel()">Cancel</button>
+  <button (click)="submit()"> Submit </button>
+</mat-dialog-actions>
+
+
+

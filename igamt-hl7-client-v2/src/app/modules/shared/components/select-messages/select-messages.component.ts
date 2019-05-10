@@ -1,6 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Guid} from 'guid-typescript';
 import {Table} from 'primeng/table';
-import {EventTreeData} from '../../../ig/models/message-event/message-event.class';
+import {Type} from '../../constants/type.enum';
+import {IAddingInfo} from '../../models/adding-info';
 
 @Component({
   selector: 'app-select-messages',
@@ -12,16 +14,17 @@ export class SelectMessagesComponent implements OnInit {
   @Input()
   table: any;
   @ViewChild('dt1') tableRef: Table;
-  selectedEvents: EventTreeData[] = [];
+  selectedData: IAddingInfo[] = [];
   @Output() selected = new EventEmitter<string>();
-  @Output() messages = new EventEmitter<EventTreeData[]>();
+  @Output() messages = new EventEmitter<IAddingInfo[]>();
   selectedVersion: string;
   @Input()
   hl7Versions: string[] = [];
 
   constructor() {
   }
-
+  ngOnInit() {
+  }
   filterTable(value) {
     this.tableRef.filteredValue = [];
     for (const row of this.tableRef.value) {
@@ -30,46 +33,36 @@ export class SelectMessagesComponent implements OnInit {
       const eventsFilter = row.children.filter((node: any) => {
         return node.data.name.includes(value);
       }).length > 0;
-
       if (nameFilter || descriptionFilter || eventsFilter) {
         this.tableRef.filteredValue.push(row);
       }
     }
   }
-
-  ngOnInit() {
+  selectMessageEvent(obj: any) {
+      const element = {
+        originalId: obj.id,
+        id: Guid.create().toString(),
+        type: Type.EVENT,
+        name: obj.name,
+        structId: obj.parentStructId,
+        ext: '',
+        description: obj.description,
+      };
+      this.selectedData.push(element);
+      this.emitData();
   }
-
-  isSelected(event) {
-    for (const item of this.selectedEvents) {
-      if (item.id === event.id && item.name === event.name) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  toggleEvent(event) {
-    for (let i = 0; i < this.selectedEvents.length; i++) {
-      if (this.selectedEvents[i].id === event.id && this.selectedEvents[i].name === event.name) {
-        this.selectedEvents.splice(i, 1);
-        return;
-      }
-    }
-    this.selectedEvents.push(event);
-    this.messages.emit(this.selectedEvents);
-  }
-
   unselect(selected: any) {
-    const index = this.selectedEvents.indexOf(selected);
+    const index = this.selectedData.indexOf(selected);
     if (index > -1) {
-      this.selectedEvents.splice(index, 1);
-      this.messages.emit(this.selectedEvents);
+      this.selectedData.splice(index, 1);
     }
+    this.emitData();
   }
-
   select($event: any) {
     this.selectedVersion = $event;
     this.selected.emit($event);
+  }
+  emitData() {
+    this.messages.emit(this.selectedData);
   }
 }

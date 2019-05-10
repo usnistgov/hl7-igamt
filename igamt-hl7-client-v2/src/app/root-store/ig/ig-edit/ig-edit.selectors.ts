@@ -24,6 +24,12 @@ export const selectIgDocument = createSelector(
     return state.document;
   },
 );
+export const selectIgId = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.id;
+  },
+);
 
 export const selectTitleBar = createSelector(
   selectIgDocument,

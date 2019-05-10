@@ -25,5 +25,10 @@ public interface DisplayInfoService {
 	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile);
 	public DisplayElement convertSegment(Segment segment);
 	public DisplayElement convertValueSet(Valueset valueset);
+	public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets);
+	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles);
+	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes);
+	public Set<DisplayElement> convertSegments(Set<Segment> segments);
+
 	
 }

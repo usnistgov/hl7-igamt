@@ -5,6 +5,7 @@ import * as fromConfig from './config/config.reducer';
 import * as formCreateIg from './create-ig/create-ig.reducer';
 import * as fromLoader from './loader/loader.reducer';
 import * as fromPageMessages from './page-messages/page-messages.reducer';
+import * as fromLoadedResources from './resource-loader/resource-loader.reducer';
 
 export interface IRouteState {
   auth: fromAuth.IState;
@@ -12,6 +13,7 @@ export interface IRouteState {
   createIg: formCreateIg.IState;
   pageMessages: fromPageMessages.IState;
   config: fromConfig.IState;
+  loadedResources: fromLoadedResources.IState;
   router: RouterReducerState;
 }
 
@@ -21,6 +23,7 @@ export const reducers: ActionReducerMap<IRouteState> = {
   createIg: formCreateIg.reducer,
   pageMessages: fromPageMessages.reducer,
   config: fromConfig.reducer,
+  loadedResources: fromLoadedResources.reducer,
   router: routerReducer,
 };
 

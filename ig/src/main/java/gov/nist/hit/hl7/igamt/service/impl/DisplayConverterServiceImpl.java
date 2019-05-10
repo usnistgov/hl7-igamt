@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
@@ -684,11 +685,11 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     AddMessageResponseDisplay addedNodes = new AddMessageResponseDisplay();
     // TODO Auto-generated method stub
 
-    List<TreeNode> segments = this.getSegmentNodes(addMessageResponse.getSegments());
-    List<TreeNode> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypesMap());
+    List<DisplayElement> segments = this.getSegmentNodes(addMessageResponse.getSegments());
+    List<DisplayElement> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypes());
 
-    List<TreeNode> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
-    List<TreeNode> conformancePrfiles =
+    List<DisplayElement> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
+    List<DisplayElement> conformancePrfiles =
         this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
     addedNodes.setConformanceProfiles(conformancePrfiles);
     addedNodes.setDatatypes(datatypes);
@@ -819,7 +820,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       }
     }
     return s;
-
   }
 
 

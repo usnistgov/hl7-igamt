@@ -25,12 +25,10 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
  *
  */
 public class AddMessageResponseObject {
- Set<ConformanceProfile > conformanceProfiles = new HashSet<ConformanceProfile>();
-
- Set<Datatype > datatypesMap = new HashSet< Datatype>();
+ Set<ConformanceProfile> conformanceProfiles = new HashSet<ConformanceProfile>();
+ Set<Datatype> datatypes = new HashSet< Datatype>();
  Set<Segment> segments = new HashSet<Segment>();
-
- Set<Valueset > valueSets = new HashSet<Valueset>();
+ Set<Valueset> valueSets = new HashSet<Valueset>();
 
 public Set<ConformanceProfile> getConformanceProfiles() {
   return conformanceProfiles;
@@ -40,12 +38,12 @@ public void setConformanceProfiles(Set<ConformanceProfile> conformanceProfiles) 
   this.conformanceProfiles = conformanceProfiles;
 }
 
-public Set<Datatype> getDatatypesMap() {
-  return datatypesMap;
+public Set<Datatype> getDatatypes() {
+  return datatypes;
 }
 
-public void setDatatypesMap(Set<Datatype> datatypesMap) {
-  this.datatypesMap = datatypesMap;
+public void setDatatypes(Set<Datatype> datatypesMap) {
+  this.datatypes = datatypesMap;
 }
 
 public Set<Segment> getSegments() {

@@ -1,6 +1,6 @@
 <div id="toc-container" class="toc-container">
   <span style="cursor: pointer">IGDocument Metadata</span>
-  <tree-root #treeroot [nodes]="nodes" [options]="options">
+  <tree-root #treeroot [nodes]="_nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
       <ng-container [ngSwitch]="node.data.type">
 
@@ -31,7 +31,7 @@
           <div #cpLib>
             <span [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
             <context-menu #conformanceProfilesContextMenu>
-              <ng-template (execute)="addMessage(node)" contextMenuItem>
+              <ng-template (execute)="addMessage(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i>Add Conformance Profiles
               </ng-template>
             </context-menu>

@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {BootstrapCheckAuthStatus} from './root-store/authentication/authentication.actions';
+import {LoadConfig} from './root-store/config/config.actions';
 import * as fromLoader from './root-store/loader/loader.reducer';
 
 @Component({
@@ -19,6 +20,8 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.store.dispatch(new BootstrapCheckAuthStatus());
+    this.store.dispatch(new LoadConfig());
+
   }
 
 }

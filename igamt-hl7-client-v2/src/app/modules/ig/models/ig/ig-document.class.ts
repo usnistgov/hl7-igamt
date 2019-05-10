@@ -33,8 +33,8 @@ export interface IgDocument {
 
 export interface IGDisplayInfo {
   ig: IgDocument;
-  segments: IDisplayElement[];
-  valueSets: IDisplayElement[];
-  datatypes: IDisplayElement[];
-  messages: IDisplayElement[];
+  segments?: IDisplayElement[];
+  valueSets?: IDisplayElement[];
+  datatypes?: IDisplayElement[];
+  messages?: IDisplayElement[];
 }

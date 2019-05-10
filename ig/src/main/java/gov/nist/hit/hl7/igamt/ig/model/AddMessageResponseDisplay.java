@@ -14,47 +14,48 @@ package gov.nist.hit.hl7.igamt.ig.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
+
 /**
  * @author ena3
  *
  */
 public class AddMessageResponseDisplay {
-  List<TreeNode> conformanceProfiles = new ArrayList<TreeNode>();
+	
+  List<DisplayElement> conformanceProfiles = new ArrayList<DisplayElement>();
+  List<DisplayElement> datatypes = new ArrayList<DisplayElement>();
+  List<DisplayElement> segments = new ArrayList<DisplayElement>();
+  List<DisplayElement> valueSets = new ArrayList<DisplayElement>();
 
-  List<TreeNode> datatypes = new ArrayList<TreeNode>();
-  List<TreeNode> segments = new ArrayList<TreeNode>();
-
-  List<TreeNode> valueSets = new ArrayList<TreeNode>();
-
-  public List<TreeNode> getConformanceProfiles() {
+  public List<DisplayElement> getConformanceProfiles() {
     return conformanceProfiles;
   }
 
-  public void setConformanceProfiles(List<TreeNode> conformanceProfiles) {
+  public void setConformanceProfiles(List<DisplayElement> conformanceProfiles) {
     this.conformanceProfiles = conformanceProfiles;
   }
 
-  public List<TreeNode> getDatatypes() {
+  public List<DisplayElement> getDatatypes() {
     return datatypes;
   }
 
-  public void setDatatypes(List<TreeNode> datatypes) {
+  public void setDatatypes(List<DisplayElement> datatypes) {
     this.datatypes = datatypes;
   }
 
-  public List<TreeNode> getSegments() {
+  public List<DisplayElement> getSegments() {
     return segments;
   }
 
-  public void setSegments(List<TreeNode> segments) {
+  public void setSegments(List<DisplayElement> segments) {
     this.segments = segments;
   }
 
-  public List<TreeNode> getValueSets() {
+  public List<DisplayElement> getValueSets() {
     return valueSets;
   }
 
-  public void setValueSets(List<TreeNode> valueSets) {
+  public void setValueSets(List<DisplayElement> valueSets) {
     this.valueSets = valueSets;
   }
 }

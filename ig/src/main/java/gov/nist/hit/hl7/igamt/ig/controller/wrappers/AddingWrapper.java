@@ -13,17 +13,19 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 import java.util.List;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
+
 /**
  * @author ena3
  *
  */
 public class AddingWrapper {
 
-  private List<AddIngInfo> toAdd;
+  private List<AddingInfo> toAdd;
   private String id;
 
 
-  public List<AddIngInfo> getToAdd() {
+  public List<AddingInfo> getToAdd() {
     return toAdd;
   }
 
@@ -32,13 +34,13 @@ public class AddingWrapper {
     // TODO Auto-generated constructor stub
   }
 
-  public AddingWrapper(List<AddIngInfo> toAdd, String id) {
+  public AddingWrapper(List<AddingInfo> toAdd, String id) {
     super();
     this.toAdd = toAdd;
     this.id = id;
   }
 
-  public void setToAdd(List<AddIngInfo> toAdd) {
+  public void setToAdd(List<AddingInfo> toAdd) {
     this.toAdd = toAdd;
   }
 

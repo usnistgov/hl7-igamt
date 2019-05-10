@@ -25,10 +25,15 @@ import { MetadataFormComponent } from './components/metadata-form/metadata-form.
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
+import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
+import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
+import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
+import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import {TocSubMenuComponent} from './components/toc-sub-menu/toc-sub-menu.component';
+import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { ConfigService } from './services/config.service';
 import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
 
@@ -49,6 +54,11 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     DisplaySectionComponent,
     TocSubMenuComponent,
     MetadataFormComponent,
+    ResourcePickerComponent,
+    SelectDatatypesComponent,
+    SelectSegmentsComponent,
+    SelectValueSetsComponent,
+    NamingDuplicationDirective,
   ],
   imports: [
     CommonModule,
@@ -106,8 +116,10 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     FroalaViewModule,
     MetadataFormComponent,
     ChipsModule,
+    ResourcePickerComponent,
+    NamingDuplicationDirective,
   ],
-  entryComponents: [ConfirmDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
