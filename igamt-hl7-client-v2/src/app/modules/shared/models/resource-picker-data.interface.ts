@@ -9,4 +9,5 @@ export interface IResourcePickerData {
   data: Observable<any[]>;
   type: Type;
   title: string;
+  version: string;
 }

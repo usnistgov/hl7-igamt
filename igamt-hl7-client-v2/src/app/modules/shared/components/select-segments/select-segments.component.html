@@ -1,3 +1,113 @@
-<p>
-  select-segments works!
-</p>
+<form #addingEditForm="ngForm" class="select-segment-container">
+  <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['name', 'description']" scrollHeight="100%" sortField="name"
+           scrollable="true">
+    <ng-template pTemplate="caption">
+      <app-select-versions (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+      <div style="text-align: left">
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+                 style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th>
+          Segment
+        </th>
+        <th style="width:100px">
+          As Is
+        </th>
+        <th style="width:100px">
+          As Flavor
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData let-rowNode pTemplate="body">
+      <tr>
+        <td>
+          <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
+          </app-scope-badge>
+          <span> {{rowData.name}}
+            <ng-container *ngIf="rowData.description">
+              {{'-' + rowData.description}}
+            </ng-container>
+          </span>
+        </td>
+        <td style="width:100px">
+          <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+        <td style="width:100px">
+          <button class="btn-primary btn btn-sm" (click)="addAsFlavor(rowData)">
+            <i class="fa fa-plus"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+  <p-table #dt [globalFilterFields]="['data.name', 'hl7Version', 'name']" [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="selectedData"
+           dataKey="data.name" scrollHeight="100%" scrollable="true">
+    <ng-template pTemplate="caption">
+      <div style="text-align: left">
+        <label> Selected Data Types</label>
+        <div class="input-group" style="margin-left: 10px;">
+          <div class="input-group-prepend" style="height: 35px;">
+            <span class="input-group-text"><i class="fa fa-filter"></i></span>
+          </div>
+          <input (input)="dt.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+                 required style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+        </div>
+      </div>
+    </ng-template>
+    <ng-template let-columns pTemplate="header">
+      <tr>
+        <th>
+          Segment
+        </th>
+        <th>
+          Extension
+        </th>
+        <th>
+          Actions
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template let-columns="columns" let-index="rowIndex" let-node="node" let-rowData pTemplate="body">
+      <tr [pReorderableRow]="index">
+        <td>
+          <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
+          </app-scope-badge>
+          <span> {{rowData.name}}
+          </span>
+        </td>
+        <td>
+          <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD'">
+            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication appNamingConvention  [type]="'DATATYPE'" [scope]="rowData.domainInfo.scope" [existing]="existing" [fixedName]="rowData.name" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.ext" required (input)="emitData()"/>
+            <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
+              <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
+                <span>*extension is required</span>
+              </div>
+              <div *ngIf="addingEditForm.controls[rowData.id].errors.duplicated">
+                <span> *extension is duplicated</span>
+              </div>
+              <div *ngIf="addingEditForm.controls[rowData.id].errors.invalidConvention">
+                <span> {{addingEditForm.controls[rowData.id].errors.invalidConvention}}</span>
+              </div>
+            </div>
+          </ng-container>
+        </td>
+        <td>
+          <button (click)="unselect(rowData)" class="btn btn-sm btn-danger">
+            <i [class]="'fa fa-remove'"></i>
+          </button>
+        </td>
+      </tr>
+    </ng-template>
+  </p-table>
+</form>
+

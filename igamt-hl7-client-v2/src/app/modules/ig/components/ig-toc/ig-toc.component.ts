@@ -35,10 +35,9 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('top') top: ElementRef;
   // TODO set type
   options;
-  _nodes: TreeNode[]
+  _nodes: TreeNode[];
   @Input()
   set nodes(n: TreeNode[]) {
-   console.log(n);
    this._nodes = n;
   }
   @Output()
@@ -104,7 +103,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.update();
   }
 
-  addMessage(node , type: Type, scope: Scope ) {
+  import(node , type: Type, scope: Scope ) {
     this.addChildren.emit({node, type, scope});
   }
 

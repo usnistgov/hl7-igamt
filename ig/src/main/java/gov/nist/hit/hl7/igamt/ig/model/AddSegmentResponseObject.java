@@ -22,18 +22,17 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
  */
 public class AddSegmentResponseObject {
 
-  Set<Datatype> datatypesMap = new HashSet< Datatype>();
+  Set<Datatype> datatypes = new HashSet< Datatype>();
   Set<Segment> segments = new HashSet<Segment>();
-
   Set<Valueset> valueSets = new HashSet<Valueset>();
 
   
-  public Set<Datatype> getDatatypesMap() {
-    return datatypesMap;
+  public Set<Datatype> getDatatypes() {
+    return datatypes;
   }
 
-  public void setDatatypesMap(Set<Datatype> datatypesMap) {
-    this.datatypesMap = datatypesMap;
+  public void setDatatypes(Set<Datatype> datatypes) {
+    this.datatypes = datatypes;
   }
 
   public Set<Segment> getSegments() {

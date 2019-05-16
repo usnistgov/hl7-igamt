@@ -24,7 +24,7 @@ export class ResourceService {
       case Type.SEGMENT:
         return 'api/segments/' + info.scope + '/' + info.version;
       case Type.VALUESET:
-        return 'api/segments/' + info.scope + '/' + info.version;
+        return 'api/valuesets/' + info.scope + '/' + info.version;
     }
   }
 }

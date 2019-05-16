@@ -10,6 +10,7 @@ import {Message} from '../../../modules/core/models/message/message.class';
 import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
 import {TurnOffLoader, TurnOnLoader} from '../../loader/loader.actions';
 import {
+  AddResourceFailure,
   AddResourceSuccess,
   IgEditActions,
   IgEditActionTypes,
@@ -55,6 +56,14 @@ export class IgEditEffects {
   );
 
   @Effect()
+  igAddResourceFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.AddResourceFailure),
+    map((action: AddResourceFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
+
+  @Effect()
   IgEditTocAddResource$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditTocAddResource),
     switchMap((action: IgEditTocAddResource) => {
@@ -72,7 +81,7 @@ export class IgEditEffects {
         catchError((error: HttpErrorResponse) => {
           return of(
             new TurnOffLoader(),
-            new IgEditResolverLoadFailure(error),
+            new AddResourceFailure(error),
           );
         }),
       );

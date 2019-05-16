@@ -87,7 +87,7 @@ public class CrudServiceImpl implements CrudService {
     Set<String> segmentIds = getConformanceProfileResourceDependenciesIds(cp);
     AddSegmentResponseObject formSegment = addSegments(segmentIds, ig);
     ret.getSegments().addAll((formSegment.getSegments()));
-    ret.getDatatypes().addAll(formSegment.getDatatypesMap());
+    ret.getDatatypes().addAll(formSegment.getDatatypes());
     for (Valueset vs : formSegment.getValueSets()) {
       ret.getValueSets().add(vs);
 
@@ -174,7 +174,7 @@ public class CrudServiceImpl implements CrudService {
     AddDatatypeResponseObject fromDataypes = addDatatypes(datatypeIds, ig);
 
     for (Datatype d : fromDataypes.getDatatypes()) {
-      ret.getDatatypesMap().add(d);
+      ret.getDatatypes().add(d);
     }
 
     for (Valueset vs : fromDataypes.getValueSets()) {

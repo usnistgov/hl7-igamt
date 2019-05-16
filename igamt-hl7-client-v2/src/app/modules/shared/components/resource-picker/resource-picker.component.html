@@ -1,10 +1,38 @@
 <h2 mat-dialog-title>{{data.title}}</h2>
-<app-select-messages (messages)="selected($event)" (selected)="data.versionChange($event)" [hl7Versions]="data.hl7Versions"
-                     [table]="data.data | async "></app-select-messages>
-<mat-dialog-actions>
-  <button (click)="cancel()">Cancel</button>
-  <button (click)="submit()"> Submit </button>
+<mat-dialog-content style="height: 500px;">
+  <ng-container [ngSwitch]="data.type">
+
+    <ng-container *ngSwitchCase="'EVENTS'">
+      <app-select-messages #child (messages)="selected($event)"
+                           (selected)="data.versionChange($event)"
+                           [existing]="data.existing"
+                           [hl7Versions]="data.hl7Versions" [selectedVersion]="data.version"
+                           [table]="data.data | async"></app-select-messages>
+    </ng-container>
+    <ng-container *ngSwitchCase="'SEGMENT'">
+      <app-select-segments #child (added)="selected($event)"
+                           (selected)="data.versionChange($event)"
+                           [existing]="data.existing"
+                           [hl7Versions]="data.hl7Versions" [selectedVersion]="data.version"
+                           [table]="data.data | async "></app-select-segments>
+    </ng-container>
+    <ng-container *ngSwitchCase="'VALUESET'">
+      <app-select-value-sets #child (added)="selected($event)"
+                             (selected)="data.versionChange($event)"
+                             [existing]="data.existing"
+                             [hl7Versions]="data.hl7Versions"
+                             [selectedVersion]="data.version" [table]="data.data | async "></app-select-value-sets>
+    </ng-container>
+    <ng-container *ngSwitchCase="'DATATYPE'">
+      <app-select-datatypes #child (added)="selected($event)"
+                            (selected)="data.versionChange($event)"
+                            [existing]="data.existing" [hl7Versions]="data.hl7Versions"
+                            [selectedVersion]="data.version" [table]="data.data | async "></app-select-datatypes>
+    </ng-container>
+  </ng-container>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!isValid()" class="btn btn-sm btn-secondary">Submit</button>
 </mat-dialog-actions>
-
-
 

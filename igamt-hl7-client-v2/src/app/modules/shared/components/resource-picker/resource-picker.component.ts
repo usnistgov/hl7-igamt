@@ -8,24 +8,37 @@ import {IResourcePickerData} from '../../models/resource-picker-data.interface';
 })
 export class ResourcePickerComponent implements OnInit {
   selectedData: any[];
-  constructor( public dialogRef: MatDialogRef<ResourcePickerComponent>,
-               @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData) {
+  canSave = false;
+  @ViewChild('child') child;
+
+  constructor(public dialogRef: MatDialogRef<ResourcePickerComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: IResourcePickerData) {
   }
 
   ngOnInit() {
   }
+
   select($event: string) {
     this.data.versionChange($event);
   }
+
   selected($event: any[]) {
     this.selectedData = $event;
   }
 
   submit() {
     this.dialogRef.close(this.selectedData);
+  }
 
+  setValid($event: boolean) {
+    this.canSave = $event;
   }
 
   cancel() {
+    this.dialogRef.close();
+  }
+
+  isValid() {
+    return this.child && this.child.isValid();
   }
 }

@@ -27,7 +27,7 @@ export class LoadResourceFailure implements Action {
 }
 export class ClearResource implements Action {
   readonly type = ResourceLoaderActionTypes.ClearResource;
-  constructor(readonly payload: HttpErrorResponse) {
+  constructor() {
   }
 }
 

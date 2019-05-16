@@ -12,6 +12,7 @@ export enum IgEditActionTypes {
   IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   IgEditDeleteNode = '[Ig Edit TOC] Delete Node',
   AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
+  AddResourceFailure = '[Ig Edit TOC] Add Resource Failure',
 }
 
 export class IgEditResolverLoad implements Action {
@@ -46,6 +47,12 @@ export class IgEditTocAddResource implements Action {
 export class AddResourceSuccess implements Action {
   readonly type = IgEditActionTypes.AddResourceSuccess;
   constructor(readonly payload: IGDisplayInfo) {
+  }
+}
+
+export class AddResourceFailure implements Action {
+  readonly type = IgEditActionTypes.AddResourceFailure;
+  constructor(readonly error: HttpErrorResponse) {
   }
 }
 

@@ -684,17 +684,16 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       AddMessageResponseObject addMessageResponse) {
     AddMessageResponseDisplay addedNodes = new AddMessageResponseDisplay();
     // TODO Auto-generated method stub
-
-    List<DisplayElement> segments = this.getSegmentNodes(addMessageResponse.getSegments());
-    List<DisplayElement> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypes());
-
-    List<DisplayElement> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
-    List<DisplayElement> conformancePrfiles =
-        this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
-    addedNodes.setConformanceProfiles(conformancePrfiles);
-    addedNodes.setDatatypes(datatypes);
-    addedNodes.setSegments(segments);
-    addedNodes.setValueSets(valueSets);
+//
+//    List<DisplayElement> segments = this.getSegmentNodes(addMessageResponse.getSegments());
+//    List<DisplayElement> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypes());
+//    List<DisplayElement> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
+//    List<DisplayElement> conformancePrfiles =
+//        this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
+//    addedNodes.setConformanceProfiles(conformancePrfiles);
+//    addedNodes.setDatatypes(datatypes);
+//    addedNodes.setSegments(segments);
+//    addedNodes.setValueSets(valueSets);
 
     return addedNodes;
   }
@@ -716,7 +715,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     // TODO Auto-generated method stub
 
     List<TreeNode> segments = this.getSegmentNodes(objects.getSegments());
-    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypesMap());
+    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypes());
 
     List<TreeNode> valueSets = this.getValueSetNodes(objects.getValueSets());
 

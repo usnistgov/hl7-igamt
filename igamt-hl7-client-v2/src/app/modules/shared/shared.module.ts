@@ -2,6 +2,7 @@ import {CommonModule} from '@angular/common';
 import {ModuleWithProviders, NgModule} from '@angular/core';
 import {ExtendedModule } from '@angular/flex-layout';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {MatRadioModule} from '@angular/material';
 import {MatDialogModule } from '@angular/material/dialog';
 import {RouterModule } from '@angular/router';
 import {NgbAlert, NgbModule} from '@ng-bootstrap/ng-bootstrap';
@@ -33,6 +34,7 @@ import { SelectSegmentsComponent } from './components/select-segments/select-seg
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import {TocSubMenuComponent} from './components/toc-sub-menu/toc-sub-menu.component';
+import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { ConfigService } from './services/config.service';
 import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
@@ -59,6 +61,7 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     SelectSegmentsComponent,
     SelectValueSetsComponent,
     NamingDuplicationDirective,
+    NamingConventionDirective,
   ],
   imports: [
     CommonModule,
@@ -69,10 +72,11 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     CardModule,
     CheckboxModule,
     ReactiveFormsModule,
+    MatRadioModule,
     MatDialogModule,
     DropdownModule,
     ToastyModule.forRoot(),
-    TreeModule.forRoot(),
+    TreeModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
@@ -105,6 +109,7 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     TreeModule,
     ContextMenuModule,
     MatDialogModule,
+    MatRadioModule,
     DropdownModule,
     ConfirmDialogComponent,
     FormInputComponent,
@@ -118,6 +123,7 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     ChipsModule,
     ResourcePickerComponent,
     NamingDuplicationDirective,
+    NamingConventionDirective,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent],
 })

@@ -6,4 +6,5 @@ export interface IAddWrapper {
   node?: IDisplayElement;
   type?: Type;
   scope?: Scope;
+  title?: string;
 }

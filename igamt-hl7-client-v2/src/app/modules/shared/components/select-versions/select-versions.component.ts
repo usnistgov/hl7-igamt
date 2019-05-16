@@ -11,6 +11,7 @@ export class SelectVersionsComponent implements OnInit {
   hl7Versions: string[];
   @Output()
   selected = new EventEmitter<string>();
+  @Input()
   selectedVersion: string;
 
   constructor() {
@@ -20,6 +21,7 @@ export class SelectVersionsComponent implements OnInit {
   }
 
   select($event: any) {
+    console.log(event);
     this.selectedVersion = $event;
     this.selected.emit($event);
   }

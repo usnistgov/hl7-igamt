@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { ResourceLoaderEffects } from './resource-loader.effects';
 
 describe('ResourceLoaderEffects', () => {
-  let actions$: Observable<any>;
+  const actions$: Observable<any> = null;
   let effects: ResourceLoaderEffects;
 
   beforeEach(() => {

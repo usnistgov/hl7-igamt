@@ -152,7 +152,7 @@ export const selectMessagesNodes = createSelector(
   },
 );
 
-function initializeIDisplayElement(section: IContent) {
+function initializeIDisplayElement(section: IContent, path: string) {
   return {
     description: section.description,
     id: section.id,
@@ -165,6 +165,7 @@ function initializeIDisplayElement(section: IContent) {
     fixedName: null,
     leaf: false,
     isExpanded: true,
+    path,
   };
 }
 
@@ -172,22 +173,22 @@ function sort(children: IDisplayElement[]) {
   return children.sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
 }
 
-function createNarativeSection(section: IContent): IDisplayElement {
-  const ret = initializeIDisplayElement(section);
+function createNarativeSection(section: IContent, path: string): IDisplayElement {
+  const ret = initializeIDisplayElement(section, path);
   if (section.children && section.children.length > 0) {
     for (const child of section.children) {
-      ret.children.push(createNarativeSection(child));
+      ret.children.push(createNarativeSection(child, path + '.' + child.position));
     }
   }
   ret.children = sort(ret.children);
   return ret;
 }
 
-function createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
-  const ret = initializeIDisplayElement(section);
+function createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], path: string) {
+  const ret = initializeIDisplayElement(section, path);
   if (section.children && section.children.length > 0) {
     for (const child of section.children) {
-      const retChild = initializeIDisplayElement(child);
+      const retChild = initializeIDisplayElement(child, ret.path + '.' + child.position);
       switch (child.type) {
         case Type.CONFORMANCEPROFILEREGISTRY:
           retChild.children = messageNodes;
@@ -213,10 +214,10 @@ export function buildTree(structure: IContent[], messageNodes: IDisplayElement[]
   for (const section of structure) {
     switch (section.type) {
       case Type.TEXT:
-        ret.push(createNarativeSection(section));
+        ret.push(createNarativeSection(section, section.position + ''));
         break;
       case Type.PROFILE:
-        ret.push(createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes));
+        ret.push(createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + '' ));
         break;
       default:
         break;
@@ -242,3 +243,10 @@ export const selectToc = createSelector(
     return buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
   },
 );
+
+export const selectVersion = createSelector(
+  selectConformanceProfileRegistry,
+  (registry: IRegistry) => {
+     const sorted = registry.children.map((link) => link.domainInfo.version).sort();
+     return sorted[sorted.length - 1];
+  });
