@@ -1,15 +1,10 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
-import {ContextMenuComponent} from 'ngx-contextmenu';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import { EditorID } from '../../../shared/models/editor.enum';
-import {NodeHelperService} from '../../../shared/services/node-helper.service';
-
-export class TOCClickEvent {
-  element: IDisplayElement;
-  editor: EditorID;
-}
+import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
+import { ContextMenuComponent } from 'ngx-contextmenu';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { NodeHelperService } from '../../../shared/services/node-helper.service';
+import { IClickInfo } from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
@@ -17,7 +12,6 @@ export class TOCClickEvent {
   styleUrls: ['./ig-toc.component.scss'],
 })
 export class IgTocComponent implements OnInit {
-
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
@@ -28,35 +22,30 @@ export class IgTocComponent implements OnInit {
   options;
   @Input()
   nodes: TreeNode[];
+
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
-  @Output()
-  nodeClick = new EventEmitter<TOCClickEvent>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   constructor(private nodeHelperService: NodeHelperService) {
-   this.options = {
-      allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
+    this.options = {
+      allowDrag: (node: TreeNode) =>
+        node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
         node.data.type === Type.PROFILE,
       actionMapping: {
         mouse: {
-          drop: (tree: TreeModel, node: TreeNode, $event: any, {from, to}) => {
-            if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
-              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
+          drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
+            if (from.data.type === Type.TEXT && ((!this.isOrphan(to) && to.parent.data.type === Type.TEXT) || this.isOrphan(to))) {
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
             if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
-              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
           },
-          click: (a, b) => {
-            this.nodeClick.emit({
-              element: b.data,
-              editor: b.data.type === 'TEXT' ? EditorID.NARRATIVE : EditorID.METADATA,
-            });
-          },
+          click: () => { },
         },
       },
     };
@@ -67,7 +56,6 @@ export class IgTocComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.tree.treeModel !== null && this.tree.treeModel);
   }
 
   print() {
@@ -81,6 +69,7 @@ export class IgTocComponent implements OnInit {
 
   addSectionToIG() {
     this.nodeHelperService.addNodeToRoot(this.tree.treeModel);
+    this.update();
   }
 
   copySection(node) {
@@ -93,29 +82,21 @@ export class IgTocComponent implements OnInit {
     this.update();
   }
 
-  addMessage(node) {
-  }
+  addMessage(node) { }
 
-  addDatatypes() {
-  }
+  addDatatypes() { }
 
-  addValueSets() {
-  }
+  addValueSets() { }
 
-  addSegments() {
-  }
+  addSegments() { }
 
-  copyConformanceProfile(node) {
-  }
+  copyConformanceProfile(node) { }
 
-  copySegment(node) {
-  }
+  copySegment(node) { }
 
-  copyValueSet(node) {
-  }
+  copyValueSet(node) { }
 
-  copyDatatype(node) {
-  }
+  copyDatatype(node) { }
 
   scrollTo(ref: ElementRef) {
     ref.nativeElement.scrollIntoView();
@@ -150,7 +131,9 @@ export class IgTocComponent implements OnInit {
 
   filter(value: any) {
     this.tree.treeModel.filterNodes((node) => {
-      return this.nodeHelperService.getFilteringLabel(node.data.fixedName, node.data.variableName).startsWith(value);
+      return this.nodeHelperService
+        .getFilteringLabel(node.data.fixedName, node.data.variableName)
+        .startsWith(value);
     });
   }
 
@@ -163,4 +146,15 @@ export class IgTocComponent implements OnInit {
     return document.getElementById('toc-container');
   }
 
+  expandAll() {
+    this.tree.treeModel.expandAll();
+  }
+
+  collapseAll() {
+    this.tree.treeModel.collapseAll();
+  }
+
+  select($event: IClickInfo) {
+    console.log($event);
+  }
 }

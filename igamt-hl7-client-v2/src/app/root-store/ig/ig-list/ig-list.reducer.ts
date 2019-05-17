@@ -1,7 +1,7 @@
-import {createEntityAdapter, EntityState} from '@ngrx/entity';
-import {IgListItem} from 'src/app/modules/ig/models/ig/ig-list-item.class';
-import {ISortOptions} from 'src/app/modules/shared/models/sort.class';
-import {IgListActions, IgListActionTypes, IgListLoad} from './ig-list.actions';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { IgListItem } from 'src/app/modules/ig/models/ig/ig-list-item.class';
+import { ISortOptions } from 'src/app/modules/shared/models/sort.class';
+import { IgListActions, IgListActionTypes, IgListLoad } from './ig-list.actions';
 
 export interface IState extends EntityState<IgListItem> {
   viewType: IgListLoad;
@@ -23,6 +23,13 @@ export const igListItemAdapter = createEntityAdapter<IgListItem>();
 export function reducer(state = initialState, action: IgListActions): IState {
   switch (action.type) {
 
+    case IgListActionTypes.ClearIgList:
+      return {
+        ...initialState,
+        sortOptions: {
+          ...state.sortOptions,
+        },
+      };
     case IgListActionTypes.UpdateIgList:
       return igListItemAdapter.upsertMany(action.payload, state);
 

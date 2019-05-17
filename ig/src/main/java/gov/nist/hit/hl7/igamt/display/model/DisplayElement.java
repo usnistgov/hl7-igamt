@@ -14,9 +14,7 @@ public class DisplayElement {
 	private boolean leaf; // eventually for lazy loading
 	private int position;
 	private boolean differantial;
-	
-	
-	
+
 	public String getFixedName() {
 		return fixedName;
 	}

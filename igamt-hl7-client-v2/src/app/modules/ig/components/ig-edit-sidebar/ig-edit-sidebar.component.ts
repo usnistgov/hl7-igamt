@@ -1,13 +1,11 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { OpenEditorNode } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import { EditorID } from '../../../shared/models/editor.enum';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
-import { IgTocComponent, TOCClickEvent } from '../ig-toc/ig-toc.component';
+import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -38,8 +36,15 @@ export class IgEditSidebarComponent implements OnInit {
     this.store.dispatch(new UpdateSections($event));
   }
 
-  click(event: TOCClickEvent) {
-    this.store.dispatch(new OpenEditorNode(event));
+  addSection() {
+    this.toc.addSectionToIG();
   }
 
+  collapseAll() {
+    this.toc.collapseAll();
+  }
+
+  expandAll() {
+    this.toc.expandAll();
+  }
 }

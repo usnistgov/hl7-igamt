@@ -2,6 +2,8 @@ package gov.nist.hit.hl7.igamt.coconstraints.xml.generator;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
 import org.xembly.Directives;
 import org.xembly.ImpossibleModificationException;
 import org.xembly.Xembler;
@@ -21,6 +23,7 @@ import gov.nist.hit.hl7.igamt.coconstraints.domain.IgnoreCell;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.VSCell;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.VSValue;
 
+@Service
 public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator {
 
 	@Override
@@ -71,7 +74,7 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 			Directives payload = new Directives().add("CoConstraint");
 			addRequirements(payload, row.getRequirements());
 			
-			section(payload, "Selectors", headers.getSelectors(), row);
+			section(payload, "Triggers", headers.getSelectors(), row);
 			section(payload, "Data", headers.getData(), row);
 			
 			container.append(payload)
@@ -111,7 +114,7 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 		
 		if(cell instanceof DataCell){
 			payload = cell((DataCell) cell);
-			cellType = "Value";
+			cellType = "PlainText";
 		}
 		else if(cell instanceof VSCell){
 			payload = cell((VSCell) cell);
@@ -126,8 +129,7 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 		}
 
 		container.push();
-		container.add("Value")
-				 .attr("Type", cellType)
+		container.add(cellType)
 				 .attr("Path", path)
 				 .append(payload)
 				 .pop();
@@ -136,7 +138,6 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 	
 	public Directives cell(DataCell cell){
 		return new Directives()
-				.add("PlainText")
 				.attr("Value", cell.getValue());
 	}
 	
@@ -151,7 +152,7 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 			
 			for(String location : value.getBindingLocation()){
 				payload.push();
-				payload.append(new Directives().add("Location").attr("Value", location));
+				payload.append(new Directives().add("Location").attr("Path", location + "[1]"));
 				payload.pop();
 			}
 			
@@ -168,7 +169,7 @@ public class SimpleCoConstraintXMLGenerator implements CoConstraintXmlGenerator 
 		
 		for(String location : cell.getLocations()){
 			dir.push();
-			dir.append(new Directives().add("Location").attr("Value", location));
+			dir.append(new Directives().add("Location").attr("Path", location));
 			dir.pop();
 		}
 		

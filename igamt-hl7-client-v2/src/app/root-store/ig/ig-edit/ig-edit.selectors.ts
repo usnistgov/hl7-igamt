@@ -1,15 +1,16 @@
-import {Dictionary} from '@ngrx/entity';
-import {createSelector} from '@ngrx/store';
-import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {Scope} from '../../../modules/shared/constants/scope.enum';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import {IRegistry} from '../../../modules/shared/models/registry.interface';
-import {IResource} from '../../../modules/shared/models/resource.interface';
-import {selectIgEdit} from '../ig.reducer';
-import {ITitleBarMetadata} from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
-import {igElementAdapter, IState} from './ig-edit.reducer';
+import { Dictionary } from '@ngrx/entity';
+import { createSelector } from '@ngrx/store';
+import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { Scope } from '../../../modules/shared/constants/scope.enum';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import { IResource } from '../../../modules/shared/models/resource.interface';
+import { selectIgEdit } from '../ig.reducer';
+import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
+import { igElementAdapter, IState } from './ig-edit.reducer';
 
 export const {
   selectAll,
@@ -22,6 +23,76 @@ export const selectIgDocument = createSelector(
   selectIgEdit,
   (state: IState) => {
     return state.document;
+  },
+);
+
+export const selectTableOfContentEdit = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.tableOfContentEdit;
+  },
+);
+
+export const selectTableOfContentChanged = createSelector(
+  selectTableOfContentEdit,
+  (state: { changed: boolean; }) => {
+    return state.changed;
+  },
+);
+
+export const selectWorkspace = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.workspace;
+  },
+);
+
+export const selectWorkspaceActive = createSelector(
+  selectWorkspace,
+  (state: IWorkspace) => {
+    return state.active;
+  },
+);
+
+export const selectWorkspaceCurrentIsValid = createSelector(
+  selectWorkspace,
+  (state: IWorkspace) => {
+    return state.flags.valid;
+  },
+);
+
+export const selectWorkspaceCurrentChangeTime = createSelector(
+  selectWorkspace,
+  (state: IWorkspace) => {
+    return state.changeTime;
+  },
+);
+
+export const selectWorkspaceCurrent = createSelector(
+  selectWorkspace,
+  selectWorkspaceCurrentIsValid,
+  selectWorkspaceCurrentChangeTime,
+  (state: IWorkspace, valid: boolean, time: Date) => {
+    return {
+      data: state.current,
+      valid,
+      time,
+    };
+  },
+);
+
+export const selectWorkspaceCurrentIsChanged = createSelector(
+  selectWorkspace,
+  (state: IWorkspace) => {
+    return state.flags.changed;
+  },
+);
+
+export const selectWorkspaceOrTableOfContentChanged = createSelector(
+  selectWorkspaceCurrentIsChanged,
+  selectTableOfContentChanged,
+  (workspace: boolean, tocChanged: boolean) => {
+    return workspace || tocChanged;
   },
 );
 
@@ -83,13 +154,53 @@ export const selectDatatypes = createSelector(
   },
 );
 
+export const selectSections = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.sections;
+  },
+);
+
 export const selectDatatypesEntites = createSelector(
   selectDatatypes,
   selectEntities,
 );
+
 export const selectSegmentsEntites = createSelector(
   selectSegments,
   selectEntities,
+);
+
+export const selectSectionsEntities = createSelector(
+  selectSections,
+  selectEntities,
+);
+
+export const selectSectionDisplayById = createSelector(
+  selectSectionsEntities,
+  (sections: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return sections[props.id];
+  },
+);
+
+export const selectSectionFromIgById = createSelector(
+  selectIgDocument,
+  (ig: IgDocument, props: { id: string }) => {
+    const loop = (content: IContent[]) => {
+      for (const section of content) {
+        if (section.id === props.id) {
+          return section;
+        } else {
+          const found = loop(section.children);
+          if (found) {
+            return found;
+          }
+        }
+      }
+      return undefined;
+    };
+    return loop(ig.content);
+  },
 );
 
 export const selectValueSets = createSelector(
@@ -98,6 +209,7 @@ export const selectValueSets = createSelector(
     return state.valueSets;
   },
 );
+
 export const selectValueSetsEntities = createSelector(
   selectValueSets,
   selectEntities,
@@ -146,79 +258,6 @@ export const selectMessagesNodes = createSelector(
   },
 );
 
-function initializeIDisplayElement(section: IContent) {
-  return {
-    description: section.description,
-    id: section.id,
-    domainInfo: null,
-    differential: false,
-    variableName: section.label,
-    children: [],
-    type: section.type,
-    position: section.position,
-    fixedName: null,
-    leaf: false,
-    isExpanded: true,
-  };
-}
-
-function sort(children: IDisplayElement[]) {
-  return children.sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
-}
-
-function createNarativeSection(section: IContent): IDisplayElement {
-  const ret = initializeIDisplayElement(section);
-  if (section.children && section.children.length > 0) {
-    for (const child of section.children) {
-      ret.children.push(createNarativeSection(child));
-    }
-  }
-  ret.children = sort(ret.children);
-  return ret;
-}
-
-function createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
-  const ret = initializeIDisplayElement(section);
-  if (section.children && section.children.length > 0) {
-    for (const child of section.children) {
-      const retChild = initializeIDisplayElement(child);
-      switch (child.type) {
-        case Type.CONFORMANCEPROFILEREGISTRY:
-          retChild.children = messageNodes;
-          break;
-        case Type.SEGMENTREGISTRY:
-          retChild.children = segmentsNodes;
-          break;
-        case Type.DATATYPEREGISTRY:
-          retChild.children = datatypesNodes;
-          break;
-        case Type.VALUESETREGISTRY:
-          retChild.children = valueSetsNodes;
-      }
-      ret.children.push(retChild);
-    }
-  }
-  ret.children = sort(ret.children);
-  return ret;
-}
-
-export function buildTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
-  const ret: IDisplayElement[] = [];
-  for (const section of structure) {
-    switch (section.type) {
-      case Type.TEXT:
-        ret.push(createNarativeSection(section));
-        break;
-      case Type.PROFILE:
-        ret.push(createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes));
-        break;
-      default:
-        break;
-    }
-  }
-  return sort(ret);
-}
-
 export const selectStructure = createSelector(
   selectIgDocument,
   (state: IgDocument) => {
@@ -231,8 +270,13 @@ export const selectToc = createSelector(
   selectMessagesNodes,
   selectSegmentsNodes,
   selectDatatypesNodes,
-  selectValueSetsNodes, (structure, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[],
-                         datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) => {
-    return buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  selectValueSetsNodes, (
+    structure: IContent[],
+    messageNodes: IDisplayElement[],
+    segmentsNodes: IDisplayElement[],
+    datatypesNodes: IDisplayElement[],
+    valueSetsNodes: IDisplayElement[],
+  ) => {
+    return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
   },
 );

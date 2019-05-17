@@ -1,28 +1,29 @@
-import {createEntityAdapter, EntityState} from '@ngrx/entity';
-import {IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {Type} from '../../../modules/shared/constants/type.enum';
-import {IContent} from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
-import { EditorID } from '../../../modules/shared/models/editor.enum';
-import {IgEditActions, IgEditActionTypes} from './ig-edit.actions';
+import { createEntityAdapter, EntityState } from '@ngrx/entity';
+import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { IContent } from '../../../modules/shared/models/content.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IState {
   document: IgDocument;
+  tableOfContentEdit: {
+    changed: boolean;
+  };
   segments: EntityState<IDisplayElement>;
   valueSets: EntityState<IDisplayElement>;
   datatypes: EntityState<IDisplayElement>;
   messages: EntityState<IDisplayElement>;
-  workspace: {
-    active: {
-      display: IDisplayElement,
-      editor: EditorID,
-    },
-    payload: any;
-  };
+  sections: EntityState<IDisplayElement>;
+  workspace: IWorkspace;
 }
 
 export const initialState: IState = {
   document: null,
+  tableOfContentEdit: {
+    changed: false,
+  },
   segments: {
     entities: {},
     ids: [],
@@ -39,9 +40,19 @@ export const initialState: IState = {
     entities: {},
     ids: [],
   },
+  sections: {
+    entities: {},
+    ids: [],
+  },
   workspace: {
     active: undefined,
-    payload: undefined,
+    initial: undefined,
+    current: undefined,
+    changeTime: undefined,
+    flags: {
+      changed: false,
+      valid: true,
+    },
   },
 };
 
@@ -51,6 +62,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 
     case IgEditActionTypes.IgEditResolverLoadSuccess:
+      const sections: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(action.igInfo.ig.content);
       return {
         ...state,
         document: action.igInfo.ig,
@@ -58,21 +70,18 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         segments: igElementAdapter.upsertMany(action.igInfo.segments, state.segments),
         messages: igElementAdapter.upsertMany(action.igInfo.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.igInfo.valueSets, state.valueSets),
+        sections: igElementAdapter.upsertMany(sections, state.sections),
       };
 
-    case IgEditActionTypes.IgEditResolverLoadFailure:
+    case IgEditActionTypes.ClearIgEdit:
       return {
-        ...state,
-      };
-    case IgEditActionTypes.UpdateSections:
-      return {
-        ...state, document: {...state.document, content: updateSections(action.payload)},
+        ...initialState,
       };
 
-    case IgEditActionTypes.OpenEditorNode:
+    case IgEditActionTypes.OpenEditor:
       return {
         ...state,
-        workspace : {
+        workspace: {
           ...state.workspace,
           active: {
             display: {
@@ -80,52 +89,104 @@ export function reducer(state = initialState, action: IgEditActions): IState {
             },
             editor: action.payload.editor,
           },
+          initial: {
+            ...action.payload.initial,
+          },
+          current: {
+            ...action.payload.initial,
+          },
+          changeTime: new Date(),
+          flags: {
+            changed: false,
+            valid: true,
+          },
         },
       };
+
+    case IgEditActionTypes.EditorChange:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          current: action.payload.data,
+          changeTime: action.payload.date,
+          flags: {
+            changed: true,
+            valid: action.payload.valid,
+          },
+        },
+      };
+
+    case IgEditActionTypes.EditorReset:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          changeTime: new Date(),
+          current: {
+            ...state.workspace.initial,
+          },
+          flags: {
+            ...state.workspace.flags,
+            changed: false,
+          },
+        },
+      };
+
+    case IgEditActionTypes.EditorSaveSuccess:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          changeTime: new Date(),
+          current: {
+            ... (action.current ? action.current : state.workspace.current),
+          },
+          initial: {
+            ... (action.current ? action.current : state.workspace.current),
+          },
+          flags: {
+            ...state.workspace.flags,
+            changed: false,
+          },
+        },
+      };
+
+    case IgEditActionTypes.UpdateActiveResource:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          active: {
+            ...state.workspace.active,
+            display: {
+              ...action.payload,
+            },
+          },
+        },
+      };
+
+    case IgEditActionTypes.TableOfContentSaveSuccess:
+      return {
+        ...state,
+        tableOfContentEdit: {
+          changed: false,
+        },
+      };
+
+    case IgEditActionTypes.UpdateSections:
+      const content: IContent[] = IgTOCNodeHelper.updateSections(action.payload);
+      const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content);
+      return {
+        ...state,
+        tableOfContentEdit: {
+          changed: true,
+        },
+        document: { ...state.document, content },
+        sections: igElementAdapter.upsertMany(sectionList, state.sections),
+      };
+
     default:
       return state;
-  }
-}
-
-function updatePositions(children: IContent[]) {
-  for (let i = 0; i < children.length; i++) {
-    children[i].position = i + 1;
-  }
-}
-
-function createSectionFromIDisplay(iDisplayElement: IDisplayElement, i: number): IContent {
-  const ret = {
-    id: iDisplayElement.id,
-    description: iDisplayElement.description,
-    type: iDisplayElement.type,
-    position: i + 1,
-    label: iDisplayElement.variableName,
-    children: [],
-  };
-  if (iDisplayElement.type === Type.TEXT || iDisplayElement.type === Type.PROFILE) {
-    ret.children = updateSections(iDisplayElement.children);
-  }
-  return ret;
-}
-
-export function updateSections(children: IDisplayElement[]) {
-  const ret: IContent[] = [];
-  for (let i = 0; i < children.length; i++) {
-    ret.push(createSectionFromIDisplay(children[i], i));
-  }
-  return ret;
-}
-
-export function removeNode(children: IContent[], node: IDisplayElement) {
-
-  for (let i = 0; i < children.length; i++) {
-    if (node.id === children[i].id) {
-      children.splice(i, 1);
-      updatePositions(children);
-      return true;
-    }
-    if (children.length[i].children) {
-      return removeNode(children.length[i].children, node);
-    }
   }
 }

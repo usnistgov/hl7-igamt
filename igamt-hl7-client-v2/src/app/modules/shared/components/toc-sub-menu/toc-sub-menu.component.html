@@ -1,16 +1,11 @@
 <div class="custom-menu">
-
-
   <ul style="list-style-type: none;">
 
-    <li *ngFor="let item of items">
-         <span> <i class="{{item.icon}}"></i>
-          <a>
-          {{item.label}}
-          </a>
+    <li *ngFor="let item of items" [routerLink]="item.url" routerLinkActive="active-node">
+         <span>
+           <i class="{{item.icon}}"></i><a>{{item.label}}</a>
          </span>
     </li>
 
   </ul>
-
 </div>

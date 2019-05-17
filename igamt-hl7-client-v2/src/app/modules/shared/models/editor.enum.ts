@@ -1,4 +1,12 @@
+import { Type } from '../constants/type.enum';
+
+export interface IEditorMetadata {
+  id: EditorID;
+  title?: string;
+  resourceType?: Type;
+}
+
 export enum EditorID {
-  NARRATIVE = 'NARRATIVE',
-  METADATA = 'METADATA',
+  IG_METADATA = 'IG_METADATA',
+  SECTION_NARRATIVE = 'SECTION_NARRATIVE',
 }

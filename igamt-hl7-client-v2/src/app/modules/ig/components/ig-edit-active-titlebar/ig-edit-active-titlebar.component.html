@@ -1,10 +1,12 @@
-<h4 class="title-text">
-  <app-scope-badge [scope]="'HL7'" [version]="'2.7.1'"></app-scope-badge>
-  <app-entity-bagde [type]="'SEGMENT'"></app-entity-bagde>
-  OBX
-</h4>
-<div style="margin-left: 20px;">
-  <app-metadata-date></app-metadata-date>
-</div>
-<i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
-<h5 class="title-text"> Metadata </h5>
+<ng-container *ngIf="activeElement | async as active">
+  <h5 class="title-text">
+      <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version"></app-scope-badge>
+      <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
+      <span *ngIf="active.display.type !== 'IGDOCUMENT'" > {{active.display.variableName}}</span>
+      <span *ngIf="active.display.type === 'IGDOCUMENT'" > Implementation Guide</span>
+  </h5>
+  <ng-container *ngIf="active.editor.title">
+    <i class="fa fa-chevron-right" style="font-size: 1em; margin-right: 10px; margin-left: 10px;"></i>
+    <h5 class="title-text"> {{active.editor.title}} </h5>
+  </ng-container>
+</ng-container>

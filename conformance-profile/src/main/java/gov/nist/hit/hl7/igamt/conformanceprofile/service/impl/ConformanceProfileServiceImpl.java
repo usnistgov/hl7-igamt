@@ -1626,10 +1626,10 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     return result;
   }
 
-  @Override
-  public List<ConformanceProfile> findDisplayFormatByIds(Set<String> ids) {
-    return null;
-  }
+//  @Override
+//  public List<ConformanceProfile> findDisplayFormatByIds(Set<String> ids) {
+//    return null;
+//  }
 
   private void markLocation(DisplayPredicate dp, Set<StructureElementBinding> children, String location, String pid) {
     for(StructureElementBinding seb: children){

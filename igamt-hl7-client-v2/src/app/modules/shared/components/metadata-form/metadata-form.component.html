@@ -3,39 +3,50 @@
     <ng-container [ngSwitch]="field.data.type">
       <ng-container *ngSwitchCase="'TEXT'">
         <app-form-input [formControlName]="field.key" [id]="field.data.id" [name]="field.data.name"
-          [placeholder]="field.data.placeholder" [label]="field.data.label" [viewOnly]="field.data.viewOnly">
+          [placeholder]="field.data.placeholder" [label]="field.data.label" [viewOnly]="viewOnly">
         </app-form-input>
       </ng-container>
       <ng-container *ngSwitchCase="'RICH'">
         <label [for]="field.data.id"><strong>{{field.data.label}}</strong></label>
-        <div *ngIf="!field.data.viewOnly" [id]="field.data.id" [froalaEditor]="{
+        <div *ngIf="!viewOnly" [id]="field.data.id" [froalaEditor]="{
+          autofocus: false,
           placeholder: field.data.placeholder
         }" [formControlName]="field.key" style="flex-grow: 1; display: flex; flex-direction: column;"></div>
-        <div *ngIf="field.data.viewOnly" [froalaView]="field.data.value"></div>
+        <div *ngIf="viewOnly && metadataForm[field.key]" [froalaView]="metadataForm[field.key]"></div>
       </ng-container>
       <ng-container *ngSwitchCase="'SELECT'">
         <div class="form-group">
           <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
-          <p-dropdown *ngIf="!field.data.viewOnly" [options]="field.data.enum"
+          <p-dropdown *ngIf="!viewOnly" [options]="field.data.enum"
             [styleClass]="'form-control form-control-dropdown'" [formControlName]=" field.key" [name]="field.data.name"
             [placeholder]="field.data.placeholder"></p-dropdown>
-          <span *ngIf="field.data.viewOnly">{{field.data.value}}</span>
+          <span *ngIf="viewOnly">{{field.data.value}}</span>
         </div>
 
       </ng-container>
       <ng-container *ngSwitchCase="'STRING_LIST'">
         <div class="form-group">
           <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
-          <p-chips *ngIf="!field.data.viewOnly" [styleClass]="'string-list'" [formControlName]=" field.key"
+          <p-chips *ngIf="!viewOnly" [styleClass]="'string-list'" [formControlName]=" field.key"
             [placeholder]="field.data.placeholder">
           </p-chips>
-          <span *ngIf="field.data.viewOnly">
+          <span *ngIf="viewOnly">
             <span *ngFor="let author of field.data.value" class="badge">
               {{author}}
             </span>
           </span>
         </div>
       </ng-container>
+
+      <ng-container *ngSwitchCase="'FILE'">
+        <div class="form-group">
+          <label [for]="field.data.id" class="form-label-lg">{{field.data.label}}</label>
+          <div>
+            <app-file-select-input [formControlName]="field.key" [viewOnly]="viewOnly"></app-file-select-input>
+          </div>
+        </div>
+      </ng-container>
+
     </ng-container>
   </ng-container>
 </form>

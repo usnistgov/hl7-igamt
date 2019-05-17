@@ -21,7 +21,6 @@ public interface DisplayInfoService {
 	public Set<DisplayElement> convertConformanceProfileRegistry(ConformanceProfileRegistry registry);
 	public Set<DisplayElement> convertSegmentRegistry(SegmentRegistry registry);
 	public Set<DisplayElement> convertValueSetRegistry(ValueSetRegistry registry);
-	
 	public DisplayElement convertDatatype(Datatype datatype);
 	public DisplayElement convertConformanceProfile(ConformanceProfile conformanceProfile);
 	public DisplayElement convertSegment(Segment segment);

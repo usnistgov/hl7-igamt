@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
@@ -27,12 +29,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
-import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
-import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
-import gov.nist.hit.hl7.igamt.common.base.domain.Link;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
@@ -367,7 +363,7 @@ public class IGDocumentController extends BaseController {
    
     IGDisplay ret = displayConverter.convertDomainToModel(igdoument,igData);
     
-    igService.buildDependencies(igData);
+//    igService.buildDependencies(igData);
     
 //    List<RelationShip> relationShip=relationShipService.findAll();
 //    System.out.println(relationShip);
@@ -393,6 +389,33 @@ public class IGDocumentController extends BaseController {
   }
 
   /**
+   *
+   * @param authentication
+   * @return
+   * @throws IGNotFoundException
+   * @throws IGUpdateException
+   */
+  @RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST,
+          produces = {"application/json"})
+
+  public @ResponseBody ResponseMessage<Object> updateIg(
+          @PathVariable("id") String id,
+          @RequestBody Section section,
+          Authentication authentication)
+          throws IGNotFoundException, IGUpdateException {
+    Ig ig = findIgById(id);
+    if(!ig.getUsername().equals(authentication.getPrincipal().toString())) {
+      return new ResponseMessage<Object>(Status.FAILED, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
+    } else {
+      Section igSection = this.findSectionById(ig.getContent(), section.getId());
+      igSection.setDescription(section.getDescription());
+      igSection.setLabel(section.getLabel());
+      this.igService.save(ig);
+      return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, ig.getId(), new Date());
+    }
+  }
+
+  /**
    * 
    * @param id
    * @param authentication
@@ -408,6 +431,28 @@ public class IGDocumentController extends BaseController {
       throws IGNotFoundException, IGUpdateException {
 
     Set<TextSection> content = displayConverter.convertTocToDomain(toc);
+
+    UpdateResult updateResult = igService.updateAttribute(id, "content", content);
+    if (!updateResult.wasAcknowledged()) {
+      throw new IGUpdateException(id);
+    }
+    return new ResponseMessage<Object>(Status.SUCCESS, TABLE_OF_CONTENT_UPDATED, id, new Date());
+  }
+
+  /**
+   *
+   * @param id
+   * @param authentication
+   * @return
+   * @throws IGNotFoundException
+   * @throws IGUpdateException
+   */
+  @RequestMapping(value = "/api/igdocuments/{id}/update/sections", method = RequestMethod.POST,
+          produces = {"application/json"})
+
+  public @ResponseBody ResponseMessage<Object> updateSections(@PathVariable("id") String id,
+                                                   @RequestBody Set<TextSection> content, Authentication authentication)
+          throws IGNotFoundException, IGUpdateException {
 
     UpdateResult updateResult = igService.updateAttribute(id, "content", content);
     if (!updateResult.wasAcknowledged()) {
