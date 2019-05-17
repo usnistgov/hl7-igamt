@@ -1,5 +1,4 @@
 export enum Scope {
-
   HL7STANDARD = 'HL7STANDARD',
   SDTF = 'SDTF',
   USER = 'USER',

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {Icons} from '../../constants/icons.enum';
 import {IDisplayElement} from '../../models/display-element.interface';
 import {SubMenu} from '../../models/sub-menu.class';
@@ -7,6 +7,7 @@ import {SubMenu} from '../../models/sub-menu.class';
   selector: 'app-toc-sub-menu',
   templateUrl: './toc-sub-menu.component.html',
   styleUrls: ['./toc-sub-menu.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TocSubMenuComponent implements OnInit {
   @Input() element: IDisplayElement;

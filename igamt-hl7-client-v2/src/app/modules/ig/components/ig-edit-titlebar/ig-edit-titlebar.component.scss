@@ -1,8 +1,17 @@
 :host {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
+}
+
+.badge {
+  display: flex;
+  font-weight: 500;
+  font-size: 1.5rem;
 }
 
 .title-text {
   margin: 0;
+  font-weight: 500;
+  line-height: 1.2;
+  font-size: 1.5rem;
 }

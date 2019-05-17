@@ -15,6 +15,18 @@ body {
   font-family: Verdana, Geneva, sans-serif !important;
 }
 
+.igamt-progress .mat-progress-bar-fill::after {
+  background-color: #be1600 !important;
+}
+
+.igamt-progress .mat-progress-bar-buffer {
+  background-color: #ffd400 !important;
+}
+
+.title-text {
+  margin: 0 !important;
+}
+
 %page-container {
   height: 100%;
   width: 100%;
@@ -54,9 +66,24 @@ body {
   overflow: auto;
 }
 
+.sidebar-filter .form-control {
+  height: initial;
+  border-radius: initial;
+  border: 1px solid #f0f0f0;
+  border-left: 1px solid #cdd3d9;
+}
+
+.sidebar-filter .input-group-text {
+  border: initial;
+}
+
 //----- Froala
 .fr-wrapper {
   flex-grow: 1;
+}
+
+.fr-sticky-off {
+  position: inherit !important;
 }
 
 //----- primeng
@@ -82,7 +109,17 @@ body {
 
 }
 
-// ---angular-tree-component---------
+//----- angular-tree-component
+
+.node-content-wrapper .active-node {
+  background-color: $nist_light_yellow;
+  padding: 2px;
+}
+
+.active-node {
+  background-color: $nist_light_yellow;
+  padding: 2px;
+}
 
 .tree-children {
   overflow: unset;
@@ -98,3 +135,4 @@ body {
 .fr-box.fr-basic .fr-element {
   min-height: 200px !important;
 }
+

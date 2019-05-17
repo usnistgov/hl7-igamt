@@ -1,11 +1,21 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { filter, map, withLatestFrom } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IGDisplayInfo} from '../../models/ig/ig-document.class';
-import {IgTocComponent} from '../ig-toc/ig-toc.component';
+import { IgEditTocAddResource, UpdateSections } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as config from '../../../../root-store/config/config.reducer';
+import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
+import { IAddWrapper } from '../../models/ig/add-wrapper.class';
+import { IGDisplayInfo } from '../../models/ig/ig-document.class';
+import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -15,10 +25,16 @@ import {IgTocComponent} from '../ig-toc/ig-toc.component';
 export class IgEditSidebarComponent implements OnInit {
 
   nodes$: Observable<any[]>;
+  hl7Version$: Observable<string[]>;
+  igId$: Observable<string>;
+  version$: Observable<string>;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
 
-  constructor(private store: Store<IGDisplayInfo>) {
+  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog) {
     this.nodes$ = store.select(fromIgDocumentEdit.selectToc);
+    this.hl7Version$ = store.select(config.getHl7Versions);
+    this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
+    this.version$ = store.select(fromIgDocumentEdit.selectVersion);
   }
 
   ngOnInit() {
@@ -46,5 +62,74 @@ export class IgEditSidebarComponent implements OnInit {
 
   expandAll() {
     this.toc.expandAll();
+  }
+
+  addChildren(event: IAddWrapper) {
+    const subscription = this.hl7Version$.pipe(
+      withLatestFrom(this.version$),
+      map(([versions, selectedVersion]) => {
+        this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
+
+        const dialogData: IResourcePickerData = {
+          hl7Versions: versions,
+          existing: event.node.children,
+          title: this.getDialogTitle(event),
+          data: this.store.select(fromResource.getData),
+          version: selectedVersion,
+          versionChange: (version: string) => {
+            this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
+          },
+          type: event.type,
+        };
+        const dialogRef = this.dialog.open(ResourcePickerComponent, {
+          data: dialogData,
+        });
+        dialogRef.afterClosed().pipe(
+          map((result) => {
+            this.store.dispatch(new ClearResource());
+            return result;
+          }),
+          filter((x) => x !== undefined),
+          withLatestFrom(this.igId$),
+          map(([result, igId]) => {
+            this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: result, type: event.type }));
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
+  }
+
+  private getDialogTitle(event: IAddWrapper) {
+
+    return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
+  }
+
+  private getStringFormScope(scope: Scope) {
+    switch (scope) {
+      case Scope.HL7STANDARD:
+        return 'HL7 Standard';
+      case Scope.USER:
+        return 'USER';
+      case Scope.SDTF:
+        return 'Standard Data Type Flavor';
+      default:
+        return '';
+    }
+  }
+
+  private getStringFromType(type: Type) {
+    switch (type) {
+      case Type.DATATYPE:
+        return 'Data type';
+      case Type.SEGMENT:
+        return 'Segment';
+      case Type.EVENTS:
+        return 'Conformance Profiles';
+      case Type.VALUESET:
+        return 'Value Sets';
+      default:
+        return '';
+    }
   }
 }

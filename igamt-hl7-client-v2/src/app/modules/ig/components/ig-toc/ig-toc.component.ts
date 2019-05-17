@@ -1,19 +1,30 @@
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-component';
-
-import {ContextMenuComponent} from 'ngx-contextmenu';
-import {Type} from '../../../shared/constants/type.enum';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {NodeHelperService} from '../../../shared/services/node-helper.service';
-import {IClickInfo} from '../../models/toc/click-info.interface';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy, ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
+import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
+import { ContextMenuComponent } from 'ngx-contextmenu';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { NodeHelperService } from '../../../shared/services/node-helper.service';
+import { IAddWrapper } from '../../models/ig/add-wrapper.class';
+import { IClickInfo } from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
   templateUrl: './ig-toc.component.html',
   styleUrls: ['./ig-toc.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
-
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
@@ -22,29 +33,37 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild('top') top: ElementRef;
   // TODO set type
   options;
+  _nodes: TreeNode[];
   @Input()
   nodes: TreeNode[];
+
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
+  @Output()
+  addChildren = new EventEmitter<IAddWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
-  constructor(private nodeHelperService: NodeHelperService) {
-   this.options = {
+  constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef) {
+    this.options = {
       allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
         node.data.type === Type.PROFILE,
       actionMapping: {
         mouse: {
-          drop: (tree: TreeModel, node: TreeNode, $event: any, {from, to}) => {
+          dragstart: () => { this.cd.detach(); },
+          ondragend: () => { this.cd.reattach(); },
+
+          drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
             if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
-              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
             if (from.data.type === Type.PROFILE && this.isOrphan(to)) {
-              TREE_ACTIONS.MOVE_NODE(tree, node, $event, {from, to});
+              TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
           },
+          click: () => { },
         },
       },
     };
@@ -55,7 +74,6 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    console.log(this.tree.treeModel !== null && this.tree.treeModel);
   }
 
   print() {
@@ -82,29 +100,23 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.update();
   }
 
-  addMessage(node) {
+  import(node, type: Type, scope: Scope) {
+    this.addChildren.emit({ node, type, scope });
   }
 
-  addDatatypes() {
-  }
+  addDatatypes() { }
 
-  addValueSets() {
-  }
+  addValueSets() { }
 
-  addSegments() {
-  }
+  addSegments() { }
 
-  copyConformanceProfile(node) {
-  }
+  copyConformanceProfile(node) { }
 
-  copySegment(node) {
-  }
+  copySegment(node) { }
 
-  copyValueSet(node) {
-  }
+  copyValueSet(node) { }
 
-  copyDatatype(node) {
-  }
+  copyDatatype(node) { }
 
   scrollTo(ref: ElementRef) {
     ref.nativeElement.scrollIntoView();
@@ -139,22 +151,21 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   filter(value: any) {
     this.tree.treeModel.filterNodes((node) => {
-      return this.nodeHelperService.getFilteringLabel(node.data.fixedName, node.data.variableName).startsWith(value);
+      return this.nodeHelperService
+        .getFilteringLabel(node.data.fixedName, node.data.variableName)
+        .startsWith(value);
     });
   }
 
   update() {
-    console.log(this.tree.treeModel);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
   getScrollContainer() {
-
     return document.getElementById('toc-container');
   }
 
   ngAfterViewInit() {
-
   }
 
   expandAll() {

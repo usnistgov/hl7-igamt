@@ -1,5 +1,5 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {IDomainInfo} from '../../../shared/models/domain-info.interface';
+import { Component, Input, OnInit } from '@angular/core';
+import { IDomainInfo } from '../../../shared/models/domain-info.interface';
 
 @Component({
   selector: 'app-ig-edit-titlebar',

@@ -1,5 +1,5 @@
-<p *ngFor="let message of messages">
-  <ngb-alert (close)="closeEmitter(message.id)" [dismissible]="message.options?.closable" [type]="alertType(message)">
+<div [ngStyle]="{'padding': messages && messages.length > 0 ? '5px' : '0px'}">
+  <ngb-alert *ngFor="let message of messages" (close)="closeEmitter(message.id)" [dismissible]="message.options?.closable" [type]="alertType(message)" style="margin-bottom : 2px !important">
     {{ message.message }}
   </ngb-alert>
-</p>
+</div>

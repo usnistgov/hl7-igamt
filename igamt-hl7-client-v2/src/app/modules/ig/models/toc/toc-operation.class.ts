@@ -1,3 +1,5 @@
+import {Type} from '../../../shared/constants/type.enum';
+import {IAddingInfo} from '../../../shared/models/adding-info';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 
 export interface IDeleteNode {
@@ -13,7 +15,7 @@ export interface IModeNode {
 }
 
 export interface IAddNodes {
-  subject: { [k: string]: IDisplayElement[] };
-  to: string;
-  index?: number;
+  documentId: string;
+  selected: IAddingInfo[];
+  type: Type;
 }

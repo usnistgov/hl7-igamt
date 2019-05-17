@@ -1,0 +1,42 @@
+.upload {
+	width: 100%;
+}
+
+.upload-span {
+  position: absolute;
+ }
+
+.upload-text {
+ color: #79c7e0;
+ font-weight: bold;
+}
+
+.filename {
+  position: absolute;
+  color: black;
+  z-index: 99;
+ }
+
+ .clear {
+   color: red;
+   cursor: pointer;
+   z-index: 99;
+ }
+
+.upload-section {
+  background-color: #dcf6ff;
+  text-align: center;
+  border: 1px dashed #cacaca;
+  height: 50px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-upload {
+	cursor: pointer;
+	height: 100%;
+	opacity: 0;
+	filter: alpha(opacity=0);
+}
