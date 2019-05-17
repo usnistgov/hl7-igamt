@@ -1,17 +1,30 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy, ChangeDetectorRef,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { TREE_ACTIONS, TreeComponent, TreeModel, TreeNode } from 'angular-tree-component';
 import { ContextMenuComponent } from 'ngx-contextmenu';
+import { Scope } from '../../../shared/constants/scope.enum';
 import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { NodeHelperService } from '../../../shared/services/node-helper.service';
+import { IAddWrapper } from '../../models/ig/add-wrapper.class';
 import { IClickInfo } from '../../models/toc/click-info.interface';
 
 @Component({
   selector: 'app-ig-toc',
   templateUrl: './ig-toc.component.html',
   styleUrls: ['./ig-toc.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IgTocComponent implements OnInit {
+export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
   @ViewChild('vsLib') vsLib: ElementRef;
   @ViewChild('dtLib') dtLib: ElementRef;
@@ -20,23 +33,28 @@ export class IgTocComponent implements OnInit {
   @ViewChild('top') top: ElementRef;
   // TODO set type
   options;
+  _nodes: TreeNode[];
   @Input()
   nodes: TreeNode[];
 
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
+  @Output()
+  addChildren = new EventEmitter<IAddWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
-  constructor(private nodeHelperService: NodeHelperService) {
+  constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef) {
     this.options = {
-      allowDrag: (node: TreeNode) =>
-        node.data.type === Type.TEXT ||
+      allowDrag: (node: TreeNode) => node.data.type === Type.TEXT ||
         node.data.type === Type.CONFORMANCEPROFILE ||
         node.data.type === Type.PROFILE,
       actionMapping: {
         mouse: {
+          dragstart: () => { this.cd.detach(); },
+          ondragend: () => { this.cd.reattach(); },
+
           drop: (tree: TreeModel, node: TreeNode, $event: any, { from, to }) => {
-            if (from.data.type === Type.TEXT && ((!this.isOrphan(to) && to.parent.data.type === Type.TEXT) || this.isOrphan(to))) {
+            if (from.data.type === Type.TEXT && (!this.isOrphan(to) && to.parent.data.type === Type.TEXT || this.isOrphan(to))) {
               TREE_ACTIONS.MOVE_NODE(tree, node, $event, { from, to });
               this.update();
             }
@@ -82,7 +100,9 @@ export class IgTocComponent implements OnInit {
     this.update();
   }
 
-  addMessage(node) { }
+  import(node, type: Type, scope: Scope) {
+    this.addChildren.emit({ node, type, scope });
+  }
 
   addDatatypes() { }
 
@@ -138,12 +158,14 @@ export class IgTocComponent implements OnInit {
   }
 
   update() {
-    console.log(this.tree.treeModel);
     this.nodeState.emit(this.tree.treeModel.nodes);
   }
 
   getScrollContainer() {
     return document.getElementById('toc-container');
+  }
+
+  ngAfterViewInit() {
   }
 
   expandAll() {

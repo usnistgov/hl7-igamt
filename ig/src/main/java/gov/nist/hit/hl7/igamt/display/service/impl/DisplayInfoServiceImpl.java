@@ -166,4 +166,43 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		return results;
 	}
 
+	@Override
+	public Set<DisplayElement> convertValueSets(Set<Valueset> valueSets) {
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Valueset vs : valueSets) {
+			ret.add(this.convertValueSet(vs));
+		}
+		return ret;
+		
+	}
+
+	@Override
+	public Set<DisplayElement> convertConformanceProfiles(Set<ConformanceProfile> conformanceProfiles) {
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(ConformanceProfile cp : conformanceProfiles) {
+			ret.add(this.convertConformanceProfile(cp));
+		}
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertDatatypes(Set<Datatype> datatypes) {
+		// TODO Auto-generated method stub
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Datatype dt : datatypes ) {
+			ret.add(this.convertDatatype(dt));
+		}
+		return ret;
+	}
+
+	@Override
+	public Set<DisplayElement> convertSegments(Set<Segment> segments) {
+		// TODO Auto-generated method stub
+		Set<DisplayElement> ret = new HashSet<DisplayElement>();
+		for(Segment seg : segments ) {
+			ret.add(this.convertSegment(seg));
+		}
+		return ret;
+	}
+
 }

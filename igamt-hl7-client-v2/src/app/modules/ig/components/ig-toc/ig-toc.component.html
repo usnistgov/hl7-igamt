@@ -5,7 +5,7 @@
       <ng-container [ngSwitch]="node.data.type">
 
         <ng-container *ngSwitchCase="'TEXT'">
-          <span [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{getPath(node)}} {{node.data.variableName}}</span>
+          <span [contextMenu]="textContextMenu" [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"> {{node.data.path}} {{node.data.variableName}}</span>
           <context-menu #textContextMenu>
             <ng-template (execute)="addSectionToNode(node)" contextMenuItem>
               <i class="fa fa-plus"></i> Add Section
@@ -20,18 +20,18 @@
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILE'">
-          <span (click)="print()"> {{getPath(node)}} {{node.data.variableName}}</span>
+          <span (click)="print()"> {{node.data.path}} {{node.data.variableName}}</span>
         </ng-container>
 
         <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
-          <span> {{getPath(node)}} {{node.data.variableName}}</span>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
         </ng-container>
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
           <div #cpLib>
-            <span [contextMenu]="conformanceProfilesContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <span [contextMenu]="conformanceProfilesContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #conformanceProfilesContextMenu>
-              <ng-template (execute)="addMessage(node)" contextMenuItem>
+              <ng-template (execute)="import(node.data, 'EVENTS', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i>Add Conformance Profiles
               </ng-template>
             </context-menu>
@@ -40,15 +40,15 @@
 
         <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
           <div #compositePLib>
-            <span> {{getPath(node)}} {{node.data.variableName}}</span>
+            <span> {{node.data.path}} {{node.data.variableName}}</span>
           </div>
         </ng-container>
 
         <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
           <div #dtLib>
-            <span [contextMenu]="addDatatypeContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <span [contextMenu]="addDatatypeContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #addDatatypeContextMenu>
-              <ng-template (execute)="addDatatypes()" contextMenuItem>
+              <ng-template (execute)="import(node.data, 'DATATYPE', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i> Add HL7 Data Types
               </ng-template>
             </context-menu>
@@ -57,9 +57,9 @@
 
         <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
           <div #vsLib>
-            <span [contextMenu]="valueSetsContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #valueSetsContextMenu>
-              <ng-template (execute)="addValueSets()" contextMenuItem>
+              <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i> Add Hl7 Value Sets
               </ng-template>
             </context-menu>
@@ -67,17 +67,13 @@
         </ng-container>
         <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
           <div #segLib>
-            <span [contextMenu]="segmentContextMenu"> {{getPath(node)}} {{node.data.variableName}}</span>
+            <span [contextMenu]="segmentContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #segmentContextMenu>
-              <ng-template (execute)="addSegments()" contextMenuItem>
-                <i class="fa fa-plus"></i> Add Segments
+              <ng-template (execute)="import(node.data, 'SEGMENT', 'HL7STANDARD')" contextMenuItem>
+                <i class="fa fa-plus"></i> Add HL7 Segments
               </ng-template>
             </context-menu>
-            <context-menu #segmentContextMenu>
-              <ng-template (execute)="addSegments()" contextMenuItem>
-                <i class="fa fa-plus"></i> Add Segments
-              </ng-template>
-            </context-menu>
+
           </div>
         </ng-container>
 

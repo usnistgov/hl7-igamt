@@ -4,24 +4,16 @@ import java.util.List;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 
 public class CreationWrapper {
+	
   private Scope scope;
-  private List<Event> msgEvts;
+  private List<AddingInfo> msgEvts;
   private DocumentMetadata metadata;
 
   public CreationWrapper() {
     super();
-    // TODO Auto-generated constructor stub
-  }
-
-  public List<Event> getMsgEvts() {
-    return msgEvts;
-  }
-
-  public void setMsgEvts(List<Event> msgEvts) {
-    this.msgEvts = msgEvts;
   }
 
   public DocumentMetadata getMetadata() {
@@ -32,9 +24,9 @@ public class CreationWrapper {
     this.metadata = metadata;
   }
 
-  public CreationWrapper(List<Event> msgEvts, DocumentMetadata metadata) {
+  public CreationWrapper(List<AddingInfo> msgEvts, DocumentMetadata metadata) {
     super();
-    this.msgEvts = msgEvts;
+    this.setMsgEvts(msgEvts);
     this.metadata = metadata;
   }
 
@@ -46,5 +38,11 @@ public class CreationWrapper {
     this.scope = scope;
   }
 
+  public List<AddingInfo> getMsgEvts() {
+	return msgEvts;
+  }
 
+  public void setMsgEvts(List<AddingInfo> msgEvts) {
+	this.msgEvts = msgEvts;
+  }
 }

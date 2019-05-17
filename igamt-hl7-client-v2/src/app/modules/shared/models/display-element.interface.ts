@@ -13,4 +13,5 @@ export interface IDisplayElement {
   differential: boolean;
   children?: IDisplayElement[];
   isExpanded: boolean;
+  path?: string;
 }

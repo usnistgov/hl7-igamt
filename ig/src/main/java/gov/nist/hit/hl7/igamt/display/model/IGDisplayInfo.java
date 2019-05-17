@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.display.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -7,10 +8,10 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 public class IGDisplayInfo {
 
 	private Ig ig;
-	private Set<DisplayElement> messages;
-	private Set<DisplayElement> segments;
-	private Set<DisplayElement> datatypes;
-	private Set<DisplayElement> valueSets;
+	private Set<DisplayElement> messages = new HashSet<DisplayElement>();
+	private Set<DisplayElement> segments = new HashSet<DisplayElement>();;
+	private Set<DisplayElement> datatypes = new HashSet<DisplayElement>();
+	private Set<DisplayElement> valueSets = new HashSet<DisplayElement>();;
 	
 	
 	public Ig getIg() {

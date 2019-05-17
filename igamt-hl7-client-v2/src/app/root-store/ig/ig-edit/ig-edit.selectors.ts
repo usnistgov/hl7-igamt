@@ -25,6 +25,12 @@ export const selectIgDocument = createSelector(
     return state.document;
   },
 );
+export const selectIgId = createSelector(
+  selectIgDocument,
+  (state: IgDocument) => {
+    return state.id;
+  },
+);
 
 export const selectTableOfContentEdit = createSelector(
   selectIgEdit,
@@ -280,3 +286,10 @@ export const selectToc = createSelector(
     return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
   },
 );
+
+export const selectVersion = createSelector(
+  selectMessagesEntites,
+  (messages: Dictionary<IDisplayElement>) => {
+    const sorted = Object.keys(messages).map((key) => messages[key].domainInfo.version).sort();
+    return sorted[sorted.length - 1];
+  });

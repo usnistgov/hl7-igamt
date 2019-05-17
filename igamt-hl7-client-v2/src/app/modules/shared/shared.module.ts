@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { ExtendedModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatRadioModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
 import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -26,10 +27,16 @@ import { MetadataFormComponent } from './components/metadata-form/metadata-form.
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
+import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
+import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
+import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
+import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
+import { NamingConventionDirective } from './directives/naming-convention.directive';
+import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { ConfigService } from './services/config.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 
@@ -50,7 +57,13 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     DisplaySectionComponent,
     TocSubMenuComponent,
     MetadataFormComponent,
+    ResourcePickerComponent,
+    SelectDatatypesComponent,
+    SelectSegmentsComponent,
+    SelectValueSetsComponent,
     FileSelectInputComponent,
+    NamingDuplicationDirective,
+    NamingConventionDirective,
   ],
   imports: [
     CommonModule,
@@ -61,6 +74,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     CardModule,
     CheckboxModule,
     ReactiveFormsModule,
+    MatRadioModule,
     MatDialogModule,
     FileUploadModule,
     DropdownModule,
@@ -91,6 +105,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
     NewPasswordFromComponent,
+    FileSelectInputComponent,
     AlertsComponent,
     EntityBagdeComponent,
     MetadataDateComponent,
@@ -99,6 +114,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     TreeModule,
     ContextMenuModule,
     MatDialogModule,
+    MatRadioModule,
     DropdownModule,
     ConfirmDialogComponent,
     FormInputComponent,
@@ -110,9 +126,11 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     FroalaViewModule,
     MetadataFormComponent,
     ChipsModule,
-    FileSelectInputComponent,
+    ResourcePickerComponent,
+    NamingDuplicationDirective,
+    NamingConventionDirective,
   ],
-  entryComponents: [ConfirmDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

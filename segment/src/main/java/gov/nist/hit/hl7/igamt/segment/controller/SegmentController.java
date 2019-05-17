@@ -47,6 +47,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
@@ -227,11 +228,13 @@ public class SegmentController extends BaseController {
         "Saved Successfully", ccTable.getId(), false, new Date(), ccTable);
   }
 
-  @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/segments/{scope}/{version:.+}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<Segment> find(@PathVariable String version,
+  public @ResponseBody ResponseMessage< List<Segment>> find(@PathVariable String version,@PathVariable String scope,
       Authentication authentication) {
-    return segmentService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
+    
+	  	return new  ResponseMessage< List<Segment>>(Status.SUCCESS, "",
+            "", null, false, null,segmentService.findDisplayFormatByScopeAndVersion(scope, version));
   }
 
 

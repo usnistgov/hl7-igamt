@@ -4,15 +4,17 @@ import { IGDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
 import { IAddNodes, IDeleteNode } from '../../../modules/ig/models/toc/toc-operation.class';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import { EditorID, IEditorMetadata } from '../../../modules/shared/models/editor.enum';
+import { IEditorMetadata } from '../../../modules/shared/models/editor.enum';
 
 export enum IgEditActionTypes {
   IgEditResolverLoad = '[Ig Edit Resolver] Load Ig',
   IgEditResolverLoadSuccess = '[Ig Edit Resolver] Ig Load Success',
   IgEditResolverLoadFailure = '[Ig Edit Resolver] Ig Load Failure',
   UpdateSections = '[Ig Edit TOC] Update Sections',
-  IgEditTocAddNodes = '[Ig Edit TOC] Add Node',
+  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   IgEditDeleteNode = '[Ig Edit TOC] Delete Node',
+  AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
+  AddResourceFailure = '[Ig Edit TOC] Add Resource Failure',
 
   UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
   OpenEditor = '[Ig Edit Open] Open Editor',
@@ -44,46 +46,52 @@ export class ClearIgEdit implements Action {
 
   constructor() {
   }
+
 }
 
 export class IgEditResolverLoad implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoad;
-
   constructor(readonly id: string) {
   }
 }
 
 export class IgEditResolverLoadSuccess implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadSuccess;
-
   constructor(readonly igInfo: IGDisplayInfo) {
   }
 }
 
 export class IgEditResolverLoadFailure implements Action {
   readonly type = IgEditActionTypes.IgEditResolverLoadFailure;
-
   constructor(readonly error: HttpErrorResponse) {
   }
 }
 
 export class UpdateSections implements Action {
   readonly type = IgEditActionTypes.UpdateSections;
-
   constructor(readonly payload: IDisplayElement[]) {
   }
 }
 
-export class IgEditTocAddNodes implements Action {
-  readonly type = IgEditActionTypes.IgEditTocAddNodes;
-
+export class IgEditTocAddResource implements Action {
+  readonly type = IgEditActionTypes.IgEditTocAddResource;
   constructor(readonly payload: IAddNodes) {
+  }
+}
+export class AddResourceSuccess implements Action {
+  readonly type = IgEditActionTypes.AddResourceSuccess;
+  constructor(readonly payload: IGDisplayInfo) {
+  }
+}
+
+export class AddResourceFailure implements Action {
+  readonly type = IgEditActionTypes.AddResourceFailure;
+  constructor(readonly error: HttpErrorResponse) {
   }
 }
 
 export class IgEditDeleteNode implements Action {
   readonly type = IgEditActionTypes.IgEditDeleteNode;
-
   constructor(readonly payload: IDeleteNode) {
   }
 }
@@ -210,7 +218,6 @@ export type IgEditActions =
   | IgEditResolverLoadFailure
   | UpdateSections
   | UpdateActiveResource
-  | IgEditTocAddNodes
   | IgEditDeleteNode
   | OpenEditor
   | EditorInitialize
@@ -223,4 +230,6 @@ export type IgEditActions =
   | TableOfContentSaveSuccess
   | OpenIgMetadataEditorNode
   | ClearIgEdit
-  | OpenNarrativeEditorNode;
+  | OpenNarrativeEditorNode
+  | IgEditTocAddResource
+  | AddResourceSuccess;

@@ -2,12 +2,17 @@ package gov.nist.hit.hl7.igamt.conformanceprofile.service.event.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePicker;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.ResourcePickerList;
+import gov.nist.hit.hl7.igamt.common.base.wrappers.VariableKey;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.Event;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.MessageEvent;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.EventTreeData;
@@ -79,6 +84,38 @@ public class MessageEventServiceImpl implements MessageEventService {
     Collections.sort(treeNodes);
     return treeNodes;
   }
+
+@Override
+public ResourcePickerList convertToDisplay(List<MessageEventTreeNode> list) {
+	// TODO Auto-generated method stub
+	ResourcePickerList ret = new ResourcePickerList();
+	List<VariableKey> selectors = new ArrayList<VariableKey>();
+	List<ResourcePicker> children = new ArrayList<ResourcePicker>();
+	selectors.add(VariableKey.EVENT);
+	ret.setSelectors(selectors);
+	for(MessageEventTreeNode node: list) {
+		
+		ResourcePicker child = new ResourcePicker();
+		child.setDescription(node.getData().getDescription());
+		child.setFixedName(node.getData().getName());
+		child.setComplements(createComplement(node));
+		children.add(child);
+	}
+	ret.setChildren(children);
+	return ret;
+	
+}
+
+private Map<VariableKey, List<String>> createComplement(MessageEventTreeNode node) {
+	// TODO Auto-generated method stub
+	 List<String> events = new ArrayList<String>();
+	 Map<VariableKey, List<String>> ret = new HashMap<VariableKey, List<String>> ();
+	 for(EventTreeNode s:  node.getChildren()) {
+		 events.add(s.getData().getName());
+	 }
+	ret.put(VariableKey.EVENT, events);
+	return ret; 
+}
 
 
 

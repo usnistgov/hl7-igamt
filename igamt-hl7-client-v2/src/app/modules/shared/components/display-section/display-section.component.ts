@@ -1,10 +1,11 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
 import {IDisplayElement} from '../../models/display-element.interface';
 
 @Component({
   selector: 'app-display-section',
   templateUrl: './display-section.component.html',
   styleUrls: ['./display-section.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DisplaySectionComponent implements OnInit {
 

@@ -5,5 +5,5 @@
   <div id="content" *ngIf="!viewOnly" [froalaEditor]="{}"
     formControlName="description"
     style="flex-grow: 1; display: flex; flex-direction: column;"></div>
-  <div *ngIf="viewOnly && sectionForm.description" [froalaView]="sectionForm.description"></div>
+  <div *ngIf="viewOnly && sectionForm['description']" [froalaView]="sectionForm['description']"></div>
 </form>

@@ -6,9 +6,12 @@ import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
+import { IG_END_POINT } from '../models/end-points';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IGDisplayInfo, IgDocument } from '../models/ig/ig-document.class';
+import { IgDocument } from '../models/ig/ig-document.class';
+import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
+import { IAddNodes } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
@@ -16,6 +19,7 @@ import { Message } from './../../core/models/message/message.class';
 })
 export class IgService {
 
+  // @ts-ignore
   constructor(private http: HttpClient) {
   }
 
@@ -34,27 +38,46 @@ export class IgService {
   }
 
   cloneIg(id: string): Observable<Message<string>> {
-    return this.http.get<Message<string>>('/api/igdocuments/' + id + '/clone').pipe();
+    return this.http.get<Message<string>>(IG_END_POINT + id + '/clone').pipe();
   }
 
   getMessagesByVersion(hl7Version: string): Observable<Message<MessageEventTreeNode[]>> {
-    return this.http.get<Message<MessageEventTreeNode[]>>('api/igdocuments/findMessageEvents/' + hl7Version);
+    return this.http.get<Message<MessageEventTreeNode[]>>(IG_END_POINT + 'findMessageEvents/' + hl7Version);
   }
 
   createIntegrationProfile(wrapper: IDocumentCreationWrapper): Observable<Message<string>> {
-    return this.http.post<Message<string>>('api/igdocuments/create/', wrapper);
+    return this.http.post<Message<string>>(IG_END_POINT + 'create/', wrapper);
   }
 
   getIgInfo(id: string): Observable<IGDisplayInfo> {
-    return this.http.get<IGDisplayInfo>('/api/igdocuments/' + id + '/state');
+    return this.http.get<IGDisplayInfo>(IG_END_POINT + id + '/state');
+  }
+
+  addResource(wrapper: IAddNodes): Observable<Message<IGDisplayInfo>> {
+    return this.http.post<Message<IGDisplayInfo>>(this.buildUrl(wrapper), wrapper);
+
+  }
+
+  buildUrl(wrapper: IAddNodes): string {
+    switch (wrapper.type) {
+      case Type.EVENTS:
+        return IG_END_POINT + wrapper.documentId + '/conformanceprofiles/add';
+      case Type.DATATYPE:
+        return IG_END_POINT + wrapper.documentId + '/datatypes/add';
+      case Type.SEGMENT:
+        return IG_END_POINT + wrapper.documentId + '/segments/add';
+      case Type.VALUESET:
+        return IG_END_POINT + wrapper.documentId + '/valuesets/add';
+      default: return null;
+    }
   }
 
   saveTextSection(id: string, narrative: INarrative): Observable<Message<string>> {
-    return this.http.post<Message<string>>('/api/igdocuments/' + id + '/section', narrative);
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/section', narrative);
   }
 
   saveTextSections(id: string, content: IContent[]): Observable<Message<string>> {
-    return this.http.post<Message<string>>('/api/igdocuments/' + id + '/update/sections', content);
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/update/sections', content);
   }
 
   uploadCoverImage(file: File): Observable<{
@@ -69,7 +92,7 @@ export class IgService {
   }
 
   saveMetadata(id: string, metadata: IMetadata): Observable<Message<string>> {
-    return this.http.post<Message<string>>('/api/igdocuments/' + id + '/updatemetadata', metadata);
+    return this.http.post<Message<string>>(IG_END_POINT + id + '/updatemetadata', metadata);
   }
 
 }

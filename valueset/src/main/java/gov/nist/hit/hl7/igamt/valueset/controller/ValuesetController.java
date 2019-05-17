@@ -143,12 +143,12 @@ public class ValuesetController extends BaseController {
     return new ResponseMessage(Status.SUCCESS, METADATA_SAVED, id, valueset.getUpdateDate());
   }
 
-  @RequestMapping(value = "/api/valuesets/hl7/{version:.+}", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/valuesets/{scope}/{version:.+}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<Valueset> findHl7ValueSets(@PathVariable String version,
+  public @ResponseBody ResponseMessage<List<Valueset>> findHl7ValueSets(@PathVariable String version,@PathVariable String scope,
       Authentication authentication) {
-    return valuesetService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(),
-        version);
+    return new ResponseMessage<List<Valueset>>(Status.SUCCESS, "",
+          "", null, false, null, valuesetService.findDisplayFormatByScopeAndVersion(scope,version));
   }
 
   private Valueset findById(String id) throws ValuesetNotFoundException {

@@ -32,6 +32,11 @@ import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.servi
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
 
+export const EDITOR_MAP = {
+  [EditorID.SECTION_NARRATIVE]: OpenNarrativeEditorNode,
+  [EditorID.IG_METADATA]: OpenIgMetadataEditorNode,
+};
+
 @NgModule({
   declarations: [
     IgListContainerComponent,
@@ -66,10 +71,7 @@ import { IgService } from './services/ig.service';
     IgEditorActivateGuard,
     {
       provide: EditorActionMapToken,
-      useValue: {
-        [EditorID.SECTION_NARRATIVE]: OpenNarrativeEditorNode,
-        [EditorID.IG_METADATA]: OpenIgMetadataEditorNode,
-      },
+      useValue: EDITOR_MAP,
     },
   ],
   exports: [

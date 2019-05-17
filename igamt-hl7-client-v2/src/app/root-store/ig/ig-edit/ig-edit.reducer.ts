@@ -62,7 +62,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 
     case IgEditActionTypes.IgEditResolverLoadSuccess:
-      const sections: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(action.igInfo.ig.content);
+      const sections: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(action.igInfo.ig.content, '');
       return {
         ...state,
         document: action.igInfo.ig,
@@ -101,6 +101,22 @@ export function reducer(state = initialState, action: IgEditActions): IState {
             valid: true,
           },
         },
+      };
+
+    case IgEditActionTypes.AddResourceSuccess:
+      return {
+        ...state,
+        document: {
+          ...state.document, conformanceProfileRegistry: action.payload.ig.conformanceProfileRegistry,
+          datatypeRegistry: action.payload.ig.datatypeRegistry,
+          segmentRegistry: action.payload.ig.segmentRegistry,
+          valueSetRegistry: action.payload.ig.valueSetRegistry,
+          content: state.document.content,
+        },
+        datatypes: igElementAdapter.upsertMany(action.payload.datatypes, state.datatypes),
+        segments: igElementAdapter.upsertMany(action.payload.segments, state.segments),
+        messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
+        valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
       };
 
     case IgEditActionTypes.EditorChange:
@@ -176,7 +192,7 @@ export function reducer(state = initialState, action: IgEditActions): IState {
 
     case IgEditActionTypes.UpdateSections:
       const content: IContent[] = IgTOCNodeHelper.updateSections(action.payload);
-      const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content);
+      const sectionList: IDisplayElement[] = IgTOCNodeHelper.getIDisplayFromSections(content, '');
       return {
         ...state,
         tableOfContentEdit: {

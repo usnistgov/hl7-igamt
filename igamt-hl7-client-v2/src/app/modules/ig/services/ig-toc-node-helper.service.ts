@@ -4,7 +4,7 @@ import { IDisplayElement } from '../../shared/models/display-element.interface';
 
 export class IgTOCNodeHelper {
 
-  static initializeIDisplayElement(section: IContent) {
+  static initializeIDisplayElement(section: IContent, path: string) {
     return {
       description: section.description,
       id: section.id,
@@ -17,6 +17,7 @@ export class IgTOCNodeHelper {
       fixedName: null,
       leaf: false,
       isExpanded: true,
+      path,
     };
   }
 
@@ -24,22 +25,22 @@ export class IgTOCNodeHelper {
     return children.sort((a: IDisplayElement, b: IDisplayElement) => a.position - b.position);
   }
 
-  static createNarativeSection(section: IContent): IDisplayElement {
-    const ret = this.initializeIDisplayElement(section);
+  static createNarativeSection(section: IContent, path: string): IDisplayElement {
+    const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {
       for (const child of section.children) {
-        ret.children.push(this.createNarativeSection(child));
+        ret.children.push(this.createNarativeSection(child, path + '.' + child.position));
       }
     }
     ret.children = this.sort(ret.children);
     return ret;
   }
 
-  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
-    const ret = this.initializeIDisplayElement(section);
+  static createProfileSection(section: IContent, messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[], path: string) {
+    const ret = this.initializeIDisplayElement(section, path);
     if (section.children && section.children.length > 0) {
       for (const child of section.children) {
-        const retChild = this.initializeIDisplayElement(child);
+        const retChild = this.initializeIDisplayElement(child, ret.path + '.' + child.position);
         switch (child.type) {
           case Type.CONFORMANCEPROFILEREGISTRY:
             retChild.children = messageNodes;
@@ -65,10 +66,10 @@ export class IgTOCNodeHelper {
     for (const section of structure) {
       switch (section.type) {
         case Type.TEXT:
-          ret.push(this.createNarativeSection(section));
+          ret.push(this.createNarativeSection(section, section.position + ''));
           break;
         case Type.PROFILE:
-          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes));
+          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
           break;
         default:
           break;
@@ -83,11 +84,11 @@ export class IgTOCNodeHelper {
     }
   }
 
-  static getIDisplayFromSections(children: IContent[]): IDisplayElement[] {
+  static getIDisplayFromSections(children: IContent[], path: string): IDisplayElement[] {
     if (children) {
-      const sections: IDisplayElement[] = children.map((section) => this.initializeIDisplayElement(section));
+      const sections: IDisplayElement[] = children.map((section) => this.initializeIDisplayElement(section, path + section.position + ''));
       for (const child of children) {
-        sections.push(...this.getIDisplayFromSections(child.children));
+        sections.push(...this.getIDisplayFromSections(child.children, path + '' + child.position + '.'));
       }
       return sections;
     } else {
