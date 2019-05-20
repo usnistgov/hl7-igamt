@@ -1,7 +1,12 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {Action} from '@ngrx/store';
 import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
-import {IAddNodes, IDeleteNode} from '../../../modules/ig/models/toc/toc-operation.class';
+import {
+  IAddNodes,
+  ICopyNode,
+  ICopyResourceResponse,
+  IDeleteNode
+} from '../../../modules/ig/models/toc/toc-operation.class';
 import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
 
 export enum IgEditActionTypes {
@@ -9,10 +14,13 @@ export enum IgEditActionTypes {
   IgEditResolverLoadSuccess = '[Ig Edit Resolver] Ig Load Success',
   IgEditResolverLoadFailure = '[Ig Edit Resolver] Ig Load Failure',
   UpdateSections = '[Ig Edit TOC] Update Sections',
-  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   IgEditDeleteNode = '[Ig Edit TOC] Delete Node',
+  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
   AddResourceFailure = '[Ig Edit TOC] Add Resource Failure',
+  CopyResource = '[Ig Edit TOC] Copy Resource',
+  CopyResourceSuccess = '[Ig Edit TOC] Copy Resource Success',
+  CopyResourceFailure = '[Ig Edit TOC] Copy Resource Failure',
 }
 
 export class IgEditResolverLoad implements Action {
@@ -56,6 +64,23 @@ export class AddResourceFailure implements Action {
   }
 }
 
+export class CopyResource implements Action {
+  readonly type = IgEditActionTypes.CopyResource;
+  constructor(readonly payload: ICopyNode) {
+  }
+}
+export class CopyResourceSuccess implements Action {
+  readonly type = IgEditActionTypes.CopyResourceSuccess;
+  constructor(readonly payload: ICopyResourceResponse) {
+  }
+}
+
+export class CopyResourceFailure implements Action {
+  readonly type = IgEditActionTypes.CopyResourceFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
 export class IgEditDeleteNode implements Action {
   readonly type = IgEditActionTypes.IgEditDeleteNode;
   constructor(readonly payload: IDeleteNode) {
@@ -69,4 +94,7 @@ export type IgEditActions =
   | UpdateSections
   | IgEditTocAddResource
   | AddResourceSuccess
-  | IgEditDeleteNode;
+  | IgEditDeleteNode
+  | CopyResource
+  | CopyResourceSuccess
+  | CopyResourceFailure;

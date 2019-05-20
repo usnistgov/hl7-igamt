@@ -38,6 +38,8 @@ import { NamingConventionDirective } from './directives/naming-convention.direct
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { ConfigService } from './services/config.service';
 import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
+import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
+import { SelectNameComponent } from './components/select-name/select-name.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,8 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     SelectValueSetsComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
+    CopyResourceComponent,
+    SelectNameComponent,
   ],
   imports: [
     CommonModule,
@@ -122,10 +126,11 @@ import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
     MetadataFormComponent,
     ChipsModule,
     ResourcePickerComponent,
+    CopyResourceComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

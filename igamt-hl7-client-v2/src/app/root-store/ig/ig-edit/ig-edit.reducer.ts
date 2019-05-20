@@ -4,6 +4,7 @@ import {Type} from '../../../modules/shared/constants/type.enum';
 import {IContent} from '../../../modules/shared/models/content.interface';
 import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
 import {IgEditActions, IgEditActionTypes} from './ig-edit.actions';
+import {ICopyResourceResponse} from "../../../modules/ig/models/toc/toc-operation.class";
 
 export interface IState {
   document: IgDocument;
@@ -66,6 +67,8 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
       };
+      case IgEditActionTypes.CopyResourceSuccess:
+        return  applyCopy(state, action.payload);
 
     case IgEditActionTypes.UpdateSections:
       return {
@@ -77,6 +80,21 @@ export function reducer(state = initialState, action: IgEditActions): IState {
   }
 }
 
+function applyCopy(state: IState, payload: ICopyResourceResponse): IState {
+  switch (payload.reg.type) {
+    case Type.VALUESETREGISTRY:
+      return {...state, document: {...state.document, valueSetRegistry: payload.reg}, valueSets: igElementAdapter.upsertOne(payload.display, state.valueSets) };
+    case Type.CONFORMANCEPROFILEREGISTRY:
+      return {...state, document: {...state.document, conformanceProfileRegistry: payload.reg}, messages: igElementAdapter.upsertOne(payload.display, state.messages) };
+    case Type.DATATYPEREGISTRY:
+      return {...state, document: {...state.document, datatypeRegistry: payload.reg}, datatypes: igElementAdapter.upsertOne(payload.display, state.datatypes) };
+    case Type.SEGMENTREGISTRY:
+      return {...state, document: {...state.document, segmentRegistry: payload.reg}, segments: igElementAdapter.upsertOne(payload.display, state.segments) };
+    default:
+      return state;
+  }
+
+}
 function updatePositions(children: IContent[]) {
   for (let i = 0; i < children.length; i++) {
     children[i].position = i + 1;

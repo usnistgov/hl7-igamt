@@ -58,6 +58,7 @@ import gov.nist.hit.hl7.igamt.display.service.DisplayInfoService;
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingMessagesWrapper;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
@@ -477,6 +478,7 @@ public class IGDocumentController extends BaseController {
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
           clone.setName(profile.getName());
+          clone.setIdentifier(ev.getExt());
           clone = conformanceProfileService.save(clone);
           savedIds.add(clone.getId());
         }
@@ -750,19 +752,19 @@ public class IGDocumentController extends BaseController {
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone",
       method = RequestMethod.POST, produces = {"application/json"})
-  public ResponseMessage<TreeNode> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
+  public ResponseMessage<CloneResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id,
       @PathVariable("conformanceProfileId") String conformanceProfileId,
       Authentication authentication) throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
     String username = authentication.getName();
-    ConformanceProfile profile = conformanceProfileService.findById(wrapper.getId());
+    ConformanceProfile profile = conformanceProfileService.findById(wrapper.getSelected().getOriginalId());
     if (profile == null) {
       throw new CloneException("Failed to build conformance profile tree structure");
     }
     ConformanceProfile clone = profile.clone();
     clone.setUsername(username);
-    clone.setName(wrapper.getName());
+    clone.setIdentifier(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone = conformanceProfileService.save(clone);
 
@@ -776,30 +778,34 @@ public class IGDocumentController extends BaseController {
         }
       }
     }
-    
     ig.getConformanceProfileRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getConformanceProfileRegistry().getChildren().size() + 1));
     ig = igService.save(ig);
     
-    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Conformance profile clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createConformanceProfileNode(clone, 0));
+    CloneResponse response = new CloneResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getConformanceProfileRegistry());
+    response.setDisplay(displayInfoService.convertConformanceProfile(clone));
+    
+    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Conformance profile clone Success", clone.getId(), false, clone.getUpdateDate(),response);
   }
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone",
       method = RequestMethod.POST, produces = {"application/json"})
-  public ResponseMessage<TreeNode> cloneSegment(@RequestBody CopyWrapper wrapper,
+  public ResponseMessage<CloneResponse> cloneSegment(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
       Authentication authentication)
       throws IGNotFoundException, ValidationException, CloneException {
     Ig ig = findIgById(id);
     String username = authentication.getPrincipal().toString();
-    Segment segment = segmentService.findById(wrapper.getId());
+    Segment segment = segmentService.findById(segmentId);
     if (segment == null) {
-      throw new CloneException("Cannot find segment with id=" + wrapper.getId());
+      throw new CloneException("Cannot find segment with id=" + segmentId);
     }
     Segment clone = segment.clone();
     clone.setUsername(username);
     clone.setName(segment.getName());
-    clone.setExt(wrapper.getExt());
+    clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = segmentService.save(clone);
@@ -813,29 +819,33 @@ public class IGDocumentController extends BaseController {
         }
       }
     }
-    
     ig.getSegmentRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
     ig=igService.save(ig);
-    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createSegmentNode(clone, 0));
+    CloneResponse response = new CloneResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getSegmentRegistry());
+    response.setDisplay(displayInfoService.convertSegment(clone));
+    
+    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Segment profile clone Success", clone.getId(), false, clone.getUpdateDate(),response);
   }
 
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone",
       method = RequestMethod.POST, produces = {"application/json"})
-  public ResponseMessage<TreeNode> copyDatatype(@RequestBody CopyWrapper wrapper,
+  public ResponseMessage<CloneResponse> copyDatatype(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
       Authentication authentication) throws IGNotFoundException, CloneException {
     Ig ig = findIgById(id);
     String username = authentication.getPrincipal().toString();
-    Datatype datatype = datatypeService.findById(wrapper.getId());
+    Datatype datatype = datatypeService.findById(datatypeId);
     if (datatype == null) {
-      throw new CloneException("Cannot find datatype with id=" + wrapper.getId());
+      throw new CloneException("Cannot find datatype with id=" + datatypeId);
     }
     Datatype clone = datatype.clone();
     clone.setUsername(username);
     clone.setId(new ObjectId().toString());
-    clone.setExt(wrapper.getExt());
+    clone.setExt(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone = datatypeService.save(clone);
@@ -849,45 +859,51 @@ public class IGDocumentController extends BaseController {
         }
       }
     }
-    
     ig.getDatatypeRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size()+1));
     ig=igService.save(ig);
-    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false, clone.getUpdateDate(), displayConverter.createDatatypeNode(clone, 0));
+    CloneResponse response = new CloneResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getDatatypeRegistry());
+    response.setDisplay(displayInfoService.convertDatatype(clone));
+    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Datatype clone Success", clone.getId(), false, clone.getUpdateDate(), response);
   }
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone",
       method = RequestMethod.POST, produces = {"application/json"})
 
-  public ResponseMessage<TreeNode> cloneValueSet(@RequestBody CopyWrapper wrapper,
+  public ResponseMessage<CloneResponse> cloneValueSet(@RequestBody CopyWrapper wrapper,
       @PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
       Authentication authentication) throws CloneException, IGNotFoundException {
     Ig ig = findIgById(id);
     String username = authentication.getPrincipal().toString();
-    Valueset valueset = valuesetService.findById(wrapper.getId());
+    Valueset valueset = valuesetService.findById(valuesetId);
     if (valueset == null) {
-      throw new CloneException("Cannot find valueset with id=" + wrapper.getId());
+      throw new CloneException("Cannot find valueset with id=" + valuesetId);
     }
     Valueset clone = valueset.clone();
     clone.getDomainInfo().setScope(Scope.USER);
 
     clone.setUsername(username);
-    clone.setBindingIdentifier(wrapper.getName());
+    clone.setBindingIdentifier(wrapper.getSelected().getExt());
     clone.getDomainInfo().setScope(Scope.USER);
     clone = valuesetService.save(clone);
     ig.getValueSetRegistry().getChildren().add(new Link(clone.getId(), clone.getDomainInfo(),
         ig.getValueSetRegistry().getChildren().size() + 1));
-
-    ig = igService.save(ig);
-    return new ResponseMessage<TreeNode>(Status.SUCCESS, "", "Value Set clone Success",
-        clone.getId(), false, clone.getUpdateDate(), displayConverter.createValueSetNode(clone, 0));
+    ig=igService.save(ig);
+    CloneResponse response = new CloneResponse();
+    response.setId(clone.getId());
+    response.setReg(ig.getValueSetRegistry());
+    response.setDisplay(displayInfoService.convertValueSet(clone));
+    return new ResponseMessage<CloneResponse>(Status.SUCCESS, "", "Value Set clone Success",
+        clone.getId(), false, clone.getUpdateDate(), response);
   }
 
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/add",
       method = RequestMethod.POST, produces = {"application/json"})
   public ResponseMessage<IGDisplayInfo> addConforanceProfile(
-      @PathVariable("id") String id, @RequestBody gov.nist.hit.hl7.igamt.common.base.wrappers.AddingWrapper wrapper,
+      @PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
       Authentication authentication) throws IGNotFoundException, AddingException {
     String username = authentication.getPrincipal().toString();
     Ig ig = findIgById(id);

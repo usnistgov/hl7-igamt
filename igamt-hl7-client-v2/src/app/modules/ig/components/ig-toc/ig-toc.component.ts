@@ -14,6 +14,7 @@ import {TREE_ACTIONS, TreeComponent, TreeModel, TreeNode} from 'angular-tree-com
 import {ContextMenuComponent} from 'ngx-contextmenu';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {Type} from '../../../shared/constants/type.enum';
+import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {NodeHelperService} from '../../../shared/services/node-helper.service';
 import {IAddWrapper} from '../../models/ig/add-wrapper.class';
@@ -42,6 +43,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   }
   @Output()
   nodeState = new EventEmitter<IDisplayElement[]>();
+  @Output()
+  copy = new EventEmitter<ICopyResourceData>();
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
@@ -106,27 +109,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   import(node , type: Type, scope: Scope ) {
     this.addChildren.emit({node, type, scope});
   }
-
-  addDatatypes() {
+  copyResource(node: TreeNode) {
+    this.copy.emit({element: node.data, existing: node.parent.data.children});
   }
 
-  addValueSets() {
-  }
-
-  addSegments() {
-  }
-
-  copyConformanceProfile(node) {
-  }
-
-  copySegment(node) {
-  }
-
-  copyValueSet(node) {
-  }
-
-  copyDatatype(node) {
-  }
   scrollTo(ref: ElementRef) {
     ref.nativeElement.scrollIntoView();
   }

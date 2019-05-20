@@ -11,13 +11,14 @@ import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
 import {TurnOffLoader, TurnOnLoader} from '../../loader/loader.actions';
 import {
   AddResourceFailure,
-  AddResourceSuccess,
+  AddResourceSuccess, CopyResource, CopyResourceSuccess,
   IgEditActions,
   IgEditActionTypes,
   IgEditResolverLoad,
   IgEditResolverLoadFailure,
   IgEditResolverLoadSuccess, IgEditTocAddResource,
 } from './ig-edit.actions';
+import {ICopyResourceResponse} from "../../../modules/ig/models/toc/toc-operation.class";
 
 @Injectable()
 export class IgEditEffects {
@@ -76,6 +77,31 @@ export class IgEditEffects {
           return [
             new TurnOffLoader(),
             new AddResourceSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new AddResourceFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  IgCopyResource$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CopyResource),
+    switchMap((action: CopyResource) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+
+      return this.igService.copyResource(action.payload).pipe(
+        flatMap((response: Message<ICopyResourceResponse>) => {
+          return [
+            new TurnOffLoader(),
+            new CopyResourceSuccess(response.data),
           ];
         }),
         catchError((error: HttpErrorResponse) => {

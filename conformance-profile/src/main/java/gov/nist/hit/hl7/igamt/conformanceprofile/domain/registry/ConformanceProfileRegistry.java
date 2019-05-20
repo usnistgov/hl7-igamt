@@ -22,7 +22,7 @@ public class ConformanceProfileRegistry extends Registry {
 
   public ConformanceProfileRegistry() {
     super();
-    this.type = Type.COMPOSITEPROFILEREGISTRY;
+    this.type = Type.CONFORMANCEPROFILEREGISTRY;
     // TODO Auto-generated constructor stub
   }
 

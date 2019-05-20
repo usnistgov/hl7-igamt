@@ -4,7 +4,7 @@ import {Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
 import {filter, map, withLatestFrom} from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import {IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {CopyResource, IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
 import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
@@ -16,6 +16,8 @@ import {IResourcePickerData} from '../../../shared/models/resource-picker-data.i
 import {IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 import {IgTocComponent} from '../ig-toc/ig-toc.component';
+import {CopyResourceComponent} from "../../../shared/components/copy-resource/copy-resource.component";
+import {ICopyResourceData} from "../../../shared/models/copy-resource-data";
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -100,8 +102,22 @@ export class IgEditSidebarComponent implements OnInit {
     subscription.unsubscribe();
   }
 
-  private getDialogTitle(event: IAddWrapper) {
+  copy($event: ICopyResourceData) {
+    console.log($event);
+    const dialogRef = this.dialog.open(CopyResourceComponent, {
+      data: {...$event, targetScope: Scope.USER },
+    });
 
+    dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
+      withLatestFrom(this.igId$),
+      map(([result, igId]) => {
+        this.store.dispatch(new CopyResource({documentId: igId, selected: result}));
+      }),
+    ).subscribe();
+  }
+
+  private getDialogTitle(event: IAddWrapper) {
     return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
   }
 
