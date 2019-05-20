@@ -9,14 +9,15 @@
       <app-ig-edit-titlebar [metadata]="titleBar | async"></app-ig-edit-titlebar>
     </div>
 
-    <div class="page-container">
+    <div class="page-container" [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ positionX +') [resize-bar] 4px [container] minmax(600px, 8fr)'}">
       <div class="container-section">
         <app-ig-edit-toolbar class="toolbar-controls"></app-ig-edit-toolbar>
         <app-ig-edit-active-titlebar class="titlebar-content"></app-ig-edit-active-titlebar>
         <div class="container-content">
-          <app-metadata-form [metadataModel]="metamodel"></app-metadata-form>
+          <router-outlet style="display: none;" (activate)="activateComponent($event)" (deactivate)="deactivateComponent($event)"></router-outlet>
         </div>
       </div>
+      <div class="resize-bar" [ngStyle]="{'background-color': dragging ? 'blue' : ''}" #resize></div>
       <app-ig-edit-sidebar class="sidebar"></app-ig-edit-sidebar>
     </div>
   </div>

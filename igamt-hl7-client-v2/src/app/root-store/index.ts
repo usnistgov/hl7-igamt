@@ -1,5 +1,6 @@
-import {routerReducer, RouterReducerState} from '@ngrx/router-store';
-import {ActionReducerMap} from '@ngrx/store';
+import { ActivatedRouteSnapshot } from '@angular/router';
+import { routerReducer, RouterReducerState } from '@ngrx/router-store';
+import { ActionReducerMap } from '@ngrx/store';
 import * as fromAuth from './authentication/authentication.reducer';
 import * as fromConfig from './config/config.reducer';
 import * as formCreateIg from './create-ig/create-ig.reducer';
@@ -34,4 +35,16 @@ export const selectRouterURL = (state: IRouteState) => {
   } else {
     return '';
   }
+};
+
+export const selectRouteParams = (state: IRouteState) => {
+  const loop = (routes: ActivatedRouteSnapshot[]) => {
+    const params = {};
+    for (const route of routes) {
+      Object.assign(params, route.params);
+      Object.assign(params, loop(route.children));
+    }
+    return params;
+  };
+  return loop([state.router.state.root]);
 };

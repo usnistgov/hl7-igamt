@@ -5,4 +5,5 @@ export interface ICopyResourceData {
   element: IDisplayElement;
   existing: IDisplayElement[];
   targetScope?: Scope;
+  title?: string;
 }

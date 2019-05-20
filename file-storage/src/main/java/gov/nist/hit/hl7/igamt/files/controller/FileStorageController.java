@@ -36,7 +36,6 @@ import gov.nist.hit.hl7.igamt.files.util.UploadFileResponse;
 
 
 @RestController
-@RequestMapping(FileStorageUtil.root)
 public class FileStorageController {
 
   @Autowired
@@ -50,8 +49,7 @@ public class FileStorageController {
   private GridFsOperations operations;
 
 
-
-  @RequestMapping(value = FileStorageUtil.UPLOAD_URL, method = RequestMethod.POST,
+  @RequestMapping(value = "/api/storage/upload", method = RequestMethod.POST,
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = "application/json")
   public UploadFileResponse upload(@RequestPart("file") MultipartFile part,
       HttpServletRequest request, Authentication authentication) throws UploadImageFileException {
@@ -75,8 +73,7 @@ public class FileStorageController {
         String generatedName = UUID.randomUUID().toString() + "." + extension;
         ObjectId fsFile = storageService.store(in, generatedName, part.getContentType(), metaData);
         GridFSFile dbFile = storageService.findOne(fsFile.toString());
-        return new UploadFileResponse(
-            HttpUtil.getImagesRootUrl(request) + "/file?name=" + dbFile.getFilename());
+        return new UploadFileResponse(dbFile.getFilename());
       }
       throw new UploadImageFileException("fileTypeUnsupported");
 
@@ -88,7 +85,7 @@ public class FileStorageController {
   }
 
   @ResponseBody
-  @RequestMapping(value = "/file", method = RequestMethod.GET)
+  @RequestMapping(value = "/api/storage/file", method = RequestMethod.GET)
   public ResponseEntity<InputStreamResource> getByName(@RequestParam("name") String filename)
       throws UploadImageFileException {
     try {

@@ -1,5 +1,7 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { debounceTime } from 'rxjs/operators';
+import { INarrative } from '../ig-section-editor/ig-section-editor.component';
 
 @Component({
   selector: 'app-narrative-section-form',
@@ -11,21 +13,31 @@ export class NarrativeSectionFormComponent implements OnInit {
   sectionForm: FormGroup;
   @Output()
   form: EventEmitter<FormGroup>;
+  @Input()
+  viewOnly: boolean;
+  @Input()
+  set data(data: INarrative) {
+    this.sectionForm.patchValue(data, { emitEvent: false });
+  }
 
   constructor() {
     this.form = new EventEmitter<FormGroup>();
     this.sectionForm = new FormGroup({
-      title: new FormControl('', [Validators.required, Validators.maxLength(3)]),
-      content: new FormControl(''),
+      id: new FormControl(''),
+      label: new FormControl('', [Validators.required]),
+      description: new FormControl(''),
     });
   }
 
   ngOnInit() {
-    this.sectionForm.valueChanges.subscribe(
-      (change) => {
-        this.form.emit(this.sectionForm);
-      },
-    );
+    this.sectionForm.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe(
+        (change) => {
+          console.log('X');
+          this.form.emit(this.sectionForm);
+        },
+      );
   }
 
 }

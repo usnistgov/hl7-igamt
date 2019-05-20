@@ -17,7 +17,7 @@ export function validConvention(scope: Scope, type: Type, ext: string): IConvent
       if ( !isTowDigets(ext)) {
         return {valid: false, error: 'The extension must be 2 Digets '};
       }
-    } else if (scope === Scope.USER) {
+    } else if (scope === Scope.USER && (type === Type.DATATYPE || type === Type.SEGMENT)) {
       if (!startWithLetter(ext)) {
         return {valid: false, error: 'User extension must start with a letter'};
       } else if (ext.length !== 4) {

@@ -8,7 +8,7 @@
          style="height: 60px; width: 60px; background-color: #feec9d; text-align: center; display: flex; flex-direction: column; justify-content: center;">
       <strong style="color: #c9c9c9;">HL7</strong>
     </div>
-    <img *ngIf="igListItem.coverpage" [src]="igListItem.coverpage" height="60px" width="60px">
+    <img *ngIf="igListItem.coverpage" [src]="'/api/storage/file?name=' + igListItem.coverpage" height="60px" >
 
     <!-- ITEM DETAILS -->
     <div style="display: flex; flex-direction: column;">

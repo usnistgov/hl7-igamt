@@ -1,5 +1,5 @@
-import {Component, EventEmitter, forwardRef, Input, OnInit, Output} from '@angular/core';
-import {AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-form-input',
@@ -37,10 +37,11 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   label: string;
   @Input()
   placeholder: any;
+  @ViewChild('inputElm', { read: ElementRef }) inputElm: ElementRef;
   disabled: boolean;
   control: AbstractControl;
 
-  constructor(private controlContainer: ControlContainer) {
+  constructor(private controlContainer: ControlContainer, private cd: ChangeDetectorRef) {
     this.change = new EventEmitter<any>();
   }
 
@@ -64,6 +65,9 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
 
   writeValue(val: any): void {
     this.value = val;
+    if (this.inputElm) {
+      this.inputElm.nativeElement.value = val;
+    }
   }
 
   valueChange(value: any) {

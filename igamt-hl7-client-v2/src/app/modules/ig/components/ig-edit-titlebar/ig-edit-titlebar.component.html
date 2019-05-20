@@ -1,8 +1,14 @@
-<h3 class="title-text">
-  <app-scope-badge [scope]="metadata?.domainInfo?.scope"></app-scope-badge>
-  <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
-  {{ metadata.title }}
-</h3>
-<div style="margin-left: 20px;">
-  <app-metadata-date></app-metadata-date>
+<div class="badge">
+    <app-scope-badge [scope]="metadata?.domainInfo?.scope"></app-scope-badge>
+    <app-entity-bagde [type]="'IGDOCUMENT'"></app-entity-bagde>
 </div>
+<div>
+    <span class="title-text">
+      {{ metadata.title }}
+    </span>
+    <app-metadata-date [updateDate]="metadata.updateDate" [creationDate]="metadata.creationDate"></app-metadata-date>
+</div>
+
+
+<!-- <div style="margin-left: 20px;">
+</div> -->

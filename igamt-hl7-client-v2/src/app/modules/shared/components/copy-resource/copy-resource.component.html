@@ -1,9 +1,10 @@
-<h2 mat-dialog-title>Copy Resource</h2>
+<h5 mat-dialog-title> {{data.title}}
+</h5>
 <mat-dialog-content style="height: 200px; width: 400px">
   <app-select-name [element]="data.element" [existing]="data.existing" [targetScope]="data.targetScope" (flavor)="selected($event)"></app-select-name>
 </mat-dialog-content>
 <mat-dialog-actions style="justify-content: flex-end;">
   <button  class="btn btn-sm btn-danger" style="margin-right: 5px;" (click)="cancel()">Cancel</button>
-  <button  class="btn btn-sm btn-secondary" [disabled]="!isValid()" (click)="submit()" (flavor)="selected($event)">Submit</button>
+  <button  class="btn btn-sm btn-success" [disabled]="!isValid()" (click)="submit()" (flavor)="selected($event)">Submit</button>
 </mat-dialog-actions>
 

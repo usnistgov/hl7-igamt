@@ -1,5 +1,7 @@
 <form #namingForm='ngForm'>
-  <input name="variableName" [id]="element.id" appNamingDuplication appNamingConvention  [type]="element.type" [scope]="targetScope" [existing]="existing" [fixedName]="element.fixedName" [domainInfo]="element.domainInfo" [(ngModel)]="element.variableName" type="text" style="width: 100%" required (input)="emitData()"/>
+
+
+  <input name="variableName" [id]="element.id" appNamingDuplication appNamingConvention  [type]="element.type" [scope]="targetScope" [existing]="existing" [fixedName]="element.fixedName" [domainInfo]="element.domainInfo" [(ngModel)]="element.variableName" type="text" style="width: 100%" required (input)="emitData()" [placeholder]="getPlaceHolder(element)"/>
   <div *ngIf="namingForm.controls['variableName'] && namingForm.controls['variableName'].errors" style="color:red; font-size: 11px">
     <div *ngIf="namingForm.controls['variableName'].errors.required">
       <span>*extension is required</span>

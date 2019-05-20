@@ -1,7 +1,12 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.util.Arrays;
 import java.util.Properties;
+
+import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -63,6 +68,11 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //  @Autowired
 //  DatatypeClassifier datatypeClassifier;
+
+    @Autowired
+    CoConstraintService ccService;
+    @Autowired
+    CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;
