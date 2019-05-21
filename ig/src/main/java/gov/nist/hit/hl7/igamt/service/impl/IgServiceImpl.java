@@ -414,7 +414,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username));
+            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username, Scope.USER));
       }
     }
     newReg.setChildren(children);
@@ -441,7 +441,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
-            valuesetsMap,datatypesMap, l, username));
+            valuesetsMap,datatypesMap, l, username,Scope.USER));
       }
     }
     newReg.setChildren(children);
@@ -463,7 +463,7 @@ public class IgServiceImpl implements IgService {
       if (!datatypesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username));
+        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username,Scope.USER));
       }
     }
 
@@ -486,7 +486,8 @@ public class IgServiceImpl implements IgService {
       if (!valuesetsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username));
+    	  	Link newLink = this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username, Scope.USER);    	  	
+        children.add(newLink);
       }
     }
     newReg.setChildren(children);

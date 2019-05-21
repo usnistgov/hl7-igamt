@@ -1,9 +1,14 @@
-import { HttpErrorResponse } from '@angular/common/http';
-import { Action } from '@ngrx/store';
-import { IGDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
-import { IAddNodes, IDeleteNode } from '../../../modules/ig/models/toc/toc-operation.class';
+import {HttpErrorResponse} from '@angular/common/http';
+import {Action} from '@ngrx/store';
+import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
+import {
+  IAddNodes,
+  ICopyNode,
+  ICopyResourceResponse,
+  IDeleteNode,
+} from '../../../modules/ig/models/toc/toc-operation.class';
 import { IContent } from '../../../modules/shared/models/content.interface';
-import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../modules/shared/models/editor.enum';
 
 export enum IgEditActionTypes {
@@ -11,10 +16,13 @@ export enum IgEditActionTypes {
   IgEditResolverLoadSuccess = '[Ig Edit Resolver] Ig Load Success',
   IgEditResolverLoadFailure = '[Ig Edit Resolver] Ig Load Failure',
   UpdateSections = '[Ig Edit TOC] Update Sections',
-  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   IgEditDeleteNode = '[Ig Edit TOC] Delete Node',
+  IgEditTocAddResource = '[Ig Edit TOC] Add Resource',
   AddResourceSuccess = '[Ig Edit TOC] Add Resource Success',
   AddResourceFailure = '[Ig Edit TOC] Add Resource Failure',
+  CopyResource = '[Ig Edit TOC] Copy Resource',
+  CopyResourceSuccess = '[Ig Edit TOC] Copy Resource Success',
+  CopyResourceFailure = '[Ig Edit TOC] Copy Resource Failure',
 
   UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
   OpenEditor = '[Ig Edit Open] Open Editor',
@@ -46,7 +54,6 @@ export class ClearIgEdit implements Action {
 
   constructor() {
   }
-
 }
 
 export class IgEditResolverLoad implements Action {
@@ -86,6 +93,23 @@ export class AddResourceSuccess implements Action {
 
 export class AddResourceFailure implements Action {
   readonly type = IgEditActionTypes.AddResourceFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
+export class CopyResource implements Action {
+  readonly type = IgEditActionTypes.CopyResource;
+  constructor(readonly payload: ICopyNode) {
+  }
+}
+export class CopyResourceSuccess implements Action {
+  readonly type = IgEditActionTypes.CopyResourceSuccess;
+  constructor(readonly payload: ICopyResourceResponse) {
+  }
+}
+
+export class CopyResourceFailure implements Action {
+  readonly type = IgEditActionTypes.CopyResourceFailure;
   constructor(readonly error: HttpErrorResponse) {
   }
 }
@@ -232,4 +256,7 @@ export type IgEditActions =
   | ClearIgEdit
   | OpenNarrativeEditorNode
   | IgEditTocAddResource
-  | AddResourceSuccess;
+  | AddResourceSuccess
+  | CopyResource
+  | CopyResourceSuccess
+  | CopyResourceFailure;

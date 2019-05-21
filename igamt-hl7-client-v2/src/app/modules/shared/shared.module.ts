@@ -17,6 +17,7 @@ import { TableModule } from 'primeng/table';
 import { MessageService } from '../core/services/message.service';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
+import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
@@ -31,6 +32,7 @@ import { ResourcePickerComponent } from './components/resource-picker/resource-p
 import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.component';
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
+import { SelectNameComponent } from './components/select-name/select-name.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
@@ -38,7 +40,7 @@ import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.comp
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { ConfigService } from './services/config.service';
-import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
+import {DEFAULT_MESSAGE_OPTION} from './shared-injection-token';
 
 @NgModule({
   declarations: [
@@ -64,6 +66,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     FileSelectInputComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
+    CopyResourceComponent,
+    SelectNameComponent,
   ],
   imports: [
     CommonModule,
@@ -127,10 +131,11 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     MetadataFormComponent,
     ChipsModule,
     ResourcePickerComponent,
+    CopyResourceComponent,
     NamingDuplicationDirective,
     NamingConventionDirective,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

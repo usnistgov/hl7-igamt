@@ -21,6 +21,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.service.ResourceService;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -82,7 +83,7 @@ public interface SegmentService extends ResourceService {
 	public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
 	public Link cloneSegment(String compositeKey, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, Link l, String username) throws CoConstraintSaveException;
+			HashMap<String, String> datatypesMap, Link l, String username, Scope user) throws CoConstraintSaveException;
 
 	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
 			throws SegmentNotFoundException, SegmentValidationException;

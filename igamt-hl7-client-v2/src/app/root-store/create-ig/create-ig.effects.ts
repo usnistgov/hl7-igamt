@@ -1,5 +1,6 @@
 import {HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
 import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
@@ -53,6 +54,7 @@ export class CreateIgEffects {
       }));
       return this.igService.createIntegrationProfile(action.payload).pipe(
         map((resp: Message<string>) => {
+          console.log(resp);
           return new CreateIgSuccess(resp);
         })
         , catchError(
@@ -90,6 +92,10 @@ export class CreateIgEffects {
   @Effect()
   createIgSucess$ = this.actions$.pipe(
     ofType(CreateIgActionTypes.CreateIgSuccess),
+    map((action: CreateIgSuccess) => {
+      this.router.navigate(['/ig/' + action.payload.data ]);
+      return action;
+    }),
     this.helper.finalize<CreateIgSuccess, Message<string>>({
       clearMessages: true,
       turnOffLoader: true,
@@ -108,6 +114,6 @@ export class CreateIgEffects {
   );
 
   constructor(private actions$: Actions<CreateIgActions>, private igService: IgService,
-              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService) {
+              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService, private router: Router) {
   }
 }

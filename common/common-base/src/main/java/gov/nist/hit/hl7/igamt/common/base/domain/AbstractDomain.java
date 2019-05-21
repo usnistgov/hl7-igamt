@@ -154,8 +154,6 @@ public abstract class AbstractDomain {
 	elm.comment = comment;
 	elm.description = description;
 	elm.createdFrom = createdFrom;
-	elm.creationDate = creationDate;
-	elm.updateDate = updateDate;
 	elm.setType(type);
 	elm.from = id;
 	elm.origin = origin;

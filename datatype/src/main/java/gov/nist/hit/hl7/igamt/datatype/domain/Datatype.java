@@ -21,6 +21,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 
@@ -45,7 +46,10 @@ public class Datatype extends Resource {
     this.binding = binding;
   }
 
-  public Datatype() {}
+  public Datatype() {
+	  super();
+	  super.setType(Type.DATATYPE);
+  }
 
   public String getExt() {
     return ext;

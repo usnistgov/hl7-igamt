@@ -9,6 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 
@@ -23,6 +24,7 @@ public class Segment extends Resource {
 
   public Segment() {
     super();
+    super.setType(Type.SEGMENT);
   }
 
   public ResourceBinding getBinding() {

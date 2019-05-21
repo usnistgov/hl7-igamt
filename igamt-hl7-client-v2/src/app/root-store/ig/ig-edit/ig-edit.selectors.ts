@@ -235,24 +235,24 @@ export const selectMessagesEntites = createSelector(
 export const selectValueSetsNodes = createSelector(
   selectValueSetsEntities,
   selectValueSetRegistry,
-  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
+  (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistry(nodes, registry);
   },
 );
 
 export const selectSegmentsNodes = createSelector(
   selectSegmentsEntites,
   selectSegmentRegistry,
-  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
+  (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistry(nodes, registry);
   },
 );
 
 export const selectDatatypesNodes = createSelector(
   selectDatatypesEntites,
   selectDatatypeRegistry,
-  (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
+  (nodes: Dictionary<IDisplayElement>, registry: IRegistry) => {
+    return IgTOCNodeHelper.sortRegistry(nodes, registry);
   },
 );
 

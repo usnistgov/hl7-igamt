@@ -382,12 +382,14 @@ public class DatatypeServiceImpl implements DatatypeService {
 
   @Override
   public Link cloneDatatype(HashMap<String, String> valuesetsMap,
-      HashMap<String, String> datatypesMap, Link l, String username) {
+      HashMap<String, String> datatypesMap, Link l, String username, Scope scope) {
     // TODO Auto-generated method stub
 
     Datatype old = this.findById(l.getId());
     Datatype elm = old.clone();
+    elm.getDomainInfo().setScope(scope);
     Link newLink = l.clone(null);
+    
     elm.setOrigin(elm.getFrom());
     if (datatypesMap.containsKey(l.getId())) {
       newLink.setId(datatypesMap.get(l.getId()));
@@ -396,6 +398,7 @@ public class DatatypeServiceImpl implements DatatypeService {
       newLink.setId(newKey);
       datatypesMap.put(l.getId(), newKey);
     }
+    newLink.setDomainInfo(elm.getDomainInfo());
     updateDependencies(elm, datatypesMap, valuesetsMap);
     elm.setId(newLink.getId());
     this.save(elm);

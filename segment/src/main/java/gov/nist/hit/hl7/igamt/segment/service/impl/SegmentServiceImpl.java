@@ -643,15 +643,16 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public Link cloneSegment(String key,
-      HashMap<String, String> valuesetsMap,HashMap<String, String> datatypesMap, Link l, String username)
+      HashMap<String, String> valuesetsMap,HashMap<String, String> datatypesMap, Link l, String username, Scope scope)
       throws CoConstraintSaveException {
 
     Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
+    elm.getDomainInfo().setScope(scope);
     elm.setOrigin(elm.getFrom());
     Link newLink = l.clone(key);
     elm.setId(newLink.getId());
-
+    newLink.setDomainInfo(elm.getDomainInfo());
     updateDependencies(elm,valuesetsMap, datatypesMap, username);
     this.save(elm);
     updateCoConstraint(elm, obj,valuesetsMap, datatypesMap, username);
