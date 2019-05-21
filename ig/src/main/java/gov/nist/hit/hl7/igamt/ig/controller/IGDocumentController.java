@@ -522,8 +522,8 @@ public class IGDocumentController extends BaseController {
           clone.setUsername(username);
           clone.getDomainInfo().setScope(Scope.USER);
           clone.setEvent(ev.getName());
-          clone.setName(profile.getName());
-          clone.setIdentifier(ev.getExt());
+          clone.setName(ev.getExt());
+         // clone.setIdentifier(ev.getExt());
           clone = conformanceProfileService.save(clone);
           savedIds.add(clone.getId());
         }
@@ -534,6 +534,7 @@ public class IGDocumentController extends BaseController {
       empty.setDomainInfo(info);
       empty.setMetadata(wrapper.getMetadata());
       crudService.AddConformanceProfilesToEmptyIg(savedIds, empty);
+     
       Ig ret = igService.save(empty);
 
       return new ResponseMessage<String>(Status.SUCCESS, "", "IG created Successfuly", ret.getId(),
@@ -961,7 +962,7 @@ public class IGDocumentController extends BaseController {
         clone.getDomainInfo().setScope(Scope.USER);
         clone.setEvent(ev.getName());
         clone.setIdentifier(ev.getExt());
-        clone.setName(profile.getName());
+        clone.setName(ev.getExt());
         clone = conformanceProfileService.save(clone);
         savedIds.add(clone.getId());
       }

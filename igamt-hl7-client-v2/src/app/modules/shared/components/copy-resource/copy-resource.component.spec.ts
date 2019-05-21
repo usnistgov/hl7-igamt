@@ -8,7 +8,7 @@ describe('CopyResourceComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ CopyResourceComponent ]
+      declarations: [ CopyResourceComponent ],
     })
     .compileComponents();
   }));

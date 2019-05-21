@@ -9,5 +9,7 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 public interface BindingService {
 	
 	Set<RelationShip> collectDependencies(ReferenceIndentifier parent, ResourceBinding binding);
+	
+	Set<String> processBinding(ResourceBinding binding);
 
 }

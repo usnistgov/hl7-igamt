@@ -1,9 +1,9 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {ICopyResourceData} from '../../models/copy-resource-data';
-import {SelectNameComponent} from '../select-name/select-name.component';
 import {IAddingInfo} from '../../models/adding-info';
+import {ICopyResourceData} from '../../models/copy-resource-data';
+import {IDisplayElement} from '../../models/display-element.interface';
+import {SelectNameComponent} from '../select-name/select-name.component';
 
 @Component({
   selector: 'app-copy-resource',

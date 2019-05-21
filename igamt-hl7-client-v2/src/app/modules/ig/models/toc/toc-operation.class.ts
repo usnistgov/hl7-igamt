@@ -1,7 +1,7 @@
 import {Type} from '../../../shared/constants/type.enum';
 import {IAddingInfo} from '../../../shared/models/adding-info';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IRegistry} from "../../../shared/models/registry.interface";
+import {IRegistry} from '../../../shared/models/registry.interface';
 
 export interface IDeleteNode {
   subject: IDisplayElement;

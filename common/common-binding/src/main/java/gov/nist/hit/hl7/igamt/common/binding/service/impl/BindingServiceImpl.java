@@ -88,6 +88,51 @@ public class BindingServiceImpl implements BindingService {
 		return location;
 
 		}
+
+
+
+	@Override
+	public Set<String> processBinding(ResourceBinding binding) {
+	    // TODO Auto-generated method stub
+	    Set<String> vauleSetIds = new HashSet<String>();
+	    if (binding.getChildren() != null) {
+	      for (StructureElementBinding child : binding.getChildren()) {
+	
+	        if (child.getValuesetBindings() != null) {
+	          for (ValuesetBinding vs : child.getValuesetBindings()) {
+	            if (vs.getValuesetId() != null) {
+	              vauleSetIds.add(vs.getValuesetId());
+	            }
+	          }
+	        }
+	    	  if(child.getChildren() !=null && !child.getChildren().isEmpty()) {
+		    	  	processStructureElementBinding(child, vauleSetIds);
+	    	   }
+	      }
+	    }
+	    return vauleSetIds;
+	  }
+
+
+
+	private void processStructureElementBinding(StructureElementBinding structureElementBinding, Set<String> vauleSetIds) {
+		// TODO Auto-generated method stub
+		
+	      for (StructureElementBinding child : structureElementBinding.getChildren()) {
+	    		
+		        if (child.getValuesetBindings() != null) {
+		          for (ValuesetBinding vs : child.getValuesetBindings()) {
+		            if (vs.getValuesetId() != null) {
+		              vauleSetIds.add(vs.getValuesetId());
+		            }
+		          }
+		        }
+		    	  if(child.getChildren() !=null && !child.getChildren().isEmpty()) {
+			    	  	processStructureElementBinding(child, vauleSetIds);
+		    	  }
+		      }
+	}
+	
 	
 
 }

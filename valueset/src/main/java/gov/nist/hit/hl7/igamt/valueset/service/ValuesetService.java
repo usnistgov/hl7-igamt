@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
@@ -135,9 +136,10 @@ public interface ValuesetService {
   /**
    * @param newkey
    * @param l
+ * @param scope 
    * @return
    */
-  Link cloneValueSet(String newkey, Link l, String username);
+  Link cloneValueSet(String newkey, Link l, String username, Scope scope);
 
   public List<Valueset> findByIdIn(Set<String> linksAsIds);
 

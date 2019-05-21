@@ -1,9 +1,9 @@
+import {Dictionary} from '@ngrx/entity';
 import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
-import {Dictionary} from "@ngrx/entity";
-import {IRegistry} from "../../shared/models/registry.interface";
-import {IResource} from "../../shared/models/resource.interface";
+import {IRegistry} from '../../shared/models/registry.interface';
+import {IResource} from '../../shared/models/resource.interface';
 
 export class IgTOCNodeHelper {
 
@@ -137,9 +137,7 @@ export class IgTOCNodeHelper {
     }
   }
   static sortRegistry(elements: Dictionary<IDisplayElement>, registry: IRegistry): IDisplayElement[] {
-
-    const sorted = Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement ) => this.compare(a, b));
-    return sorted;
+    return  Object.keys(elements).map((key) => elements[key]).sort((a: IDisplayElement, b: IDisplayElement ) => this.compare(a, b));
   }
   static getFullName(node: IDisplayElement): string {
     if (node.fixedName && node.fixedName.length) {

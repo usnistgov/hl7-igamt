@@ -21,7 +21,7 @@ export class SelectNameComponent implements OnInit {
   @Input()
   targetScope: Scope;
   @Output()
-  flavor: EventEmitter<IAddingInfo> =new EventEmitter<IAddingInfo>();
+  flavor: EventEmitter<IAddingInfo> = new EventEmitter<IAddingInfo>();
 
   ngOnInit() {
   }
