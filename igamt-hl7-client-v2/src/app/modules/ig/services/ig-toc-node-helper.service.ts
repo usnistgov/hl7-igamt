@@ -3,7 +3,6 @@ import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import {IRegistry} from '../../shared/models/registry.interface';
-import {IResource} from '../../shared/models/resource.interface';
 
 export class IgTOCNodeHelper {
 
