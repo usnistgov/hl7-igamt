@@ -15,6 +15,7 @@ import {
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
 import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
+import { ClearAll } from '../../../../root-store/page-messages/page-messages.actions';
 import { IgListItem } from '../../models/ig/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
 import { Message } from './../../../core/models/message/message.class';
@@ -191,9 +192,17 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.store.dispatch(new ClearAll());
     this.route.queryParams.subscribe((params) => {
       if (params['type']) {
         this.selectViewType(params['type']);
+      } else {
+        this.router.navigate(['.'], {
+          queryParams: {
+            type: 'USER',
+          },
+          relativeTo: this.route,
+        });
       }
     });
   }

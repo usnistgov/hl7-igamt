@@ -8,6 +8,7 @@ import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IState {
   document: IgDocument;
+  tocCollapsed: boolean;
   tableOfContentEdit: {
     changed: boolean;
   };
@@ -21,6 +22,7 @@ export interface IState {
 
 export const initialState: IState = {
   document: null,
+  tocCollapsed: false,
   tableOfContentEdit: {
     changed: false,
   },
@@ -202,6 +204,17 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         sections: igElementAdapter.upsertMany(sectionList, state.sections),
       };
 
+    case IgEditActionTypes.CollapseTOC:
+      return {
+        ...state,
+        tocCollapsed: true,
+      };
+
+    case IgEditActionTypes.ExpandTOC:
+      return {
+        ...state,
+        tocCollapsed: false,
+      };
     default:
       return state;
   }

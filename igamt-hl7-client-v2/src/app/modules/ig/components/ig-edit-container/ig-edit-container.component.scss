@@ -67,7 +67,7 @@
   color: #444;
   background-color: #d6d6d6e3;
   grid-template-columns: minmax(min-content, 1fr);
-  grid-template-rows: [toolbar] 40px  [titlebar] 40px [page-container-content] auto;
+  grid-template-rows: [toolbar] 40px [titlebar] minmax(min-content, 40px) [page-container-content] auto;
   overflow: hidden;
 }
 

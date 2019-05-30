@@ -71,6 +71,17 @@ public class ConformanceProfileController extends BaseController {
     return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile,getReadOnly(authentication, conformanceProfile));
 
   }
+
+  @RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.GET,
+          produces = {"application/json"})
+
+  public ConformanceProfile getConformanceProfile(
+          @PathVariable("id") String id, Authentication authentication) throws ConformanceProfileNotFoundException {
+    ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
+
+    return this.findById(id);
+
+  }
   
   @RequestMapping(value = "/api/conformanceprofiles/{id}/structure/{contextId}", method = RequestMethod.GET,
       produces = {"application/json"})

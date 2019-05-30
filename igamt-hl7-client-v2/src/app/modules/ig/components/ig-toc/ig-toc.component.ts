@@ -22,7 +22,6 @@ import { IClickInfo } from '../../models/toc/click-info.interface';
   selector: 'app-ig-toc',
   templateUrl: './ig-toc.component.html',
   styleUrls: ['./ig-toc.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;

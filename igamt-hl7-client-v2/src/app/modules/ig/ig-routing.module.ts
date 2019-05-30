@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
 import { AuthenticatedGuard } from './../core/services/auth-guard.guard';
@@ -22,6 +24,10 @@ const routes: Routes = [
     path: 'create',
     component: CreateIGComponent,
     canActivate: [AuthenticatedGuard],
+  },
+  {
+    path: 'error',
+    component: ErrorPageComponent,
   },
   {
     path: ':igId',
@@ -47,6 +53,7 @@ const routes: Routes = [
             saveEditor: true,
             saveTableOfContent: true,
           },
+          action: OpenIgMetadataEditorNode,
           idKey: 'igId',
         },
         canDeactivate: [IgEditSaveDeactivateGuard],
@@ -64,9 +71,14 @@ const routes: Routes = [
             saveEditor: true,
             saveTableOfContent: true,
           },
+          action: OpenNarrativeEditorNode,
           idKey: 'sectionId',
         },
         canDeactivate: [IgEditSaveDeactivateGuard],
+      },
+      {
+        path: 'conformanceprofile',
+        loadChildren: 'src/app/modules/conformance-profile/conformance-profile.module#ConformanceProfileModule',
       },
     ],
   },

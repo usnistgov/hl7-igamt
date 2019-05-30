@@ -121,6 +121,12 @@ body {
   padding: 2px;
 }
 
+.node-content-wrapper:hover {
+  background-color: inherit !important;
+  border: 0 !important;
+  cursor: inherit !important;
+}
+
 .tree-children {
   overflow: unset;
 }

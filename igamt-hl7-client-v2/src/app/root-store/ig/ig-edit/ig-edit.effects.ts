@@ -6,10 +6,10 @@ import { combineLatest, of } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/core/services/message.service';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
-import { Message } from '../../../modules/core/models/message/message.class';
+import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { EditorSave, OpenEditor, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, TableOfContentSave, TableOfContentSaveFailure, TableOfContentSaveSuccess, ToolbarSave } from './ig-edit.actions';
+import { EditorSave, OpenEditor, OpenEditorFailure, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, TableOfContentSave, TableOfContentSaveFailure, TableOfContentSaveSuccess, ToolbarSave } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -134,16 +134,26 @@ export class IgEditEffects {
         this.store.select(selectSectionFromIgById, { id: action.payload.id }))
         .pipe(
           take(1),
-          map(([elm, section]) => {
-            return new OpenEditor({
-              element: elm,
-              editor: action.payload.editor,
-              initial: {
-                id: section.id,
-                label: section.label,
-                description: section.description,
-              },
-            });
+          flatMap(([elm, section]): Action[] => {
+            if (!elm || !section || !elm.id || !section.id) {
+              return [
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
+                new OpenEditorFailure({ id: action.payload.id }),
+              ];
+            } else {
+              return [
+                new OpenEditor({
+                  id: action.payload.id,
+                  element: elm,
+                  editor: action.payload.editor,
+                  initial: {
+                    id: section.id,
+                    label: section.label,
+                    description: section.description,
+                  },
+                }),
+              ];
+            }
           }),
         );
     }),
@@ -158,6 +168,7 @@ export class IgEditEffects {
           take(1),
           map((ig) => {
             return new OpenEditor({
+              id: action.payload.id,
               element: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
               initial: ig.metadata,

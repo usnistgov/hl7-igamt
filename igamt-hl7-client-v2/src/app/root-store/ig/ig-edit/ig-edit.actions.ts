@@ -18,6 +18,8 @@ export enum IgEditActionTypes {
 
   UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
   OpenEditor = '[Ig Edit Open] Open Editor',
+  OpenEditorFailure = '[Ig Edit Open] Open Editor Failure',
+
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
   OpenConformanceProfileEditorNode = '[Ig Edit TOC Conformance Profile] Open Conformance Profile Editor Node',
@@ -39,6 +41,24 @@ export enum IgEditActionTypes {
   EditorSaveFailure = '[Editor Save Failure] Editor Save Failure',
 
   ClearIgEdit = '[Editor Leave] Clear Ig Edit State',
+  CollapseTOC = '[Ig Edit TOC] Collapse',
+  ExpandTOC = '[Ig Edit TOC] Expand',
+}
+
+export class CollapseTOC implements Action {
+  readonly type = IgEditActionTypes.CollapseTOC;
+
+  constructor() {
+  }
+
+}
+
+export class ExpandTOC implements Action {
+  readonly type = IgEditActionTypes.ExpandTOC;
+
+  constructor() {
+  }
+
 }
 
 export class ClearIgEdit implements Action {
@@ -120,9 +140,19 @@ export class OpenEditor implements Action {
   readonly type = IgEditActionTypes.OpenEditor;
 
   constructor(readonly payload: {
+    id: string,
     element: IDisplayElement,
     editor: IEditorMetadata,
     initial: any,
+  }) {
+  }
+}
+
+export class OpenEditorFailure implements Action {
+  readonly type = IgEditActionTypes.OpenEditorFailure;
+
+  constructor(readonly payload: {
+    id: string,
   }) {
   }
 }
@@ -220,6 +250,7 @@ export type IgEditActions =
   | UpdateActiveResource
   | IgEditDeleteNode
   | OpenEditor
+  | OpenEditorFailure
   | EditorInitialize
   | EditorChange
   | EditorReset
@@ -232,4 +263,6 @@ export type IgEditActions =
   | ClearIgEdit
   | OpenNarrativeEditorNode
   | IgEditTocAddResource
+  | CollapseTOC
+  | ExpandTOC
   | AddResourceSuccess;

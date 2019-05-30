@@ -25,6 +25,14 @@ export const selectIgDocument = createSelector(
     return state.document;
   },
 );
+
+export const selectTocCollapsed = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.tocCollapsed;
+  },
+);
+
 export const selectIgId = createSelector(
   selectIgDocument,
   (state: IgDocument) => {
@@ -227,10 +235,19 @@ export const selectMessages = createSelector(
     return state.messages;
   },
 );
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
 );
+
+export const selectMessagesById = createSelector(
+  selectMessagesEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
 
 export const selectValueSetsNodes = createSelector(
   selectValueSetsEntities,

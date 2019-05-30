@@ -1,15 +1,12 @@
-<!-- <div class="sidebar-filter" style="text-align: center;"> -->
-  <!-- <div class="filter"> -->
-    <div class="input-group sidebar-filter">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
-      </div>
-      <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
-             placeholder="Filter" required style="background-color: #f0f0f0; text-align: center;" type="text">
-    </div>
-  <!-- </div> -->
-<!-- </div> -->
+<div class="input-group sidebar-filter">
+  <div class="input-group-prepend">
+    <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+  </div>
+  <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+          placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+</div>
 <div class="sidebar-controls">
+  <button (click)="collapseToc()" class="btn btn-sm btn-default" style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i class="fa fa-chevron-left"></i></button>
   <div class="btn-group mr-2" role="group">
     <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
       CP
@@ -37,3 +34,4 @@
 <div class="sidebar-content" id="sidebar-content">
   <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)"></app-ig-toc>
 </div>
+

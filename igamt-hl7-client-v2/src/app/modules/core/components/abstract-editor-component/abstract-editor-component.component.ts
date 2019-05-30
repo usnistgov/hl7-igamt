@@ -19,6 +19,7 @@ export abstract class AbstractEditorComponent {
   readonly elementId$: Observable<string>;
   readonly current$: Observable<IWorkspaceCurrent>;
   readonly currentSynchronized$: Observable<any>;
+  readonly initial$: Observable<any>;
   readonly viewOnly$: Observable<boolean>;
   readonly ig$: Observable<IgDocument>;
 
@@ -28,6 +29,9 @@ export abstract class AbstractEditorComponent {
     protected store: Store<any>) {
     this.changeTime = new Date();
     this.active$ = this.store.select(fromIgEdit.selectWorkspaceActive);
+    this.initial$ = this.store.select(fromIgEdit.selectWorkspace).pipe(
+      map((ws) => ws.initial),
+    );
     this.elementId$ = this.active$.pipe(
       filter((active) => active.editor.id === editor.id),
       map((active) => {

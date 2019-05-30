@@ -9,4 +9,6 @@ export interface IEditorMetadata {
 export enum EditorID {
   IG_METADATA = 'IG_METADATA',
   SECTION_NARRATIVE = 'SECTION_NARRATIVE',
+  PREDEF = 'PREDEF',
+  POSTDEF = 'POSTDEF',
 }

@@ -1,5 +1,5 @@
 <div id="toc-container" class="toc-container">
-  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer">&emsp; Implementation Guide Document Metadata</span>
+  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
       <ng-container [ngSwitch]="node.data.type">
@@ -90,7 +90,7 @@
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
           <app-display-section [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive ></app-display-section>
           <context-menu #conformanceProfileContextMenu>
             <ng-template (execute)="copyConformanceProfile(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
