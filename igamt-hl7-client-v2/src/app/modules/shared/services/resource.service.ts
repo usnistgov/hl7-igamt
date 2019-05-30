@@ -31,7 +31,7 @@ export class ResourceService {
   }
 
   getDependencies(id: string, type: Type) {
-    return this.http.get<Message<IResource[]>> (this.getDependenciesURl(type, id));
+    return this.http.get<IResource[]> (this.getDependenciesURl(type, id));
   }
 
   private getDependenciesURl(type: Type, id: string) {
