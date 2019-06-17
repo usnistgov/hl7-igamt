@@ -73,6 +73,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
+import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -116,8 +117,8 @@ public class IgServiceImpl implements IgService {
   @Autowired
   RelationShipService relationshipService;
   
-//  @Autowired
-//  CoConstraintService coConstraintService;
+  @Autowired
+  CoConstraintService coConstraintService;
 
   @Override
   public Ig findById(String id) {
@@ -375,7 +376,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Ig clone(Ig ig, String username) {
+  public Ig clone(Ig ig, String username) throws CoConstraintSaveException {
     Ig newIg = new Ig();
     newIg.setId(null);
     newIg.setFrom(ig.getId());
@@ -446,7 +447,7 @@ public class IgServiceImpl implements IgService {
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
       HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
-      HashMap<String, String> segmentsMap, String username){
+      HashMap<String, String> segmentsMap, String username) throws CoConstraintSaveException {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -848,27 +849,27 @@ public IGContentMap collectData(Ig ig) {
       Datatype d = this.datatypeService.findById(link.getId());
       if(d != null){
         DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-//        datatypeDataModel.putModel(d, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
         datatypes.add(datatypeDataModel);
       }else throw new Exception("Datatype is missing.");
     }
     
     for (Link link : ig.getSegmentRegistry().getChildren()) {
       Segment s = this.segmentService.findById(link.getId());
-//      if(s != null){
-//        SegmentDataModel segmentDataModel = new SegmentDataModel();
-//        segmentDataModel.putModel(s, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-//        CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
-//        segmentDataModel.setCoConstraintTable(coConstraintTable);
-//        segments.add(segmentDataModel);
-//      }else throw new Exception("Segment is missing.");
+      if(s != null){
+        SegmentDataModel segmentDataModel = new SegmentDataModel();
+        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
+        segmentDataModel.setCoConstraintTable(coConstraintTable);
+        segments.add(segmentDataModel);
+      }else throw new Exception("Segment is missing.");
     }
     
     for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
       ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
       if(cp != null){
         ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
+        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
         conformanceProfiles.add(conformanceProfileDataModel);
       }else throw new Exception("ConformanceProfile is missing.");
     }

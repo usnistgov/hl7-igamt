@@ -24,7 +24,9 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
 import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
+import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 /**
  * @author jungyubw
@@ -33,12 +35,13 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 public class DatatypeDataModel {
   private Datatype model;
 
-  private Set<ConformanceStatement> conformanceStatementMap = new HashSet<ConformanceStatement>();
+  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
   private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
   private Map<String, Set<Comment>> commentMap = new HashMap<String, Set<Comment>>();
   private Map<String, String> constantValueMap = new HashMap<String, String>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
   private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
+  private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
 
   public Datatype getModel() {
     return model;
@@ -46,15 +49,6 @@ public class DatatypeDataModel {
 
   public void setModel(Datatype model) {
     this.model = model;
-  }
-
-  public Set<ConformanceStatement> getConformanceStatementMap() {
-    return conformanceStatementMap;
-  }
-
-  public void setConformanceStatementMap(
-      Set<ConformanceStatement> conformanceStatementMap) {
-    this.conformanceStatementMap = conformanceStatementMap;
   }
 
   public Map<String, Predicate> getPredicateMap() {
@@ -103,19 +97,43 @@ public class DatatypeDataModel {
    * @param conformanceStatementRepository
    * @param predicateRepository
    */
-  public void putModel(Datatype d, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+  public void putModel(Datatype d, DatatypeService dataytpeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
     this.model = d;
     
     if (d.getBinding() != null){
       if(d.getBinding().getConformanceStatementIds() != null){
         for(String csId: d.getBinding().getConformanceStatementIds()){
-          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatementMap.add(cs));
+          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
         }
       }
     }
     
     if (d.getBinding().getChildren() != null) {
     //  this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    }
+    
+    if (d instanceof ComplexDatatype) {
+      ComplexDatatype cd = (ComplexDatatype)d;
+     
+      if(cd.getComponents() != null) {
+        cd.getComponents().forEach(c -> {
+          String key = c.getPosition() + "";
+          if(c.getRef() != null && c.getRef().getId() != null){
+            Datatype childDt = dataytpeService.findById(c.getRef().getId());
+            if(childDt != null) {
+              this.componentDataModels.add(new ComponentDataModel(
+                  c, 
+                  this.predicateMap.get(key), 
+                  this.commentMap.get(key),
+                  this.constantValueMap.get(key),
+                  this.singleCodeMap.get(key),
+                  this.valuesetMap.get(key),
+                  new DatatypeBindingDataModel(childDt)
+                  ));    
+            }
+          }
+        });
+      }
     }
   }
 
@@ -167,5 +185,21 @@ public class DatatypeDataModel {
        // this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
       }
     }
+  }
+
+  public Set<ConformanceStatement> getConformanceStatements() {
+    return conformanceStatements;
+  }
+
+  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatemens) {
+    this.conformanceStatements = conformanceStatemens;
+  }
+
+  public Set<ComponentDataModel> getComponentDataModels() {
+    return componentDataModels;
+  }
+
+  public void setComponentDataModels(Set<ComponentDataModel> componentDataModels) {
+    this.componentDataModels = componentDataModels;
   }
 }
