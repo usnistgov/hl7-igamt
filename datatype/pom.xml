@@ -28,16 +28,16 @@
 			<artifactId>common-change-entity</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>document-export</artifactId>
 			<version>${parent.version}</version>
-		</dependency>
-		<dependency>
+		</dependency> -->
+<!-- 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>serialization</artifactId>
 			<version>${parent.version}</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>gov.nist.hit.hl7</groupId>
 			<artifactId>valueset</artifactId>

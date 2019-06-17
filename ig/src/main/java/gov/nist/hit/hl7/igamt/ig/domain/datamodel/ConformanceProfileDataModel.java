@@ -116,7 +116,7 @@ public class ConformanceProfileDataModel {
     }
     
     if (cp.getBinding().getChildren() != null) {
-      this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+     // this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
     }
   }
 
@@ -161,7 +161,7 @@ public class ConformanceProfileDataModel {
       }
       
       if (seb.getChildren() != null) {
-        this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+       // this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
       }
     }
   }

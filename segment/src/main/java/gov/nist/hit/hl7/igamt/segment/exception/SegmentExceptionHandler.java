@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import gov.nist.hit.hl7.igamt.common.base.exception.ForbiddenOperationException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
  * @author Harold Affo
@@ -34,26 +33,26 @@ import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveEx
 public class SegmentExceptionHandler {
 
 
-  @ResponseBody
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({SegmentValidationException.class})
-  public ResponseMessage handleValidationException(SegmentValidationException exception) {
-    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
-	  exception.printStackTrace();
-
-    return message;
-  }
-  
-  @ResponseBody
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({CoConstraintNotFoundException.class})
-  public ResponseMessage handleCoConstraintNotFoundException(CoConstraintNotFoundException exception) {
-    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
-	  exception.printStackTrace();
-	message.setHide(true);
-    return message;
-  }
-  
+//  @ResponseBody
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  @ExceptionHandler({SegmentValidationException.class})
+//  public ResponseMessage handleValidationException(SegmentValidationException exception) {
+//    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+//	  exception.printStackTrace();
+//
+//    return message;
+//  }
+//  
+//  @ResponseBody
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  @ExceptionHandler({CoConstraintNotFoundException.class})
+//  public ResponseMessage handleCoConstraintNotFoundException(CoConstraintNotFoundException exception) {
+//    ResponseMessage message = new ResponseMessage(Status.FAILED, exception.getLocalizedMessage());
+//	  exception.printStackTrace();
+//	message.setHide(true);
+//    return message;
+//  }
+//  
 
 
   @ResponseBody
@@ -98,21 +97,21 @@ public class SegmentExceptionHandler {
     return message;
   }
 
-  @ResponseBody
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  @ExceptionHandler({CoConstraintSaveException.class})
-  public ResponseMessage handleValidationException(CoConstraintSaveException exception) {
-	  exception.printStackTrace();
-
-	Map<String, String> map = exception.getErrors();
-	String errorMessage = "";
-	for(Entry<String, String> entry : map.entrySet()){
-		errorMessage += "Error At ["+entry.getKey()+"] : "+entry.getValue()+".   ";
-	}
-    ResponseMessage message = new ResponseMessage(Status.FAILED, errorMessage);
-    return message;
-  }
-  
+//  @ResponseBody
+//  @ResponseStatus(HttpStatus.BAD_REQUEST)
+//  @ExceptionHandler({CoConstraintSaveException.class})
+//  public ResponseMessage handleValidationException(CoConstraintSaveException exception) {
+//	  exception.printStackTrace();
+//
+//	Map<String, String> map = exception.getErrors();
+//	String errorMessage = "";
+//	for(Entry<String, String> entry : map.entrySet()){
+//		errorMessage += "Error At ["+entry.getKey()+"] : "+entry.getValue()+".   ";
+//	}
+//    ResponseMessage message = new ResponseMessage(Status.FAILED, errorMessage);
+//    return message;
+//  }
+//  
 
 
   

@@ -32,7 +32,23 @@ public class IgDataModel {
     return model;
   }
 
-  public void setModel(Ig model) {
+  public Set<ConformanceProfileDataModel> getConformanceProfiles() {
+	return conformanceProfiles;
+}
+
+public void setConformanceProfiles(Set<ConformanceProfileDataModel> conformanceProfiles) {
+	this.conformanceProfiles = conformanceProfiles;
+}
+
+public Set<ValuesetDataModel> getValuesets() {
+	return valuesets;
+}
+
+public void setDatatypes(Set<DatatypeDataModel> datatypes) {
+	this.datatypes = datatypes;
+}
+
+public void setModel(Ig model) {
     this.model = model;
   }
 
@@ -40,33 +56,19 @@ public class IgDataModel {
     return datatypes;
   }
 
-  public void setDatatypes(Set<DatatypeDataModel> datatypes) {
-    this.datatypes = datatypes;
-  }
-
-  public Set<SegmentDataModel> getSegments() {
-    return segments;
-  }
-
-  public void setSegments(Set<SegmentDataModel> segments) {
-    this.segments = segments;
-  }
-
-  public Set<ConformanceProfileDataModel> getConformanceProfiles() {
-    return conformanceProfiles;
-  }
-
-  public void setConformanceProfiles(Set<ConformanceProfileDataModel> conformanceProfiles) {
-    this.conformanceProfiles = conformanceProfiles;
-  }
-
-  public Set<ValuesetDataModel> getValuesets() {
-    return valuesets;
-  }
+   
 
   public void setValuesets(Set<ValuesetDataModel> valuesets) {
     this.valuesets = valuesets;
   }
+
+public Set<SegmentDataModel> getSegments() {
+	return segments;
+}
+
+public void setSegments(Set<SegmentDataModel> segments) {
+	this.segments = segments;
+}
 
 
 

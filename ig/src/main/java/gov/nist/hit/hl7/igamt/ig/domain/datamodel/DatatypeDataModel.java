@@ -115,7 +115,7 @@ public class DatatypeDataModel {
     }
     
     if (d.getBinding().getChildren() != null) {
-      this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    //  this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
     }
   }
 
@@ -164,7 +164,7 @@ public class DatatypeDataModel {
       }
       
       if (seb.getChildren() != null) {
-        this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+       // this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
       }
     }
   }

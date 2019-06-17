@@ -47,7 +47,6 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
-import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -57,8 +56,6 @@ import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 
@@ -70,15 +67,9 @@ public class SegmentController extends BaseController {
 
   @Autowired
   SegmentService segmentService;
-  
-  @Autowired
-  CoConstraintService coconstraintService;
-  
-  @Autowired
-  EntityChangeService entityChangeService;
 
   @Autowired
-  CoConstraintService coConstraintService;
+  EntityChangeService entityChangeService;
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
@@ -196,36 +187,36 @@ public class SegmentController extends BaseController {
     Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
     return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
   }
+//
+//  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
+//      produces = {"application/json"})
+//  @ResponseBody
+//  public CoConstraintTableDisplay getCoConstraints(@PathVariable("id") String id,
+//      Authentication authentication)
+//      throws CoConstraintNotFoundException, SegmentNotFoundException {
+//
+//    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
+//
+//    Segment segment = findById(id);
+//    CoConstraintTableDisplay display = new CoConstraintTableDisplay();
+//    display.complete(display, segment, SectionType.COCONSTRAINTS,
+//        getReadOnly(authentication, segment));
+//    display.setData(table);
+//    return display;
+//
+//  }
 
-  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
-      produces = {"application/json"})
-  @ResponseBody
-  public CoConstraintTableDisplay getCoConstraints(@PathVariable("id") String id,
-      Authentication authentication)
-      throws CoConstraintNotFoundException, SegmentNotFoundException {
-
-    CoConstraintTable table = this.coconstraintService.getCoConstraintForSegment(id);
-
-    Segment segment = findById(id);
-    CoConstraintTableDisplay display = new CoConstraintTableDisplay();
-    display.complete(display, segment, SectionType.COCONSTRAINTS,
-        getReadOnly(authentication, segment));
-    display.setData(table);
-    return display;
-
-  }
-
-  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
-      produces = {"application/json"})
-  @ResponseBody
-  public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
-      @RequestBody CoConstraintTable table, Authentication authentication)
-      throws CoConstraintSaveException {
-    CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
-        authentication.getPrincipal().toString());
-    return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
-        "Saved Successfully", ccTable.getId(), false, new Date(), ccTable);
-  }
+//  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.POST,
+//      produces = {"application/json"})
+//  @ResponseBody
+//  public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
+//      @RequestBody CoConstraintTable table, Authentication authentication)
+//      throws CoConstraintSaveException {
+//    CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
+//        authentication.getPrincipal().toString());
+//    return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
+//        "Saved Successfully", ccTable.getId(), false, new Date(), ccTable);
+//  }
 
   @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -233,8 +224,6 @@ public class SegmentController extends BaseController {
       Authentication authentication) {
     return segmentService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
   }
-
-
 
   private Segment findById(String id) throws SegmentNotFoundException {
     Segment segment = segmentService.findById(id);
@@ -269,25 +258,25 @@ public class SegmentController extends BaseController {
     }
   }
   
-  @RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
-  public void exportCoConstraintsToExcel(@PathVariable("id") String id,
-  		HttpServletResponse response) throws ExportException {
-  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-  	if (authentication != null) {
-  		String username = authentication.getPrincipal().toString();
-  		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
-  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-  		response.setHeader("Content-disposition",
-  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
-  		try {
-  			response.getOutputStream().write(excelFile.toByteArray());
-  		} catch (IOException e) {
-  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
-  		}
-  	} else {
-  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-  	}
-  }
+//  @RequestMapping(value = "/api/segments/{id}/coconstraints/export", method = RequestMethod.GET)
+//  public void exportCoConstraintsToExcel(@PathVariable("id") String id,
+//  		HttpServletResponse response) throws ExportException {
+//  	Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//  	if (authentication != null) {
+//  		String username = authentication.getPrincipal().toString();
+//  		ByteArrayOutputStream excelFile = coConstraintService.exportToExcel(id);
+//  		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+//  		response.setHeader("Content-disposition",
+//  				"attachment;filename=" + "CoConstraintsExcelFile.xlsx");
+//  		try {
+//  			response.getOutputStream().write(excelFile.toByteArray());
+//  		} catch (IOException e) {
+//  			throw new ExportException(e, "Error while sending back excel Document with id " + id);
+//  		}
+//  	} else {
+//  		throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//  	}
+//  }
 
 
   @RequestMapping(value = "/api/segments/{id}/preDef", method = RequestMethod.POST,

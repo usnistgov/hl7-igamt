@@ -93,8 +93,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
+//import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+//import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
@@ -120,8 +120,8 @@ public class SegmentServiceImpl implements SegmentService {
   @Autowired
   private InMemoryDomainExtentionService domainExtention;
 
-  @Autowired
-  private CoConstraintService coConstraintService;
+//  @Autowired
+//  private CoConstraintService coConstraintService;
 
   @Autowired
   private MongoTemplate mongoTemplate;
@@ -643,8 +643,7 @@ public class SegmentServiceImpl implements SegmentService {
    */
   @Override
   public Link cloneSegment(String key,
-      HashMap<String, String> valuesetsMap,HashMap<String, String> datatypesMap, Link l, String username)
-      throws CoConstraintSaveException {
+      HashMap<String, String> valuesetsMap,HashMap<String, String> datatypesMap, Link l, String username){
 
     Segment obj = this.findById(l.getId());
     Segment elm = obj.clone();
@@ -654,7 +653,7 @@ public class SegmentServiceImpl implements SegmentService {
 
     updateDependencies(elm,valuesetsMap, datatypesMap, username);
     this.save(elm);
-    updateCoConstraint(elm, obj,valuesetsMap, datatypesMap, username);
+   // updateCoConstraint(elm, obj,valuesetsMap, datatypesMap, username);
     return newLink;
 
   }
@@ -666,7 +665,7 @@ public class SegmentServiceImpl implements SegmentService {
    * @throws CoConstraintSaveException
    */
   private void updateDependencies(Segment elm,
-      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
+      HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, String username){
     // TODO Auto-generated method stub
 
     for (Field f : elm.getChildren()) {
@@ -681,16 +680,16 @@ public class SegmentServiceImpl implements SegmentService {
     updateBindings(elm.getBinding(), valuesetsMap);
   }
 
-  private void updateCoConstraint(Segment elm, Segment old,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
-       String username) throws CoConstraintSaveException {
-    CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
-    if (cc != null) {
-      CoConstraintTable cc_ =
-          coConstraintService.clone(valuesetsMap, datatypesMap,elm.getId(), cc);
-      coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-    }
-
-  }
+//  private void updateCoConstraint(Segment elm, Segment old,HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
+//       String username) throws CoConstraintSaveException {
+//    CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
+//    if (cc != null) {
+//      CoConstraintTable cc_ =
+//          coConstraintService.clone(valuesetsMap, datatypesMap,elm.getId(), cc);
+//      coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
+//    }
+//
+//  }
 
 
   /**

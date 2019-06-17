@@ -53,8 +53,6 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeSelectItemGroup;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
-import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddIngInfo;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingMessagesWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.AddingWrapper;
@@ -84,11 +82,9 @@ import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.model.TreeNode;
 import gov.nist.hit.hl7.igamt.ig.service.CrudService;
 import gov.nist.hit.hl7.igamt.ig.service.DisplayConverterService;
-import gov.nist.hit.hl7.igamt.ig.service.IgExportService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
@@ -105,8 +101,8 @@ public class IGDocumentController extends BaseController {
   
   @Autowired RelationShipService relationShipService;
 
-  @Autowired
-  IgExportService igExportService;
+//  @Autowired
+//  IgExportService igExportService;
 
   @Autowired
   DisplayConverterService displayConverter;
@@ -241,49 +237,50 @@ public class IGDocumentController extends BaseController {
    * @param response
    * @throws ExportException
    */
-  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
-      HttpServletResponse response) throws ExportException {
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    if (authentication != null) {
-      String username = authentication.getPrincipal().toString();
-      ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
-      response.setContentType("text/html");
-      response.setHeader("Content-disposition",
-          "attachment;filename=" + exportedFile.getFileName());
-      try {
-        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-      } catch (IOException e) {
-        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-      }
-    } else {
-      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-    }
-  }
+//  @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+//  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+//      HttpServletResponse response) throws ExportException {
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    System.out.println("We in");
+//    if (authentication != null) {
+//      String username = authentication.getPrincipal().toString();
+//      ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+//      response.setContentType("text/html");
+//      response.setHeader("Content-disposition",
+//          "attachment;filename=" + exportedFile.getFileName());
+//      try {
+//        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+//      } catch (IOException e) {
+//        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+//      }
+//    } else {
+//      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//    }
+//  }
 
 
-  // @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-  // public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
-  // HttpServletResponse response) throws ExportException {
-  // Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-  // if (authentication != null) {
-  // String username = authentication.getPrincipal().toString();
-  // ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
-  // File coCons;
-  // response.setContentType("text/html");
-  // response.setHeader("Content-disposition",
-  // "attachment;filename=" + "CoconstraintExcel.xsl");
-  // try {
-  // coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
-  // InputStream targetStream = new FileInputStream(coCons);
-  // FileCopyUtils.copy(targetStream, response.getOutputStream());
-  // } catch (IOException e) {
-  // throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-  // }
-  // } else {
-  // throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-  // }
-  // }
+//   @RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+//   public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
+//   HttpServletResponse response) throws ExportException {
+//   Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//   if (authentication != null) {
+//   String username = authentication.getPrincipal().toString();
+//   ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+//   File coCons;
+//   response.setContentType("text/html");
+//   response.setHeader("Content-disposition",
+//   "attachment;filename=" + "CoconstraintExcel.xsl");
+//   try {
+//   coCons = new ClassPathResource("CoconstaintHTMLForConverting.html").getFile();
+//   InputStream targetStream = new FileInputStream(coCons);
+//   FileCopyUtils.copy(targetStream, response.getOutputStream());
+//   } catch (IOException e) {
+//   throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+//   }
+//   } else {
+//   throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//   }
+//   }
 
   /**
    * 
@@ -292,25 +289,27 @@ public class IGDocumentController extends BaseController {
    * @param authentication
    * @throws ExportException
    */
-  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
-  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,
-      HttpServletResponse response, Authentication authentication) throws ExportException {
-    if (authentication != null) {
-      String username = authentication.getPrincipal().toString();
-      ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
-      response.setContentType(
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-      response.setHeader("Content-disposition",
-          "attachment;filename=" + exportedFile.getFileName());
-      try {
-        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-      } catch (IOException e) {
-        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-      }
-    } else {
-      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-    }
-  }
+//  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
+//  public @ResponseBody String exportIgDocumentToWord(@PathVariable("id") String id,
+//      HttpServletResponse response, Authentication authentication) throws ExportException {
+//	  System.out.println("Callinf");
+//    if (authentication != null) {
+//      String username = authentication.getPrincipal().toString();
+//      ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
+//      response.setContentType(
+//          "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+//      response.setHeader("Content-disposition",
+//          "attachment;filename=" + exportedFile.getFileName());
+//      try {
+//        FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+//      } catch (IOException e) {
+//        throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+//      }
+//    } else {
+//      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+//    }
+//	  return "sddssdsd";
+//  }
 
   @RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET,
       produces = {"application/json"})
@@ -999,7 +998,7 @@ public class IGDocumentController extends BaseController {
   @RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET,
       produces = {"application/json"})
   public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id,
-      Authentication authentication) throws IGNotFoundException, CoConstraintSaveException {
+      Authentication authentication) throws IGNotFoundException{
     String username = authentication.getPrincipal().toString();
 
     Ig ig = findIgById(id);
