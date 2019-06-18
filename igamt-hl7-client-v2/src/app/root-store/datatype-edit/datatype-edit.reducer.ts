@@ -1,7 +1,7 @@
 import { DatatypeEditActions, DatatypeEditActionTypes } from './datatype-edit.actions';
 
 export interface IState {
-  placeholder: any,
+  placeholder: any;
 }
 
 export const initialState: IState = {

@@ -194,56 +194,62 @@ export class Hl7V2TreeService {
     );
   }
 
+  // tslint:disable-next-line: cognitive-complexity
   formatDatatype(
     datatype: IDatatype,
     repository: AResourceRepositoryService,
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    return repository.areLeafs(datatype.components ? datatype.components.map((child) => child.ref.id) : []).pipe(
+    const components = datatype.components || [];
+    return repository.areLeafs(components.map((child) => child.ref.id)).pipe(
       map((leafs) => {
-        if (datatype.components) {
-          return datatype.components.map((child) => {
-            const reference = new BehaviorSubject({
-              type: Type.DATATYPE,
-              id: child.ref.id,
-            });
-            const level = parent ? parent.data.level + 1 : 0;
-            const bindings = this.mergeBindings(parent ? parent.data.bindings.children[child.id] || [] : [], child.id, { resource: Type.DATATYPE, element: this.nodeType(parent) }, datatype.binding ? datatype.binding.children || [] : [], level);
-            return {
-              data: {
-                id: child.id,
-                name: child.name,
-                position: child.position,
-                type: child.type,
-                usage: {
-                  value: child.usage,
-                },
-                length: {
-                  min: child.minLength,
-                  max: child.maxLength,
-                },
-                changeable,
-                viewOnly,
-                level,
-                text: {
-                  value: child.text,
-                },
-                pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-                confLength: child.confLength,
-                ref: reference,
-                bindings,
+        return components.map((child) => {
+          const reference = new BehaviorSubject({
+            type: Type.DATATYPE,
+            id: child.ref.id,
+          });
+          const level = parent ? parent.data.level + 1 : 0;
+          let parentBindings = [];
+          let currentBindings = [];
+          if (parent && parent.data.bindings.children[child.id]) {
+            parentBindings = parent.data.bindings.children[child.id];
+          }
+          if (datatype.binding && datatype.binding.children) {
+            currentBindings = datatype.binding.children;
+          }
+          const bindings = this.mergeBindings(parentBindings, child.id, { resource: Type.DATATYPE, element: this.nodeType(parent) }, currentBindings, level);
+          return {
+            data: {
+              id: child.id,
+              name: child.name,
+              position: child.position,
+              type: child.type,
+              usage: {
+                value: child.usage,
               },
-              leaf: leafs[child.ref.id],
-              $hl7V2TreeHelpers: {
-                ref$: reference.asObservable(),
-                treeChildrenSubscription: undefined,
+              length: {
+                min: child.minLength,
+                max: child.maxLength,
               },
-            };
-          }).sort((a, b) => a.data.position - b.data.position);
-        } else {
-          return [];
-        }
+              changeable,
+              viewOnly,
+              level,
+              text: {
+                value: child.text,
+              },
+              pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
+              confLength: child.confLength,
+              ref: reference,
+              bindings,
+            },
+            leaf: leafs[child.ref.id],
+            $hl7V2TreeHelpers: {
+              ref$: reference.asObservable(),
+              treeChildrenSubscription: undefined,
+            },
+          };
+        }).sort((a, b) => a.data.position - b.data.position);
       }),
     );
   }

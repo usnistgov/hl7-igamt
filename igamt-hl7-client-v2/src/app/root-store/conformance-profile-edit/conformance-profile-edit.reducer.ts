@@ -4,7 +4,7 @@ import { ConformanceProfileEditActions } from './conformance-profile-edit.action
 export const featureName = 'conformanceProfileEdit';
 
 export interface IState {
-  placeholder: any,
+  placeholder: any;
 }
 
 export const initialState: IState = {
