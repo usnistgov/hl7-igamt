@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
+import { IgEditActionTypes, IgEditResolverLoad, OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import { ErrorPageComponent } from '../core/components/error-page/error-page.component';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
@@ -10,7 +10,7 @@ import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit
 import { IgListContainerComponent } from './components/ig-list-container/ig-list-container.component';
 import { IgMetadataEditorComponent } from './components/ig-metadata-editor/ig-metadata-editor.component';
 import { IgSectionEditorComponent } from './components/ig-section-editor/ig-section-editor.component';
-import { IgEditResolverService } from './services/ig-edit-resolver.service';
+import { DataLoaderResolverService } from './services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 
@@ -32,7 +32,14 @@ const routes: Routes = [
   {
     path: ':igId',
     component: IgEditContainerComponent,
-    canActivate: [IgEditResolverService],
+    data: {
+      routeParam: 'igId',
+      loadAction: IgEditResolverLoad,
+      successAction: IgEditActionTypes.IgEditResolverLoadSuccess,
+      failureAction: IgEditActionTypes.IgEditResolverLoadFailure,
+      redirectTo: ['ig', 'error'],
+    },
+    canActivate: [DataLoaderResolverService],
     children: [
       {
         path: '',
@@ -79,6 +86,14 @@ const routes: Routes = [
       {
         path: 'conformanceprofile',
         loadChildren: 'src/app/modules/conformance-profile/conformance-profile.module#ConformanceProfileModule',
+      },
+      {
+        path: 'segment',
+        loadChildren: 'src/app/modules/segment/segment.module#SegmentModule',
+      },
+      {
+        path: 'datatype',
+        loadChildren: 'src/app/modules/datatype/datatype.module#DatatypeModule',
       },
     ],
   },

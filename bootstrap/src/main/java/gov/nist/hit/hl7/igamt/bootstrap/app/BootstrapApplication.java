@@ -129,9 +129,6 @@ public class BootstrapApplication implements CommandLineRunner {
   @Override
   public void run(String... arg0) throws Exception {
 
-      CoConstraintTable table = this.ccService.getCoConstraintForSegment("5ca66fb4085c143fa0712cb7");
-      String xml = this.ccXmlGen.generateXML(Arrays.asList(table));
-        System.out.println(xml);
     // accountService.findAll().get(0).getFullName();
     // List<Valueset> all = repo.findByDomainInfoScopeAndDomainInfoVersion("HL7STANDARD","2.7");
     // List<Valueset> bindingIdentifier = repo.findByBindingIdentifier("0001");

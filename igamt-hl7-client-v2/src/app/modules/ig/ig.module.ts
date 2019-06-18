@@ -23,7 +23,6 @@ import { IgSectionEditorComponent } from './components/ig-section-editor/ig-sect
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
-import { IgEditResolverService } from './services/ig-edit-resolver.service';
 import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
@@ -58,7 +57,6 @@ import { IgService } from './services/ig.service';
   providers: [
     IgListService,
     IgService,
-    IgEditResolverService,
     IgEditSaveDeactivateGuard,
     IgEditorActivateGuard,
   ],

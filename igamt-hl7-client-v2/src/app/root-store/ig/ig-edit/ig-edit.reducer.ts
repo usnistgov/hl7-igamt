@@ -1,14 +1,22 @@
 import { createEntityAdapter, EntityState } from '@ngrx/entity';
 import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
+import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
+import { IgEditActions, IgEditActionTypes, ToggleFullScreen } from './ig-edit.actions';
+
+export interface IResourcesState {
+  selected: IResource;
+  resources: EntityState<IResource>;
+}
 
 export interface IState {
   document: IgDocument;
   tocCollapsed: boolean;
+  fullscreen: boolean;
   tableOfContentEdit: {
     changed: boolean;
   };
@@ -17,12 +25,14 @@ export interface IState {
   datatypes: EntityState<IDisplayElement>;
   messages: EntityState<IDisplayElement>;
   sections: EntityState<IDisplayElement>;
+  resources: IResourcesState;
   workspace: IWorkspace;
 }
 
 export const initialState: IState = {
   document: null,
   tocCollapsed: false,
+  fullscreen: false,
   tableOfContentEdit: {
     changed: false,
   },
@@ -46,6 +56,13 @@ export const initialState: IState = {
     entities: {},
     ids: [],
   },
+  resources: {
+    selected: undefined,
+    resources: {
+      entities: {},
+      ids: [],
+    },
+  },
   workspace: {
     active: undefined,
     initial: undefined,
@@ -59,7 +76,9 @@ export const initialState: IState = {
 };
 
 export const igElementAdapter = createEntityAdapter<IDisplayElement>();
+export const loadedResourceAdapter = createEntityAdapter<IResource>();
 
+// tslint:disable-next-line: no-big-function
 export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 
@@ -78,6 +97,27 @@ export function reducer(state = initialState, action: IgEditActions): IState {
     case IgEditActionTypes.ClearIgEdit:
       return {
         ...initialState,
+      };
+
+    case IgEditActionTypes.LoadResourceReferencesSuccess:
+      return {
+        ...state,
+        resources: {
+          ...state.resources,
+          resources: loadedResourceAdapter.upsertMany(action.payload, state.resources.resources),
+        },
+      };
+
+    case IgEditActionTypes.LoadSelectedResource:
+      return {
+        ...state,
+        resources: {
+          resources: {
+            entities: {},
+            ids: [],
+          },
+          selected: action.resource,
+        },
       };
 
     case IgEditActionTypes.OpenEditor:
@@ -120,13 +160,43 @@ export function reducer(state = initialState, action: IgEditActions): IState {
         messages: igElementAdapter.upsertMany(action.payload.messages, state.messages),
         valueSets: igElementAdapter.upsertMany(action.payload.valueSets, state.valueSets),
       };
+    case IgEditActionTypes.CopyResourceSuccess:
 
+      if (action.payload.display.type === Type.VALUESET) {
+        return {
+          ...state,
+          document: { ...state.document, valueSetRegistry: action.payload.reg },
+          valueSets: igElementAdapter.upsertOne(action.payload.display, state.valueSets),
+        };
+      } else if (action.payload.display.type === Type.CONFORMANCEPROFILE) {
+        return {
+          ...state,
+          document: { ...state.document, conformanceProfileRegistry: action.payload.reg },
+          messages: igElementAdapter.upsertOne(action.payload.display, state.messages),
+        };
+      } else if (action.payload.display.type === Type.DATATYPE) {
+        return {
+          ...state,
+          document: { ...state.document, datatypeRegistry: action.payload.reg },
+          datatypes: igElementAdapter.upsertOne(action.payload.display, state.datatypes),
+        };
+      } else if (action.payload.display.type === Type.SEGMENT) {
+        return {
+          ...state,
+          document: { ...state.document, segmentRegistry: action.payload.reg },
+          segments: igElementAdapter.upsertOne(action.payload.display, state.segments),
+        };
+      } else {
+        return state;
+      }
     case IgEditActionTypes.EditorChange:
       return {
         ...state,
         workspace: {
           ...state.workspace,
-          current: action.payload.data,
+          current: {
+            ...action.payload.data,
+          },
           changeTime: action.payload.date,
           flags: {
             changed: true,
@@ -150,7 +220,6 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           },
         },
       };
-
     case IgEditActionTypes.EditorSaveSuccess:
       return {
         ...state,
@@ -158,10 +227,10 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           ...state.workspace,
           changeTime: new Date(),
           current: {
-            ... (action.current ? action.current : state.workspace.current),
+            ...(action.current ? action.current : state.workspace.current),
           },
           initial: {
-            ... (action.current ? action.current : state.workspace.current),
+            ...(action.current ? action.current : state.workspace.current),
           },
           flags: {
             ...state.workspace.flags,
@@ -208,6 +277,12 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       return {
         ...state,
         tocCollapsed: true,
+      };
+
+    case IgEditActionTypes.ToggleFullScreen:
+      return {
+        ...state,
+        fullscreen: !state.fullscreen,
       };
 
     case IgEditActionTypes.ExpandTOC:

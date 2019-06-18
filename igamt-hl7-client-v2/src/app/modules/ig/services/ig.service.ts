@@ -11,7 +11,7 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes } from '../models/toc/toc-operation.class';
+import {IAddNodes, ICopyNode, ICopyResourceResponse} from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
@@ -54,11 +54,10 @@ export class IgService {
   }
 
   addResource(wrapper: IAddNodes): Observable<Message<IGDisplayInfo>> {
-    return this.http.post<Message<IGDisplayInfo>>(this.buildUrl(wrapper), wrapper);
-
+    return this.http.post<Message<IGDisplayInfo>>(this.buildAddingUrl(wrapper), wrapper);
   }
 
-  buildUrl(wrapper: IAddNodes): string {
+  buildAddingUrl(wrapper: IAddNodes): string {
     switch (wrapper.type) {
       case Type.EVENTS:
         return IG_END_POINT + wrapper.documentId + '/conformanceprofiles/add';
@@ -72,6 +71,23 @@ export class IgService {
     }
   }
 
+  copyResource(payload: ICopyNode) {
+    return this.http.post<Message<ICopyResourceResponse>>(this.buildCopyUrl(payload), payload);
+  }
+
+  private buildCopyUrl(payload: ICopyNode) {
+    switch (payload.selected.type) {
+      case Type.CONFORMANCEPROFILE:
+        return IG_END_POINT + payload.documentId + '/conformanceprofiles/' + payload.selected.originalId + '/clone';
+      case Type.DATATYPE:
+        return IG_END_POINT + payload.documentId + '/datatypes/' + payload.selected.originalId + '/clone';
+      case Type.SEGMENT:
+        return IG_END_POINT + payload.documentId + '/segments/' + payload.selected.originalId + '/clone';
+      case Type.VALUESET:
+        return IG_END_POINT + payload.documentId + '/valuesets/' + payload.selected.originalId + '/clone';
+      default: return null;
+    }
+  }
   saveTextSection(id: string, narrative: INarrative): Observable<Message<string>> {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/section', narrative);
   }
@@ -94,5 +110,4 @@ export class IgService {
   saveMetadata(id: string, metadata: IMetadata): Observable<Message<string>> {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/updatemetadata', metadata);
   }
-
 }

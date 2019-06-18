@@ -1,12 +1,12 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { repeat, skipUntil, takeUntil, tap, filter } from 'rxjs/operators';
+import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { TurnOnLoader } from 'src/app/root-store/loader/loader.actions';
 import { ClearIgEdit, ExpandTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
-import { TurnOnLoader } from 'src/app/root-store/loader/loader.actions';
 
 @Component({
   selector: 'app-ig-edit-container',

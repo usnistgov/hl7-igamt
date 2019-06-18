@@ -10,7 +10,7 @@
           </div>
           <input (input)="filterTable($event.target.value)" class="form-control" placeholder="Filter"
                  required
-                 style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+                 style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
         </div>
       </div>
     </ng-template>
@@ -54,13 +54,12 @@
             <span class="input-group-text"><i class="fa fa-filter"></i></span>
           </div>
           <input (input)="dt.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
-                 required style="background-color: #f0f0f0; text-align: center; height: 35px;" type="text">
+                 required style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
         </div>
       </div>
     </ng-template>
     <ng-template let-columns pTemplate="header">
       <tr>
-        <th style="width:2.5em"></th>
         <th>
           Message Structure
         </th>
@@ -68,7 +67,7 @@
           Message Event
         </th>
         <th>
-          Label
+          Name
         </th>
         <th>
           Actions
@@ -76,10 +75,7 @@
       </tr>
     </ng-template>
     <ng-template let-columns="columns" let-index="rowIndex" let-node="node" let-rowData pTemplate="body">
-      <tr [pReorderableRow]="index">
-        <td style="width:2.5em">
-          <i class="fa fa-bars" pReorderableRowHandle></i>
-        </td>
+      <tr>
         <td>
           {{rowData.structId}}
         </td>
@@ -89,14 +85,14 @@
         <td>
           <input [name]="rowData.id" [id]="rowData.id"
                  appNamingDuplication
-                 [existing]="existing" [fixedName]="getFixedName(rowData.structId,rowData.name)" [domainInfo]="rowData.domainInfo" type="text"
+                 [existing]="existing" [fixedName]="''" [domainInfo]="rowData.domainInfo" type="text"
                  style="width: 100%"  [(ngModel)]="rowData.ext" (blur)="emitData()" required/>
           <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
             <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
-              <span>*label is required</span>
+              <span>*Name is required</span>
             </div>
             <div  *ngIf="addingEditForm.controls[rowData.id].errors.duplicated">
-              <span> *label is duplicated</span>
+              <span>*Name is duplicated</span>
             </div>
           </div>
         </td>

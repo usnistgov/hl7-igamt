@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
@@ -441,11 +442,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
    */
   @Override
   public Link cloneConformanceProfile(String key, HashMap<String, String> valuesetsMap,
-      HashMap<String, String> segmentsMap, Link l, String username) {
+      HashMap<String, String> segmentsMap, Link l, String username, Scope scope) {
     ConformanceProfile old = this.findById(l.getId());
     ConformanceProfile elm = old.clone();
+    elm.getDomainInfo().setScope(scope);
     elm.setOrigin(elm.getFrom());
     Link newLink = l.clone(key);
+    newLink.setDomainInfo(elm.getDomainInfo());
     updateDependencies(elm,valuesetsMap,segmentsMap);
     elm.setId(newLink.getId());
     elm.setUsername(username);
@@ -1661,6 +1664,53 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
         }
       }
     }
+  }
+
+@Override
+public Set<Resource> getDependencies(ConformanceProfile cp) {
+	Set<String> segmentIds = collectSegmentIds(cp);
+	Set<Resource> ret= new HashSet<Resource>();
+	ret.add(cp);
+	HashMap<String, Resource> usedDatatypes = new HashMap<String, Resource>();
+	List<Segment> segments= this.segmentService.findByIdIn(segmentIds);
+	ret.addAll(segments);
+	for(Segment seg: segments ) {
+		 this.segmentService.collectResources(seg, usedDatatypes);
+	}
+	ret.addAll(usedDatatypes.values());	
+	return ret;
+}
+
+private Set<String> collectSegmentIds(ConformanceProfile cp) {
+    // TODO Auto-generated method stub
+    Set<String> ids = new HashSet<String>();
+    for (MsgStructElement segOrgroup : cp.getChildren()) {
+      if (segOrgroup instanceof SegmentRef) {
+        SegmentRef ref = (SegmentRef) segOrgroup;
+        if (ref.getRef() != null && ref.getRef().getId() != null)
+          ids.add(ref.getRef().getId());
+      } else {
+        processSegmentorGroup(segOrgroup, ids);
+      }
+    }
+    return ids;
+
+  }
+private void processSegmentorGroup(MsgStructElement segOrgroup, Set<String> ids) {
+    // TODO Auto-generated method stub
+    if (segOrgroup instanceof SegmentRef) {
+      SegmentRef ref = (SegmentRef) segOrgroup;
+      if (ref.getRef() != null && ref.getRef().getId() != null) {
+        ids.add(ref.getRef().getId());
+
+      }
+    } else if (segOrgroup instanceof Group) {
+      Group g = (Group) segOrgroup;
+      for (MsgStructElement child : g.getChildren()) {
+        processSegmentorGroup(child, ids);
+      }
+    }
+
   }
 }
 

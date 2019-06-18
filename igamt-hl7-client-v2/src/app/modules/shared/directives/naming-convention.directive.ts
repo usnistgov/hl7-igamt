@@ -13,13 +13,15 @@ export class NamingConventionDirective  implements Validator {
   @Input()
   scope: Scope;
   @Input()
-  Type: Type;
+  type: Type;
 
   constructor() {
   }
 
   validate(control: AbstractControl): ValidationErrors | null {
-    const validation: IConventionError = validConvention(this.scope, this.Type, control.value);
+    console.log(this.scope);
+    console.log(this.type);
+    const validation: IConventionError = validConvention(this.scope, this.type, control.value);
     return validation.valid ? null : {invalidConvention: validation.error};
   }
 }

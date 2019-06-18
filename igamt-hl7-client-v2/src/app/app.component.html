@@ -1,7 +1,7 @@
 <!-- Header -->
-<app-header></app-header>
+<app-header *ngIf="!fullscreen"></app-header>
   <block-ui>
-    <div class="page-container-pad page-container-layout">
+    <div [class]="'page-container-layout ' + (fullscreen ? 'page-container-nopad' : 'page-container-pad')">
 
       <!-- Content -->
       <div class="page-content">

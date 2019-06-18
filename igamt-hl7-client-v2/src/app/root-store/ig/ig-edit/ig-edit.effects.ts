@@ -2,27 +2,81 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
+import { combineLatest, Observable, of } from 'rxjs';
 import { catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { MessageService } from 'src/app/modules/core/services/message.service';
 import { IgService } from 'src/app/modules/ig/services/ig.service';
 import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
 import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { ICopyResourceResponse } from '../../../modules/ig/models/toc/toc-operation.class';
+import { IResource } from '../../../modules/shared/models/resource.interface';
+import { ResourceService } from '../../../modules/shared/services/resource.service';
+import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { EditorSave, OpenEditor, OpenEditorFailure, OpenIgMetadataEditorNode, OpenNarrativeEditorNode, TableOfContentSave, TableOfContentSaveFailure, TableOfContentSaveSuccess, ToolbarSave } from './ig-edit.actions';
+import { LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditorFailure } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
+  CopyResource,
+  CopyResourceFailure,
+  CopyResourceSuccess,
+  EditorSave,
   IgEditActions,
   IgEditActionTypes,
   IgEditResolverLoad,
   IgEditResolverLoadFailure,
-  IgEditResolverLoadSuccess, IgEditTocAddResource,
+  IgEditResolverLoadSuccess,
+  IgEditTocAddResource,
+  OpenEditor,
+  OpenIgMetadataEditorNode,
+  OpenNarrativeEditorNode,
+  TableOfContentSave,
+  TableOfContentSaveFailure,
+  TableOfContentSaveSuccess,
+  ToolbarSave,
 } from './ig-edit.actions';
-import { selectIgDocument, selectSectionDisplayById, selectSectionFromIgById, selectTableOfContentChanged } from './ig-edit.selectors';
+import {
+  selectIgDocument,
+  selectSectionDisplayById,
+  selectSectionFromIgById,
+  selectTableOfContentChanged,
+} from './ig-edit.selectors';
 
 @Injectable()
 export class IgEditEffects {
+
+  @Effect()
+  loadReferences$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.LoadResourceReferences),
+    switchMap((action: LoadResourceReferences) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+
+      return this.resourceService.getResources(action.payload.id, action.payload.resourceType).pipe(
+        flatMap((resources: IResource[]) => {
+          return [
+            new TurnOffLoader(),
+            new LoadResourceReferencesSuccess(resources),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new LoadResourceReferencesFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  loadReferencesFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.LoadResourceReferencesFailure),
+    map((action: LoadResourceReferencesFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
 
   @Effect()
   igEditResolverLoad$ = this.actions$.pipe(
@@ -73,24 +127,28 @@ export class IgEditEffects {
               id: ig.id,
             }));
 
-            return this.actions$.pipe(
-              ofType(IgEditActionTypes.TableOfContentSaveSuccess, IgEditActionTypes.TableOfContentSaveFailure),
-              filter((status) => (status.type === IgEditActionTypes.TableOfContentSaveSuccess ||
-                status.type === IgEditActionTypes.TableOfContentSaveFailure) && status.igId === ig.id),
-              take(1),
-              map((tocSaveStatus: Action) => {
-                switch (tocSaveStatus.type) {
-                  case IgEditActionTypes.TableOfContentSaveSuccess:
-                    return new EditorSave({
-                      tocSaveStatus: true,
-                    });
-                  case IgEditActionTypes.TableOfContentSaveFailure:
-                    return new EditorSave({
-                      tocSaveStatus: false,
-                    });
-                }
-              }),
-            );
+            return this.rxjsHelper.listenAndReact(this.actions$, {
+              [IgEditActionTypes.TableOfContentSaveSuccess]: {
+                do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return of(new EditorSave({
+                    tocSaveStatus: true,
+                  }));
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
+              },
+              [IgEditActionTypes.TableOfContentSaveFailure]: {
+                do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                  return of(new EditorSave({
+                    tocSaveStatus: false,
+                  }));
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
+              },
+            });
 
           } else {
             return of(new EditorSave({
@@ -185,6 +243,13 @@ export class IgEditEffects {
       return this.message.actionFromError(action.error);
     }),
   );
+  @Effect()
+  copyResourceFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CopyResourceFailure),
+    map((action: CopyResourceFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
 
   @Effect()
   IgEditTocAddResource$ = this.actions$.pipe(
@@ -193,8 +258,7 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-
-      return this.igService.addResource(action.payload).pipe(
+      const doAdd: Observable<Action> = this.igService.addResource(action.payload).pipe(
         flatMap((response: Message<IGDisplayInfo>) => {
           return [
             new TurnOffLoader(),
@@ -208,14 +272,80 @@ export class IgEditEffects {
           );
         }),
       );
+      return this.finalizeAdd(doAdd);
     }),
   );
+  @Effect()
+  IgCopyResource$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.CopyResource),
+    switchMap((action: CopyResource) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+      const doAdd: Observable<Action> = this.igService.copyResource(action.payload).pipe(
+        flatMap((response: Message<ICopyResourceResponse>) => {
+          return [
+            new TurnOffLoader(),
+            new CopyResourceSuccess(response.data),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new CopyResourceFailure(error),
+          );
+        }),
+      );
+      return this.finalizeAdd(doAdd);
+    }),
+  );
+  finalizeAdd(toDoo: Observable<Action>) {
+    return combineLatest(
+      this.store.select(selectTableOfContentChanged),
+      this.store.select(selectIgDocument)).pipe(
+        take(1),
+        mergeMap(([changed, ig]) => {
+          if (changed) {
+            this.store.dispatch(new TableOfContentSave({
+              sections: ig.content,
+              id: ig.id,
+            }));
+
+            return this.rxjsHelper.listenAndReact(this.actions$, {
+              [IgEditActionTypes.TableOfContentSaveSuccess]: {
+                do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return toDoo;
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
+              },
+              [IgEditActionTypes.TableOfContentSaveFailure]: {
+                do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                  return of(
+                    new TurnOffLoader(),
+                    this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
+                  );
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
+              },
+            });
+          } else {
+            return toDoo;
+          }
+        }),
+      );
+  }
 
   constructor(
     private actions$: Actions<IgEditActions>,
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
+    private resourceService: ResourceService,
+    private rxjsHelper: RxjsStoreHelperService,
   ) {
   }
 

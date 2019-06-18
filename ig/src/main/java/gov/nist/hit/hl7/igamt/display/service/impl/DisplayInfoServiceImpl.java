@@ -121,10 +121,9 @@ public class DisplayInfoServiceImpl implements DisplayInfoService {
 		displayElement.setId(conformanceProfile.getId());
 		displayElement.setDomainInfo(conformanceProfile.getDomainInfo());
 		displayElement.setDescription(conformanceProfile.getDescription());
-		displayElement.setFixedName(conformanceProfile.getName());
 		displayElement.setDifferantial(conformanceProfile.getOrigin() !=null);
 		displayElement.setLeaf(false);
-		displayElement.setVariableName(conformanceProfile.getIdentifier());
+		displayElement.setVariableName(conformanceProfile.getName());
 		displayElement.setType(Type.CONFORMANCEPROFILE);
 		
 		return displayElement;

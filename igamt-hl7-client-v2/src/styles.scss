@@ -23,6 +23,17 @@ body {
   background-color: #ffd400 !important;
 }
 
+.range-input {
+  width: 50px;
+}
+
+.tt-cell {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .title-text {
   margin: 0 !important;
 }

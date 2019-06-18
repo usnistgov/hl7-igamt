@@ -3,21 +3,23 @@ import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { filter, map, withLatestFrom } from 'rxjs/operators';
+import {CopyResource, IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { IgEditTocAddResource, UpdateSections } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
 import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { TurnOffLoader } from '../../../../root-store/loader/loader.actions';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
-import { Scope } from '../../../shared/constants/scope.enum';
-import { Type } from '../../../shared/constants/type.enum';
-import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
-import { IAddWrapper } from '../../models/ig/add-wrapper.class';
-import { IGDisplayInfo } from '../../models/ig/ig-document.class';
-import { IgTocComponent } from '../ig-toc/ig-toc.component';
+import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {Scope} from '../../../shared/constants/scope.enum';
+import {Type} from '../../../shared/constants/type.enum';
+import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
+import {IAddWrapper} from '../../models/ig/add-wrapper.class';
+import {IGDisplayInfo} from '../../models/ig/ig-document.class';
+import {IgTocComponent} from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -106,8 +108,22 @@ export class IgEditSidebarComponent implements OnInit {
     subscription.unsubscribe();
   }
 
-  private getDialogTitle(event: IAddWrapper) {
+  copy($event: ICopyResourceData) {
+    console.log($event);
+    const dialogRef = this.dialog.open(CopyResourceComponent, {
+      data: {...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
+    });
 
+    dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
+      withLatestFrom(this.igId$),
+      map(([result, igId]) => {
+        this.store.dispatch(new CopyResource({documentId: igId, selected: result}));
+      }),
+    ).subscribe();
+  }
+
+  private getDialogTitle(event: IAddWrapper) {
     return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
   }
 
@@ -130,12 +146,15 @@ export class IgEditSidebarComponent implements OnInit {
         return 'Data type';
       case Type.SEGMENT:
         return 'Segment';
-      case Type.EVENTS:
+      case Type.CONFORMANCEPROFILE:
         return 'Conformance Profiles';
       case Type.VALUESET:
         return 'Value Sets';
       default:
         return '';
     }
+  }
+  private getCopyTitle(type: Type) {
+    return 'Copy ' + this.getStringFromType(type);
   }
 }

@@ -1,0 +1,28 @@
+@import '../../../../../assets/variables';
+
+// .error-layout {
+//   @extend %page-wrapper;
+
+//   display: grid;
+//   grid-template-areas: 'alerts' 'content';
+//   grid-template-columns: 1fr;
+//   grid-template-rows: minmax(min-content, max-content) auto;
+// }
+
+.title-color {
+  color: $nist_light_blue;
+}
+
+.error-layout {
+  display: flex;
+  background-color: white;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+}
+
+.oops {
+  font-size: 100px;
+  font-weight: 600;
+  color: $nist_dark_blue;
+}

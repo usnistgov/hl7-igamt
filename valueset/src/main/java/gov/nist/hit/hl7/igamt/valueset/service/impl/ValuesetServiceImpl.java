@@ -23,6 +23,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
@@ -532,12 +533,14 @@ public class ValuesetServiceImpl implements ValuesetService {
   }
 
   @Override
-  public Link cloneValueSet(String newkey, Link l, String username) {
+  public Link cloneValueSet(String newkey, Link l, String username, Scope scope) {
     Valueset old = this.findById(l.getId());
     Valueset elm = old.clone();
+    elm.getDomainInfo().setScope(scope);
     elm.setOrigin(elm.getFrom());
     Link newLink = new Link();
     newLink = l.clone(newkey);
+    newLink.setDomainInfo(elm.getDomainInfo());
     elm.setId(newkey);
     elm.setUsername(username);
     this.save(elm);

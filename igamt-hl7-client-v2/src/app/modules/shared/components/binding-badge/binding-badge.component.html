@@ -1,0 +1,17 @@
+<ng-container [ngSwitch]="bindingLevel">
+  <ng-container *ngSwitchCase="level.MESSAGE">
+    <div pTooltip="Message" tooltipPosition="top" class="binding binding-message"></div>
+  </ng-container>
+  <ng-container *ngSwitchCase="level.SEGMENT">
+    <div pTooltip="Segment" tooltipPosition="top" class="binding binding-segment"></div>
+  </ng-container>
+  <ng-container *ngSwitchCase="level.DATATYPE_COMPONENT">
+    <div pTooltip="Datatype (component)" tooltipPosition="top" class="binding binding-datatype-component"></div>
+  </ng-container>
+  <ng-container *ngSwitchCase="level.DATATYPE_SUBCOMPONENT">
+    <div pTooltip="Datatype (subcomponent)" tooltipPosition="top" class="binding binding-datatype-subcomponent"></div>
+  </ng-container>
+  <ng-container *ngSwitchCase="level.DATATYPE_FIELD">
+    <div pTooltip="Datatype (field)" tooltipPosition="top" class="binding binding-datatype-field"></div>
+  </ng-container>
+</ng-container>

@@ -32,6 +32,6 @@
   </div>
 </div>
 <div class="sidebar-content" id="sidebar-content">
-  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)"></app-ig-toc>
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (copy)="copy($event)"></app-ig-toc>
 </div>
 

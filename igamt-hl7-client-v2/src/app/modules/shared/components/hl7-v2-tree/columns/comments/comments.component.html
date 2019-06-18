@@ -1,0 +1,25 @@
+<div class="tt-cell" *ngIf="comments && contextList">
+  <div>
+    <ng-container *ngTemplateOutlet="commentItems; context: { $implicit: immutableList }"></ng-container>
+    <ng-container *ngTemplateOutlet="commentItems; context: { $implicit: [contextList] }"></ng-container>
+  </div>
+  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly" (click)="openDialog()">
+    <i class="fa fa-plus" aria-hidden="true"></i>
+  </button>
+</div>
+<ng-template #popContent let-text>
+    <div [froalaView]="text"></div>
+</ng-template>
+<ng-template #commentItems let-comments>
+    <ng-container *ngFor="let comment of comments">
+      <div *ngFor="let item of comment.value; let index = i" style="display: flex; flex-direction: row; align-items: center;">
+        <app-binding-badge [context]="comment.context" style="margin-right: 5px;"></app-binding-badge>
+        <div style="margin-right: 10px; margin-left: 10px;">
+          <i class="fa fa-times" style="color: red; font-size: 1.2em;" (click)="removeComment(i, comment.value)"></i>
+          <i class="fa fa-pencil" style="font-size: 1.2em; margin-left: 5px;" (click)="openDialog(item)"></i>
+        </div>
+        <i class="fa fa-comment-o" [ngbPopover]="popContent" triggers="mouseenter:mouseleave" placement="bottom" style="font-size: 1.2em; margin-right: 5px;"></i>
+        <strong>{{item.username}}</strong>
+      </div>
+    </ng-container>
+</ng-template>
