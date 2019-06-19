@@ -9,7 +9,7 @@ import * as config from '../../../../root-store/config/config.reducer';
 import {LoadCrossRefs} from '../../../../root-store/cross-references/cross-refs.actions';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import * as fromCrossReferences from '../../../../root-store/cross-references/cross-refs.reducer'
+import * as fromCrossReferences from '../../../../root-store/cross-references/cross-refs.reducer';
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
 import {Scope} from '../../../shared/constants/scope.enum';
