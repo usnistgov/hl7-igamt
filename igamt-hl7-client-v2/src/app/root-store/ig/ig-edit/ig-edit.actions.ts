@@ -1,14 +1,16 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Action} from '@ngrx/store';
-import {IGDisplayInfo} from '../../../modules/ig/models/ig/ig-document.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Action } from '@ngrx/store';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { IGDisplayInfo } from '../../../modules/ig/models/ig/ig-document.class';
 import {
   IAddNodes,
   ICopyNode,
   ICopyResourceResponse,
   IDeleteNode,
 } from '../../../modules/ig/models/toc/toc-operation.class';
+import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
-import {IDisplayElement} from '../../../modules/shared/models/display-element.interface';
+import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../modules/shared/models/editor.enum';
 
 export enum IgEditActionTypes {
@@ -23,9 +25,10 @@ export enum IgEditActionTypes {
   CopyResource = '[Ig Edit TOC] Copy Resource',
   CopyResourceSuccess = '[Ig Edit TOC] Copy Resource Success',
   CopyResourceFailure = '[Ig Edit TOC] Copy Resource Failure',
-
   UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
+
   OpenEditor = '[Ig Edit Open] Open Editor',
+  OpenEditorFailure = '[Ig Edit Open] Open Editor Failure',
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
   OpenIgMetadataEditorNode = '[Ig Edit TOC Ig Metadata] Open Ig Metadata Editor Node',
   OpenConformanceProfileEditorNode = '[Ig Edit TOC Conformance Profile] Open Conformance Profile Editor Node',
@@ -46,7 +49,38 @@ export enum IgEditActionTypes {
   EditorSaveSuccess = '[Editor Save Success] Editor Save Success',
   EditorSaveFailure = '[Editor Save Failure] Editor Save Failure',
 
+  LoadSelectedResource = '[Router Resolver] Load Selected Resource',
+  LoadResourceReferences = '[Ig Resource References] Load Resource References',
+  LoadResourceReferencesSuccess = '[Ig Resource References] Load Resource References Success',
+  LoadResourceReferencesFailure = '[Ig Resource References] Load Resource References Failure',
   ClearIgEdit = '[Editor Leave] Clear Ig Edit State',
+  CollapseTOC = '[Ig Edit TOC] Collapse',
+  ExpandTOC = '[Ig Edit TOC] Expand',
+  ToggleFullScreen = '[Ig Edit] Toggle Fullscreen',
+}
+
+export class CollapseTOC implements Action {
+  readonly type = IgEditActionTypes.CollapseTOC;
+
+  constructor() {
+  }
+
+}
+
+export class ExpandTOC implements Action {
+  readonly type = IgEditActionTypes.ExpandTOC;
+
+  constructor() {
+  }
+
+}
+
+export class ToggleFullScreen implements Action {
+  readonly type = IgEditActionTypes.ToggleFullScreen;
+
+  constructor() {
+  }
+
 }
 
 export class ClearIgEdit implements Action {
@@ -54,6 +88,29 @@ export class ClearIgEdit implements Action {
 
   constructor() {
   }
+}
+
+export class LoadSelectedResource implements Action {
+  readonly type = IgEditActionTypes.LoadSelectedResource;
+  constructor(readonly resource: IResource) { }
+}
+
+export class LoadResourceReferences implements Action {
+  readonly type = IgEditActionTypes.LoadResourceReferences;
+  constructor(readonly payload: {
+    resourceType: Type,
+    id: string,
+  }) { }
+}
+
+export class LoadResourceReferencesSuccess implements Action {
+  readonly type = IgEditActionTypes.LoadResourceReferencesSuccess;
+  constructor(readonly payload: IResource[]) { }
+}
+
+export class LoadResourceReferencesFailure implements Action {
+  readonly type = IgEditActionTypes.LoadResourceReferencesFailure;
+  constructor(readonly error: HttpErrorResponse) { }
 }
 
 export class IgEditResolverLoad implements Action {
@@ -144,9 +201,19 @@ export class OpenEditor implements Action {
   readonly type = IgEditActionTypes.OpenEditor;
 
   constructor(readonly payload: {
+    id: string,
     element: IDisplayElement,
     editor: IEditorMetadata,
     initial: any,
+  }) {
+  }
+}
+
+export class OpenEditorFailure implements Action {
+  readonly type = IgEditActionTypes.OpenEditorFailure;
+
+  constructor(readonly payload: {
+    id: string,
   }) {
   }
 }
@@ -244,6 +311,7 @@ export type IgEditActions =
   | UpdateActiveResource
   | IgEditDeleteNode
   | OpenEditor
+  | OpenEditorFailure
   | EditorInitialize
   | EditorChange
   | EditorReset
@@ -256,7 +324,14 @@ export type IgEditActions =
   | ClearIgEdit
   | OpenNarrativeEditorNode
   | IgEditTocAddResource
+  | CollapseTOC
+  | ExpandTOC
   | AddResourceSuccess
   | CopyResource
   | CopyResourceSuccess
+  | LoadSelectedResource
+  | LoadResourceReferences
+  | LoadResourceReferencesSuccess
+  | LoadResourceReferencesFailure
+  | ToggleFullScreen
   | CopyResourceFailure;

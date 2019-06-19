@@ -1,4 +1,4 @@
-import {IComment} from './comment.interface';
+import { IComment } from './comment.interface';
 
 export enum LocationType {
   FIELD = 'FIELD', COMPONENT = 'COMPONENT', SUBCOMPONENT = 'SUBCOMPONENT', SEGREF = 'SEGREF', GROUP = 'GROUP',
@@ -34,13 +34,17 @@ export interface IBinding {
   locationInfo?: ILocationInfo;
   children?: IStructureElementBinding[];
 }
-export interface IStructureElementBinding extends IBinding {
-  comments?: IComment[] ;
+
+export interface IStructureElementBindingProperties {
+  comments?: IComment[];
   valuesetBindings: IValuesetBinding[];
   internalSingleCode: InternalSingleCode;
   externalSingleCode: IExternalSingleCode;
   constantValue: string;
   predicateId: string;
+}
+
+export interface IStructureElementBinding extends IBinding, IStructureElementBindingProperties {
 }
 
 export interface IResourceBinding extends IBinding {

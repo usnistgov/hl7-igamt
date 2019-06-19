@@ -1,0 +1,12 @@
+<div class="tt-cell">
+  <span *ngIf="definition.value">
+    <i class="fa fa-eye eye-icon" [ngbPopover]="popContent" triggers="mouseenter:mouseleave" placement="bottom"></i>
+  </span>
+  <span *ngIf="!definition.value"></span>
+  <button class="btn btn-sm btn-primary" *ngIf="!viewOnly" style="margin-right: 10px;" (click)="openDialog()">
+    <i class="fa fa-pencil"></i>
+  </button>
+</div>
+<ng-template #popContent>
+    <div [froalaView]="definition.value"></div>
+</ng-template>

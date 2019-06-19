@@ -1,0 +1,20 @@
+<ng-container *ngIf="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'" [ngSwitch]="viewOnly">
+  <ng-container *ngSwitchCase="false">
+    <div class="tt-cell">
+      <div>
+        <input class="range-input" style="margin-right: 5px;" type="number" [name]="location + 'min-length'" [id]="location + 'min-length'"  placeholder="Min" min="0" [(ngModel)]="val.length.min" (ngModelChange)="minChange($event)">
+        <span style="margin-right: 5px;"> .. </span>
+        <input class="range-input" type="text" [name]="location + 'max-length'" [id]="location + 'max-length'" placeholder="Max" [(ngModel)]="val.length.max" (ngModelChange)="maxChange($event)">
+      </div>
+      <button class="btn btn-sm btn-danger" (click)="clear()" style="margin-right: 5px;">
+        <i class="fa fa-times"></i>
+      </button>
+    </div>
+  </ng-container>
+  <ng-container *ngSwitchCase="true">
+      <ng-container [ngSwitch]="val && val.length && val.length.min !== 'NA' && val.length.max !== 'NA'">
+        <strong *ngSwitchCase="true">[{{val.length.min}} .. {{val.length.max}}]</strong>
+        <strong *ngSwitchCase="false">NA</strong>
+      </ng-container>
+  </ng-container>
+</ng-container>

@@ -1,0 +1,16 @@
+<ng-container  [ngSwitch]="viewOnly">
+
+    <p-dropdown
+    [style]="{'min-width': '70px'}"
+    *ngSwitchCase="false"
+    [options]="options"
+    (onChange)="modelChange($event)"
+    [(ngModel)]="usage.value"
+    showTransitionOptions="0ms"
+    hideTransitionOptions="0ms"
+    appendTo="body" ></p-dropdown>
+
+    <strong *ngSwitchCase="true">{{usage.value}}</strong>
+
+</ng-container>
+

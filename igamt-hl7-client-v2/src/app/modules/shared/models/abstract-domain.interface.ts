@@ -1,6 +1,6 @@
-import {Type} from '../constants/type.enum';
-import {IDomainInfo} from './domain-info.interface';
-import {IPublicationInfo} from './publication-info.interface';
+import { Type } from '../constants/type.enum';
+import { IDomainInfo } from './domain-info.interface';
+import { IPublicationInfo } from './publication-info.interface';
 
 export interface IAbstractDomain {
   id: string;

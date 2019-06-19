@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -6,6 +6,8 @@ import { filter, map, withLatestFrom } from 'rxjs/operators';
 import {CopyResource, IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
+import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { TurnOffLoader } from '../../../../root-store/loader/loader.actions';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
@@ -37,6 +39,10 @@ export class IgEditSidebarComponent implements OnInit {
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+  }
+
+  collapseToc() {
+    this.store.dispatch(new CollapseTOC());
   }
 
   ngOnInit() {

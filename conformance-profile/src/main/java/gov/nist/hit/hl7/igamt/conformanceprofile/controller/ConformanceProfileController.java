@@ -67,7 +67,7 @@ public class ConformanceProfileController extends BaseController {
 			"application/json" })
 
 	public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
-			Authentication authentication) {
+																			 Authentication authentication) {
 		ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
 
 		return conformanceProfileService.convertDomainToDisplayStructure(conformanceProfile,
@@ -89,7 +89,7 @@ public class ConformanceProfileController extends BaseController {
 			"application/json" })
 
 	public ConformanceProfileStructureDisplay getConformanceProfileStructure(@PathVariable("id") String id,
-			@PathVariable("contextId") String contextId, Authentication authentication) {
+																			 @PathVariable("contextId") String contextId, Authentication authentication) {
 		ConformanceProfile conformanceProfile = conformanceProfileService.findById(id);
 
 		return conformanceProfileService.convertDomainToDisplayStructureFromContext(conformanceProfile, contextId,
@@ -101,7 +101,7 @@ public class ConformanceProfileController extends BaseController {
 			"application/json" })
 
 	public DisplayConformanceProfileMetadata getConformanceProfileMetadata(@PathVariable("id") String id,
-			Authentication authentication) throws ConformanceProfileNotFoundException {
+																		   Authentication authentication) throws ConformanceProfileNotFoundException {
 		ConformanceProfile conformanceProfile = findById(id);
 		DisplayConformanceProfileMetadata display = new DisplayConformanceProfileMetadata();
 		display.complete(conformanceProfile, SectionType.METADATA, getReadOnly(authentication, conformanceProfile));
@@ -144,7 +144,7 @@ public class ConformanceProfileController extends BaseController {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param id
 	 * @return
 	 * @throws ConformanceProfileNotFoundException
@@ -169,8 +169,8 @@ public class ConformanceProfileController extends BaseController {
 			"application/json" })
 	@ResponseBody
 	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,
-			@RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
-			Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
+										   @RequestParam(name = "dId", required = true) String documentId, @RequestBody List<ChangeItemDomain> cItems,
+										   Authentication authentication) throws DatatypeException, IOException, ForbiddenOperationException {
 		ConformanceProfile cp = this.conformanceProfileService.findById(id);
 		validateSaveOperation(cp);
 		this.conformanceProfileService.applyChanges(cp, cItems, documentId);
@@ -190,5 +190,14 @@ public class ConformanceProfileController extends BaseController {
 			throw new ForbiddenOperationException("FORBIDDEN_SAVE_CONFORMANCEPROFILE");
 		}
 	}
+
+	@RequestMapping(value = "/api/conformanceprofiles/{id}", method = RequestMethod.GET,
+			produces = {"application/json"})
+
+	public ConformanceProfile getConformanceProfile(
+			@PathVariable("id") String id, Authentication authentication) throws ConformanceProfileNotFoundException {
+		return this.findById(id);
+	}
+
 
 }
