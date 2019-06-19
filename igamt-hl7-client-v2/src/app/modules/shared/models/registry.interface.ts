@@ -1,7 +1,7 @@
 import {Type} from '../constants/type.enum';
-import {IResource} from './resource.interface';
+import {ILink} from './link.interface';
 
 export interface IRegistry {
-  children: IResource[];
+  children: ILink[];
   type: Type;
 }

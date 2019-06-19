@@ -181,7 +181,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
 
       ResponseEntity<ConnectionResponseMessage<UserResponse>> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "register", HttpMethod.POST, request,
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/register", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<UserResponse>>() {});
 
 
@@ -218,7 +218,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordRequest> request =
           new HttpEntity<ChangePasswordRequest>(changePasswordRequest);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "password/reset", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -243,7 +243,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
       HttpEntity<String> request = new HttpEntity<String>(token);
       ResponseEntity<Boolean> response =
-          restTemplate.exchange(env.getProperty(AUTH_URL) + "password/validatetoken",
+          restTemplate.exchange(env.getProperty(AUTH_URL) + "/api/password/validatetoken",
               HttpMethod.POST, request, Boolean.class);
       return response.getBody();
     } catch (HttpClientErrorException e) {
@@ -276,7 +276,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
       HttpEntity<ChangePasswordConfirmRequest> request =
           new HttpEntity<ChangePasswordConfirmRequest>(requestObject);
       ResponseEntity<ConnectionResponseMessage<PasswordResetTokenResponse>> response = restTemplate
-          .exchange(env.getProperty(AUTH_URL) + "password/reset/confirm", HttpMethod.POST, request,
+          .exchange(env.getProperty(AUTH_URL) + "/api/password/reset/confirm", HttpMethod.POST, request,
               new ParameterizedTypeReference<ConnectionResponseMessage<PasswordResetTokenResponse>>() {});
       return response.getBody();
 

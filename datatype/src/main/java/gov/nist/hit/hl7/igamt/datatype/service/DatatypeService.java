@@ -21,6 +21,7 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
@@ -39,84 +40,91 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PostDef;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.PreDef;
 
-
 /**
  *
  * @author Jungyub Woo on Feb 1, 2019.
  */
 public interface DatatypeService {
 
-  public Datatype findById(String id);
+	public Datatype findById(String id);
 
-  public Datatype create(Datatype datatype);
+	public Datatype create(Datatype datatype);
 
-  public Datatype save(Datatype datatype);
+	public Datatype save(Datatype datatype);
 
-  public List<Datatype> findAll();
+	public List<Datatype> findAll();
 
-  public List<Datatype> findByScope(Scope scope);
+	public List<Datatype> findByScope(Scope scope);
 
-  public void delete(Datatype datatype);
+	public void delete(Datatype datatype);
 
-  public void delete(String id);
+	public void delete(String id);
 
-  public void removeCollection();
+	public void removeCollection();
 
-  public List<Datatype> findByDomainInfoVersion(String version);
+	public List<Datatype> findByDomainInfoVersion(String version);
 
-  public List<Datatype> findByDomainInfoScope(String scope);
+	public List<Datatype> findByDomainInfoScope(String scope);
 
-  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	public List<Datatype> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-  public List<Datatype> findByName(String name);
+	public List<Datatype> findByName(String name);
 
-  public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
+	public List<Datatype> findByDomainInfoScopeAndDomainInfoVersionAndName(String scope, String version, String name);
 
-  public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
+	public List<Datatype> findByDomainInfoVersionAndName(String version, String name);
 
-  public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
+	public List<Datatype> findByDomainInfoScopeAndName(String scope, String name);
 
-  public PreDef convertDomainToPredef(Datatype datatype);
+	public PreDef convertDomainToPredef(Datatype datatype);
 
-  public PostDef convertDomainToPostdef(Datatype datatype);
+	public PostDef convertDomainToPostdef(Datatype datatype);
 
-  List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
+	List<Datatype> findDisplayFormatByScopeAndVersion(String scope, String version);
 
-  public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
+	public DatatypeConformanceStatement convertDomainToConformanceStatement(Datatype datatype);
 
-  List<Datatype> findByScopeAndVersion(String scope, String hl7Version);
+	List<Datatype> findByScopeAndVersion(String scope, String hl7Version);
 
-  List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
+	List<Datatype> findByNameAndVersionAndScope(String name, String version, String scope);
 
-  Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
+	Datatype findOneByNameAndVersionAndScope(String name, String version, String scope);
 
-  public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l, String username, Scope scope);
+	public Link cloneDatatype(HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap, Link l,
+			String username, Scope scope);
 
-  public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
+	public Set<?> convertComponentStructure(Datatype datatype, String idPath, String path, String viewScope);
 
-  public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
-  
-  public List<Datatype> findDisplayFormatByIds(Set<String> ids);
+	public DatatypeStructureDisplay convertDomainToStructureDisplay(Datatype datatype, boolean readOnly);
 
-  public List<Datatype> findFlavors(Set<String> ids, String id, String name);
+	public List<Datatype> findDisplayFormatByIds(Set<String> ids);
 
-  public List<Datatype> findNonFlavor(Set<String> ids, String id, String name);
+	public List<Datatype> findFlavors(Set<String> ids, String id, String name);
 
-  public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
+	public List<Datatype> findNonFlavor(Set<String> ids, String id, String name);
 
-  public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId) throws JsonProcessingException, IOException;
+	public List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(Set<String> ids, Datatype dt, String scope);
 
-  public Set<RelationShip> collectDependencies(Datatype dt);
-  
-  public void collectAssoicatedConformanceStatements(Datatype datatype, HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
-  
-  public Binding makeLocationInfo(Datatype dt);
-  
-  public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
-  
-  public List<Datatype> findByIdIn(Set<String> linksAsIds);  
-  
-  public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId, String datatypeName);
-  
-  public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+	public void applyChanges(Datatype dt, List<ChangeItemDomain> cItems, String documentId)
+			throws JsonProcessingException, IOException;
+
+	public Set<RelationShip> collectDependencies(Datatype dt);
+
+	public void collectAssoicatedConformanceStatements(Datatype datatype,
+			HashMap<String, ConformanceStatementsContainer> associatedConformanceStatementMap);
+
+	public Binding makeLocationInfo(Datatype dt);
+
+	public LocationInfo makeLocationInfoForComponent(ComplexDatatype dt, StructureElementBinding seb);
+
+	public List<Datatype> findByIdIn(Set<String> linksAsIds);
+
+	public Set<ConformanceStatement> collectAvaliableConformanceStatements(String documentId, String datatypeId,
+			String datatypeName);
+
+	public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+
+	public void collectResources(Datatype d, HashMap<String, Resource> used);
+
+	public Set<Resource> getDependencies(Datatype datatype);
 }

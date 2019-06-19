@@ -32,7 +32,7 @@ export class ResourceLoaderEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: false,
       }));
-      return this.resourceService.getResource(action.payload).pipe(
+      return this.resourceService.importResource(action.payload).pipe(
         map((resp: Message<any[]> ) => {
           return new LoadResourceSuccess({response: resp, resourceInfo: action.payload});
         })

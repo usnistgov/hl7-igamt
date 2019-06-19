@@ -1669,17 +1669,16 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 @Override
 public Set<Resource> getDependencies(ConformanceProfile cp) {
 	Set<String> segmentIds = collectSegmentIds(cp);
-	Set<String> datatypeIds = new HashSet<String>();
-	Set<String> vsIds = new HashSet<String>();
-	if(cp.getBinding() !=null) {
-	vsIds = this.bindingService.processBinding(cp.getBinding());
-	}
+	Set<Resource> ret= new HashSet<Resource>();
+	ret.add(cp);
+	HashMap<String, Resource> usedDatatypes = new HashMap<String, Resource>();
 	List<Segment> segments= this.segmentService.findByIdIn(segmentIds);
-//	for(Segment seg: segments ) {
-//		this.segmentService.collectResources()
-//	}
-	
-	return null;
+	ret.addAll(segments);
+	for(Segment seg: segments ) {
+		 this.segmentService.collectResources(seg, usedDatatypes);
+	}
+	ret.addAll(usedDatatypes.values());	
+	return ret;
 }
 
 private Set<String> collectSegmentIds(ConformanceProfile cp) {

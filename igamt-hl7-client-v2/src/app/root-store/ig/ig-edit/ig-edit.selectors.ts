@@ -6,8 +6,8 @@ import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper
 import { Scope } from '../../../modules/shared/constants/scope.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
+import { ILink } from '../../../modules/shared/models/link.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
-import { IResource } from '../../../modules/shared/models/resource.interface';
 import { selectIgEdit } from '../ig.reducer';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { igElementAdapter, IState } from './ig-edit.reducer';
@@ -260,7 +260,7 @@ export const selectMessagesNodes = createSelector(
   selectMessagesEntites,
   selectConformanceProfileRegistry,
   (messages: Dictionary<IDisplayElement>, registry: IRegistry) => {
-    return registry.children.sort((a: IResource, b: IResource) => a.position - b.position).map((link) => messages[link.id]);
+    return registry.children.sort((a: ILink, b: ILink) => a.position - b.position).map((link) => messages[link.id]);
   },
 );
 

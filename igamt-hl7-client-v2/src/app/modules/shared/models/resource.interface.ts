@@ -1,8 +1,6 @@
-import {IDomainInfo} from './domain-info.interface';
+import {IAbstractDomain} from './abstract-domain.interface';
 
-export interface IResource {
-  id: string;
-  position: number;
-  domainInfo: IDomainInfo;
-  type?: any;
+export interface IResource extends IAbstractDomain {
+  preDef?: string;
+  postDef?: string;
 }
