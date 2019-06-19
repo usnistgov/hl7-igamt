@@ -84,6 +84,9 @@
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
@@ -94,6 +97,9 @@
           <context-menu #conformanceProfileContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
@@ -110,6 +116,9 @@
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
@@ -120,6 +129,9 @@
           <context-menu #valueSetContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>

@@ -43,6 +43,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   copy = new EventEmitter<ICopyResourceData>();
   @Output()
+  delete = new EventEmitter<IDisplayElement>();
+  @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
@@ -106,6 +108,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   copyResource(node: TreeNode) {
     this.copy.emit({element: node.data, existing: node.parent.data.children});
   }
+  deleteResource(node: TreeNode) {
+    this.delete.emit(node.data);
+  }
+
   scrollTo(ref: ElementRef) {
     ref.nativeElement.scrollIntoView();
   }

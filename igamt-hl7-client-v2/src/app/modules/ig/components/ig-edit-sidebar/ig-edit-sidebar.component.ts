@@ -6,8 +6,10 @@ import { filter, map, withLatestFrom } from 'rxjs/operators';
 import {CopyResource, IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
+import {LoadCrossRefs} from '../../../../root-store/cross-references/cross-refs.actions';
 import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import * as fromCrossReferences from '../../../../root-store/cross-references/cross-refs.reducer'
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
 import {Scope} from '../../../shared/constants/scope.enum';
@@ -115,6 +117,16 @@ export class IgEditSidebarComponent implements OnInit {
         this.store.dispatch(new CopyResource({documentId: igId, selected: result}));
       }),
     ).subscribe();
+  }
+
+  delete($event: IDisplayElement) {
+    const subscription =
+    this.igId$.pipe(
+      map((id: string) => {
+        this.store.dispatch(new LoadCrossRefs({ documentId: id, documentType: Type.IGDOCUMENT, elementType: $event.type, elementId: $event.id}));
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
   }
 
   private getDialogTitle(event: IAddWrapper) {
