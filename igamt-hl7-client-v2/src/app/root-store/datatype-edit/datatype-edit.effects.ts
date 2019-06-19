@@ -10,7 +10,7 @@ import { MessageService } from '../../modules/core/services/message.service';
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
-import { selectedDatatype, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
+import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { DatatypeEditActionTypes, LoadDatatype, LoadDatatypeFailure, LoadDatatypeSuccess, OpenDatatypeMetadataEditorNode, OpenDatatypePostDefEditor, OpenDatatypePreDefEditor } from './datatype-edit.actions';
 
@@ -129,10 +129,10 @@ export class DatatypeEditEffects {
     switchMap((action: OpenDatatypeMetadataEditorNode) => {
       return combineLatest(
         this.store.select(fromIgEdit.selectDatatypesById, { id: action.payload.id }),
-        this.store.select(selectedDatatype))
+        this.store.select(selectedResourceMetadata))
         .pipe(
           take(1),
-          flatMap(([elm, datatype]): Action[] => {
+          flatMap(([elm, metadata]): Action[] => {
             if (!elm || !elm.id) {
               return [
                 this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.DatatypeNotFound + action.payload.id)),
@@ -145,8 +145,7 @@ export class DatatypeEditEffects {
                   element: elm,
                   editor: action.payload.editor,
                   initial: {
-                    name: datatype.name,
-                    ext: datatype.ext,
+                    ...metadata,
                   },
                 }),
               ];

@@ -91,6 +91,7 @@ export interface IMetadataField {
     value: string;
     label: string;
   }>;
+  disabled?: boolean;
   placeholder: string;
   id: string;
   name: string;

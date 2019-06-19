@@ -22,7 +22,6 @@ import { IgService } from '../../services/ig.service';
 })
 export class IgMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
-  metamodel: Observable<MetadataModel<IMetadata>>;
   coverPictureFile$: BehaviorSubject<File>;
   metadataFormInput: IMetadataFormInput<IMetadata>;
 
