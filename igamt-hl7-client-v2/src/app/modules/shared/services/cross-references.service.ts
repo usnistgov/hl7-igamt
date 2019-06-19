@@ -5,10 +5,6 @@ import {Observable, throwError} from 'rxjs';
 import {Message, MessageType, UserMessage} from '../../core/models/message/message.class';
 import {Type} from '../constants/type.enum';
 import {IReferenceLocation, IRelationShip, IUsages} from '../models/cross-reference';
-import {map} from "rxjs/operators";
-import {mergeMap} from "rxjs-compat/operator/mergeMap";
-import {Usage} from "../constants/usage.enum";
-import {IDisplayElement} from "../models/display-element.interface";
 
 @Injectable({
   providedIn: 'root',
@@ -35,16 +31,16 @@ export class CrossReferencesService {
     } else { return null; }
   }
 
-  getUsagesFromRelationShip(relations: Observable<IRelationShip>): Observable<IUsages> {
-    return relations.pipe(
-      mergeMap((x: IRelationShip) => {
-          return {
-            usage: x.usage;
-            location: x.location;
-          }
-
-      }
-    )
-
-  }
+  // getUsagesFromRelationShip(relations: Observable<IRelationShip>): Observable<IUsages> {
+  //   return relations.pipe(
+  //     mergeMap((x: IRelationShip) => {
+  //         return {
+  //           usage: x.usage;
+  //           location: x.location;
+  //         }
+  //
+  //     }
+  //   )
+  //
+  // }
 }
