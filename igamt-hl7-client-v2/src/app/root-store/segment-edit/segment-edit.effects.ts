@@ -9,11 +9,10 @@ import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageType, UserMessage } from '../../modules/core/models/message/message.class';
 import { MessageService } from '../../modules/core/services/message.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
-import { IChange } from '../../modules/shared/models/save-change';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
 import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourcePostDef, selectedResourcePreDef, selectedSegment } from '../ig/ig-edit/ig-edit.selectors';
+import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
 
@@ -85,6 +84,38 @@ export class SegmentEditEffects {
                   editor: action.payload.editor,
                   initial: {
                     value: predef,
+                  },
+                }),
+              ];
+            }
+          }),
+        );
+    }),
+  );
+
+  @Effect()
+  openSegmentMetadataEditor$ = this.actions$.pipe(
+    ofType(SegmentEditActionTypes.OpenSegmentMetadataEditor),
+    switchMap((action: OpenSegmentPreDefEditor) => {
+      return combineLatest(
+        this.store.select(fromIgEdit.selectSegmentsById, { id: action.payload.id }),
+        this.store.select(selectedResourceMetadata))
+        .pipe(
+          take(1),
+          flatMap(([elm, metadata]): Action[] => {
+            if (!elm || !elm.id) {
+              return [
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.SegmentNotFound + action.payload.id)),
+                new OpenEditorFailure({ id: action.payload.id }),
+              ];
+            } else {
+              return [
+                new OpenEditor({
+                  id: action.payload.id,
+                  element: elm,
+                  editor: action.payload.editor,
+                  initial: {
+                    ...metadata,
                   },
                 }),
               ];

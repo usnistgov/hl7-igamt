@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoadSegment, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from '../../root-store/segment-edit/segment-edit.actions';
+import { LoadSegment, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
@@ -81,6 +82,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenSegmentStructureEditor,
+          idKey: 'segmentId',
+        },
+      },
+      {
+        path: 'metadata',
+        component: MetadataEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SEGMENT_METADATA,
+            title: 'Metadata',
+            resourceType: Type.SEGMENT,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenSegmentMetadataEditor,
           idKey: 'segmentId',
         },
       },
