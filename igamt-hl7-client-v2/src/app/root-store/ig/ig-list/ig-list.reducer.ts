@@ -23,6 +23,13 @@ export const igListItemAdapter = createEntityAdapter<IgListItem>();
 export function reducer(state = initialState, action: IgListActions): IState {
   switch (action.type) {
 
+    case IgListActionTypes.ClearIgList:
+      return {
+        ...initialState,
+        sortOptions: {
+          ...state.sortOptions,
+        },
+      };
     case IgListActionTypes.UpdateIgList:
       return igListItemAdapter.upsertMany(action.payload, state);
 

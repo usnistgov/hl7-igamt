@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { IgListService } from './ig-list.service';
+import {IgListService} from './ig-list.service';
 
 describe('IgListService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));

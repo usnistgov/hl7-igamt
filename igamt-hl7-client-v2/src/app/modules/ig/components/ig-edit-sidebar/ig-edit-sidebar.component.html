@@ -1,38 +1,39 @@
-<div class="sidebar-header" style="text-align: center;">
-  <div class="filter">
-    <div class="input-group">
+<!-- <div class="sidebar-filter" style="text-align: center;"> -->
+  <!-- <div class="filter"> -->
+    <div class="input-group sidebar-filter">
       <div class="input-group-prepend">
         <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
       </div>
-      <input type="text" style="background-color: #f0f0f0; text-align: center;" class="form-control"
-        id="validationServerUsername" placeholder="Filter" required>
+      <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+             placeholder="Filter" required style="background-color: #f0f0f0; text-align: center;" type="text">
     </div>
-  </div>
-  <div>
-    <div class="btn-group mr-2" role="group">
-      <button type="button" class="btn btn-text entity-badge-conformance-profile">
-        CP
-      </button>
-      <button type="button" class="btn btn-text entity-badge-segment">
-        S
-      </button>
-      <button type="button" class="btn btn-text entity-badge-datatype">
-        DT
-      </button>
-      <button type="button" class="btn btn-text  entity-badge-valueset">
-        VS
-      </button>
-    </div>
-    <!-- <div>
-      <app-entity-bagde [type]="'CONFORMANCEPROFILE'"></app-entity-bagde>
-      <app-entity-bagde [type]="'SEGMENT'"></app-entity-bagde>
-    </div>
-    <div>
-      <app-entity-bagde [type]="'DATATYPE'"></app-entity-bagde>
-      <app-entity-bagde [type]="'VALUESET'"></app-entity-bagde>
-    </div> -->
+  <!-- </div> -->
+<!-- </div> -->
+<div class="sidebar-controls">
+  <div class="btn-group mr-2" role="group">
+    <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
+      CP
+    </button>
+    <button (click)="scrollTo('segments')" class="btn btn-text btn-sm entity-badge-segment" type="button">
+      S
+    </button>
+    <button (click)="scrollTo('datatypes')" class="btn btn-text btn-sm entity-badge-datatype" type="button">
+      DT
+    </button>
+    <button (click)="scrollTo('valueSets')" class="btn btn-text btn-sm entity-badge-valueset" type="button">
+      VS
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
+      <i class="fa fa-expand"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
+      <i class="fa fa-compress"></i>
+    </button>
+    <button  class="btn btn-text btn-sm btn-primary" type="button" (click)="addSection()">
+      <i class="fa fa-plus"></i>
+    </button>
   </div>
 </div>
-<div class="sidebar-content">
-
+<div class="sidebar-content" id="sidebar-content">
+  <app-ig-toc (nodeState)="update($event)" [nodes]="nodes$ | async" (addChildren)="addChildren($event)" (copy)="copy($event)"></app-ig-toc>
 </div>

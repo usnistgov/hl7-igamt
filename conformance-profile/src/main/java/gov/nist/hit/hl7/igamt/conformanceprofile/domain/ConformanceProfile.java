@@ -17,6 +17,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
 /**
@@ -58,7 +59,9 @@ public class ConformanceProfile extends Resource {
   }
 
   public ConformanceProfile() {
+	
     super();
+    super.setType(Type.CONFORMANCEPROFILE);
   }
 
   public Set<SegmentRefOrGroup> getChildren() {

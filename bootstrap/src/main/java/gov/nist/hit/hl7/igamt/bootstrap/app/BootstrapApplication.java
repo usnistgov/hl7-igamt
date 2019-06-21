@@ -1,7 +1,12 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.util.Arrays;
 import java.util.Properties;
+
+import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -13,8 +18,10 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
@@ -48,8 +55,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  ConfigService sharedConstantService;
 //  
 // 
-  @Autowired
-  MessageEventFacory messageEventFactory;
+//  @Autowired
+//  MessageEventFacory messageEventFactory;
   @Autowired
   Environment env;
   
@@ -61,6 +68,11 @@ public class BootstrapApplication implements CommandLineRunner {
 //
 //  @Autowired
 //  DatatypeClassifier datatypeClassifier;
+
+//    @Autowired
+//    CoConstraintService ccService;
+    @Autowired
+    CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;
@@ -99,7 +111,7 @@ public class BootstrapApplication implements CommandLineRunner {
 //   CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
 //   return multipartResolver;
 //   }
-   
+//   
 //   @Bean
 //   public GridFsTemplate gridFsTemplate() throws Exception {
 //       return new GridFsTemplate(mongoDbFactory(), mappingMongoConverter());

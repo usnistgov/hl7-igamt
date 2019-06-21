@@ -73,7 +73,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -117,8 +116,8 @@ public class IgServiceImpl implements IgService {
   @Autowired
   RelationShipService relationshipService;
   
-  @Autowired
-  CoConstraintService coConstraintService;
+//  @Autowired
+//  CoConstraintService coConstraintService;
 
   @Override
   public Ig findById(String id) {
@@ -376,7 +375,7 @@ public class IgServiceImpl implements IgService {
   }
 
   @Override
-  public Ig clone(Ig ig, String username) throws CoConstraintSaveException {
+  public Ig clone(Ig ig, String username) {
     Ig newIg = new Ig();
     newIg.setId(null);
     newIg.setFrom(ig.getId());
@@ -429,7 +428,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(conformanceProfileService.cloneConformanceProfile(
-            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username));
+            conformanceProfilesMap.get(l.getId()),valuesetsMap,segmentsMap,l, username, Scope.USER));
       }
     }
     newReg.setChildren(children);
@@ -447,7 +446,7 @@ public class IgServiceImpl implements IgService {
    */
   private SegmentRegistry copySegmentRegistry(SegmentRegistry segmentRegistry,
       HashMap<String, String> valuesetsMap , HashMap<String, String> datatypesMap,
-      HashMap<String, String> segmentsMap, String username) throws CoConstraintSaveException {
+      HashMap<String, String> segmentsMap, String username) {
     // TODO Auto-generated method stub
     SegmentRegistry newReg = new SegmentRegistry();
     HashSet<Link> children = new HashSet<Link>();
@@ -456,7 +455,7 @@ public class IgServiceImpl implements IgService {
         children.add(l);
       } else {
         children.add(segmentService.cloneSegment(segmentsMap.get(l.getId()),
-            valuesetsMap,datatypesMap, l, username));
+            valuesetsMap,datatypesMap, l, username,Scope.USER));
       }
     }
     newReg.setChildren(children);
@@ -478,7 +477,7 @@ public class IgServiceImpl implements IgService {
       if (!datatypesMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username));
+        children.add(this.datatypeService.cloneDatatype(valuesetsMap,datatypesMap, l, username,Scope.USER));
       }
     }
 
@@ -501,7 +500,8 @@ public class IgServiceImpl implements IgService {
       if (!valuesetsMap.containsKey(l.getId())) {
         children.add(l);
       } else {
-        children.add(this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username));
+    	  	Link newLink = this.valueSetService.cloneValueSet(valuesetsMap.get(l.getId()), l, username, Scope.USER);    	  	
+        children.add(newLink);
       }
     }
     newReg.setChildren(children);
@@ -859,8 +859,8 @@ public IGContentMap collectData(Ig ig) {
       if(s != null){
         SegmentDataModel segmentDataModel = new SegmentDataModel();
         segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-        CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
-        segmentDataModel.setCoConstraintTable(coConstraintTable);
+//        CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
+//        segmentDataModel.setCoConstraintTable(coConstraintTable);
         segments.add(segmentDataModel);
       }else throw new Exception("Segment is missing.");
     }

@@ -1,4 +1,4 @@
-import { Action } from '@ngrx/store';
+import {Action} from '@ngrx/store';
 
 export enum LoaderActionTypes {
   TurnOnLoader = '[Loader] Start Loading',
@@ -7,14 +7,18 @@ export enum LoaderActionTypes {
 
 export class TurnOnLoader implements Action {
   readonly type = LoaderActionTypes.TurnOnLoader;
+
   constructor(readonly payload: {
     blockUI: boolean,
-  }) { }
+  }) {
+  }
 }
 
 export class TurnOffLoader implements Action {
   readonly type = LoaderActionTypes.TurnOffLoader;
-  constructor() { }
+
+  constructor() {
+  }
 }
 
 export type LoaderActions = TurnOnLoader | TurnOffLoader;

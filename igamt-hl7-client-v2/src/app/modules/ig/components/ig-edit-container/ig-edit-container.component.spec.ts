@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { IgEditContainerComponent } from './ig-edit-container.component';
+import {IgEditContainerComponent} from './ig-edit-container.component';
 
 describe('IgEditContainerComponent', () => {
   let component: IgEditContainerComponent;
@@ -8,9 +8,9 @@ describe('IgEditContainerComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ IgEditContainerComponent ],
+      declarations: [IgEditContainerComponent],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

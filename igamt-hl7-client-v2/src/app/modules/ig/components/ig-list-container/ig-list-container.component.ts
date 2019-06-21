@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map, withLatestFrom } from 'rxjs/operators';
+import { combineLatest, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import {
   DeleteIgListItemRequest,
@@ -14,6 +14,7 @@ import {
 } from 'src/app/root-store/ig/ig-list/ig-list.actions';
 import * as fromIgList from 'src/app/root-store/ig/ig-list/ig-list.index';
 import * as fromRoot from 'src/app/root-store/index';
+import { ClearIgList } from '../../../../root-store/ig/ig-list/ig-list.actions';
 import { IgListItem } from '../../models/ig/ig-list-item.class';
 import { IgService } from '../../services/ig.service';
 import { Message } from './../../../core/models/message/message.class';
@@ -26,7 +27,7 @@ import { IgListItemControl } from './../ig-list-item-card/ig-list-item-card.comp
   templateUrl: './ig-list-container.component.html',
   styleUrls: ['./ig-list-container.component.scss'],
 })
-export class IgListContainerComponent implements OnInit {
+export class IgListContainerComponent implements OnInit, OnDestroy {
 
   listItems: Observable<IgListItem[]>;
   viewType: Observable<IgListLoad>;
@@ -84,9 +85,8 @@ export class IgListContainerComponent implements OnInit {
     ];
 
     // -- Ig List Item Controls (BUTTONS)
-    this.controls = this.isAdmin
+    this.controls = combineLatest(this.isAdmin, this.username)
       .pipe(
-        withLatestFrom(this.username),
         map(
           ([admin, username]) => {
             return [
@@ -137,6 +137,7 @@ export class IgListContainerComponent implements OnInit {
                   this.ig.cloneIg(item.id).subscribe(
                     (response: Message<string>) => {
                       this.store.dispatch(this.message.messageToAction(response));
+                      this.router.navigate(['ig', response.data]);
                     },
                     (error) => {
                       this.store.dispatch(this.message.actionFromError(error));
@@ -152,7 +153,7 @@ export class IgListContainerComponent implements OnInit {
                 class: 'btn-primary',
                 icon: 'fa-arrow-right',
                 action: (item: IgListItem) => {
-                  this.router.navigate(['ig', item.id, 'edit']);
+                  this.router.navigate(['ig', item.id]);
                 },
                 disabled: (item: IgListItem): boolean => {
                   return false;
@@ -195,6 +196,10 @@ export class IgListContainerComponent implements OnInit {
         this.selectViewType(params['type']);
       }
     });
+  }
+
+  ngOnDestroy() {
+    this.store.dispatch(new ClearIgList());
   }
 
 }

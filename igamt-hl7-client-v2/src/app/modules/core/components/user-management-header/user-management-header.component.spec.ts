@@ -1,6 +1,6 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import { UserManagementHeaderComponent } from './user-management-header.component';
+import {UserManagementHeaderComponent} from './user-management-header.component';
 
 describe('UserManagementHeaderComponent', () => {
   let component: UserManagementHeaderComponent;

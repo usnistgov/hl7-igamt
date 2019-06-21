@@ -1,4 +1,10 @@
-interface IgDocument {
+import {IContent} from '../../../shared/models/content.interface';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {IDomainInfo} from '../../../shared/models/domain-info.interface';
+import {IMetadata} from '../../../shared/models/metadata.interface';
+import {IRegistry} from '../../../shared/models/registry.interface';
+
+export interface IgDocument {
   id: string;
   name?: any;
   publicationInfo?: any;
@@ -25,41 +31,10 @@ interface IgDocument {
   label?: any;
 }
 
-interface IRegistry {
-  children: IResource[];
-  type: string;
-}
-
-interface IResource {
-  id: string;
-  position: number;
-  domainInfo: IDomainInfo;
-  type?: any;
-}
-
-interface IContent {
-  id: string;
-  description?: any;
-  type: string;
-  position: number;
-  label: string;
-  children: IContent[];
-}
-
-interface IMetadata {
-  title: string;
-  topics: string;
-  specificationName: string;
-  identifier?: any;
-  implementationNotes?: any;
-  orgName: string;
-  coverPicture?: any;
-  subTitle: string;
-  scope?: any;
-}
-
-interface IDomainInfo {
-  version: any;
-  compatibilityVersion: any[];
-  scope: string;
+export interface IGDisplayInfo {
+  ig: IgDocument;
+  segments?: IDisplayElement[];
+  valueSets?: IDisplayElement[];
+  datatypes?: IDisplayElement[];
+  messages?: IDisplayElement[];
 }

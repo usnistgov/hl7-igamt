@@ -34,6 +34,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileServi
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.display.model.DisplayElement;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
@@ -142,7 +143,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     sectionTree.setPosition(s.getPosition());
     sectionTree.setType(s.getType());
     t.setId(s.getId());
-
     sectionTree.setDescription(s.getDescription());
     t.setData(sectionTree);
 
@@ -155,7 +155,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
           TextSection sect = section;
           children.add(createNarrativeNode(sect));
         }
-
       }
       children.sort((h1, h2) -> h1.compareTo(h2));
 
@@ -685,17 +684,16 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       AddMessageResponseObject addMessageResponse) {
     AddMessageResponseDisplay addedNodes = new AddMessageResponseDisplay();
     // TODO Auto-generated method stub
-
-    List<TreeNode> segments = this.getSegmentNodes(addMessageResponse.getSegments());
-    List<TreeNode> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypesMap());
-
-    List<TreeNode> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
-    List<TreeNode> conformancePrfiles =
-        this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
-    addedNodes.setConformanceProfiles(conformancePrfiles);
-    addedNodes.setDatatypes(datatypes);
-    addedNodes.setSegments(segments);
-    addedNodes.setValueSets(valueSets);
+//
+//    List<DisplayElement> segments = this.getSegmentNodes(addMessageResponse.getSegments());
+//    List<DisplayElement> datatypes = this.getDatatypesNodes(addMessageResponse.getDatatypes());
+//    List<DisplayElement> valueSets = this.getValueSetNodes(addMessageResponse.getValueSets());
+//    List<DisplayElement> conformancePrfiles =
+//        this.getConformaneProfile(addMessageResponse.getConformanceProfiles());
+//    addedNodes.setConformanceProfiles(conformancePrfiles);
+//    addedNodes.setDatatypes(datatypes);
+//    addedNodes.setSegments(segments);
+//    addedNodes.setValueSets(valueSets);
 
     return addedNodes;
   }
@@ -717,7 +715,7 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
     // TODO Auto-generated method stub
 
     List<TreeNode> segments = this.getSegmentNodes(objects.getSegments());
-    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypesMap());
+    List<TreeNode> datatypes = this.getDatatypesNodes(objects.getDatatypes());
 
     List<TreeNode> valueSets = this.getValueSetNodes(objects.getValueSets());
 
@@ -821,7 +819,6 @@ public class DisplayConverterServiceImpl implements DisplayConverterService {
       }
     }
     return s;
-
   }
 
 

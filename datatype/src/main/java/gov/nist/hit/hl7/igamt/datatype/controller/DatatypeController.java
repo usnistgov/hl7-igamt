@@ -44,6 +44,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeException;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @RestController
 public class DatatypeController extends BaseController {
@@ -162,15 +163,15 @@ public class DatatypeController extends BaseController {
 
 
 
-  @RequestMapping(value = "/api/datatypes/hl7/{version:.+}", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/datatypes/{scope}/{version:.+}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<Datatype> findHl7Datatypes(@PathVariable String version,
+  public @ResponseBody ResponseMessage<List<Datatype>> findHl7Datatypes(@PathVariable String version, @PathVariable String scope,
       Authentication authentication) {
-    return datatypeService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(),
-        version);
+    return new ResponseMessage<List<Datatype>>(Status.SUCCESS, "",
+            "", null, false, null, datatypeService.findDisplayFormatByScopeAndVersion(scope,
+        version));
   }
-
-
+  
   private Datatype findById(String id) throws DatatypeNotFoundException {
     Datatype Datatype = datatypeService.findById(id);
     if (Datatype == null) {

@@ -1,6 +1,7 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~@angular/material/prebuilt-themes/indigo-pink.css";
 @import "./assets/variables";
+@import '~angular-tree-component/dist/angular-tree-component.css';
 
 html {
   height: 100%;
@@ -11,7 +12,19 @@ body {
   @extend %blue-bg;
   height: 100%;
   width: 100%;
-  font-family: Verdana,Geneva,sans-serif !important;
+  font-family: Verdana, Geneva, sans-serif !important;
+}
+
+.igamt-progress .mat-progress-bar-fill::after {
+  background-color: #be1600 !important;
+}
+
+.igamt-progress .mat-progress-bar-buffer {
+  background-color: #ffd400 !important;
+}
+
+.title-text {
+  margin: 0 !important;
 }
 
 %page-container {
@@ -36,7 +49,7 @@ body {
   height: 100%;
 }
 
-.form-label-lg{
+.form-label-lg {
   font-weight: 700;
 }
 
@@ -53,7 +66,25 @@ body {
   overflow: auto;
 }
 
-//-----
+.sidebar-filter .form-control {
+  height: initial;
+  border-radius: initial;
+  border: 1px solid #f0f0f0;
+  border-left: 1px solid #cdd3d9;
+}
+
+.sidebar-filter .input-group-text {
+  border: initial;
+}
+
+//----- Froala
+.fr-wrapper {
+  flex-grow: 1;
+}
+
+.fr-sticky-off {
+  position: inherit !important;
+}
 
 //----- primeng
 .ui-progressbar {
@@ -72,7 +103,36 @@ body {
 .border-gray {
   border: 1px solid #c1c1c1;
 }
-.ui-table-scrollable-body{
+
+.ui-table-scrollable-body {
   border-bottom: 1px solid #c1c1c1 !important;
 
 }
+
+//----- angular-tree-component
+
+.node-content-wrapper .active-node {
+  background-color: $nist_light_yellow;
+  padding: 2px;
+}
+
+.active-node {
+  background-color: $nist_light_yellow;
+  padding: 2px;
+}
+
+.tree-children {
+  overflow: unset;
+}
+.form-control-dropdown {
+  padding: 0 !important;
+}
+
+.string-list ul {
+  width: 100%;
+}
+
+.fr-box.fr-basic .fr-element {
+  min-height: 200px !important;
+}
+

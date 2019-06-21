@@ -10,7 +10,7 @@ export class SubMenu{
   icon:string;
 
 
-  constructor(id:string, value:string,label,icon:string){
+  constructor (id:string, value:string,label,icon:string){
 
   this.id=id;
   this.value=value;

@@ -10,12 +10,8 @@
  * that they have been modified.
  */
 package gov.nist.hit.hl7.igamt.ig.model;
-
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
-
-import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -26,19 +22,17 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
  */
 public class AddSegmentResponseObject {
 
-  Set<Datatype > datatypesMap = new HashSet< Datatype>();
+  Set<Datatype> datatypes = new HashSet< Datatype>();
   Set<Segment> segments = new HashSet<Segment>();
-
-  Set<Valueset > valueSets = new HashSet<Valueset>();
+  Set<Valueset> valueSets = new HashSet<Valueset>();
 
   
-
-  public Set<Datatype> getDatatypesMap() {
-    return datatypesMap;
+  public Set<Datatype> getDatatypes() {
+    return datatypes;
   }
 
-  public void setDatatypesMap(Set<Datatype> datatypesMap) {
-    this.datatypesMap = datatypesMap;
+  public void setDatatypes(Set<Datatype> datatypes) {
+    this.datatypes = datatypes;
   }
 
   public Set<Segment> getSegments() {

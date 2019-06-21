@@ -9,40 +9,60 @@ export enum IgListActionTypes {
   DeleteIgListItemSuccess = '[IgList] Delete Ig List Item',
   SelectIgListViewType = '[IgList] Select Ig List View Type',
   SelectIgListSortOption = '[IgList] Select Sort Option',
+  ClearIgList = '[IgList] Clear Ig List',
 }
 
 export type IgListLoad = 'USER' | 'PUBLISHED' | 'ALL';
 
 export class LoadIgList implements Action {
   readonly type = IgListActionTypes.LoadIgList;
+
   constructor(readonly payload: {
     type: IgListLoad,
-  }) { }
+  }) {
+  }
 }
 
 export class UpdateIgList implements Action {
   readonly type = IgListActionTypes.UpdateIgList;
-  constructor(readonly payload: IgListItem[]) { }
+
+  constructor(readonly payload: IgListItem[]) {
+  }
 }
 
 export class DeleteIgListItemRequest implements Action {
   readonly type = IgListActionTypes.DeleteIgListItemRequest;
-  constructor(readonly id: string) { }
+
+  constructor(readonly id: string) {
+  }
 }
 
 export class DeleteIgListItemSuccess implements Action {
   readonly type = IgListActionTypes.DeleteIgListItemSuccess;
-  constructor(readonly id: string) { }
+
+  constructor(readonly id: string) {
+  }
 }
 
 export class SelectIgListViewType implements Action {
   readonly type = IgListActionTypes.SelectIgListViewType;
-  constructor(readonly viewType: IgListLoad) { }
+
+  constructor(readonly viewType: IgListLoad) {
+  }
 }
 
 export class SelectIgListSortOption implements Action {
   readonly type = IgListActionTypes.SelectIgListSortOption;
-  constructor(readonly sortOption: ISortOptions) { }
+
+  constructor(readonly sortOption: ISortOptions) {
+  }
+}
+
+export class ClearIgList implements Action {
+  readonly type = IgListActionTypes.ClearIgList;
+
+  constructor() {
+  }
 }
 
 export type IgListActions =
@@ -50,5 +70,6 @@ export type IgListActions =
   UpdateIgList |
   DeleteIgListItemRequest |
   DeleteIgListItemSuccess |
+  ClearIgList |
   SelectIgListViewType |
   SelectIgListSortOption;

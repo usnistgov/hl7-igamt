@@ -1,6 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { LoginRequest } from 'src/app/root-store/authentication/authentication.actions';
+import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {FormControl, FormGroup, Validators} from '@angular/forms';
+import {LoginRequest} from 'src/app/root-store/authentication/authentication.actions';
 
 @Component({
   selector: 'app-login-form',

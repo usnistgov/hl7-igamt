@@ -21,6 +21,8 @@ import java.util.Set;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
+import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
@@ -103,11 +105,12 @@ public interface ConformanceProfileService {
    * @param segmentsMap
    * @param l
    * @param username
+ * @param user 
    * @return
    */
   public Link cloneConformanceProfile(String String,
       HashMap<String, String> valuesetsMap, HashMap<String, String> segmentsMap, Link l,
-      String username);
+      String username, Scope scope);
 
   /**
    * @param conformanceProfile
@@ -132,4 +135,7 @@ public interface ConformanceProfileService {
   List<ConformanceProfile> findByIdIn(Set<String> set);
   
   public Set<DisplayPredicate> findDisplayPredicates(String sourceId, String documentId);
+  
+  public Set<Resource> getDependencies(ConformanceProfile cp);
+
 }

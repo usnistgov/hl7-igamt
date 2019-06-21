@@ -27,9 +27,7 @@ public class SectionCopyWrapper {
   public void setIgDocumentId(String igDocumentId) {
     this.igDocumentId = igDocumentId;
   }
-
-
-
+  
   public String getName() {
     return name;
   }

@@ -1,4 +1,4 @@
-import { initialState, reducer } from './create-ig.reducer';
+import {initialState, reducer} from './create-ig.reducer';
 
 describe('CreateIg Reducer', () => {
   describe('an unknown action', () => {

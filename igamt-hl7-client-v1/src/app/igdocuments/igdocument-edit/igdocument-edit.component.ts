@@ -399,11 +399,7 @@ export class IgDocumentEditComponent {
       .subscribe(params => {
         //console.log(params);
         this.router.navigate(["./section/"+id],{ preserveQueryParams:true ,relativeTo:this.sp, preserveFragment:true});
-
       });
-
-
-
   }
 
   getSectionUrl(id){

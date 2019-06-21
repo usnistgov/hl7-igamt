@@ -1,6 +1,6 @@
-import { TestBed } from '@angular/core/testing';
+import {TestBed} from '@angular/core/testing';
 
-import { IgEditEffects } from './ig-edit.effects';
+import {IgEditEffects} from './ig-edit.effects';
 
 describe('IgEditEffects', () => {
   let effects: IgEditEffects;

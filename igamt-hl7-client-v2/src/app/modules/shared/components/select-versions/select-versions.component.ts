@@ -1,4 +1,5 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+
 @Component({
   selector: 'app-select-versions',
   templateUrl: './select-versions.component.html',
@@ -6,20 +7,21 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 })
 export class SelectVersionsComponent implements OnInit {
 
-  constructor() { }
-
   @Input()
   hl7Versions: string[];
-
   @Output()
   selected = new EventEmitter<string>();
-
+  @Input()
   selectedVersion: string;
+
+  constructor() {
+  }
 
   ngOnInit() {
   }
 
   select($event: any) {
+    console.log(event);
     this.selectedVersion = $event;
     this.selected.emit($event);
   }

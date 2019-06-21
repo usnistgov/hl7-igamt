@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
-import { BlockUIModule } from 'primeng/blockui';
 import { CardModule } from 'primeng/card';
 import { ProgressBarModule } from 'primeng/progressbar';
 import { NotificationEffects } from 'src/app/root-store/notification/notification.effects';
@@ -39,8 +39,8 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     HttpClientModule,
     CardModule,
     ProgressBarModule,
-    BlockUIModule,
     StoreModule,
+    MatProgressBarModule,
     EffectsModule.forFeature([AuthenticationEffects, RegistrationEffects, NotificationEffects]),
     SharedModule.forRoot(),
   ],
@@ -56,9 +56,9 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     RegisterComponent,
     SharedModule,
     ProgressBarModule,
-    BlockUIModule,
     HomeComponent,
     AlertsContainerComponent,
   ],
 })
-export class CoreModule { }
+export class CoreModule {
+}

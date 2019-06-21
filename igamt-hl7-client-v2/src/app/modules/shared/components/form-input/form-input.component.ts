@@ -1,4 +1,4 @@
-import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, forwardRef, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { AbstractControl, ControlContainer, ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -20,6 +20,10 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   @Input()
   type: string;
   @Input()
+  options: any;
+  @Input()
+  viewOnly: boolean;
+  @Input()
   name: string;
   @Input()
   formControlName: string;
@@ -33,13 +37,18 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
   label: string;
   @Input()
   placeholder: any;
+  @ViewChild('inputElm', { read: ElementRef }) inputElm: ElementRef;
   disabled: boolean;
   control: AbstractControl;
-  onChange: any = () => { };
-  onTouch: any = () => { };
 
-  constructor(private controlContainer: ControlContainer) {
+  constructor(private controlContainer: ControlContainer, private cd: ChangeDetectorRef) {
     this.change = new EventEmitter<any>();
+  }
+
+  onChange: any = () => {
+  }
+
+  onTouch: any = () => {
   }
 
   registerOnChange(fn: any): void {
@@ -56,6 +65,9 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
 
   writeValue(val: any): void {
     this.value = val;
+    if (this.inputElm) {
+      this.inputElm.nativeElement.value = val;
+    }
   }
 
   valueChange(value: any) {
@@ -86,7 +98,6 @@ export class FormInputComponent implements ControlValueAccessor, OnInit {
         break;
       }
     }
-    console.log(errors);
     return errors;
   }
 

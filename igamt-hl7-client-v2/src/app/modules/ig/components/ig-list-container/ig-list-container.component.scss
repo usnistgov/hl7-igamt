@@ -1,15 +1,12 @@
-@import  '../../../../../assets/variables';
+@import '../../../../../assets/variables';
 
 .ig-list-layout {
   @extend %page-wrapper;
 
   display: grid;
-  grid-template-areas:  'alerts'
-                        'topbar'
-                        'search-bar'
-                        'ig-list';
+  grid-template-areas: 'alerts' 'topbar' 'search-bar' 'ig-list';
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(min-content,max-content) 70px 60px auto;
+  grid-template-rows: minmax(min-content, max-content) 70px 60px auto;
   height: 100%;
 }
 
@@ -39,5 +36,6 @@
 }
 
 .spacer {
-  margin-top: 5px; margin-bottom: 5px;
+  margin-top: 5px;
+  margin-bottom: 5px;
 }

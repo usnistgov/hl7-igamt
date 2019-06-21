@@ -93,17 +93,6 @@ export  class TocService{
 
   }
 
-
-
-
-
-
-
-
-
-
-
-
   async getDatatypeById(id: string) {
     const list = await this.getDataypeList();
     const elm = _.find(list, function (x) {
@@ -111,9 +100,6 @@ export  class TocService{
     });
     return elm;
   }
-
-
-
 
   setTreeModelInDB(treeModel){
     console.log("Setting tree model");
@@ -129,9 +115,6 @@ export  class TocService{
         });
     })
   }
-
-
-
 
   initTreeModel(treeModel){
     console.log("init tree model");
@@ -394,16 +377,10 @@ export  class TocService{
     );
 
   }
-
-
-
-
   deleteNodeById(id){
-
     let node =this.treeModel.getNodeById(id);
 
     if(node){
-
       let parentNode = node.realParent ? node.realParent : node.treeModel.virtualRoot;
       _.remove(parentNode.data.children, function (child:any) {
         return child.id === id;
@@ -414,11 +391,6 @@ export  class TocService{
       }
     }
   }
-
-
-
-
-
   getPath =function (node) {
 
     node.data.data.position= parseInt(node.index)+1; // temporary to be discussed

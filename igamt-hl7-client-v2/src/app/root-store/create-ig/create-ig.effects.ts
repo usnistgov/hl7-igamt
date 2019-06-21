@@ -1,6 +1,7 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
 import {catchError, map, mergeMap} from 'rxjs/operators';
@@ -13,7 +14,9 @@ import {TurnOnLoader} from '../loader/loader.actions';
 import {
   CreateIg,
   CreateIgActions,
-  CreateIgActionTypes, CreateIgFailure, CreateIgSuccess,
+  CreateIgActionTypes,
+  CreateIgFailure,
+  CreateIgSuccess,
   LoadMessageEvents,
   LoadMessageEventsFailure,
   LoadMessageEventsSuccess,
@@ -31,7 +34,7 @@ export class CreateIgEffects {
       }));
       return this.igService.getMessagesByVersion(action.payload).pipe(
         map((resp: Message<MessageEventTreeNode[]>) => {
-         return new LoadMessageEventsSuccess(resp);
+          return new LoadMessageEventsSuccess(resp);
         })
         , catchError(
           (err: HttpErrorResponse) => {
@@ -51,6 +54,7 @@ export class CreateIgEffects {
       }));
       return this.igService.createIntegrationProfile(action.payload).pipe(
         map((resp: Message<string>) => {
+          console.log(resp);
           return new CreateIgSuccess(resp);
         })
         , catchError(
@@ -88,6 +92,10 @@ export class CreateIgEffects {
   @Effect()
   createIgSucess$ = this.actions$.pipe(
     ofType(CreateIgActionTypes.CreateIgSuccess),
+    map((action: CreateIgSuccess) => {
+      this.router.navigate(['/ig/' + action.payload.data ]);
+      return action;
+    }),
     this.helper.finalize<CreateIgSuccess, Message<string>>({
       clearMessages: true,
       turnOffLoader: true,
@@ -104,7 +112,8 @@ export class CreateIgEffects {
       turnOffLoader: true,
     }),
   );
+
   constructor(private actions$: Actions<CreateIgActions>, private igService: IgService,
-              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService) {
+              private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService, private router: Router) {
   }
 }

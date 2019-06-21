@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
+import gov.nist.hit.hl7.igamt.common.base.wrappers.AddingInfo;
 
 /**
  * @author ena3
@@ -18,43 +19,23 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
  */
 public class CopyWrapper {
 
-  private String igDocumentId;
-  private String id;
-  private String ext;
-  private String name;
-  
-  
-  public String getIgDocumentId() {
-    return igDocumentId;
-  }
+	private String documentId;
+	private AddingInfo selected;
 
-  public void setIgDocumentId(String igDocumentId) {
-    this.igDocumentId = igDocumentId;
-  }
+	public AddingInfo getSelected() {
+		return selected;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public void setSelected(AddingInfo selected) {
+		this.selected = selected;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public String getDocumentId() {
+		return documentId;
+	}
 
-  public String getExt() {
-    return ext;
-  }
-
-  public void setExt(String ext) {
-    this.ext = ext;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
+	}
 
 }

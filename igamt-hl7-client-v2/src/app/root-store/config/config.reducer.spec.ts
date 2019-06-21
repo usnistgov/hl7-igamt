@@ -1,4 +1,4 @@
-import { initialState, reducer } from './config.reducer';
+import {initialState, reducer} from './config.reducer';
 
 describe('Hl7Config Reducer', () => {
   describe('an unknown action', () => {

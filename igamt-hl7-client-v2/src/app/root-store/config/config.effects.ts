@@ -1,6 +1,6 @@
 import {HttpErrorResponse} from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import {Injectable} from '@angular/core';
+import {Actions, Effect, ofType} from '@ngrx/effects';
 import {Store} from '@ngrx/store';
 import {of} from 'rxjs';
 import {catchError, concatMap, map} from 'rxjs/operators';
@@ -23,7 +23,7 @@ export class ConfigEffects {
       }));
       return this.configService.getConfig().pipe(
         map((resp: Message<Hl7Config>) => {
-            return new LoadConfigSuccess(resp);
+          return new LoadConfigSuccess(resp);
         })
         , catchError(
           (err: HttpErrorResponse) => {
@@ -54,6 +54,7 @@ export class ConfigEffects {
   );
 
   constructor(private actions$: Actions<ConfigActions>, private store: Store<any>, private configService: ConfigService,
-              private message: MessageService,  private helper: RxjsStoreHelperService) {}
+              private message: MessageService, private helper: RxjsStoreHelperService) {
+  }
 
 }

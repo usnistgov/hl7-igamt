@@ -117,12 +117,13 @@ public class SegmentDataModel {
           conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
         }
       }
+      if (s.getBinding().getChildren() != null) {
+    	     // this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    	    }
+    	    
     }
     
-    if (s.getBinding().getChildren() != null) {
-     // this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
-    }
-    
+ 
     if(s.getChildren() != null) {
       s.getChildren().forEach(f -> {
         String key = f.getPosition() + "";

@@ -118,12 +118,13 @@ public class ConformanceProfileDataModel {
               .ifPresent(cs -> this.conformanceStatementMap.add(cs));
         }
       }
+      if (cp.getBinding().getChildren() != null) {
+//          this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
+//              valuesetBindingDataModelMap);
+        }
     }
 
-    if (cp.getBinding().getChildren() != null) {
-      this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
-          valuesetBindingDataModelMap);
-    }
+
 
     if (cp.getChildren() != null) {
       cp.getChildren().forEach(child -> {

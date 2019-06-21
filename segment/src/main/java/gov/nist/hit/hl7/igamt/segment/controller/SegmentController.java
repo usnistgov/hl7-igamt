@@ -47,6 +47,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementDisplay;
 import gov.nist.hit.hl7.igamt.constraints.domain.display.ConformanceStatementsContainer;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.CoConstraintTableDisplay;
 import gov.nist.hit.hl7.igamt.segment.domain.display.DisplayMetadataSegment;
@@ -56,6 +57,7 @@ import gov.nist.hit.hl7.igamt.segment.exception.CoConstraintNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
+import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 
 
@@ -67,9 +69,13 @@ public class SegmentController extends BaseController {
 
   @Autowired
   SegmentService segmentService;
-
+  
+  
   @Autowired
   EntityChangeService entityChangeService;
+
+//  @Autowired
+//  CoConstraintService coConstraintService;
 
   @Autowired
   private ConformanceStatementRepository conformanceStatementRepository;
@@ -187,7 +193,7 @@ public class SegmentController extends BaseController {
     Segment segment = segmentService.saveDynamicMapping(dynamicMapping);
     return new ResponseMessage(Status.SUCCESS, DYNAMICMAPPING_SAVED, id, segment.getUpdateDate());
   }
-//
+
 //  @RequestMapping(value = "/api/segments/{id}/coconstraints", method = RequestMethod.GET,
 //      produces = {"application/json"})
 //  @ResponseBody
@@ -210,20 +216,23 @@ public class SegmentController extends BaseController {
 //      produces = {"application/json"})
 //  @ResponseBody
 //  public ResponseMessage<CoConstraintTable> saveCoConstraints(@PathVariable("id") String id,
-//      @RequestBody CoConstraintTable table, Authentication authentication)
-//      throws CoConstraintSaveException {
+//      @RequestBody CoConstraintTable table, Authentication authentication){
 //    CoConstraintTable ccTable = this.coconstraintService.saveCoConstraintForSegment(id, table,
 //        authentication.getPrincipal().toString());
 //    return new ResponseMessage<CoConstraintTable>(Status.SUCCESS, "CoConstraint Table",
 //        "Saved Successfully", ccTable.getId(), false, new Date(), ccTable);
 //  }
 
-  @RequestMapping(value = "/api/segments/hl7/{version:.+}", method = RequestMethod.GET,
+  @RequestMapping(value = "/api/segments/{scope}/{version:.+}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public @ResponseBody List<Segment> find(@PathVariable String version,
+  public @ResponseBody ResponseMessage< List<Segment>> find(@PathVariable String version,@PathVariable String scope,
       Authentication authentication) {
-    return segmentService.findDisplayFormatByScopeAndVersion(Scope.HL7STANDARD.toString(), version);
+    
+	  	return new  ResponseMessage< List<Segment>>(Status.SUCCESS, "",
+            "", null, false, null,segmentService.findDisplayFormatByScopeAndVersion(scope, version));
   }
+
+
 
   private Segment findById(String id) throws SegmentNotFoundException {
     Segment segment = segmentService.findById(id);

@@ -4,7 +4,7 @@
       <div class="input-group-prepend">
         <span class="input-group-text" style="width: 40px;"> <i class="fa fa-user"></i> </span>
       </div>
-      <input formControlName="username" class="form-control" placeholder="Username" type="username">
+      <input class="form-control" formControlName="username" placeholder="Username" type="username">
     </div>
   </div>
   <div class="form-group">
@@ -12,12 +12,12 @@
       <div class="input-group-prepend">
         <span class="input-group-text" style="width: 40px;"> <i class="fa fa-key"></i> </span>
       </div>
-      <input formControlName="password" class="form-control" placeholder="password" type="password">
+      <input class="form-control" formControlName="password" placeholder="password" type="password">
     </div>
   </div>
   <div class="form-group">
-    <button type="submit" class="btn btn-primary btn-block" [disabled]="!loginForm.valid" (click)="submit()"> Login
+    <button (click)="submit()" [disabled]="!loginForm.valid" class="btn btn-primary btn-block" type="submit"> Login
     </button>
   </div>
-  <p class="text-center"><a class="btn" [routerLink]="['/reset-password']">Forgot password?</a></p>
+  <p class="text-center"><a [routerLink]="['/reset-password']" class="btn">Forgot password?</a></p>
 </form>

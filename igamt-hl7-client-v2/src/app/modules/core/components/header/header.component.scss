@@ -17,19 +17,22 @@
 
 .nav-links-bar {
   background-color: $nist_dark_yellow;
-  margin-top: 61px; padding: 0px 0px 0px 0px;
+  margin-top: 61px;
+  padding: 0px 0px 0px 0px;
   justify-content: space-between;
-  -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-  -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-  box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
 }
 
 .nav-progress-bar {
-  margin-top: 100px; padding: 0px 0px 0px 0px;
-  -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-  -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
-  box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+  margin-top: 105px;
+  padding: 0px 0px 0px 0px;
+  -webkit-box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
+  box-shadow: 0px 3px 5px -2px rgba(0, 0, 0, 0.75);
 }
+
 
 .toolname-abbrv {
   font-weight: 500;

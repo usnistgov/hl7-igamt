@@ -1,34 +1,33 @@
 <form [formGroup]="registrationForm" novalidate>
 
-  <app-form-input type="text" id="fullName" name="Full name" formControlName="fullName" placeholder="Enter Name"
-    label="Full Name*"></app-form-input>
-  <app-form-input type="text" id="email" name="Email" formControlName="email" placeholder="Enter Email" label="E-mail">
+  <app-form-input formControlName="fullName" id="fullName" label="Full Name*" name="Full name" placeholder="Enter Name"
+                  type="text"></app-form-input>
+  <app-form-input formControlName="email" id="email" label="E-mail" name="Email" placeholder="Enter Email" type="text">
   </app-form-input>
-  <app-form-input type="text" id="username" name="Username" formControlName="username" placeholder="Enter Username"
-    label="Username*"></app-form-input>
-  <app-form-input type="password" id="password" name="Password" formControlName="password"
-    (change)="refreshConfirmPasswordValidation()" placeholder="Enter Password" label="Password*">
+  <app-form-input formControlName="username" id="username" label="Username*" name="Username" placeholder="Enter Username"
+                  type="text"></app-form-input>
+  <app-form-input (change)="refreshConfirmPasswordValidation()" formControlName="password" id="password" label="Password*"
+                  name="Password" placeholder="Enter Password" type="password">
   </app-form-input>
-  <app-form-input type="password" id="confirmpassword" name="Password confirmation" formControlName="confirm"
-    placeholder="Confirm Password" label="Confirm password*">
+  <app-form-input formControlName="confirm" id="confirmpassword" label="Confirm password*" name="Password confirmation"
+                  placeholder="Confirm Password" type="password">
   </app-form-input>
-
-
 
 
   <div class="form-group p-col p-grid">
-    <label for="notice" class="form-label-lg"> Notice to Applicant Regarding IGAMT Terms of Use</label>
-    <div class="form-control user-notice" disabled aria-label="With textarea" id="notice">{{notice}}</div>
-    <p-checkbox [style]="{ 'margin-top' : '5px'}" name="signedConfidentialityAgreement" binary="true"
-      [formControl]="registrationForm.controls['signedConfidentialityAgreement']"></p-checkbox>
+    <label class="form-label-lg" for="notice"> Notice to Applicant Regarding IGAMT Terms of Use</label>
+    <div aria-label="With textarea" class="form-control user-notice" disabled id="notice">{{notice}}</div>
+    <p-checkbox [formControl]="registrationForm.controls['signedConfidentialityAgreement']" [style]="{ 'margin-top' : '5px'}" binary="true"
+                name="signedConfidentialityAgreement"></p-checkbox>
     <span style="margin-left: 5px; margin-top: 5px;"> I have read the Notice to Applicant and Accept the Terms of Use
       for the
       IGAMT</span>
   </div>
 
   <div class="p-grid p-col p-justify-end">
-    <button type="submit" class="btn btn-primary" (click)="submit()" [disabled]="registrationForm.invalid">Submit
-      Application</button>
+    <button (click)="submit()" [disabled]="registrationForm.invalid" class="btn btn-primary" type="submit">Submit
+      Application
+    </button>
   </div>
 
 </form>

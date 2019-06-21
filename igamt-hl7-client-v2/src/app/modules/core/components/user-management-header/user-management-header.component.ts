@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { LogoutRequest } from 'src/app/root-store/authentication/authentication.actions';
+import {Component, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {LogoutRequest} from 'src/app/root-store/authentication/authentication.actions';
 import * as fromAuth from './../../../../root-store/authentication/authentication.reducer';
 
 @Component({
