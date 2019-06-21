@@ -190,8 +190,8 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       if (comments != null && comments.size() > 0) {
         for (Comment c : comments) {
           PropertyComment propertyComment = new PropertyComment();
-          gov.nist.hit.hl7.igamt.common.binding.domain.Comment newComment =
-              new gov.nist.hit.hl7.igamt.common.binding.domain.Comment();
+          gov.nist.hit.hl7.igamt.common.base.domain.Comment newComment =
+              new gov.nist.hit.hl7.igamt.common.base.domain.Comment();
           newComment.setDateupdated(c.getLastUpdatedDate());
           newComment.setDescription(c.getDescription());
           propertyComment.setComment(newComment);
@@ -203,8 +203,8 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
       if (comments != null && comments.size() > 0) {
         for (Comment c : comments) {
           PropertyComment propertyComment = new PropertyComment();
-          gov.nist.hit.hl7.igamt.common.binding.domain.Comment newComment =
-              new gov.nist.hit.hl7.igamt.common.binding.domain.Comment();
+          gov.nist.hit.hl7.igamt.common.base.domain.Comment newComment =
+              new gov.nist.hit.hl7.igamt.common.base.domain.Comment();
           newComment.setDateupdated(c.getLastUpdatedDate());
           newComment.setDescription(c.getDescription());
           propertyComment.setComment(newComment);

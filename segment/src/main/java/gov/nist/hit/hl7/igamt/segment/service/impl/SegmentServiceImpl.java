@@ -35,6 +35,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -49,7 +50,6 @@ import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
@@ -862,13 +862,15 @@ public class SegmentServiceImpl implements SegmentService {
 				item.setOldPropertyValue(seb.getExternalSingleCode());
 				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getConstantValue());
-				if (item.getPropertyValue() == null) {
-					seb.setConstantValue(null);
-				} else {
-					seb.setConstantValue((String) item.getPropertyValue());
-				}
+			  Field f = this.findFieldById(s, item.getLocation());
+              if (f != null) {
+                  item.setOldPropertyValue(f.getConstantValue());
+                  if (item.getPropertyValue() == null) {
+                    f.setConstantValue(null);
+                } else {
+                    f.setConstantValue((String) item.getPropertyValue());
+                }
+              }
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Field f = this.findFieldById(s, item.getLocation());
 				if (f != null) {
@@ -880,11 +882,13 @@ public class SegmentServiceImpl implements SegmentService {
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getComments());
-				seb.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+			  ObjectMapper mapper = new ObjectMapper();
+              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+              Field f = this.findFieldById(s, item.getLocation());
+              if (f != null) {
+                item.setOldPropertyValue(f.getComments());
+                f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+              }
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1117,8 +1121,6 @@ public class SegmentServiceImpl implements SegmentService {
 		bindingDisplay.setSourceId(sourceId);
 		bindingDisplay.setSourceType(sourceType);
 		bindingDisplay.setPriority(priority);
-		bindingDisplay.setComments(seb.getComments());
-		bindingDisplay.setConstantValue(seb.getConstantValue());
 		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
 		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 		if (seb.getPredicateId() != null)
