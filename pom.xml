@@ -111,7 +111,6 @@
 		<module>ig</module>
 		<module>datatype</module>
 		<module>valueset</module>
-		<module>bootstrap</module>
 		<module>conformance-profile</module>
 		<module>serialization</module>
 		<module>segment</module>
@@ -125,6 +124,8 @@
 		<module>constraint</module>
 		<module>delta</module>
 		<module>diff-utils</module>
+		<module>bootstrap</module>
+		
 	</modules>
   
 </project>

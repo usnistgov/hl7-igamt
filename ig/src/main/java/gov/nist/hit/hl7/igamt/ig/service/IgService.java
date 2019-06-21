@@ -16,8 +16,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 @Service("igService")
 public interface IgService {
@@ -30,7 +30,7 @@ public interface IgService {
 
   public Ig save(Ig ig);
 
-  public Ig clone(Ig ig, String username) throws CoConstraintSaveException;
+  public Ig clone(Ig ig, String username);
 
   public List<Ig> findByUsername(String username);
 
@@ -64,8 +64,7 @@ public interface IgService {
   public IGContentMap collectData(Ig igdoument);
 
   void buildDependencies(IGContentMap contentMap);
-
-
-
+  
+  public IgDataModel generateDataModel(Ig ig) throws Exception;
 }
 
