@@ -68,8 +68,6 @@ public class ChangeItemDomain implements Comparable<ChangeItemDomain> {
     this.changeType = changeType;
   }
 
-
-
   public int getPosition() {
     return position;
   }

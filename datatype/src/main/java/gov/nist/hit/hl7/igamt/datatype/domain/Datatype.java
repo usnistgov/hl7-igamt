@@ -89,16 +89,10 @@ public class Datatype extends Resource {
 
   }
 
-public void complete(Datatype elm) {
-	super.complete(elm);
-	elm.ext = ext;
-	elm.purposeAndUse = purposeAndUse;
-	elm.binding = binding;
-}
-
-
-  
-  
-  
-
+  public void complete(Datatype elm) {
+      super.complete(elm);
+      elm.ext = ext;
+      elm.purposeAndUse = purposeAndUse;
+      elm.binding = binding;
+  }
 }

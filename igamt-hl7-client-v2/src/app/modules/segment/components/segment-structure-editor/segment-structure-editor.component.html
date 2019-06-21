@@ -1,0 +1,33 @@
+<strong>Binding Context Legend : </strong>
+<div style="display: flex; flex-direction: row; align-items: center;">
+  <div style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+    <app-binding-badge [context]="{
+      resource: type.SEGMENT
+    }"></app-binding-badge>
+    <span style="margin-left: 5px;">Segment</span>
+  </div>
+  <div style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+    <app-binding-badge [context]="{
+      resource: type.DATATYPE,
+      element: type.FIELD
+    }"></app-binding-badge>
+    <span style="margin-left: 5px;"> Datatype (FIELD)</span>
+  </div>
+  <div style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+    <app-binding-badge [context]="{
+      resource: type.DATATYPE,
+      element: type.COMPONENT
+    }"></app-binding-badge>
+    <span style="margin-left: 5px;"> Datatype (COMPONENT)</span>
+  </div>
+</div>
+<app-hl7-v2-tree
+[columns]="columns"
+[datatypes]="datatypes | async"
+[segments]="segments | async"
+[repository]="repository"
+[viewOnly]="viewOnly$ | async"
+(changes)="change($event)"
+[resource]="segment | async"
+[username]="username | async">
+</app-hl7-v2-tree>

@@ -11,6 +11,8 @@ import { RegistrationEffects } from '../../root-store/registration/registration.
 import { SharedModule } from '../shared/shared.module';
 import { AuthenticationEffects } from './../../root-store/authentication/authentication.effects';
 import { AlertsContainerComponent } from './components/alerts-container/alerts-container.component';
+import { DefinitionEditorComponent } from './components/definition-editor/definition-editor.component';
+import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
 import { HomeComponent } from './components/home/home.component';
@@ -33,6 +35,7 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     NewPasswordComponent,
     HomeComponent,
     AlertsContainerComponent,
+    ErrorPageComponent,
   ],
   imports: [
     CommonModule,
@@ -58,6 +61,7 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     ProgressBarModule,
     HomeComponent,
     AlertsContainerComponent,
+    ErrorPageComponent,
   ],
 })
 export class CoreModule {

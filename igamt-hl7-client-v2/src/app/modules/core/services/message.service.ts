@@ -1,10 +1,10 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Inject, Injectable} from '@angular/core';
-import {MessageType, UserMessage} from 'src/app/modules/core/models/message/message.class';
-import {Notify} from 'src/app/root-store/notification/notification.actions';
-import {DEFAULT_MESSAGE_OPTION} from '../../shared/shared-injection-token';
-import {AddMessage} from './../../../root-store/page-messages/page-messages.actions';
-import {IUserMessageOptions, Message} from './../models/message/message.class';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Inject, Injectable } from '@angular/core';
+import { MessageType, UserMessage } from 'src/app/modules/core/models/message/message.class';
+import { Notify } from 'src/app/root-store/notification/notification.actions';
+import { DEFAULT_MESSAGE_OPTION } from '../../shared/shared-injection-token';
+import { AddMessage } from './../../../root-store/page-messages/page-messages.actions';
+import { IUserMessageOptions, Message } from './../models/message/message.class';
 
 @Injectable({
   providedIn: 'root',

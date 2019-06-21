@@ -1,0 +1,16 @@
+<ng-container *ngIf="valueSetBindings">
+  <div *ngFor="let item of valueSetBindings.value" style="display: flex; flex-direction: row; align-items: center;">
+    <ng-container *ngIf="getValueSetById(item.valuesetId) | async as vs">
+        <app-binding-badge [context]="valueSetBindings.context" style="margin-right: 5px;"></app-binding-badge>
+        <ng-container *ngTemplateOutlet="display; context: { $implicit: vs }"></ng-container>
+    </ng-container>
+  </div>
+</ng-container>
+<ng-template #display let-item>
+  <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+      <app-entity-bagde [type]="item.type"></app-entity-bagde>
+      <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+      <strong *ngIf="item.variableName" style="margin-left: 5px;"> {{item.variableName}}</strong>
+  </div>
+</ng-template>
+

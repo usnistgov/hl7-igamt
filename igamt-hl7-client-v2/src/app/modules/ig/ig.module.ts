@@ -1,14 +1,12 @@
 import { NgModule } from '@angular/core';
 import { EffectsModule } from '@ngrx/effects';
-import { Store, StoreModule } from '@ngrx/store';
+import { StoreModule } from '@ngrx/store';
 import { ContextMenuModule, RadioButtonModule } from 'primeng/primeng';
 import { StepsModule } from 'primeng/steps';
 import { TableModule } from 'primeng/table';
 import { IgListEffects } from 'src/app/root-store/ig/ig-list/ig-list.effects';
 import { CreateIgEffects } from '../../root-store/create-ig/create-ig.effects';
-import { OpenIgMetadataEditorNode, OpenNarrativeEditorNode } from '../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIg from '../../root-store/ig/ig.reducer';
-import { EditorID } from '../shared/models/editor.enum';
 import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
@@ -25,17 +23,10 @@ import { IgSectionEditorComponent } from './components/ig-section-editor/ig-sect
 import { IgTocComponent } from './components/ig-toc/ig-toc.component';
 import { NarrativeSectionFormComponent } from './components/narrative-section-form/narrative-section-form.component';
 import { IgRoutingModule } from './ig-routing.module';
-import { EditorActionMapToken } from './ig.token';
-import { IgEditResolverService } from './services/ig-edit-resolver.service';
 import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
-
-export const EDITOR_MAP = {
-  [EditorID.SECTION_NARRATIVE]: OpenNarrativeEditorNode,
-  [EditorID.IG_METADATA]: OpenIgMetadataEditorNode,
-};
 
 @NgModule({
   declarations: [
@@ -66,13 +57,8 @@ export const EDITOR_MAP = {
   providers: [
     IgListService,
     IgService,
-    IgEditResolverService,
     IgEditSaveDeactivateGuard,
     IgEditorActivateGuard,
-    {
-      provide: EditorActionMapToken,
-      useValue: EDITOR_MAP,
-    },
   ],
   exports: [
     IgListContainerComponent,

@@ -1,4 +1,4 @@
-import {ActionReducerMap, createFeatureSelector, createSelector} from '@ngrx/store';
+import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromIgEdit from './ig-edit/ig-edit.reducer';
 import * as fromIgList from './ig-list/ig-list.reducer';
 
@@ -28,6 +28,6 @@ export const selectIgList = createSelector(
 export const selectIgEdit = createSelector(
   selectIgFeature,
   (state: IState) => {
-    return state.edit;
+    return state ? state.edit : undefined;
   },
 );

@@ -1,16 +1,19 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {combineLatest, Observable, of} from 'rxjs';
-import {catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take} from 'rxjs/operators';
-import {MessageService} from 'src/app/modules/core/services/message.service';
-import {IgService} from 'src/app/modules/ig/services/ig.service';
-import {Message, MessageType, UserMessage} from '../../../modules/core/models/message/message.class';
-import {IGDisplayInfo, IgDocument} from '../../../modules/ig/models/ig/ig-document.class';
-import {ICopyResourceResponse} from '../../../modules/ig/models/toc/toc-operation.class';
-import {RxjsStoreHelperService} from '../../../modules/shared/services/rxjs-store-helper.service';
-import {TurnOffLoader, TurnOnLoader} from '../../loader/loader.actions';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { combineLatest, Observable, of } from 'rxjs';
+import { catchError, concatMap, filter, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
+import { MessageService } from 'src/app/modules/core/services/message.service';
+import { IgService } from 'src/app/modules/ig/services/ig.service';
+import { Message, MessageType, UserMessage } from '../../../modules/core/models/message/message.class';
+import { IGDisplayInfo, IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
+import { ICopyResourceResponse } from '../../../modules/ig/models/toc/toc-operation.class';
+import { IResource } from '../../../modules/shared/models/resource.interface';
+import { ResourceService } from '../../../modules/shared/services/resource.service';
+import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
+import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
+import { LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditorFailure } from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -41,6 +44,39 @@ import {
 
 @Injectable()
 export class IgEditEffects {
+
+  @Effect()
+  loadReferences$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.LoadResourceReferences),
+    switchMap((action: LoadResourceReferences) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+
+      return this.resourceService.getResources(action.payload.id, action.payload.resourceType).pipe(
+        flatMap((resources: IResource[]) => {
+          return [
+            new TurnOffLoader(),
+            new LoadResourceReferencesSuccess(resources),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new LoadResourceReferencesFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
+  @Effect()
+  loadReferencesFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.LoadResourceReferencesFailure),
+    map((action: LoadResourceReferencesFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
 
   @Effect()
   igEditResolverLoad$ = this.actions$.pipe(
@@ -156,16 +192,26 @@ export class IgEditEffects {
         this.store.select(selectSectionFromIgById, { id: action.payload.id }))
         .pipe(
           take(1),
-          map(([elm, section]) => {
-            return new OpenEditor({
-              element: elm,
-              editor: action.payload.editor,
-              initial: {
-                id: section.id,
-                label: section.label,
-                description: section.description,
-              },
-            });
+          flatMap(([elm, section]): Action[] => {
+            if (!elm || !section || !elm.id || !section.id) {
+              return [
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find section with ID ' + action.payload.id)),
+                new OpenEditorFailure({ id: action.payload.id }),
+              ];
+            } else {
+              return [
+                new OpenEditor({
+                  id: action.payload.id,
+                  element: elm,
+                  editor: action.payload.editor,
+                  initial: {
+                    id: section.id,
+                    label: section.label,
+                    description: section.description,
+                  },
+                }),
+              ];
+            }
           }),
         );
     }),
@@ -180,6 +226,7 @@ export class IgEditEffects {
           take(1),
           map((ig) => {
             return new OpenEditor({
+              id: action.payload.id,
               element: this.igService.igToIDisplayElement(ig),
               editor: action.payload.editor,
               initial: ig.metadata,
@@ -256,40 +303,40 @@ export class IgEditEffects {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),
       this.store.select(selectIgDocument)).pipe(
-      take(1),
-      mergeMap(([changed, ig]) => {
-        if (changed) {
-          this.store.dispatch(new TableOfContentSave({
-            sections: ig.content,
-            id: ig.id,
-          }));
+        take(1),
+        mergeMap(([changed, ig]) => {
+          if (changed) {
+            this.store.dispatch(new TableOfContentSave({
+              sections: ig.content,
+              id: ig.id,
+            }));
 
-          return this.rxjsHelper.listenAndReact(this.actions$, {
-            [IgEditActionTypes.TableOfContentSaveSuccess]: {
-              do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return toDoo;
+            return this.rxjsHelper.listenAndReact(this.actions$, {
+              [IgEditActionTypes.TableOfContentSaveSuccess]: {
+                do: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return toDoo;
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
               },
-              filter: (tocSaveSuccess: TableOfContentSaveSuccess) => {
-                return tocSaveSuccess.igId === ig.id;
+              [IgEditActionTypes.TableOfContentSaveFailure]: {
+                do: (tocSaveFailure: TableOfContentSaveFailure) => {
+                  return of(
+                    new TurnOffLoader(),
+                    this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
+                  );
+                },
+                filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
+                  return tocSaveSuccess.igId === ig.id;
+                },
               },
-            },
-            [IgEditActionTypes.TableOfContentSaveFailure]: {
-              do: (tocSaveFailure: TableOfContentSaveFailure) => {
-                return of(
-                  new TurnOffLoader(),
-                  this.message.userMessageToAction(new UserMessage(MessageType.FAILED, 'Could not add resources due to failure to save table of content')),
-                );
-              },
-              filter: (tocSaveSuccess: TableOfContentSaveFailure) => {
-                return tocSaveSuccess.igId === ig.id;
-              },
-            },
-          });
-        } else {
-          return toDoo;
-        }
-      }),
-    );
+            });
+          } else {
+            return toDoo;
+          }
+        }),
+      );
   }
 
   constructor(
@@ -297,6 +344,7 @@ export class IgEditEffects {
     private igService: IgService,
     private store: Store<any>,
     private message: MessageService,
+    private resourceService: ResourceService,
     private rxjsHelper: RxjsStoreHelperService,
   ) {
   }

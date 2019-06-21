@@ -9,7 +9,7 @@
       <app-ig-edit-titlebar [metadata]="titleBar | async"></app-ig-edit-titlebar>
     </div>
 
-    <div class="page-container" [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ positionX +') [resize-bar] 4px [container] minmax(600px, 8fr)'}">
+    <div class="page-container" [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}">
       <div class="container-section">
         <app-ig-edit-toolbar class="toolbar-controls"></app-ig-edit-toolbar>
         <app-ig-edit-active-titlebar class="titlebar-content"></app-ig-edit-active-titlebar>
@@ -18,7 +18,16 @@
         </div>
       </div>
       <div class="resize-bar" [ngStyle]="{'background-color': dragging ? 'blue' : ''}" #resize></div>
-      <app-ig-edit-sidebar class="sidebar"></app-ig-edit-sidebar>
+      <ng-container *ngIf="!collapsed">
+          <app-ig-edit-sidebar class="sidebar"></app-ig-edit-sidebar>
+      </ng-container>
+      <ng-container *ngIf="collapsed">
+          <div style="background-color: white;">
+            <div style="height: 40px; display: flex; align-items: center; justify-content: flex-start;">
+              <button (click)="expandToc()" class="btn btn-sm btn-default" style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i class="fa fa-chevron-right"></i></button>
+            </div>
+          </div>
+      </ng-container>
     </div>
   </div>
 </div>
