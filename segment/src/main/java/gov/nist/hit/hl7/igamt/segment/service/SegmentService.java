@@ -42,7 +42,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
+//import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 
 /**
  *
@@ -85,7 +85,9 @@ public interface SegmentService extends ResourceService {
 	public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
 	public Link cloneSegment(String compositeKey, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, Link l, String username, Scope user) throws CoConstraintSaveException;
+//			HashMap<String, String> datatypesMap, Link l, String username, Scope user) throws CoConstraintSaveException;
+			HashMap<String, String> datatypesMap, Link l, String username, Scope user);
+
 
 	public Segment saveDynamicMapping(SegmentDynamicMapping dynamicMapping)
 			throws SegmentNotFoundException, SegmentValidationException;

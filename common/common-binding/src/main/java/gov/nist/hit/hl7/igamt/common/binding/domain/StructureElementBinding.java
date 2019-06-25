@@ -22,24 +22,13 @@ import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
  *
  */
 public class StructureElementBinding extends Binding {
-
-  private Set<Comment> comments;
   private Set<ValuesetBinding> valuesetBindings;
   private InternalSingleCode internalSingleCode;
   private ExternalSingleCode externalSingleCode;
-  private String constantValue;
   private String predicateId;
 
   public StructureElementBinding() {
     super();
-  }
-
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
   }
 
   public Set<ValuesetBinding> getValuesetBindings() {
@@ -48,20 +37,6 @@ public class StructureElementBinding extends Binding {
 
   public void setValuesetBindings(Set<ValuesetBinding> valuesetBindings) {
     this.valuesetBindings = valuesetBindings;
-  }
-
-  public void addComment(Comment newComment) {
-    if (this.comments == null)
-      this.comments = new HashSet<Comment>();
-    this.comments.add(newComment);
-  }
-
-  public String getConstantValue() {
-    return constantValue;
-  }
-
-  public void setConstantValue(String constantValue) {
-    this.constantValue = constantValue;
   }
 
   public void addValuesetBinding(ValuesetBinding newValuesetBinding) {

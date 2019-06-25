@@ -3,21 +3,22 @@ import { RouterModule, Routes } from '@angular/router';
 import {
   LoadSegment,
   OpenSegmentCrossRefEditor,
+  OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
   OpenSegmentPreDefEditor,
   OpenSegmentStructureEditor,
-  SegmentEditActionTypes,
+  SegmentEditActionTypes
 } from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import {CrossReferenceResolverService} from '../shared/resolvers/cross-reference-resolver.service';
-import {SegmentCrossRefsComponent} from './components/cross-refs/segment-cross-refs.component';
+import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { SegmentStructureEditorComponent } from './components/segment-structure-editor/segment-structure-editor.component';
+import {SegmentCrossRefsComponent} from "./components/cross-refs/segment-cross-refs.component";
 
 const routes: Routes = [
   {
@@ -93,6 +94,26 @@ const routes: Routes = [
           idKey: 'segmentId',
         },
       },
+      {
+        path: 'metadata',
+        component: MetadataEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SEGMENT_METADATA,
+            title: 'Metadata',
+            resourceType: Type.SEGMENT,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenSegmentMetadataEditor,
+          idKey: 'segmentId',
+        },
+      },
+
       {
         path: 'cross-references',
         component: SegmentCrossRefsComponent,

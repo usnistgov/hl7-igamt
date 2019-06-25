@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.util.Set;
+
 import gov.nist.diff.annotation.DeltaField;
 
 // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
@@ -10,6 +12,8 @@ public class MsgStructElement extends StructureElement {
   private int min;
   @DeltaField
   private String max;
+  @DeltaField
+  private Set<Comment> comments;
 
   public MsgStructElement() {
     super();
@@ -17,10 +21,11 @@ public class MsgStructElement extends StructureElement {
   }
 
   public MsgStructElement(String id, String name, int position, Usage usage, Type type, String text,
-      boolean custom, int min, String max) {
+      boolean custom, int min, String max, Set<Comment> comments) {
     super(id, name, position, usage, type, text, custom);
     this.min = min;
     this.max = max;
+    this.comments = comments;
   }
 
   public int getMin() {
@@ -39,4 +44,13 @@ public class MsgStructElement extends StructureElement {
     this.max = max;
   }
 
+  public Set<Comment> getComments() {
+    return comments;
+  }
+
+  public void setComments(Set<Comment> comments) {
+    this.comments = comments;
+  }
+
+  
 }

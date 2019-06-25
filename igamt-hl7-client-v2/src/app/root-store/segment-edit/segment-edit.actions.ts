@@ -11,6 +11,7 @@ export enum SegmentEditActionTypes {
   OpenSegmentPostDefEditor = '[Segment Edit] Open Segment PostDef Editor',
   OpenSegmentStructureEditor = '[Segment Edit] Open Segment Structure Editor',
   OpenSegmentCrossRefEditor = '[Segment Edit] Open Segment Cross References Editor',
+  OpenSegmentMetadataEditor = '[Segment Edit] Open Segment Metadata Editor',
 }
 
 export class LoadSegment implements Action {
@@ -26,6 +27,15 @@ export class LoadSegmentSuccess implements Action {
 export class LoadSegmentFailure implements Action {
   readonly type = SegmentEditActionTypes.LoadSegmentFailure;
   constructor(readonly error: HttpErrorResponse) { }
+}
+
+export class OpenSegmentMetadataEditor implements Action {
+  readonly type = SegmentEditActionTypes.OpenSegmentMetadataEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+
 }
 
 export class OpenSegmentStructureEditor implements Action {
@@ -67,4 +77,5 @@ export type SegmentEditActions =
   | OpenSegmentStructureEditor
   | OpenSegmentPreDefEditor
   | OpenSegmentPostDefEditor
-  | OpenSegmentCrossRefEditor;
+  | OpenSegmentCrossRefEditor
+  | OpenSegmentMetadataEditor;

@@ -35,6 +35,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
@@ -50,7 +51,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
@@ -95,7 +95,6 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentNotFoundException;
 import gov.nist.hit.hl7.igamt.segment.exception.SegmentValidationException;
 import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
-import gov.nist.hit.hl7.igamt.segment.serialization.exception.CoConstraintSaveException;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -120,8 +119,8 @@ public class SegmentServiceImpl implements SegmentService {
 	@Autowired
 	private InMemoryDomainExtentionService domainExtention;
 
-	@Autowired
-	private CoConstraintService coConstraintService;
+//	@Autowired
+//	private CoConstraintService coConstraintService;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -668,7 +667,7 @@ public class SegmentServiceImpl implements SegmentService {
 	 */
 	@Override
 	public Link cloneSegment(String key, HashMap<String, String> valuesetsMap, HashMap<String, String> datatypesMap,
-			Link l, String username, Scope scope) throws CoConstraintSaveException {
+			Link l, String username, Scope scope) {
 
 		Segment obj = this.findById(l.getId());
 		Segment elm = obj.clone();
@@ -679,7 +678,7 @@ public class SegmentServiceImpl implements SegmentService {
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, valuesetsMap, datatypesMap, username);
 		this.save(elm);
-		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
+//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
 		return newLink;
 
 	}
@@ -691,7 +690,7 @@ public class SegmentServiceImpl implements SegmentService {
 	 * @throws CoConstraintSaveException
 	 */
 	private void updateDependencies(Segment elm, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
+			HashMap<String, String> datatypesMap, String username) {
 		// TODO Auto-generated method stub
 
 		for (Field f : elm.getChildren()) {
@@ -707,12 +706,12 @@ public class SegmentServiceImpl implements SegmentService {
 	}
 
 	private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,
-			HashMap<String, String> datatypesMap, String username) throws CoConstraintSaveException {
-		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
-		if (cc != null) {
-			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
-			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-		}
+			HashMap<String, String> datatypesMap, String username) {
+//		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
+//		if (cc != null) {
+//			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
+//			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
+//		}
 
 	}
 
@@ -864,13 +863,15 @@ public class SegmentServiceImpl implements SegmentService {
 				item.setOldPropertyValue(seb.getExternalSingleCode());
 				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getConstantValue());
-				if (item.getPropertyValue() == null) {
-					seb.setConstantValue(null);
-				} else {
-					seb.setConstantValue((String) item.getPropertyValue());
-				}
+			  Field f = this.findFieldById(s, item.getLocation());
+              if (f != null) {
+                  item.setOldPropertyValue(f.getConstantValue());
+                  if (item.getPropertyValue() == null) {
+                    f.setConstantValue(null);
+                } else {
+                    f.setConstantValue((String) item.getPropertyValue());
+                }
+              }
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Field f = this.findFieldById(s, item.getLocation());
 				if (f != null) {
@@ -882,11 +883,13 @@ public class SegmentServiceImpl implements SegmentService {
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-				ObjectMapper mapper = new ObjectMapper();
-				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(s, item.getLocation());
-				item.setOldPropertyValue(seb.getComments());
-				seb.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+			  ObjectMapper mapper = new ObjectMapper();
+              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+              Field f = this.findFieldById(s, item.getLocation());
+              if (f != null) {
+                item.setOldPropertyValue(f.getComments());
+                f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+              }
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1119,8 +1122,6 @@ public class SegmentServiceImpl implements SegmentService {
 		bindingDisplay.setSourceId(sourceId);
 		bindingDisplay.setSourceType(sourceType);
 		bindingDisplay.setPriority(priority);
-		bindingDisplay.setComments(seb.getComments());
-		bindingDisplay.setConstantValue(seb.getConstantValue());
 		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
 		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 		if (seb.getPredicateId() != null)

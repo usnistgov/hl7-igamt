@@ -1,5 +1,6 @@
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
+import { IResourceMetadata } from 'src/app/modules/core/components/resource-metadata-editor/resource-metadata-editor.component';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
 import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
@@ -58,6 +59,19 @@ export const selectedResourcePreDef = createSelector(
   selectSelectedResource,
   (state: IResource) => {
     return state.preDef;
+  },
+);
+
+export const selectedResourceMetadata = createSelector(
+  selectSelectedResource,
+  (state: IResource): IResourceMetadata => {
+    return {
+      name: state.name,
+      ext: (state.type === Type.DATATYPE ? (state as IDatatype).ext : state.type === Type.SEGMENT) ? (state as ISegment).ext : undefined,
+      description: state.description,
+      authorNotes: state.authorNotes,
+      usageNotes: state.usageNotes,
+    };
   },
 );
 

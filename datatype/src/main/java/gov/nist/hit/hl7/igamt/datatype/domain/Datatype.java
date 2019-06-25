@@ -14,13 +14,9 @@
 package gov.nist.hit.hl7.igamt.datatype.domain;
 
 
-import java.util.Date;
-
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 

@@ -55,8 +55,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  ConfigService sharedConstantService;
 //  
 // 
-  @Autowired
-  MessageEventFacory messageEventFactory;
+//  @Autowired
+//  MessageEventFacory messageEventFactory;
   @Autowired
   Environment env;
   
@@ -69,8 +69,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  @Autowired
 //  DatatypeClassifier datatypeClassifier;
 
-    @Autowired
-    CoConstraintService ccService;
+//    @Autowired
+//    CoConstraintService ccService;
     @Autowired
     CoConstraintXmlGenerator ccXmlGen;
 //  
