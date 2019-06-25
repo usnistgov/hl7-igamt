@@ -1,17 +1,16 @@
-import {Usage} from '../constants/usage.enum';
-import {IResourceBinding} from './binding.interface';
+import { Usage } from '../constants/usage.enum';
+import { IResourceBinding } from './binding.interface';
+import { IResource } from './resource.interface';
+import { ISubStructElement } from './structure-element.interface';
 
-export interface IDatatype {
+export interface IDatatype extends IResource {
   ext?: string;
   purposeAndUse: string;
   binding?: IResourceBinding;
+  components?: IComponent[];
 }
 
-export interface IComponent {
-  components: IComponent[];
-}
-
-export interface IComplexDatatype {
+export interface IComponent extends ISubStructElement {
   components: IComponent[];
 }
 

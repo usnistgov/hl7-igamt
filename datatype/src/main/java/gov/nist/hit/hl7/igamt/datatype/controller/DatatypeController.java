@@ -184,6 +184,13 @@ public class DatatypeController extends BaseController {
 		return Datatype;
 	}
 
+	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.GET, produces = {"application/json"})
+	public Datatype getSegment(
+			@PathVariable("id") String id,
+			Authentication authentication) throws DatatypeNotFoundException {
+		return this.findById(id);
+	}
+
 	@RequestMapping(value = "/api/datatypes/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> applyChanges(@PathVariable("id") String id,

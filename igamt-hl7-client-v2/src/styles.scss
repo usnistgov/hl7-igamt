@@ -23,6 +23,17 @@ body {
   background-color: #ffd400 !important;
 }
 
+.range-input {
+  width: 50px;
+}
+
+.tt-cell {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+}
+
 .title-text {
   margin: 0 !important;
 }
@@ -119,6 +130,12 @@ body {
 .active-node {
   background-color: $nist_light_yellow;
   padding: 2px;
+}
+
+.node-content-wrapper:hover {
+  background-color: inherit !important;
+  border: 0 !important;
+  cursor: inherit !important;
 }
 
 .tree-children {

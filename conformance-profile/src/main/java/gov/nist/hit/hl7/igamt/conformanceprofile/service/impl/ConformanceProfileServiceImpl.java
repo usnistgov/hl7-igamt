@@ -1530,20 +1530,19 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		for (MsgStructElement segOrgroup : cp.getChildren()) {
 			if (segOrgroup instanceof SegmentRef) {
 				usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
-
 				usageMap.put(segOrgroup.getId(), segOrgroup.getUsage());
 				SegmentRef ref = (SegmentRef) segOrgroup;
 
 				if (ref.getRef() != null && ref.getRef().getId() != null) {
 					RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
 							new ReferenceIndentifier(cp.getId(), Type.CONFORMANCEPROFILE),
-							new ReferenceLocation(Type.SEGMENTREF, ref.getPosition() + "", ref.getName()));
+							new ReferenceLocation(Type.CONFORMANCEPROFILE, ref.getPosition() + "", ref.getName()));
 					rel.setUsage(ref.getUsage());
 					used.add(rel);
 				}
 
 			} else {
-				processSegmentorGroup(cp.getId(), segOrgroup, used, segOrgroup.getPosition() + "");
+				processSegmentorGroup(cp.getId(), segOrgroup, used,"");
 			}
 		}
 		if (cp.getBinding() != null) {
@@ -1567,13 +1566,13 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				RelationShip rel = new RelationShip(new ReferenceIndentifier(ref.getRef().getId(), Type.SEGMENT),
 						new ReferenceIndentifier(profileId, Type.CONFORMANCEPROFILE),
 
-						new ReferenceLocation(Type.SEGMENTREF, path + "." + ref.getPosition(), ref.getName()));
+						new ReferenceLocation(Type.GROUP, path + "." + ref.getPosition(), ref.getName()));
 				rel.setUsage(ref.getUsage());
 				used.add(rel);
 			}
 		} else if (segOrgroup instanceof Group) {
 			Group g = (Group) segOrgroup;
-			path += path + "." + g.getPosition();
+			path += g.getName();
 			for (MsgStructElement child : g.getChildren()) {
 				processSegmentorGroup(profileId, child, used, path);
 			}

@@ -1,16 +1,21 @@
 import { Dictionary } from '@ngrx/entity';
 import { createSelector } from '@ngrx/store';
+import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
 import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
+import { IResource } from 'src/app/modules/shared/models/resource.interface';
+import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
+import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { ILink } from '../../../modules/shared/models/link.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
 import { selectIgEdit } from '../ig.reducer';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
-import { igElementAdapter, IState } from './ig-edit.reducer';
+import { IDatatype } from './../../../modules/shared/models/datatype.interface';
+import { igElementAdapter, IResourcesState, IState, loadedResourceAdapter } from './ig-edit.reducer';
 
 export const {
   selectAll,
@@ -19,12 +24,147 @@ export const {
   selectTotal,
 } = igElementAdapter.getSelectors();
 
+export const loadedResourceAdapterSelectors = loadedResourceAdapter.getSelectors();
+
 export const selectIgDocument = createSelector(
   selectIgEdit,
   (state: IState) => {
     return state.document;
   },
 );
+
+export const selectFullScreen = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state ? state.fullscreen : false;
+  },
+);
+
+export const selectResources = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.resources;
+  },
+);
+
+export const selectSelectedResource = createSelector(
+  selectResources,
+  (state: IResourcesState) => {
+    return state.selected;
+  },
+);
+
+export const selectedResourcePreDef = createSelector(
+  selectSelectedResource,
+  (state: IResource) => {
+    return state.preDef;
+  },
+);
+
+export const selectedResourcePostDef = createSelector(
+  selectSelectedResource,
+  (state: IResource) => {
+    return state.postDef;
+  },
+);
+
+export const selectLoadedResource = createSelector(
+  selectResources,
+  (state: IResourcesState) => {
+    return state.resources;
+  },
+);
+
+export const selectedConformanceProfile = createSelector(
+  selectSelectedResource,
+  (state: IResource): IConformanceProfile => {
+    if (state && state.type === Type.CONFORMANCEPROFILE) {
+      return state as IConformanceProfile;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedDatatype = createSelector(
+  selectSelectedResource,
+  (state: IResource): IDatatype => {
+    if (state && state.type === Type.DATATYPE) {
+      return state as IDatatype;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedSegment = createSelector(
+  selectSelectedResource,
+  (state: IResource): ISegment => {
+    if (state && state.type === Type.SEGMENT) {
+      return state as ISegment;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectLoadedResourceEntities = createSelector(
+  selectLoadedResource,
+  loadedResourceAdapterSelectors.selectEntities,
+);
+
+export const selectLoadedResourceById = createSelector(
+  selectLoadedResourceEntities,
+  (resources: Dictionary<IResource>, props: { id: string }): IResource => {
+    return resources[props.id];
+  },
+);
+
+export const selectReferencesAreLeaf = createSelector(
+  selectLoadedResourceEntities,
+  (resources: Dictionary<IResource>, props: { ids: string[] }): { [id: string]: boolean } => {
+    const leafs = {};
+    props.ids.forEach((id) => {
+      if (resources[id]) {
+        switch (resources[id].type) {
+          case Type.SEGMENT:
+            leafs[id] = !(resources[id] as ISegment).children || (resources[id] as ISegment).children.length === 0;
+            break;
+          case Type.DATATYPE:
+            leafs[id] = !(resources[id] as IDatatype).components || (resources[id] as IDatatype).components.length === 0;
+            break;
+        }
+      }
+    });
+    return leafs;
+  },
+);
+
+export const selectLoadedSegmentById = createSelector(
+  selectLoadedResourceById,
+  (resource: IResource): ISegment => {
+    if (resource && resource.type === Type.SEGMENT) {
+      return resource as ISegment;
+    }
+  },
+);
+
+export const selectLoadedDatatypeById = createSelector(
+  selectLoadedResourceById,
+  (resource: IResource): IDatatype => {
+    if (resource && resource.type === Type.SEGMENT) {
+      return resource as IDatatype;
+    }
+  },
+);
+
+export const selectTocCollapsed = createSelector(
+  selectIgEdit,
+  (state: IState) => {
+    return state.tocCollapsed;
+  },
+);
+
 export const selectIgId = createSelector(
   selectIgDocument,
   (state: IgDocument) => {
@@ -172,9 +312,33 @@ export const selectDatatypesEntites = createSelector(
   selectEntities,
 );
 
+export const selectAllDatatypes = createSelector(
+  selectDatatypes,
+  selectAll,
+);
+
 export const selectSegmentsEntites = createSelector(
   selectSegments,
   selectEntities,
+);
+
+export const selectAllSegments = createSelector(
+  selectSegments,
+  selectAll,
+);
+
+export const selectDatatypesById = createSelector(
+  selectDatatypesEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
+export const selectSegmentsById = createSelector(
+  selectSegmentsEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
 );
 
 export const selectSectionsEntities = createSelector(
@@ -221,15 +385,30 @@ export const selectValueSetsEntities = createSelector(
   selectEntities,
 );
 
+export const selectValueSetById = createSelector(
+  selectValueSetsEntities,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
+);
+
 export const selectMessages = createSelector(
   selectIgEdit,
   (state: IState) => {
     return state.messages;
   },
 );
+
 export const selectMessagesEntites = createSelector(
   selectMessages,
   selectEntities,
+);
+
+export const selectMessagesById = createSelector(
+  selectMessagesEntites,
+  (dictionary: Dictionary<IDisplayElement>, props: { id: string }) => {
+    return dictionary[props.id];
+  },
 );
 
 export const selectValueSetsNodes = createSelector(

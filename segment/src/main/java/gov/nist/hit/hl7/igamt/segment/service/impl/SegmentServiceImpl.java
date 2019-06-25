@@ -1436,7 +1436,7 @@ public class SegmentServiceImpl implements SegmentService {
 				RelationShip rel = new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
 						new ReferenceIndentifier(elm.getId(), Type.SEGMENT),
 
-						new ReferenceLocation(Type.COMPONENT, f.getPosition() + "", f.getName()));
+						new ReferenceLocation(Type.FIELD, f.getPosition() + "", f.getName()));
 				rel.setUsage(f.getUsage());
 				usageMap.put(f.getId(), f.getUsage());
 				used.add(rel);

@@ -238,6 +238,13 @@ public class SegmentController extends BaseController {
 		return segment;
 	}
 
+	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.GET, produces = {"application/json"})
+	public Segment getSegment(
+			@PathVariable("id") String id,
+			Authentication authentication) throws SegmentNotFoundException {
+		return this.findById(id);
+	}
+
 	@RequestMapping(value = "/api/segments/{id}", method = RequestMethod.POST, produces = { "application/json" })
 	@ResponseBody
 	public ResponseMessage<?> applyStructureChanges(@PathVariable("id") String id,

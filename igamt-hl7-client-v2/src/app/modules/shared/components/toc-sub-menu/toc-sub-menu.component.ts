@@ -1,7 +1,7 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
-import {Icons} from '../../constants/icons.enum';
-import {IDisplayElement} from '../../models/display-element.interface';
-import {SubMenu} from '../../models/sub-menu.class';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
+import { Icons } from '../../constants/icons.enum';
+import { IDisplayElement } from '../../models/display-element.interface';
+import { SubMenu } from '../../models/sub-menu.class';
 
 @Component({
   selector: 'app-toc-sub-menu',
@@ -28,11 +28,11 @@ export class TocSubMenuComponent implements OnInit {
     const ret: SubMenu[] = [];
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
 
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre definition', Icons.PRE));
+    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre-definition', Icons.PRE));
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
 
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post definition', Icons.POST));
+    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post-definition', Icons.POST));
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
 

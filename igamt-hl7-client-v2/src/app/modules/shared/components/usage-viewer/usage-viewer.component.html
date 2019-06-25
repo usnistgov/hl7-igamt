@@ -1,0 +1,59 @@
+
+<p-table #dt1 [style]="{'width': '100%', 'min-height': '400px'}" [value]="refsDisplay"
+         [globalFilterFields]="['element.type', 'element.fixedName']" >
+
+
+  <ng-template pTemplate="caption">
+    <div style="text-align: left">
+      <div class="input-group" style="margin-left: 10px;">
+        <div class="input-group-prepend" style="height: 35px;">
+          <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+        </div>
+        <input (input)="dt1.filterGlobal($event.target.value, 'contains')" class="form-control" placeholder="Filter"
+               style="background-color: #f0f0f0; text-align: left; height: 35px;" type="text">
+      </div>
+    </div>
+  </ng-template>
+  <ng-template let-columns pTemplate="header">
+    <tr>
+    <th>
+      Reference
+    </th>
+    <th>
+      Location
+    </th>
+    <th>
+      Usage
+    </th>
+  </tr>
+
+    <tr>
+      <th>
+        <p-multiSelect  [style]="{'width': '100%'}" [options]="types" defaultLabel="Show only" (onChange)="filterByType($event.value)"></p-multiSelect>
+      </th>
+      <th>
+      <th>
+        <p-multiSelect [style]="{'width': '100%'}" [options]="usages" defaultLabel="Show only" (onChange)="filterByUsages($event.value)"></p-multiSelect>
+      </th>
+    </tr>
+
+  </ng-template>
+  <ng-template let-columns="columns" let-expanded="expanded" let-index="rowIndex" let-node="node" let-rowData let-rowNode pTemplate="body">
+    <tr>
+      <td>
+      <app-display-section [element]="rowData.element"></app-display-section>
+      </td>
+      <td>
+        <app-entity-bagde [type]="rowData.location.type"></app-entity-bagde>
+        {{rowData.location.path}}
+        <span *ngIf="rowData.location.label">
+        .{{rowData.location.label}}
+        </span>
+
+      </td>
+      <td>
+        {{rowData.usage}}
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

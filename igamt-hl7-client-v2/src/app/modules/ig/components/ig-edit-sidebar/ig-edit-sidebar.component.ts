@@ -1,22 +1,30 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialog } from '@angular/material';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { filter, map, withLatestFrom } from 'rxjs/operators';
-import {CopyResource, IgEditTocAddResource, UpdateSections} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {concatMap, filter, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {
+  CopyResource,
+  DeleteResource,
+  IgEditTocAddResource,
+  UpdateSections,
+} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import {LoadCrossRefs} from '../../../../root-store/cross-references/cross-refs.actions';
-import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import {CollapseTOC} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import * as fromCrossReferences from '../../../../root-store/cross-references/cross-refs.reducer';
+import {ConfirmDialogComponent} from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
 import {Scope} from '../../../shared/constants/scope.enum';
 import {Type} from '../../../shared/constants/type.enum';
 import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
+import {IUsages} from '../../../shared/models/cross-reference';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
+import {CrossReferencesService} from '../../../shared/services/cross-references.service';
 import {IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 import {IgTocComponent} from '../ig-toc/ig-toc.component';
@@ -34,11 +42,15 @@ export class IgEditSidebarComponent implements OnInit {
   version$: Observable<string>;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
 
-  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog) {
+  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private  crossReferencesService: CrossReferencesService) {
     this.nodes$ = store.select(fromIgDocumentEdit.selectToc);
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
     this.version$ = store.select(fromIgDocumentEdit.selectVersion);
+  }
+
+  collapseToc() {
+    this.store.dispatch(new CollapseTOC());
   }
 
   ngOnInit() {
@@ -105,11 +117,9 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   copy($event: ICopyResourceData) {
-    console.log($event);
     const dialogRef = this.dialog.open(CopyResourceComponent, {
       data: {...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
     });
-
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
@@ -120,15 +130,40 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   delete($event: IDisplayElement) {
-    const subscription =
     this.igId$.pipe(
-      map((id: string) => {
-        this.store.dispatch(new LoadCrossRefs({ documentId: id, documentType: Type.IGDOCUMENT, elementType: $event.type, elementId: $event.id}));
+      concatMap((id: string) => {
+        return this.crossReferencesService.findUsagesDisplay(id, Type.IGDOCUMENT, $event.type, $event.id ).pipe(
+          take(1),
+          map((usages: IUsages[]) => {
+            if (usages.length === 0) {
+              const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+                data: {
+                  question: 'Are you sure you want to delete this ' + this.getStringFromType($event.type) + '?',
+                  action: 'Delete ' + this.getStringFromType($event.type),
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+                (answer) => {
+                  if (answer) {
+                    this.store.dispatch(new DeleteResource({documentId: id, element: $event}));
+                  }
+                },
+              );
+            } else {
+              const dialogRef = this.dialog.open(UsageDialogComponent, {
+                data : {
+                  title: 'Cross References found',
+                  usages,
+                },
+              });
+              dialogRef.afterClosed().subscribe(
+              );
+            }
+          }),
+        );
       }),
     ).subscribe();
-    subscription.unsubscribe();
   }
-
   private getDialogTitle(event: IAddWrapper) {
     return 'Add ' + this.getStringFormScope(event.scope) + ' ' + this.getStringFromType(event.type);
   }

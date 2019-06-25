@@ -1,10 +1,11 @@
-import {HttpClient} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable} from 'rxjs';
-import {Message} from '../../core/models/message/message.class';
-import {Type} from '../constants/type.enum';
-import {IResourceInfo} from '../models/resource-info.interface';
-import {IResource} from '../models/resource.interface';
+import { Observable, throwError } from 'rxjs';
+import { UserMessage } from 'src/app/modules/core/models/message/message.class';
+import { Message, MessageType } from '../../core/models/message/message.class';
+import { Type } from '../constants/type.enum';
+import { IResourceInfo } from '../models/resource-info.interface';
+import { IResource } from '../models/resource.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -12,11 +13,12 @@ import {IResource} from '../models/resource.interface';
 export class ResourceService {
 
   resource = '/resources';
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   importResource(payload: IResourceInfo): Observable<Message<any[]>> {
-   return this.http.get<Message<any[]>> (this.getImportUrl(payload));
+    return this.http.get<Message<any[]>>(this.getImportUrl(payload));
   }
+
   private getImportUrl(info: IResourceInfo): string {
     switch (info.type) {
       case Type.EVENTS:
@@ -30,11 +32,16 @@ export class ResourceService {
     }
   }
 
-  getDependencies(id: string, type: Type) {
-    return this.http.get<IResource[]> (this.getDependenciesURl(type, id));
+  getResources(id: string, type: Type): Observable<IResource[]> {
+    const url = this.getResourcesUrl(type, id);
+    if (url) {
+      return this.http.get<IResource[]>(url);
+    } else {
+      return throwError(new UserMessage(MessageType.FAILED, 'Unrecognized resource type'));
+    }
   }
 
-  private getDependenciesURl(type: Type, id: string) {
+  private getResourcesUrl(type: Type, id: string): string {
     switch (type) {
       case Type.CONFORMANCEPROFILE:
         return 'api/conformanceprofiles/' + id + this.resource;

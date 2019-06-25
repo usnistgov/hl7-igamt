@@ -95,7 +95,6 @@ public class BindingServiceImpl implements BindingService {
 
 		}
 		return location;
-
 	}
 
 	@Override

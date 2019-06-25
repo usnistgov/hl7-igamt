@@ -1,5 +1,5 @@
 <div id="toc-container" class="toc-container">
-  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer">&emsp; Implementation Guide Document Metadata</span>
+  <span routerLink="metadata" routerLinkActive="active-node" style="cursor: pointer; width: fit-content;">&emsp; Implementation Guide Document Metadata</span>
   <tree-root #treeroot [nodes]="nodes" [options]="options">
     <ng-template #treeNodeTemplate let-index="index" let-node>
       <ng-container [ngSwitch]="node.data.type">
@@ -79,7 +79,7 @@
 
         <ng-container *ngSwitchCase="'DATATYPE'">
           <app-display-section [contextMenu]="datatypeContextMenu" #rla="routerLinkActive" [element]="node.data"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #datatypeContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
@@ -93,7 +93,7 @@
 
         <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
           <app-display-section [contextMenu]="conformanceProfileContextMenu" [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #conformanceProfileContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
@@ -111,7 +111,7 @@
 
         <ng-container *ngSwitchCase="'SEGMENT'">
           <app-display-section  [contextMenu]='segmentContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #segmentContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor

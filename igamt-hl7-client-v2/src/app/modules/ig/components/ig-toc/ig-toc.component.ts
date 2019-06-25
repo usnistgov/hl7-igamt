@@ -23,7 +23,6 @@ import {IClickInfo} from '../../models/toc/click-info.interface';
   selector: 'app-ig-toc',
   templateUrl: './ig-toc.component.html',
   styleUrls: ['./ig-toc.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class IgTocComponent implements OnInit, AfterViewInit {
   @ViewChild(ContextMenuComponent) public basicMenu: ContextMenuComponent;
@@ -116,21 +115,10 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     ref.nativeElement.scrollIntoView();
   }
 
-  getElementUrl(elm) {
+  getElementUrl(elm): string {
     const type = elm.type.toLowerCase();
     return './' + type + '/' + elm.id;
   }
-
-  getPath(node) {
-    if (node) {
-      if (this.isOrphan(node)) {
-        return node.data.position + '.';
-      } else {
-        return this.getPath(node.parent) + node.data.position + '.';
-      }
-    }
-  }
-
   scroll(type: string) {
     if (type === 'messages') {
       this.cpLib.nativeElement.scrollIntoView();
@@ -143,11 +131,11 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     }
   }
 
-  filter(value: any) {
+  filter(value: string) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService
-        .getFilteringLabel(node.data.fixedName, node.data.variableName)
-        .startsWith(value);
+        .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
+        .startsWith(value.toLowerCase());
     });
   }
 
