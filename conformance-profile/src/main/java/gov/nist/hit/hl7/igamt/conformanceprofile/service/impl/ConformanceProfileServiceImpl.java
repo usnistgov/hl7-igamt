@@ -45,9 +45,9 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -970,8 +970,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 		bindingDisplay.setSourceId(sourceId);
 		bindingDisplay.setSourceType(sourceType);
 		bindingDisplay.setPriority(priority);
-		bindingDisplay.setComments(seb.getComments());
-		bindingDisplay.setConstantValue(seb.getConstantValue());
 		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
 		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 
@@ -1134,14 +1132,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
 				item.setOldPropertyValue(seb.getExternalSingleCode());
 				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
-			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-				item.setOldPropertyValue(seb.getConstantValue());
-				if (item.getPropertyValue() == null) {
-					seb.setConstantValue(null);
-				} else {
-					seb.setConstantValue((String) item.getPropertyValue());
-				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
 				if (srog != null) {
@@ -1155,9 +1145,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-				StructureElementBinding seb = this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-				item.setOldPropertyValue(seb.getComments());
-				seb.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+				SegmentRefOrGroup srog = this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+				if (srog != null) {
+					item.setOldPropertyValue(srog.getComments());
+					srog.setComments(
+							new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+				}
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1542,7 +1535,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 				}
 
 			} else {
-				processSegmentorGroup(cp.getId(), segOrgroup, used,"");
+				processSegmentorGroup(cp.getId(), segOrgroup, used, "");
 			}
 		}
 		if (cp.getBinding() != null) {
