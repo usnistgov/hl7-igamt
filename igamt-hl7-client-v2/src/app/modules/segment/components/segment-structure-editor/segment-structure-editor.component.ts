@@ -1,18 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject } from 'rxjs';
-import { concatMap, map, take } from 'rxjs/operators';
+import { combineLatest, Observable, of, ReplaySubject, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, pluck, take } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { LoadSegment } from 'src/app/root-store/segment-edit/segment-edit.actions';
+import { EditorSave, EditorSaveFailure, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectAllDatatypes, selectAllSegments, selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
+import { SegmentService } from '../../services/segment.service';
 import { HL7v2TreeColumnType } from './../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
@@ -32,6 +35,8 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
+    private segmentService: SegmentService,
+    private messageService: MessageService,
     actions$: Actions,
     store: Store<any>) {
     super({
@@ -44,6 +49,7 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
       HL7v2TreeColumnType.DATATYPE,
       HL7v2TreeColumnType.USAGE,
       HL7v2TreeColumnType.VALUESET,
+      HL7v2TreeColumnType.CONSTANTVALUE,
       HL7v2TreeColumnType.CARDINALITY,
       HL7v2TreeColumnType.LENGTH,
       HL7v2TreeColumnType.CONFLENGTH,
@@ -68,6 +74,7 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
       take(1),
       map(([changes, segment]) => {
         changes[change.location] = {
+          ...changes[change.location],
           [change.propertyType]: change,
         };
         this.changes.next(changes);
@@ -77,7 +84,15 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    throw new Error('Method not implemented.');
+    return combineLatest(this.elementId$, this.ig$.pipe(map((ig) => ig.id)), this.changes).pipe(
+      take(1),
+      concatMap(([id, igId, changes]) => {
+        return this.segmentService.saveChanges(id, igId, this.convert(changes)).pipe(
+          flatMap((message) => [this.messageService.messageToAction(message)]),
+          catchError((error) => throwError(this.messageService.actionFromError(error))),
+        );
+      }),
+    );
   }
 
   editorDisplayNode(): Observable<IDisplayElement> {
@@ -86,6 +101,16 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
         return this.store.select(selectSegmentsById, { id });
       }),
     );
+  }
+
+  convert(changes: IStructureChanges): IChange[] {
+    let c = [];
+    Object.keys(changes).forEach((id) => {
+      c = c.concat(Object.keys(changes[id]).map((prop) => {
+        return changes[id][prop];
+      }));
+    });
+    return c;
   }
 
   ngOnInit() {

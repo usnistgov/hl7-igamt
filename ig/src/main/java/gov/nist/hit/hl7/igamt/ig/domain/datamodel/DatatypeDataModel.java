@@ -16,8 +16,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -138,8 +138,7 @@ public class DatatypeDataModel {
   }
 
   /**
-   * @param children
-   * @param object
+
    */
   private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
     for (StructureElementBinding seb : sebs) {
@@ -149,18 +148,12 @@ public class DatatypeDataModel {
       }else {
         key = path + "." + seb.getLocationInfo().getPosition();
       }
-      
-      if(seb.getComments() != null && seb.getComments().size() > 0){
-        this.commentMap.put(key, seb.getComments());
-      }
+
       
       if(seb.getPredicateId() != null){
         predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
       }
-      
-      if(seb.getConstantValue() != null){
-        this.constantValueMap.put(key, seb.getConstantValue());
-      }
+
       
       if(seb.getExternalSingleCode() != null){
         this.singleCodeMap.put(key, seb.getExternalSingleCode());

@@ -9,10 +9,20 @@ import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
 import { MessageType, UserMessage } from '../../modules/core/models/message/message.class';
 import { MessageService } from '../../modules/core/services/message.service';
-import { LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
+import { Type } from '../../modules/shared/constants/type.enum';
+import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
+import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { ConformanceProfileEditActions, ConformanceProfileEditActionTypes, LoadConformanceProfile, LoadConformanceProfileFailure, LoadConformanceProfileSuccess, OpenConformanceProfilePostDefEditor, OpenConformanceProfilePreDefEditor } from './conformance-profile-edit.actions';
+import {
+  ConformanceProfileEditActions,
+  ConformanceProfileEditActionTypes,
+  LoadConformanceProfile,
+  LoadConformanceProfileFailure,
+  LoadConformanceProfileSuccess,
+  OpenConformanceProfilePostDefEditor,
+  OpenConformanceProfilePreDefEditor,
+  OpenConformanceProfileStructureEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
 
 @Injectable()
@@ -58,6 +68,8 @@ export class ConformanceProfileEditEffects {
     }),
   );
 
+  ConfPNotFound = 'Could not find conformance profile with ID ';
+
   @Effect()
   openConformanceProfilePreDefEditor$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.OpenConformanceProfilePreDefEditor),
@@ -70,7 +82,7 @@ export class ConformanceProfileEditEffects {
           flatMap(([elm, predef]): Action[] => {
             if (!elm || !elm.id) {
               return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find conformance profile with ID ' + action.payload.id)),
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.ConfPNotFound + action.payload.id)),
                 new OpenEditorFailure({ id: action.payload.id }),
               ];
             } else {
@@ -91,6 +103,47 @@ export class ConformanceProfileEditEffects {
   );
 
   @Effect()
+  openMessageStructureEditor$ = this.actions$.pipe(
+    ofType(ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor),
+    switchMap((action: OpenConformanceProfileStructureEditor) => {
+      return combineLatest(this.store.select(fromIgEdit.selectMessagesById, { id: action.payload.id }),
+        this.store.select(fromIgEdit.selectedConformanceProfile)).pipe(
+          take(1),
+          switchMap(([elm, conformanceProfile]) => {
+            if (!elm || !elm.id) {
+              return of(
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.ConfPNotFound + action.payload.id)),
+                new OpenEditorFailure({ id: action.payload.id }));
+            } else {
+              const openEditor = new OpenEditor({
+                id: action.payload.id,
+                element: elm,
+                editor: action.payload.editor,
+                initial: {
+                  changes: {},
+                  conformanceProfile,
+                },
+              });
+              this.store.dispatch(new LoadResourceReferences({ resourceType: Type.CONFORMANCEPROFILE, id: action.payload.id }));
+              return this.rxjsHelper.listenAndReact(this.actions$, {
+                [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+                  do: (loadSuccess: LoadResourceReferencesSuccess) => {
+                    return of(openEditor);
+                  },
+                },
+                [IgEditActionTypes.LoadResourceReferencesFailure]: {
+                  do: (loadFailure: LoadResourceReferencesFailure) => {
+                    return of(new OpenEditorFailure({ id: action.payload.id }));
+                  },
+                },
+              });
+            }
+          }),
+        );
+    }),
+  );
+
+  @Effect()
   openConformanceProfilePostDefEditor$ = this.actions$.pipe(
     ofType(ConformanceProfileEditActionTypes.OpenConformanceProfilePostDefEditor),
     switchMap((action: OpenConformanceProfilePostDefEditor) => {
@@ -102,7 +155,7 @@ export class ConformanceProfileEditEffects {
           flatMap(([elm, postdef]): Action[] => {
             if (!elm || !elm.id) {
               return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, 'Could not find conformance profile with ID ' + action.payload.id)),
+                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.ConfPNotFound + action.payload.id)),
                 new OpenEditorFailure({ id: action.payload.id }),
               ];
             } else {
@@ -126,6 +179,7 @@ export class ConformanceProfileEditEffects {
     private actions$: Actions<ConformanceProfileEditActions>,
     private store: Store<IState>,
     private message: MessageService,
+    private rxjsHelper: RxjsStoreHelperService,
     private conformanceProfileService: ConformanceProfileService,
   ) { }
 

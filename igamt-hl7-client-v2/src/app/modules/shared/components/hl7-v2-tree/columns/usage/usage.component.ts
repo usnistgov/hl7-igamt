@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { IPredicate } from '../../../../models/predicate.interface';
 import { ChangeType, PropertyType } from '../../../../models/save-change';
 import { IStringValue } from '../../hl7-v2-tree.component';
 import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
@@ -16,16 +17,28 @@ export class UsageComponent extends HL7v2TreeColumnComponent<IStringValue> imple
       value: 'R',
     },
     {
-      label: 'O',
-      value: 'O',
+      label: 'RE',
+      value: 'RE',
     },
     {
       label: 'C',
       value: 'C',
     },
+    {
+      label: 'O',
+      value: 'O',
+    },
+    {
+      label: 'X',
+      value: 'X',
+    },
   ];
 
   usage: IStringValue;
+  @Input()
+  anchor: TemplateRef<any>;
+  @Input()
+  predicate: IPredicate;
 
   constructor() {
     super([PropertyType.USAGE]);

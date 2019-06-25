@@ -1,10 +1,13 @@
-import {IResourceBinding} from './binding.interface';
-import {IResource} from './resource.interface';
-import {ISubStructElement} from './structure-element.interface';
+import { IResourceBinding } from './binding.interface';
+import { IComment } from './comment.interface';
+import { IResource } from './resource.interface';
+import { ISubStructElement } from './structure-element.interface';
 
 export interface IField extends ISubStructElement {
   min: number;
   max: string;
+  constantValue: string;
+  comments: IComment[];
 }
 
 export interface IDynamicMappingItem {
@@ -18,7 +21,7 @@ export interface IDynamicMappingInfo {
   items?: IDynamicMappingItem[];
 }
 
-export interface ISegment extends IResource  {
+export interface ISegment extends IResource {
   ext?: string;
   binding?: IResourceBinding;
   children: IField[];

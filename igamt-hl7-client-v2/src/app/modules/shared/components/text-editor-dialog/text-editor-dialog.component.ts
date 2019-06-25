@@ -1,5 +1,6 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
+import { interval } from 'rxjs';
 
 @Component({
   selector: 'app-text-editor-dialog',
@@ -8,6 +9,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 })
 export class TextEditorDialogComponent implements OnInit {
 
+  text;
   constructor(
     public dialogRef: MatDialogRef<TextEditorDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: ITextEditorDialog,
@@ -22,4 +24,5 @@ export class TextEditorDialogComponent implements OnInit {
 export interface ITextEditorDialog {
   title: string;
   content: string;
+  plain?: boolean;
 }
