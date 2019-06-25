@@ -1,5 +1,6 @@
 import { Usage } from '../constants/usage.enum';
 import { IResourceBinding } from './binding.interface';
+import { IComment } from './comment.interface';
 import { IResource } from './resource.interface';
 import { ISubStructElement } from './structure-element.interface';
 
@@ -11,6 +12,8 @@ export interface IDatatype extends IResource {
 }
 
 export interface IComponent extends ISubStructElement {
+  constantValue: string;
+  comments: IComment[];
   components: IComponent[];
 }
 

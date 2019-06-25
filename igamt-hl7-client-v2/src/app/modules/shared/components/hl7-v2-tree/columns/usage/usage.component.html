@@ -6,11 +6,14 @@
     [options]="options"
     (onChange)="modelChange($event)"
     [(ngModel)]="usage.value"
-    showTransitionOptions="0ms"
-    hideTransitionOptions="0ms"
-    appendTo="body" ></p-dropdown>
+    [appendTo]="anchor" ></p-dropdown>
 
     <strong *ngSwitchCase="true">{{usage.value}}</strong>
+
+    <ng-container *ngIf="predicate && usage.value === 'C'">
+      ( {{predicate.trueUsage}} / {{predicate.falseUsage}} )
+    </ng-container>
+
 
 </ng-container>
 
