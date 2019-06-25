@@ -1,14 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, of, ReplaySubject, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, pluck, take } from 'rxjs/operators';
+import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { LoadSegment } from 'src/app/root-store/segment-edit/segment-edit.actions';
-import { EditorSave, EditorSaveFailure, LoadSelectedResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectAllDatatypes, selectAllSegments, selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
@@ -23,7 +22,7 @@ import { HL7v2TreeColumnType } from './../../../shared/components/hl7-v2-tree/hl
   templateUrl: './segment-structure-editor.component.html',
   styleUrls: ['./segment-structure-editor.component.scss'],
 })
-export class SegmentStructureEditorComponent extends AbstractEditorComponent implements OnInit {
+export class SegmentStructureEditorComponent extends AbstractEditorComponent implements OnDestroy, OnInit {
 
   type = Type;
   segment: ReplaySubject<ISegment>;
@@ -32,6 +31,8 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;
+  workspace_s: Subscription;
+  segment$: Observable<ISegment>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -61,12 +62,17 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
     this.username = store.select(fromAuth.selectUsername);
     this.segment = new ReplaySubject<ISegment>();
     this.changes = new ReplaySubject<IStructureChanges>();
-    this.currentSynchronized$.pipe(
+    this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.segment.next({ ...current.segment });
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
+    this.segment$ = this.segment.asObservable();
+  }
+
+  ngOnDestroy(): void {
+    this.workspace_s.unsubscribe();
   }
 
   change(change: IChange) {
@@ -88,7 +94,11 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
       take(1),
       concatMap(([id, igId, changes]) => {
         return this.segmentService.saveChanges(id, igId, this.convert(changes)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message)]),
+          mergeMap((message) => {
+            return this.segmentService.getById(id).pipe(
+              flatMap((segment) => [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, segment }, updateDate: false })]),
+            );
+          }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );
       }),

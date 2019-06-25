@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectAllDatatypes, selectAllSegments, selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
@@ -74,14 +74,14 @@ export class ConformanceProfileStructureEditorComponent extends AbstractEditorCo
   change(change: IChange) {
     combineLatest(this.changes.asObservable(), this.conformanceProfile.asObservable()).pipe(
       take(1),
-      map(([changes, segment]) => {
+      map(([changes, conformanceProfile]) => {
         changes[change.location] = {
           ...changes[change.location],
           [change.propertyType]: change,
         };
         this.changes.next(changes);
         console.log(changes);
-        this.editorChange({ changes, segment }, true);
+        this.editorChange({ changes, conformanceProfile }, true);
       }),
     ).subscribe();
   }
@@ -91,7 +91,11 @@ export class ConformanceProfileStructureEditorComponent extends AbstractEditorCo
       take(1),
       concatMap(([id, igId, changes]) => {
         return this.conformanceProfileService.saveChanges(id, igId, this.convert(changes)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message)]),
+          mergeMap((message) => {
+            return this.conformanceProfileService.getById(id).pipe(
+              flatMap((conformanceProfile) => [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, conformanceProfile }, updateDate: false })]),
+            );
+          }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );
       }),

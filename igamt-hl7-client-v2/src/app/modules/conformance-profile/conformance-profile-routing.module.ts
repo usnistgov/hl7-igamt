@@ -25,7 +25,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'pre-def',
+        redirectTo: 'structure',
         pathMatch: 'full',
       },
       {

@@ -21,6 +21,6 @@
 [repository]="repository"
 [viewOnly]="viewOnly$ | async"
 (changes)="change($event)"
-[resource]="datatype | async"
+[resource]="datatype$ | async"
 [username]="username | async">
 </app-hl7-v2-tree>

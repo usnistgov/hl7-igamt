@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, take, tap } from 'rxjs/operators';
+import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectAllDatatypes, selectAllSegments, selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
@@ -23,7 +23,7 @@ import { DatatypeService } from '../../services/datatype.service';
   templateUrl: './datatype-structure-editor.component.html',
   styleUrls: ['./datatype-structure-editor.component.scss'],
 })
-export class DatatypeStructureEditorComponent extends AbstractEditorComponent implements OnInit {
+export class DatatypeStructureEditorComponent extends AbstractEditorComponent implements OnDestroy, OnInit {
 
   type = Type;
   datatype: ReplaySubject<IDatatype>;
@@ -32,6 +32,8 @@ export class DatatypeStructureEditorComponent extends AbstractEditorComponent im
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;
+  workspace_s: Subscription;
+  datatype$: Observable<IDatatype>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -60,24 +62,29 @@ export class DatatypeStructureEditorComponent extends AbstractEditorComponent im
     this.username = store.select(fromAuth.selectUsername);
     this.datatype = new ReplaySubject<IDatatype>();
     this.changes = new ReplaySubject<IStructureChanges>();
-    this.currentSynchronized$.pipe(
+    this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.datatype.next({ ...current.datatype });
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
+    this.datatype$ = this.datatype.asObservable();
+  }
+
+  ngOnDestroy(): void {
+    this.workspace_s.unsubscribe();
   }
 
   change(change: IChange) {
     combineLatest(this.changes.asObservable(), this.datatype.asObservable()).pipe(
       take(1),
-      map(([changes, segment]) => {
+      map(([changes, datatype]) => {
         changes[change.location] = {
           ...changes[change.location],
           [change.propertyType]: change,
         };
         this.changes.next(changes);
-        this.editorChange({ changes, segment }, true);
+        this.editorChange({ changes, datatype }, true);
       }),
     ).subscribe();
   }
@@ -87,7 +94,11 @@ export class DatatypeStructureEditorComponent extends AbstractEditorComponent im
       take(1),
       concatMap(([id, igId, changes]) => {
         return this.datatypeService.saveChanges(id, igId, this.convert(changes)).pipe(
-          flatMap((message) => [this.messageService.messageToAction(message)]),
+          mergeMap((message) => {
+            return this.datatypeService.getById(id).pipe(
+              flatMap((datatype) => [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, datatype }, updateDate: false })]),
+            );
+          }),
           catchError((error) => throwError(this.messageService.actionFromError(error))),
         );
       }),
