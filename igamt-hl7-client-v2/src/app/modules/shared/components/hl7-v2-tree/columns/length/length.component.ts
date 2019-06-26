@@ -29,17 +29,17 @@ export class LengthComponent extends HL7v2TreeColumnComponent<ILengthAndConfLeng
   }
 
   minChange(value: string) {
-    this.onChange<string>(this.getInputValue().length.min, value, PropertyType.LENGTHMIN, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.min + '', value + '', PropertyType.LENGTHMIN, ChangeType.UPDATE);
   }
 
   maxChange(value: string) {
-    this.onChange<string>(this.getInputValue().length.max, value, PropertyType.LENGTHMAX, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.max + '', value + '', PropertyType.LENGTHMAX, ChangeType.UPDATE);
   }
 
   clear() {
-    this.onChange<string>(this.getInputValue().length.min, 'NA', PropertyType.LENGTHMIN, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().length.max, 'NA', PropertyType.LENGTHMAX, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().confLength, '*', PropertyType.CONFLENGTH, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.min + '', 'NA', PropertyType.LENGTHMIN, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.max + '', 'NA', PropertyType.LENGTHMAX, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().confLength + '', '*', PropertyType.CONFLENGTH, ChangeType.UPDATE);
 
     this.val = {
       length: {

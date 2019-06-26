@@ -1,8 +1,10 @@
 <h2 mat-dialog-title>{{ data.title }}</h2>
 <div id="content" [froalaEditor]="{}" [(ngModel)]="data.content"
+*ngIf="!data.plain"
 style="flex-grow: 1; display: flex; flex-direction: column;"></div>
+<textarea *ngIf="data.plain" maxlength="100" [(ngModel)]="data.content"></textarea>
 <div style="margin-top: 10px;">
   <button [mat-dialog-close]="undefined" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
-  <button [mat-dialog-close]="data.content" class="btn btn-sm btn-success">Edit</button>
+  <button  [mat-dialog-close]="data.content" class="btn btn-sm btn-success">Ok</button>
 </div>
 

@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {
   DatatypeEditActionTypes,
   LoadDatatype,
@@ -7,16 +7,18 @@ import {
   OpenDatatypeMetadataEditorNode,
   OpenDatatypePostDefEditor,
   OpenDatatypePreDefEditor,
+  OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
-import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
-import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
-import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
-import { Type } from '../shared/constants/type.enum';
-import { EditorID } from '../shared/models/editor.enum';
+import {DataLoaderResolverService} from '../ig/services/data-loader-resolver.service';
+import {IgEditorActivateGuard} from '../ig/services/ig-editor-activate.guard.';
+import {IgEditSaveDeactivateGuard} from '../ig/services/ig-editor-deactivate.service';
+import {Type} from '../shared/constants/type.enum';
+import {EditorID} from '../shared/models/editor.enum';
 import {DatatypeCrossRefsComponent} from './components/datatype-cross-refs/datatype-cross-refs.component';
-import { MetadataEditComponent } from './components/metadata-edit/metadata-edit.component';
-import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
-import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
+import {DatatypeStructureEditorComponent} from './components/datatype-structure-editor/datatype-structure-editor.component';
+import {MetadataEditComponent} from './components/metadata-edit/metadata-edit.component';
+import {PostdefEditorComponent} from './components/postdef-editor/postdef-editor.component';
+import {PredefEditorComponent} from './components/predef-editor/predef-editor.component';
 
 const routes: Routes = [
   {
@@ -32,7 +34,7 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'pre-def',
+        redirectTo: 'structure',
         pathMatch: 'full',
       },
       {
@@ -92,7 +94,6 @@ const routes: Routes = [
           idKey: 'datatypeId',
         },
       },
-
       {
         path: 'cross-references',
         component: DatatypeCrossRefsComponent,
@@ -108,6 +109,25 @@ const routes: Routes = [
           action: OpenDatatypeCrossRefEditor,
         },
       },
+      {
+        path: 'structure',
+        component: DatatypeStructureEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.DATATYPE_STRUCTURE,
+            title: 'Structure',
+            resourceType: Type.DATATYPE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenDatatypeStructureEditor,
+          idKey: 'datatypeId',
+        },
+      },
     ],
   },
 ];
@@ -116,4 +136,5 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DatatypeRoutingModule { }
+export class DatatypeRoutingModule {
+}

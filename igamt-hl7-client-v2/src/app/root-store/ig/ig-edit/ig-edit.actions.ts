@@ -48,6 +48,7 @@ export enum IgEditActionTypes {
   EditorChange = '[Ig Edit Change] Register Change Data',
   EditorReset = '[Ig Edit Reset] Reset Data',
   EditorSave = '[Editor Save] Toolbar Save Button',
+  EditorUpdate = '[Editor Update] Update editor without changes',
   EditorSaveSuccess = '[Editor Save Success] Editor Save Success',
   EditorSaveFailure = '[Editor Save Failure] Editor Save Failure',
 
@@ -190,6 +191,14 @@ export class IgEditDeleteNode implements Action {
   readonly type = IgEditActionTypes.IgEditDeleteNode;
   constructor(readonly payload: IDeleteNode) {
   }
+}
+
+export class EditorUpdate implements Action {
+  readonly type = IgEditActionTypes.EditorUpdate;
+  constructor(readonly payload: {
+    value: any,
+    updateDate: boolean,
+  }) { }
 }
 
 export class OpenNarrativeEditorNode implements Action {
@@ -352,4 +361,5 @@ export type IgEditActions =
   | CopyResourceFailure
   | DeleteResource
   | DeleteResourceSuccess
-  | DeleteResourceFailure;
+  | DeleteResourceFailure
+  | EditorUpdate;

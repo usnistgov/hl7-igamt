@@ -84,6 +84,7 @@ function removeById( reg: IRegistry, id: string): IRegistry {
 }
 
 // tslint:disable-next-line: no-big-function
+// tslint:disable-next-line: cognitive-complexity
 export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 
@@ -268,6 +269,21 @@ export function reducer(state = initialState, action: IgEditActions): IState {
           flags: {
             ...state.workspace.flags,
             changed: false,
+          },
+        },
+      };
+
+    case IgEditActionTypes.EditorUpdate:
+      return {
+        ...state,
+        workspace: {
+          ...state.workspace,
+          changeTime: action.payload.updateDate ? new Date() : state.workspace.changeTime,
+          current: {
+            ...(action.payload.value ? action.payload.value : state.workspace.current),
+          },
+          initial: {
+            ...(action.payload.value ? action.payload.value : state.workspace.current),
           },
         },
       };

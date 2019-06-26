@@ -105,7 +105,7 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.addChildren.emit({ node, type, scope });
   }
   copyResource(node: TreeNode) {
-    this.copy.emit({element: node.data, existing: node.parent.data.children});
+    this.copy.emit({element: {...node.data}, existing: node.parent.data.children});
   }
   deleteResource(node: TreeNode) {
     this.delete.emit(node.data);

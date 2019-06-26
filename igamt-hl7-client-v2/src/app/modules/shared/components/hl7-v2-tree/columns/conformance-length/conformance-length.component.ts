@@ -29,13 +29,13 @@ export class ConformanceLengthComponent extends HL7v2TreeColumnComponent<ILength
   }
 
   confLengthChange(value: string) {
-    this.onChange<string>(this.getInputValue().confLength, value, PropertyType.CONFLENGTH, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().confLength + '', value + '', PropertyType.CONFLENGTH, ChangeType.UPDATE);
   }
 
   clear() {
-    this.onChange<string>(this.getInputValue().length.min, '0', PropertyType.LENGTHMIN, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().length.max, '*', PropertyType.LENGTHMAX, ChangeType.UPDATE);
-    this.onChange<string>(this.getInputValue().confLength, 'NA', PropertyType.CONFLENGTH, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.min + '', '0', PropertyType.LENGTHMIN, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().length.max + '', '*', PropertyType.LENGTHMAX, ChangeType.UPDATE);
+    this.onChange<string>(this.getInputValue().confLength + '', 'NA', PropertyType.CONFLENGTH, ChangeType.UPDATE);
 
     this.val = {
       length: {

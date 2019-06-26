@@ -1,6 +1,6 @@
-import {createFeatureSelector, createSelector} from '@ngrx/store';
-import {Hl7Config} from '../../modules/shared/models/config.class';
-import {ConfigActions, ConfigActionTypes} from './config.actions';
+import { createFeatureSelector, createSelector } from '@ngrx/store';
+import { Hl7Config } from '../../modules/shared/models/config.class';
+import { ConfigActions, ConfigActionTypes } from './config.actions';
 
 export interface IState {
   hl7Config: Hl7Config;
@@ -12,7 +12,7 @@ export const initialState: IState = {
 
 export function reducer(state = initialState, action: ConfigActions): IState {
   if (action.type === ConfigActionTypes.LoadConfigSuccess) {
-    state = {...state, hl7Config: action.payload.data};
+    state = { ...state, hl7Config: action.payload.data };
     return state;
   } else {
     return state;
@@ -29,4 +29,9 @@ export const getHl7ConfigState = createSelector(
 export const getHl7Versions = createSelector(
   getHl7ConfigState,
   (state: Hl7Config) => state.hl7Versions,
+);
+
+export const getHl7Usages = createSelector(
+  getHl7ConfigState,
+  (state: Hl7Config) => state.usages,
 );

@@ -5,6 +5,7 @@ import { IBindingContext } from '../../services/hl7-v2-tree.service';
 export enum BindingLevel {
   MESSAGE,
   SEGMENT,
+  DATATYPE,
   DATATYPE_COMPONENT,
   DATATYPE_FIELD,
   DATATYPE_SUBCOMPONENT,
@@ -33,6 +34,8 @@ export class BindingBadgeComponent implements OnInit {
           this.bindingLevel = BindingLevel.DATATYPE_SUBCOMPONENT;
         } else if (c.element === Type.FIELD) {
           this.bindingLevel = BindingLevel.DATATYPE_FIELD;
+        } else {
+          this.bindingLevel = BindingLevel.DATATYPE;
         }
         break;
     }
