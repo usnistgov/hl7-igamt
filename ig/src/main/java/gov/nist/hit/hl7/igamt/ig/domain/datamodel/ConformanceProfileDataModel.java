@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -84,7 +85,6 @@ public class ConformanceProfileDataModel {
 
   /**
    * @param cp
-   * @param valuesets
    */
   public void putModel(ConformanceProfile cp,
       Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,

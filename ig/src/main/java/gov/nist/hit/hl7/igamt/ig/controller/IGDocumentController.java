@@ -10,6 +10,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+
+import gov.nist.hit.hl7.igamt.common.base.domain.*;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
+import gov.nist.hit.hl7.igamt.ig.exceptions.*;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -59,6 +65,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
@@ -67,6 +74,9 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
+
+import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
+
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
@@ -118,6 +128,9 @@ public class IGDocumentController extends BaseController {
   
   @Autowired
   ConformanceStatementRepository conformanceStatementRepository;
+
+  @Autowired
+  PredicateRepository predicateRepository;
   
   @Autowired
   DisplayInfoService displayInfoService;
@@ -161,6 +174,21 @@ public class IGDocumentController extends BaseController {
       }
     }
     return result;
+  }
+
+  @RequestMapping(value = "/api/igdocuments/{ig}/predicate/{id}", method = RequestMethod.GET,
+          produces = {"application/json"})
+  public @ResponseBody
+  Predicate getPredicate(@PathVariable("ig") String ig, @PathVariable("id") String id,
+                         Authentication authentication) throws IGNotFoundException, PredicateNotFoundException {
+    Ig igdocument = findIgById(ig);
+    if(igdocument.getUsername().equals(authentication.getName())) {
+      return this.predicateRepository.findById(id).orElseThrow(() -> {
+        return new PredicateNotFoundException(id);
+      });
+    } else {
+      throw new PredicateNotFoundException(id);
+    }
   }
 
   @RequestMapping(value = "/api/igdocuments/{id}/conformancestatement", method = RequestMethod.GET,
@@ -276,10 +304,10 @@ public class IGDocumentController extends BaseController {
 
   /**
    * 
-   * @param id
-   * @param response
+   * @param
+   * @param
    * @param authentication
-   * @throws ExportException
+   * @throws
    */
 //  @RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
 //  public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id,

@@ -71,10 +71,13 @@ export abstract class AbstractEditorComponent {
       withLatestFrom(this.store.select(fromIgEdit.selectWorkspaceCurrentIsChanged)),
       tap(([action, changed]) => {
         if (changed) {
-          this.onEditorSave(action).subscribe((result) => this.store.dispatch(result), (result) => {
-            this.store.dispatch(result);
-            this.store.dispatch(new EditorSaveFailure());
-          }, () => this.store.dispatch(new EditorSaveSuccess()));
+          this.onEditorSave(action).subscribe(
+            (result) => this.store.dispatch(result),
+            (result) => {
+              this.store.dispatch(result);
+              this.store.dispatch(new EditorSaveFailure());
+            },
+            () => this.store.dispatch(new EditorSaveSuccess()));
         }
       }),
     ).subscribe();

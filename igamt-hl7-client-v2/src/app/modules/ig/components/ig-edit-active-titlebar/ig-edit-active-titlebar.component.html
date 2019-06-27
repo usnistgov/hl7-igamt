@@ -2,7 +2,12 @@
   <h5 class="title-text">
       <app-scope-badge *ngIf="active.display.domainInfo" [scope]="active.display.domainInfo.scope" [version]="active.display.domainInfo.version"></app-scope-badge>
       <app-entity-bagde [type]="active.display.type"></app-entity-bagde>
-      <span *ngIf="active.display.type !== 'IGDOCUMENT'" > <span *ngIf="active.display.path"> {{active.display.path}} </span> <span *ngIf="active.display.fixedName"> {{active.display.fixedName + '_'}}</span>{{active.display.variableName}}</span>
+      <span *ngIf="active.display.type !== 'IGDOCUMENT'" >
+        <span *ngIf="active.display.path"> {{active.display.path}} </span>
+        <span>{{active.display.fixedName}}</span>
+        <span *ngIf="active.display.fixedName && active.display.variableName">_</span>
+          <span>{{active.display.variableName}}</span>
+      </span>
       <span *ngIf="active.display.type === 'IGDOCUMENT'" > Implementation Guide</span>
   </h5>
   <ng-container *ngIf="active.editor.title">

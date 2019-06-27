@@ -153,6 +153,7 @@ export class IgListContainerComponent implements OnInit, OnDestroy {
                 label: 'Open',
                 class: 'btn-primary',
                 icon: 'fa-arrow-right',
+                default: true,
                 action: (item: IgListItem) => {
                   this.router.navigate(['ig', item.id]);
                 },

@@ -9,6 +9,7 @@ export enum ConformanceProfileEditActionTypes {
   LoadConformanceProfileFailure = '[ConformanceProfileEdit] Load Conformance Profile Failure',
   OpenConformanceProfilePreDefEditor = '[ConformanceProfileEdit] Open Conformance Profile PreDef Editor',
   OpenConformanceProfilePostDefEditor = '[ConformanceProfileEdit] Open Conformance Profile PostDef Editor',
+  OpenConformanceProfileStructureEditor = '[ConformanceProfileEdit] Open Conformance Profile Structure Editor',
 }
 
 export class LoadConformanceProfile implements Action {
@@ -34,6 +35,14 @@ export class OpenConformanceProfilePreDefEditor implements Action {
   }) { }
 }
 
+export class OpenConformanceProfileStructureEditor implements Action {
+  readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+}
+
 export class OpenConformanceProfilePostDefEditor implements Action {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePostDefEditor;
   constructor(readonly payload: {
@@ -46,5 +55,6 @@ export type ConformanceProfileEditActions =
   | LoadConformanceProfile
   | OpenConformanceProfilePreDefEditor
   | OpenConformanceProfilePostDefEditor
+  | OpenConformanceProfileStructureEditor
   | LoadConformanceProfileSuccess
   | LoadConformanceProfileFailure;

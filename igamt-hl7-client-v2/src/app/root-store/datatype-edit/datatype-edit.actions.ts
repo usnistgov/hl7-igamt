@@ -10,6 +10,7 @@ export enum DatatypeEditActionTypes {
   OpenDatatypePreDefEditor = '[Datatype Edit] Open Datatype Editor',
   OpenDatatypePostDefEditor = '[Datatype Edit] Open Datatype PostDef Editor',
   OpenDatatypeMetadataEditorNode = '[Datatype Edit] Open Datatype Metadata Editor Node',
+  OpenDatatypeStructureEditor = '[Datatype Edit] Open Datatype Structure Editor',
 }
 
 export class LoadDatatype implements Action {
@@ -38,6 +39,14 @@ export class OpenDatatypePreDefEditor implements Action {
 
 export class OpenDatatypePostDefEditor implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypePostDefEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+}
+
+export class OpenDatatypeStructureEditor implements Action {
+  readonly type = DatatypeEditActionTypes.OpenDatatypeStructureEditor;
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,

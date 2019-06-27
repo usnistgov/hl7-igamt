@@ -1,14 +1,17 @@
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChildren } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
+import { IComment } from '../../models/comment.interface';
 import { IConformanceProfile } from '../../models/conformance-profile.interface';
 import { IDatatype } from '../../models/datatype.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
+import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { IChange } from '../../models/save-change';
 import { ISegment } from '../../models/segment.interface';
+import { PredicateService } from '../../service/predicate.service';
 import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { ILengthAndConfLength } from './columns/length/length.component';
@@ -24,6 +27,7 @@ export enum HL7v2TreeColumnType {
   VALUESET = 'ValueSet',
   COMMENT = 'Comment',
   TEXT = 'Definition Text',
+  CONSTANTVALUE = 'Constant Value',
 }
 
 export interface ILengthRange {
@@ -55,6 +59,8 @@ export interface IHL7v2TreeNode extends TreeNode {
     text: IStringValue,
     cardinality?: ICardinalityRange,
     length?: ILengthRange,
+    comments?: IComment[],
+    constantValue?: IStringValue,
     pathId: string,
     changeable?: boolean,
     viewOnly?: boolean,
@@ -65,6 +71,7 @@ export interface IHL7v2TreeNode extends TreeNode {
   };
   children?: IHL7v2TreeNode[];
   $hl7V2TreeHelpers: {
+    predicate$: Observable<IPredicate>;
     ref$: Observable<IResourceRef>;
     treeChildrenSubscription: Subscription;
   };
@@ -83,6 +90,7 @@ type ColumnOptions = Array<{
 export class Hl7V2TreeComponent implements OnInit, OnDestroy {
 
   columnTypes = HL7v2TreeColumnType;
+  types = Type;
   @Input()
   viewOnly: boolean;
   @Input()
@@ -154,7 +162,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     return item.node.data.id;
   }
 
-  constructor(private treeService: Hl7V2TreeService) {
+  constructor(
+    private treeService: Hl7V2TreeService) {
     this.nodes = [];
     this.treeSubscriptions = [];
     this.changes = new EventEmitter<IChange>();
@@ -237,6 +246,7 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
                 case Type.SEGMENT:
                   return this.treeService.formatSegment(resource as ISegment, this.repository, this.viewOnly, false, node).pipe(
                     tap(this.addChildren(node)),
+                    tap(() => node.data.name = (resource as ISegment).name),
                   );
               }
             }),

@@ -28,6 +28,6 @@
 [repository]="repository"
 [viewOnly]="viewOnly$ | async"
 (changes)="change($event)"
-[resource]="segment | async"
+[resource]="segment$ | async"
 [username]="username | async">
 </app-hl7-v2-tree>
