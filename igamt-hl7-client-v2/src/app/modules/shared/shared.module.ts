@@ -26,8 +26,10 @@ import { FormInputComponent } from './components/form-input/form-input.component
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
 import { CommentsComponent } from './components/hl7-v2-tree/columns/comments/comments.component';
 import { ConformanceLengthComponent } from './components/hl7-v2-tree/columns/conformance-length/conformance-length.component';
+import { ConstantValueComponent } from './components/hl7-v2-tree/columns/constant-value/constant-value.component';
 import { DatatypeComponent } from './components/hl7-v2-tree/columns/datatype/datatype.component';
 import { LengthComponent } from './components/hl7-v2-tree/columns/length/length.component';
+import { PredicateComponent } from './components/hl7-v2-tree/columns/predicate/predicate.component';
 import { SegmentComponent } from './components/hl7-v2-tree/columns/segment/segment.component';
 import { TextComponent } from './components/hl7-v2-tree/columns/text/text.component';
 import { UsageComponent } from './components/hl7-v2-tree/columns/usage/usage.component';
@@ -95,6 +97,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     TextEditorDialogComponent,
     BindingBadgeComponent,
     CommentsComponent,
+    ConstantValueComponent,
+    PredicateComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -182,6 +186,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     TextEditorDialogComponent,
     BindingBadgeComponent,
     CommentsComponent,
+    ConstantValueComponent,
+    PredicateComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent],
 })

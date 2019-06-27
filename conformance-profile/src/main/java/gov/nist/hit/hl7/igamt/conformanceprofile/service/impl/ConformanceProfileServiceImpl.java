@@ -29,6 +29,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.MsgStructElement;
 import gov.nist.hit.hl7.igamt.common.base.domain.Ref;
@@ -44,7 +46,6 @@ import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationInfo;
 import gov.nist.hit.hl7.igamt.common.binding.domain.LocationType;
@@ -984,8 +985,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
     bindingDisplay.setSourceId(sourceId);
     bindingDisplay.setSourceType(sourceType);
     bindingDisplay.setPriority(priority);
-    bindingDisplay.setComments(seb.getComments());
-    bindingDisplay.setConstantValue(seb.getConstantValue());
     bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
     bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
 
@@ -1159,15 +1158,6 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
             this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
         item.setOldPropertyValue(seb.getExternalSingleCode());
         seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
-      } else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-        StructureElementBinding seb =
-            this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-        item.setOldPropertyValue(seb.getConstantValue());
-        if (item.getPropertyValue() == null) {
-          seb.setConstantValue(null);
-        } else {
-          seb.setConstantValue((String) item.getPropertyValue());
-        }
       } else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
         SegmentRefOrGroup srog =
             this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
@@ -1182,11 +1172,12 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
       } else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-        StructureElementBinding seb =
-            this.findAndCreateStructureElementBindingByIdPath(cp, item.getLocation());
-        item.setOldPropertyValue(seb.getComments());
-        seb.setComments(
-            new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+        SegmentRefOrGroup srog =
+            this.findSegmentRefOrGroupById(cp.getChildren(), item.getLocation());
+        if (srog != null) {
+          item.setOldPropertyValue(srog.getComments());
+          srog.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+        }
       } else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
         ObjectMapper mapper = new ObjectMapper();
         String jsonInString = mapper.writeValueAsString(item.getPropertyValue());

@@ -161,13 +161,13 @@ public class BindingHandler implements ConversionService{
      */
     List<Comment> oldComments = this.findOldCommentByPath(refObj, path);
     for (Comment comment : oldComments) {
-      gov.nist.hit.hl7.igamt.common.binding.domain.Comment newComment =
-          new gov.nist.hit.hl7.igamt.common.binding.domain.Comment();
+      gov.nist.hit.hl7.igamt.common.base.domain.Comment newComment =
+          new gov.nist.hit.hl7.igamt.common.base.domain.Comment();
       newComment.setDateupdated(comment.getLastUpdatedDate());
       newComment.setDescription(comment.getDescription());
       // TODO need to change username
       newComment.setUsername(comment.getAuthorId() + "");
-      seb.addComment(newComment);
+//      seb.addComment(newComment);
     }
 
     /*
@@ -216,7 +216,7 @@ public class BindingHandler implements ConversionService{
        */
       SingleElementValue oldSingleElementValue = this.findOldSingleElementValueByPath(refObj, path);
       if (oldSingleElementValue != null) {
-        seb.setConstantValue(oldSingleElementValue.getValue());
+//        seb.setConstantValue(oldSingleElementValue.getValue());
       }
 
       /*

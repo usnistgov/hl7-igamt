@@ -19,11 +19,11 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -162,27 +162,12 @@ public class SerializableBinding extends SerializableElement {
           }
         }
       }
-      if (structureElementBinding.getComments() != null) {
-        for (Comment comment : structureElementBinding.getComments()) {
-          Element commentElement = this.serializeComment(comment);
-          if (commentElement != null) {
-            structureElementBindingElement.appendChild(commentElement);
-          }
-        }
-      }
+
       if (structureElementBinding.getInternalSingleCode() != null) {
         structureElementBindingElement.addAttribute(new Attribute("singleCodeId",
             structureElementBinding.getInternalSingleCode().getCodeId()));
       }
-      if (structureElementBinding.getConstantValue() != null) {
-        structureElementBindingElement.addAttribute(
-            new Attribute("constantValue", structureElementBinding.getConstantValue()));
-      }
 
-      if (structureElementBinding.getConstantValue() != null) {
-        structureElementBindingElement.addAttribute(
-            new Attribute("constantValue", structureElementBinding.getConstantValue()));
-      }
       if (structureElementBinding.getPredicateId() != null) {
         Element predicateElement = this.serializePredicate(structureElementBinding.getPredicateId());
         if (predicateElement != null) {

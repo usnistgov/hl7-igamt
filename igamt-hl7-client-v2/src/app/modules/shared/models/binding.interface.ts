@@ -36,11 +36,9 @@ export interface IBinding {
 }
 
 export interface IStructureElementBindingProperties {
-  comments?: IComment[];
   valuesetBindings: IValuesetBinding[];
   internalSingleCode: InternalSingleCode;
   externalSingleCode: IExternalSingleCode;
-  constantValue: string;
   predicateId: string;
 }
 

@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
-import gov.nist.hit.hl7.igamt.common.binding.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
@@ -37,8 +36,6 @@ public class DatatypeDataModel {
 
   private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
   private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-  private Map<String, Set<Comment>> commentMap = new HashMap<String, Set<Comment>>();
-  private Map<String, String> constantValueMap = new HashMap<String, String>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
   private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
   private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
@@ -57,22 +54,6 @@ public class DatatypeDataModel {
 
   public void setPredicateMap(Map<String, Predicate> predicateMap) {
     this.predicateMap = predicateMap;
-  }
-
-  public Map<String, Set<Comment>> getCommentMap() {
-    return commentMap;
-  }
-
-  public void setCommentMap(Map<String, Set<Comment>> commentMap) {
-    this.commentMap = commentMap;
-  }
-
-  public Map<String, String> getConstantValueMap() {
-    return constantValueMap;
-  }
-
-  public void setConstantValueMap(Map<String, String> constantValueMap) {
-    this.constantValueMap = constantValueMap;
   }
 
   public Map<String, ExternalSingleCode> getSingleCodeMap() {
@@ -108,10 +89,10 @@ public class DatatypeDataModel {
       }
     }
     
-//    if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
-//     this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
-//    }
-//    
+    if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
+     this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    }
+    
     if (d instanceof ComplexDatatype) {
       ComplexDatatype cd = (ComplexDatatype)d;
      
@@ -124,8 +105,6 @@ public class DatatypeDataModel {
               this.componentDataModels.add(new ComponentDataModel(
                   c, 
                   this.predicateMap.get(key), 
-                  this.commentMap.get(key),
-                  this.constantValueMap.get(key),
                   this.singleCodeMap.get(key),
                   this.valuesetMap.get(key),
                   new DatatypeBindingDataModel(childDt)
@@ -150,16 +129,8 @@ public class DatatypeDataModel {
         key = path + "." + seb.getLocationInfo().getPosition();
       }
       
-      if(seb.getComments() != null && seb.getComments().size() > 0){
-        this.commentMap.put(key, seb.getComments());
-      }
-      
       if(seb.getPredicateId() != null){
         predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
-      
-      if(seb.getConstantValue() != null){
-        this.constantValueMap.put(key, seb.getConstantValue());
       }
       
       if(seb.getExternalSingleCode() != null){

@@ -1,15 +1,17 @@
 <ng-container *ngIf="ref" [ngSwitch]="viewOnly">
-    <p-dropdown [options]="_options" *ngSwitchCase="false" appendTo="body" optionLabel="id" dataKey="id" [(ngModel)]="ref" (ngModelChange)="referenceChanged($event)" >
-      <ng-template let-item pTemplate="selectedItem">
+    <p-dropdown [options]="_options" *ngSwitchCase="false" [appendTo]="anchor" dataKey="id" [(ngModel)]="ref" (ngModelChange)="referenceChanged($event)" [group]="true" [filter]="true" filterBy="value.fixedName,value.variableName">
+        <ng-template let-item pTemplate="selectedItem">
+          <ng-container *ngIf="item.value">
+              <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
+              <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
+              <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
+          </ng-container>
+        </ng-template>
+        <ng-template let-item pTemplate="item">
           <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
           <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
           <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
-      </ng-template>
-      <ng-template let-item pTemplate="item">
-        <app-entity-bagde [type]="item.value.type"></app-entity-bagde>
-        <app-scope-badge *ngIf="item.value.domainInfo" [scope]="item.value.domainInfo.scope" [version]="item.value.domainInfo.version"></app-scope-badge>
-        <span *ngIf="item.value.fixedName"> {{item.value.fixedName}}</span><span *ngIf="item.value.variableName">{{ '_' + item.value.variableName}}</span>
-      </ng-template>
+        </ng-template>
   </p-dropdown>
   <div *ngSwitchCase="true">
     <ng-container *ngIf="selected">
