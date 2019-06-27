@@ -13,7 +13,13 @@ import { IResource } from '../../../modules/shared/models/resource.interface';
 import { ResourceService } from '../../../modules/shared/services/resource.service';
 import { RxjsStoreHelperService } from '../../../modules/shared/services/rxjs-store-helper.service';
 import { TurnOffLoader, TurnOnLoader } from '../../loader/loader.actions';
-import { LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditorFailure } from './ig-edit.actions';
+import {
+  DeleteResource, DeleteResourceFailure, DeleteResourceSuccess,
+  LoadResourceReferences,
+  LoadResourceReferencesFailure,
+  LoadResourceReferencesSuccess,
+  OpenEditorFailure,
+} from './ig-edit.actions';
 import {
   AddResourceFailure,
   AddResourceSuccess,
@@ -252,6 +258,21 @@ export class IgEditEffects {
   );
 
   @Effect()
+  deleteResourceFailure$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteResourceFailure),
+    map((action: DeleteResourceFailure) => {
+      return this.message.actionFromError(action.error);
+    }),
+  );
+  @Effect()
+  deleteResourceSuccess$ = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteResourceSuccess),
+    map((action: DeleteResourceSuccess) => {
+      return this.message.messageToAction(new Message(MessageType.SUCCESS, 'Delete Success', null));
+    }),
+  );
+
+  @Effect()
   IgEditTocAddResource$ = this.actions$.pipe(
     ofType(IgEditActionTypes.IgEditTocAddResource),
     switchMap((action: IgEditTocAddResource) => {
@@ -299,6 +320,30 @@ export class IgEditEffects {
       return this.finalizeAdd(doAdd);
     }),
   );
+  @Effect()
+  igDeleteResource = this.actions$.pipe(
+    ofType(IgEditActionTypes.DeleteResource),
+    switchMap((action: DeleteResource) => {
+      this.store.dispatch(new TurnOnLoader({
+        blockUI: true,
+      }));
+      return this.igService.deleteResource(action.payload.documentId, action.payload.element).pipe(
+        flatMap((response: Message<any>) => {
+          return [
+            new TurnOffLoader(),
+            new DeleteResourceSuccess(action.payload.element),
+          ];
+        }),
+        catchError((error: HttpErrorResponse) => {
+          return of(
+            new TurnOffLoader(),
+            new DeleteResourceFailure(error),
+          );
+        }),
+      );
+    }),
+  );
+
   finalizeAdd(toDoo: Observable<Action>) {
     return combineLatest(
       this.store.select(selectTableOfContentChanged),

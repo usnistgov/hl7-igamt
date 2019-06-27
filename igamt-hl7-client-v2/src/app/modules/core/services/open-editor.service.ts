@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
-import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { switchMap, take } from 'rxjs/operators';
+import { concatMap, switchMap, take } from 'rxjs/operators';
 import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditor, OpenEditorBase, OpenEditorFailure } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Type } from '../../shared/constants/type.enum';
+import { IUsages } from '../../shared/models/cross-reference';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
@@ -26,7 +27,7 @@ export class OpenEditorService {
   openEditor<T extends any, A extends OpenEditorBase>(
     _action: string,
     displayElementSelector: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
-    resource$: Observable<T>,
+    resource$: (action: A) => Observable<T>,
     notFoundMessage: string,
     handler: (a: A, payload: T, display: IDisplayElement) => Observable<Action>,
   ): Observable<Action> {
@@ -35,7 +36,7 @@ export class OpenEditorService {
       switchMap((action: A) => {
         return combineLatest(
           this.store.select(displayElementSelector, { id: action.payload.id }),
-          resource$,
+          resource$(action),
         ).pipe(
           take(1),
           switchMap(([elm, resource]) => {
@@ -62,7 +63,7 @@ export class OpenEditorService {
     return this.openEditor<T, A>(
       _action,
       displayElement$,
-      resource$,
+      () => resource$,
       notFoundMessage,
       (action: A, resource: T, display: IDisplayElement) => {
         const openEditor = new OpenEditor({
@@ -100,7 +101,7 @@ export class OpenEditorService {
     return this.openEditor<T, A>(
       _action,
       displayElement$,
-      resource$,
+      () => resource$,
       notFoundMessage,
       (action: A, resource: T, display: IDisplayElement) => {
         return of(new OpenEditor({
@@ -124,7 +125,7 @@ export class OpenEditorService {
     return this.openEditor<IResourceMetadata, A>(
       _action,
       displayElement$,
-      resource$,
+      () => resource$,
       notFoundMessage,
       (action: A, resource: IResourceMetadata, display: IDisplayElement) => {
         return of(new OpenEditor({
@@ -134,6 +135,37 @@ export class OpenEditorService {
           initial: {
             ...resource,
           },
+        }));
+      },
+    );
+  }
+
+  openCrossRefEditor<T extends IUsages[], A extends OpenEditorBase>(
+    _action: string,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    documentType: Type,
+    elementType: Type,
+    id: MemoizedSelector<object, string>,
+    service: (documentId: string, documentType: Type, elementType: Type, elementId: string) => Observable<T>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      (action: A) => {
+        return this.store.select(id).pipe(
+          concatMap((igId: string) => {
+            return service(igId, documentType, elementType, action.payload.id);
+          }),
+        );
+      },
+      notFoundMessage,
+      (action: A, resource: IUsages[], display: IDisplayElement) => {
+        return of(new OpenEditor({
+          id: action.payload.id,
+          element: display,
+          editor: action.payload.editor,
+          initial: resource,
         }));
       },
     );

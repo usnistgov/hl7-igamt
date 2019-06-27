@@ -25,8 +25,10 @@ export enum IgEditActionTypes {
   CopyResource = '[Ig Edit TOC] Copy Resource',
   CopyResourceSuccess = '[Ig Edit TOC] Copy Resource Success',
   CopyResourceFailure = '[Ig Edit TOC] Copy Resource Failure',
+  DeleteResource = '[Ig Edit TOC] Delete Resource',
+  DeleteResourceSuccess = '[Ig Edit TOC] Delete Resource Success',
+  DeleteResourceFailure = '[Ig Edit TOC] Delete Resource Failure',
   UpdateActiveResource = '[Ig Edit Editor] Update Active Resource Display',
-
   OpenEditor = '[Ig Edit Open] Open Editor',
   OpenEditorFailure = '[Ig Edit Open] Open Editor Failure',
   OpenNarrativeEditorNode = '[Ig Edit TOC Narrative] Open Narrative Editor Node',
@@ -78,15 +80,12 @@ export class ExpandTOC implements Action {
 
 export class ToggleFullScreen implements Action {
   readonly type = IgEditActionTypes.ToggleFullScreen;
-
   constructor() {
   }
-
 }
 
 export class ClearIgEdit implements Action {
   readonly type = IgEditActionTypes.ClearIgEdit;
-
   constructor() {
   }
 }
@@ -168,6 +167,22 @@ export class CopyResourceSuccess implements Action {
 
 export class CopyResourceFailure implements Action {
   readonly type = IgEditActionTypes.CopyResourceFailure;
+  constructor(readonly error: HttpErrorResponse) {
+  }
+}
+
+export class DeleteResource implements Action {
+  readonly type = IgEditActionTypes.DeleteResource;
+  constructor(readonly payload: IDeleteNode) {
+  }
+}
+export class DeleteResourceSuccess implements Action {
+  readonly type = IgEditActionTypes.DeleteResourceSuccess;
+  constructor(readonly payload: IDisplayElement) {
+  }
+}
+export class DeleteResourceFailure implements Action {
+  readonly type = IgEditActionTypes.DeleteResourceFailure;
   constructor(readonly error: HttpErrorResponse) {
   }
 }
@@ -356,5 +371,8 @@ export type IgEditActions =
   | LoadResourceReferencesSuccess
   | LoadResourceReferencesFailure
   | ToggleFullScreen
-  | EditorUpdate
-  | CopyResourceFailure;
+  | CopyResourceFailure
+  | DeleteResource
+  | DeleteResourceSuccess
+  | DeleteResourceFailure
+  | EditorUpdate;

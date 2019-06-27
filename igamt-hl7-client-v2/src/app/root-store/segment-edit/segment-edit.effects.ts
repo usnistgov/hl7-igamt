@@ -9,12 +9,13 @@ import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
+import { IUsages } from '../../modules/shared/models/cross-reference';
 import { ISegment } from '../../modules/shared/models/segment.interface';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
+import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
 import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
+import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentCrossRefEditor, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
 
 @Injectable()
 export class SegmentEditEffects {
@@ -70,6 +71,17 @@ export class SegmentEditEffects {
   );
 
   @Effect()
+  openSegmentCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenSegmentCrossRefEditor>(
+    SegmentEditActionTypes.OpenSegmentCrossRefEditor,
+    fromIgEdit.selectSegmentsById,
+    Type.IGDOCUMENT,
+    Type.SEGMENT,
+    fromIgEdit.selectIgId,
+    this.crossReferenceService.findUsagesDisplay,
+    this.SegmentNotFound,
+  );
+
+  @Effect()
   openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
     SegmentEditActionTypes.OpenSegmentMetadataEditor,
     fromIgEdit.selectSegmentsById,
@@ -100,6 +112,7 @@ export class SegmentEditEffects {
     private message: MessageService,
     private segmentService: SegmentService,
     private editorHelper: OpenEditorService,
+    private crossReferenceService: CrossReferencesService,
   ) { }
 
 }

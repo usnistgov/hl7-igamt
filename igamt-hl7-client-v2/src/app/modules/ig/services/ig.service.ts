@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import {Observable, throwError} from 'rxjs';
 import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
@@ -11,7 +11,7 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import {IAddNodes, ICopyNode, ICopyResourceResponse} from '../models/toc/toc-operation.class';
+import {IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode} from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
@@ -88,6 +88,20 @@ export class IgService {
       default: return null;
     }
   }
+
+  private buildDeleteUrl(documentId: string, element: IDisplayElement) {
+    switch (element.type) {
+      case Type.CONFORMANCEPROFILE:
+        return IG_END_POINT + documentId + '/conformanceprofiles/' + element.id + '/delete';
+      case Type.DATATYPE:
+        return IG_END_POINT + documentId + '/datatypes/' + element.id + '/delete';
+      case Type.SEGMENT:
+        return IG_END_POINT + documentId + '/segments/' + element.id + '/delete';
+      case Type.VALUESET:
+        return IG_END_POINT + documentId + '/valuesets/' + element.id + '/delete';
+      default: return null;
+    }
+  }
   saveTextSection(id: string, narrative: INarrative): Observable<Message<string>> {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/section', narrative);
   }
@@ -107,7 +121,14 @@ export class IgService {
     }>('/api/storage/upload', form);
   }
 
-  saveMetadata(id: string, metadata: IMetadata): Observable<Message<string>> {
+  saveMetadata(id: string, metadata: IMetadata): Observable<Message<any>> {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/updatemetadata', metadata);
+  }
+
+  deleteResource(documentId: string, element: IDisplayElement):  Observable<Message<any>> {
+    const url = this.buildDeleteUrl(documentId, element);
+    if (url != null) {
+      return this.http.delete<Message<any>>(url);
+    } else { throwError('Unsupported Url'); }
   }
 }

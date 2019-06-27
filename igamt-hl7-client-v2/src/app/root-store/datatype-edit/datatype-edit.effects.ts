@@ -4,16 +4,28 @@ import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
 import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
+import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { Type } from '../../modules/shared/constants/type.enum';
+import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
 import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { DatatypeEditActionTypes, LoadDatatype, LoadDatatypeFailure, LoadDatatypeSuccess, OpenDatatypeMetadataEditorNode, OpenDatatypePostDefEditor, OpenDatatypePreDefEditor, OpenDatatypeStructureEditor } from './datatype-edit.actions';
+import {
+  DatatypeEditActionTypes,
+  LoadDatatype,
+  LoadDatatypeFailure,
+  LoadDatatypeSuccess,
+  OpenDatatypeCrossRefEditor,
+  OpenDatatypeMetadataEditorNode,
+  OpenDatatypePostDefEditor,
+  OpenDatatypePreDefEditor,
+  OpenDatatypeStructureEditor,
+} from './datatype-edit.actions';
 
 @Injectable()
 export class DatatypeEditEffects {
@@ -93,12 +105,24 @@ export class DatatypeEditEffects {
     this.DatatypeNotFound,
   );
 
+  @Effect()
+  openDatatypeCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenDatatypeCrossRefEditor>(
+    DatatypeEditActionTypes.OpenDatatypeCrossRefEditor,
+    fromIgEdit.selectDatatypesById,
+    Type.IGDOCUMENT,
+    Type.DATATYPE,
+    fromIgEdit.selectIgId,
+    this.crossReferenceService.findUsagesDisplay,
+    this.DatatypeNotFound,
+  );
+
   constructor(
     private actions$: Actions<any>,
     private store: Store<any>,
     private message: MessageService,
     private editorHelper: OpenEditorService,
     private datatypeService: DatatypeService,
+    private crossReferenceService: CrossReferencesService,
   ) { }
 
 }
