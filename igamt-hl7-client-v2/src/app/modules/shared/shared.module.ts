@@ -51,13 +51,14 @@ import { SelectValueSetsComponent } from './components/select-value-sets/select-
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
+import {UsageDialogComponent} from './components/usage-dialog/usage-dialog.component';
+import {UsageViewerComponent} from './components/usage-viewer/usage-viewer.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
-
 @NgModule({
   declarations: [
     LoginFormComponent,
@@ -97,6 +98,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     TextEditorDialogComponent,
     BindingBadgeComponent,
     CommentsComponent,
+    UsageDialogComponent,
+    UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
   ],
@@ -186,10 +189,11 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     TextEditorDialogComponent,
     BindingBadgeComponent,
     CommentsComponent,
+    UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

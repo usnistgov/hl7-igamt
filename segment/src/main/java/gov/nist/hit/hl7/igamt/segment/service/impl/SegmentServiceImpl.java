@@ -48,6 +48,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -1428,19 +1429,26 @@ public class SegmentServiceImpl implements SegmentService {
 	public Set<RelationShip> collectDependencies(Segment elm) {
 
 		Set<RelationShip> used = new HashSet<RelationShip>();
+		HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
+
 		for (Field f : elm.getChildren()) {
 			if (f.getRef() != null && f.getRef().getId() != null) {
-				used.add(new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
-						new ReferenceIndentifier(elm.getId(), Type.SEGMENT), f.getPosition() + ""));
 
+				RelationShip rel = new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
+						new ReferenceIndentifier(elm.getId(), Type.SEGMENT),
+
+						new ReferenceLocation(Type.FIELD, f.getPosition() + "", f.getName()));
+				rel.setUsage(f.getUsage());
+				usageMap.put(f.getId(), f.getUsage());
+				used.add(rel);
 			}
 		}
 		if (elm.getDynamicMappingInfo() != null) {
 			collectDynamicMappingDependencies(elm.getId(), elm.getDynamicMappingInfo(), used);
 		}
 		if (elm.getBinding() != null) {
-			Set<RelationShip> bindingDependencies = bindingService
-					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getBinding());
+			Set<RelationShip> bindingDependencies = bindingService.collectDependencies(
+					new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getBinding(), usageMap);
 			used.addAll(bindingDependencies);
 
 		}
@@ -1453,8 +1461,11 @@ public class SegmentServiceImpl implements SegmentService {
 		if (dynamicMappingInfo.getItems() != null) {
 			for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
 				if (item.getDatatypeId() != null) {
-					used.add(new RelationShip(new ReferenceIndentifier(item.getDatatypeId(), Type.DATATYPE),
-							new ReferenceIndentifier(id, Type.SEGMENT), Type.DYNAMICMAPPING.getValue()));
+					RelationShip rel = new RelationShip(new ReferenceIndentifier(item.getDatatypeId(), Type.DATATYPE),
+							new ReferenceIndentifier(id, Type.SEGMENT),
+
+							new ReferenceLocation(Type.DYNAMICMAPPING, null , null));
+					used.add(rel);
 				}
 			}
 		}
@@ -1623,8 +1634,8 @@ public class SegmentServiceImpl implements SegmentService {
 	public void collectResources(Segment seg, HashMap<String, Resource> used) {
 		// TODO Auto-generated method stub
 		Set<String> usedDatatypesIds = this.getSegmentDatatypesDependenciesIds(seg, used);
-		List<Datatype> usedDatatypes= this.datatypeService.findByIdIn(usedDatatypesIds);
-		for(Datatype d : usedDatatypes) {
+		List<Datatype> usedDatatypes = this.datatypeService.findByIdIn(usedDatatypesIds);
+		for (Datatype d : usedDatatypes) {
 			used.put(d.getId(), d);
 			this.datatypeService.collectResources(d, used);
 		}
@@ -1648,11 +1659,11 @@ public class SegmentServiceImpl implements SegmentService {
 	@Override
 	public Set<Resource> getDependencies(Segment segment) {
 		// TODO Auto-generated method stub
-		Set<Resource> ret= new HashSet<Resource>();
+		Set<Resource> ret = new HashSet<Resource>();
 		ret.add(segment);
 		HashMap<String, Resource> usedDatatypes = new HashMap<String, Resource>();
 		this.collectResources(segment, usedDatatypes);
-		ret.addAll(usedDatatypes.values());	
+		ret.addAll(usedDatatypes.values());
 		return ret;
 	}
 

@@ -49,6 +49,7 @@ import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.CommonService;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -1234,20 +1235,27 @@ public class DatatypeServiceImpl implements DatatypeService {
 	public Set<RelationShip> collectDependencies(Datatype elm) {
 
 		Set<RelationShip> used = new HashSet<RelationShip>();
+		HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
+
 		if (elm instanceof ComplexDatatype) {
 			ComplexDatatype complex = (ComplexDatatype) elm;
 			for (Component c : complex.getComponents()) {
 				if (c.getRef() != null && c.getRef().getId() != null) {
-					used.add(new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
-							new ReferenceIndentifier(elm.getId(), Type.DATATYPE), c.getPosition() + ""));
-
+					RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
+							new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
+							
+							new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
+							);
+					rel.setUsage( c.getUsage());
+					usageMap.put(c.getId(), c.getUsage());
+					used.add(rel);
 				}
 			}
 
 		}
 		if (elm.getBinding() != null) {
 			Set<RelationShip> bindingDependencies = bindingService
-					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.DATATYPE), elm.getBinding());
+					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.DATATYPE), elm.getBinding(),usageMap);
 			used.addAll(bindingDependencies);
 		}
 		return used;

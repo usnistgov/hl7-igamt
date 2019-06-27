@@ -1,11 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { LoadSegment, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from '../../root-store/segment-edit/segment-edit.actions';
+import {
+  LoadSegment,
+  OpenSegmentCrossRefEditor,
+  OpenSegmentMetadataEditor,
+  OpenSegmentPostDefEditor,
+  OpenSegmentPreDefEditor,
+  OpenSegmentStructureEditor,
+  SegmentEditActionTypes,
+} from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
+import {SegmentCrossRefsComponent} from './components/cross-refs/segment-cross-refs.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -102,6 +111,23 @@ const routes: Routes = [
           },
           action: OpenSegmentMetadataEditor,
           idKey: 'segmentId',
+        },
+      },
+
+      {
+        path: 'cross-references',
+        component: SegmentCrossRefsComponent,
+        canActivate: [IgEditorActivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.CROSSREF,
+            title: 'Cross references',
+            resourceType: Type.SEGMENT,
+          },
+          urlPath: 'segment',
+          idKey: 'segmentId',
+          resourceType: Type.SEGMENT,
+          action: OpenSegmentCrossRefEditor,
         },
       },
     ],

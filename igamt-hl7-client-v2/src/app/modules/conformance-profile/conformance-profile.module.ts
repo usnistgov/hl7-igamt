@@ -5,6 +5,7 @@ import { StoreModule } from '@ngrx/store';
 import { ConformanceProfileEditEffects } from '../../root-store/conformance-profile-edit/conformance-profile-edit.effects';
 import * as fromConformanceProfile from '../../root-store/conformance-profile-edit/conformance-profile-edit.reducer';
 import { SharedModule } from '../shared/shared.module';
+import { ConfomanceProfileCrossRefsComponent } from './components/confomance-profile-cross-refs/confomance-profile-cross-refs.component';
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -15,6 +16,7 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
   declarations: [
     PredefEditorComponent,
     PostdefEditorComponent,
+    ConfomanceProfileCrossRefsComponent,
     ConformanceProfileStructureEditorComponent,
   ],
   imports: [

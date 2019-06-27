@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnDestroy, OnInit} from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
+import {combineLatest, Observable, ReplaySubject, Subscription, throwError} from 'rxjs';
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
@@ -24,7 +24,7 @@ import { ConformanceProfileService } from '../../services/conformance-profile.se
   templateUrl: './conformance-profile-structure-editor.component.html',
   styleUrls: ['./conformance-profile-structure-editor.component.scss'],
 })
-export class ConformanceProfileStructureEditorComponent extends AbstractEditorComponent implements OnInit {
+export class ConformanceProfileStructureEditorComponent extends AbstractEditorComponent implements OnDestroy, OnInit {
 
   type = Type;
   conformanceProfile: ReplaySubject<IConformanceProfile>;
@@ -33,6 +33,8 @@ export class ConformanceProfileStructureEditorComponent extends AbstractEditorCo
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;
+  workspace_s: Subscription;
+  conformanceProfile$: Observable<IConformanceProfile>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -47,8 +49,8 @@ export class ConformanceProfileStructureEditorComponent extends AbstractEditorCo
     }, actions$, store);
     this.columns = [
       HL7v2TreeColumnType.NAME,
-      HL7v2TreeColumnType.DATATYPE,
       HL7v2TreeColumnType.SEGMENT,
+      HL7v2TreeColumnType.DATATYPE,
       HL7v2TreeColumnType.USAGE,
       HL7v2TreeColumnType.VALUESET,
       HL7v2TreeColumnType.CONSTANTVALUE,
@@ -61,14 +63,19 @@ export class ConformanceProfileStructureEditorComponent extends AbstractEditorCo
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
     this.username = store.select(fromAuth.selectUsername);
-    this.conformanceProfile = new ReplaySubject<IConformanceProfile>();
-    this.changes = new ReplaySubject<IStructureChanges>();
-    this.currentSynchronized$.pipe(
+    this.conformanceProfile = new ReplaySubject<IConformanceProfile>(1);
+    this.changes = new ReplaySubject<IStructureChanges>(1);
+    this.workspace_s = this.currentSynchronized$.pipe(
       map((current) => {
         this.conformanceProfile.next({ ...current.conformanceProfile });
         this.changes.next({ ...current.changes });
       }),
     ).subscribe();
+    this.conformanceProfile$ = this.conformanceProfile.asObservable();
+  }
+
+  ngOnDestroy(): void {
+    this.workspace_s.unsubscribe();
   }
 
   change(change: IChange) {

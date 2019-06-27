@@ -146,45 +146,55 @@ public class SegmentDataModel {
   }
 
   /**
+   * @param children
+   * @param object
    * @param predicateRepository
    * @param valuesetBindingDataModelMap
    */
   private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
-    for (StructureElementBinding seb : sebs) {
-      String key;
-      if(path == null){
-        key = seb.getLocationInfo().getPosition() + "";
-      }else {
-        key = path + "." + seb.getLocationInfo().getPosition();
-      }
-
-      if(seb.getPredicateId() != null){
-        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
-
-      if(seb.getExternalSingleCode() != null){
-        this.singleCodeMap.put(key, seb.getExternalSingleCode());
-      }
-      
-      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
-        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for(ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if(valuesetBindingDataModel != null) {
-            valuesetBindingDataModel.setValuesetBinding(vb);
-            vbdm.add(valuesetBindingDataModel);
-          }
-        }
-        
-        if(vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);          
-        }
-      }
-      
-      if (seb.getChildren() != null) {
-        //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
-      }
-    }
+//    for (StructureElementBinding seb : sebs) {
+//      String key;
+//      if(path == null){
+//        key = seb.getLocationInfo().getPosition() + "";
+//      }else {
+//        key = path + "." + seb.getLocationInfo().getPosition();
+//      }
+//      
+//      if(seb.getComments() != null && seb.getComments().size() > 0){
+//        this.commentMap.put(key, seb.getComments());
+//      }
+//      
+//      if(seb.getPredicateId() != null){
+//        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+//      }
+//      
+//      if(seb.getConstantValue() != null){
+//        this.constantValueMap.put(key, seb.getConstantValue());
+//      }
+//      
+//      if(seb.getExternalSingleCode() != null){
+//        this.singleCodeMap.put(key, seb.getExternalSingleCode());
+//      }
+//      
+//      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+//        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+//        for(ValuesetBinding vb : seb.getValuesetBindings()) {
+//          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
+//          if(valuesetBindingDataModel != null) {
+//            valuesetBindingDataModel.setValuesetBinding(vb);
+//            vbdm.add(valuesetBindingDataModel);
+//          }
+//        }
+//        
+//        if(vbdm != null && vbdm.size() > 0) {
+//          this.valuesetMap.put(key, vbdm);          
+//        }
+//      }
+//      
+//      if (seb.getChildren() != null) {
+//        //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+//      }
+//    }
     
   }
 
