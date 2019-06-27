@@ -1,7 +1,9 @@
 <ng-container *ngIf="range" [ngSwitch]="viewOnly">
   <ng-container *ngSwitchCase="false">
-    <input class="range-input" type="number" [name]="location + 'min'" [id]="location + 'min'"  placeholder="Min" min="0" [(ngModel)]="range.min" (ngModelChange)="minChange($event)"> ..
-    <input class="range-input" type="text" [name]="location + 'max'" [id]="location + 'max'" placeholder="Max" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)">
+    <form #cardinalityForm="ngForm">
+      <input class="range-input" type="number" [name]="location + 'min'" [id]="location + 'min'"  placeholder="Min" min="0" [(ngModel)]="range.min" (ngModelChange)="minChange($event)"> ..
+      <input class="range-input" type="text" [name]="location + 'max'" [id]="location + 'max'" placeholder="Max" [(ngModel)]="range.max" (ngModelChange)="maxChange($event)">
+    </form>
   </ng-container>
   <ng-container *ngSwitchCase="true">
       <strong *ngIf="range.min && range.max">[{{range.min}} .. {{range.max}}]</strong>

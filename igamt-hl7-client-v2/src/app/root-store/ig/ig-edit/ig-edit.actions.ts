@@ -186,23 +186,36 @@ export class EditorUpdate implements Action {
   }) { }
 }
 
-export class OpenNarrativeEditorNode implements Action {
+export abstract class OpenEditorBase implements Action {
+  readonly type: string;
+  readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  };
+
+  constructor() {
+  }
+}
+
+export class OpenNarrativeEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenNarrativeEditorNode;
 
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
   }) {
+    super();
   }
 }
 
-export class OpenIgMetadataEditorNode implements Action {
+export class OpenIgMetadataEditorNode extends OpenEditorBase {
   readonly type = IgEditActionTypes.OpenIgMetadataEditorNode;
 
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
   }) {
+    super();
   }
 }
 

@@ -1,20 +1,20 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
-import { catchError, flatMap, map, switchMap, take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { MessageType, UserMessage } from '../../modules/core/models/message/message.class';
 import { MessageService } from '../../modules/core/services/message.service';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
-import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
+import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
+import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
 
 @Injectable()
 export class SegmentEditEffects {
@@ -62,140 +62,36 @@ export class SegmentEditEffects {
   SegmentNotFound = 'Could not find segment with ID ';
 
   @Effect()
-  openSegmentPreDefEditor$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.OpenSegmentPreDefEditor),
-    switchMap((action: OpenSegmentPreDefEditor) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectSegmentsById, { id: action.payload.id }),
-        this.store.select(selectedResourcePreDef))
-        .pipe(
-          take(1),
-          flatMap(([elm, predef]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.SegmentNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    value: predef,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openSegmentPreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPreDefEditor>(
+    SegmentEditActionTypes.OpenSegmentPreDefEditor,
+    fromIgEdit.selectSegmentsById,
+    this.store.select(selectedResourcePreDef),
+    this.SegmentNotFound,
   );
 
   @Effect()
-  openSegmentMetadataEditor$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.OpenSegmentMetadataEditor),
-    switchMap((action: OpenSegmentPreDefEditor) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectSegmentsById, { id: action.payload.id }),
-        this.store.select(selectedResourceMetadata))
-        .pipe(
-          take(1),
-          flatMap(([elm, metadata]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.SegmentNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    ...metadata,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openSegmentMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenSegmentMetadataEditor>(
+    SegmentEditActionTypes.OpenSegmentMetadataEditor,
+    fromIgEdit.selectSegmentsById,
+    this.store.select(selectedResourceMetadata),
+    this.SegmentNotFound,
   );
 
   @Effect()
-  openSegmentPostDefEditor$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.OpenSegmentPostDefEditor),
-    switchMap((action: OpenSegmentPostDefEditor) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectSegmentsById, { id: action.payload.id }),
-        this.store.select(selectedResourcePostDef))
-        .pipe(
-          take(1),
-          flatMap(([elm, postdef]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.SegmentNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    value: postdef,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openSegmentPostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenSegmentPostDefEditor>(
+    SegmentEditActionTypes.OpenSegmentPostDefEditor,
+    fromIgEdit.selectSegmentsById,
+    this.store.select(selectedResourcePostDef),
+    this.SegmentNotFound,
   );
 
   @Effect()
-  openSegmentStructureEditor$ = this.actions$.pipe(
-    ofType(SegmentEditActionTypes.OpenSegmentStructureEditor),
-    switchMap((action: OpenSegmentStructureEditor) => {
-      return combineLatest(this.store.select(fromIgEdit.selectSegmentsById, { id: action.payload.id }),
-        this.store.select(fromIgEdit.selectedSegment)).pipe(
-          take(1),
-          switchMap(([elm, segment]) => {
-            if (!elm || !elm.id) {
-              return of(
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.SegmentNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }));
-            } else {
-              const openEditor = new OpenEditor({
-                id: action.payload.id,
-                element: elm,
-                editor: action.payload.editor,
-                initial: {
-                  changes: {},
-                  segment,
-                },
-              });
-              this.store.dispatch(new LoadResourceReferences({ resourceType: Type.SEGMENT, id: action.payload.id }));
-              return this.rxjsHelper.listenAndReact(this.actions$, {
-                [IgEditActionTypes.LoadResourceReferencesSuccess]: {
-                  do: (loadSuccess: LoadResourceReferencesSuccess) => {
-                    return of(openEditor);
-                  },
-                },
-                [IgEditActionTypes.LoadResourceReferencesFailure]: {
-                  do: (loadFailure: LoadResourceReferencesFailure) => {
-                    return of(new OpenEditorFailure({ id: action.payload.id }));
-                  },
-                },
-              });
-            }
-          }),
-        );
-    }),
+  openSegmentStructureEditor$ = this.editorHelper.openStructureEditor<ISegment, OpenSegmentStructureEditor>(
+    SegmentEditActionTypes.OpenSegmentStructureEditor,
+    Type.SEGMENT,
+    fromIgEdit.selectSegmentsById,
+    this.store.select(fromIgEdit.selectedSegment),
+    this.SegmentNotFound,
   );
 
   constructor(
@@ -203,7 +99,7 @@ export class SegmentEditEffects {
     private store: Store<any>,
     private message: MessageService,
     private segmentService: SegmentService,
-    private rxjsHelper: RxjsStoreHelperService,
+    private editorHelper: OpenEditorService,
   ) { }
 
 }

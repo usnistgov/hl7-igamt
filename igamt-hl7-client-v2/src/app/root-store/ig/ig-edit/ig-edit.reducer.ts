@@ -6,7 +6,7 @@ import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import { IgEditActions, IgEditActionTypes, ToggleFullScreen } from './ig-edit.actions';
+import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IResourcesState {
   selected: IResource;
@@ -78,8 +78,7 @@ export const initialState: IState = {
 export const igElementAdapter = createEntityAdapter<IDisplayElement>();
 export const loadedResourceAdapter = createEntityAdapter<IResource>();
 
-// tslint:disable-next-line: no-big-function
-// tslint:disable-next-line: cognitive-complexity
+// tslint:disable-next-line: cognitive-complexity no-big-function
 export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 

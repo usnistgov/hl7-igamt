@@ -1,0 +1,17 @@
+<strong>Binding Context Legend : </strong>
+<div style="display: flex; flex-direction: row; align-items: center;">
+  <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
+    <app-binding-badge [context]="item.context"></app-binding-badge>
+    <span style="margin-left: 5px;">{{ item.label }}</span>
+  </div>
+</div>
+<app-hl7-v2-tree
+[columns]="columns"
+[datatypes]="datatypes | async"
+[segments]="segments | async"
+[repository]="repository"
+[viewOnly]="viewOnly$ | async"
+(changes)="change($event)"
+[resource]="resource$ | async"
+[username]="username | async">
+</app-hl7-v2-tree>

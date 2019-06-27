@@ -19,7 +19,6 @@ export class IgEditorActivateGuard implements CanActivate {
     private actions$: Actions) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
-
     // Start Loading
     this.store.dispatch(new TurnOnLoader({
       blockUI: true,
