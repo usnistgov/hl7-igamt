@@ -6,8 +6,8 @@ import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper
 import { Type } from '../../../modules/shared/constants/type.enum';
 import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
-import {IRegistry} from '../../../modules/shared/models/registry.interface';
-import { IgEditActions, IgEditActionTypes, ToggleFullScreen } from './ig-edit.actions';
+import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import { IgEditActions, IgEditActionTypes } from './ig-edit.actions';
 
 export interface IResourcesState {
   selected: IResource;
@@ -79,12 +79,11 @@ export const initialState: IState = {
 export const igElementAdapter = createEntityAdapter<IDisplayElement>();
 export const loadedResourceAdapter = createEntityAdapter<IResource>();
 
-function removeById( reg: IRegistry, id: string): IRegistry {
-  return  {... reg, children: reg.children.filter((elm) => elm.id !== id)};
+function removeById(reg: IRegistry, id: string): IRegistry {
+  return { ...reg, children: reg.children.filter((elm) => elm.id !== id) };
 }
 
-// tslint:disable-next-line: no-big-function
-// tslint:disable-next-line: cognitive-complexity
+// tslint:disable-next-line: cognitive-complexity no-big-function
 export function reducer(state = initialState, action: IgEditActions): IState {
   switch (action.type) {
 
@@ -195,34 +194,34 @@ export function reducer(state = initialState, action: IgEditActions): IState {
       } else {
         return state;
       }
-      case IgEditActionTypes.DeleteResourceSuccess:
-        if (action.payload.type === Type.VALUESET) {
-          return {
-            ...state,
-            document: { ...state.document, valueSetRegistry: removeById(state.document.valueSetRegistry, action.payload.id) },
-            valueSets: igElementAdapter.removeOne(action.payload.id, state.valueSets),
-          };
-        } else if (action.payload.type === Type.CONFORMANCEPROFILE) {
-          return {
-            ...state,
-            document: { ...state.document, conformanceProfileRegistry: removeById(state.document.conformanceProfileRegistry, action.payload.id) },
-            messages: igElementAdapter.removeOne(action.payload.id, state.messages),
-          };
-        } else if (action.payload.type === Type.DATATYPE) {
-          return {
-            ...state,
-            document: { ...state.document, datatypeRegistry: removeById(state.document.datatypeRegistry, action.payload.id)},
-            datatypes: igElementAdapter.removeOne(action.payload.id, state.datatypes),
-          };
-        } else if (action.payload.type === Type.SEGMENT) {
-          return {
-            ...state,
-            document: { ...state.document, segmentRegistry: removeById(state.document.segmentRegistry, action.payload.id) },
-            segments: igElementAdapter.removeOne(action.payload.id, state.segments),
-          };
-        } else {
-          return state;
-        }
+    case IgEditActionTypes.DeleteResourceSuccess:
+      if (action.payload.type === Type.VALUESET) {
+        return {
+          ...state,
+          document: { ...state.document, valueSetRegistry: removeById(state.document.valueSetRegistry, action.payload.id) },
+          valueSets: igElementAdapter.removeOne(action.payload.id, state.valueSets),
+        };
+      } else if (action.payload.type === Type.CONFORMANCEPROFILE) {
+        return {
+          ...state,
+          document: { ...state.document, conformanceProfileRegistry: removeById(state.document.conformanceProfileRegistry, action.payload.id) },
+          messages: igElementAdapter.removeOne(action.payload.id, state.messages),
+        };
+      } else if (action.payload.type === Type.DATATYPE) {
+        return {
+          ...state,
+          document: { ...state.document, datatypeRegistry: removeById(state.document.datatypeRegistry, action.payload.id) },
+          datatypes: igElementAdapter.removeOne(action.payload.id, state.datatypes),
+        };
+      } else if (action.payload.type === Type.SEGMENT) {
+        return {
+          ...state,
+          document: { ...state.document, segmentRegistry: removeById(state.document.segmentRegistry, action.payload.id) },
+          segments: igElementAdapter.removeOne(action.payload.id, state.segments),
+        };
+      } else {
+        return state;
+      }
     case IgEditActionTypes.EditorChange:
       return {
         ...state,

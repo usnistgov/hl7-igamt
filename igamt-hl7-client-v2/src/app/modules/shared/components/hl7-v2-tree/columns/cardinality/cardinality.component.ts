@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { PropertyType } from 'src/app/modules/shared/models/save-change';
 import { ChangeType } from '../../../../models/save-change';
 import { ICardinalityRange } from '../../hl7-v2-tree.component';
@@ -12,6 +12,7 @@ import { HL7v2TreeColumnComponent } from '../hl7-v2-tree-column.component';
 export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityRange> implements OnInit {
 
   range: ICardinalityRange;
+  @ViewChild('cardinalityForm') form;
 
   constructor() {
     super([PropertyType.CARDINALITYMAX, PropertyType.CARDINALITYMIN]);
@@ -27,6 +28,7 @@ export class CardinalityComponent extends HL7v2TreeColumnComponent<ICardinalityR
   }
 
   minChange(value: number) {
+    console.log(this.form);
     this.onChange<number>(this.getInputValue().min, value, PropertyType.CARDINALITYMIN, ChangeType.UPDATE);
   }
 
