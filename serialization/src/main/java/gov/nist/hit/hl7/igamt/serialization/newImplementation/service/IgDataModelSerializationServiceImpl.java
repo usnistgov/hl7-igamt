@@ -31,6 +31,9 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 	@Override
 	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration) throws RegistrySerializationException {
+		
+		
+		
 		Ig igDocument = igDataModel.getModel();
 		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName());
 		Element metadataElement = serializeDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(),

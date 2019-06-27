@@ -52,6 +52,7 @@
                         <xsl:element name="td">
                             <xsl:value-of select="@identifier" />
                         </xsl:element>
+                        
                     </xsl:if>
                     <xsl:if test="$type='pre'">
                         <xsl:element name="td">

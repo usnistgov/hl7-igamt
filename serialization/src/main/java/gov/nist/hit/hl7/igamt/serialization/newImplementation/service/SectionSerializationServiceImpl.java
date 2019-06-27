@@ -200,7 +200,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					if (!conformanceProfileRegistry.getChildren().isEmpty()) {
 						for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
 							ConformanceProfileDataModel conformanceProfileDataModel = igDataModel.getConformanceProfiles().stream().filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId())).findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId()));
-							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel, level, exportConfiguration);
+							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level, exportConfiguration);
 							if (conformanceProfileElement != null) {
 								conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
 							}
@@ -226,7 +226,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						for (Link segmentLink : segmentRegistry.getChildren()) {
 							SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> segmentLink.getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(segmentLink.getId()));
 							Segment segment = segmentDataModel.getModel();
-							Element segmentElement = segmentSerializationService.serializeSegment(segmentDataModel,level,exportConfiguration);
+							Element segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,level,exportConfiguration);
 							if (segmentElement != null) {
 								segmentRegistryElement.appendChild(segmentElement);
 							}
