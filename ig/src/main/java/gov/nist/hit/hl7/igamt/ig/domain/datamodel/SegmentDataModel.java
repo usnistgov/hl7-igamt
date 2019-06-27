@@ -99,7 +99,7 @@ public class SegmentDataModel {
         }
       }
       if (s.getBinding().getChildren() != null) {
-    	     // this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    	     this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
     	    }
     	    
     }
