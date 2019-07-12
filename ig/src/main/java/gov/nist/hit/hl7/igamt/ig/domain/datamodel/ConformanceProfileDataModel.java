@@ -16,7 +16,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -100,8 +99,8 @@ public class ConformanceProfileDataModel {
         }
       }
       if (cp.getBinding().getChildren() != null) {
-//          this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
-//              valuesetBindingDataModelMap);
+          this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
+              valuesetBindingDataModelMap);
         }
     }
 
@@ -166,5 +165,16 @@ public class ConformanceProfileDataModel {
   public void setSegmentRefOrGroupDataModels(
       Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels) {
     this.segmentRefOrGroupDataModels = segmentRefOrGroupDataModels;
+  }
+
+  /**
+   * @param parseInt
+   * @return
+   */
+  public SegmentRefOrGroupDataModel findChildByPosition(int position) {
+    for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+      if (sgModel.getModel().getPosition() == position) return sgModel;
+    }
+    return null;
   }
 }

@@ -232,5 +232,9 @@ public class DatatypeBindingDataModel {
     this.postDef = postDef;
   }
 
+  public String getLabel() {
+    if(this.ext == null || this.ext.isEmpty()) return this.name;
+    return this.name + "_" + this.ext;
+  }
 
 }

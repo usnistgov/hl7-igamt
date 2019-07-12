@@ -2,7 +2,8 @@ package gov.nist.hit.hl7.igamt.ig.controller;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.rmi.server.ExportException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,15 +11,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-
-import gov.nist.hit.hl7.igamt.common.base.domain.*;
-import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
-import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
-import gov.nist.hit.hl7.igamt.ig.exceptions.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,7 +50,9 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.event.display.MessageEve
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventService;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.constraints.repository.ConformanceStatementRepository;
+import gov.nist.hit.hl7.igamt.constraints.repository.PredicateRepository;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeLabel;
@@ -65,18 +66,15 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
-
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.AddingException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.CloneException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGConverterException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGUpdateException;
+import gov.nist.hit.hl7.igamt.ig.exceptions.PredicateNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.SectionNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.exceptions.XReferenceFoundException;
-
-import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseDisplay;
-
 import gov.nist.hit.hl7.igamt.ig.model.AddDatatypeResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddMessageResponseObject;
 import gov.nist.hit.hl7.igamt.ig.model.AddSegmentResponseObject;
@@ -414,6 +412,35 @@ public class IGDocumentController extends BaseController {
     
     return this.igService.generateDataModel(findIgById(id));
 }
+  
+  
+  @RequestMapping(value = "/api/igdocuments/exportTest", method = RequestMethod.GET, produces = {"application/json"})
+  public void  test(Authentication authentication) throws Exception {
+    IgDataModel igModel = this.igService.generateDataModel(findIgById("5b5b69ad84ae99a4bd0d1f74"));
+    
+    InputStream content = this.igService.exportValidationXMLByZip(igModel, new String[] {"5b5b69ab84ae99a4bd0d0558"}, null);
+    
+}
+  
+  
+  @RequestMapping(value = "/api/igdocuments/{id}/export/xml/Validation/mids/{mids}/cids/{cids}", method = RequestMethod.POST, produces = "application/zip",consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  public void exportValidationXMLByProfiles(@PathVariable("id") String id, @PathVariable("mids") String[] conformanceProfileIds, @PathVariable("cids") String[] compositeProfileIds, HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IGNotFoundException, Exception{
+    IgDataModel igModel = this.igService.generateDataModel(findIgById(id));
+    
+    if(conformanceProfileIds != null && conformanceProfileIds.length == 1 && conformanceProfileIds[0].equals("NOTHING")) conformanceProfileIds = null;
+    if(compositeProfileIds != null && compositeProfileIds.length == 1 && compositeProfileIds[0].equals("NOTHING")) compositeProfileIds = null;
+    
+    //NEED Verification Check
+    
+    InputStream content = this.igService.exportValidationXMLByZip(igModel, conformanceProfileIds, compositeProfileIds);
+    response.setContentType("application/zip");
+    response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
+    FileCopyUtils.copy(content, response.getOutputStream());
+  }
+
+  private String updateFileName(String str) {
+    return str.replaceAll(" ", "-").replaceAll("\\*", "-").replaceAll("\"", "-").replaceAll(":", "-").replaceAll(";", "-").replaceAll("=", "-").replaceAll(",", "-");
+  }
 
   /**
    *
@@ -1045,7 +1072,6 @@ public class IGDocumentController extends BaseController {
         "segment Added Succesfully", ig.getId(), false, ig.getUpdateDate(),
         info);
   }
-
 
   @RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST,
       produces = {"application/json"})

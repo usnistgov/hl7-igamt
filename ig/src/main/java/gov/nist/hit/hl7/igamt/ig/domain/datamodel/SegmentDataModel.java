@@ -184,4 +184,15 @@ public class SegmentDataModel {
   public void setFieldDataModels(Set<FieldDataModel> fieldDataModels) {
     this.fieldDataModels = fieldDataModels;
   }
+
+  /**
+   * @param parseInt
+   * @return
+   */
+  public FieldDataModel findFieldDataModelByPosition(int position) {
+    for(FieldDataModel fModel : this.fieldDataModels) {
+      if (fModel.getModel().getPosition() == position) return fModel;
+    }
+    return null;
+  }
 }

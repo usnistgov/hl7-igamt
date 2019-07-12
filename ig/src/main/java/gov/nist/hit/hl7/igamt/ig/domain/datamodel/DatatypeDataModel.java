@@ -173,4 +173,11 @@ public class DatatypeDataModel {
   public void setComponentDataModels(Set<ComponentDataModel> componentDataModels) {
     this.componentDataModels = componentDataModels;
   }
+
+  public ComponentDataModel findComponentDataModelByPosition(int position) {
+    for(ComponentDataModel cModel : this.componentDataModels) {
+      if (cModel.getModel().getPosition() == position) return cModel;
+    }
+    return null;
+  }
 }
