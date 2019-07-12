@@ -334,7 +334,7 @@ export class Hl7V2TreeService {
       if (bds.values.predicateId && bds.values.predicateId.length > 0) {
         predicate = this.predicate.getPredicate('', bds.values.predicateId[0].value);
       }
-      return {
+      const childNode: IHL7v2TreeNode = {
         data: {
           id: child.id,
           name,
@@ -364,10 +364,11 @@ export class Hl7V2TreeService {
           ref$: reference.asObservable(),
           treeChildrenSubscription: undefined,
         },
-        children: [
-          ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, leafs, viewOnly, changeable, parent) : []),
-        ],
       };
+      childNode.children = [
+        ...((!leaf && child.type === Type.GROUP) ? this.formatStructure([], (child as IGroup).children, segments, leafs, viewOnly, changeable, childNode) : []),
+      ];
+      return childNode;
     }).sort((a, b) => a.data.position - b.data.position);
   }
 }

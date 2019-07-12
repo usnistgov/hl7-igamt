@@ -17,8 +17,8 @@ import {
 } from '../create-ig/create-ig.actions';
 import {TurnOnLoader} from '../loader/loader.actions';
 import {
-  LoadResource,
-  LoadResourceSuccess,
+  LoadResource, LoadResourceFailure,
+  LoadResourceSuccess, ResourceLoaderActions,
   ResourceLoaderActionTypes,
 } from './resource-loader.actions';
 
@@ -47,10 +47,10 @@ export class ResourceLoaderEffects {
   @Effect()
   loadResourceFailure$ = this.actions$.pipe(
     ofType(ResourceLoaderActionTypes.LoadResourceFailure),
-    this.helper.finalize<LoadMessageEventsFailure, HttpErrorResponse>({
+    this.helper.finalize<LoadResourceFailure, HttpErrorResponse>({
       clearMessages: true,
       turnOffLoader: true,
-      message: (action: LoadMessageEventsFailure) => {
+      message: (action: LoadResourceFailure) => {
         return action.payload;
       },
     }),
@@ -59,13 +59,13 @@ export class ResourceLoaderEffects {
   @Effect()
   loadMessageEventsSuccess$ = this.actions$.pipe(
     ofType(ResourceLoaderActionTypes.LoadResourceSuccess),
-    this.helper.finalize<LoadMessageEventsSuccess, Message>({
+    this.helper.finalize<LoadResourceSuccess, Message>({
       clearMessages: true,
       turnOffLoader: true,
     }),
   );
 
-  constructor(private actions$: Actions<CreateIgActions>, private resourceService: ResourceService,
+  constructor(private actions$: Actions<ResourceLoaderActions>, private resourceService: ResourceService,
               private store: Store<any>, private message: MessageService, private helper: RxjsStoreHelperService) {
   }
 

@@ -1,20 +1,31 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
-import { combineLatest, of } from 'rxjs';
-import { catchError, flatMap, map, switchMap, take } from 'rxjs/operators';
+import { Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
+import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { MessageType, UserMessage } from '../../modules/core/models/message/message.class';
 import { MessageService } from '../../modules/core/services/message.service';
+import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { Type } from '../../modules/shared/constants/type.enum';
+import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
-import { RxjsStoreHelperService } from '../../modules/shared/services/rxjs-store-helper.service';
-import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, LoadSelectedResource, OpenEditor, OpenEditorFailure } from '../ig/ig-edit/ig-edit.actions';
+import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { DatatypeEditActionTypes, LoadDatatype, LoadDatatypeFailure, LoadDatatypeSuccess, OpenDatatypeMetadataEditorNode, OpenDatatypePostDefEditor, OpenDatatypePreDefEditor, OpenDatatypeStructureEditor } from './datatype-edit.actions';
+import {
+  DatatypeEditActionTypes,
+  LoadDatatype,
+  LoadDatatypeFailure,
+  LoadDatatypeSuccess,
+  OpenDatatypeCrossRefEditor,
+  OpenDatatypeMetadataEditorNode,
+  OpenDatatypePostDefEditor,
+  OpenDatatypePreDefEditor,
+  OpenDatatypeStructureEditor,
+} from './datatype-edit.actions';
 
 @Injectable()
 export class DatatypeEditEffects {
@@ -62,148 +73,56 @@ export class DatatypeEditEffects {
   DatatypeNotFound = 'Could not find Datatype with ID ';
 
   @Effect()
-  openDatatypePreDefEditor$ = this.actions$.pipe(
-    ofType(DatatypeEditActionTypes.OpenDatatypePreDefEditor),
-    switchMap((action: OpenDatatypePreDefEditor) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectDatatypesById, { id: action.payload.id }),
-        this.store.select(selectedResourcePreDef))
-        .pipe(
-          take(1),
-          flatMap(([elm, predef]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.DatatypeNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    value: predef,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openDatatypePreDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenDatatypePreDefEditor>(
+    DatatypeEditActionTypes.OpenDatatypePreDefEditor,
+    fromIgEdit.selectDatatypesById,
+    this.store.select(selectedResourcePreDef),
+    this.DatatypeNotFound,
   );
 
   @Effect()
-  openDatatypePostDefEditor$ = this.actions$.pipe(
-    ofType(DatatypeEditActionTypes.OpenDatatypePostDefEditor),
-    switchMap((action: OpenDatatypePostDefEditor) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectDatatypesById, { id: action.payload.id }),
-        this.store.select(selectedResourcePostDef))
-        .pipe(
-          take(1),
-          flatMap(([elm, postdef]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.DatatypeNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    value: postdef,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openDatatypePostDefEditor$ = this.editorHelper.openDefEditorHandler<string, OpenDatatypePostDefEditor>(
+    DatatypeEditActionTypes.OpenDatatypePostDefEditor,
+    fromIgEdit.selectDatatypesById,
+    this.store.select(selectedResourcePostDef),
+    this.DatatypeNotFound,
   );
 
   @Effect()
-  openDatatypeMetadataEditor$ = this.actions$.pipe(
-    ofType(DatatypeEditActionTypes.OpenDatatypeMetadataEditorNode),
-    switchMap((action: OpenDatatypeMetadataEditorNode) => {
-      return combineLatest(
-        this.store.select(fromIgEdit.selectDatatypesById, { id: action.payload.id }),
-        this.store.select(selectedResourceMetadata))
-        .pipe(
-          take(1),
-          flatMap(([elm, metadata]): Action[] => {
-            if (!elm || !elm.id) {
-              return [
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.DatatypeNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }),
-              ];
-            } else {
-              return [
-                new OpenEditor({
-                  id: action.payload.id,
-                  element: elm,
-                  editor: action.payload.editor,
-                  initial: {
-                    ...metadata,
-                  },
-                }),
-              ];
-            }
-          }),
-        );
-    }),
+  openDatatypeMetadataEditor$ = this.editorHelper.openMetadataEditor<OpenDatatypeMetadataEditorNode>(
+    DatatypeEditActionTypes.OpenDatatypeMetadataEditorNode,
+    fromIgEdit.selectDatatypesById,
+    this.store.select(selectedResourceMetadata),
+    this.DatatypeNotFound,
   );
 
   @Effect()
-  openDatatypeStructureEditor$ = this.actions$.pipe(
-    ofType(DatatypeEditActionTypes.OpenDatatypeStructureEditor),
-    switchMap((action: OpenDatatypeStructureEditor) => {
-      return combineLatest(this.store.select(fromIgEdit.selectDatatypesById, { id: action.payload.id }),
-        this.store.select(fromIgEdit.selectedDatatype)).pipe(
-          take(1),
-          switchMap(([elm, datatype]) => {
-            if (!elm || !elm.id) {
-              return of(
-                this.message.userMessageToAction(new UserMessage<never>(MessageType.FAILED, this.DatatypeNotFound + action.payload.id)),
-                new OpenEditorFailure({ id: action.payload.id }));
-            } else {
-              const openEditor = new OpenEditor({
-                id: action.payload.id,
-                element: elm,
-                editor: action.payload.editor,
-                initial: {
-                  changes: {},
-                  datatype,
-                },
-              });
-              this.store.dispatch(new LoadResourceReferences({ resourceType: Type.DATATYPE, id: action.payload.id }));
-              return this.rxjsHelper.listenAndReact(this.actions$, {
-                [IgEditActionTypes.LoadResourceReferencesSuccess]: {
-                  do: (loadSuccess: LoadResourceReferencesSuccess) => {
-                    return of(openEditor);
-                  },
-                },
-                [IgEditActionTypes.LoadResourceReferencesFailure]: {
-                  do: (loadFailure: LoadResourceReferencesFailure) => {
-                    return of(new OpenEditorFailure({ id: action.payload.id }));
-                  },
-                },
-              });
-            }
-          }),
-        );
-    }),
+  openDatatypeStructureEditor$ = this.editorHelper.openStructureEditor<IDatatype, OpenDatatypeStructureEditor>(
+    DatatypeEditActionTypes.OpenDatatypeStructureEditor,
+    Type.DATATYPE,
+    fromIgEdit.selectDatatypesById,
+    this.store.select(fromIgEdit.selectedDatatype),
+    this.DatatypeNotFound,
+  );
+
+  @Effect()
+  openDatatypeCrossRefEditor$ = this.editorHelper.openCrossRefEditor<IUsages[], OpenDatatypeCrossRefEditor>(
+    DatatypeEditActionTypes.OpenDatatypeCrossRefEditor,
+    fromIgEdit.selectDatatypesById,
+    Type.IGDOCUMENT,
+    Type.DATATYPE,
+    fromIgEdit.selectIgId,
+    this.crossReferenceService.findUsagesDisplay,
+    this.DatatypeNotFound,
   );
 
   constructor(
     private actions$: Actions<any>,
     private store: Store<any>,
     private message: MessageService,
-    private rxjsHelper: RxjsStoreHelperService,
+    private editorHelper: OpenEditorService,
     private datatypeService: DatatypeService,
+    private crossReferenceService: CrossReferencesService,
   ) { }
 
 }
