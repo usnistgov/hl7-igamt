@@ -75,63 +75,6 @@ public interface ValuesetService {
    */
   public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
-  /**
-   * @param valueset
-   * @return
-   */
-  public ValuesetMetadata convertDomainToMetadata(Valueset valueset);
-
-  /**
-   * @param valueset
-   * @return
-   */
-  public ValuesetPreDef convertDomainToPredef(Valueset valueset);
-
-  /**
-   * @param valueset
-   * @return
-   */
-  public ValuesetPostDef convertDomainToPostdef(Valueset valueset);
-
-  /**
-   * @param valueset
-   * @return
-   */
-  public ValuesetStructure convertDomainToStructure(Valueset valueset);
-
-  /**
-   * @param structure
-   * @return
-   * @throws ValuesetNotFoundException
-   */
-  public Valueset convertToValueset(ValuesetStructure structure) throws ValuesetNotFoundException;
-
-  /**
-   * @param preDef
-   * @return
-   * @throws ValuesetNotFoundException
-   */
-  public Valueset savePredef(ValuesetPreDef preDef) throws ValuesetNotFoundException;
-
-  /**
-   * @param displayMetadata
-   * @return
-   * @throws ValuesetNotFoundException
-   */
-  public Valueset saveMetadata(ValuesetMetadata displayMetadata) throws ValuesetNotFoundException;
-
-  /**
-   * @param postDef
-   * @return
-   * @throws ValuesetNotFoundException
-   */
-  public Valueset savePostdef(ValuesetPostDef postDef) throws ValuesetNotFoundException;
-
-  /**
-   * @param valueset
-   * @return
-   */
-  public Set<DisplayCode> getCodeDisplay(Valueset valueset);
 
   /**
    * @param newkey
@@ -142,7 +85,4 @@ public interface ValuesetService {
   Link cloneValueSet(String newkey, Link l, String username, Scope scope);
 
   public List<Valueset> findByIdIn(Set<String> linksAsIds);
-
-public List<Valueset> findDisplayFormatByIds(Set<String> ids);
-
 }

@@ -34,225 +34,138 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
  */
 @Document(collection = "valueset")
 public class Valueset extends Resource {
-  private String bindingIdentifier;
-  private String oid;
-  private String intensionalComment;
-  private URL url;
+	private String bindingIdentifier;
+	private String oid;
+	private String intensionalComment;
+	private String url;
+	private Stability stability = Stability.Undefined;
+	private Extensibility extensibility = Extensibility.Undefined;
+	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
+	private SourceType sourceType = SourceType.INTERNAL;
 
-  private ManagedBy managedBy = ManagedBy.Internal;
-  private Stability stability = Stability.Undefined;
-  private Extensibility extensibility = Extensibility.Undefined;
-  private ContentDefinition contentDefinition = ContentDefinition.Undefined;
+	protected int numberOfCodes;
+	private Set<String> codeSystems = new HashSet<String>();
+	private Set<Code> codes = new HashSet<Code>();
 
-  private SourceType sourceType = SourceType.INTERNAL;
+	public Valueset() {
+		super();
+		super.setType(Type.VALUESET);
+	}
 
-  protected int numberOfCodes;
-  private Set<String> codeSystemIds = new HashSet<String>();
-  private Set<CodeRef> codeRefs = new HashSet<CodeRef>();
+	public String getBindingIdentifier() {
+		return bindingIdentifier;
+	}
 
-  private Set<InternalCodeSystem> internalCodeSystems = new HashSet<InternalCodeSystem>();
-  private Set<InternalCode> codes = new HashSet<InternalCode>();
+	public void setBindingIdentifier(String bindingIdentifier) {
+		this.bindingIdentifier = bindingIdentifier;
+	}
 
-  public Valueset() {
-    super();
-    super.setType(Type.VALUESET);
-  }
+	public String getOid() {
+		return oid;
+	}
 
-  public String getBindingIdentifier() {
-    return bindingIdentifier;
-  }
+	public void setOid(String oid) {
+		this.oid = oid;
+	}
 
-  public void setBindingIdentifier(String bindingIdentifier) {
-    this.bindingIdentifier = bindingIdentifier;
-  }
+	public String getIntensionalComment() {
+		return intensionalComment;
+	}
 
-  public String getOid() {
-    return oid;
-  }
+	public void setIntensionalComment(String intensionalComment) {
+		this.intensionalComment = intensionalComment;
+	}
 
-  public void setOid(String oid) {
-    this.oid = oid;
-  }
+	public String getUrl() {
+		return url;
+	}
 
-  public String getIntensionalComment() {
-    return intensionalComment;
-  }
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
-  public void setIntensionalComment(String intensionalComment) {
-    this.intensionalComment = intensionalComment;
-  }
+	public Stability getStability() {
+		return stability;
+	}
 
-  public URL getUrl() {
-    return url;
-  }
+	public void setStability(Stability stability) {
+		this.stability = stability;
+	}
 
-  public void setUrl(URL url) {
-    this.url = url;
-  }
+	public Extensibility getExtensibility() {
+		return extensibility;
+	}
 
-  public ManagedBy getManagedBy() {
-    return managedBy;
-  }
+	public void setExtensibility(Extensibility extensibility) {
+		this.extensibility = extensibility;
+	}
 
-  public void setManagedBy(ManagedBy managedBy) {
-    this.managedBy = managedBy;
-  }
+	public ContentDefinition getContentDefinition() {
+		return contentDefinition;
+	}
 
-  public Stability getStability() {
-    return stability;
-  }
+	public void setContentDefinition(ContentDefinition contentDefinition) {
+		this.contentDefinition = contentDefinition;
+	}
 
-  public void setStability(Stability stability) {
-    this.stability = stability;
-  }
+	public void setNumberOfCodes(int numberOfCodes) {
+		this.numberOfCodes = numberOfCodes;
+	}
 
-  public Extensibility getExtensibility() {
-    return extensibility;
-  }
+	@Override
+	public String getLabel() {
+		return this.getBindingIdentifier() + " - " + this.getName();
+	}
 
-  public void setExtensibility(Extensibility extensibility) {
-    this.extensibility = extensibility;
-  }
+	public SourceType getSourceType() {
+		return sourceType;
+	}
 
-  public ContentDefinition getContentDefinition() {
-    return contentDefinition;
-  }
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
+	}
 
-  public void setContentDefinition(ContentDefinition contentDefinition) {
-    this.contentDefinition = contentDefinition;
-  }
+	public void setSourceType(String sourceType) {
+		this.sourceType = SourceType.valueOf(sourceType);
+	}
 
-  public int getNumberOfCodes() {
-    return this.codes.size() + this.codeRefs.size();
-  }
+	@Override
+	public Valueset clone() {
 
-  public void setNumberOfCodes(int numberOfCodes) {
-    this.numberOfCodes = numberOfCodes;
-  }
+		Valueset clone = new Valueset();
+		this.complete(clone);
+		return clone;
+	}
 
-  public void updateNumberOfCodes() {
-    this.numberOfCodes = this.codes.size() + this.codeRefs.size();
-  }
+	public void complete(Valueset elm) {
+		super.complete(elm);
+		elm.bindingIdentifier = bindingIdentifier;
+		elm.oid = oid;
+		elm.intensionalComment = intensionalComment;
+		elm.url = url;
+		elm.stability = stability;
+		elm.extensibility = extensibility;
+		elm.contentDefinition = contentDefinition;
+		elm.sourceType = sourceType;
+		elm.numberOfCodes = numberOfCodes;
+		elm.codeSystems = codeSystems;
+		elm.codes=codes;
+	}
 
-  public Set<String> getCodeSystemIds() {
-    return codeSystemIds;
-  }
+	public Set<String> getCodeSystems() {
+		return codeSystems;
+	}
 
-  public void setCodeSystemIds(Set<String> codeSystemIds) {
-    this.codeSystemIds = codeSystemIds;
-  }
+	public void setCodeSystems(Set<String> codeSystems) {
+		this.codeSystems = codeSystems;
+	}
 
-  public Set<CodeRef> getCodeRefs() {
-    return codeRefs;
-  }
+	public Set<Code> getCodes() {
+		return codes;
+	}
 
-  public void setCodeRefs(Set<CodeRef> codeRefs) {
-    this.codeRefs = codeRefs;
-    this.updateNumberOfCodes();
-  }
-
-  public Set<InternalCode> getCodes() {
-    return codes;
-  }
-
-  public void setCodes(Set<InternalCode> codes) {
-    this.codes = codes;
-    this.updateNumberOfCodes();
-  }
-
-  public void addCode(InternalCode code) {
-    if (code.getCodeSystemId() != null) {
-      InternalCodeSystem found = findInternalCodeSystem(code.getCodeSystemId());
-      if (found == null) {
-        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
-        internalCodeSystem.setIdentifier(code.getCodeSystemId());
-        this.internalCodeSystems.add(internalCodeSystem);
-      }
-    } else {
-      InternalCodeSystem found = findInternalCodeSystem("NULL");
-      if (found == null) {
-        InternalCodeSystem internalCodeSystem = new InternalCodeSystem();
-        internalCodeSystem.setIdentifier("NULL");
-        this.internalCodeSystems.add(internalCodeSystem);
-      }
-      code.setCodeSystemId("NULL");
-    }
-    this.codes.add(code);
-  }
-
-  private InternalCodeSystem findInternalCodeSystem(String codeSystemId) {
-    for (InternalCodeSystem cs : this.internalCodeSystems) {
-      if (cs.getIdentifier().equals(codeSystemId))
-        return cs;
-    }
-    return null;
-  }
-
-  public void addCodeRef(CodeRef codeRef) {
-    this.codeRefs.add(codeRef);
-  }
-
-  public void addCodeSystemId(String codeSystemId) {
-    this.codeSystemIds.add(codeSystemId);
-  }
-
-  public Set<InternalCodeSystem> getInternalCodeSystems() {
-    return internalCodeSystems;
-  }
-
-  public void setInternalCodeSystems(Set<InternalCodeSystem> internalCodeSystems) {
-    this.internalCodeSystems = internalCodeSystems;
-  }
-
-
-  /*
-   * (non-Javadoc)
-   * 
-   * @see gov.nist.hit.hl7.igamt.shared.domain.AbstractDomain#getLabel()
-   */
-  @Override
-  public String getLabel() {
-    return this.getBindingIdentifier() + " - " + this.getName();
-  }
-
-  public SourceType getSourceType() {
-    return sourceType;
-  }
-
-  public void setSourceType(SourceType sourceType) {
-    this.sourceType = sourceType;
-  }
-
-  public void setSourceType(String sourceType) {
-    this.sourceType = SourceType.valueOf(sourceType);
-  }
-
-  @Override
-  public Valueset clone() {
-
-    Valueset clone = new Valueset();
-    this.complete(clone);
-    return clone;
-  }
-
-  public void complete(Valueset elm) {
-	super.complete(elm);
-	elm.bindingIdentifier = bindingIdentifier;
-	elm.oid = oid;
-	elm.intensionalComment = intensionalComment;
-	elm.url = url;
-	elm.managedBy = managedBy;
-	elm.stability = stability;
-	elm.extensibility = extensibility;
-	elm.contentDefinition = contentDefinition;
-	elm.sourceType = sourceType;
-	elm.numberOfCodes = numberOfCodes;
-	elm.codeSystemIds = codeSystemIds;
-	elm.codeRefs = codeRefs;
-	elm.internalCodeSystems = internalCodeSystems;
-	elm.codes = codes;
- };
-  
-  
+	public void setCodes(Set<Code> codes) {
+		this.codes = codes;
+	};
 
 }

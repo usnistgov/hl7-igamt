@@ -5,6 +5,7 @@ import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-p
 import { IWorkspace } from 'src/app/modules/shared/models/editor.class';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
+import {IMessage} from '../../../modules/core/models/message/message.class';
 import { IgDocument } from '../../../modules/ig/models/ig/ig-document.class';
 import { IgTOCNodeHelper } from '../../../modules/ig/services/ig-toc-node-helper.service';
 import { Scope } from '../../../modules/shared/constants/scope.enum';
@@ -13,6 +14,7 @@ import { IContent } from '../../../modules/shared/models/content.interface';
 import { IDisplayElement } from '../../../modules/shared/models/display-element.interface';
 import { ILink } from '../../../modules/shared/models/link.interface';
 import { IRegistry } from '../../../modules/shared/models/registry.interface';
+import {IValueSet} from '../../../modules/shared/models/value-set.interface';
 import { selectIgEdit } from '../ig.reducer';
 import { ITitleBarMetadata } from './../../../modules/ig/components/ig-edit-titlebar/ig-edit-titlebar.component';
 import { IDatatype } from './../../../modules/shared/models/datatype.interface';
@@ -64,9 +66,10 @@ export const selectedResourcePreDef = createSelector(
 
 export const selectedResourceMetadata = createSelector(
   selectSelectedResource,
-  (state: IResource): IResourceMetadata => {
+  (state: any): IResourceMetadata => {
     return {
       name: state.name,
+      bindingIdentifier: state.bindingIdentifier,
       ext: (state.type === Type.DATATYPE ? (state as IDatatype).ext : state.type === Type.SEGMENT) ? (state as ISegment).ext : undefined,
       description: state.description,
       authorNotes: state.authorNotes,
@@ -116,6 +119,17 @@ export const selectedSegment = createSelector(
   (state: IResource): ISegment => {
     if (state && state.type === Type.SEGMENT) {
       return state as ISegment;
+    } else {
+      return undefined;
+    }
+  },
+);
+
+export const selectedValueSet = createSelector(
+  selectSelectedResource,
+  (state: IResource): IValueSet => {
+    if (state && state.type === Type.VALUESET) {
+      return state as IValueSet;
     } else {
       return undefined;
     }

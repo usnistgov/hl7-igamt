@@ -49,6 +49,8 @@ export class ResourceService {
         return 'api/datatypes/' + id + this.resource;
       case Type.SEGMENT:
         return 'api/segments/' + id + this.resource;
+      case Type.VALUESET:
+        return 'api/valuesets/' + id + this.resource;
       default: return null;
     }
   }

@@ -12,7 +12,17 @@ import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
-import { CheckboxModule, ChipsModule, FileUploadModule, MultiSelectModule, RadioButtonModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
+import {
+  AutoCompleteModule,
+  CheckboxModule,
+  ChipsModule,
+  FileUploadModule,
+  MultiSelectModule,
+  PanelModule,
+  RadioButtonModule,
+  TooltipModule,
+  TreeTableModule,
+} from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { MessageService } from '../core/services/message.service';
 import { AlertsComponent } from './components/alerts/alerts.component';
@@ -53,6 +63,7 @@ import { TextEditorDialogComponent } from './components/text-editor-dialog/text-
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
 import {UsageDialogComponent} from './components/usage-dialog/usage-dialog.component';
 import {UsageViewerComponent} from './components/usage-viewer/usage-viewer.component';
+import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -102,6 +113,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
+    ValueSetStructureComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -133,6 +145,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     FroalaViewModule.forRoot(),
     ChipsModule,
     MultiSelectModule,
+    PanelModule,
+    AutoCompleteModule,
   ],
   exports: [
     CommonModule,
@@ -192,6 +206,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
+    ValueSetStructureComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent],
 })

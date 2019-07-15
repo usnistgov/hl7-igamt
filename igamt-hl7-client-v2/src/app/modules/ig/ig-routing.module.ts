@@ -95,6 +95,10 @@ const routes: Routes = [
         path: 'datatype',
         loadChildren: 'src/app/modules/datatype/datatype.module#DatatypeModule',
       },
+      {
+        path: 'valueset',
+        loadChildren: 'src/app/modules/value-set/value-set.module#ValueSetModule',
+      },
     ],
   },
   {
