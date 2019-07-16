@@ -11,7 +11,6 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
-import java.net.URL;
 import java.util.Date;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -22,7 +21,6 @@ import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.ManagedBy;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
 /**
@@ -48,8 +46,7 @@ public class ValuesetBindingDataModel {
   private String bindingIdentifier;
   private String oid;
   private String intensionalComment;
-  private URL url;
-  private ManagedBy managedBy = ManagedBy.Internal;
+  private String url;
   private Stability stability = Stability.Undefined;
   private Extensibility extensibility = Extensibility.Undefined;
   private ContentDefinition contentDefinition = ContentDefinition.Undefined;
@@ -78,7 +75,6 @@ public class ValuesetBindingDataModel {
     this.oid = vs.getOid();
     this.intensionalComment = vs.getIntensionalComment();
     this.url = vs.getUrl();
-    this.managedBy = vs.getManagedBy();
     this.stability = vs.getStability();
     this.extensibility = vs.getExtensibility();
     this.contentDefinition = vs.getContentDefinition();
@@ -234,20 +230,12 @@ public class ValuesetBindingDataModel {
     this.intensionalComment = intensionalComment;
   }
 
-  public URL getUrl() {
+  public String getUrl() {
     return url;
   }
 
-  public void setUrl(URL url) {
+  public void setUrl(String url) {
     this.url = url;
-  }
-
-  public ManagedBy getManagedBy() {
-    return managedBy;
-  }
-
-  public void setManagedBy(ManagedBy managedBy) {
-    this.managedBy = managedBy;
   }
 
   public Stability getStability() {
