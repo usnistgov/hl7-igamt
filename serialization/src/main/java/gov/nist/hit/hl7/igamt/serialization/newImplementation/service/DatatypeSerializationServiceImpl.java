@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Autowired
 	private IgDataModelSerializationService igDataModelSerializationService;
 
+	@Autowired
+	private ConstraintSerializationService constraintSerializationService;
+	
 	@Override
 	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, ExportConfiguration exportConfiguration) throws SubStructElementSerializationException {
 //	    try {
@@ -61,6 +66,13 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      } else if (datatype instanceof DateTimeDatatype) {
 	        datatypeElement = serializeDateTimeDatatype(datatypeElement, datatypeDataModel);
 	      }
+	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
+	    	  System.out.println("BOOM");
+	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap());
+	        if (constraints != null) {
+	        	datatypeElement.appendChild(constraints);
+    }
+	      }
 	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level);
 
 //	    } catch (Exception exception) {
@@ -95,12 +107,14 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	              new Attribute("text", component.getText() != null ? component.getText() : ""));
 	          componentElement
 	              .addAttribute(new Attribute("position", String.valueOf(component.getPosition())));
-	          if (!datatypeDataModel.getValuesetMap().isEmpty() && !datatypeDataModel.getValuesetMap().get(component.getId()).isEmpty()) {
-//		          if (!datatypeDataModel.getValuesetMap().isEmpty()) {
-		        	  System.out.println("ITS NOT EMPTY");
+	          if (datatypeDataModel != null && datatypeDataModel.getValuesetMap() != null && datatypeDataModel.getValuesetMap().containsKey(component.getPosition() + "")) {
+	        	String vs = datatypeDataModel.getValuesetMap().get(component.getPosition()+"").stream().map((element) -> {
+                	return element.getName();
+                })
+	        	.collect(Collectors.joining(", "));
 	            componentElement
-	                .addAttribute(new Attribute("valueset", datatypeDataModel.getValuesetMap().get(component.getId()).toString()));
-	        	  System.out.println("LOOK HERE : " + datatypeDataModel.getValuesetMap().get(component.getId()).stream().findFirst());
+	                .addAttribute(new Attribute("valueset", vs));
+//	        	  System.out.println("LOOK HERE : " + datatypeDataModel.getValuesetMap().get(component.getPosition()).stream().findFirst().get());
 	          }         
 	          if (component.getRef() != null) {
 //	            if (datatypeNamesMap != null

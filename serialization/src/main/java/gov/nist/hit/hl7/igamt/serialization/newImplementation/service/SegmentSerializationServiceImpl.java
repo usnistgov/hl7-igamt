@@ -3,6 +3,7 @@ package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,11 @@ public class SegmentSerializationServiceImpl implements SegmentSerializationServ
 @Autowired
 private IgDataModelSerializationService igDataModelSerializationService;
 
-@Autowired BindingSerializationService bindingSerializationService;
+@Autowired 
+BindingSerializationService bindingSerializationService;
+
+@Autowired
+ConstraintSerializationService constraintSerializationService;
 	
 	@Override
 	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, ExportConfiguration exportConfiguration) throws SerializationException {
@@ -52,15 +57,22 @@ private IgDataModelSerializationService igDataModelSerializationService;
 	        }
 	      }
 //	      System.out.println("Segment name : " + segment.getName());
-	      if (segment.getBinding() != null) {
+//	      if (segment.getBinding() != null) {
 //	    	  System.out.println("Je suis dans IF segment");
-	        Element bindingElement = bindingSerializationService.serializeBinding(igDataModel, (Binding) segment.getBinding());
-	        if (bindingElement != null) {
-	          segmentElement.appendChild(bindingElement);
-	        }
+//	        Element bindingElement = bindingSerializationService.serializeBinding(igDataModel, (Binding) segment.getBinding());
+//	        if (bindingElement != null) {
+//	          segmentElement.appendChild(bindingElement);
+//	        }
+//	      }
+	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
+	    	  System.out.println("BOOM");
+    	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap());
+	        if (constraints != null) {
+          segmentElement.appendChild(constraints);
+        }
 	      }
 	      if (segment.getChildren() != null) {
-	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel);
+	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);
 	        }
@@ -80,7 +92,7 @@ private IgDataModelSerializationService igDataModelSerializationService;
 	      return igDataModelSerializationService.getSectionElement(segmentElement, segmentDataModel.getModel(), level);
 	  }
 
-	  private Element serializeFields(Set<Field> fields, IgDataModel igDataModel) throws SubStructElementSerializationException {
+	  private Element serializeFields(Set<Field> fields, IgDataModel igDataModel, SegmentDataModel segmentDataModel) throws SubStructElementSerializationException {
 		    if (fields.size() > 0) {
 		      Element fieldsElement = new Element("Fields");
 		      for (Field field : fields) {
@@ -119,8 +131,19 @@ private IgDataModelSerializationService igDataModelSerializationService;
 		              }
 		              fieldElement.addAttribute(
 		                  new Attribute("usage", field.getUsage() != null ? field.getUsage().name() : ""));
+		              if (segmentDataModel != null && segmentDataModel.getValuesetMap() != null && segmentDataModel.getValuesetMap().containsKey(field.getPosition() + "")) {
+		  	        	String vs = segmentDataModel.getValuesetMap().get(field.getPosition()+"").stream().map((element) -> {
+		                  	return element.getName();
+		                  })
+		  	        	.collect(Collectors.joining(", "));
+		  	        	fieldElement
+		  	                .addAttribute(new Attribute("valueset", vs));
+		              }
+//		  	        	
 		              fieldsElement.appendChild(fieldElement);
+		              
 		            }
+		            
 		          } catch (DatatypeNotFoundException exception) {
 		            throw new SubStructElementSerializationException(exception, field);
 		          }

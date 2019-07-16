@@ -26,6 +26,9 @@ public class ConformanceProfileSerializationServiceImpl implements ConformancePr
 
 @Autowired
 private IgDataModelSerializationService igDataModelSerializationService;
+
+@Autowired
+private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, 
@@ -47,6 +50,13 @@ private IgDataModelSerializationService igDataModelSerializationService;
 //	        if (bindingElement != null) {
 //	          conformanceProfileElement.appendChild(bindingElement);
 //	        }
+	        if(!conformanceProfileDataModel.getConformanceStatementMap().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
+		    	  System.out.println("BOOM");
+	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatementMap(), conformanceProfileDataModel.getPredicateMap());
+	        if (constraints != null) {
+	        	conformanceProfileElement.appendChild(constraints);
+        }
+	        }
 	        if (conformanceProfile.getChildren() != null
 	            && conformanceProfile.getChildren().size() > 0) {
 	          for (MsgStructElement msgStructElm : conformanceProfile.getChildren()) {

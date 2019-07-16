@@ -1,5 +1,8 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -14,6 +17,25 @@ import nu.xom.Element;
 
 @Service
 public class ConstraintSerializationServiceImpl implements ConstraintSerializationService{
+	
+	public Element serializeConstraints(Set<ConformanceStatement> conformanceStatements, Map<String,Predicate> predicates) {
+	    Element constraintsElement = new Element("Constraints");
+	    if(conformanceStatements !=null) {
+	    for(ConformanceStatement conformanceStatement : conformanceStatements){
+	    	Element conformanceStatementElement = serializeConformanceStatement(conformanceStatement);
+	    	constraintsElement.appendChild(conformanceStatementElement);
+	    }
+	    }
+	    if(predicates != null) {
+	    for(String location : predicates.keySet()){
+	    	Predicate predicate = predicates.get(location);
+	    	Element predicateElement = serializePredicate(predicate);
+	    	constraintsElement.appendChild(predicateElement);
+	    }
+	    }
+	    return constraintsElement;
+	};
+
 
 	@Override
 	public Element serializeConformanceStatement(ConformanceStatement conformanceStatement) {
@@ -40,10 +62,12 @@ public class ConstraintSerializationServiceImpl implements ConstraintSerializati
 	@Override
 	public Element serializePredicate(Predicate predicate) {
 	      Element predicateElement = new Element("Predicate");
-	      predicateElement.addAttribute(new Attribute("true",
+	      predicateElement.addAttribute(new Attribute("trueUsage",
 	          predicate.getTrueUsage() != null ? predicate.getTrueUsage().name() : ""));
-	      predicateElement.addAttribute(new Attribute("codeSystem",
+	      predicateElement.addAttribute(new Attribute("falseUsage",
 	          predicate.getFalseUsage() != null ? predicate.getFalseUsage().name() : ""));
+	      predicateElement.addAttribute(new Attribute("location",
+		          predicate.getLocation() != null ? predicate.getLocation() : ""));
 	      if (predicate instanceof AssertionPredicate) {
 	        if (((AssertionPredicate) predicate).getAssertion() != null) {
 	          String description = ((AssertionPredicate) predicate).getAssertion().getDescription();

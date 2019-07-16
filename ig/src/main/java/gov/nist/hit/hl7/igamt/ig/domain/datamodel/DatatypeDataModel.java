@@ -90,6 +90,7 @@ public class DatatypeDataModel {
     }
     
     if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
+    	System.out.println(d.getId());
      this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
     }
     

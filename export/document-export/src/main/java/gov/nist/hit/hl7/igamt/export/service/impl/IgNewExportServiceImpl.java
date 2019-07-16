@@ -63,7 +63,7 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		      IgDataModel igDataModel = igService.generateDataModel(igDocument);
 		      String xmlContent =
 		              igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration).toXML();
-//		      System.out.println("XML_EXPORT : " + xmlContent);
+		      System.out.println("XML_EXPORT : " + xmlContent);
 //		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 		      	// TODO add app infoservice to get app version
 		      ExportParameters exportParameters = new ExportParameters(false, true, exportFormat.getValue(),

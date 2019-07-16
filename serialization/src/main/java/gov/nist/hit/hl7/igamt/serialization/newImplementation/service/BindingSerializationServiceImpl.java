@@ -56,8 +56,6 @@ public class BindingSerializationServiceImpl implements BindingSerializationServ
 	        if (((ResourceBinding) binding).getConformanceStatementIds() != null) {
 //	        	System.out.println("Im in conformance statment IF2");
 	          for (String id : ((ResourceBinding) binding).getConformanceStatementIds()) {
-//				ConformanceProfileDataModel conformanceProfileDataModel = igDataModel.getConformanceProfiles().stream().filter(cp -> id.equals(cp.getModel().getId())).findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(id));
-//				ConformanceStatement conformanceStatement = conformanceProfileDataModel.getConformanceStatementMap().stream().filter(cs -> id.equals(cs.getId())).findAny().orElseThrow(() -> new SerializationException(exception, Type.BINDING, "Binding"));
 	            ConformanceStatement conformanceStatement = this.conformanceStatementRepository.findById(id).get();
 	            Element conformanceStatementElement = constraintSerializationService.serializeConformanceStatement(conformanceStatement);
 	            if (conformanceStatementElement != null) {

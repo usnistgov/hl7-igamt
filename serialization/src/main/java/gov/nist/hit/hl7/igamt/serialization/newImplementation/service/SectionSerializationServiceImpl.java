@@ -175,7 +175,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						for (Link valuesetLink : valuesetRegistry.getChildren()) {
 							ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream().filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny().orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
 							//	                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId());
-							Element valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level, exportConfiguration);
+							Element valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportConfiguration);
 							if (valuesetElement != null) {
 								valuesetRegistryElement.appendChild(valuesetElement);
 							}
@@ -200,7 +200,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 					if (!conformanceProfileRegistry.getChildren().isEmpty()) {
 						for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
 							ConformanceProfileDataModel conformanceProfileDataModel = igDataModel.getConformanceProfiles().stream().filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId())).findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId()));
-							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level, exportConfiguration);
+							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level+1, exportConfiguration);
 							if (conformanceProfileElement != null) {
 								conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
 							}
@@ -226,7 +226,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						for (Link segmentLink : segmentRegistry.getChildren()) {
 							SegmentDataModel segmentDataModel = igDataModel.getSegments().stream().filter(seg -> segmentLink.getId().equals(seg.getModel().getId())).findAny().orElseThrow(() -> new SegmentNotFoundException(segmentLink.getId()));
 							Segment segment = segmentDataModel.getModel();
-							Element segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,level,exportConfiguration);
+							Element segmentElement = segmentSerializationService.serializeSegment(igDataModel, segmentDataModel,level+1,exportConfiguration);
 							if (segmentElement != null) {
 								segmentRegistryElement.appendChild(segmentElement);
 							}

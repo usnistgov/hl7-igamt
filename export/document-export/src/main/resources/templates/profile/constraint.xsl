@@ -7,7 +7,7 @@
         <xsl:param name="headerLevel"/>
         <xsl:choose>
             <xsl:when test="$type='pre'">
- 		<xsl:if test="count(Binding/Predicate)  &gt; 0">
+ 		<xsl:if test="count(Constraints/Predicate)  &gt; 0">
                     <xsl:call-template name="displayConstraint">
                         <xsl:with-param name="constraintMode" select="$constraintMode"/>
                         <xsl:with-param name="title" select="$title"/>
@@ -17,7 +17,7 @@
                 </xsl:if>
             </xsl:when>
             <xsl:when test="$type='cs'">
- 		<xsl:if test="count(Binding/ConformanceStatement)  &gt; 0">
+ 		<xsl:if test="count(Constraints/ConformanceStatement)  &gt; 0">
                     <xsl:call-template name="displayConstraint">
                         <xsl:with-param name="constraintMode" select="$constraintMode"/>
                         <xsl:with-param name="title" select="$title"/>
