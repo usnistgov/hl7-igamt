@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
  * @author jungyubw
  *
  */
-public class ComponentDataModel {
+public class ComponentDataModel implements Serializable{
 
   private Component model;
 

@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -22,7 +23,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  * @author jungyubw
  *
  */
-public class SegmentBindingDataModel {
+public class SegmentBindingDataModel implements Serializable{
   private String id;
   private Date creationDate;
   private Date updateDate;

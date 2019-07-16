@@ -1,10 +1,11 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 
-public class DomainInfo {
+public class DomainInfo implements Serializable{
   @DeltaField
   private String version;
   @DeltaField

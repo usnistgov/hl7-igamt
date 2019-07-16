@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -27,7 +28,7 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
  * @author jungyubw
  *
  */
-public class ValuesetBindingDataModel {
+public class ValuesetBindingDataModel implements Serializable {
   private String id;
   private Date creationDate;
   private Date updateDate;

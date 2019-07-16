@@ -22,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -1417,8 +1418,7 @@ public IGContentMap collectData(Ig ig) {
 
           DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
           if (childDtModel == null) childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
-          DatatypeDataModel copyDtModel = (DatatypeDataModel)this.makeCopy(childDtModel);
-
+          DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
           String ext = childDtModel.getModel().getExt();
@@ -1426,7 +1426,7 @@ public IGContentMap collectData(Ig ig) {
           copyDtModel.getModel().setExt(ext + "_A" + randumNum);
           toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
           cModel.getDatatype().setId(copyDtModel.getModel().getId());
-
+          cModel.getDatatype().setExt(ext + "_A" + randumNum);
           updateChildDatatype(pathList, copyDtModel, igModel, dtModel.getValuesetMap().get(key), toBeAddedDTs);
         }
       }
@@ -1441,7 +1441,7 @@ public IGContentMap collectData(Ig ig) {
 
           DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
           if (childDtModel == null) childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
-          DatatypeDataModel copyDtModel = (DatatypeDataModel)this.makeCopy(childDtModel);
+          DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
 
           int randumNum = new SecureRandom().nextInt(100000);
           copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
@@ -1449,7 +1449,9 @@ public IGContentMap collectData(Ig ig) {
           if (ext == null) ext = "";
           copyDtModel.getModel().setExt(ext + "_A" + randumNum);
           toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
+          System.out.println(copyDtModel.getModel().getId());
           fModel.getDatatype().setId(copyDtModel.getModel().getId());
+          fModel.getDatatype().setExt(ext + "_A" + randumNum);
 
           updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key), toBeAddedDTs);
         }
@@ -1464,9 +1466,15 @@ public IGContentMap collectData(Ig ig) {
       }
     }
     
+    
     for (String key : toBeAddedDTs.keySet()) {
       igModel.getDatatypes().add(toBeAddedDTs.get(key));
     }
+    
+    for(DatatypeDataModel dm : igModel.getDatatypes()) {
+      System.out.println(dm.getModel().getId() + dm.getModel().getLabel());
+    }
+    
     for (String key : toBeAddedSegs.keySet()) {
       igModel.getSegments().add(toBeAddedSegs.get(key));
     }
@@ -1479,12 +1487,11 @@ public IGContentMap collectData(Ig ig) {
     } else {
       SegmentDataModel sModel = igModel.findSegment(sgModel.getSegment().getId());
       if (sModel == null) sModel = toBeAddedSegs.get(sgModel.getSegment().getId());
-      SegmentDataModel copySModel = (SegmentDataModel)this.makeCopy(sModel);
+      SegmentDataModel copySModel = (SegmentDataModel)SerializationUtils.clone(sModel);
       int randumNum = new SecureRandom().nextInt(100000);
       copySModel.getModel().setId(sModel.getModel().getId() + "_A" + randumNum);
       String ext = sModel.getModel().getExt();
-      if (ext == null)
-        ext = "";
+      if (ext == null) ext = "";
       copySModel.getModel().setExt(ext + "_A" + randumNum);
 
       if (pathList.size() == 1) {
@@ -1499,19 +1506,21 @@ public IGContentMap collectData(Ig ig) {
         
         DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
         if (childDtModel == null) childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
-        DatatypeDataModel copyDtModel = (DatatypeDataModel)this.makeCopy(childDtModel);
+        DatatypeDataModel copyDtModel = (DatatypeDataModel)SerializationUtils.clone(childDtModel);
 
-        randumNum = new SecureRandom().nextInt(100000);
-        copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
+        int randumNum2 = new SecureRandom().nextInt(100000);
+        copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum2);
         String ext2 = childDtModel.getModel().getExt();
         if (ext2 == null) ext2 = "";
-        copyDtModel.getModel().setExt(ext2 + "_A" + randumNum);
+        copyDtModel.getModel().setExt(ext2 + "_A" + randumNum2);
         toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
         fModel.getDatatype().setId(copyDtModel.getModel().getId());
+        fModel.getDatatype().setExt(ext2 + "_A" + randumNum2);
         
         this.updateChildDatatype(pathList, copyDtModel, igModel, valuesetBindingDataModels, toBeAddedDTs);
       }
       sgModel.getSegment().setId(copySModel.getModel().getId());
+      sgModel.getSegment().setExt(ext + "_A" + randumNum);
       toBeAddedSegs.put(copySModel.getModel().getId(), copySModel);
     }
     
@@ -1531,7 +1540,7 @@ public IGContentMap collectData(Ig ig) {
       
       DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
       if (childDtModel == null) childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
-      DatatypeDataModel copyDtModel = (DatatypeDataModel)this.makeCopy(childDtModel);
+      DatatypeDataModel copyDtModel = (DatatypeDataModel)SerializationUtils.clone(childDtModel);
 
       int randumNum = new SecureRandom().nextInt(100000);
       copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
@@ -1546,19 +1555,19 @@ public IGContentMap collectData(Ig ig) {
     
   }
   
-  private Object makeCopy(Object original) throws IOException, ClassNotFoundException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    ObjectOutputStream oos = new ObjectOutputStream(baos);
-    oos.writeObject(original);
-    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-    ObjectInputStream ois = new ObjectInputStream(bais);
-    return ois.readObject();
-  }
+//  private Object makeCopy(Object original) throws IOException, ClassNotFoundException {
+//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//    ObjectOutputStream oos = new ObjectOutputStream(baos);
+//    oos.writeObject(original);
+//    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+//    ObjectInputStream ois = new ObjectInputStream(bais);
+//    return ois.readObject();
+//  }
   
   private Set<ValuesetBindingDataModel> makeCopySet(Set<ValuesetBindingDataModel> valuesetBindingDataModels) throws IOException, ClassNotFoundException {
     Set<ValuesetBindingDataModel> copy = new HashSet<ValuesetBindingDataModel>();
     for(ValuesetBindingDataModel o : valuesetBindingDataModels){
-      copy.add((ValuesetBindingDataModel)this.makeCopy(o));
+      copy.add((ValuesetBindingDataModel)SerializationUtils.clone(o));
     }
     return copy;
   }

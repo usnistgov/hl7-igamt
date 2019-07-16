@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -7,7 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.annotation.Version;
 
-public abstract class AbstractDomain {
+public abstract class AbstractDomain implements Serializable{
 
 	@Id
 	private String id;

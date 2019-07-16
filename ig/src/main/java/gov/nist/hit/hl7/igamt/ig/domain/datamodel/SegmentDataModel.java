@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -32,7 +33,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  * @author jungyubw
  *
  */
-public class SegmentDataModel {
+public class SegmentDataModel implements Serializable {
   private Segment model;
 
   private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
@@ -163,7 +164,7 @@ public class SegmentDataModel {
       }
       
       if (seb.getChildren() != null) {
-        //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+        this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
       }
     }
     

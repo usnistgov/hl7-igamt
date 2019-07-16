@@ -11,11 +11,13 @@
  */
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import java.io.Serializable;
+
 /**
  * @author jungyubw
  *
  */
-public class LocationInfo {
+public class LocationInfo implements Serializable {
   private LocationType type;
   private int position;
   private String name;

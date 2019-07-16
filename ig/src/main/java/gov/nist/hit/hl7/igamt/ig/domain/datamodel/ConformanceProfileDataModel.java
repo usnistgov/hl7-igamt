@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,7 +31,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  * @author jungyubw
  *
  */
-public class ConformanceProfileDataModel {
+public class ConformanceProfileDataModel implements Serializable{
   private ConformanceProfile model;
 
   private Set<ConformanceStatement> conformanceStatementMap = new HashSet<ConformanceStatement>();
