@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -35,14 +34,13 @@ public class SegmentRefOrGroupDataModel {
   private SegmentBindingDataModel segment;
   private Set<SegmentRefOrGroupDataModel> children;
   private Predicate predicate;
-  private Set<Comment> comments = new HashSet<Comment>();
 
 
   public SegmentRefOrGroupDataModel() {
     super();
   }
 
-  public SegmentRefOrGroupDataModel(SegmentRefOrGroup sog, String parentKey, Map<String, Predicate> predicateMap, Map<String, Set<Comment>> commentMap, SegmentService segmentService) {
+  public SegmentRefOrGroupDataModel(SegmentRefOrGroup sog, String parentKey, Map<String, Predicate> predicateMap, SegmentService segmentService) {
     super();
     this.model = sog;
     String key = null;
@@ -53,13 +51,12 @@ public class SegmentRefOrGroupDataModel {
     }
 
     this.predicate = predicateMap.get(key);
-    this.comments = commentMap.get(key);
 
     if (sog instanceof Group) {
       this.type = Type.GROUP;
       Group g = (Group)sog;
       for (SegmentRefOrGroup child : g.getChildren()) {
-        this.addChild(new SegmentRefOrGroupDataModel(child, key, predicateMap, commentMap, segmentService));        
+        this.addChild(new SegmentRefOrGroupDataModel(child, key, predicateMap, segmentService));        
       }
     }else {
       this.type = Type.SEGMENTREF;  
@@ -104,14 +101,6 @@ public class SegmentRefOrGroupDataModel {
     this.predicate = predicate;
   }
 
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
-
   public Set<SegmentRefOrGroupDataModel> getChildren() {
     return children;
   }
@@ -125,6 +114,15 @@ public class SegmentRefOrGroupDataModel {
     this.children.add(child);
   }
 
-
+  /**
+   * @param parseInt
+   * @return
+   */
+  public SegmentRefOrGroupDataModel findChildByPosition(int position) {
+    for(SegmentRefOrGroupDataModel sgModel : this.children) {
+      if (sgModel.getModel().getPosition() == position) return sgModel;
+    }
+    return null;
+  }
 
 }

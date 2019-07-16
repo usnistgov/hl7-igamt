@@ -70,6 +70,28 @@ public void setSegments(Set<SegmentDataModel> segments) {
 	this.segments = segments;
 }
 
+/**
+ * @param id
+ * @return
+ */
+public DatatypeDataModel findDatatype(String id) {
+  for(DatatypeDataModel dtModel : this.datatypes) {
+    if(dtModel.getModel().getId().equals(id)) return dtModel;
+  }
+  return null;
+}
+
+/**
+ * @param id
+ * @return
+ */
+public SegmentDataModel findSegment(String id) {
+  for(SegmentDataModel segModel : this.segments) {
+    if(segModel.getModel().getId().equals(id)) return segModel;
+  }
+  return null;
+}
+
 
 
 }
