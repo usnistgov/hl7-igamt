@@ -69,20 +69,7 @@ public interface IgService {
   void buildDependencies(IGContentMap contentMap);
   
   public IgDataModel generateDataModel(Ig ig) throws Exception;
-
-  /**
-   * @param igModel
-   * @param conformanceProfileIds
-   * @param compositeProfileIds
-   * @return
-   * @throws CloneNotSupportedException 
-   * @throws IOException 
-   * @throws ClassNotFoundException 
-   * @throws ProfileSerializationException 
-   * @throws TableSerializationException 
-   */
+  
   public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
-
-
 }
 
