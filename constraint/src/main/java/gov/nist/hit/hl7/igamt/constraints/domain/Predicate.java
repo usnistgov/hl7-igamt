@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.constraints.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
 import org.springframework.data.annotation.Id;
@@ -31,7 +32,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes({@JsonSubTypes.Type(value = FreeTextPredicate.class, name = "FREE"),
     @JsonSubTypes.Type(value = AssertionPredicate.class, name = "ASSERTION")})
-public abstract class Predicate {
+public abstract class Predicate implements Serializable{
   @Id
   private String id;
   private String identifier;

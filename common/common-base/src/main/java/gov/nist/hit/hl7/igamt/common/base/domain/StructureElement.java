@@ -1,9 +1,11 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
+
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
 
-public class StructureElement {
+public class StructureElement implements Serializable{
 
   private String id;
   @DeltaField

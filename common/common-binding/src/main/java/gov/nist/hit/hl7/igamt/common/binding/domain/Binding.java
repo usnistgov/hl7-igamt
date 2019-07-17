@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -18,7 +19,7 @@ import java.util.Set;
  * @author jungyubw
  *
  */
-public abstract class Binding {
+public abstract class Binding implements Serializable{
 
   /*
    * elementId contains element mongo id for ConformanceProfileId/SegmentId/DatatypeId/FieldId/ComponentId

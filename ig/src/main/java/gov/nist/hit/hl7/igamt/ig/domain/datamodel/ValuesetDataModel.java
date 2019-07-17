@@ -11,13 +11,15 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
+
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 /**
  * @author jungyubw
  *
  */
-public class ValuesetDataModel {
+public class ValuesetDataModel implements Serializable{
 
   private Valueset model;
 

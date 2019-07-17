@@ -1,3 +1,5 @@
+package gov.nist.hit.hl7.igamt.service.impl.exception;
+
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
@@ -8,52 +10,28 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * <p>
+ * Created by Maxence Lefort on 11/16/17.
  */
-package gov.nist.hit.hl7.igamt.common.binding.domain;
+public class ProfileSerializationException extends SerializationException {
 
-import java.io.Serializable;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -1208576722915722235L;
+  private final static String label = "IG Document";
 
-/**
- * @author jungyubw
- *
- */
-public class LocationInfo implements Serializable {
-  private LocationType type;
-  private int position;
-  private String name;
-
-  public LocationInfo() {
-    super();
+  @Override
+  public String getLabel() {
+    return label;
   }
 
-  public LocationInfo(LocationType type, int position, String name) {
-    super();
-    this.type = type;
-    this.position = position;
-    this.name = name;
+  public ProfileSerializationException(Exception originalException, String profileId) {
+    this(originalException, profileId, null);
   }
 
-  public LocationType getType() {
-    return type;
-  }
-
-  public void setType(LocationType type) {
-    this.type = type;
-  }
-
-  public int getPosition() {
-    return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public ProfileSerializationException(Exception originalException, String profileId,
+      String message) {
+    super(originalException, profileId, message);
   }
 }

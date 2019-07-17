@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
-public class Section {
+import java.io.Serializable;
+
+public class Section implements Serializable{
   
   private String id; 
   private String description;
