@@ -19,65 +19,71 @@ import org.bson.types.ObjectId;
  */
 
 public class Code {
-  private String id;
-  private String value;
-  private String description;
-  private String codeSystemId;
-  private String comments;
+	private String value;
+	private String description;
+	private String codeSystem;
+	private String comments;
+	private CodeUsage usage;
+	private String id; 
 
-  public Code() {
-    super();
-    this.id = new ObjectId().toString();
-  }
+	public Code() {
+		this.setId(new ObjectId().toString());
+	}
 
-  public Code(String id, String value, String description, String codeSystemId, String comments) {
-    super();
-    this.id = id;
-    this.value = value;
-    this.description = description;
-    this.codeSystemId = codeSystemId;
-    this.comments = comments;
-  }
+	public Code(String id, String value, String description, String codeSystem, String comments) {
+		this.setId(id);
+		this.value = value;
+		this.description = description;
+		this.codeSystem = codeSystem;
+		this.comments = comments;
+	}
 
-  public String getId() {
-    return id;
-  }
+	public String getValue() {
+		return value;
+	}
 
-  public void setId(String id) {
-    this.id = id;
-  }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-  public String getValue() {
-    return value;
-  }
+	public String getDescription() {
+		return description;
+	}
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
-  public String getDescription() {
-    return description;
-  }
+	public String getCodeSystem() {
+		return codeSystem;
+	}
 
-  public void setDescription(String description) {
-    this.description = description;
-  }
+	public void setCodeSystem(String codeSystem) {
+		this.codeSystem = codeSystem;
+	}
 
-  public String getCodeSystemId() {
-    return codeSystemId;
-  }
+	public String getComments() {
+		return comments;
+	}
 
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
-  }
+	public void setComments(String comments) {
+		this.comments = comments;
+	}
 
-  public String getComments() {
-    return comments;
-  }
+	public CodeUsage getUsage() {
+		return usage;
+	}
 
-  public void setComments(String comments) {
-    this.comments = comments;
-  }
+	public void setUsage(CodeUsage usage) {
+		this.usage = usage;
+	}
 
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 }

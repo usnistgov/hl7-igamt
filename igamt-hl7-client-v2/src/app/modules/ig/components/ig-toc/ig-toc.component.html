@@ -84,6 +84,9 @@
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
@@ -94,6 +97,9 @@
           <context-menu #conformanceProfileContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
@@ -110,16 +116,22 @@
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
             </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
+            </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>
         </ng-container>
 
         <ng-container *ngSwitchCase="'VALUESET'">
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #valueSetContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor
+            </ng-template>
+            <ng-template (execute)="deleteResource(node)" contextMenuItem>
+              <i class="fa fa-remove"></i> Delete
             </ng-template>
           </context-menu>
           <app-toc-sub-menu [element]="node.data" *ngIf="rla.isActive"></app-toc-sub-menu>

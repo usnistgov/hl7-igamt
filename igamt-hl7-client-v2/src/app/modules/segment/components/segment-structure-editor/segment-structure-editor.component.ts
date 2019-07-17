@@ -1,15 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
-import { Action, Store } from '@ngrx/store';
-import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
+import { Observable, ReplaySubject, Subscription } from 'rxjs';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
-import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectAllSegments, selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
+import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
 import { Type } from '../../../shared/constants/type.enum';
 import { EditorID } from '../../../shared/models/editor.enum';
@@ -19,10 +17,10 @@ import { HL7v2TreeColumnType } from './../../../shared/components/hl7-v2-tree/hl
 
 @Component({
   selector: 'app-segment-structure-editor',
-  templateUrl: './segment-structure-editor.component.html',
-  styleUrls: ['./segment-structure-editor.component.scss'],
+  templateUrl: '../../../core/components/structure-editor/structure-editor.component.html',
+  styleUrls: ['../../../core/components/structure-editor/structure-editor.component.scss'],
 })
-export class SegmentStructureEditorComponent extends AbstractEditorComponent implements OnDestroy, OnInit {
+export class SegmentStructureEditorComponent extends StructureEditorComponent<ISegment> implements OnDestroy, OnInit {
 
   type = Type;
   segment: ReplaySubject<ISegment>;
@@ -37,94 +35,65 @@ export class SegmentStructureEditorComponent extends AbstractEditorComponent imp
   constructor(
     readonly repository: StoreResourceRepositoryService,
     private segmentService: SegmentService,
-    private messageService: MessageService,
+    messageService: MessageService,
     actions$: Actions,
     store: Store<any>) {
-    super({
-      id: EditorID.SEGMENT_STRUCTURE,
-      title: 'Structure',
-      resourceType: Type.SEGMENT,
-    }, actions$, store);
-    this.columns = [
-      HL7v2TreeColumnType.NAME,
-      HL7v2TreeColumnType.DATATYPE,
-      HL7v2TreeColumnType.USAGE,
-      HL7v2TreeColumnType.VALUESET,
-      HL7v2TreeColumnType.CONSTANTVALUE,
-      HL7v2TreeColumnType.CARDINALITY,
-      HL7v2TreeColumnType.LENGTH,
-      HL7v2TreeColumnType.CONFLENGTH,
-      HL7v2TreeColumnType.TEXT,
-      HL7v2TreeColumnType.COMMENT,
-    ];
-    this.datatypes = this.store.select(selectAllDatatypes);
-    this.segments = this.store.select(selectAllSegments);
-    this.username = store.select(fromAuth.selectUsername);
-    this.segment = new ReplaySubject<ISegment>();
-    this.changes = new ReplaySubject<IStructureChanges>();
-    this.workspace_s = this.currentSynchronized$.pipe(
-      map((current) => {
-        this.segment.next({ ...current.segment });
-        this.changes.next({ ...current.changes });
-      }),
-    ).subscribe();
-    this.segment$ = this.segment.asObservable();
+    super(
+      repository,
+      messageService,
+      actions$,
+      store,
+      {
+        id: EditorID.SEGMENT_STRUCTURE,
+        title: 'Structure',
+        resourceType: Type.SEGMENT,
+      },
+      [
+        {
+          context: {
+            resource: Type.SEGMENT,
+          },
+          label: 'Segment',
+        },
+        {
+          context: {
+            resource: Type.DATATYPE,
+            element: Type.FIELD,
+          },
+          label: 'Datatype (FIELD)',
+        },
+        {
+          context: {
+            resource: Type.DATATYPE,
+            element: Type.COMPONENT,
+          },
+          label: 'Datatype (COMPONENT)',
+        },
+      ],
+      [
+        HL7v2TreeColumnType.NAME,
+        HL7v2TreeColumnType.DATATYPE,
+        HL7v2TreeColumnType.USAGE,
+        HL7v2TreeColumnType.VALUESET,
+        HL7v2TreeColumnType.CONSTANTVALUE,
+        HL7v2TreeColumnType.CARDINALITY,
+        HL7v2TreeColumnType.LENGTH,
+        HL7v2TreeColumnType.CONFLENGTH,
+        HL7v2TreeColumnType.TEXT,
+        HL7v2TreeColumnType.COMMENT,
+      ]);
   }
 
-  ngOnDestroy(): void {
-    this.workspace_s.unsubscribe();
+  saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
+    return this.segmentService.saveChanges(id, igId, changes);
+  }
+  getById(id: string): Observable<ISegment> {
+    return this.segmentService.getById(id);
+  }
+  elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
+    return selectSegmentsById;
   }
 
-  change(change: IChange) {
-    combineLatest(this.changes.asObservable(), this.segment.asObservable()).pipe(
-      take(1),
-      map(([changes, segment]) => {
-        changes[change.location] = {
-          ...changes[change.location],
-          [change.propertyType]: change,
-        };
-        this.changes.next(changes);
-        this.editorChange({ changes, segment }, true);
-      }),
-    ).subscribe();
-  }
-
-  onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.ig$.pipe(map((ig) => ig.id)), this.changes).pipe(
-      take(1),
-      concatMap(([id, igId, changes]) => {
-        return this.segmentService.saveChanges(id, igId, this.convert(changes)).pipe(
-          mergeMap((message) => {
-            return this.segmentService.getById(id).pipe(
-              flatMap((segment) => [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, segment }, updateDate: false })]),
-            );
-          }),
-          catchError((error) => throwError(this.messageService.actionFromError(error))),
-        );
-      }),
-    );
-  }
-
-  editorDisplayNode(): Observable<IDisplayElement> {
-    return this.elementId$.pipe(
-      concatMap((id) => {
-        return this.store.select(selectSegmentsById, { id });
-      }),
-    );
-  }
-
-  convert(changes: IStructureChanges): IChange[] {
-    let c = [];
-    Object.keys(changes).forEach((id) => {
-      c = c.concat(Object.keys(changes[id]).map((prop) => {
-        return changes[id][prop];
-      }));
-    });
-    return c;
-  }
-
-  ngOnInit() {
-  }
 }
 
 export interface IStructureChanges {

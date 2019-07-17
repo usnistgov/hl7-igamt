@@ -19,7 +19,6 @@ export class DataLoaderResolverService implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean | UrlTree> {
-
     const routeParam: string = route.data.routeParam;
     const LoadAction: Type<Action> = route.data.loadAction;
     const SuccessAction: string = route.data.successAction;

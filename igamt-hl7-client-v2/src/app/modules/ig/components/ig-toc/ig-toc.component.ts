@@ -42,6 +42,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   @Output()
   copy = new EventEmitter<ICopyResourceData>();
   @Output()
+  delete = new EventEmitter<IDisplayElement>();
+  @Output()
   addChildren = new EventEmitter<IAddWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
@@ -103,27 +105,20 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     this.addChildren.emit({ node, type, scope });
   }
   copyResource(node: TreeNode) {
-    this.copy.emit({element: node.data, existing: node.parent.data.children});
+    this.copy.emit({element: {...node.data}, existing: node.parent.data.children});
   }
+  deleteResource(node: TreeNode) {
+    this.delete.emit(node.data);
+  }
+
   scrollTo(ref: ElementRef) {
     ref.nativeElement.scrollIntoView();
   }
 
-  getElementUrl(elm) {
+  getElementUrl(elm): string {
     const type = elm.type.toLowerCase();
     return './' + type + '/' + elm.id;
   }
-
-  getPath(node) {
-    if (node) {
-      if (this.isOrphan(node)) {
-        return node.data.position + '.';
-      } else {
-        return this.getPath(node.parent) + node.data.position + '.';
-      }
-    }
-  }
-
   scroll(type: string) {
     if (type === 'messages') {
       this.cpLib.nativeElement.scrollIntoView();
@@ -136,11 +131,11 @@ export class IgTocComponent implements OnInit, AfterViewInit {
     }
   }
 
-  filter(value: any) {
+  filter(value: string) {
     this.tree.treeModel.filterNodes((node) => {
       return this.nodeHelperService
-        .getFilteringLabel(node.data.fixedName, node.data.variableName)
-        .startsWith(value);
+        .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
+        .startsWith(value.toLowerCase());
     });
   }
 

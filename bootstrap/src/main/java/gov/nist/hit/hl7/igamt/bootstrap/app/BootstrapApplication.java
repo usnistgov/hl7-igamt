@@ -4,6 +4,8 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 import java.util.Arrays;
 import java.util.Properties;
 
+import javax.annotation.PostConstruct;
+
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
@@ -55,8 +57,8 @@ public class BootstrapApplication implements CommandLineRunner {
 //  ConfigService sharedConstantService;
 //  
 // 
-//  @Autowired
-//  MessageEventFacory messageEventFactory;
+  @Autowired
+  MessageEventFacory messageEventFactory;
   @Autowired
   Environment env;
   

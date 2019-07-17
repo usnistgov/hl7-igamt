@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.ValuesetBinding;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.common.binding.domain.StructureElementBinding;
@@ -37,6 +38,8 @@ public class SegmentDataModel {
 
   private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
   private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
+  private Map<String, Set<Comment>> commentMap = new HashMap<String, Set<Comment>>();
+  private Map<String, String> constantValueMap = new HashMap<String, String>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
   private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
   private CoConstraintTable coConstraintTable = new CoConstraintTable();
@@ -57,6 +60,22 @@ public class SegmentDataModel {
 
   public void setPredicateMap(Map<String, Predicate> predicateMap) {
     this.predicateMap = predicateMap;
+  }
+
+  public Map<String, Set<Comment>> getCommentMap() {
+    return commentMap;
+  }
+
+  public void setCommentMap(Map<String, Set<Comment>> commentMap) {
+    this.commentMap = commentMap;
+  }
+
+  public Map<String, String> getConstantValueMap() {
+    return constantValueMap;
+  }
+
+  public void setConstantValueMap(Map<String, String> constantValueMap) {
+    this.constantValueMap = constantValueMap;
   }
 
   public Map<String, ExternalSingleCode> getSingleCodeMap() {
@@ -99,7 +118,7 @@ public class SegmentDataModel {
         }
       }
       if (s.getBinding().getChildren() != null) {
-    	     this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+    	     // this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
     	    }
     	    
     }
@@ -111,13 +130,15 @@ public class SegmentDataModel {
         if(f.getRef() != null && f.getRef().getId() != null){
           Datatype childDt = datatypeService.findById(f.getRef().getId());
           if(childDt != null) {
-            this.fieldDataModels.add(new FieldDataModel(
-                f, 
-                this.predicateMap.get(key),
-                this.singleCodeMap.get(key),
-                this.valuesetMap.get(key),
-                new DatatypeBindingDataModel(childDt)
-                ));    
+//            this.fieldDataModels.add(new FieldDataModel(
+//                f, 
+//                this.predicateMap.get(key), 
+//                this.commentMap.get(key),
+//                this.constantValueMap.get(key),
+//                this.singleCodeMap.get(key),
+//                this.valuesetMap.get(key),
+//                new DatatypeBindingDataModel(childDt)
+//                ));    
           }
         }
       });
@@ -131,41 +152,49 @@ public class SegmentDataModel {
    * @param valuesetBindingDataModelMap
    */
   private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
-    for (StructureElementBinding seb : sebs) {
-      String key;
-      if(path == null){
-        key = seb.getLocationInfo().getPosition() + "";
-      }else {
-        key = path + "." + seb.getLocationInfo().getPosition();
-      }
-      
-      if(seb.getPredicateId() != null){
-        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
-
-      if(seb.getExternalSingleCode() != null){
-        this.singleCodeMap.put(key, seb.getExternalSingleCode());
-      }
-      
-      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
-        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for(ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if(valuesetBindingDataModel != null) {
-            valuesetBindingDataModel.setValuesetBinding(vb);
-            vbdm.add(valuesetBindingDataModel);
-          }
-        }
-        
-        if(vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);          
-        }
-      }
-      
-      if (seb.getChildren() != null) {
-        //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
-      }
-    }
+//    for (StructureElementBinding seb : sebs) {
+//      String key;
+//      if(path == null){
+//        key = seb.getLocationInfo().getPosition() + "";
+//      }else {
+//        key = path + "." + seb.getLocationInfo().getPosition();
+//      }
+//      
+//      if(seb.getComments() != null && seb.getComments().size() > 0){
+//        this.commentMap.put(key, seb.getComments());
+//      }
+//      
+//      if(seb.getPredicateId() != null){
+//        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+//      }
+//      
+//      if(seb.getConstantValue() != null){
+//        this.constantValueMap.put(key, seb.getConstantValue());
+//      }
+//      
+//      if(seb.getExternalSingleCode() != null){
+//        this.singleCodeMap.put(key, seb.getExternalSingleCode());
+//      }
+//      
+//      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+//        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+//        for(ValuesetBinding vb : seb.getValuesetBindings()) {
+//          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
+//          if(valuesetBindingDataModel != null) {
+//            valuesetBindingDataModel.setValuesetBinding(vb);
+//            vbdm.add(valuesetBindingDataModel);
+//          }
+//        }
+//        
+//        if(vbdm != null && vbdm.size() > 0) {
+//          this.valuesetMap.put(key, vbdm);          
+//        }
+//      }
+//      
+//      if (seb.getChildren() != null) {
+//        //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+//      }
+//    }
     
   }
 

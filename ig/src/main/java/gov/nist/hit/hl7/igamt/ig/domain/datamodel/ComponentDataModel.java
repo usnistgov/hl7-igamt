@@ -14,6 +14,7 @@ package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 import java.util.HashSet;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -45,7 +46,13 @@ public class ComponentDataModel {
     
   }
 
-  public Component getModel() {
+  public ComponentDataModel(Component c, Predicate predicate2, Set<Comment> set, String string,
+		ExternalSingleCode externalSingleCode, Set<ValuesetBindingDataModel> set2,
+		DatatypeBindingDataModel datatypeBindingDataModel) {
+	// TODO Auto-generated constructor stub
+}
+
+public Component getModel() {
     return model;
   }
 

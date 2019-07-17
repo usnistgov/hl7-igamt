@@ -48,6 +48,7 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.model.SectionType;
 import gov.nist.hit.hl7.igamt.common.base.service.InMemoryDomainExtentionService;
 import gov.nist.hit.hl7.igamt.common.base.util.ReferenceIndentifier;
+import gov.nist.hit.hl7.igamt.common.base.util.ReferenceLocation;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.base.util.ValidationUtil;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -97,11 +98,7 @@ import gov.nist.hit.hl7.igamt.segment.repository.SegmentRepository;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeRef;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
-import gov.nist.hit.hl7.igamt.valueset.domain.InternalCode;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 /**
@@ -132,10 +129,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Autowired
 	ValuesetService valueSetService;
-
-	@Autowired
-	private CodeSystemService codeSystemService;
-
+	
 	@Autowired
 	private ConformanceStatementRepository conformanceStatementRepository;
 
@@ -567,70 +561,6 @@ public class SegmentServiceImpl implements SegmentService {
 		List<Segment> segments = mongoTemplate.find(qry, Segment.class);
 
 		return segments;
-	}
-
-	@Override
-	public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment) {
-		if (segment != null) {
-			SegmentDynamicMapping result = new SegmentDynamicMapping();
-			result.setId(segment.getId());
-			result.setScope(segment.getDomainInfo().getScope());
-			result.setVersion(segment.getDomainInfo().getVersion());
-			if (segment.getExt() != null) {
-				result.setLabel(segment.getName() + segment.getExt());
-			} else {
-				result.setLabel(segment.getName());
-			}
-			result.setName(segment.getName());
-			result.setUpdateDate(segment.getUpdateDate());
-			result.setDynamicMappingInfo(segment.getDynamicMappingInfo());
-
-			if (segment.getName().equals("OBX")) {
-				for (Field field : segment.getChildren()) {
-					if (field.getPosition() == 2) {
-						result.getDynamicMappingInfo().setReferenceFieldId(field.getId());
-					} else if (field.getPosition() == 5) {
-						result.getDynamicMappingInfo().setVariesFieldId(field.getId());
-					}
-				}
-
-				if (segment.getBinding() != null && segment.getBinding().getChildren() != null) {
-					for (StructureElementBinding structureElementBinding : segment.getBinding().getChildren()) {
-						if (structureElementBinding.getElementId()
-								.equals(result.getDynamicMappingInfo().getReferenceFieldId())) {
-							if (structureElementBinding.getValuesetBindings() != null) {
-								for (ValuesetBinding valuesetBinding : structureElementBinding.getValuesetBindings()) {
-									Valueset vs = valueSetService.findById(valuesetBinding.getValuesetId());
-									if (vs.getCodeRefs() != null) {
-										for (CodeRef codeRef : vs.getCodeRefs()) {
-											CodeSystem codeSystem = codeSystemService
-													.findById(codeRef.getCodeSystemId());
-											Code code = codeSystem.findCode(codeRef.getCodeId());
-											CodeInfo codeInfo = new CodeInfo();
-											codeInfo.setCode(code.getValue());
-											codeInfo.setDescription(code.getDescription());
-											result.addReferenceCode(codeInfo);
-										}
-									}
-
-									if (vs.getCodes() != null) {
-										for (InternalCode iCode : vs.getCodes()) {
-											CodeInfo codeInfo = new CodeInfo();
-											codeInfo.setCode(iCode.getValue());
-											codeInfo.setDescription(iCode.getDescription());
-											result.addReferenceCode(codeInfo);
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-
-			return result;
-		}
-		return null;
 	}
 
 	private void validateField(Field f) throws ValidationException {
@@ -1428,19 +1358,26 @@ public class SegmentServiceImpl implements SegmentService {
 	public Set<RelationShip> collectDependencies(Segment elm) {
 
 		Set<RelationShip> used = new HashSet<RelationShip>();
+		HashMap<String, Usage> usageMap = new HashMap<String, Usage>();
+
 		for (Field f : elm.getChildren()) {
 			if (f.getRef() != null && f.getRef().getId() != null) {
-				used.add(new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
-						new ReferenceIndentifier(elm.getId(), Type.SEGMENT), f.getPosition() + ""));
 
+				RelationShip rel = new RelationShip(new ReferenceIndentifier(f.getRef().getId(), Type.DATATYPE),
+						new ReferenceIndentifier(elm.getId(), Type.SEGMENT),
+
+						new ReferenceLocation(Type.FIELD, f.getPosition() + "", f.getName()));
+				rel.setUsage(f.getUsage());
+				usageMap.put(f.getId(), f.getUsage());
+				used.add(rel);
 			}
 		}
 		if (elm.getDynamicMappingInfo() != null) {
 			collectDynamicMappingDependencies(elm.getId(), elm.getDynamicMappingInfo(), used);
 		}
 		if (elm.getBinding() != null) {
-			Set<RelationShip> bindingDependencies = bindingService
-					.collectDependencies(new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getBinding());
+			Set<RelationShip> bindingDependencies = bindingService.collectDependencies(
+					new ReferenceIndentifier(elm.getId(), Type.SEGMENT), elm.getBinding(), usageMap);
 			used.addAll(bindingDependencies);
 
 		}
@@ -1453,8 +1390,11 @@ public class SegmentServiceImpl implements SegmentService {
 		if (dynamicMappingInfo.getItems() != null) {
 			for (DynamicMappingItem item : dynamicMappingInfo.getItems()) {
 				if (item.getDatatypeId() != null) {
-					used.add(new RelationShip(new ReferenceIndentifier(item.getDatatypeId(), Type.DATATYPE),
-							new ReferenceIndentifier(id, Type.SEGMENT), Type.DYNAMICMAPPING.getValue()));
+					RelationShip rel = new RelationShip(new ReferenceIndentifier(item.getDatatypeId(), Type.DATATYPE),
+							new ReferenceIndentifier(id, Type.SEGMENT),
+
+							new ReferenceLocation(Type.DYNAMICMAPPING, null , null));
+					used.add(rel);
 				}
 			}
 		}
@@ -1623,8 +1563,8 @@ public class SegmentServiceImpl implements SegmentService {
 	public void collectResources(Segment seg, HashMap<String, Resource> used) {
 		// TODO Auto-generated method stub
 		Set<String> usedDatatypesIds = this.getSegmentDatatypesDependenciesIds(seg, used);
-		List<Datatype> usedDatatypes= this.datatypeService.findByIdIn(usedDatatypesIds);
-		for(Datatype d : usedDatatypes) {
+		List<Datatype> usedDatatypes = this.datatypeService.findByIdIn(usedDatatypesIds);
+		for (Datatype d : usedDatatypes) {
 			used.put(d.getId(), d);
 			this.datatypeService.collectResources(d, used);
 		}
@@ -1648,11 +1588,11 @@ public class SegmentServiceImpl implements SegmentService {
 	@Override
 	public Set<Resource> getDependencies(Segment segment) {
 		// TODO Auto-generated method stub
-		Set<Resource> ret= new HashSet<Resource>();
+		Set<Resource> ret = new HashSet<Resource>();
 		ret.add(segment);
 		HashMap<String, Resource> usedDatatypes = new HashMap<String, Resource>();
 		this.collectResources(segment, usedDatatypes);
-		ret.addAll(usedDatatypes.values());	
+		ret.addAll(usedDatatypes.values());
 		return ret;
 	}
 

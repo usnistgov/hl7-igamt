@@ -21,7 +21,6 @@ export class IgEditSaveDeactivateGuard implements CanDeactivate<AbstractEditorCo
   ) { }
 
   canDeactivate(component: AbstractEditorComponent, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot) {
-    console.log('CAN DEACTIVATE GUARD');
     return combineLatest(
       this.store.select(selectWorkspaceCurrentIsChanged),
       this.store.select(selectWorkspaceCurrentIsValid),

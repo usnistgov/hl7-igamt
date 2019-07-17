@@ -20,6 +20,7 @@ import { LoginComponent } from './components/login/login.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
+import { StructureEditorComponent } from './components/structure-editor/structure-editor.component';
 import { UserManagementHeaderComponent } from './components/user-management-header/user-management-header.component';
 import { NewPasswordResolver } from './resolvers/new-password.resolver';
 import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard.guard';

@@ -158,3 +158,21 @@ body {
   top: inherit !important;
   left: inherit !important;
 }
+
+body .ui-table .ui-table-tbody > tr:nth-child(even).ui-state-highlight {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+body .ui-table .ui-table-tbody > tr.ui-state-highlight {
+  background-color: inherit !important;
+  color: inherit!important;
+}
+body .ui-panel .ui-panel-titlebar .ui-panel-titlebar-icon {
+  margin: 0;
+  float: left;
+  font-size: 14px;
+  color: #848484;
+  border: 1px solid transparent;
+  transition: color 0.2s;
+}

@@ -3,7 +3,14 @@ import { Store } from '@ngrx/store';
 import { Observable, of } from 'rxjs';
 import { filter, map, mergeMap } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectDatatypesById, selectLoadedResourceById, selectReferencesAreLeaf, selectSegmentsById, selectValueSetById } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {
+  selectDatatypesById,
+  selectLoadedResourceById,
+  selectMessagesById,
+  selectReferencesAreLeaf,
+  selectSegmentsById,
+  selectValueSetById,
+} from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../constants/type.enum';
 import { IDisplayElement } from '../models/display-element.interface';
 import { IResource } from '../models/resource.interface';
@@ -56,7 +63,9 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         return this.store.select(selectSegmentsById, { id });
       case Type.VALUESET:
         return this.store.select(selectValueSetById, { id });
-      default:
+      case Type.CONFORMANCEPROFILE:
+        return this.store.select(selectMessagesById, { id });
+        default:
         return of(undefined);
     }
   }

@@ -48,7 +48,7 @@ public class ValuesetBindingDataModel {
   private String bindingIdentifier;
   private String oid;
   private String intensionalComment;
-  private URL url;
+  private String url;
   private ManagedBy managedBy = ManagedBy.Internal;
   private Stability stability = Stability.Undefined;
   private Extensibility extensibility = Extensibility.Undefined;
@@ -78,7 +78,6 @@ public class ValuesetBindingDataModel {
     this.oid = vs.getOid();
     this.intensionalComment = vs.getIntensionalComment();
     this.url = vs.getUrl();
-    this.managedBy = vs.getManagedBy();
     this.stability = vs.getStability();
     this.extensibility = vs.getExtensibility();
     this.contentDefinition = vs.getContentDefinition();
@@ -234,11 +233,11 @@ public class ValuesetBindingDataModel {
     this.intensionalComment = intensionalComment;
   }
 
-  public URL getUrl() {
+  public String getUrl() {
     return url;
   }
 
-  public void setUrl(URL url) {
+  public void setUrl(String url) {
     this.url = url;
   }
 

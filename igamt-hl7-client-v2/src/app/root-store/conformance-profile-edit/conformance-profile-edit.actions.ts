@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Action } from '@ngrx/store';
 import { IEditorMetadata } from '../../modules/shared/models/editor.enum';
+import { OpenEditorBase } from '../ig/ig-edit/ig-edit.index';
 import { IConformanceProfile } from './../../modules/shared/models/conformance-profile.interface';
 
 export enum ConformanceProfileEditActionTypes {
@@ -27,28 +28,34 @@ export class LoadConformanceProfileFailure implements Action {
   constructor(readonly error: HttpErrorResponse) { }
 }
 
-export class OpenConformanceProfilePreDefEditor implements Action {
+export class OpenConformanceProfilePreDefEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePreDefEditor;
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
-  }) { }
+  }) {
+    super();
+  }
 }
 
-export class OpenConformanceProfileStructureEditor implements Action {
+export class OpenConformanceProfileStructureEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileStructureEditor;
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
-  }) { }
+  }) {
+    super();
+  }
 }
 
-export class OpenConformanceProfilePostDefEditor implements Action {
+export class OpenConformanceProfilePostDefEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePostDefEditor;
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
-  }) { }
+  }) {
+    super();
+  }
 }
 
 export type ConformanceProfileEditActions =

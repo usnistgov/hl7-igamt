@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.serialization.newImplementation.service;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -7,7 +11,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
+import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCodeSystem;
 import nu.xom.Attribute;
 import nu.xom.Element;
 
@@ -33,8 +39,8 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	          valueSet.getIntensionalComment() != null ? valueSet.getIntensionalComment() : ""));
 	      valueSetElement.addAttribute(
 	          new Attribute("url", valueSet.getUrl() != null ? valueSet.getUrl().toString() : ""));
-	      valueSetElement.addAttribute(new Attribute("managedBy",
-	          valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
+//	      valueSetElement.addAttribute(new Attribute("managedBy",
+//	          valueSet.getManagedBy() != null ? valueSet.getManagedBy().value : ""));
 	      valueSetElement.addAttribute(new Attribute("stability",
 	          valueSet.getStability() != null ? valueSet.getStability().value : ""));
 	      valueSetElement.addAttribute(new Attribute("extensibility",
@@ -43,40 +49,29 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	          valueSet.getContentDefinition() != null ? valueSet.getContentDefinition().value : ""));
 	      valueSetElement.addAttribute(
 	          new Attribute("numberOfCodes", String.valueOf(valueSet.getNumberOfCodes())));
-	      valueSetElement.addAttribute(new Attribute("codeSystemIds",
-	          valueSet.getCodeSystemIds().size() > 0 ? String.join(",", valueSet.getCodeSystemIds())
-	              : ""));
-//	      Map<String,String> displayCodeSystemNameMap = new HashMap<>();
-//	      for(DisplayCodeSystem displayCodeSystem : this.valuesetStructure.getDisplayCodeSystems()) {
-//	        if(!displayCodeSystemNameMap.containsKey(displayCodeSystem.getCodeSysRef())) {
-//	          displayCodeSystemNameMap.put(displayCodeSystem.getCodeSysRef(), displayCodeSystem.getIdentifier());
-//	        }
-//	      }
-//	      Element codesElement = new Element("Codes");
-//	      Set<DisplayCode> displayCodes = this.valuesetStructure.getDisplayCodes();
-//	      if (displayCodes.size() > 0) {
-//	        if(displayCodes.size() > maxNumberOfCodes) {
-//	          List<DisplayCode> list = new ArrayList<DisplayCode>(displayCodes);
-//	          displayCodes = new LinkedHashSet<DisplayCode>(list.subList(0, maxNumberOfCodes));
-//	        }
-//	        for (DisplayCode displayCode : displayCodes) {
-//	          Element codeRefElement = new Element("Code");
-//	          codeRefElement.addAttribute(
-//	              new Attribute("codeId", displayCode.getId() != null ? displayCode.getId() : ""));
-//	          codeRefElement.addAttribute(new Attribute("value",
-//	              displayCode.getValue() != null ? displayCode.getValue() : ""));
-//	          codeRefElement.addAttribute(new Attribute("codeSystem",
-//	              displayCode.getCodeSysRef() != null && displayCodeSystemNameMap.containsKey(displayCode.getCodeSysRef().getRef()) ? displayCodeSystemNameMap.get(displayCode.getCodeSysRef().getRef()) : ""));
-//	          codeRefElement.addAttribute(new Attribute("usage",
-//	              displayCode.getUsage() != null ? displayCode.getUsage().name() : ""));
-//	          codeRefElement.addAttribute(new Attribute("description",
-//	              displayCode.getDescription() != null ? displayCode.getDescription() : ""));
-//	          codeRefElement.addAttribute(new Attribute("comment",
-//	              displayCode.getComments() != null ? displayCode.getComments() : ""));
-//	          codesElement.appendChild(codeRefElement);
-//	        }
-//	      }
-//	      valueSetElement.appendChild(codesElement);
+	      valueSetElement.addAttribute(new Attribute("codeSystemIds",getCodSystemDispaly(valueSet.getCodeSystems())));
+
+	   
+	      Element codesElement = new Element("Codes");
+	      if (valueSet.getCodes().size() > 0) {
+
+	        for (Code displayCode : valueSet.getCodes()) {
+	          Element codeRefElement = new Element("Code");
+	          codeRefElement.addAttribute(
+	              new Attribute("codeId", displayCode.getId() != null ? displayCode.getId() : ""));
+	          codeRefElement.addAttribute(new Attribute("value",
+	              displayCode.getValue() != null ? displayCode.getValue() : ""));
+	          codeRefElement.addAttribute(new Attribute("codeSystem", displayCode.getCodeSystem()));
+	          codeRefElement.addAttribute(new Attribute("usage",
+	              displayCode.getUsage() != null ? displayCode.getUsage().name() : ""));
+	          codeRefElement.addAttribute(new Attribute("description",
+	              displayCode.getDescription() != null ? displayCode.getDescription() : ""));
+	          codeRefElement.addAttribute(new Attribute("comment",
+	              displayCode.getComments() != null ? displayCode.getComments() : ""));
+	          codesElement.appendChild(codeRefElement);
+	        }
+	      }
+	      valueSetElement.appendChild(codesElement);
 //	      Element codeSystemsElement = new Element("CodeSystems");
 //	      if (this.valuesetStructure.getDisplayCodes().size() > 0) {
 //	        for (DisplayCodeSystem displayCodeSystem : this.valuesetStructure.getDisplayCodeSystems()) {
@@ -102,6 +97,14 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	    		  valuesetDataModel.getModel());
 	    }
 	  
+	}
+
+	private String getCodSystemDispaly(Set<String> codeSystems) {
+		if(codeSystems !=null && !codeSystems.isEmpty()) {
+			return String.join(",", codeSystems);
+		}else {
+			return "No code system applied";
+		}
 	}
 
 }

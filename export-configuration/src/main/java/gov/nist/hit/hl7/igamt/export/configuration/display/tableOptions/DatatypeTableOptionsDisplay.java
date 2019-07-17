@@ -43,7 +43,7 @@ public class DatatypeTableOptionsDisplay implements TableOptionsDisplay {
     this.metadataConfig = exportConfiguration.getDatatypeMetadataConfig();
   }
 
-  /**
+  /** 
    * @param findExportConfigurationServiceByAuthentication
    * @return
    */
