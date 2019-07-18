@@ -1,15 +1,23 @@
 package gov.nist.hit.hl7.igamt.valueset.controller;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -17,15 +25,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
+import gov.nist.hit.hl7.igamt.valueset.service.impl.TableCSVGenerator;
 
 @RestController
 public class ValuesetController extends BaseController {
@@ -69,6 +74,19 @@ public class ValuesetController extends BaseController {
 		Valueset valueset = valuesetService.findById(id);
 		return valueset;
 	}
+	
+	@RequestMapping(value = "/exportCSV/{id}", method = RequestMethod.POST, produces = "text/xml", consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	  public void exportCSV(@PathVariable("id") String tableId, HttpServletRequest request,
+	      HttpServletResponse response) throws IOException, ValuesetNotFoundException {
+	    log.info("Export table " + tableId);
+	    Valueset valueset = findById(tableId);
+
+	    InputStream content = IOUtils.toInputStream(new TableCSVGenerator().generate(valueset), "UTF-8");
+	    response.setContentType("text/xml");
+	    response.setHeader("Content-disposition", "attachment;filename=" + valueset.getBindingIdentifier()
+	        + "-" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv");
+	    FileCopyUtils.copy(content, response.getOutputStream());
+	  }
 	
 	private Valueset findById(String id) throws ValuesetNotFoundException {
 		Valueset valueset = valuesetService.findById(id);

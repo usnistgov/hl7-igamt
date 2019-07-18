@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.ig.controller;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -25,10 +27,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.mongodb.client.result.UpdateResult;
+import com.opencsv.CSVReader;
 
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.domain.AccessType;
@@ -64,6 +68,7 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CloneResponse;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CopyWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.CreationWrapper;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
+import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
@@ -88,8 +93,14 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
+import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
+import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -423,16 +434,23 @@ public class IGDocumentController extends BaseController {
 }
   
   
-  @RequestMapping(value = "/api/igdocuments/{id}/export/xml/Validation/mids/{mids}/cids/{cids}", method = RequestMethod.POST, produces = "application/zip",consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-  public void exportValidationXMLByProfiles(@PathVariable("id") String id, @PathVariable("mids") String[] conformanceProfileIds, @PathVariable("cids") String[] compositeProfileIds, HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IGNotFoundException, Exception{
+  @RequestMapping(value = "/api/igdocuments/{id}/export/xml/Validation", method = RequestMethod.POST, produces = "application/zip",consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+  public void exportValidationXMLByProfiles(
+      @PathVariable("id") String id, 
+      @RequestBody ReqId reqIds,
+      HttpServletRequest request, 
+      HttpServletResponse response, 
+      Authentication authentication) throws IGNotFoundException, Exception{
     IgDataModel igModel = this.igService.generateDataModel(findIgById(id));
     
-    if(conformanceProfileIds != null && conformanceProfileIds.length == 1 && conformanceProfileIds[0].equals("NOTHING")) conformanceProfileIds = null;
-    if(compositeProfileIds != null && compositeProfileIds.length == 1 && compositeProfileIds[0].equals("NOTHING")) compositeProfileIds = null;
-    
+
+    if (reqIds != null && reqIds.getMids().length == 1 && reqIds.getMids()[0].equals("NOTHING"))
+      reqIds.setMids(null);
+    if (reqIds != null && reqIds.getCids().length == 1 && reqIds.getCids()[0].equals("NOTHING"))
+      reqIds.setCids(null);
     //NEED Verification Check
     
-    InputStream content = this.igService.exportValidationXMLByZip(igModel, conformanceProfileIds, compositeProfileIds);
+    InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getMids(), reqIds.getCids());
     response.setContentType("application/zip");
     response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + id + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
     FileCopyUtils.copy(content, response.getOutputStream());
@@ -1272,7 +1290,103 @@ public class IGDocumentController extends BaseController {
     return ig;
   }
   
-  
-  
+  @RequestMapping(value = "/api/igdocuments/{id}/valuesets/uploadCSVFile",
+      method = RequestMethod.POST)
+  public ResponseMessage<IGDisplayInfo> addValuesetFromCSV(@PathVariable("id") String id,
+      @RequestParam("file") MultipartFile csvFile) {
+    CSVReader reader = null;
+    if (!csvFile.isEmpty()) {
+      try {
+        reader = new CSVReader(new FileReader(this.multipartToFile(csvFile, "CSVFile")));
+        int index = 0;
+        String[] row;
 
+        Valueset newVS = new Valueset();
+        DomainInfo domainInfo = new DomainInfo();
+        domainInfo.setScope(Scope.USER);
+        newVS.setDomainInfo(domainInfo);
+        newVS.setSourceType(SourceType.INTERNAL);
+        while ((row = reader.readNext()) != null) {
+
+          index = index + 1;
+
+          if (index > 1 && index < 11) {
+            if (row.length > 1 && !row[1].isEmpty()) {
+              switch (row[0]) {
+                case "Mapping Identifier":
+                  newVS.setBindingIdentifier(row[1]);
+                  break;
+                case "Name":
+                  newVS.setName(row[1]);
+                  break;
+                case "Description":
+                  newVS.setDescription(row[1]);
+                  break;
+                case "OID":
+                  newVS.setOid(row[1]);
+                  break;
+                case "Version":
+                  newVS.getDomainInfo().setVersion(row[1]);
+                  break;
+                case "Extensibility":
+                  newVS.setExtensibility(Extensibility.valueOf(row[1]));
+                  break;
+                case "Stability":
+                  newVS.setStability(Stability.valueOf(row[1]));
+                  break;
+                case "Content Definition":
+                  newVS.setContentDefinition(ContentDefinition.valueOf(row[1]));
+                  break;
+                case "Comment":
+                  newVS.setComment(row[1]);
+              }
+            }
+          } else if (index > 13) {
+
+            Code code = new Code();
+            code.setValue(row[0]);
+            code.setDescription(row[1]);
+            code.setCodeSystem(row[2]);
+            code.setUsage(CodeUsage.valueOf(row[3]));
+            code.setComments(row[4]);
+
+            if (code.getCodeSystem() != null && !code.getCodeSystem().isEmpty())
+              newVS.getCodeSystems().add(code.getCodeSystem());
+            if (code.getValue() != null && !code.getValue().isEmpty()) {
+              newVS.getCodes().add(code);
+            }
+          }
+        }
+
+        reader.close();
+
+        Set<String> savedIds = new HashSet<String>();
+        newVS = this.valuesetService.save(newVS);
+        savedIds.add(newVS.getId());
+        Ig ig = findIgById(id);
+        AddValueSetResponseObject objects = this.crudService.addValueSets(savedIds, ig);
+        ig = igService.save(ig);
+        IGDisplayInfo info = new IGDisplayInfo();
+        info.setIg(ig);
+        info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
+
+        return new ResponseMessage<IGDisplayInfo>(Status.SUCCESS, "",
+            "Value Sets Added Succesfully", ig.getId(), false, ig.getUpdateDate(), info);
+
+      } catch (Exception e) {
+        return new ResponseMessage<IGDisplayInfo>(Status.FAILED, "", e.getMessage(), id, false,
+            null, null);
+      }
+    } else {
+      return new ResponseMessage<IGDisplayInfo>(Status.FAILED, "", "CSV File is empty.", id, false,
+          null, null);
+    }
+  }
+
+  public File multipartToFile(MultipartFile multipart, String fileName)
+      throws IllegalStateException, IOException {
+    File convFile = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
+    multipart.transferTo(convFile);
+    return convFile;
+  }
 }
