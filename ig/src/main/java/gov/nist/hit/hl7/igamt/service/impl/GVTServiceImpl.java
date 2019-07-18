@@ -20,7 +20,9 @@ import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -35,38 +37,23 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import gov.nist.hit.hl7.igamt.ig.service.GvtService;
+import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
 
-/**
- * 
- * @author haffo
- *
- */
+
 @Service
-public class GvtServiceImpl implements GvtService {
+public class GVTServiceImpl implements GVTService {
 
-
-  // @Value("${gvt.url}")
-  // private String GVT_URL;
-
-  @Value("${connect.exportEndpoint}")
-  private String EXPORT_ENDPOINT;
-
-  @Value("${connect.loginEndpoint}")
-  private String LOGIN_ENDPOINT;
-
-  @Value("${connect.domainsEndpoint}")
-  private String DOMAINS_ENDPOINT;
-
-  @Value("${connect.createDomainEndpoint}")
-  private String CREATE_DOMAN_ENDPOINT;
-
-
+  @Autowired
+  private Environment env;
 
   private RestTemplate restTemplate;
-
+  
+  private static final String EXPORT_ENDPOINT = "gvt.export-endpoint";
+  private static final String CREATE_DOMAN_ENDPOINT = "gvt.create-domain-endpoint";
+  private static final String LOGIN_ENDPOINT = "gvt.login-endpoint";
+  private static final String DOMAINS_ENDPOINT = "gvt.domain-endpoint";
 
   @PostConstruct
   @SuppressWarnings("deprecation")
@@ -93,7 +80,7 @@ public class GvtServiceImpl implements GvtService {
   }
 
 
-  public GvtServiceImpl() {
+  public GVTServiceImpl() {
     super();
   }
 
@@ -111,7 +98,7 @@ public class GvtServiceImpl implements GvtService {
     HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
         new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
     ResponseEntity<?> response =
-        restTemplate.exchange(url + EXPORT_ENDPOINT, HttpMethod.POST, requestEntity, Map.class);
+        restTemplate.exchange(url + env.getProperty(EXPORT_ENDPOINT)   , HttpMethod.POST, requestEntity, Map.class);
     return response;
   }
 
@@ -128,7 +115,7 @@ public class GvtServiceImpl implements GvtService {
     HttpEntity<MultiValueMap<String, String>> request =
         new HttpEntity<MultiValueMap<String, String>>(params, headers);
     ResponseEntity<?> response =
-        restTemplate.postForEntity(url + CREATE_DOMAN_ENDPOINT, request, Map.class);
+        restTemplate.postForEntity(url + env.getProperty(CREATE_DOMAN_ENDPOINT), request, Map.class);
     return response;
   }
 
@@ -175,7 +162,7 @@ public class GvtServiceImpl implements GvtService {
       headers.add("Authorization", authorization);
       HttpEntity<String> entity = new HttpEntity<String>("", headers);
       ResponseEntity<String> response =
-          restTemplate.exchange(url + LOGIN_ENDPOINT, HttpMethod.GET, entity, String.class);
+          restTemplate.exchange(url + env.getProperty(LOGIN_ENDPOINT), HttpMethod.GET, entity, String.class);
       if (response.getStatusCode() == HttpStatus.OK) {
         return true;
       }
@@ -193,7 +180,7 @@ public class GvtServiceImpl implements GvtService {
       headers.add("Authorization", authorization);
       HttpEntity<String> entity = new HttpEntity<String>("", headers);
       ResponseEntity<List> response =
-          restTemplate.exchange(url + DOMAINS_ENDPOINT, HttpMethod.GET, entity, List.class);
+          restTemplate.exchange(url + env.getProperty(DOMAINS_ENDPOINT), HttpMethod.GET, entity, List.class);
       return response;
     } catch (HttpClientErrorException e) {
       throw new GVTLoginException(e.getMessage());

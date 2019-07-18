@@ -23,19 +23,19 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
-import gov.nist.hit.hl7.igamt.ig.service.GvtService;
+import gov.nist.hit.hl7.igamt.ig.service.GVTService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
 
 @RestController
-public class GvtConnectController extends BaseController {
+public class GVTConnectController extends BaseController {
 
-  Logger log = LoggerFactory.getLogger(GvtConnectController.class);
+  Logger log = LoggerFactory.getLogger(GVTConnectController.class);
 
 
   @Autowired
-  private GvtService gvtService;
+  private GVTService gvtService;
   
   @Autowired
   IgService igService;

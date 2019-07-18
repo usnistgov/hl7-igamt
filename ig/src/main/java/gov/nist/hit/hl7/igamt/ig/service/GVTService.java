@@ -14,7 +14,7 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
  *
  */
 
-public interface GvtService {
+public interface GVTService {
 
   public ResponseEntity<?> send(InputStream io, String authorization, String url, String domain)
       throws GVTExportException, IOException;
