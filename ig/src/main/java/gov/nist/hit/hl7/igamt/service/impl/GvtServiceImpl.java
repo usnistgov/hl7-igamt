@@ -35,7 +35,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import gov.nist.hit.hl7.igamt.ig.service.GVTConnectService;
+import gov.nist.hit.hl7.igamt.ig.service.GvtService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
 
@@ -45,7 +45,7 @@ import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
  *
  */
 @Service
-public class GVTConnectServiceImpl implements GVTConnectService {
+public class GvtServiceImpl implements GvtService {
 
 
   // @Value("${gvt.url}")
@@ -93,7 +93,7 @@ public class GVTConnectServiceImpl implements GVTConnectService {
   }
 
 
-  public GVTConnectServiceImpl() {
+  public GvtServiceImpl() {
     super();
   }
 

@@ -23,19 +23,19 @@ import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
-import gov.nist.hit.hl7.igamt.ig.service.GVTConnectService;
+import gov.nist.hit.hl7.igamt.ig.service.GvtService;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTExportException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.GVTLoginException;
 
 @RestController
-public class GVTConnectController extends BaseController {
+public class GvtConnectController extends BaseController {
 
-  Logger log = LoggerFactory.getLogger(GVTConnectController.class);
+  Logger log = LoggerFactory.getLogger(GvtConnectController.class);
 
 
   @Autowired
-  private GVTConnectService gvtConnectService;
+  private GvtService gvtService;
   
   @Autowired
   IgService igService;
@@ -45,7 +45,7 @@ public class GVTConnectController extends BaseController {
     log.info("Logging to " + host);
     try {
       // SSLHL7v2ResourceClient client = new SSLHL7v2ResourceClient(host, authorization);
-      return gvtConnectService.validCredentials(authorization, host);
+      return gvtService.validCredentials(authorization, host);
     } catch (Exception e) {
       throw new GVTLoginException(e.getMessage());
     }
@@ -55,14 +55,14 @@ public class GVTConnectController extends BaseController {
   @RequestMapping(value = "/api/gvt/domains", method = RequestMethod.GET, produces = {"application/json"})
   public ResponseEntity<?> getDomains(@RequestHeader("target-url") String url, @RequestHeader("target-auth") String authorization) throws GVTLoginException {
     log.info("Logging to " + url);
-    return gvtConnectService.getDomains(authorization, url);
+    return gvtService.getDomains(authorization, url);
   }
 
   @RequestMapping(value = "/api/gvt/createDomain", method = RequestMethod.POST, produces = "application/json")
   public ResponseEntity<?> createDomain(@RequestHeader("target-auth") String authorization, @RequestHeader("target-url") String url, @RequestBody HashMap<String, String> params, HttpServletRequest request, HttpServletResponse response) throws GVTExportException {
     try {
       log.info("Creating domain with name " + params.get("name") + ", key=" + params.get("key") + ",url=" + url);
-      return gvtConnectService.createDomain(authorization, url, params.get("key"), params.get("name"), params.get("homeTitle"));
+      return gvtService.createDomain(authorization, url, params.get("key"), params.get("name"), params.get("homeTitle"));
     } catch (Exception e) {
       throw new GVTExportException(e);
     }
@@ -88,7 +88,7 @@ public class GVTConnectController extends BaseController {
         reqIds.setCids(null);
 
       InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getMids(), reqIds.getCids());
-      ResponseEntity<?> rsp = gvtConnectService.send(content, authorization, url, domain);
+      ResponseEntity<?> rsp = gvtService.send(content, authorization, url, domain);
       Map<String, Object> res = (Map<String, Object>) rsp.getBody();
       return res;
     } catch (Exception e) {
