@@ -1,12 +1,8 @@
 package gov.nist.hit.hl7.igamt.bootstrap.util;
 
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -231,25 +227,25 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
         table = this.fixValueSetDescription(table);
         
         mongoOps.save(table);
-        for (Ig ig : this.igDocs) {
-          if (ig.getValueSetRegistry().findOneTableById(table.getId()) != null) {
-            Notification item = new Notification();
-            item.setByWhom("CDC");
-            item.setChangedDate(new Date());
-            item.setTargetType(TargetType.Valueset);
-            item.setTargetId(table.getId());
-            Criteria where = Criteria.where("igDocumentId").is(ig.getId());
-            Query qry = Query.query(where);
-            Notifications notifications = mongoOps.findOne(qry, Notifications.class);
-            if (notifications == null) {
-              notifications = new Notifications();
-              notifications.setIgDocumentId(ig.getId());
-              notifications.addItem(item);
-            }
-            mongoOps.save(notifications);
-            notificationEmail(notifications.getId());
-          }
-        }
+//        for (Ig ig : this.igDocs) {
+//          if (ig.getValueSetRegistry().findOneTableById(table.getId()) != null) {
+//            Notification item = new Notification();
+//            item.setByWhom("CDC");
+//            item.setChangedDate(new Date());
+//            item.setTargetType(TargetType.Valueset);
+//            item.setTargetId(table.getId());
+//            Criteria where = Criteria.where("igDocumentId").is(ig.getId());
+//            Query qry = Query.query(where);
+//            Notifications notifications = mongoOps.findOne(qry, Notifications.class);
+//            if (notifications == null) {
+//              notifications = new Notifications();
+//              notifications.setIgDocumentId(ig.getId());
+//              notifications.addItem(item);
+//            }
+//            mongoOps.save(notifications);
+//            notificationEmail(notifications.getId());
+//          }
+//        }
       } catch (Exception e) {
         e.printStackTrace();
         return null;
@@ -292,24 +288,24 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
     return t;
   }
 
-  private static void notificationEmail(String notificationsId) throws IOException {
-    if (notificationsId != null) {
-      String endpoint = System.getProperty("IGAMT_URL");
-      if (endpoint != null) {
-        String encodedNotificationsId = Base64.getEncoder().encodeToString(notificationsId.getBytes());
-        endpoint = endpoint + "/api/notifications/" + encodedNotificationsId + "/sendEmail";
-        
-        URL url = new URL(endpoint);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("Accept", "application/json");
-        if (conn.getResponseCode() != 200) {
-          throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-        }
-        conn.disconnect();
-      }
-    }
-  }
+//  private static void notificationEmail(String notificationsId) throws IOException {
+//    if (notificationsId != null) {
+//      String endpoint = System.getProperty("IGAMT_URL");
+//      if (endpoint != null) {
+//        String encodedNotificationsId = Base64.getEncoder().encodeToString(notificationsId.getBytes());
+//        endpoint = endpoint + "/api/notifications/" + encodedNotificationsId + "/sendEmail";
+//        
+//        URL url = new URL(endpoint);
+//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//        conn.setRequestMethod("GET");
+//        conn.setRequestProperty("Accept", "application/json");
+//        if (conn.getResponseCode() != 200) {
+//          throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+//        }
+//        conn.disconnect();
+//      }
+//    }
+//  }
 
   public VocabService getService() {
     return service;
