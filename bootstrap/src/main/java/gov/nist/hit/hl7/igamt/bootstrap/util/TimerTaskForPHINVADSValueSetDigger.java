@@ -31,7 +31,6 @@ import gov.cdc.vocab.service.dto.output.ValueSetConceptResultDto;
 import gov.cdc.vocab.service.dto.output.ValueSetResultDto;
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
@@ -45,7 +44,7 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
   Logger log = LoggerFactory.getLogger(TimerTaskForPHINVADSValueSetDigger.class);
   private VocabService service;
   private MongoOperations mongoOps;
-  private List<Ig> igDocs = null;
+//  private List<Ig> igDocs = null;
 
   public static void main(String[] args) throws IOException {
     TimerTaskForPHINVADSValueSetDigger tool = new TimerTaskForPHINVADSValueSetDigger();
@@ -68,9 +67,9 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
 
   @Override
   public void run() {
-    igDocs = mongoOps.find(Query.query(Criteria.where("domainInfo.scope").is("USER")),
-        Ig.class);
-    log.info("You have " + igDocs.size() + " igDocuemnts. ");
+//    igDocs = mongoOps.find(Query.query(Criteria.where("domainInfo.scope").is("USER")),
+//        Ig.class);
+//    log.info("You have " + igDocs.size() + " igDocuemnts. ");
 
     log.info("PHINVADSValueSetDigger started at " + new Date());
 
