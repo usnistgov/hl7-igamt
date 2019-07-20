@@ -1,12 +1,22 @@
+/**
+ * This software was developed at the National Institute of Standards and Technology by employees of
+ * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
+ * of the United States Code this software is not subject to copyright protection and is in the
+ * public domain. This is an experimental system. NIST assumes no responsibility whatsoever for its
+ * use by other parties, and makes no guarantees, expressed or implied, about its quality,
+ * reliability, or any other characteristic. We would appreciate acknowledgement if the software is
+ * used. This software can be redistributed and/or modified freely provided that any derivative
+ * works bear some notice that they are derived from it, and any modified versions bear some notice
+ * that they have been modified.
+ */
 package gov.nist.hit.hl7.igamt.bootstrap.util;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TimerTask;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -16,6 +26,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoDbFactory;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.mongodb.MongoClient;
@@ -39,20 +51,20 @@ import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
 
-public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
+/**
+ * @author jungyubw
+ *
+ */
+@Component
+public class PhinvadsValuesetUpdateScheduller {
+  private static final Logger log = LoggerFactory.getLogger(PhinvadsValuesetUpdateScheduller.class);
 
-  Logger log = LoggerFactory.getLogger(TimerTaskForPHINVADSValueSetDigger.class);
   private VocabService service;
   private MongoOperations mongoOps;
-//  private List<Ig> igDocs = null;
 
-  public static void main(String[] args) throws IOException {
-    TimerTaskForPHINVADSValueSetDigger tool = new TimerTaskForPHINVADSValueSetDigger();
-    tool.run();
-  }
+  private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-  public TimerTaskForPHINVADSValueSetDigger() {
-
+  public PhinvadsValuesetUpdateScheduller() {
     String serviceUrl = "https://phinvads.cdc.gov/vocabService/v2";
 
     HessianProxyFactory factory = new HessianProxyFactory();
@@ -65,12 +77,10 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
 
   }
 
-  @Override
-  public void run() {
-//    igDocs = mongoOps.find(Query.query(Criteria.where("domainInfo.scope").is("USER")),
-//        Ig.class);
-//    log.info("You have " + igDocs.size() + " igDocuemnts. ");
-
+  //Every 1:00 AM Saturday
+  @Scheduled(cron = "0 0 1 * * SAT")
+  public void reportCurrentTime() {
+    log.info("The time is now {}", dateFormat.format(new Date()));
     log.info("PHINVADSValueSetDigger started at " + new Date());
 
     List<ValueSet> vss = this.service.getAllValueSets().getValueSets();
@@ -83,6 +93,7 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
     }
     log.info("PHINVADSValueSetDigger ended at " + new Date());
   }
+
 
   public Valueset tableSaveOrUpdate(String oid) {
     // 1. Get metadata from PHINVADS web service
@@ -140,7 +151,7 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
     boolean needUpdate = false;
     if (vs != null && vsv != null) {
       if (table != null) {
-        if (table.getUpdateDate().equals(vs.getStatusDate())
+        if (table.getUpdateDate() != null && table.getUpdateDate().equals(vs.getStatusDate())
             && table.getDomainInfo().getVersion().equals(vsv.getVersionNumber() + "")) {
           if (table.getCodes().size() == 0 && table.getNumberOfCodes() == 0) {
             vscByVSVid =
@@ -179,7 +190,7 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
           this.getService().getValueSetVersionsByValueSetOid(vs.getOid()).getValueSetVersions();
       table.setBindingIdentifier(vs.getCode());
       // table.setDescription(vs.getDefinitionText());
-      table.setPreDef(vs.getDefinitionText().replaceAll("\u0019s", " "));
+      if(vs.getDefinitionText() != null) table.setPreDef(vs.getDefinitionText().replaceAll("\u0019s", " "));
       table.setName(vs.getName());
       table.setOid(vs.getOid());
       domainInfo.setVersion("" + vsvByVSOid.get(0).getVersionNumber());
@@ -208,7 +219,8 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
           csSearchCritDto.setTable396Search(false);
           csSearchCritDto.setSearchType(1);
           csSearchCritDto.setSearchText(pcode.getCodeSystemOid());
-          CodeSystem cs = this.getService().findCodeSystems(csSearchCritDto, 1, 5).getCodeSystems().get(0);
+          CodeSystem cs =
+              this.getService().findCodeSystems(csSearchCritDto, 1, 5).getCodeSystems().get(0);
           Code code = new Code();
           code.setValue(pcode.getConceptCode());
           code.setDescription(pcode.getCodeSystemConceptName());
@@ -224,32 +236,35 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
       // 5. update Table on DB
       try {
         table = this.fixValueSetDescription(table);
-        
+
         mongoOps.save(table);
-//        for (Ig ig : this.igDocs) {
-//          if (ig.getValueSetRegistry().findOneTableById(table.getId()) != null) {
-//            Notification item = new Notification();
-//            item.setByWhom("CDC");
-//            item.setChangedDate(new Date());
-//            item.setTargetType(TargetType.Valueset);
-//            item.setTargetId(table.getId());
-//            Criteria where = Criteria.where("igDocumentId").is(ig.getId());
-//            Query qry = Query.query(where);
-//            Notifications notifications = mongoOps.findOne(qry, Notifications.class);
-//            if (notifications == null) {
-//              notifications = new Notifications();
-//              notifications.setIgDocumentId(ig.getId());
-//              notifications.addItem(item);
-//            }
-//            mongoOps.save(notifications);
-//            notificationEmail(notifications.getId());
-//          }
-//        }
+        log.info(oid + " Table is updated.");
+        // for (Ig ig : this.igDocs) {
+        // if (ig.getValueSetRegistry().findOneTableById(table.getId()) != null) {
+        // Notification item = new Notification();
+        // item.setByWhom("CDC");
+        // item.setChangedDate(new Date());
+        // item.setTargetType(TargetType.Valueset);
+        // item.setTargetId(table.getId());
+        // Criteria where = Criteria.where("igDocumentId").is(ig.getId());
+        // Query qry = Query.query(where);
+        // Notifications notifications = mongoOps.findOne(qry, Notifications.class);
+        // if (notifications == null) {
+        // notifications = new Notifications();
+        // notifications.setIgDocumentId(ig.getId());
+        // notifications.addItem(item);
+        // }
+        // mongoOps.save(notifications);
+        // notificationEmail(notifications.getId());
+        // }
+        // }
       } catch (Exception e) {
         e.printStackTrace();
         return null;
       }
       return table;
+    } else {
+      log.info(oid + " Table is NOT updated.");
     }
     return null;
   }
@@ -287,24 +302,24 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
     return t;
   }
 
-//  private static void notificationEmail(String notificationsId) throws IOException {
-//    if (notificationsId != null) {
-//      String endpoint = System.getProperty("IGAMT_URL");
-//      if (endpoint != null) {
-//        String encodedNotificationsId = Base64.getEncoder().encodeToString(notificationsId.getBytes());
-//        endpoint = endpoint + "/api/notifications/" + encodedNotificationsId + "/sendEmail";
-//        
-//        URL url = new URL(endpoint);
-//        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//        conn.setRequestMethod("GET");
-//        conn.setRequestProperty("Accept", "application/json");
-//        if (conn.getResponseCode() != 200) {
-//          throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
-//        }
-//        conn.disconnect();
-//      }
-//    }
-//  }
+  // private static void notificationEmail(String notificationsId) throws IOException {
+  // if (notificationsId != null) {
+  // String endpoint = System.getProperty("IGAMT_URL");
+  // if (endpoint != null) {
+  // String encodedNotificationsId = Base64.getEncoder().encodeToString(notificationsId.getBytes());
+  // endpoint = endpoint + "/api/notifications/" + encodedNotificationsId + "/sendEmail";
+  //
+  // URL url = new URL(endpoint);
+  // HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+  // conn.setRequestMethod("GET");
+  // conn.setRequestProperty("Accept", "application/json");
+  // if (conn.getResponseCode() != 200) {
+  // throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+  // }
+  // conn.disconnect();
+  // }
+  // }
+  // }
 
   public VocabService getService() {
     return service;
@@ -330,9 +345,11 @@ public class TimerTaskForPHINVADSValueSetDigger extends TimerTask {
     tables =
         mongoOps
             .find(
-                Query.query(Criteria.where("domainInfo.scope")
-                    .is("PHINVADS").and("bindingIdentifier").regex(Pattern
-                        .compile(searchValue, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE))),
+                Query
+                    .query(
+                        Criteria.where("domainInfo.scope")
+                            .is("PHINVADS").and("bindingIdentifier").regex(Pattern.compile(
+                                searchValue, Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE))),
                 Valueset.class);
 
     for (Valueset t : tables) {
