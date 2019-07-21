@@ -1,6 +1,7 @@
 import {Observable} from 'rxjs';
 import {Type} from '../constants/type.enum';
 import {IDisplayElement} from './display-element.interface';
+import {Scope} from "../constants/scope.enum";
 
 export interface IResourcePickerData {
   existing?: IDisplayElement[];
@@ -10,4 +11,5 @@ export interface IResourcePickerData {
   type: Type;
   title: string;
   version: string;
+  scope: Scope;
 }

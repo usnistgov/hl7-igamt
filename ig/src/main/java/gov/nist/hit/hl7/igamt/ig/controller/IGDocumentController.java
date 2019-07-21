@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.MidiDevice.Info;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.*;
 import org.bson.types.ObjectId;
@@ -31,6 +32,7 @@ import com.mongodb.client.result.UpdateResult;
 import gov.nist.hit.hl7.igamt.common.base.controller.BaseController;
 import gov.nist.hit.hl7.igamt.common.base.exception.ResourceNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
+import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage;
 import gov.nist.hit.hl7.igamt.common.base.model.ResponseMessage.Status;
 import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
@@ -82,8 +84,8 @@ import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItemGroup;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetLabel;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.exceptions.XReferenceException;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
@@ -136,7 +138,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/datatypeLabels", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody Set<DatatypeLabel> getDatatypeLabels(@PathVariable("id") String id,
 			Authentication authentication) throws IGNotFoundException {
 		Ig igdoument = findIgById(id);
@@ -162,7 +164,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/conformancestatement", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public IgDocumentConformanceStatement getIgDocumentConformanceStatement(@PathVariable("id") String id,
 			Authentication authentication) throws IGNotFoundException {
 		Ig igdoument = findIgById(id);
@@ -170,7 +172,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/datatypeFalvorOptions/{dtId}", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody List<DatatypeSelectItemGroup> getDatatypeFlavorsOptions(@PathVariable("id") String id,
 			@PathVariable("viewScope") String viewScope, @PathVariable("dtId") String dtId,
 			Authentication authentication) throws IGNotFoundException {
@@ -185,7 +187,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/{viewScope}/segmentFalvorOptions/{segId}", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody List<SegmentSelectItemGroup> getSegmentFlavorsOptions(@PathVariable("id") String id,
 			@PathVariable("viewScope") String viewScope, @PathVariable("segId") String segId,
 			Authentication authentication) throws IGNotFoundException {
@@ -199,27 +201,7 @@ public class IGDocumentController extends BaseController {
 		return result;
 	}
 
-	@RequestMapping(value = "/api/igdocuments/{id}/valuesetLabels", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public @ResponseBody Set<ValuesetLabel> getValuesetLabels(@PathVariable("id") String id,
-			Authentication authentication) throws IGNotFoundException {
-		Ig igdoument = findIgById(id);
-		Set<ValuesetLabel> result = new HashSet<ValuesetLabel>();
 
-		for (Link link : igdoument.getValueSetRegistry().getChildren()) {
-			Valueset vs = this.valuesetService.findById(link.getId());
-			if (vs != null && vs.getDomainInfo() != null) {
-				ValuesetLabel label = new ValuesetLabel();
-				label.setId(vs.getId());
-				label.setScope(vs.getDomainInfo().getScope());
-				label.setLabel(vs.getBindingIdentifier());
-				label.setName(vs.getName());
-				label.setVersion(vs.getDomainInfo().getVersion());
-				result.add(label);
-			}
-		}
-		return result;
-	}
 
 	/**
 	 * 
@@ -227,24 +209,24 @@ public class IGDocumentController extends BaseController {
 	 * @param response
 	 * @throws ExportException
 	 */
-//	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
-//	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
-//			throws ExportException {
-//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//		if (authentication != null) {
-//			String username = authentication.getPrincipal().toString();
-//			ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
-//			response.setContentType("text/html");
-//			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
-//			try {
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-//			} catch (IOException e) {
-//				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-//			}
-//		} else {
-//			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-//		}
-//	}
+	//	@RequestMapping(value = "/api/igdocuments/{id}/export/html", method = RequestMethod.GET)
+	//	public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id, HttpServletResponse response)
+	//			throws ExportException {
+	//		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+	//		if (authentication != null) {
+	//			String username = authentication.getPrincipal().toString();
+	//			ExportedFile exportedFile = igExportService.exportIgDocumentToHtml(username, id);
+	//			response.setContentType("text/html");
+	//			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
+	//			try {
+	//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+	//			} catch (IOException e) {
+	//				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+	//			}
+	//		} else {
+	//			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+	//		}
+	//	}
 
 	// @RequestMapping(value = "/api/igdocuments/{id}/export/html", method =
 	// RequestMethod.GET)
@@ -275,30 +257,30 @@ public class IGDocumentController extends BaseController {
 	// }
 	// }
 
-//	/**
-//	 * 
-//	 * @param id
-//	 * @param response
-//	 * @param authentication
-//	 * @throws ExportException
-//	 */
-//	@RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
-//	public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id, HttpServletResponse response,
-//			Authentication authentication) throws ExportException {
-//		if (authentication != null) {
-//			String username = authentication.getPrincipal().toString();
-//			ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
-//			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
-//			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
-//			try {
-//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
-//			} catch (IOException e) {
-//				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
-//			}
-//		} else {
-//			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
-//		}
-//	}
+	//	/**
+	//	 * 
+	//	 * @param id
+	//	 * @param response
+	//	 * @param authentication
+	//	 * @throws ExportException
+	//	 */
+	//	@RequestMapping(value = "/api/igdocuments/{id}/export/word", method = RequestMethod.GET)
+	//	public @ResponseBody void exportIgDocumentToWord(@PathVariable("id") String id, HttpServletResponse response,
+	//			Authentication authentication) throws ExportException {
+	//		if (authentication != null) {
+	//			String username = authentication.getPrincipal().toString();
+	//			ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id);
+	//			response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+	//			response.setHeader("Content-disposition", "attachment;filename=" + exportedFile.getFileName());
+	//			try {
+	//				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+	//			} catch (IOException e) {
+	//				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
+	//			}
+	//		} else {
+	//			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+	//		}
+	//	}
 
 	@RequestMapping(value = "/api/igdocuments", method = RequestMethod.GET, produces = { "application/json" })
 	public @ResponseBody List<IgSummary> getUserIG(Authentication authentication,
@@ -343,7 +325,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws ResourceNotFoundException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/display", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody IGDisplay getIgDisplay(@PathVariable("id") String id, Authentication authentication)
 			throws IGNotFoundException, IGConverterException, ResourceNotFoundException {
@@ -386,7 +368,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws IGUpdateException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/section", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody ResponseMessage<Object> updateIg(@PathVariable("id") String id, @RequestBody Section section,
 			Authentication authentication) throws IGNotFoundException, IGUpdateException {
@@ -411,7 +393,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws IGUpdateException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/updatetoc", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id, @RequestBody List<TreeNode> toc,
 			Authentication authentication) throws IGNotFoundException, IGUpdateException {
@@ -434,11 +416,11 @@ public class IGDocumentController extends BaseController {
 	 * @throws IGUpdateException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/update/sections", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody ResponseMessage<Object> updateSections(@PathVariable("id") String id,
 			@RequestBody Set<TextSection> content, Authentication authentication)
-			throws IGNotFoundException, IGUpdateException {
+					throws IGNotFoundException, IGUpdateException {
 
 		UpdateResult updateResult = igService.updateAttribute(id, "content", content);
 		if (!updateResult.wasAcknowledged()) {
@@ -448,11 +430,11 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
 			@RequestBody DocumentMetadata metadata, Authentication authentication)
-			throws IGNotFoundException, IGUpdateException {
+					throws IGNotFoundException, IGUpdateException {
 		UpdateResult updateResult = igService.updateAttribute(id, "metadata", metadata);
 		if (!updateResult.wasAcknowledged()) {
 			throw new IGUpdateException("Could not update IG Metadata ");
@@ -461,7 +443,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/findMessageEvents/{version:.+}", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody ResponseMessage<List<MessageEventTreeNode>> getMessageEvents(
 			@PathVariable("version") String version, Authentication authentication) {
@@ -490,7 +472,7 @@ public class IGDocumentController extends BaseController {
 	@RequestMapping(value = "/api/igdocuments/create", method = RequestMethod.POST, produces = { "application/json" })
 	public @ResponseBody ResponseMessage<String> create(@RequestBody CreationWrapper wrapper,
 			Authentication authentication)
-			throws JsonParseException, JsonMappingException, FileNotFoundException, IOException, AddingException {
+					throws JsonParseException, JsonMappingException, FileNotFoundException, IOException, AddingException {
 
 		try {
 			String username = authentication.getPrincipal().toString();
@@ -545,11 +527,11 @@ public class IGDocumentController extends BaseController {
 	 * @throws SectionNotFoundException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/section/{sectionId}", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 
 	public @ResponseBody TextSection findSectionById(@PathVariable("id") String id,
 			@PathVariable("sectionId") String sectionId, Authentication authentication)
-			throws IGNotFoundException, SectionNotFoundException {
+					throws IGNotFoundException, SectionNotFoundException {
 		Ig ig = igService.findIgContentById(id);
 		if (ig != null) {
 			TextSection s = igService.findSectionById(ig.getContent(), sectionId);
@@ -574,10 +556,10 @@ public class IGDocumentController extends BaseController {
 	 * @throws XReferenceException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/crossref", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody List<RelationShip> findDatatypeCrossRef(@PathVariable("id") String id,
 			@PathVariable("datatypeId") String datatypeId, Authentication authentication)
-			throws IGNotFoundException, XReferenceException {
+					throws IGNotFoundException, XReferenceException {
 
 		return this.relationShipService.findCrossReferences(datatypeId);
 
@@ -593,7 +575,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws IGNotFoundException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{igId}/{type}/{elementId}/usage", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody Set<RelationShip> findUsage(@PathVariable("igId") String igId, @PathVariable("type") Type type,
 			@PathVariable("elementId") String elementId, Authentication authentication) throws IGNotFoundException {
 		Ig ig = findIgById(igId);
@@ -723,7 +705,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws XReferenceException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/delete", method = RequestMethod.DELETE, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage deleteDatatype(@PathVariable("id") String id, @PathVariable("datatypeId") String datatypeId,
 			Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
 		// Map<String, List<CrossRefsNode>> xreferences = findDatatypeCrossRef(id,
@@ -757,7 +739,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws XReferenceException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/delete", method = RequestMethod.DELETE, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage deleteSegment(@PathVariable("id") String id, @PathVariable("segmentId") String segmentId,
 			Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
 		// Map<String, List<CrossRefsNode>> xreferences = findSegmentCrossRef(id,
@@ -791,7 +773,7 @@ public class IGDocumentController extends BaseController {
 	 * @throws XReferenceException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/delete", method = RequestMethod.DELETE, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage deleteValueSet(@PathVariable("id") String id, @PathVariable("valuesetId") String valuesetId,
 			Authentication authentication) throws IGNotFoundException, XReferenceFoundException, XReferenceException {
 		// Map<String, List<CrossRefsNode>> xreferences = findValueSetCrossRef(id,
@@ -826,10 +808,10 @@ public class IGDocumentController extends BaseController {
 	 * @throws XReferenceException
 	 */
 	@RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceprofileId}/delete", method = RequestMethod.DELETE, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage deleteConformanceProfile(@PathVariable("id") String id,
 			@PathVariable("conformanceprofileId") String conformanceProfileId, Authentication authentication)
-			throws IGNotFoundException, XReferenceFoundException, XReferenceException {
+					throws IGNotFoundException, XReferenceFoundException, XReferenceException {
 
 		Ig ig = findIgById(id);
 		Link found = findLinkById(conformanceProfileId, ig.getConformanceProfileRegistry().getChildren());
@@ -847,7 +829,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/{conformanceProfileId}/clone", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<CloneResponse> cloneConformanceProfile(@RequestBody CopyWrapper wrapper,
 			@PathVariable("id") String id, @PathVariable("conformanceProfileId") String conformanceProfileId,
 			Authentication authentication) throws CloneException, IGNotFoundException {
@@ -886,10 +868,10 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/segments/{segmentId}/clone", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<CloneResponse> cloneSegment(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
 			@PathVariable("segmentId") String segmentId, Authentication authentication)
-			throws IGNotFoundException, ValidationException, CloneException {
+					throws IGNotFoundException, ValidationException, CloneException {
 		Ig ig = findIgById(id);
 		String username = authentication.getPrincipal().toString();
 		Segment segment = segmentService.findById(segmentId);
@@ -914,7 +896,7 @@ public class IGDocumentController extends BaseController {
 			}
 		}
 		ig.getSegmentRegistry().getChildren()
-				.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
+		.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getSegmentRegistry().getChildren().size() + 1));
 		ig = igService.save(ig);
 		CloneResponse response = new CloneResponse();
 		response.setId(clone.getId());
@@ -926,10 +908,10 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/datatypes/{datatypeId}/clone", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<CloneResponse> copyDatatype(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
 			@PathVariable("datatypeId") String datatypeId, Authentication authentication)
-			throws IGNotFoundException, CloneException {
+					throws IGNotFoundException, CloneException {
 		Ig ig = findIgById(id);
 		String username = authentication.getPrincipal().toString();
 		Datatype datatype = datatypeService.findById(datatypeId);
@@ -954,7 +936,7 @@ public class IGDocumentController extends BaseController {
 			}
 		}
 		ig.getDatatypeRegistry().getChildren()
-				.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1));
+		.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getDatatypeRegistry().getChildren().size() + 1));
 		ig = igService.save(ig);
 		CloneResponse response = new CloneResponse();
 		response.setId(clone.getId());
@@ -965,11 +947,11 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/{valuesetId}/clone", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 
 	public ResponseMessage<CloneResponse> cloneValueSet(@RequestBody CopyWrapper wrapper, @PathVariable("id") String id,
 			@PathVariable("valuesetId") String valuesetId, Authentication authentication)
-			throws CloneException, IGNotFoundException {
+					throws CloneException, IGNotFoundException {
 		Ig ig = findIgById(id);
 		String username = authentication.getPrincipal().toString();
 		Valueset valueset = valuesetService.findById(valuesetId);
@@ -984,7 +966,7 @@ public class IGDocumentController extends BaseController {
 		clone.getDomainInfo().setScope(Scope.USER);
 		clone = valuesetService.save(clone);
 		ig.getValueSetRegistry().getChildren()
-				.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
+		.add(new Link(clone.getId(), clone.getDomainInfo(), ig.getValueSetRegistry().getChildren().size() + 1));
 		ig = igService.save(ig);
 		CloneResponse response = new CloneResponse();
 		response.setId(clone.getId());
@@ -995,10 +977,10 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/conformanceprofiles/add", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<IGDisplayInfo> addConforanceProfile(@PathVariable("id") String id,
 			@RequestBody AddingWrapper wrapper, Authentication authentication)
-			throws IGNotFoundException, AddingException {
+					throws IGNotFoundException, AddingException {
 		String username = authentication.getPrincipal().toString();
 		Ig ig = findIgById(id);
 		Set<String> savedIds = new HashSet<String>();
@@ -1030,7 +1012,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/segments/add", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<IGDisplayInfo> addSegments(@PathVariable("id") String id, @RequestBody AddingWrapper wrapper,
 			Authentication authentication) throws IGNotFoundException, ValidationException, AddingException {
 		String username = authentication.getPrincipal().toString();
@@ -1066,10 +1048,10 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/datatypes/add", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<IGDisplayInfo> addDatatypes(@PathVariable("id") String id,
 			@RequestBody AddingWrapper wrapper, Authentication authentication)
-			throws IGNotFoundException, AddingException {
+					throws IGNotFoundException, AddingException {
 		String username = authentication.getPrincipal().toString();
 		Ig ig = findIgById(id);
 		Set<String> savedIds = new HashSet<String>();
@@ -1103,30 +1085,60 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/valuesets/add", method = RequestMethod.POST, produces = {
-			"application/json" })
+	"application/json" })
 	public ResponseMessage<IGDisplayInfo> addValueSets(@PathVariable("id") String id,
 			@RequestBody AddingWrapper wrapper, Authentication authentication)
-			throws IGNotFoundException, AddingException {
+					throws IGNotFoundException, AddingException {
 		String username = authentication.getPrincipal().toString();
 		Ig ig = findIgById(id);
 		Set<String> savedIds = new HashSet<String>();
 		for (AddingInfo elm : wrapper.getSelected()) {
+
 			if (elm.isFlavor()) {
-				Valueset valueset = valuesetService.findById(elm.getOriginalId());
-				if (valueset != null) {
-					Valueset clone = valueset.clone();
-					clone.getDomainInfo().setScope(Scope.USER);
-					clone.setUsername(username);
-					clone.setBindingIdentifier(elm.getName());
-					clone = valuesetService.save(clone);
-					savedIds.add(clone.getId());
+				if(elm.getOriginalId() !=null) {
+					Valueset valueset = valuesetService.findById(elm.getOriginalId());
+					if (valueset != null) {
+						Valueset clone = valueset.clone();
+						clone.getDomainInfo().setScope(Scope.USER);
+						if(!elm.isIncludeChildren()) {
+							clone.setSourceType(SourceType.EXTERNAL);
+							clone.setCodes(new HashSet<Code>());	
+						}
+						clone.setUsername(username);
+						clone.setBindingIdentifier(elm.getName());
+						clone.setSourceType(elm.getSourceType());
+						clone = valuesetService.save(clone);
+						ig.getValueSetRegistry().getCodesPresence().put(clone.getId(), elm.isIncludeChildren());
+						savedIds.add(clone.getId());
+					}
+				} else {
+					Valueset valueset= new Valueset();
+					DomainInfo info = new DomainInfo();
+					info.setScope(Scope.USER);
+					info.setVersion(null);
+					valueset.setDomainInfo(info);
+						if(!elm.isIncludeChildren()) {
+							valueset.setSourceType(SourceType.EXTERNAL);
+							valueset.setCodes(new HashSet<Code>());	
+						} else {
+							valueset.setSourceType(SourceType.INTERNAL);
+						}
+						valueset.setUsername(username);
+						valueset.setBindingIdentifier(elm.getName());
+						valueset.setUrl(elm.getUrl());
+						Valueset saved = valuesetService.save(valueset);
+						ig.getValueSetRegistry().getCodesPresence().put(saved.getId(), elm.isIncludeChildren());
+						savedIds.add(saved.getId());
+					
 				}
+
 			} else {
+				ig.getValueSetRegistry().getCodesPresence().put(elm.getId(), elm.isIncludeChildren());
 				savedIds.add(elm.getId());
 			}
 		}
 		AddValueSetResponseObject objects = crudService.addValueSets(savedIds, ig);
-		ig = igService.save(ig);
+		igService.save(ig);
 		IGDisplayInfo info = new IGDisplayInfo();
 		info.setIg(ig);
 		info.setValueSets(displayInfoService.convertValueSets(objects.getValueSets()));
@@ -1136,7 +1148,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/clone", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody ResponseMessage<String> copy(@PathVariable("id") String id, Authentication authentication)
 			throws IGNotFoundException {
 		String username = authentication.getPrincipal().toString();
@@ -1161,13 +1173,31 @@ public class IGDocumentController extends BaseController {
 	}
 
 	@RequestMapping(value = "/api/igdocuments/{id}/state", method = RequestMethod.GET, produces = {
-			"application/json" })
+	"application/json" })
 	public @ResponseBody IGDisplayInfo getState(@PathVariable("id") String id, Authentication authentication)
 			throws IGNotFoundException {
 
 		Ig ig = findIgById(id);
 		displayInfoService.covertIgToDisplay(ig);
 		return displayInfoService.covertIgToDisplay(ig);
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}", method = RequestMethod.GET, produces = {
+	"application/json" })
+	public @ResponseBody Valueset getValueSetInIG(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
+			throws IGNotFoundException, ValuesetNotFoundException {
+		return this.igService.getValueSetIngIg(id, vsId);	
+	}
+
+	@RequestMapping(value = "/api/igdocuments/{id}/valueset/{vsId}/resource", method = RequestMethod.GET, produces = {
+	"application/json" })
+	public @ResponseBody Set<Valueset> getValueSetInIGAsResource(@PathVariable("id") String id ,@PathVariable("vsId") String vsId, Authentication authentication)
+			throws IGNotFoundException, ValuesetNotFoundException {
+		HashSet<Valueset> ret = new HashSet<Valueset>();
+		Valueset vs = this.igService.getValueSetIngIg(id, vsId);
+		ret.add(vs);
+		return ret;
+		
 	}
 
 	/**

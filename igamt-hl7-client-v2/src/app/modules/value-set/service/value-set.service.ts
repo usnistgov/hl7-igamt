@@ -11,10 +11,9 @@ export class ValueSetService {
 
   constructor(private http: HttpClient) { }
 
-  getById(id: string): Observable<any> {
-    return this.http.get<any>('api/valuesets/' + id);
+  getById(igId: string, id: string): Observable<any> {
+    return this.http.get<any>('api/igdocuments/' + igId + '/valueset/' + id);
   }
-
   saveChanges(id: string, documentId: string, changes: IChange[]): Observable<Message<string>> {
     return this.http.post<Message<string>>('api/valuesets/' + id, changes, {
       params: {

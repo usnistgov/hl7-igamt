@@ -84,7 +84,9 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 
   getChanges(elementId: string, current: IResourceMetadata, old: IResourceMetadata): IChange[] {
     const changes: IChange[] = [];
-
+    console.log("getChanges");
+    console.log(current);
+    console.log(old);
     if (current.ext !== old.ext) {
       changes.push({
         location: elementId,
@@ -102,6 +104,17 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
         oldPropertyValue: old.description,
         propertyValue: current.description,
         propertyType: PropertyType.DESCRIPTION,
+        position: -1,
+        changeType: ChangeType.UPDATE,
+      });
+    }
+
+    if (current.bindingIdentifier !== old.bindingIdentifier) {
+      changes.push({
+        location: elementId,
+        oldPropertyValue: old.bindingIdentifier,
+        propertyValue: current.bindingIdentifier,
+        propertyType: PropertyType.BINDINGIDENTIFIER,
         position: -1,
         changeType: ChangeType.UPDATE,
       });
@@ -156,7 +169,7 @@ export interface IResourceMetadata {
   name: string;
   ext?: string;
   bindingIdentifier?: string;
-  description: string;
-  authorNotes: string;
-  usageNotes: string;
+  description?: string;
+  authorNotes?: string;
+  usageNotes?: string;
 }

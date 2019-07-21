@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import {EMPTY, of} from 'rxjs';
-import {catchError, flatMap, map, switchMap} from 'rxjs/operators';
+import {catchError, flatMap, map, mergeMap, switchMap, take, tap} from 'rxjs/operators';
 import {
   LoadValueSet,
   LoadValueSetFailure,
@@ -41,17 +41,22 @@ export class ValueSetEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-      return this.valueSetService.getById(action.id).pipe(
-        flatMap((valueSet: IValueSet) => {
-          return [
-            new TurnOffLoader(),
-            new LoadValueSetSuccess(valueSet),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new LoadValueSetFailure(error),
+      return this.store.select(fromIgEdit.selectIgId).pipe(
+        mergeMap((x: string ) => {
+          return this.valueSetService.getById(x, action.id).pipe(
+            take(1),
+            flatMap((valueSet: IValueSet) => {
+              return [
+                new TurnOffLoader(),
+                new LoadValueSetSuccess(valueSet),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new TurnOffLoader(),
+                new LoadValueSetFailure(error),
+              );
+            }),
           );
         }),
       );

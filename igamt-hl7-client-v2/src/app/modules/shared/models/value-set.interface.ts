@@ -3,6 +3,7 @@ import {Extensibility} from '../constants/extensibility.enum';
 import {Stability} from '../constants/stability.enum';
 import {CodeUsage} from '../constants/usage.enum';
 import {IResource} from './resource.interface';
+import {SourceType} from './adding-info';
 
 export interface ICodes {
   value: string;
@@ -16,9 +17,13 @@ export interface ICodes {
 export interface IValueSet extends IResource {
   codes: ICodes[];
   codeSystems?: string[];
+  includeCodes?: boolean;
   url?: string;
+  sourceType: SourceType;
+  numberOfCodes: number;
   bindingIdentifier: string;
   stability: Stability;
   extensibility: Extensibility;
   contentDefinition: ContentDefinition;
+  intensionalComment?: string;
 }

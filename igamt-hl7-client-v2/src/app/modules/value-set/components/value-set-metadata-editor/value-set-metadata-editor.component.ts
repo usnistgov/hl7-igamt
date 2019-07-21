@@ -84,6 +84,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
   }
 
   save(changes: IChange[]): Observable<Message<any>> {
+    console.log(changes);
     return combineLatest(this.elementId$, this.store.select(selectIgId)).pipe(
       take(1),
       concatMap(([id, documentId]) => {

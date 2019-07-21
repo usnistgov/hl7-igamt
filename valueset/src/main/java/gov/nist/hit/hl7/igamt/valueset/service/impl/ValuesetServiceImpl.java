@@ -13,28 +13,29 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.service.impl;
 
-import java.util.HashSet;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
-import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.PropertyType;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.CodeSysRef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.CodeSystemType;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCodeSystem;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
 import gov.nist.hit.hl7.igamt.valueset.repository.ValuesetRepository;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
@@ -178,7 +179,19 @@ public class ValuesetServiceImpl implements ValuesetService {
     return valueSets;
   }
 
-
+  @Override
+  public List<Valueset> findDisplayFormatByScope(String scope) {
+    // TODO Auto-generated method stub
+    Criteria where = Criteria.where("domainInfo.scope").is(scope);
+    Query qry = Query.query(where);
+    qry.fields().include("domainInfo");
+    qry.fields().include("id");
+    qry.fields().include("name");
+    qry.fields().include("bindingIdentifier");
+    qry.fields().include("numberOfCodes");
+    List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
+    return valueSets;
+  }
 
   private boolean exist(String codeSystemId, Set<String> codeSystemIds) {
     for (String csId : codeSystemIds) {
@@ -187,18 +200,6 @@ public class ValuesetServiceImpl implements ValuesetService {
     }
     return false;
   }
-
-  private DisplayCodeSystem findDisplayCodeSystem(String ref,
-      Set<DisplayCodeSystem> displayCodeSystems) {
-    for (DisplayCodeSystem displayCodeSystem : displayCodeSystems) {
-      if (displayCodeSystem.getCodeSysRef().equals(ref))
-        return displayCodeSystem;
-    }
-    return null;
-  }
-
-
-
 
   @Override
   public Link cloneValueSet(String newkey, Link l, String username, Scope scope) {
@@ -219,6 +220,50 @@ public class ValuesetServiceImpl implements ValuesetService {
 public List<Valueset> findByIdIn(Set<String> ids) {
 	// TODO Auto-generated method stub
 	return valuesetRepository.findByIdIn(ids);
+}
+
+@Override
+public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
+		throws JsonProcessingException, IOException {
+	Collections.sort(cItems);
+	   ObjectMapper mapper = new ObjectMapper();
+	    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+	    for (ChangeItemDomain item : cItems) {
+		if (item.getPropertyType().equals(PropertyType.PREDEF)) {
+			item.setOldPropertyValue(s.getPreDef());
+			s.setPreDef((String) item.getPropertyValue());
+
+		} else if (item.getPropertyType().equals(PropertyType.POSTDEF)) {
+			item.setOldPropertyValue(s.getPostDef());
+			s.setPostDef((String) item.getPropertyValue());
+		} else if (item.getPropertyType().equals(PropertyType.AUTHORNOTES)) {
+			item.setOldPropertyValue(s.getAuthorNotes());
+			s.setAuthorNotes((String) item.getPropertyValue());
+		} else if (item.getPropertyType().equals(PropertyType.USAGENOTES)) {
+			item.setOldPropertyValue(s.getUsageNotes());
+			s.setUsageNotes((String) item.getPropertyValue());
+		} else if (item.getPropertyType().equals(PropertyType.BINDINGIDENTIFIER)) {
+			item.setOldPropertyValue(s.getBindingIdentifier());
+			s.setBindingIdentifier((String) item.getPropertyValue());
+		}
+		else if (item.getPropertyType().equals(PropertyType.CODES)) {
+			String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+            item.setOldPropertyValue(s.getCodes());
+            Set<Code> codes= mapper.readValue(jsonInString, new TypeReference<Set<Code>>() {});
+            s.setCodes(codes);
+          }
+		else if (item.getPropertyType().equals(PropertyType.CODESYSTEM)) {
+
+			String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+            item.setOldPropertyValue(s.getCodes());
+            Set<String> codeSystems= mapper.readValue(jsonInString, new TypeReference<Set<String>>() {});
+            s.setCodeSystems(codeSystems);
+          }
+		} 
+	
+	this.save(s);
+	
 }
 
 }

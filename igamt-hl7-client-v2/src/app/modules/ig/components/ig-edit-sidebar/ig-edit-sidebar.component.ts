@@ -25,9 +25,11 @@ import {IUsages} from '../../../shared/models/cross-reference';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
 import {CrossReferencesService} from '../../../shared/services/cross-references.service';
-import {IAddWrapper} from '../../models/ig/add-wrapper.class';
+import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 import {IgTocComponent} from '../ig-toc/ig-toc.component';
+import {AddResourceComponent} from "../../../shared/components/add-resource/add-resource.component";
+import {$e} from "codelyzer/angular/styles/chars";
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -92,6 +94,7 @@ export class IgEditSidebarComponent implements OnInit {
           title: this.getDialogTitle(event),
           data: this.store.select(fromResource.getData),
           version: selectedVersion,
+          scope: event.scope,
           versionChange: (version: string) => {
             this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version }));
           },
@@ -197,5 +200,25 @@ export class IgEditSidebarComponent implements OnInit {
   }
   private getCopyTitle(type: Type) {
     return 'Copy ' + this.getStringFromType(type);
+  }
+
+  private getNewTitle(type: Type) {
+    return 'add New ' + this.getStringFromType(type);
+  }
+
+  addChild($event: IAddNewWrapper) {
+    const dialogRef = this.dialog.open(AddResourceComponent, {
+      data: {existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type },
+    });
+    dialogRef.afterClosed().pipe(
+      filter((x) => x !== undefined),
+      withLatestFrom(this.igId$),
+      map(([result, igId]) => {
+
+        console.log([result]);
+        this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
+
+      }),
+    ).subscribe();
   }
 }

@@ -44,7 +44,7 @@ export class ValueSetStructureComponent implements OnInit {
     this.notDefinedOption, {label: 'Open', value: 'Open'}, {label: 'Closed', value: 'Closed'},
   ];
   contentDefinitionOptions = [
-    this.notDefinedOption, {label: 'Extensional', value: 'Extensional'}, {label: 'Intentional', value: 'Intentional'},
+    this.notDefinedOption, {label: 'Extensional', value: 'Extensional'}, {label: 'Intensional', value: 'Intensional'},
   ];
 
   codeUsageOptions = [
@@ -102,7 +102,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   deleteCodeSystem(codeSystem: string) {
-    console.log(codeSystem);
     this.valueSet.codeSystems = this.valueSet.codeSystems.filter((codeSys: string) => {
       return codeSystem.toLowerCase() !== codeSys.toLowerCase();
     });
@@ -165,7 +164,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   updateAttribute(propertyType: PropertyType, value: any) {
-
     this.changes.emit({
       location: 'ROOT',
       propertyType,

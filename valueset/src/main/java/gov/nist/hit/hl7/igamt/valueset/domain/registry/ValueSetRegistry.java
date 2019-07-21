@@ -7,7 +7,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class ValueSetRegistry extends Registry {
   private ValueSetConfigForExport exportConfig;
-  private HashMap<String, Boolean> codesPresence;
+  private HashMap<String, Boolean> codesPresence = new HashMap<String, Boolean>();
 
   public ValueSetRegistry() {
     super();

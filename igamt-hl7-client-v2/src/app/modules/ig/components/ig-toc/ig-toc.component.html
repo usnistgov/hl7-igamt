@@ -59,8 +59,15 @@
           <div #vsLib>
             <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #valueSetsContextMenu>
+
+              <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem>
+                <i class="fa fa-plus"></i> Create new value set
+              </ng-template>
               <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i> Add Hl7 Value Sets
+              </ng-template>
+              <ng-template (execute)="import(node.data, 'VALUESET', 'PHINVADS')" contextMenuItem>
+                <i class="fa fa-plus"></i> Add PHINVADS Value Sets
               </ng-template>
             </context-menu>
           </div>
