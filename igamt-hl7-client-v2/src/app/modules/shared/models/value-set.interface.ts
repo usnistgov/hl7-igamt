@@ -2,8 +2,8 @@ import {ContentDefinition} from '../constants/content-definition.enum';
 import {Extensibility} from '../constants/extensibility.enum';
 import {Stability} from '../constants/stability.enum';
 import {CodeUsage} from '../constants/usage.enum';
-import {IResource} from './resource.interface';
 import {SourceType} from './adding-info';
+import {IResource} from './resource.interface';
 
 export interface ICodes {
   value: string;

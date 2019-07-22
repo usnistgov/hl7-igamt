@@ -38,7 +38,8 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
       messageService,
       store,
     );
-
+    const authorNotes = 'Author notes';
+    const usageNotes = 'Usage notes';
     this.metadataFormInput = {
       viewOnly: this.viewOnly$,
       data: this.currentSynchronized$,
@@ -61,22 +62,22 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
           name: 'Name',
         },
         authorNotes: {
-          label: 'Author notes',
-          placeholder: 'Author notes',
+          label: authorNotes,
+          placeholder: authorNotes,
           validators: [],
           enum: [],
           type: FieldType.RICH,
           id: 'authornotes',
-          name: 'Author notes',
+          name: authorNotes,
         },
         usageNotes: {
-          label: 'Usage notes',
-          placeholder: 'Usage notes',
+          label: usageNotes,
+          placeholder: usageNotes,
           validators: [],
           enum: [],
           type: FieldType.RICH,
           id: 'usagenotes',
-          name: 'Author notes',
+          name: usageNotes,
         },
       },
     };

@@ -1,6 +1,7 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
 import {MatDialog} from '@angular/material';
 import {Store} from '@ngrx/store';
+import {$e} from 'codelyzer/angular/styles/chars';
 import {Observable} from 'rxjs';
 import {concatMap, filter, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -14,6 +15,7 @@ import * as config from '../../../../root-store/config/config.reducer';
 import {CollapseTOC} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
+import {AddResourceComponent} from '../../../shared/components/add-resource/add-resource.component';
 import {ConfirmDialogComponent} from '../../../shared/components/confirm-dialog/confirm-dialog.component';
 import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
 import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
@@ -28,8 +30,6 @@ import {CrossReferencesService} from '../../../shared/services/cross-references.
 import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IGDisplayInfo} from '../../models/ig/ig-document.class';
 import {IgTocComponent} from '../ig-toc/ig-toc.component';
-import {AddResourceComponent} from "../../../shared/components/add-resource/add-resource.component";
-import {$e} from "codelyzer/angular/styles/chars";
 
 @Component({
   selector: 'app-ig-edit-sidebar',

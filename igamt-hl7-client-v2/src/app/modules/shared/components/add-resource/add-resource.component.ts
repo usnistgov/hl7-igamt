@@ -1,11 +1,11 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {NgForm} from '@angular/forms';
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import {Scope} from '../../constants/scope.enum';
 import {Type} from '../../constants/type.enum';
-import {IAddingInfo, SourceType} from "../../models/adding-info";
-import {IDisplayElement} from "../../models/display-element.interface";
-import {IResourcePickerData} from "../../models/resource-picker-data.interface";
+import {IAddingInfo, SourceType} from '../../models/adding-info';
+import {IDisplayElement} from '../../models/display-element.interface';
+import {IResourcePickerData} from '../../models/resource-picker-data.interface';
 @Component({
   selector: 'app-add-resource',
   templateUrl: './add-resource.component.html',

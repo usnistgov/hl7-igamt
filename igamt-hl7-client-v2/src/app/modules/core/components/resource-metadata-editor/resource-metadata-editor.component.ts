@@ -84,7 +84,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 
   getChanges(elementId: string, current: IResourceMetadata, old: IResourceMetadata): IChange[] {
     const changes: IChange[] = [];
-    console.log("getChanges");
+    console.log('getChanges');
     console.log(current);
     console.log(old);
     if (current.ext !== old.ext) {

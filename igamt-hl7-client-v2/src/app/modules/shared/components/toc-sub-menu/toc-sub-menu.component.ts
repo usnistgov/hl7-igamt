@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Icons } from '../../constants/icons.enum';
+import {Type} from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { SubMenu } from '../../models/sub-menu.class';
-import {Type} from "../../constants/type.enum";
 
 @Component({
   selector: 'app-toc-sub-menu',
