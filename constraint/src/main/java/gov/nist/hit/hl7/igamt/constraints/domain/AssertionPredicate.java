@@ -41,5 +41,11 @@ public class AssertionPredicate extends Predicate implements Serializable{
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
   }
+  
+  
+  @Override
+  public String generateConditionScript() {
+    return "<Condition>" + this.assertion.generateAssertionScript() + "</Condition>" ;
+  }
 
 }

@@ -46,5 +46,9 @@ public class FreeTextPredicate extends Predicate  implements Serializable{
   public void setAssertionScript(String assertionScript) {
     this.assertionScript = assertionScript;
   }
-
+  
+  @Override
+  public String generateConditionScript() {
+    return assertionScript;
+  }
 }
