@@ -20,6 +20,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 
 @Service("igService")
 public interface IgService {
@@ -78,8 +79,9 @@ public interface IgService {
    * @throws IOException 
    * @throws ClassNotFoundException 
    * @throws ProfileSerializationException 
+   * @throws TableSerializationException 
    */
-  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException;
+  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
 
 
 }
