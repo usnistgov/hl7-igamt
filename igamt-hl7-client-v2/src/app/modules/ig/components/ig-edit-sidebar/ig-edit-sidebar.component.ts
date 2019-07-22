@@ -217,7 +217,6 @@ export class IgEditSidebarComponent implements OnInit {
 
         console.log([result]);
         this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: [result], type: $event.type }));
-
       }),
     ).subscribe();
   }

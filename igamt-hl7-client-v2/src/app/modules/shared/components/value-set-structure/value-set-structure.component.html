@@ -5,7 +5,18 @@
         <strong>
           Extensibility:
         </strong>
-        <p-dropdown (ngModelChange)="updateStability()" *ngIf="!viewOnly" [(ngModel)]="valueSet.stability"
+        <span *ngIf="viewOnly">
+          {{valueSet.extensibility}}
+        </span>
+        <p-dropdown (ngModelChange)="updateExtensibility($event)" *ngIf="!viewOnly" [(ngModel)]="valueSet.extensibility"
+                    [options]="extensibilityOptions"
+                    id="extensibility" name="extensibility"></p-dropdown>
+      </div>
+      <div class="value-set-attributes-col">
+        <strong>
+          Stability:
+        </strong>
+        <p-dropdown (ngModelChange)="updateStability($event)" *ngIf="!viewOnly" [(ngModel)]="valueSet.stability"
                     [options]="stabilityOptionsOptions"
                     id="stability" name="stability"></p-dropdown>
         <span *ngIf="viewOnly">
@@ -14,23 +25,12 @@
       </div>
       <div class="value-set-attributes-col">
         <strong>
-          Stability:
-        </strong>
-        <span *ngIf="viewOnly">
-          {{valueSet.extensibility}}
-        </span>
-        <p-dropdown (ngModelChange)="updateExtensibility()" *ngIf="!viewOnly" [(ngModel)]="valueSet.extensibility"
-                    [options]="extensibilityOptions"
-                    id="extensibility" name="extensibility"></p-dropdown>
-      </div>
-      <div class="value-set-attributes-col">
-        <strong>
           Content Definition:
         </strong>
         <span *ngIf="viewOnly">
           {{valueSet.contentDefinition}}
         </span>
-        <p-dropdown (ngModelChange)="updateContentDefinition()" *ngIf="!viewOnly"
+        <p-dropdown (ngModelChange)="updateContentDefinition($event)" *ngIf="!viewOnly"
                     [(ngModel)]="valueSet.contentDefinition" [options]="contentDefinitionOptions"
                     id="contentDef" name="contentDef"></p-dropdown>
       </div>
@@ -70,7 +70,7 @@
     <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right"
              header="Content">
       <div *ngIf="valueSet.includeCodes">
-        <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true"
+        <p-table #dt1 [(selection)]="selectedCodes" [columns]="selectedColumns" [reorderableColumns]="true" sortField="value"
                  [resizableColumns]="false" [value]="valueSet.codes" selectionMode="checkbox">
           <ng-template pTemplate="caption">
             <div class="codes-toolbar">
@@ -82,22 +82,22 @@
               </div>
               <div *ngIf="!viewOnly" class="selected-codes-options">
                 <div>
-                  <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="false" [disabled]="!selectedCodes || !selectedCodes.length" [options]="codeSystemOptions"
+                  <p-dropdown (onChange)="applyCodeSystem($event)" [editable]="true"  [disabled]="!selectedCodes.length"  [options]="codeSystemOptions"
                               placeholder="Apply Code System"></p-dropdown>
                 </div>
                 <div class="apply-usages" style="margin-right: 5px; margin-left: 10px;">
-          <span style="margin-right: 5px">
-            <strong>Apply Usages</strong>
-          </span>
+                  <span style="margin-right: 5px">
+                   <strong>Apply Usages</strong>
+                   </span>
 
-                  <button (click)="applyUsage('P')" [disabled]="!selectedCodes || !selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> P</button>
-                  <button (click)="applyUsage('R')"  [disabled]="!selectedCodes || !selectedCodes.length" class="btn btn-sm btn-primary" style="height: 38px;"> R</button>
-                  <button (click)="applyUsage('E')" [disabled]="!selectedCodes || !selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> E</button>
+                  <button (click)="applyUsage('P')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> P</button>
+                  <button (click)="applyUsage('R')"  [disabled]="!selectedCodes.length" class="btn btn-sm btn-primary" style="height: 38px;"> R</button>
+                  <button (click)="applyUsage('E')" [disabled]="!selectedCodes.length"  class="btn btn-sm btn-primary" style="height: 38px;"> E</button>
                 </div>
               </div>
 
               <div *ngIf="!viewOnly" class="codes-options">
-                <button (click)="deleteCodes()" [disabled]="!selectedCodes||!selectedCodes.length" class="btn btn-danger"
+                <button (click)="deleteCodes()" [disabled]="!selectedCodes.length" class="btn btn-danger"
                         style="margin-right:5px;"
                         type="button">
                   <i class="fa fa-trash"></i> Delete Selected
@@ -213,14 +213,14 @@
         </div>
         <div class="form-group" *ngIf="!viewOnly">
           <label  class="form-label-lg"> URL</label>
-        <input required id="url" name="url" type="url"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
+        <input required id="url" name="url" type="url" (ngModelChange)="updateAttribute('URL' ,valueSet.url)"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
            <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
              <span style="color:red"> Enter a valid URL</span>
            </div>
         </div>
         <div class="form-group" *ngIf="!viewOnly && !valueSet.includeCodes && valueSet.contentDefinition =='Intensional'">
           <label  class="form-label-lg"> Intensional comment</label>
-          <input required id="intensionalComment" name="intensionalComment" type="text"  placeholder="Comment For Intensional content definition"  [(ngModel)]="valueSet.intensionalComment" class="form-control" width="100%"/>
+          <input required id="intensionalComment" name="intensionalComment" type="text"  placeholder="Comment For Intensional content definition"  [(ngModel)]="valueSet.intensionalComment" (ngModelChange)="updateAttribute('INTENSIONALCOMMENT' ,valueSet.intensionalComment)" class="form-control" width="100%"/>
         </div>
         <div>
         </div>

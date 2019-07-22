@@ -16,7 +16,7 @@ export class ValueSetStructureComponent implements OnInit {
 
   @Input()
   valueSet: IValueSet;
-  selectedCodes: ICodes[];
+  selectedCodes: ICodes[] = [];
   notDefinedOption = {label: 'Not defined', value: 'Undefined'};
   edit = {};
   temp: string = null;
@@ -57,14 +57,6 @@ export class ValueSetStructureComponent implements OnInit {
     this.editMap[this.valueSet.id] = false;
     this.codeSystemOptions = this.getCodeSystemOptions();
   }
-
-  filterByCodeSystem(value: any) {
-
-  }
-
-  filterByUsages(value: any) {
-  }
-
   toggleEdit(id: string) {
     this.temp = null;
     const tempMap = this.editMap;
@@ -110,6 +102,8 @@ export class ValueSetStructureComponent implements OnInit {
         code.codeSystem = null;
       }
     }
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codeSystems);
   }
 
   addCode() {
@@ -135,6 +129,7 @@ export class ValueSetStructureComponent implements OnInit {
     for (const code of this.selectedCodes) {
       code.usage = usage;
     }
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
   }
 
   applyCodeSystem($event) {
@@ -161,9 +156,15 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   deleteCodes() {
+    this.valueSet.codes = this.valueSet.codes.filter((x) =>  this.selectedCodes.indexOf(x) < 0);
+    this.selectedCodes = [];
+    this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
   }
 
   updateAttribute(propertyType: PropertyType, value: any) {
+    console.log(propertyType);
+    console.log(value);
+
     this.changes.emit({
       location: 'ROOT',
       propertyType,
@@ -173,16 +174,16 @@ export class ValueSetStructureComponent implements OnInit {
       changeType: ChangeType.UPDATE,
     });
   }
-
-  updateExtensibility() {
-    this.updateAttribute(PropertyType.EXTENSIBILITY, this.valueSet.extensibility);
+  updateExtensibility($event) {
+    this.updateAttribute(PropertyType.EXTENSIBILITY, $event);
   }
 
-  updateStability() {
-    this.updateAttribute(PropertyType.STABILITY, this.valueSet.stability);
+  updateStability($event) {
+    console.log();
+    this.updateAttribute(PropertyType.STABILITY, $event);
   }
 
-  updateContentDefinition() {
-    this.updateAttribute(PropertyType.CONTENTDEFINITION, this.valueSet.contentDefinition);
+  updateContentDefinition($event) {
+    this.updateAttribute(PropertyType.CONTENTDEFINITION, $event);
   }
 }
