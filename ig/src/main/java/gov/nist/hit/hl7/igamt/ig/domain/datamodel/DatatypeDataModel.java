@@ -154,7 +154,7 @@ public class DatatypeDataModel implements Serializable {
       }
       
       if (seb.getChildren() != null) {
-       //this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+       this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
       }
     }
   }
