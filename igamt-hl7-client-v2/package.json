@@ -38,7 +38,7 @@
     "font-awesome": "^4.7.0",
     "guid-typescript": "^1.0.9",
     "jquery": "^3.4.0",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.14",
     "ng-block-ui": "^2.1.3",
     "ng2-toasty": "^4.0.3",
     "ngx-contextmenu": "^5.1.1",

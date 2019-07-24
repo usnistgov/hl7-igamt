@@ -1,0 +1,200 @@
+<table class="table table-sm table-condensed table-striped">
+  <tr>
+    <th><i [class]="'fa ' + (collapsed ? 'fa-chevron-right' : 'fa-chevron-down')" style="cursor: pointer;" (click)="collapsed = !collapsed"></i></th>
+
+    <th *ngIf="csType === _csType.PROPOSITION"></th>
+
+    <!-- Occurrence -->
+    <th *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" >Target Occurrence Declarative Statement <strong class="asteriks">*</strong></th>
+
+    <!-- Location -->
+    <th>Target Node Location  <strong class="asteriks">*</strong></th>
+
+    <!-- Verb -->
+    <th *ngIf="csType === _csType.STATEMENT" >Verb  <strong class="asteriks">*</strong></th>
+
+    <!-- Statement -->
+    <th [attr.colspan]="csType === _csType.PROPOSITION ? 2 : 1">
+      <div style="justify-content: space-between; display: flex; align-items: start;">
+        <span>Content Declarative Statement  <strong class="asteriks">*</strong></span>
+        <div *ngIf="csType !== _csType.PROPOSITION">
+          <p-radioButton (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" [style]="{'margin-left': '10px'}" [label]="'Declaration'" styleClass="'radio-inline'" [value]="_statementType.DECLARATIVE"></p-radioButton>
+          <p-radioButton (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" [style]="{'margin-left': '10px'}" [label]="'Comparison'" styleClass="'radio-inline'" [value]="_statementType.COMPARATIVE"></p-radioButton>
+        </div>
+      </div>
+    </th>
+
+    <!-- Comparison Occurrence -->
+    <th *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" >Comparison Occurrence Declarative Statement  <strong class="asteriks">*</strong></th>
+
+    <!-- Comparative Node -->
+    <th *ngIf="statementType === _statementType.COMPARATIVE" >Comparison Node Location  <strong class="asteriks">*</strong></th>
+
+  </tr>
+  <tr>
+
+    <td>
+      <span [ngSwitch]="complete()">
+        <i *ngSwitchCase="false" class="fa fa-times-circle-o" style="color: red;"></i>
+        <i *ngSwitchCase="true" class="fa fa-check" style="color: green;"></i>
+      </span>
+    </td>
+
+    <th *ngIf="csType === _csType.PROPOSITION"> If </th>
+
+    <!-- Occurrence -->
+    <td *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" [ngClass]="{'invalid': !targetOccurenceValid()}">
+      <span class="value" *ngIf="!assertion.subject.occurenceType"> SELECT </span>
+      <form #targetOccurenceValues="ngForm">
+        <ng-container [ngSwitch]="assertion.subject.occurenceType">
+          <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
+            The <input (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [max]="subjectRepeatMax"> occurrence of
+          </ng-container>
+          <ng-container *ngSwitchCase="_occurrenceType.COUNT">
+            <input (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [max]="subjectRepeatMax"> occurrence(s) of
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ labelsMap[assertion.subject.occurenceType] }}
+          </ng-container>
+        </ng-container>
+      </form>
+    </td>
+
+    <!-- Location -->
+    <td [ngClass]="{'invalid': !targetNodeValid()}">
+      <span class="value" *ngIf="!assertion.subject.occurenceLocationStr"> SELECT </span>
+      <span *ngIf="assertion.subject.occurenceLocationStr"> {{assertion.subject.occurenceLocationStr}} </span>
+    </td>
+
+    <!-- Verb -->
+    <td *ngIf="csType === _csType.STATEMENT" [ngClass]="{'invalid': !verbValid()}">
+      <span class="value" *ngIf="!assertion.verbKey"> SELECT </span>
+      {{ labelsMap[assertion.verbKey] }}
+    </td>
+
+    <!-- Statement -->
+    <td style="display: flex; align-items: center;" [ngClass]="{'invalid': !statementValid()}">
+      <span class="value" *ngIf="!assertion.complement.complementKey"> SELECT </span>
+      <form #statementValues="ngForm" style="display: flex; align-items: center;">
+        <ng-container [ngSwitch]="assertion.complement.complementKey">
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE">
+            contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+          </ng-container>
+          <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE">
+            does not contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE_DESC">
+            contain the value <input type="text" name="value" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+          </ng-container>
+          <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE_DESC">
+            does not contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE">
+            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES">
+            contain one of the values in the list:  <p-chips name="values" (change)="change()" required [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips>
+          </ng-container>
+          <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUES">
+            does not contain one of the values in the list:  <p-chips name="values" (change)="change()"  required [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips>
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES">
+            contain one of the values in the list: <p-chips name="values" required (change)="change()" [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips> drawn from the code system <input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_REGEX">
+            match the regular expression <input (change)="change()" name="regex" type="text" required [(ngModel)]="assertion.complement.value" placeholder="regular expression" style="margin-left: 5px; margin-right: 5px;" >
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ labelsMap[assertion.complement.complementKey] }}
+          </ng-container>
+        </ng-container>
+      </form>
+    </td>
+
+    <!-- Occurrence -->
+    <td *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" [ngClass]="{'invalid': !comparisonOccurenceValid()}">
+      <span class="value" *ngIf="!assertion.complement.occurenceType"> SELECT </span>
+      <form #compOccurenceValues="ngForm">
+        <ng-container [ngSwitch]="assertion.complement.occurenceType">
+          <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
+            the <input (change)="change()" name="comp-occurence" required type="number" [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [max]="complementRepeatMax"> occurrence of
+          </ng-container>
+          <ng-container *ngSwitchCase="_occurrenceType.COUNT">
+            <input (change)="change()" type="number" name="comp-occurence" required [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [max]="complementRepeatMax"> occurrence(s) of
+          </ng-container>
+          <ng-container *ngSwitchDefault>
+            {{ labelsMap[assertion.complement.occurenceType] }}
+          </ng-container>
+        </ng-container>
+      </form>
+    </td>
+
+    <!-- Comparative Node -->
+    <td *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
+      <span class="value" *ngIf="!assertion.complement.occurenceLocationStr"> SELECT </span>
+      <span *ngIf="assertion.complement.occurenceLocationStr"> {{assertion.complement.occurenceLocationStr}} </span>
+    </td>
+
+    <th *ngIf="csType === _csType.PROPOSITION"> then </th>
+
+  </tr>
+  <tr *ngIf="!collapsed">
+
+    <td></td>
+
+    <td *ngIf="csType === _csType.PROPOSITION"></td>
+
+    <!-- Occurrence -->
+    <td *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" class="table-font">
+      <ng-container *ngFor="let occurence of occurences">
+        <p-radioButton  [name]="id + 'target-occurences'" [value]="occurence.value" [label]="occurence.label" [(ngModel)]="assertion.subject.occurenceType" (ngModelChange)="change()"></p-radioButton><br>
+      </ng-container>
+    </td>
+
+    <!-- Location -->
+    <td>
+      <div style="height: 200px; width: 250px;">
+        <app-structure-tree
+          [resource]="resource"
+          [repository]="repository"
+          (selection)="targetElement($event)"
+        ></app-structure-tree>
+      </div>
+    </td>
+
+    <!-- Verb -->
+    <td *ngIf="csType === _csType.STATEMENT" class="table-font">
+      <ng-container *ngFor="let verb of verbs">
+        <p-radioButton [name]="id + 'verbs'" [value]="verb.value" [label]="verb.label" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"></p-radioButton><br>
+      </ng-container>
+    </td>
+
+    <!-- Statement -->
+    <td class="table-font">
+      <ng-container  *ngFor="let complement of statementList()" >
+          <p-radioButton [name]="id + 'complement'" [value]="complement.value" [label]="complement.label" [(ngModel)]="assertion.complement.complementKey" (ngModelChange)="changeStatement($event)"></p-radioButton><br>
+      </ng-container>
+    </td>
+
+    <!-- Occurrence -->
+    <td *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" class="table-font">
+      <ng-container *ngFor="let occurence of occurences">
+        <p-radioButton  [name]="id + 'comp-occurences'" [value]="occurence.value" [label]="occurence.label" [(ngModel)]="assertion.complement.occurenceType" (ngModelChange)="change()"></p-radioButton><br>
+      </ng-container>
+    </td>
+
+    <!-- Comparative Node -->
+    <td *ngIf="statementType === _statementType.COMPARATIVE">
+      <div style="height: 200px; width: 250px;">
+        <app-structure-tree
+          [resource]="resource"
+          [repository]="repository"
+          (selection)=" comparativeElement($event)"
+        ></app-structure-tree>
+      </div>
+    </td>
+
+    <td *ngIf="csType === _csType.PROPOSITION"></td>
+
+  </tr>
+</table>

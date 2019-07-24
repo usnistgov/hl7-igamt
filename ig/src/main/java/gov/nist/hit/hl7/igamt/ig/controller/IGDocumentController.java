@@ -354,7 +354,7 @@ public class IGDocumentController extends BaseController {
 
 		IGDisplay ret = displayConverter.convertDomainToModel(igdoument, igData);
 
-		igService.buildDependencies(igData);
+//		igService.buildDependencies(igData);
 
 		// List<RelationShip> relationShip=relationShipService.findAll();
 		// System.out.println(relationShip);

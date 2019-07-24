@@ -12,6 +12,7 @@ export enum SegmentEditActionTypes {
   OpenSegmentStructureEditor = '[Segment Edit] Open Segment Structure Editor',
   OpenSegmentCrossRefEditor = '[Segment Edit] Open Segment Cross References Editor',
   OpenSegmentMetadataEditor = '[Segment Edit] Open Segment Metadata Editor',
+  OpenSegmentConformanceStatementEditor = '[Segment Edit] Open Segment Conformance Statement Editor',
 }
 
 export class LoadSegment implements Action {
@@ -70,6 +71,14 @@ export class OpenSegmentCrossRefEditor implements Action {
   }) { }
 }
 
+export class OpenSegmentConformanceStatementEditor implements Action {
+  readonly type = SegmentEditActionTypes.OpenSegmentConformanceStatementEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+}
+
 export type SegmentEditActions =
   LoadSegment
   | LoadSegmentSuccess
@@ -78,4 +87,5 @@ export type SegmentEditActions =
   | OpenSegmentPreDefEditor
   | OpenSegmentPostDefEditor
   | OpenSegmentCrossRefEditor
+  | OpenSegmentConformanceStatementEditor
   | OpenSegmentMetadataEditor;

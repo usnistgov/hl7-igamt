@@ -11,7 +11,6 @@ import { RegistrationEffects } from '../../root-store/registration/registration.
 import { SharedModule } from '../shared/shared.module';
 import { AuthenticationEffects } from './../../root-store/authentication/authentication.effects';
 import { AlertsContainerComponent } from './components/alerts-container/alerts-container.component';
-import { DefinitionEditorComponent } from './components/definition-editor/definition-editor.component';
 import { ErrorPageComponent } from './components/error-page/error-page.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeaderComponent } from './components/header/header.component';
@@ -20,7 +19,6 @@ import { LoginComponent } from './components/login/login.component';
 import { NewPasswordComponent } from './components/new-password/new-password.component';
 import { RegisterComponent } from './components/register/register.component';
 import { ResetPasswordRequestComponent } from './components/reset-password-request/reset-password-request.component';
-import { StructureEditorComponent } from './components/structure-editor/structure-editor.component';
 import { UserManagementHeaderComponent } from './components/user-management-header/user-management-header.component';
 import { NewPasswordResolver } from './resolvers/new-password.resolver';
 import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard.guard';

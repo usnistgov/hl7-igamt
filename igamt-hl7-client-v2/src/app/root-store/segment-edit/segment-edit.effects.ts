@@ -3,19 +3,20 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
+import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { Type } from 'src/app/modules/shared/constants/type.enum';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { SegmentService } from '../../modules/segment/services/segment.service';
 import { IUsages } from '../../modules/shared/models/cross-reference';
+import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
-import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
+import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
+import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentCrossRefEditor, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
+import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentConformanceStatementEditor, OpenSegmentCrossRefEditor, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
 
 @Injectable()
 export class SegmentEditEffects {
@@ -103,6 +104,22 @@ export class SegmentEditEffects {
     Type.SEGMENT,
     fromIgEdit.selectSegmentsById,
     this.store.select(fromIgEdit.selectedSegment),
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenSegmentConformanceStatementEditor>(
+    SegmentEditActionTypes.OpenSegmentConformanceStatementEditor,
+    Type.SEGMENT,
+    fromIgEdit.selectSegmentsById,
+    (action: OpenEditorBase) => {
+      return this.store.select(selectIgId).pipe(
+        take(1),
+        mergeMap((igId) => {
+          return this.segmentService.getSegmentConformanceStatements(action.payload.id, igId);
+        }),
+      );
+    },
     this.SegmentNotFound,
   );
 

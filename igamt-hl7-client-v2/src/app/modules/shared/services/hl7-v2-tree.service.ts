@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, from, Observable, of } from 'rxjs';
-import { map, mergeMap, take, toArray } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, from, Observable, of, Subscription } from 'rxjs';
+import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
+import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
+import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { PredicateService } from '../service/predicate.service';
 import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
@@ -71,6 +73,71 @@ export class Hl7V2TreeService {
       });
     });
     return payload;
+  }
+
+  // getNode(resource: IResource, repository: AResourceRepositoryService, path: IPath): IHL7v2TreeNode {
+
+  // }
+
+  getTree(resource: IResource, repository: AResourceRepositoryService, viewOnly: boolean, changeable: boolean, then?: (value: any) => void): Subscription {
+    switch (resource.type) {
+      case Type.DATATYPE:
+        return this.formatDatatype(resource as IDatatype, repository, viewOnly, changeable).pipe(
+          take(1),
+          tap(then),
+        ).subscribe();
+      case Type.SEGMENT:
+        return this.formatSegment(resource as ISegment, repository, viewOnly, changeable).pipe(
+          take(1),
+          tap(then),
+        ).subscribe();
+      case Type.CONFORMANCEPROFILE:
+        return this.formatConformanceProfile(resource as IConformanceProfile, repository, viewOnly, changeable).pipe(
+          take(1),
+          tap(then),
+        ).subscribe();
+    }
+  }
+
+  resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
+    if (node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
+      node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
+        filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
+        switchMap((ref) => {
+          return repository.fetchResource(ref.type, ref.id).pipe(
+            switchMap((resource) => {
+              switch (ref.type) {
+                case Type.DATATYPE:
+                  return this.formatDatatype(resource as IDatatype, repository, viewOnly, false, node).pipe(
+                    tap(this.addChildren(node, then, transform)),
+                  );
+                case Type.SEGMENT:
+                  return this.formatSegment(resource as ISegment, repository, viewOnly, false, node).pipe(
+                    tap(this.addChildren(node, then, transform)),
+                    tap(() => node.data.name = (resource as ISegment).name),
+                  );
+              }
+            }),
+          );
+        }),
+      ).subscribe();
+      return node.$hl7V2TreeHelpers.treeChildrenSubscription;
+    }
+    return undefined;
+  }
+
+  addChildren(node: IHL7v2TreeNode, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): (nodes: IHL7v2TreeNode[]) => void {
+    return (nodes: IHL7v2TreeNode[]) => {
+      if (nodes && nodes.length > 0) {
+        node.children = transform ? transform(nodes) : nodes;
+        node.leaf = false;
+      } else {
+        node.children = [];
+        node.expanded = true;
+        node.leaf = true;
+      }
+      then();
+    };
   }
 
   mergeBindings(fromParent: IBindingNode[], elementId, context: IBindingContext, elementBindings: IStructureElementBinding[], parentLevel: number): IElementBinding {
