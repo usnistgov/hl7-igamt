@@ -1,19 +1,19 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import {MatDialog} from '@angular/material';
 import { Store } from '@ngrx/store';
 import {combineLatest, Observable, of, Subscription} from 'rxjs';
 import {filter, map, tap, withLatestFrom} from 'rxjs/operators';
-import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import {IgEditTocAddResource} from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {ClearResource} from '../../../../root-store/resource-loader/resource-loader.actions';
+import {ExportXmlDialogComponent} from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
+import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import {IgService} from '../../services/ig.service';
-import {IDisplayElement} from "../../../shared/models/display-element.interface";
-import {MatDialog} from "@angular/material";
-import {ResourcePickerComponent} from "../../../shared/components/resource-picker/resource-picker.component";
-import {ExportXmlDialogComponent} from "../../../shared/components/export-xml-dialog/export-xml-dialog.component";
-import {ClearResource} from "../../../../root-store/resource-loader/resource-loader.actions";
-import {IgEditTocAddResource} from "src/app/root-store/ig/ig-edit/ig-edit.index";
 
 @Component({
   selector: 'app-ig-edit-toolbar',

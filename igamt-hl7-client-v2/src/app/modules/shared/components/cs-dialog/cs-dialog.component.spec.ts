@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExportXmlDialogComponent } from './export-xml-dialog.component';
+import { CsDialogComponent } from './cs-dialog.component';
 
-describe('ExportXmlDialogComponent', () => {
-  let component: ExportXmlDialogComponent;
-  let fixture: ComponentFixture<ExportXmlDialogComponent>;
+describe('CsDialogComponent', () => {
+  let component: CsDialogComponent;
+  let fixture: ComponentFixture<CsDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExportXmlDialogComponent ],
+      declarations: [ CsDialogComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExportXmlDialogComponent);
+    fixture = TestBed.createComponent(CsDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

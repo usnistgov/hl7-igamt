@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ExportXmlDialogComponent } from './export-xml-dialog.component';
+import { StructureTreeComponent } from './structure-tree.component';
 
-describe('ExportXmlDialogComponent', () => {
-  let component: ExportXmlDialogComponent;
-  let fixture: ComponentFixture<ExportXmlDialogComponent>;
+describe('StructureTreeComponent', () => {
+  let component: StructureTreeComponent;
+  let fixture: ComponentFixture<StructureTreeComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExportXmlDialogComponent ],
+      declarations: [ StructureTreeComponent ],
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ExportXmlDialogComponent);
+    fixture = TestBed.createComponent(StructureTreeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatRadioModule } from '@angular/material';
 import { MatDialogModule } from '@angular/material/dialog';
 import { RouterModule } from '@angular/router';
-import { NgbAlert, NgbModule, NgbPopover } from '@ng-bootstrap/ng-bootstrap';
+import { NgbAlert, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FroalaEditorModule, FroalaViewModule } from 'angular-froala-wysiwyg';
 import { TreeModule } from 'angular-tree-component';
 import { ToastyModule } from 'ng2-toasty';
@@ -13,25 +13,21 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import {
-  AutoCompleteModule,
-  CheckboxModule,
-  ChipsModule,
-  FileUploadModule,
-  MultiSelectModule,
-  PanelModule,
-  RadioButtonModule,
-  TooltipModule,
-  TreeTableModule,
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
+import { TreeModule as pTreeModule } from 'primeng/tree';
 import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
+import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
+import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -50,6 +46,7 @@ import { LoginFormComponent } from './components/login-form/login-form.component
 import { MetadataDateComponent } from './components/metadata-date/metadata-date.component';
 import { MetadataFormComponent } from './components/metadata-form/metadata-form.component';
 import { NewPasswordFromComponent } from './components/new-password-from/new-password-from.component';
+import { PatternDialogComponent } from './components/pattern-dialog/pattern-dialog.component';
 import { RegisterFormComponent } from './components/register-form/register-form.component';
 import { ResetPasswordRequestFormComponent } from './components/reset-password-request-form/reset-password-request-form.component';
 import { ResourcePickerComponent } from './components/resource-picker/resource-picker.component';
@@ -57,13 +54,15 @@ import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.compon
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
 import { SelectNameComponent } from './components/select-name/select-name.component';
+import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
+import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
-import {UsageDialogComponent} from './components/usage-dialog/usage-dialog.component';
-import {UsageViewerComponent} from './components/usage-viewer/usage-viewer.component';
+import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
+import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
 import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
@@ -71,8 +70,7 @@ import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
-import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
-import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
+
 @NgModule({
   declarations: [
     LoginFormComponent,
@@ -104,6 +102,7 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     CardinalityComponent,
     LengthComponent,
     ConformanceLengthComponent,
+    PatternDialogComponent,
     DatatypeComponent,
     SegmentComponent,
     ValuesetComponent,
@@ -116,6 +115,9 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
+    StructureTreeComponent,
+    CsPropositionComponent,
+    CsDialogComponent,
     ValueSetStructureComponent,
     AddResourceComponent,
     SelectResourceIdsComponent,
@@ -131,26 +133,32 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     ReactiveFormsModule,
     NgbModule,
     TooltipModule,
+    TreeModule,
     CardModule,
     CheckboxModule,
     ReactiveFormsModule,
     MatRadioModule,
     MatDialogModule,
     FileUploadModule,
+    pTreeModule,
     DropdownModule,
     ToastyModule.forRoot(),
     TreeModule,
     TreeTableModule,
+    TableModule,
     ContextMenuModule.forRoot({
       useBootstrap4: true,
     }),
+    DragDropModule,
     RadioButtonModule,
+    AccordionModule,
     TableModule,
     ExtendedModule,
     FroalaEditorModule.forRoot(),
     FroalaViewModule.forRoot(),
     ChipsModule,
     MultiSelectModule,
+    OrganizationChartModule,
     PanelModule,
     AutoCompleteModule,
   ],
@@ -166,6 +174,7 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     NgbModule,
     NgbAlert,
     CardModule,
+    AccordionModule,
     CheckboxModule,
     ReactiveFormsModule,
     ResetPasswordRequestFormComponent,
@@ -179,6 +188,7 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     MultiSelectModule,
     TreeModule,
     ContextMenuModule,
+    pTreeModule,
     MatDialogModule,
     MatRadioModule,
     DropdownModule,
@@ -202,6 +212,7 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     LengthComponent,
     ConformanceLengthComponent,
     DatatypeComponent,
+    DragDropModule,
     SegmentComponent,
     ValuesetComponent,
     TextComponent,
@@ -212,11 +223,16 @@ import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-
     UsageViewerComponent,
     ConstantValueComponent,
     PredicateComponent,
+    TableModule,
+    StructureTreeComponent,
+    CsPropositionComponent,
+    CsDialogComponent,
+    OrganizationChartModule,
     ValueSetStructureComponent,
     AddResourceComponent,
     ExportXmlDialogComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {
