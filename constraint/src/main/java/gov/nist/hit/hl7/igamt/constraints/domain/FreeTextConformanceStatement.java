@@ -17,6 +17,10 @@ package gov.nist.hit.hl7.igamt.constraints.domain;
  */
 public class FreeTextConformanceStatement extends ConformanceStatement {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7899147064970467492L;
   private String freeText;
   private String assertionScript;
 
@@ -39,5 +43,12 @@ public class FreeTextConformanceStatement extends ConformanceStatement {
 
   public void setAssertionScript(String assertionScript) {
     this.assertionScript = assertionScript;
+  }
+  
+  @Override
+  public String generateAssertionScript(){
+    if(assertionScript != null && !assertionScript.isEmpty()) return assertionScript;
+    
+    return "<Assertion><OR><Presence Path=\"1[1]\"/><NOT><Presence Path=\"1[1]\"/></NOT></OR></Assertion>";
   }
 }

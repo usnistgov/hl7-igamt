@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.ig.service;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,8 @@ import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
+import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 
 @Service("igService")
@@ -67,7 +70,10 @@ public interface IgService {
 
 	void buildDependencies(IGContentMap contentMap);
 
-	public IgDataModel generateDataModel(Ig ig) throws Exception;
 
 	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
+
+	public IgDataModel generateDataModel(Ig ig) throws Exception;
+
+	public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
 }

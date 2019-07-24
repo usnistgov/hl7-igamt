@@ -71,6 +71,8 @@ import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
+import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
+import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 @NgModule({
   declarations: [
     LoginFormComponent,
@@ -116,6 +118,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     PredicateComponent,
     ValueSetStructureComponent,
     AddResourceComponent,
+    SelectResourceIdsComponent,
+    ExportXmlDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -210,8 +214,9 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     PredicateComponent,
     ValueSetStructureComponent,
     AddResourceComponent,
+    ExportXmlDialogComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, AddResourceComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

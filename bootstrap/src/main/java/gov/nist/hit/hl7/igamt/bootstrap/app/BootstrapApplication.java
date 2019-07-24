@@ -1,18 +1,8 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
-import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -24,12 +14,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @SpringBootApplication
@@ -37,9 +27,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto",
-    "gov.nist.hit.hl7.auth.util.service"})
-
+@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
+@EnableScheduling
 public class BootstrapApplication implements CommandLineRunner {
 
 	private static final String EMAIL_PORT = "email.port";
@@ -57,8 +46,8 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
 
-  @Autowired
-  ConfigService sharedConstantService;
+//  @Autowired
+//  ConfigService sharedConstantService;
 //  
 // 
   @Autowired
@@ -179,36 +168,33 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-    @PostConstruct
-   void createSharedConstant() {
-    Config constant = new Config();
-    List<String> hl7Versions = new ArrayList<String>();
-    hl7Versions.add("2.3.1");
-    hl7Versions.add("2.4");
-    hl7Versions.add("2.5");
-    hl7Versions.add("2.5.1");
-    hl7Versions.add("2.6");
-    hl7Versions.add("2.7");
-    hl7Versions.add("2.7.1");
-    hl7Versions.add("2.8");
-    hl7Versions.add("2.8.1");
-    hl7Versions.add("2.8.2");
-   
-    List<String> usages = new ArrayList<String>();
-   
-    usages.add("R");
-    usages.add("RE");
-    usages.add("RC");
-    usages.add("C");
-    usages.add("X");
-    constant.setHl7Versions(hl7Versions);
-    constant.setUsages(usages);
-    constant.setPhinvadsUrl("https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=");
-    sharedConstantService.deleteAll();
-    sharedConstantService.save(constant);
-  
-   }
-  
+//    @PostConstruct
+//   void createSharedConstant() {
+//    Config constant = new Config();
+//    List<String> hl7Versions = new ArrayList<String>();
+//    hl7Versions.add("2.3.1");
+//    hl7Versions.add("2.4");
+//    hl7Versions.add("2.5");
+//    hl7Versions.add("2.5.1");
+//    hl7Versions.add("2.6");
+//    hl7Versions.add("2.7");
+//    hl7Versions.add("2.7.1");
+//    hl7Versions.add("2.8");
+//    hl7Versions.add("2.8.1");
+//    hl7Versions.add("2.8.2");
+//   
+//    List<String> usages = new ArrayList<String>();
+//   
+//    usages.add("R");
+//    usages.add("RE");
+//    usages.add("RC");
+//    usages.add("C");
+//    usages.add("X");
+//    constant.setHl7Versions(hl7Versions);
+//    constant.setUsages(usages);
+//    sharedConstantService.save(constant);
+//  
+//   }
   //
   // // @PostConstruct
   // void generateDatatypeLibrary()

@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,7 +21,7 @@ import gov.nist.hit.hl7.igamt.ig.domain.Ig;
  * @author jungyubw
  *
  */
-public class IgDataModel {
+public class IgDataModel implements Serializable{
   private Ig model;
 
   private Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
@@ -68,6 +69,28 @@ public Set<SegmentDataModel> getSegments() {
 
 public void setSegments(Set<SegmentDataModel> segments) {
 	this.segments = segments;
+}
+
+/**
+ * @param id
+ * @return
+ */
+public DatatypeDataModel findDatatype(String id) {
+  for(DatatypeDataModel dtModel : this.datatypes) {
+    if(dtModel.getModel().getId().equals(id)) return dtModel;
+  }
+  return null;
+}
+
+/**
+ * @param id
+ * @return
+ */
+public SegmentDataModel findSegment(String id) {
+  for(SegmentDataModel segModel : this.segments) {
+    if(segModel.getModel().getId().equals(id)) return segModel;
+  }
+  return null;
 }
 
 

@@ -1,7 +1,10 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.ZipOutputStream;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +73,7 @@ import gov.nist.hit.hl7.igamt.ig.exceptions.IGNotFoundException;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
+import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.ig.util.SectionTemplate;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.ProfileComponent;
 import gov.nist.hit.hl7.igamt.profilecomponent.domain.registry.ProfileComponentRegistry;
@@ -79,6 +84,8 @@ import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
 import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
@@ -123,6 +130,9 @@ public class IgServiceImpl implements IgService {
 
 	@Autowired
 	RelationShipService relationshipService;
+	
+	  @Autowired
+	  XMLSerializeService xmlSerializeService;
 
 	//  @Autowired
 	//  CoConstraintService coConstraintService;
@@ -248,9 +258,6 @@ public class IgServiceImpl implements IgService {
 	 */
 	@Override
 	public List<Ig> findByUsername(String username, Scope scope) {
-
-
-
 		Criteria where = Criteria.where("username").is(username)
 				.andOperator(Criteria.where("domainInfo.scope").is(scope.toString()));
 
@@ -831,69 +838,6 @@ public class IgServiceImpl implements IgService {
 		}
 
 	}
-
-	/* (non-Javadoc)
-	 * @see gov.nist.hit.hl7.igamt.ig.service.IgService#generateDataModel(gov.nist.hit.hl7.igamt.ig.domain.Ig)
-	 */
-	@Override
-	public IgDataModel generateDataModel(Ig ig) throws Exception {
-		IgDataModel igDataModel = new IgDataModel();
-		igDataModel.setModel(ig);
-
-		Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
-		Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
-		Set<ConformanceProfileDataModel> conformanceProfiles = new HashSet<ConformanceProfileDataModel>();
-		Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
-		Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap = new HashMap<String, ValuesetBindingDataModel>();
-
-		for (Link link : ig.getValueSetRegistry().getChildren()) {
-			Valueset vs = this.valueSetService.findById(link.getId());
-			if(vs != null){
-				ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
-				valuesetDataModel.setModel(vs);
-				valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
-				valuesets.add(valuesetDataModel);
-			}else throw new Exception("Valueset is missing.");
-		}
-
-		for (Link link : ig.getDatatypeRegistry().getChildren()) {
-			Datatype d = this.datatypeService.findById(link.getId());
-			if(d != null){
-				DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
-				datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-				datatypes.add(datatypeDataModel);
-			}else throw new Exception("Datatype is missing.");
-		}
-
-		for (Link link : ig.getSegmentRegistry().getChildren()) {
-			Segment s = this.segmentService.findById(link.getId());
-			if(s != null){
-				SegmentDataModel segmentDataModel = new SegmentDataModel();
-				segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
-				//        CoConstraintTable coConstraintTable = this.coConstraintService.getCoConstraintForSegment(s.getId());
-				//        segmentDataModel.setCoConstraintTable(coConstraintTable);
-				segments.add(segmentDataModel);
-			}else throw new Exception("Segment is missing.");
-		}
-
-		for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
-			ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
-			if(cp != null){
-				ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
-				conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
-				conformanceProfiles.add(conformanceProfileDataModel);
-			}else throw new Exception("ConformanceProfile is missing.");
-		}
-
-		igDataModel.setDatatypes(datatypes);
-		igDataModel.setSegments(segments);
-		igDataModel.setConformanceProfiles(conformanceProfiles);
-		igDataModel.setValuesets(valuesets);
-
-
-		return igDataModel;
-	}
-
 	@Override
 	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
 		// TODO Auto-generated method stub
@@ -929,4 +873,109 @@ public class IgServiceImpl implements IgService {
 		return vs;
 
 	}
-}
+	
+	  /*
+	   * (non-Javadoc)
+	   * 
+	   * @see
+	   * gov.nist.hit.hl7.igamt.ig.service.IgService#generateDataModel(gov.nist.hit.hl7.igamt.ig.domain.
+	   * Ig)
+	   */
+	  @Override
+	  public IgDataModel generateDataModel(Ig ig) throws Exception {
+	    IgDataModel igDataModel = new IgDataModel();
+	    igDataModel.setModel(ig);
+
+	    Set<DatatypeDataModel> datatypes = new HashSet<DatatypeDataModel>();
+	    Set<SegmentDataModel> segments = new HashSet<SegmentDataModel>();
+	    Set<ConformanceProfileDataModel> conformanceProfiles =
+	        new HashSet<ConformanceProfileDataModel>();
+	    Set<ValuesetDataModel> valuesets = new HashSet<ValuesetDataModel>();
+	    Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap =
+	        new HashMap<String, ValuesetBindingDataModel>();
+
+	    for (Link link : ig.getValueSetRegistry().getChildren()) {
+	      Valueset vs = this.valueSetService.findById(link.getId());
+	      if (vs != null) {
+	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
+	        valuesetDataModel.setModel(vs);
+	        valuesetBindingDataModelMap.put(vs.getId(), new ValuesetBindingDataModel(vs));
+	        valuesets.add(valuesetDataModel);
+	      } else
+	        throw new Exception("Valueset is missing.");
+	    }
+
+	    for (Link link : ig.getDatatypeRegistry().getChildren()) {
+	      Datatype d = this.datatypeService.findById(link.getId());
+	      if (d != null) {
+	        DatatypeDataModel datatypeDataModel = new DatatypeDataModel();
+	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
+	            this.conformanceStatementRepository, this.predicateRepository);
+	        datatypes.add(datatypeDataModel);
+	      } else
+	        throw new Exception("Datatype is missing.");
+	    }
+
+	    for (Link link : ig.getSegmentRegistry().getChildren()) {
+	      Segment s = this.segmentService.findById(link.getId());
+	      if (s != null) {
+	        SegmentDataModel segmentDataModel = new SegmentDataModel();
+	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap,
+	            this.conformanceStatementRepository, this.predicateRepository);
+	        // CoConstraintTable coConstraintTable =
+	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
+	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
+	        segments.add(segmentDataModel);
+	      } else
+	        throw new Exception("Segment is missing.");
+	    }
+
+	    for (Link link : ig.getConformanceProfileRegistry().getChildren()) {
+	      ConformanceProfile cp = this.conformanceProfileService.findById(link.getId());
+	      if (cp != null) {
+	        ConformanceProfileDataModel conformanceProfileDataModel = new ConformanceProfileDataModel();
+	        conformanceProfileDataModel.putModel(cp, valuesetBindingDataModelMap,
+	            this.conformanceStatementRepository, this.predicateRepository, this.segmentService);
+	        conformanceProfiles.add(conformanceProfileDataModel);
+	      } else
+	        throw new Exception("ConformanceProfile is missing.");
+	    }
+
+	    igDataModel.setDatatypes(datatypes);
+	    igDataModel.setSegments(segments);
+	    igDataModel.setConformanceProfiles(conformanceProfiles);
+	    igDataModel.setValuesets(valuesets);
+
+
+	    return igDataModel;
+	  }
+
+	  @Override
+	  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds,
+	      String[] compositeProfileIds) throws CloneNotSupportedException, IOException,
+	      ClassNotFoundException, ProfileSerializationException, TableSerializationException {
+
+	    this.xmlSerializeService.normalizeIgModel(igModel, conformanceProfileIds);
+
+	    ByteArrayOutputStream outputStream = null;
+	    byte[] bytes;
+	    outputStream = new ByteArrayOutputStream();
+	    ZipOutputStream out = new ZipOutputStream(outputStream);
+
+	    String profileXMLStr = this.xmlSerializeService.serializeProfileToDoc(igModel).toXML();
+	    String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
+	    String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
+
+	    System.out.println(profileXMLStr);
+	    System.out.println(valueSetXMLStr);
+	    System.out.println(constraintXMLStr);
+
+	    this.xmlSerializeService.generateIS(out, profileXMLStr, "Profiles.xml");
+	    this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
+	    this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
+
+	    out.close();
+	    bytes = outputStream.toByteArray();
+	    return new ByteArrayInputStream(bytes);
+	  }
+	}

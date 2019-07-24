@@ -11,10 +11,10 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
@@ -23,14 +23,12 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Component;
  * @author jungyubw
  *
  */
-public class ComponentDataModel {
+public class ComponentDataModel implements Serializable{
 
   private Component model;
 
   private DatatypeBindingDataModel datatype;
   private Predicate predicate;
-  private Set<Comment> comments = new HashSet<Comment>();
-  private String constantValue;
   private ExternalSingleCode singleCode;
   private Set<ValuesetBindingDataModel> valuesets = new HashSet<ValuesetBindingDataModel>();
   
@@ -38,12 +36,10 @@ public class ComponentDataModel {
     
   }
 
-  public ComponentDataModel(Component c, Predicate predicate, Set<Comment> comments, String constantValue,
+  public ComponentDataModel(Component c, Predicate predicate,
       ExternalSingleCode singleCode, Set<ValuesetBindingDataModel> valuesets, DatatypeBindingDataModel datatype) {
     this.model = c;
     this.predicate = predicate;
-    this.comments = comments;
-    this.constantValue = constantValue;
     this.singleCode = singleCode;
     this.valuesets = valuesets;
     this.datatype = datatype;
@@ -65,23 +61,7 @@ public class ComponentDataModel {
   public void setPredicate(Predicate predicate) {
     this.predicate = predicate;
   }
-
-  public Set<Comment> getComments() {
-    return comments;
-  }
-
-  public void setComments(Set<Comment> comments) {
-    this.comments = comments;
-  }
-
-  public String getConstantValue() {
-    return constantValue;
-  }
-
-  public void setConstantValue(String constantValue) {
-    this.constantValue = constantValue;
-  }
-
+  
   public ExternalSingleCode getSingleCode() {
     return singleCode;
   }

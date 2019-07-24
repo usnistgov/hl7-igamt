@@ -1,8 +1,10 @@
 package gov.nist.hit.hl7.igamt.common.binding.domain;
 
+import java.io.Serializable;
+
 import gov.nist.diff.annotation.DeltaField;
 
-public class ExternalSingleCode {
+public class ExternalSingleCode implements Serializable{
 
   @DeltaField
   private String value;

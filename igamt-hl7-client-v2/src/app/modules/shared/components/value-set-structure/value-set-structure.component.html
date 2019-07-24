@@ -1,4 +1,5 @@
 <form #form="ngForm">
+
   <p-panel [toggleable]="true" collapseIcon="pi pi-fw pi-chevron-down" expandIcon="pi pi-fw pi-chevron-right" header="Value Set Attributes" [style]="{'margin-bottom':'5px;'}">
     <div class="value-set-attributes">
       <div class="value-set-attributes-col">
@@ -36,7 +37,7 @@
       </div>
     </div>
 
-    <div class="code-system-container">
+    <div class="code-system-container" *ngIf="valueSet.includeCodes">
         <span class="code-system-label">
           <strong> Source code Systems: </strong>
         </span>
@@ -150,7 +151,7 @@
                                   [options]="codeSystemOptions" [readonly]="viewOnly"
                                   [style]="{'minWidth': '100%', 'maxWidth':'100%'}"
                                   autoZIndex="true"
-                                  placeholder="select code system"></p-dropdown>
+                                  placeholder="select code system" (ngModelChange)="updateAttribute('CODES', valueSet.codes)"></p-dropdown>
                     </div>
                     <div class="dropdown-button-column">
                       <button (click)="toggleEdit(rowData.id)" class="btn btn-sm btn-primary">

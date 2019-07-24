@@ -1,10 +1,11 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Registry {
+public class Registry implements Serializable{
 
   private Set<Link> children = new HashSet<Link>();
   protected Type type;

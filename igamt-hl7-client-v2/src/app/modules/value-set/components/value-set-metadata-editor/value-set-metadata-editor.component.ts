@@ -8,7 +8,6 @@ import {selectIgId} from '../../../../root-store/ig/ig-edit/ig-edit.index';
 import {ResourceMetadataEditorComponent} from '../../../core/components/resource-metadata-editor/resource-metadata-editor.component';
 import {Message} from '../../../core/models/message/message.class';
 import {MessageService} from '../../../core/services/message.service';
-import {DatatypeService} from '../../../datatype/services/datatype.service';
 import {FieldType} from '../../../shared/components/metadata-form/metadata-form.component';
 import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
@@ -85,7 +84,6 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
   }
 
   save(changes: IChange[]): Observable<Message<any>> {
-    console.log(changes);
     return combineLatest(this.elementId$, this.store.select(selectIgId)).pipe(
       take(1),
       concatMap(([id, documentId]) => {

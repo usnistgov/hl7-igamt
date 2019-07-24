@@ -95,13 +95,14 @@ export class ValueSetStructureComponent implements OnInit {
 
   deleteCodeSystem(codeSystem: string) {
     this.valueSet.codeSystems = this.valueSet.codeSystems.filter((codeSys: string) => {
-      return codeSystem.toLowerCase() !== codeSys.toLowerCase();
+      return codeSys != null && codeSystem.toLowerCase() !== codeSys.toLowerCase() ;
     });
     for (const code of this.valueSet.codes) {
       if (code.codeSystem.toLowerCase() === codeSystem.toLowerCase()) {
         code.codeSystem = null;
       }
     }
+    this.codeSystemOptions = this.getCodeSystemOptions();
     this.updateAttribute(PropertyType.CODES, this.valueSet.codes);
     this.updateAttribute(PropertyType.CODES, this.valueSet.codeSystems);
   }

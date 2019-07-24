@@ -18,6 +18,10 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
  *
  */
 public class AssertionConformanceStatement extends ConformanceStatement {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5906567957257311681L;
   private Assertion assertion;
 
   public AssertionConformanceStatement() {
@@ -31,5 +35,10 @@ public class AssertionConformanceStatement extends ConformanceStatement {
 
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
+  }
+  
+  @Override
+  public String generateAssertionScript(){
+    return "<Assertion>" + this.assertion.generateAssertionScript() + "/<Assertion>";
   }
 }
