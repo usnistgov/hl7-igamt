@@ -52,10 +52,10 @@ public class TableConversionServiceImpl implements ConversionService {
 		v.setIntensionalComment(table.getIntensionalComment());
 		if (table.getSourceType()
 				.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.EXTERNAL))
-			v.setSourceType(SourceType.EXTERNAL);
+			v.setSourceType(gov.nist.hit.hl7.igamt.common.base.domain.SourceType.EXTERNAL);
 		else if (table.getSourceType()
 				.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.INTERNAL))
-			v.setSourceType(SourceType.INTERNAL);
+			v.setSourceType(gov.nist.hit.hl7.igamt.common.base.domain.SourceType.INTERNAL);
 
 		// v.setSourceType(table.getSourceType().value);
 		if (table.getContentDefinition()
