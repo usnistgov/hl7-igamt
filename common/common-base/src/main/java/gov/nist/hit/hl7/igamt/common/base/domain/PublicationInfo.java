@@ -1,8 +1,9 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class PublicationInfo {
+public class PublicationInfo implements Serializable{
   private String publicationVersion;
   private Date publicationDate;
   private STATUS status;

@@ -1,6 +1,8 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
-public class Link {
+import java.io.Serializable;
+
+public class Link implements Serializable{
   private String id;
   private int position;
   private DomainInfo domainInfo;

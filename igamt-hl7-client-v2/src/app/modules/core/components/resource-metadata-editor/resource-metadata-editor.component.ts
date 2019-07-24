@@ -78,6 +78,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   }
 
   dataChange(form: FormGroup) {
+    console.log(form.getRawValue());
     this.editorChange(form.getRawValue(), form.valid);
   }
 
@@ -154,6 +155,7 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
 export interface IResourceMetadata {
   name: string;
   ext?: string;
+  bindingIdentifier?: string;
   description: string;
   authorNotes: string;
   usageNotes: string;

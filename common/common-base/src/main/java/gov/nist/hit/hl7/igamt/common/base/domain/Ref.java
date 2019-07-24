@@ -1,8 +1,10 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
+
 import gov.nist.diff.annotation.DeltaField;
 
-public class Ref {
+public class Ref implements Serializable{
 
   @DeltaField
   private String id;

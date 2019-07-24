@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.Date;
 import gov.nist.diff.annotation.DeltaField;
 
@@ -18,7 +19,7 @@ import gov.nist.diff.annotation.DeltaField;
  * @author jungyubw
  *
  */
-public class Comment {
+public class Comment implements Serializable{
   @DeltaField
   private String description;
   @DeltaField

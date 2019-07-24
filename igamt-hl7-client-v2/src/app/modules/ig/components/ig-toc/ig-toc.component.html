@@ -125,7 +125,7 @@
 
         <ng-container *ngSwitchCase="'VALUESET'">
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #valueSetContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor

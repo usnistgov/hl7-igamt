@@ -12,11 +12,13 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
+
 /**
  * @author ena3
  *
  */
-public class DocumentMetadata {
+public class DocumentMetadata implements Serializable{
 
   private String title;
 

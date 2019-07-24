@@ -11,6 +11,8 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.domain;
 
+import java.io.Serializable;
+
 import org.bson.types.ObjectId;
 
 /**
@@ -18,33 +20,30 @@ import org.bson.types.ObjectId;
  *
  */
 
-public class Code {
-  private String id;
+public class Code implements Serializable{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 3734129200317300616L;
   private String value;
   private String description;
-  private String codeSystemId;
+  private String codeSystem;
   private String comments;
+  private CodeUsage usage;
+  private String id;
 
   public Code() {
-    super();
-    this.id = new ObjectId().toString();
+    this.setId(new ObjectId().toString());
+    this.setUsage(CodeUsage.P);
   }
 
-  public Code(String id, String value, String description, String codeSystemId, String comments) {
-    super();
-    this.id = id;
+  public Code(String value, String description, String codeSystem, String comments) {
+    this.setId(new ObjectId().toString());
+    this.setUsage(CodeUsage.P);
     this.value = value;
     this.description = description;
-    this.codeSystemId = codeSystemId;
+    this.codeSystem = codeSystem;
     this.comments = comments;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
   }
 
   public String getValue() {
@@ -63,12 +62,12 @@ public class Code {
     this.description = description;
   }
 
-  public String getCodeSystemId() {
-    return codeSystemId;
+  public String getCodeSystem() {
+    return codeSystem;
   }
 
-  public void setCodeSystemId(String codeSystemId) {
-    this.codeSystemId = codeSystemId;
+  public void setCodeSystem(String codeSystem) {
+    this.codeSystem = codeSystem;
   }
 
   public String getComments() {
@@ -79,5 +78,20 @@ public class Code {
     this.comments = comments;
   }
 
+  public CodeUsage getUsage() {
+    return usage;
+  }
+
+  public void setUsage(CodeUsage usage) {
+    this.usage = usage;
+  }
+
+  public String getId() {
+    return id;
+  }
+
+  public void setId(String id) {
+    this.id = id;
+  }
 
 }

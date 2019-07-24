@@ -175,7 +175,6 @@ export class ConformanceStatementService {
         };
       }
     }
-    console.log(assertion);
     throw new Error('Unrecognized assertion');
   }
 

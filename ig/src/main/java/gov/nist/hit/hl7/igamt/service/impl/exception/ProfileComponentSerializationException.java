@@ -1,3 +1,5 @@
+package gov.nist.hit.hl7.igamt.service.impl.exception;
+
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
@@ -8,43 +10,23 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * <p>
+ * Created by Maxence Lefort on 11/16/17.
  */
-package gov.nist.hit.hl7.igamt.valueset.domain;
+public class ProfileComponentSerializationException extends SerializationException{
 
-import java.util.Set;
-import org.springframework.data.mongodb.core.mapping.Document;
-import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+    private final static String label = "Profile Component";
 
+    public ProfileComponentSerializationException(Exception originalException, String location) {
+        super(originalException, location);
+    }
 
-/**
- * @author jungyubw
- *
- */
-@Document(collection = "codesystem-library")
-public class CodeSystemLibrary extends Resource {
-  private Set<CodeSystemLink> refs;
+    public ProfileComponentSerializationException(Exception originalException, String location,
+        String message) {
+        super(originalException, location, message);
+    }
 
-  public CodeSystemLibrary() {
-    super();
-  }
-
-  public Set<CodeSystemLink> getRefs() {
-    return refs;
-  }
-
-  public void setRefs(Set<CodeSystemLink> refs) {
-    this.refs = refs;
-  }
-
-  @Override
-  public String getLabel() {
-    return this.getName();
-  }
-
-  @Override
-  public Resource clone() {
-    // TODO Auto-generated method stub
-    return null;
-  }
-
+    @Override public String getLabel() {
+        return label;
+    }
 }

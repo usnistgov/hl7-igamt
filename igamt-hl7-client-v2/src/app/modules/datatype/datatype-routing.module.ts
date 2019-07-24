@@ -84,7 +84,7 @@ const routes: Routes = [
           editorMetadata: {
             id: EditorID.POSTDEF,
             title: 'Post-definition',
-            resourceType: Type.CONFORMANCEPROFILE,
+            resourceType: Type.DATATYPE,
           },
           onLeave: {
             saveEditor: true,

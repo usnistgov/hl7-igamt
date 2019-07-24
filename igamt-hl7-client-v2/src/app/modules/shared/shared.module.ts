@@ -12,7 +12,9 @@ import { ToastyModule } from 'ng2-toasty';
 import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
-import { AccordionModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, MultiSelectModule, OrganizationChartModule, RadioButtonModule, TooltipModule, TreeTableModule } from 'primeng/primeng';
+import {
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
+} from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { MessageService } from '../core/services/message.service';
@@ -58,6 +60,7 @@ import { TextEditorDialogComponent } from './components/text-editor-dialog/text-
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
 import { UsageDialogComponent } from './components/usage-dialog/usage-dialog.component';
 import { UsageViewerComponent } from './components/usage-viewer/usage-viewer.component';
+import { ValueSetStructureComponent } from './components/value-set-structure/value-set-structure.component';
 import { NamingConventionDirective } from './directives/naming-convention.directive';
 import { NamingDuplicationDirective } from './directives/naming-duplication.directive';
 import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow.directive';
@@ -112,6 +115,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     StructureTreeComponent,
     CsPropositionComponent,
     CsDialogComponent,
+    ValueSetStructureComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -149,6 +153,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     ChipsModule,
     MultiSelectModule,
     OrganizationChartModule,
+    PanelModule,
+    AutoCompleteModule,
   ],
   exports: [
     CommonModule,
@@ -216,6 +222,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     CsPropositionComponent,
     CsDialogComponent,
     OrganizationChartModule,
+    ValueSetStructureComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent],
 })

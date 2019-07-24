@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.Date;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
@@ -22,7 +23,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
  * @author jungyubw
  *
  */
-public class DatatypeBindingDataModel {
+public class DatatypeBindingDataModel implements Serializable{
   private String id;
   private Date creationDate;
   private Date updateDate;
@@ -232,5 +233,9 @@ public class DatatypeBindingDataModel {
     this.postDef = postDef;
   }
 
+  public String getLabel() {
+    if(this.ext == null || this.ext.isEmpty()) return this.name;
+    return this.name + "_" + this.ext;
+  }
 
 }

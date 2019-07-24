@@ -1,3 +1,5 @@
+package gov.nist.hit.hl7.igamt.service.impl.exception;
+
 /**
  * This software was developed at the National Institute of Standards and Technology by employees of
  * the Federal Government in the course of their official duties. Pursuant to title 17 Section 105
@@ -8,39 +10,17 @@
  * used. This software can be redistributed and/or modified freely provided that any derivative
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
+ * <p>
+ * Created by Maxence Lefort on 11/14/17.
  */
-package gov.nist.hit.hl7.igamt.valueset.domain;
+public class CoConstraintDataSerializationException extends CoConstraintSerializationException{
 
-/**
- * @author jungyubw
- *
- */
-public class CodeSystemLink {
+    public CoConstraintDataSerializationException(String column, int row,
+        String message) {
+        super(new Exception(message), "Column "+column+", Row "+row);
+    }
 
-  private String id;
-  private int position;
-
-  public CodeSystemLink(String id, int position) {
-    super();
-    this.id = id;
-    this.position = position;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public int getPosition() {
-    return position;
-  }
-
-  public void setPosition(int position) {
-    this.position = position;
-  }
-
-
+    public CoConstraintDataSerializationException(String column, int row) {
+        this(column,row,"");
+    }
 }
