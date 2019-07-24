@@ -4,8 +4,9 @@ import {Guid} from 'guid-typescript';
 import {Table} from 'primeng/table';
 import {Scope} from '../../constants/scope.enum';
 import {Type} from '../../constants/type.enum';
-import {IAddingInfo} from '../../models/adding-info';
+import {IAddingInfo, SourceType} from '../../models/adding-info';
 import {IDisplayElement} from '../../models/display-element.interface';
+import {IValueSet} from '../../models/value-set.interface';
 
 @Component({
   selector: 'app-select-value-sets',
@@ -23,6 +24,8 @@ export class SelectValueSetsComponent implements OnInit {
   @Output() selected = new EventEmitter<string>();
   @Output() added = new EventEmitter<IAddingInfo[]>();
   @Output() valid = new EventEmitter<boolean>();
+  @Input() scope: Scope;
+
   @Input()
   selectedVersion: string;
   @Input()
@@ -42,12 +45,15 @@ export class SelectValueSetsComponent implements OnInit {
       ext: '',
       description: obj.name,
       domainInfo: obj.domainInfo,
+      sourceType: obj.sourceType,
+      numberOfChildren: obj.numberOfCodes,
+      includeChildren: obj.numberOfCodes < 500,
       flavor: false,
     };
     this.selectedData.push(element);
     this.emitData();
   }
-  addAsFlavor(obj: any) {
+  addAsFlavor(obj: IValueSet) {
     const element: IAddingInfo = {
       originalId: obj.id,
       id: Guid.create().toString(),
@@ -55,11 +61,13 @@ export class SelectValueSetsComponent implements OnInit {
       name: obj.bindingIdentifier,
       description: obj.name,
       flavor: true,
+      sourceType: obj.sourceType,
+      numberOfChildren: obj.numberOfCodes,
+      includeChildren: obj.numberOfCodes < 500,
       domainInfo: {...obj.domainInfo , scope: Scope.USER},
     };
     this.selectedData.push(element);
     this.emitData();
-
   }
   unselect(selected: any) {
     const index = this.selectedData.indexOf(selected);
@@ -80,6 +88,14 @@ export class SelectValueSetsComponent implements OnInit {
       return this.form.valid && this.selectedData.length > 0;
     } else {
       return this.selectedData.length > 0;
+    }
+  }
+
+  switchType(obj: IAddingInfo) {
+    if (!obj.includeChildren) {
+      obj.sourceType = SourceType.EXTERNAL;
+    } else {
+      obj.sourceType = SourceType.INTERNAL;
     }
   }
 }

@@ -13,76 +13,76 @@
  */
 package gov.nist.hit.hl7.igamt.valueset.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.change.entity.domain.ChangeItemDomain;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.DisplayCode;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetMetadata;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPostDef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetPreDef;
-import gov.nist.hit.hl7.igamt.valueset.domain.display.ValuesetStructure;
-
 /**
  *
  * @author Jungyub Woo on Mar 1, 2018.
  */
 public interface ValuesetService {
 
-  public Valueset findById(String id);
+	public Valueset findById(String id);
 
-  public Valueset create(Valueset valueset);
+	public Valueset create(Valueset valueset);
 
-  public Valueset createFromLegacy(Valueset valueset, String legacyId);
+	public Valueset createFromLegacy(Valueset valueset, String legacyId);
 
-  public Valueset save(Valueset valueset);
+	public Valueset save(Valueset valueset);
 
-  public List<Valueset> findAll();
+	public List<Valueset> findAll();
 
-  public void delete(Valueset valueset);
+	public void delete(Valueset valueset);
 
-  public void delete(String id);
+	public void delete(String id);
 
-  public void removeCollection();
+	public void removeCollection();
 
-  public List<Valueset> findByDomainInfoVersion(String version);
+	public List<Valueset> findByDomainInfoVersion(String version);
 
-  public List<Valueset> findByDomainInfoScope(String scope);
+	public List<Valueset> findByDomainInfoScope(String scope);
 
-  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
+	public List<Valueset> findByDomainInfoScopeAndDomainInfoVersion(String scope, String verion);
 
-  public List<Valueset> findByBindingIdentifier(String bindingIdentifier);
+	public List<Valueset> findByBindingIdentifier(String bindingIdentifier);
 
-  public Valueset getLatestById(String id);
+	public Valueset getLatestById(String id);
 
+	public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope, String version,
+			String bindingIdentifier);
 
-  public List<Valueset> findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(String scope,
-      String version, String bindingIdentifier);
+	public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version, String bindingIdentifier);
 
-  public List<Valueset> findByDomainInfoVersionAndBindingIdentifier(String version,
-      String bindingIdentifier);
+	public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope, String bindingIdentifier);
 
-  public List<Valueset> findByDomainInfoScopeAndBindingIdentifier(String scope,
-      String bindingIdentifier);
+	/**
+	 * @param string
+	 * @param version
+	 * @return
+	 */
+	public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
 
-  /**
-   * @param string
-   * @param version
-   * @return
-   */
-  public List<Valueset> findDisplayFormatByScopeAndVersion(String string, String version);
+	/**
+	 * @param newkey
+	 * @param l
+	 * @param scope
+	 * @return
+	 */
+	Link cloneValueSet(String newkey, Link l, String username, Scope scope);
 
+	public List<Valueset> findByIdIn(Set<String> linksAsIds);
 
-  /**
-   * @param newkey
-   * @param l
- * @param scope 
-   * @return
-   */
-  Link cloneValueSet(String newkey, Link l, String username, Scope scope);
+	public List<Valueset> findDisplayFormatByScope(String scope);
+	
 
-  public List<Valueset> findByIdIn(Set<String> linksAsIds);
+	public void applyChanges(Valueset s, List<ChangeItemDomain> cItems, String documentId)
+			throws JsonProcessingException, IOException;
 }

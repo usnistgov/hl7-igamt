@@ -1,0 +1,12 @@
+<h2 mat-dialog-title>Export XML</h2>
+
+<mat-dialog-content style="height: 500px;">
+  <h4>Conformance profiles</h4>
+
+  <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
+  </app-select-resource-ids>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

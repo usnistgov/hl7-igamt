@@ -3,6 +3,9 @@
   grid-template-areas: 'loaded selected';
   grid-gap: 20px;
   height: 100%;
+  word-break: break-word !important;
+  font-size: 10px !important;
+  padding: 0px !important;
 }
 
 .selected {
@@ -11,4 +14,12 @@
 
 .loaded {
   grid-area: loaded;
+}
+.vs-text{
+  word-break: break-word;
+  font-size: 10px;
+}
+
+.header-padding{
+  padding-left:3px !important;
 }

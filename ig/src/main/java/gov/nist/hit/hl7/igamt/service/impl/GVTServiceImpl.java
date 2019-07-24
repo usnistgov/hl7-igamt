@@ -19,7 +19,6 @@ import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -58,26 +57,26 @@ public class GVTServiceImpl implements GVTService {
   @PostConstruct
   @SuppressWarnings("deprecation")
   public void init() {
-    try {
-      SSLContextBuilder builder = new SSLContextBuilder();
-      builder.loadTrustMaterial(null, new TrustAllStrategy());
-      SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-      CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
-      HttpComponentsClientHttpRequestFactory fct =
-          new HttpComponentsClientHttpRequestFactory(httpClient);
-      this.restTemplate = new RestTemplate(fct);
-    } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+//    try {
+//      SSLContextBuilder builder = new SSLContextBuilder();
+//      builder.loadTrustMaterial(null, new TrustAllStrategy());
+//      SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(builder.build(), SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
+//      CloseableHttpClient httpClient = HttpClients.custom().setSSLSocketFactory(socketFactory).setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER).build();
+//      HttpComponentsClientHttpRequestFactory fct =
+//          new HttpComponentsClientHttpRequestFactory(httpClient);
+//      this.restTemplate = new RestTemplate(fct);
+//    } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+//      // TODO Auto-generated catch block
+//      e.printStackTrace();
+//    }
   }
 
-  public class TrustAllStrategy implements TrustStrategy {
-    @Override
-    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-      return true;
-    }
-  }
+//  public class TrustAllStrategy implements TrustStrategy {
+//    @Override
+//    public boolean isTrusted(X509Certificate[] chain, String authType) throws CertificateException {
+//      return true;
+//    }
+//  }
 
 
   public GVTServiceImpl() {

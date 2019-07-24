@@ -25,6 +25,7 @@ import {
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { MessageService } from '../core/services/message.service';
+import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -70,6 +71,8 @@ import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
+import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
+import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 @NgModule({
   declarations: [
     LoginFormComponent,
@@ -114,6 +117,9 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     ConstantValueComponent,
     PredicateComponent,
     ValueSetStructureComponent,
+    AddResourceComponent,
+    SelectResourceIdsComponent,
+    ExportXmlDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -207,8 +213,10 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     ConstantValueComponent,
     PredicateComponent,
     ValueSetStructureComponent,
+    AddResourceComponent,
+    ExportXmlDialogComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

@@ -8,3 +8,8 @@ export interface IAddWrapper {
   scope?: Scope;
   title?: string;
 }
+
+export interface IAddNewWrapper {
+  node?: IDisplayElement;
+  type?: Type;
+}
