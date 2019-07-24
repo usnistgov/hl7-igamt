@@ -8,6 +8,7 @@ import {Type} from '../constants/type.enum';
 import {IRelationShip, IUsages} from '../models/cross-reference';
 import {IDisplayElement} from '../models/display-element.interface';
 import {StoreResourceRepositoryService} from './resource-repository.service';
+import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,9 @@ export class CrossReferencesService {
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {
         return from(relations).pipe(
           mergeMap((r: IRelationShip) => {
+            this.store.dispatch(new TurnOnLoader({
+              blockUI: true,
+            }));
             return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
               take(1),
               map((elm: IDisplayElement) => {
@@ -47,6 +51,7 @@ export class CrossReferencesService {
                   element: elm,
                   location: r.location,
                 };
+                this.store.dispatch(new TurnOffLoader());
               }),
             );
           }),
@@ -54,10 +59,10 @@ export class CrossReferencesService {
         );
   }
 
-  findUsagesDisplay(documentId: string, documentType: Type, elementType: Type, elementId: string): Observable<IUsages[]> {
+  findUsagesDisplay = (documentId: string, documentType: Type, elementType: Type, elementId: string): Observable<IUsages[]> => {
     return this.findUsages (documentId, documentType, elementType, elementId).pipe(
+
       mergeMap( (rel: IRelationShip[]) => {
-        console.log(rel);
         return this.getUsagesFromRelationShip(rel);
         },
         ),
