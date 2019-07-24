@@ -82,12 +82,8 @@ public class GVTConnectController extends BaseController {
       Ig ig = findIgById("5b5b69ad84ae99a4bd0d1f74");
       IgDataModel igModel = this.igService.generateDataModel(ig);
 
-      if (reqIds != null && reqIds.getMids().length == 1 && reqIds.getMids()[0].equals("NOTHING"))
-        reqIds.setMids(null);
-      if (reqIds != null && reqIds.getCids().length == 1 && reqIds.getCids()[0].equals("NOTHING"))
-        reqIds.setCids(null);
-
-      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getMids(), reqIds.getCids());
+  
+      InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
       ResponseEntity<?> rsp = gvtService.send(content, authorization, url, domain);
       Map<String, Object> res = (Map<String, Object>) rsp.getBody();
       return res;

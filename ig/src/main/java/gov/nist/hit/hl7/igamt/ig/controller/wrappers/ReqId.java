@@ -16,21 +16,22 @@ package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
  *
  */
 public class ReqId {
-  private String[] mids;
-  private String[] cids;
-  public String[] getMids() {
-    return mids;
-  }
-  public void setMids(String[] mids) {
-    this.mids = mids;
-  }
-  public String[] getCids() {
-    return cids;
-  }
-  public void setCids(String[] cids) {
-    this.cids = cids;
-  }
-  
-  
+
+	private String[] conformanceProfilesId;
+	private String[] compositeProfilesId;
+	public String[] getConformanceProfilesId() {
+		return conformanceProfilesId;
+	}
+	public void setConformanceProfilesId(String[] conformanceProfilesId) {
+		this.conformanceProfilesId = conformanceProfilesId;
+	}
+	public String[] getCompositeProfilesId() {
+		return compositeProfilesId;
+	}
+	public void setCompositeProfilesId(String[] compositeProfilesId) {
+		this.compositeProfilesId = compositeProfilesId;
+	}
+
+
 
 }

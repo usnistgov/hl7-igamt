@@ -18,6 +18,7 @@ import {
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
 import { MessageService } from '../core/services/message.service';
+import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
@@ -26,6 +27,7 @@ import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
 import { CardinalityComponent } from './components/hl7-v2-tree/columns/cardinality/cardinality.component';
@@ -52,6 +54,7 @@ import { ScopeBadgeComponent } from './components/scope-badge/scope-badge.compon
 import { SelectDatatypesComponent } from './components/select-datatypes/select-datatypes.component';
 import { SelectMessagesComponent } from './components/select-messages/select-messages.component';
 import { SelectNameComponent } from './components/select-name/select-name.component';
+import { SelectResourceIdsComponent } from './components/select-resource-ids/select-resource-ids.component';
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
@@ -116,6 +119,9 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     CsPropositionComponent,
     CsDialogComponent,
     ValueSetStructureComponent,
+    AddResourceComponent,
+    SelectResourceIdsComponent,
+    ExportXmlDialogComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -223,8 +229,10 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     CsDialogComponent,
     OrganizationChartModule,
     ValueSetStructureComponent,
+    AddResourceComponent,
+    ExportXmlDialogComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

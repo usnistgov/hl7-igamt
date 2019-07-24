@@ -1,5 +1,7 @@
 <form #namingForm='ngForm'>
-  <input name="variableName" [id]="element.id" appNamingDuplication appNamingConvention  [type]="element.type" [scope]="targetScope" [existing]="existing" [fixedName]="element.fixedName" [domainInfo]="element.domainInfo" [(ngModel)]="element.variableName" type="text" style="width: 100%" required (ngModelChange)="emitData()"/>
+  <div class="form-group">
+
+  <input name="variableName" [id]="element.id" appNamingDuplication appNamingConvention  [type]="element.type" [scope]="targetScope" [existing]="existing" [fixedName]="element.fixedName" [domainInfo]="element.domainInfo" [(ngModel)]="element.variableName" type="text" class="form-control" style="width: 100%" required (ngModelChange)="emitData()"/>
   <div *ngIf="namingForm.controls['variableName'] && namingForm.controls['variableName'].errors" style="color:red; font-size: 11px">
     <div *ngIf="namingForm.controls['variableName'].errors.required">
       <span>*extension is required</span>
@@ -10,5 +12,6 @@
     <div *ngIf="namingForm.controls['variableName'].errors.invalidConvention">
       <span> {{namingForm.controls['variableName'].errors.invalidConvention}}</span>
     </div>
+  </div>
   </div>
 </form>

@@ -4,14 +4,19 @@
     </button>
 </div>
 <div>
+
   <button class="btn btn-info btn-sm toolbar-button" type="button">
     <i class="fa fa-plug"></i>
     Connect
   </button>
-  <button class="btn btn-secondary btn-sm toolbar-button" type="button">
-    <i class="fa fa-chevron-down"></i>
-    Export
-  </button>
+  <div ngbDropdown class="d-inline-block">
+    <button class="btn btn-secondary btn-sm toolbar-button" id="exportDropDown" ngbDropdownToggle>Export</button>
+    <div ngbDropdownMenu aria-labelledby="exportDropDown">
+      <button ngbDropdownItem (click)="exportWord()">Word</button>
+      <button ngbDropdownItem (click)="exportHTML()">HTML</button>
+      <button ngbDropdownItem (click)="exportXML()">XML</button>
+    </div>
+  </div>
   <button *ngIf="!viewOnly" class="btn btn-success btn-sm toolbar-button" type="button">
     <i class="fa fa-check"></i>
     Verify

@@ -34,12 +34,12 @@ public class Code implements Serializable{
 
   public Code() {
     this.setId(new ObjectId().toString());
-    this.setUsage(CodeUsage.P);
+//    this.setUsage(CodeUsage.P);
   }
 
   public Code(String value, String description, String codeSystem, String comments) {
     this.setId(new ObjectId().toString());
-    this.setUsage(CodeUsage.P);
+//    this.setUsage(CodeUsage.P);
     this.value = value;
     this.description = description;
     this.codeSystem = codeSystem;

@@ -118,6 +118,12 @@ public class TableConversionServiceImpl implements ConversionService {
 		}
 		v.setCodeSystems(table.getCodeSystems());
 		v.setId(table.getId());
+		if(table.getCodes().isEmpty()) {
+			v.setNumberOfCodes(table.getNumberOfCodes());
+
+		}else {
+			v.setNumberOfCodes(table.getCodes().size());
+		}
 		valuesetService.save(v);
 		
 	}

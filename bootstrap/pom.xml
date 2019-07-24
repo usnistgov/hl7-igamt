@@ -117,11 +117,11 @@
 			<artifactId>file-storage</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		<dependency>
+<!-- 		<dependency>
 			<groupId>gov.cdc.phinvads</groupId>
 			<artifactId>vocabServiceClient</artifactId>
 			<version>1.0</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.caucho</groupId>
 			<artifactId>hessian</artifactId>
