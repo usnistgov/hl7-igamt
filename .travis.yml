@@ -33,3 +33,5 @@ matrix:
         - mvn -Dmaven.test.skip=true -q install
       script:
         - echo "BUILD PASSED"
+notifications:
+  slack: igamt:AguUmFpxIC0okakY5LtQ3c22
