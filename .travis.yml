@@ -25,5 +25,7 @@ matrix:
       branches:
         only:
           - develop
-      script:
+      install:
         - mvn -Dmaven.test.skip=true install
+      script:
+        - echo "BUILD PASSED"
