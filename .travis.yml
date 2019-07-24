@@ -28,8 +28,8 @@ matrix:
       install:
         - git clone https://github.com/usnistgov/hl7-auth.git -b develop
         - cd ./hl7-auth/
-        - mvn -Dmaven.test.skip=true install
+        - mvn -Dmaven.test.skip=true -q install
         - cd ..
-        - mvn -Dmaven.test.skip=true install
+        - mvn -Dmaven.test.skip=true -q install
       script:
         - echo "BUILD PASSED"
