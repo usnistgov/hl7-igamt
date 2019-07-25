@@ -1343,29 +1343,12 @@ public class IGDocumentController extends BaseController {
 	}
 
 
-	@RequestMapping(value = "/api/igdocuments/exportTests", method = RequestMethod.POST, produces = {"application/json"})
-	public void  test(Authentication authentication) throws Exception {
-		IgDataModel igModel = this.igService.generateDataModel(findIgById("5b5b69ad84ae99a4bd0d1f74"));
+	@RequestMapping(value = "/api/igdocuments/exportTests", method = RequestMethod.GET, produces = {"application/json"})
+	public void  test(HttpServletResponse response, Authentication authentication) throws Exception {
+		IgDataModel igModel = this.igService.generateDataModel(findIgById("5d38babd0739e61e3825b183"));
+//		IgDataModel igModel = this.igService.generateDataModel(findIgById("5b5b69ad84ae99a4bd0d1f74"));
 
-		InputStream content = this.igService.exportValidationXMLByZip(igModel, new String[] {"5b5b69ab84ae99a4bd0d0558"}, null);
-
-	}
-
-
-
-
-	@RequestMapping(value = "/api/igdocuments/exportTests", method = RequestMethod.POST, produces = "application/zip",consumes = "application/x-www-form-urlencoded; charset=UTF-8")
-	public void exportValidationXMLByProfiles(
-			FormData formData,
-			HttpServletResponse response, 
-			Authentication authentication) throws IGNotFoundException, Exception {
-
-		IgDataModel igModel = this.igService.generateDataModel(findIgById("5b5b69ad84ae99a4bd0d1f74"));		
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-		ReqId reqIds = mapper.readValue(formData.getJson(), ReqId.class);
-
-		InputStream content = this.igService.exportValidationXMLByZip(igModel, reqIds.getConformanceProfilesId(), reqIds.getCompositeProfilesId());
+		InputStream content = this.igService.exportValidationXMLByZip(igModel, new String[] {"5d38babd0739e61e3825b183"}, null);
 		response.setContentType("application/zip");
 		response.setHeader("Content-disposition", "attachment;filename=" + this.updateFileName(igModel.getModel().getMetadata().getTitle()) + "-" + "5b5b69ad84ae99a4bd0d1f74" + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".zip");
 		FileCopyUtils.copy(content, response.getOutputStream());

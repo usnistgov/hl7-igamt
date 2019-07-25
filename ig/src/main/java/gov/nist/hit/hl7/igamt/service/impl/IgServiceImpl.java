@@ -920,8 +920,7 @@ public class IgServiceImpl implements IgService {
 	      Segment s = this.segmentService.findById(link.getId());
 	      if (s != null) {
 	        SegmentDataModel segmentDataModel = new SegmentDataModel();
-	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap,
-	            this.conformanceStatementRepository, this.predicateRepository);
+	        segmentDataModel.putModel(s, this.datatypeService, valuesetBindingDataModelMap, this.conformanceStatementRepository, this.predicateRepository);
 	        // CoConstraintTable coConstraintTable =
 	        // this.coConstraintService.getCoConstraintForSegment(s.getId());
 	        // segmentDataModel.setCoConstraintTable(coConstraintTable);
@@ -966,10 +965,6 @@ public class IgServiceImpl implements IgService {
 	    String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 	    String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
 
-	    System.out.println(profileXMLStr);
-	    System.out.println(valueSetXMLStr);
-	    System.out.println(constraintXMLStr);
-
 	    this.xmlSerializeService.generateIS(out, profileXMLStr, "Profiles.xml");
 	    this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
 	    this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
@@ -978,4 +973,5 @@ public class IgServiceImpl implements IgService {
 	    bytes = outputStream.toByteArray();
 	    return new ByteArrayInputStream(bytes);
 	  }
+	  
 	}

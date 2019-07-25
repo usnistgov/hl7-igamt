@@ -1,5 +1,7 @@
 package gov.nist.hit.hl7.igamt.coconstraints.domain;
 
+import java.util.Set;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -53,6 +55,17 @@ public class CoConstraintTable {
 		table.headers = headers.clone();
 		table.content = content.clone();
 		return table;
+	}
+	/**
+	 * @return
+	 */
+	public Set<String[]> generateDynamicMappingItems() {
+		// TODO Auto-generated method stub
+		/*
+		 * return Set of "String Array of {OBX.3.1 value , datatypeId}"
+		 */
+		
+		return null;
 	}
 
 }
