@@ -36,9 +36,4 @@ public class AssertionConformanceStatement extends ConformanceStatement {
   public void setAssertion(Assertion assertion) {
     this.assertion = assertion;
   }
-  
-  @Override
-  public String generateAssertionScript(){
-    return "<Assertion>" + this.assertion.generateAssertionScript() + "/<Assertion>";
-  }
 }

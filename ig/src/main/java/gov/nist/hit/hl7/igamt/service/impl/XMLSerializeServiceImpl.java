@@ -33,8 +33,28 @@ import org.springframework.stereotype.Service;
 import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRefOrGroup;
+import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.AssertionPredicate;
 import gov.nist.hit.hl7.igamt.constraints.domain.ConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextConformanceStatement;
+import gov.nist.hit.hl7.igamt.constraints.domain.FreeTextPredicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.Level;
 import gov.nist.hit.hl7.igamt.constraints.domain.Predicate;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Assertion;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.IfThenAssertion;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.InstancePath;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.NotAssertion;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.OperatorAssertion;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.OperatorAssertion.Operator;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.SingleAssertion;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.Complement;
+import gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement.ComplementKey;
 import gov.nist.hit.hl7.igamt.datatype.domain.ComplexDatatype;
 import gov.nist.hit.hl7.igamt.datatype.domain.Component;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
@@ -52,6 +72,9 @@ import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.XMLSerializeService;
 import gov.nist.hit.hl7.igamt.segment.domain.DynamicMappingItem;
+import gov.nist.hit.hl7.igamt.segment.domain.Field;
+import gov.nist.hit.hl7.igamt.segment.domain.Segment;
+import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeComponentSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeSerializationException;
 import gov.nist.hit.hl7.igamt.service.impl.exception.FieldSerializationException;
@@ -69,6 +92,7 @@ import nu.xom.Attribute;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
+import nu.xom.Elements;
 import nu.xom.Node;
 import nu.xom.NodeFactory;
 import nu.xom.ParsingException;
@@ -80,9 +104,15 @@ import nu.xom.ValidityException;
  */
 @Service("xMLSerializeService")
 public class XMLSerializeServiceImpl implements XMLSerializeService {
-	
+
 	@Autowired
 	DatatypeService datatypeService;
+	
+	@Autowired
+	SegmentService segmentService;
+
+	@Autowired
+	ConformanceProfileService conformanceProfileService;
 
 	/*
 	 * (non-Javadoc)
@@ -95,7 +125,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	public Document serializeProfileToDoc(IgDataModel igModel) throws ProfileSerializationException {
 		try {
 			Set<Datatype> missingDts = new HashSet<Datatype>();
-			
+
 			Element e = new Element("ConformanceProfile");
 			this.serializeProfileMetaData(e, igModel, "Validation");
 
@@ -115,11 +145,11 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			for (DatatypeDataModel dModel : igModel.getDatatypes()) {
 				ds.appendChild(this.serializeDatatype(dModel, igModel));
 			}
-			
+
 			for (Datatype dt : missingDts) {
 				ds.appendChild(this.serializeSimpleDatatype(dt, igModel));
 			}
-			
+
 			e.appendChild(ds);
 
 			Document doc = new Document(e);
@@ -133,26 +163,24 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 	/**
 	 * @param dt
-	 * @param igModel 
+	 * @param igModel
 	 * @return
-	 * @throws DatatypeSerializationException 
+	 * @throws DatatypeSerializationException
 	 */
 	private Element serializeSimpleDatatype(Datatype dt, IgDataModel igModel) throws DatatypeSerializationException {
 		try {
 			Element elmDatatype = new Element("Datatype");
 
 			if (igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null
-					&& dt.getDomainInfo() != null
-					&& dt.getDomainInfo().getVersion() != null) {
-				if (igModel.getModel().getDomainInfo().getVersion()
-						.equals(dt.getDomainInfo().getVersion())) {
+					&& dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+				if (igModel.getModel().getDomainInfo().getVersion().equals(dt.getDomainInfo().getVersion())) {
 					elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
 					elmDatatype.addAttribute(new Attribute("ID", this.str(dt.getLabel())));
 				} else {
-					elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel() + "_"
-							+ dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-					elmDatatype.addAttribute(new Attribute("ID", this.str(dt.getLabel() + "_"
-							+ dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+					elmDatatype.addAttribute(new Attribute("Label",
+							this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+					elmDatatype.addAttribute(new Attribute("ID",
+							this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
 				}
 			} else {
 				elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
@@ -161,19 +189,18 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 			elmDatatype.addAttribute(new Attribute("Name", this.str(dt.getName())));
 			elmDatatype.addAttribute(new Attribute("Label", this.str(dt.getLabel())));
-			elmDatatype
-					.addAttribute(new Attribute("Version", this.str(dt.getDomainInfo().getVersion())));
+			elmDatatype.addAttribute(new Attribute("Version", this.str(dt.getDomainInfo().getVersion())));
 			if (dt.getDescription() == null || dt.getDescription().equals("")) {
 				elmDatatype.addAttribute(new Attribute("Description", "NoDesc"));
 			} else {
 				elmDatatype.addAttribute(new Attribute("Description", this.str(dt.getDescription())));
 			}
-			
-			if(dt instanceof ComplexDatatype) {
-				ComplexDatatype complexDatatype = (ComplexDatatype)dt;
-				if(complexDatatype.getComponents() != null) {
+
+			if (dt instanceof ComplexDatatype) {
+				ComplexDatatype complexDatatype = (ComplexDatatype) dt;
+				if (complexDatatype.getComponents() != null) {
 					Map<Integer, Component> components = new HashMap<Integer, Component>();
-					for(Component c : complexDatatype.getComponents()) {
+					for (Component c : complexDatatype.getComponents()) {
 						components.put(c.getPosition(), c);
 					}
 					for (int i = 1; i < components.size() + 1; i++) {
@@ -186,15 +213,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 
 							String childDTId = c.getRef().getId();
 							Datatype childDT = this.datatypeService.findById(childDTId);
-							
+
 							if (igModel.getModel().getDomainInfo() != null
 									&& igModel.getModel().getDomainInfo().getVersion() != null
 									&& childDT.getDomainInfo() != null
 									&& childDT.getDomainInfo().getVersion() != null) {
 								if (igModel.getModel().getDomainInfo().getVersion()
 										.equals(childDT.getDomainInfo().getVersion())) {
-									elmComponent
-											.addAttribute(new Attribute("Datatype", this.str(childDT.getLabel())));
+									elmComponent.addAttribute(new Attribute("Datatype", this.str(childDT.getLabel())));
 								} else {
 									elmComponent.addAttribute(new Attribute("Datatype", this.str(childDT.getLabel()
 											+ "_" + childDT.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
@@ -204,24 +230,21 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 							}
 
 							if (c.getMinLength() != null && !c.getMinLength().isEmpty()) {
-								elmComponent
-										.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
+								elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getMinLength())));
 
 							} else {
 								elmComponent.addAttribute(new Attribute("MinLength", "NA"));
 							}
 
 							if (c.getMaxLength() != null && !c.getMaxLength().isEmpty()) {
-								elmComponent
-										.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
+								elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getMaxLength())));
 
 							} else {
 								elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
 
 							}
 							if (c.getConfLength() != null && !c.getConfLength().equals("")) {
-								elmComponent
-										.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
+								elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getConfLength())));
 							} else {
 								elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
 							}
@@ -494,6 +517,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	 */
 	private void serializeMain(Element e, IgDataModel igModel) {
 		Element predicates_Elm = new Element("Predicates");
+		
 		Element predicates_dataType_Elm = new Element("Datatype");
 		for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
 
@@ -524,7 +548,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					Element elm_Description = new Element("Description");
 					elm_Description.appendChild(p.generateDescription());
 					elm_Constraint.appendChild(elm_Description);
-					elm_Constraint.appendChild(this.innerXMLHandler(p.generateConditionScript()));
+					elm_Constraint.appendChild(this.innerXMLHandler(this.generateConditionScript(p, dtModel.getModel().getId())));
 					elm_ByID.appendChild(elm_Constraint);
 				}
 			}
@@ -565,7 +589,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					Element elm_Description = new Element("Description");
 					elm_Description.appendChild(p.generateDescription());
 					elm_Constraint.appendChild(elm_Description);
-					elm_Constraint.appendChild(this.innerXMLHandler(p.generateConditionScript()));
+					elm_Constraint.appendChild(this
+							.innerXMLHandler(this.generateConditionScript(p, segModel.getModel().getId())));
 					elm_ByID.appendChild(elm_Constraint);
 				}
 			}
@@ -575,6 +600,71 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			}
 		}
 		predicates_Elm.appendChild(predicates_segment_Elm);
+		
+		Element predicates_Group_Elm = new Element("Group");
+		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+			if (cpModel.getPredicateMap() != null && cpModel.getPredicateMap().size() > 0) {
+				for (String key : cpModel.getPredicateMap().keySet()) {
+
+					Predicate p = cpModel.getPredicateMap().get(key);
+					
+					if(p.getLevel().equals(Level.GROUP)) {
+						
+						int count = countContextChild(p.getContext().getChild(), 1);
+						
+						String groupKey = "";
+						
+						for(int i = count; i < key.split("//.").length; i++) {
+							if(count + 1 == key.split("//.").length) groupKey = groupKey + key.split("//.")[i];
+							else groupKey = groupKey + key.split("//.")[i] + ".";
+						}
+						Element elm_ByID = this.findOrCreatByIDElement(predicates_Group_Elm, p.getContext(), cpModel.getModel());
+						
+						Element elm_Constraint = new Element("Predicate");
+						elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(groupKey)));
+						elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
+						elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
+						Element elm_Description = new Element("Description");
+						elm_Description.appendChild(p.generateDescription());
+						elm_Constraint.appendChild(elm_Description);
+						elm_Constraint.appendChild(this.innerXMLHandler(this.generateConditionScript(p, cpModel.getModel().getId())));
+						elm_ByID.appendChild(elm_Constraint);	
+					}
+				}
+			}
+		}
+		predicates_Elm.appendChild(predicates_Group_Elm);
+		
+		Element predicates_Message_Elm = new Element("Message");
+		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+
+			Element elm_ByID = new Element("ByID");
+			elm_ByID.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
+
+			if (cpModel.getPredicateMap() != null && cpModel.getPredicateMap().size() > 0) {
+				for (String key : cpModel.getPredicateMap().keySet()) {
+
+					Predicate p = cpModel.getPredicateMap().get(key);
+					
+					if(p.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+						Element elm_Constraint = new Element("Predicate");
+						elm_Constraint.addAttribute(new Attribute("Target", this.bindingInstanceNum(key)));
+						elm_Constraint.addAttribute(new Attribute("TrueUsage", p.getTrueUsage().toString()));
+						elm_Constraint.addAttribute(new Attribute("FalseUsage", p.getFalseUsage().toString()));
+						Element elm_Description = new Element("Description");
+						elm_Description.appendChild(p.generateDescription());
+						elm_Constraint.appendChild(elm_Description);
+						elm_Constraint.appendChild(this.innerXMLHandler(this.generateConditionScript(p, cpModel.getModel().getId())));
+						elm_ByID.appendChild(elm_Constraint);						
+					}
+				}
+			}
+
+			if (elm_ByID.getChildElements() != null && elm_ByID.getChildElements().size() > 0) {
+				predicates_Message_Elm.appendChild(elm_ByID);
+			}
+		}
+		predicates_Elm.appendChild(predicates_Message_Elm);
 
 		Element constraints_Elm = new Element("Constraints");
 		Element constraints_dataType_Elm = new Element("Datatype");
@@ -602,7 +692,8 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					Element elm_Description = new Element("Description");
 					elm_Description.appendChild(cs.generateDescription());
 					elm_Constraint.appendChild(elm_Description);
-					elm_Constraint.appendChild(this.innerXMLHandler(cs.generateAssertionScript()));
+					elm_Constraint.appendChild(this
+							.innerXMLHandler(this.generateAssertionScript(cs, dtModel.getModel().getId())));
 					elm_ByID.appendChild(elm_Constraint);
 				}
 			}
@@ -620,12 +711,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			if (igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null
 					&& segModel.getModel().getDomainInfo() != null
 					&& segModel.getModel().getDomainInfo().getVersion() != null) {
-				if (igModel.getModel().getDomainInfo().getVersion()
-						.equals(segModel.getModel().getDomainInfo().getVersion())) {
+				if (igModel.getModel().getDomainInfo().getVersion().equals(segModel.getModel().getDomainInfo().getVersion())) {
 					elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel()));
 				} else {
-					elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel() + "_"
-							+ segModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")));
+					elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel() + "_" + segModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")));
 				}
 			} else {
 				elm_ByID.addAttribute(new Attribute("ID", segModel.getModel().getLabel()));
@@ -638,7 +727,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 					Element elm_Description = new Element("Description");
 					elm_Description.appendChild(cs.generateDescription());
 					elm_Constraint.appendChild(elm_Description);
-					elm_Constraint.appendChild(this.innerXMLHandler(cs.generateAssertionScript()));
+					elm_Constraint.appendChild(this.innerXMLHandler(this.generateAssertionScript(cs, segModel.getModel().getId())));
 					elm_ByID.appendChild(elm_Constraint);
 				}
 			}
@@ -648,33 +737,103 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			}
 		}
 		constraints_Elm.appendChild(constraints_segment_Elm);
+		
+		Element constraints_group_Elm = new Element("Group");
+		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
 
-//    Element constraints_segment_Elm = new Element("Segment");
-//    for (ByNameOrByID byNameOrByIDObj : conformanceStatements.getSegments().getByNameOrByIDs()) {
-//      Element segmentConstaint = this.serializeByNameOrByID(byNameOrByIDObj);
-//      if (segmentConstaint != null)
-//        constraints_segment_Elm.appendChild(segmentConstaint);
-//    }
-//    constraints_Elm.appendChild(constraints_segment_Elm);
-//
-//    Element constraints_group_Elm = new Element("Group");
-//    for (ByNameOrByID byNameOrByIDObj : conformanceStatements.getGroups().getByNameOrByIDs()) {
-//      Element groupConstaint = this.serializeByNameOrByID(byNameOrByIDObj);
-//      if (groupConstaint != null)
-//        constraints_group_Elm.appendChild(groupConstaint);
-//    }
-//    constraints_Elm.appendChild(constraints_group_Elm);
-//
-//    Element constraints_message_Elm = new Element("Message");
-//    for (ByNameOrByID byNameOrByIDObj : conformanceStatements.getMessages().getByNameOrByIDs()) {
-//      Element messageConstaint = this.serializeByNameOrByID(byNameOrByIDObj);
-//      if (messageConstaint != null)
-//        constraints_message_Elm.appendChild(messageConstaint);
-//    }
-//    constraints_Elm.appendChild(constraints_message_Elm);
+			if (cpModel.getConformanceStatements() != null && cpModel.getConformanceStatements().size() > 0) {
+				for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
+					if(cs.getLevel().equals(Level.GROUP)) {
+						Element elm_ByID = this.findOrCreatByIDElement(constraints_group_Elm, cs.getContext(), cpModel.getModel());
+						Element elm_Constraint = new Element("Constraint");
+						elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+						Element elm_Description = new Element("Description");
+						elm_Description.appendChild(cs.generateDescription());
+						elm_Constraint.appendChild(elm_Description);
+						elm_Constraint.appendChild(this.innerXMLHandler(this.generateAssertionScript(cs, cpModel.getModel().getId())));
+						elm_ByID.appendChild(elm_Constraint);
+					}
+				}
+			}
+		}
+		constraints_Elm.appendChild(constraints_group_Elm);
+		
+		Element constraints_message_Elm = new Element("Message");
+		for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+
+			Element elm_ByID = new Element("ByID");
+			elm_ByID.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
+
+			if (cpModel.getConformanceStatements() != null && cpModel.getConformanceStatements().size() > 0) {
+				for (ConformanceStatement cs : cpModel.getConformanceStatements()) {
+					if(cs.getLevel().equals(Level.CONFORMANCEPROFILE)) {
+						Element elm_Constraint = new Element("Constraint");
+						elm_Constraint.addAttribute(new Attribute("ID", cs.getIdentifier()));
+						Element elm_Description = new Element("Description");
+						elm_Description.appendChild(cs.generateDescription());
+						elm_Constraint.appendChild(elm_Description);
+						elm_Constraint.appendChild(this.innerXMLHandler(this.generateAssertionScript(cs, cpModel.getModel().getId())));
+						elm_ByID.appendChild(elm_Constraint);	
+					}
+				}
+			}
+
+			if (elm_ByID.getChildElements() != null && elm_ByID.getChildElements().size() > 0) {
+				constraints_message_Elm.appendChild(elm_ByID);
+			}
+		}
+		constraints_Elm.appendChild(constraints_message_Elm);
+
 		e.appendChild(predicates_Elm);
 		e.appendChild(constraints_Elm);
 
+	}
+
+	/**
+	 * @param constraints_group_Elm
+	 * @param context
+	 * @param conformanceProfile 
+	 * @return
+	 */
+	private Element findOrCreatByIDElement(Element constraints_group_Elm, Path context, ConformanceProfile conformanceProfile) {
+		Group group = this.findGroupByContext(context.getChild(), conformanceProfile.getChildren());
+		Elements elements = constraints_group_Elm.getChildElements("ByID");
+		if(elements != null && elements.size() > 0) {
+			for(int i=0; i < elements.size(); i ++) {
+				if(elements.get(i).getAttribute("ID").getValue().equals(group.getId())) {
+					return elements.get(i);
+				}
+			}
+		}
+		
+		Element elm_ByID = new Element("ByID");
+		elm_ByID.addAttribute(new Attribute("ID", group.getId()));
+		constraints_group_Elm.appendChild(elm_ByID);
+		return elm_ByID;
+	}
+
+	/**
+	 * @param context
+	 * @param set
+	 * @return
+	 */
+	private Group findGroupByContext(InstancePath context, Set<SegmentRefOrGroup> set) {
+		for(SegmentRefOrGroup srog : set) {
+			if(srog.getId().equals(context.getElementId())) {
+				if(context.getChild() == null) return (Group)srog;
+				else return findGroupByContext(context.getChild(), ((Group)srog).getChildren());
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param context
+	 * @return
+	 */
+	private int countContextChild(InstancePath instancePath, int result) {
+		if(instancePath.getChild() == null) return result;
+		else return countContextChild(instancePath.getChild(), result + 1);
 	}
 
 	/**
@@ -861,332 +1020,347 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 	}
 
 	private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel, Set<Datatype> missingDts)
-      throws SegmentSerializationException {
-    try {
-      // TODO DynamicMapping Need
-      Element elmSegment = new Element("Segment");
+			throws SegmentSerializationException {
+		try {
+			// TODO DynamicMapping Need
+			Element elmSegment = new Element("Segment");
 
-      if (igModel.getModel().getDomainInfo() != null
-          && igModel.getModel().getDomainInfo().getVersion() != null
-          && sModel.getModel().getDomainInfo() != null
-          && sModel.getModel().getDomainInfo().getVersion() != null) {
-        if (igModel.getModel().getDomainInfo().getVersion()
-            .equals(sModel.getModel().getDomainInfo().getVersion())) {
-          elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
-          elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
-        } else {
-          elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel() + "_"
-              + sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-          elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel() + "_"
-              + sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-        }
-      } else {
-        elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
-        elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
-      }
+			if (igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null
+					&& sModel.getModel().getDomainInfo() != null
+					&& sModel.getModel().getDomainInfo().getVersion() != null) {
+				if (igModel.getModel().getDomainInfo().getVersion()
+						.equals(sModel.getModel().getDomainInfo().getVersion())) {
+					elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
+					elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
+				} else {
+					elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel() + "_"
+							+ sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+					elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel() + "_"
+							+ sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+				}
+			} else {
+				elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
+				elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
+			}
 
-      elmSegment.addAttribute(new Attribute("Name", this.str(sModel.getModel().getName())));
-      elmSegment.addAttribute(
-          new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
-      if (sModel.getModel().getDescription() == null
-          || sModel.getModel().getDescription().equals("")) {
-        elmSegment.addAttribute(new Attribute("Description", "NoDesc"));
-      } else {
-        elmSegment.addAttribute(
-            new Attribute("Description", this.str(sModel.getModel().getDescription())));
-      }
-      
-      
-      //DynamicMapping
-      if(sModel.getModel().getName().equals("OBX")) {
-    	  Element elmDynamicMapping = new Element("DynamicMapping");
-    	  Element elmMapping = new Element("Mapping");
-    	  elmMapping.addAttribute(new Attribute("Position", "5"));
-    	  elmMapping.addAttribute(new Attribute("Reference", "2"));
-    	  elmMapping.addAttribute(new Attribute("SecondReference", "3.1"));
-    	  
-    	  //#1 User's Defined Dynamic Mapping
-    	  if(sModel.getModel().getDynamicMappingInfo() != null && sModel.getModel().getDynamicMappingInfo().getItems() != null) {
-    		  for(DynamicMappingItem item : sModel.getModel().getDynamicMappingInfo().getItems()) {
-    			  Element elmCase = new Element("Case");
-    			  elmCase.addAttribute(new Attribute("Value", item.getValue()));
-    			  
-    			  DatatypeDataModel itemDTModel = igModel.findDatatype(item.getDatatypeId());
-    			  
-    			  if (igModel.getModel().getDomainInfo() != null
-    			          && igModel.getModel().getDomainInfo().getVersion() != null
-    			          && itemDTModel.getModel().getDomainInfo() != null
-    			          && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-    				  if (igModel.getModel().getDomainInfo().getVersion().equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-    					  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-    			        } else {
-    			        	elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-    			        }  
-    			  } else {
-    				  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-    			  }
-    			  
-    			  elmMapping.appendChild(elmCase);
-    		  }
-    	  }
-    	  
-    	  //#2 CoConstraint's Defined Dynamic Mapping
-    	  if(sModel.getCoConstraintTable() != null) {
-    		  CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
-    		  Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
-    		  
-    		  if(dynamicMappingItems != null) {
-    			  dynamicMappingItems.forEach(item -> {
-        			  if(item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
-        				  DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
-        				  if(itemDTModel != null) {
-        					  Element elmCase = new Element("Case");
-                			  elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-                			  elmCase.addAttribute(new Attribute("SecondValue", item[0]));
-                			  if (igModel.getModel().getDomainInfo() != null
-                			          && igModel.getModel().getDomainInfo().getVersion() != null
-                			          && itemDTModel.getModel().getDomainInfo() != null
-                			          && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-                				  if (igModel.getModel().getDomainInfo().getVersion().equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-                					  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                			        } else {
-                			        	elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                			        }  
-                			  } else {
-                				  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-                			  }
-                			  
-                			  elmMapping.appendChild(elmCase);  
-        				  }
-        			  }
-        		  });  
-    		  }
-    	  }
-    	 
-    	  //#3 OBX-2 Dynamic Mapping
-    	  String version = null;
-    	  String refValuesetId = null;
-    	  ValuesetDataModel vsModel = null;
-    	  if(sModel.getValuesetMap().get("2") != null) {
-    		  for(ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
-    			  refValuesetId = m.getValuesetBinding().getValuesetId();
-    		  }
-    	  }
-    	  if(refValuesetId != null) {
-    		  vsModel = igModel.findValueset(refValuesetId);
-    	  }
-    	  if(vsModel != null) {
-    		  version = vsModel.getModel().getDomainInfo().getVersion();
-    		  if(version != null) {
-    			  for(Code c : vsModel.getModel().getCodes()) {
-    				  String value = c.getValue();
-    				  DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
-    				  
-    				  if(itemDTModel != null) {
-    					  Element elmCase = new Element("Case");
-            			  elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
-            			  if (igModel.getModel().getDomainInfo() != null
-            			          && igModel.getModel().getDomainInfo().getVersion() != null
-            			          && itemDTModel.getModel().getDomainInfo() != null
-            			          && itemDTModel.getModel().getDomainInfo().getVersion() != null) {
-            				  if (igModel.getModel().getDomainInfo().getVersion().equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
-            					  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-            			        } else {
-            			        	elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-            			        }  
-            			  } else {
-            				  elmCase.addAttribute(new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
-            			  }
-            			  elmMapping.appendChild(elmCase);  
-    				  }else {
-    					  Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version, "HL7STANDARD");
-    					  if(dt != null) {
-    						  Element elmCase = new Element("Case");
-                			  elmCase.addAttribute(new Attribute("Value", dt.getName()));
-                			  if (igModel.getModel().getDomainInfo() != null
-                			          && igModel.getModel().getDomainInfo().getVersion() != null
-                			          && dt.getDomainInfo() != null
-                			          && dt.getDomainInfo().getVersion() != null) {
-                				  if (igModel.getModel().getDomainInfo().getVersion().equals(dt.getDomainInfo().getVersion())) {
-                					  elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                			        } else {
-                			        	elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_" + dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-                			        }  
-                			  } else {
-                				  elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
-                			  }
-                			  elmMapping.appendChild(elmCase);
-                			  
-                			  missingDts.add(dt);
-                			  if(dt instanceof ComplexDatatype) {
-                				  ComplexDatatype complexDatatype = (ComplexDatatype)dt;
-                				  if(complexDatatype.getComponents() != null) {
-                    				  for(Component component: complexDatatype.getComponents()) {
-                    					  if(igModel.findDatatype(component.getRef().getId()) == null) {
-                    						  Datatype childDT = this.datatypeService.findById(component.getRef().getId());
-                    						  if(childDT != null) missingDts.add(childDT);
-                    						  
-                    						  if(childDT instanceof ComplexDatatype) {
-                                				  ComplexDatatype complexChildDatatype = (ComplexDatatype)childDT;
-                                				  if(complexChildDatatype.getComponents() != null) {
-                                    				  for(Component subComponent: complexChildDatatype.getComponents()) {
-                                    					  if(igModel.findDatatype(subComponent.getRef().getId()) == null) {
-                                    						  Datatype childchildDT = this.datatypeService.findById(subComponent.getRef().getId());
-                                    						  if(childchildDT != null) missingDts.add(childchildDT);
-                                    					  }
-                                    				  }
-                                				  }
-                    						  }
-                    						  
-                    					  }
-                    				  }
-                				  }
+			elmSegment.addAttribute(new Attribute("Name", this.str(sModel.getModel().getName())));
+			elmSegment.addAttribute(new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
+			if (sModel.getModel().getDescription() == null || sModel.getModel().getDescription().equals("")) {
+				elmSegment.addAttribute(new Attribute("Description", "NoDesc"));
+			} else {
+				elmSegment.addAttribute(new Attribute("Description", this.str(sModel.getModel().getDescription())));
+			}
 
-                			  }
-    					  }else {
-        					  System.out.println(value + "-" + version);    						  
-    					  }
+			// DynamicMapping
+			if (sModel.getModel().getName().equals("OBX")) {
+				Element elmDynamicMapping = new Element("DynamicMapping");
+				Element elmMapping = new Element("Mapping");
+				elmMapping.addAttribute(new Attribute("Position", "5"));
+				elmMapping.addAttribute(new Attribute("Reference", "2"));
+				elmMapping.addAttribute(new Attribute("SecondReference", "3.1"));
 
-    				  }
-    				  
-    			  }
-    		  }
-    	  }
+				// #1 User's Defined Dynamic Mapping
+				if (sModel.getModel().getDynamicMappingInfo() != null
+						&& sModel.getModel().getDynamicMappingInfo().getItems() != null) {
+					for (DynamicMappingItem item : sModel.getModel().getDynamicMappingInfo().getItems()) {
+						Element elmCase = new Element("Case");
+						elmCase.addAttribute(new Attribute("Value", item.getValue()));
 
-    	  
-    	  elmDynamicMapping.appendChild(elmMapping);
-    	  elmSegment.appendChild(elmDynamicMapping);
-      }
-      
+						DatatypeDataModel itemDTModel = igModel.findDatatype(item.getDatatypeId());
 
-      Map<Integer, FieldDataModel> fields = new HashMap<Integer, FieldDataModel>();
+						if (igModel.getModel().getDomainInfo() != null
+								&& igModel.getModel().getDomainInfo().getVersion() != null
+								&& itemDTModel.getModel().getDomainInfo() != null
+								&& itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+							if (igModel.getModel().getDomainInfo().getVersion()
+									.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+								elmCase.addAttribute(
+										new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+							} else {
+								elmCase.addAttribute(new Attribute("Datatype",
+										this.str(itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
+												.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+							}
+						} else {
+							elmCase.addAttribute(
+									new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+						}
 
-      for (FieldDataModel fModel : sModel.getFieldDataModels()) {
-        fields.put(fModel.getModel().getPosition(), fModel);
-      }
+						elmMapping.appendChild(elmCase);
+					}
+				}
 
-      for (int i = 1; i < fields.size() + 1; i++) {
-        try {
-          FieldDataModel f = fields.get(i);
+				// #2 CoConstraint's Defined Dynamic Mapping
+				if (sModel.getCoConstraintTable() != null) {
+					CoConstraintTable coConstraintTable = sModel.getCoConstraintTable();
+					Set<String[]> dynamicMappingItems = coConstraintTable.generateDynamicMappingItems();
 
-          if (f != null) {
-            DatatypeBindingDataModel dBindingModel = f.getDatatype();
+					if (dynamicMappingItems != null) {
+						dynamicMappingItems.forEach(item -> {
+							if (item[0] != null && !item[0].isEmpty() && item[1] != null && !item[1].isEmpty()) {
+								DatatypeDataModel itemDTModel = igModel.findDatatype(item[1]);
+								if (itemDTModel != null) {
+									Element elmCase = new Element("Case");
+									elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+									elmCase.addAttribute(new Attribute("SecondValue", item[0]));
+									if (igModel.getModel().getDomainInfo() != null
+											&& igModel.getModel().getDomainInfo().getVersion() != null
+											&& itemDTModel.getModel().getDomainInfo() != null
+											&& itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+										if (igModel.getModel().getDomainInfo().getVersion()
+												.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+											elmCase.addAttribute(new Attribute("Datatype",
+													this.str(itemDTModel.getModel().getLabel())));
+										} else {
+											elmCase.addAttribute(new Attribute("Datatype",
+													this.str(itemDTModel.getModel().getLabel() + "_"
+															+ itemDTModel.getModel().getDomainInfo().getVersion()
+																	.replaceAll("\\.", "-"))));
+										}
+									} else {
+										elmCase.addAttribute(
+												new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+									}
 
-            Element elmField = new Element("Field");
-            elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
-            elmField
-                .addAttribute(new Attribute("Usage", this.str(f.getModel().getUsage().toString())));
+									elmMapping.appendChild(elmCase);
+								}
+							}
+						});
+					}
+				}
 
-            if (igModel.getModel().getDomainInfo() != null
-                && igModel.getModel().getDomainInfo().getVersion() != null
-                && dBindingModel.getDomainInfo() != null
-                && dBindingModel.getDomainInfo().getVersion() != null) {
-              if (igModel.getModel().getDomainInfo().getVersion()
-                  .equals(dBindingModel.getDomainInfo().getVersion())) {
-                elmField
-                    .addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
-              } else {
-                elmSegment.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel()
-                    + "_" + dBindingModel.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
-              }
-            } else {
-              elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
-            }
+				// #3 OBX-2 Dynamic Mapping
+				String version = null;
+				String refValuesetId = null;
+				ValuesetDataModel vsModel = null;
+				if (sModel.getValuesetMap().get("2") != null) {
+					for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
+						refValuesetId = m.getValuesetBinding().getValuesetId();
+					}
+				}
+				if (refValuesetId != null) {
+					vsModel = igModel.findValueset(refValuesetId);
+				}
+				if (vsModel != null) {
+					version = vsModel.getModel().getDomainInfo().getVersion();
+					if (version != null) {
+						for (Code c : vsModel.getModel().getCodes()) {
+							String value = c.getValue();
+							DatatypeDataModel itemDTModel = igModel.findDatatype(value, version);
 
-            if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
-              elmField
-                  .addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+							if (itemDTModel != null) {
+								Element elmCase = new Element("Case");
+								elmCase.addAttribute(new Attribute("Value", itemDTModel.getModel().getName()));
+								if (igModel.getModel().getDomainInfo() != null
+										&& igModel.getModel().getDomainInfo().getVersion() != null
+										&& itemDTModel.getModel().getDomainInfo() != null
+										&& itemDTModel.getModel().getDomainInfo().getVersion() != null) {
+									if (igModel.getModel().getDomainInfo().getVersion()
+											.equals(itemDTModel.getModel().getDomainInfo().getVersion())) {
+										elmCase.addAttribute(
+												new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+									} else {
+										elmCase.addAttribute(new Attribute("Datatype",
+												this.str(
+														itemDTModel.getModel().getLabel() + "_" + itemDTModel.getModel()
+																.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+									}
+								} else {
+									elmCase.addAttribute(
+											new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+								}
+								elmMapping.appendChild(elmCase);
+							} else {
+								Datatype dt = this.datatypeService.findOneByNameAndVersionAndScope(value, version,
+										"HL7STANDARD");
+								if (dt != null) {
+									Element elmCase = new Element("Case");
+									elmCase.addAttribute(new Attribute("Value", dt.getName()));
+									if (igModel.getModel().getDomainInfo() != null
+											&& igModel.getModel().getDomainInfo().getVersion() != null
+											&& dt.getDomainInfo() != null && dt.getDomainInfo().getVersion() != null) {
+										if (igModel.getModel().getDomainInfo().getVersion()
+												.equals(dt.getDomainInfo().getVersion())) {
+											elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+										} else {
+											elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel() + "_"
+													+ dt.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+										}
+									} else {
+										elmCase.addAttribute(new Attribute("Datatype", this.str(dt.getLabel())));
+									}
+									elmMapping.appendChild(elmCase);
 
-            } else {
-              elmField.addAttribute(new Attribute("MinLength", "NA"));
-            }
+									missingDts.add(dt);
+									if (dt instanceof ComplexDatatype) {
+										ComplexDatatype complexDatatype = (ComplexDatatype) dt;
+										if (complexDatatype.getComponents() != null) {
+											for (Component component : complexDatatype.getComponents()) {
+												if (igModel.findDatatype(component.getRef().getId()) == null) {
+													Datatype childDT = this.datatypeService
+															.findById(component.getRef().getId());
+													if (childDT != null)
+														missingDts.add(childDT);
 
-            if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
-              elmField
-                  .addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+													if (childDT instanceof ComplexDatatype) {
+														ComplexDatatype complexChildDatatype = (ComplexDatatype) childDT;
+														if (complexChildDatatype.getComponents() != null) {
+															for (Component subComponent : complexChildDatatype
+																	.getComponents()) {
+																if (igModel.findDatatype(
+																		subComponent.getRef().getId()) == null) {
+																	Datatype childchildDT = this.datatypeService
+																			.findById(subComponent.getRef().getId());
+																	if (childchildDT != null)
+																		missingDts.add(childchildDT);
+																}
+															}
+														}
+													}
 
-            } else {
-              elmField.addAttribute(new Attribute("MaxLength", "NA"));
+												}
+											}
+										}
 
-            }
+									}
+								} else {
+									System.out.println(value + "-" + version);
+								}
 
-            if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
-              elmField.addAttribute(
-                  new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
-            } else {
-              elmField.addAttribute(new Attribute("ConfLength", "NA"));
-            }
+							}
 
-            Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
-            if (valueSetBindings != null && valueSetBindings.size() > 0) {
-              String bindingString = "";
-              String bindingStrength = null;
-              Set<Integer> bindingLocation = null;
+						}
+					}
+				}
 
-              for (ValuesetBindingDataModel binding : valueSetBindings) {
-                try {
-                  if(binding.getValuesetBinding().getStrength() != null) bindingStrength = binding.getValuesetBinding().getStrength().toString();
-                  
-                  if (binding.getValuesetBinding().getValuesetLocations() != null
-                      && binding.getValuesetBinding().getValuesetLocations().size() > 0)
-                    bindingLocation = binding.getValuesetBinding().getValuesetLocations();
-                  if (binding != null && binding.getBindingIdentifier() != null
-                      && !binding.getBindingIdentifier().equals("")) {
-                    if (igModel.getModel().getDomainInfo() != null
-                        && igModel.getModel().getDomainInfo().getVersion() != null
-                        && binding.getDomainInfo() != null
-                        && binding.getDomainInfo().getVersion() != null) {
-                      if (igModel.getModel().getDomainInfo().getVersion()
-                          .equals(binding.getDomainInfo().getVersion())) {
-                        bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                      } else {
-                        bindingString = bindingString + binding.getBindingIdentifier() + "_"
-                            + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
-                      }
-                    } else {
-                      bindingString = bindingString + binding.getBindingIdentifier() + ":";
-                    }
-                  }
-                } catch (Exception e) {
-                  e.printStackTrace();
-                  throw new TableSerializationException(e, "" + f.getModel().getPosition());
-                }
+				elmDynamicMapping.appendChild(elmMapping);
+				elmSegment.appendChild(elmDynamicMapping);
+			}
 
+			Map<Integer, FieldDataModel> fields = new HashMap<Integer, FieldDataModel>();
 
-              }
+			for (FieldDataModel fModel : sModel.getFieldDataModels()) {
+				fields.put(fModel.getModel().getPosition(), fModel);
+			}
 
-              if (!bindingString.equals(""))
-                elmField.addAttribute(new Attribute("Binding",
-                    bindingString.substring(0, bindingString.length() - 1)));
-              if (bindingStrength != null)
-                elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
-              if (bindingLocation != null && bindingLocation.size() > 0) {
-                String bindingLocationStr = "";
-                for (Integer index : bindingLocation) {
-                  bindingLocationStr = bindingLocationStr + index + ":";
-                }
+			for (int i = 1; i < fields.size() + 1; i++) {
+				try {
+					FieldDataModel f = fields.get(i);
 
-                elmField.addAttribute(new Attribute("BindingLocation",
-                    bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
-              } else {
-              }
-            }
-            elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
-            elmField.addAttribute(new Attribute("Max", "" + f.getModel().getMax()));
-            elmSegment.appendChild(elmField);
-          }
-        } catch (Exception e) {
-          e.printStackTrace();
-          throw new FieldSerializationException(e, "Field[" + i + "]");
-        }
-      }
+					if (f != null) {
+						DatatypeBindingDataModel dBindingModel = f.getDatatype();
 
-      return elmSegment;
-    } catch (Exception e) {
-      e.printStackTrace();
-      throw new SegmentSerializationException(e, sModel != null ? sModel.getModel().getId() : "");
-    }
-  }
+						Element elmField = new Element("Field");
+						elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
+						elmField.addAttribute(new Attribute("Usage", this.str(f.getModel().getUsage().toString())));
+
+						if (igModel.getModel().getDomainInfo() != null
+								&& igModel.getModel().getDomainInfo().getVersion() != null
+								&& dBindingModel.getDomainInfo() != null
+								&& dBindingModel.getDomainInfo().getVersion() != null) {
+							if (igModel.getModel().getDomainInfo().getVersion()
+									.equals(dBindingModel.getDomainInfo().getVersion())) {
+								elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
+							} else {
+								elmSegment.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel()
+										+ "_" + dBindingModel.getDomainInfo().getVersion().replaceAll("\\.", "-"))));
+							}
+						} else {
+							elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
+						}
+
+						if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+							elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+
+						} else {
+							elmField.addAttribute(new Attribute("MinLength", "NA"));
+						}
+
+						if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+							elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+
+						} else {
+							elmField.addAttribute(new Attribute("MaxLength", "NA"));
+
+						}
+
+						if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+							elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+						} else {
+							elmField.addAttribute(new Attribute("ConfLength", "NA"));
+						}
+
+						Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
+						if (valueSetBindings != null && valueSetBindings.size() > 0) {
+							String bindingString = "";
+							String bindingStrength = null;
+							Set<Integer> bindingLocation = null;
+
+							for (ValuesetBindingDataModel binding : valueSetBindings) {
+								try {
+									if (binding.getValuesetBinding().getStrength() != null)
+										bindingStrength = binding.getValuesetBinding().getStrength().toString();
+
+									if (binding.getValuesetBinding().getValuesetLocations() != null
+											&& binding.getValuesetBinding().getValuesetLocations().size() > 0)
+										bindingLocation = binding.getValuesetBinding().getValuesetLocations();
+									if (binding != null && binding.getBindingIdentifier() != null
+											&& !binding.getBindingIdentifier().equals("")) {
+										if (igModel.getModel().getDomainInfo() != null
+												&& igModel.getModel().getDomainInfo().getVersion() != null
+												&& binding.getDomainInfo() != null
+												&& binding.getDomainInfo().getVersion() != null) {
+											if (igModel.getModel().getDomainInfo().getVersion()
+													.equals(binding.getDomainInfo().getVersion())) {
+												bindingString = bindingString + binding.getBindingIdentifier() + ":";
+											} else {
+												bindingString = bindingString + binding.getBindingIdentifier() + "_"
+														+ binding.getDomainInfo().getVersion().replaceAll("\\.", "-")
+														+ ":";
+											}
+										} else {
+											bindingString = bindingString + binding.getBindingIdentifier() + ":";
+										}
+									}
+								} catch (Exception e) {
+									e.printStackTrace();
+									throw new TableSerializationException(e, "" + f.getModel().getPosition());
+								}
+
+							}
+
+							if (!bindingString.equals(""))
+								elmField.addAttribute(new Attribute("Binding",
+										bindingString.substring(0, bindingString.length() - 1)));
+							if (bindingStrength != null)
+								elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
+							if (bindingLocation != null && bindingLocation.size() > 0) {
+								String bindingLocationStr = "";
+								for (Integer index : bindingLocation) {
+									bindingLocationStr = bindingLocationStr + index + ":";
+								}
+
+								elmField.addAttribute(new Attribute("BindingLocation",
+										bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
+							} else {
+							}
+						}
+						elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
+						elmField.addAttribute(new Attribute("Max", "" + f.getModel().getMax()));
+						elmSegment.appendChild(elmField);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					throw new FieldSerializationException(e, "Field[" + i + "]");
+				}
+			}
+
+			return elmSegment;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new SegmentSerializationException(e, sModel != null ? sModel.getModel().getId() : "");
+		}
+	}
 
 	private Element serializeConformanceProfile(ConformanceProfileDataModel cpModel, IgDataModel igModel)
 			throws MessageSerializationException {
@@ -1536,4 +1710,305 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		return copy;
 	}
 
+	private String generateConditionScript(Predicate p, String targetId) {
+		if (p instanceof FreeTextPredicate) {
+			FreeTextPredicate cp = (FreeTextPredicate) p;
+			return cp.getAssertionScript().replace("\n", "").replace("\r", "");
+		} else if (p instanceof AssertionPredicate) {
+			AssertionPredicate cp = (AssertionPredicate) p;
+			if (cp.getAssertion() != null)
+				return "<Condition>" + this
+						.generateAssertionScript(cp.getAssertion(), cp.getLevel(), targetId, cp.getContext())
+						.replace("\n", "").replace("\r", "") + "</Condition>";
+		}
+		return null;
+	}
+
+	private String generateAssertionScript(ConformanceStatement c, String targetId) {
+		if (c instanceof FreeTextConformanceStatement) {
+			FreeTextConformanceStatement cs = (FreeTextConformanceStatement) c;
+			return cs.getAssertionScript().replace("\n", "").replace("\r", "");
+		} else if (c instanceof AssertionConformanceStatement) {
+			AssertionConformanceStatement cs = (AssertionConformanceStatement) c;
+			if (cs.getAssertion() != null)
+				return "<Assertion>" + this
+						.generateAssertionScript(cs.getAssertion(), cs.getLevel(), targetId, cs.getContext())
+						.replace("\n", "").replace("\r", "") + "</Assertion>";
+		}
+		return null;
+	}
+
+	/**
+	 * @param assertion
+	 * @param path
+	 * @param targetId
+	 * @param level
+	 * @param igModel
+	 * @return
+	 */
+	private String generateAssertionScript(Assertion assertion, Level level, String targetId, Path context) {
+		if (assertion instanceof NotAssertion) {
+			return "<NOT>" + this.generateAssertionScript(((NotAssertion) assertion).getChild(), level, targetId,
+					context) + "<NOT>";
+		} else if (assertion instanceof IfThenAssertion) {
+			return "<IMPLY>"
+					+ this.generateAssertionScript(((IfThenAssertion) assertion).getIfAssertion(), level, targetId,
+							context)
+					+ this.generateAssertionScript(((IfThenAssertion) assertion).getThenAssertion(), level, targetId,
+							context)
+					+ "</IMPLY>";
+		} else if (assertion instanceof OperatorAssertion) {
+			OperatorAssertion oAssertion = (OperatorAssertion) assertion;
+			if (oAssertion.getOperator().equals(Operator.AND)) {
+				if (oAssertion.getAssertions().size() == 2) {
+					String script = "<AND>";
+					for (Assertion a : oAssertion.getAssertions()) {
+						script = script + this.generateAssertionScript(a, level, targetId, context);
+					}
+					return script + "</AND>";
+				} else if (oAssertion.getAssertions().size() > 2) {
+					String script = "<FORALL>";
+					for (Assertion a : oAssertion.getAssertions()) {
+						script = script + this.generateAssertionScript(a, level, targetId, context);
+					}
+					return script + "</FORALL>";
+				}
+
+			} else if (oAssertion.getOperator().equals(Operator.OR)) {
+				if (oAssertion.getAssertions().size() == 2) {
+					String script = "<OR>";
+					for (Assertion a : oAssertion.getAssertions()) {
+						script = script + this.generateAssertionScript(a, level, targetId, context);
+					}
+					return script + "</OR>";
+				} else if (oAssertion.getAssertions().size() > 2) {
+					String script = "<EXIST>";
+					for (Assertion a : oAssertion.getAssertions()) {
+						script = script + this.generateAssertionScript(a, level, targetId, context);
+					}
+					return script + "</EXIST>";
+				}
+			} else if (oAssertion.getOperator().equals(Operator.XOR)) {
+				if (oAssertion.getAssertions().size() == 2) {
+					String script = "<XOR>";
+					for (Assertion a : oAssertion.getAssertions()) {
+						script = script + this.generateAssertionScript(a, level, targetId, context);
+					}
+					return script + "</XOR>";
+				} 
+			}
+
+		} else if (assertion instanceof SingleAssertion) {
+			return this.generateSingleAssertionScript((SingleAssertion) assertion, level, targetId, context);
+		}
+
+		return null;
+	}
+
+	/**
+	 * @param assertion
+	 * @param level
+	 * @param targetId
+	 * @param context
+	 * @param igModel
+	 * @return
+	 */
+	private String generateSingleAssertionScript(SingleAssertion assertion, Level level, String targetId, Path context) {
+		Complement complement = assertion.getComplement();
+		ComplementKey key = complement.getComplementKey();
+		boolean notAssertion = assertion.getVerbKey().contains("NOT");
+		
+		boolean atLeastOnce = false;
+		
+		String sPathStr = this.generatePath(assertion.getSubject().getPath(), targetId, level, context);
+		String cPathStr = this.generatePath(complement.getPath(), targetId, level, context);
+		
+		if(assertion.getSubject().getOccurenceType() != null) {
+			if(assertion.getSubject().getOccurenceType().equals("atLeast")) {
+				atLeastOnce = true;
+			}else if(assertion.getSubject().getOccurenceType().equals("instance")) {
+				sPathStr.replaceFirst("//*", "" + assertion.getSubject().getOccurenceValue());
+			}		
+		}
+		
+		if(complement.getOccurenceType() != null) {
+			if(complement.getOccurenceType().equals("instance")) {
+				cPathStr.replaceFirst("//*", "" + complement.getOccurenceValue());
+			}		
+		}
+
+		
+		String result = "";
+		switch (key) {
+		case valued:
+			result = "<Presence Path=\"" + sPathStr + "\"/>";
+			break;
+		case notValued:
+			result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
+			break;
+		case containtValue:
+			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case notContaintValue:
+			result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+			break;
+		case containValueDesc:
+			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case notContainValueDesc:
+			result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+			break;
+		case containListValues:
+			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case notContainListValues:
+			result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""+ String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
+			break;
+		case containCode:
+			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case containListCodes:
+			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case regex:
+			result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + complement.getValue() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case positiveInteger:
+			result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "^[1-9]\\d*$" +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case sequentially:
+			result = "<SetID Path=\"" + sPathStr + "\"/>";
+			break;
+		case iso:
+			result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + "[0-2](\\.(0|[1-9][0-9]*))*" +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			break;
+		case cEarlier:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cEarlierEquivalent:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cEquivalent:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cEquivalentLater:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cIdentical:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cLater:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cTruncatedEarlier:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LT" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cTruncatedEarlierEquivalent:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "LE" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cTruncatedEquivalent:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "EQ" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cTruncatedEquivalentLater:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GE" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		case cTruncatedLater:
+			result = "<PathValue Path1=\"" + sPathStr + "\" Operator=\"" + "GT" +"\" Path2=\"" + cPathStr + "\"/>";
+			break;
+		default:
+			break;
+		}
+		
+		if(notAssertion) result = "<NOT>" + result + "</NOT>";
+		
+		return result;
+	}
+
+	/**
+	 * @param path
+	 * @param targetId
+	 * @param level
+	 * @return
+	 */
+	private String generatePath(Path path, String targetId, Level level, Path context) {
+		List<String> result = new ArrayList<String>();
+		if(level.equals(Level.DATATYPE)) {
+			Datatype target = this.datatypeService.findById(targetId);
+			if(target != null) {
+				if(path.getChild() != null) this.visitComponent(target, path.getChild(), result);
+			}
+		}else if(level.equals(Level.SEGMENT)) {
+			Segment target = this.segmentService.findById(targetId);
+			if(target != null) {
+				if(path.getChild() != null) this.visitField(target, path.getChild(), result);
+			}
+		}else if(level.equals(Level.GROUP)) {
+			ConformanceProfile cp = this.conformanceProfileService.findById(targetId);
+			Group target = this.findGroupByContext(context.getChild(), cp.getChildren());
+			if(target != null) {
+				if(path.getChild() != null) this.visitSegOrGroup(target.getChildren(), path.getChild(), result);
+			}
+		}else if(level.equals(Level.CONFORMANCEPROFILE)) {
+			ConformanceProfile target = this.conformanceProfileService.findById(targetId);
+			if(target != null) {
+				if(path.getChild() != null) this.visitSegOrGroup(target.getChildren(), path.getChild(), result);
+			}
+		}
+		return String.join(".", result);
+	}
+
+	/**
+	 * @param target
+	 * @param child
+	 * @param result
+	 */
+	private void visitSegOrGroup(Set<SegmentRefOrGroup> segOrGroups, InstancePath child, List<String> result) {
+		for(SegmentRefOrGroup segOrGroup:segOrGroups) {
+			if(child.getElementId().equals(segOrGroup.getId())) {
+				if(!segOrGroup.getMax().equals("0") && !segOrGroup.getMax().equals("1")) result.add(segOrGroup.getPosition() + "[*]");
+				else result.add(segOrGroup.getPosition() + "[1]");
+				if(segOrGroup instanceof SegmentRef) {
+					Segment childSeg = this.segmentService.findById(((SegmentRef)segOrGroup).getRef().getId());
+					if(child.getChild() != null) this.visitField(childSeg, child.getChild(), result);	
+				}else if(segOrGroup instanceof Group) {
+					if(child.getChild() != null) this.visitSegOrGroup(((Group)segOrGroup).getChildren(), child.getChild(), result);	
+				}
+			}
+		}
+		
+	}
+
+	/**
+	 * @param target
+	 * @param child
+	 * @param result
+	 */
+	private void visitField(Segment seg, InstancePath child, List<String> result) {
+		for(Field f : seg.getChildren()) {
+			if(child.getElementId().equals(f.getId())) {
+				if(!f.getMax().equals("0") && !f.getMax().equals("1")) result.add(f.getPosition() + "[*]");
+				else result.add(f.getPosition() + "[1]");
+				Datatype childDT = this.datatypeService.findById(f.getRef().getId());
+				if(child.getChild() != null) this.visitComponent(childDT, child.getChild(), result);
+			}
+		}
+	}
+
+	/**
+	 * @param target
+	 * @param child
+	 * @param result
+	 */
+	private void visitComponent(Datatype dt, InstancePath child, List<String> result) {
+		if(dt instanceof ComplexDatatype) {
+			ComplexDatatype complexDatatype = (ComplexDatatype)dt;
+			for(Component c : complexDatatype.getComponents()) {
+				if(child.getElementId().equals(c.getId())) {
+					result.add(c.getPosition() + "[1]");
+					Datatype childDT = this.datatypeService.findById(c.getRef().getId());
+					if(child.getChild() != null) this.visitComponent(childDT, child.getChild(), result);
+				}
+			}
+		}
+	}
 }

@@ -21,7 +21,7 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 
 public class Complement {
 
-  private String complementKey;
+  private ComplementKey complementKey;
 
   private String occurenceType;
   private String occurenceValue;
@@ -31,19 +31,24 @@ public class Complement {
   private Path path;
 
   private String value;
-  private String[] values;
   private String desc;
-  private String codesys;
+  
+  private String[] values;
+  private String[] descs;
+  
+  private String[] codesys;
+  
+  private boolean ignoreCase;
 
   public Complement() {
     super();
   }
 
-  public String getComplementKey() {
+  public ComplementKey getComplementKey() {
     return complementKey;
   }
 
-  public void setComplementKey(String complementKey) {
+  public void setComplementKey(ComplementKey complementKey) {
     this.complementKey = complementKey;
   }
 
@@ -111,13 +116,29 @@ public class Complement {
     this.desc = desc;
   }
 
-  public String getCodesys() {
+  public String[] getCodesys() {
     return codesys;
   }
 
-  public void setCodesys(String codesys) {
+  public void setCodesys(String[] codesys) {
     this.codesys = codesys;
   }
+
+public String[] getDescs() {
+	return descs;
+}
+
+public void setDescs(String[] descs) {
+	this.descs = descs;
+}
+
+public boolean isIgnoreCase() {
+	return ignoreCase;
+}
+
+public void setIgnoreCase(boolean ignoreCase) {
+	this.ignoreCase = ignoreCase;
+}
 
 
 }
