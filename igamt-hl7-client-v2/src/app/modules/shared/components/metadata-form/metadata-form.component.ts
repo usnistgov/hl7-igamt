@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup, ValidatorFn } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
 
@@ -7,7 +7,7 @@ import { Observable, Subscription } from 'rxjs';
   templateUrl: './metadata-form.component.html',
   styleUrls: ['./metadata-form.component.scss'],
 })
-export class MetadataFormComponent implements OnInit {
+export class MetadataFormComponent implements OnInit, OnDestroy {
 
   model: Array<{
     key: string;
@@ -70,6 +70,18 @@ export class MetadataFormComponent implements OnInit {
   }
 
   ngOnInit() {
+  }
+
+  ngOnDestroy() {
+    if (this.changesSubscription) {
+      this.changesSubscription.unsubscribe();
+    }
+    if (this.dataSubscription) {
+      this.dataSubscription.unsubscribe();
+    }
+    if (this.viewOnlySubscription) {
+      this.viewOnlySubscription.unsubscribe();
+    }
   }
 
 }

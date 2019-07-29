@@ -2,8 +2,9 @@ import { Component, Inject, Input, OnInit, QueryList, ViewChild, ViewChildren } 
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
+import * as _ from 'lodash';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion } from '../../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
@@ -28,14 +29,14 @@ export class CsDialogComponent implements OnInit {
 
   pattern: Pattern;
   activeTab: CsTab;
-  tabs = Object.values(CsTab);
   csType = ConstraintType;
   tabType = CsTab;
   cs: IAssertionConformanceStatement | IFreeTextConformanceStatement;
   resource: IResource;
   statementsValidity: boolean[];
-
+  backUp: IAssertionConformanceStatement | IFreeTextConformanceStatement;
   resourceType: Type;
+  title: string;
   hideAdvanced: boolean;
   ifThenPattern: BinaryOperator;
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
@@ -56,6 +57,7 @@ export class CsDialogComponent implements OnInit {
         this.resource = resource;
       },
     );
+    this.title = data.title;
     this.conformanceStatement = data.cs;
   }
 
@@ -74,7 +76,6 @@ export class CsDialogComponent implements OnInit {
     } else {
       return false;
     }
-
   }
 
   @Input()
@@ -85,8 +86,9 @@ export class CsDialogComponent implements OnInit {
     } else {
       this.activeTab = CsTab.FREE;
     }
+    console.log(this.pattern);
     this.cs = cs;
-    console.log(this.cs);
+    this.backUp = _.cloneDeep(cs);
   }
 
   @Input()
@@ -138,7 +140,6 @@ export class CsDialogComponent implements OnInit {
   }
 
   statementValid() {
-
   }
 
   changeTab(item: CsTab) {
@@ -154,6 +155,10 @@ export class CsDialogComponent implements OnInit {
         this.cs = this.csService.getAssertionConformanceStatement(this.ifThenPattern).cs;
         break;
       case CsTab.COMPLEX:
+        if (this.cs.type === ConstraintType.ASSERTION) {
+          (this.cs as IAssertionConformanceStatement).assertion.description = '';
+        }
+
         if (this.pattern && this.pattern.assertion) {
           this.cs = this.csService.getAssertionConformanceStatement(this.pattern.assertion).cs;
         }
@@ -164,7 +169,6 @@ export class CsDialogComponent implements OnInit {
 
   openPatternDialog() {
     const dialogRef = this.dialog.open(PatternDialogComponent, {});
-
     dialogRef.afterClosed().subscribe(
       (answer) => {
         this.pattern = answer;
@@ -179,10 +183,16 @@ export class CsDialogComponent implements OnInit {
     return this.sanitizer.bypassSecurityTrustHtml(str);
   }
 
-  edit() {
-    console.log(this.cs);
-    console.log(this.propositions);
+  done() {
+    this.dialogRef.close(this.cs);
+  }
 
+  cancel() {
+    this.dialogRef.close();
+  }
+
+  reset() {
+    this.conformanceStatement = this.backUp;
   }
 
   ngOnInit() {
@@ -194,7 +204,7 @@ export class CsDialogComponent implements OnInit {
       return CsTab.FREE;
     } else if (pattern.assertion instanceof Statement) {
       return CsTab.SIMPLE;
-    } else if (pattern.assertion instanceof BinaryOperator && pattern.assertion.type === 'IF-THEN' && pattern.assertion.getLeft() instanceof Statement && pattern.assertion.getRight() instanceof Statement) {
+    } else if (pattern.assertion instanceof BinaryOperator && pattern.assertion.data.type === 'IF-THEN' && pattern.assertion.getLeft() instanceof Statement && pattern.assertion.getRight() instanceof Statement) {
       return CsTab.CONDITIONAL;
     } else {
       return CsTab.COMPLEX;

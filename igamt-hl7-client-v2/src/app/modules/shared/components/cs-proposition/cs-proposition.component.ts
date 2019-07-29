@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
+import { AssertionMode, IComplement, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
@@ -189,7 +189,7 @@ export class CsPropositionComponent implements OnInit {
     { label: 'SHOULD', value: VerbType.SHOULD },
     { label: 'SHOULD NOT', value: VerbType.SHOULD_NOT },
     { label: 'MAY', value: VerbType.MAY },
-    { label: 'MAY NOT', value: VerbType.MAY_NOT },
+    // { label: 'MAY NOT', value: VerbType.MAY_NOT },
   ];
 
   declarative_statements = [
@@ -200,7 +200,7 @@ export class CsPropositionComponent implements OnInit {
     { label: 'contain one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' } drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODES },
     { label: 'match the regular expression \'REGULAR EXPRESSION\'.', value: DeclarativeType.CONTAINS_REGEX },
     { label: 'contain a positive integer.', value: DeclarativeType.INTEGER },
-    { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
+    // { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
     { label: 'be valued with an ISO-compliant OID.', value: DeclarativeType.ISO },
   ];
 
@@ -244,10 +244,6 @@ export class CsPropositionComponent implements OnInit {
     this.map(this.proposition_statements);
   }
 
-  // getNode(path: IPath): IHL7v2TreeNode {
-
-  // }
-
   map(list: Array<{ label: string, value: string }>) {
     for (const item of list) {
       this.labelsMap[item.value] = item.label;
@@ -274,7 +270,7 @@ export class CsPropositionComponent implements OnInit {
     const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
     const compNode = this.assertion.complement.occurenceLocationStr;
     const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-    this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb) : ''} ${this.valueOrBlank(statement)}
+    this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
     ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
     this.valueChange.emit(this.assertion);
   }
@@ -287,14 +283,35 @@ export class CsPropositionComponent implements OnInit {
     if (elm.occurenceType) {
       switch (elm.occurenceType) {
         case OccurrenceType.COUNT:
-          return `${elm.occurenceValue ? elm.occurenceValue : '#'} occurrences of`;
+          return `${elm.occurenceValue ? elm.occurenceValue : '#'} occurrence${elm.occurenceValue > 1 ? 's' : ''} of`;
         case OccurrenceType.INSTANCE:
-          return `The \'${elm.occurenceValue ? elm.occurenceValue : '#'}\' occurrence of`;
+          return `The ${elm.occurenceValue ? this.getLiteralForNumber(elm.occurenceValue) : '#'} occurrence of`;
         default:
           return this.labelsMap[elm.occurenceType];
       }
     }
     return '';
+  }
+
+  min(a: number, b: number) {
+    return a < b ? a : b;
+  }
+
+  getLiteralForNumber(nb: number) {
+    switch (nb) {
+      case 1: return 'first';
+      case 2: return 'second';
+      case 3: return 'third';
+      case 4: return 'fourth';
+      case 6: return 'sixth';
+      case 7: return 'seventh';
+      case 8: return 'eight';
+      default: return '#';
+    }
+  }
+
+  trackByFn(index, item) {
+    return index;
   }
 
   getStatementLiteral(complement: IComplement): string {
@@ -342,8 +359,8 @@ export class CsPropositionComponent implements OnInit {
   }
 
   targetOccurenceValid() {
-    if ((this.assertion.subject && this.assertion.subject.occurenceType) || this.subjectRepeatMax > 0) {
-      return !!this.assertion.subject.occurenceType && this.targetOccurenceValues.valid;
+    if (this.targetOccurenceValues && (this.assertion.subject && this.assertion.subject.occurenceType) || this.subjectRepeatMax > 0) {
+      return !!this.assertion.subject.occurenceType && !!this.targetOccurenceValues.valid;
     } else {
       return true;
     }
@@ -370,7 +387,7 @@ export class CsPropositionComponent implements OnInit {
   }
 
   comparisonOccurenceValid() {
-    if (this.statementType === this._statementType.COMPARATIVE && (this.assertion.complement && this.assertion.complement.occurenceType) || this.complementRepeatMax > 0) {
+    if (this.compOccurenceValues && this.statementType === this._statementType.COMPARATIVE && (this.assertion.complement && this.assertion.complement.occurenceType) || this.complementRepeatMax > 0) {
       return !!this.assertion.complement.occurenceType && !!this.compOccurenceValues.valid;
     } else {
       return true;
@@ -482,6 +499,23 @@ export class CsPropositionComponent implements OnInit {
     } else {
       return prep + ' (' + elm.data.name + ')';
     }
+  }
+
+  removeStr(list: any[], i: number) {
+    list.splice(i, 1);
+    this.change();
+  }
+
+  addStr(list: any[]) {
+    list.push('');
+    this.change();
+  }
+
+  addStrDesc(list: any[]) {
+    list.push({
+      value: '',
+      desc: '',
+    });
   }
 
   ngOnInit() {

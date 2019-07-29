@@ -38,7 +38,7 @@ export class ConformanceStatementService {
   }
 
   getCsPattern(assertion: IAssertion): Pattern {
-    return new Pattern(this.getCsViewAssertion(assertion));
+    return new Pattern(this.getCsViewAssertion(assertion, 0));
   }
 
   createSimpleAssertion(): ISimpleAssertion {
@@ -178,20 +178,20 @@ export class ConformanceStatementService {
     throw new Error('Unrecognized assertion');
   }
 
-  getCsViewAssertion(assertion: IAssertion, parent?: Operator, position?: number): Assertion {
+  getCsViewAssertion(assertion: IAssertion, id: number, parent?: Operator, position?: number): Assertion {
     switch (assertion.mode) {
       case AssertionMode.SIMPLE:
-        return this.getCsSimplePattern(assertion as ISimpleAssertion, parent, position);
+        return this.getCsSimplePattern(assertion as ISimpleAssertion, id, parent, position);
       case AssertionMode.IFTHEN:
         const ifThenAssertion = assertion as IIfThenAssertion;
         const ifThen = this.getCsConditionalPattern(ifThenAssertion, parent, position);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, ifThen, LEFT), LEFT);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, ifThen, RIGHT), RIGHT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, id + 1, ifThen, LEFT), LEFT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, id + 2, ifThen, RIGHT), RIGHT);
         return ifThen;
       case AssertionMode.NOT:
         const notAssertion = assertion as INotAssertion;
         const not = this.getCsNotPattern(notAssertion, parent, position);
-        not.putOne(this.getCsViewAssertion(notAssertion.child, not, LEFT), LEFT);
+        not.putOne(this.getCsViewAssertion(notAssertion.child, id + 1, not, LEFT), LEFT);
         return not;
       case AssertionMode.ANDOR:
         const opAssertion = assertion as IOperatorAssertion;
@@ -199,13 +199,13 @@ export class ConformanceStatementService {
           if (opAssertion.assertions.length > 2) {
             const nOp = this.getCsNaryOpPattern(opAssertion, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              nOp.putOne(this.getCsViewAssertion(a, nOp, i), i);
+              nOp.putOne(this.getCsViewAssertion(a, id + i, nOp, i), i);
             });
             return nOp;
           } else {
             const biOp = this.getCsBinaryOpPattern(opAssertion, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              biOp.putOne(this.getCsViewAssertion(a, biOp, i), i);
+              biOp.putOne(this.getCsViewAssertion(a, id + i, biOp, i), i);
             });
             return biOp;
           }
@@ -213,20 +213,22 @@ export class ConformanceStatementService {
     }
   }
 
-  getCsSimplePattern(assertion: ISimpleAssertion, parent?: Operator, position?: number): Statement {
-    return new Statement('D', 0, parent, position || 1);
+  getCsSimplePattern(assertion: ISimpleAssertion, id: number, parent?: Operator, position?: number): Statement {
+    const statement = new Statement('D', id, parent, position || 1);
+    statement.payload = assertion;
+    return statement;
   }
 
   getCsConditionalPattern(assertion: IIfThenAssertion, parent?: Operator, position?: number): Operator {
-    return new BinaryOperator(undefined, 'IF-THEN', parent, position);
+    return new BinaryOperator('D', 'IF-THEN', parent, position);
   }
 
   getCsNotPattern(assertion: INotAssertion, parent?: Operator, position?: number): Operator {
-    return new UnaryOperator(undefined, 'NOT', parent, position);
+    return new UnaryOperator('D', 'NOT', parent, position);
   }
 
   getCsBinaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): Operator {
-    return new BinaryOperator(undefined, assertion.operator, parent, position);
+    return new BinaryOperator('D', assertion.operator, parent, position);
   }
 
   getCsNaryOpPattern(assertion: IOperatorAssertion, parent?: Operator, position?: number): Operator {
@@ -234,6 +236,6 @@ export class ConformanceStatementService {
     if (!op) {
       throw Error(assertion.operator + ' is not Nary Op');
     }
-    return new NaryOperator(undefined, op, parent, position);
+    return new NaryOperator('D', op, parent, position);
   }
 }

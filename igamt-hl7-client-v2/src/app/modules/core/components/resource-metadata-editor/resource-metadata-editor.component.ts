@@ -3,7 +3,7 @@ import { FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { catchError, concatMap, flatMap, map, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, take } from 'rxjs/operators';
 import { EditorSave, EditorSaveFailure, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
@@ -78,15 +78,12 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   }
 
   dataChange(form: FormGroup) {
-    console.log(form.getRawValue());
     this.editorChange(form.getRawValue(), form.valid);
   }
 
   getChanges(elementId: string, current: IResourceMetadata, old: IResourceMetadata): IChange[] {
     const changes: IChange[] = [];
-    console.log('getChanges');
-    console.log(current);
-    console.log(old);
+
     if (current.ext !== old.ext) {
       changes.push({
         location: elementId,

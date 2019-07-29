@@ -27,6 +27,7 @@ import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
+import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ConfigurationTocComponent,
   ],
   imports: [
     IgRoutingModule,
@@ -70,6 +72,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ConfigurationTocComponent,
   ],
 })
 export class IgModule {
