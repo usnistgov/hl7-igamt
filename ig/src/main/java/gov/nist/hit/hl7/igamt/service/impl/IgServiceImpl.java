@@ -895,7 +895,7 @@ public class IgServiceImpl implements IgService {
 	        new HashMap<String, ValuesetBindingDataModel>();
 
 	    for (Link link : ig.getValueSetRegistry().getChildren()) {
-	      Valueset vs = this.valueSetService.findById(link.getId());
+	      Valueset vs = this.getValueSetIngIg(ig.getId(), link.getId());
 	      if (vs != null) {
 	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
 	        valuesetDataModel.setModel(vs);
