@@ -76,4 +76,5 @@ public interface IgService {
 	public IgDataModel generateDataModel(Ig ig) throws Exception;
 
 	public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
+
 }
