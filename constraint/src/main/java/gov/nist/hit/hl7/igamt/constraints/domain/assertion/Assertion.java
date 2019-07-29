@@ -57,8 +57,4 @@ public abstract class Assertion {
   public void setScript(String script) {
     this.script = script;
   }
-
-  public String generateAssertionScript() {
-    return script;
-  }
 }

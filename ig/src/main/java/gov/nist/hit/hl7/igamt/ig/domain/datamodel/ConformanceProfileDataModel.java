@@ -34,7 +34,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
 public class ConformanceProfileDataModel implements Serializable{
   private ConformanceProfile model;
 
-  private Set<ConformanceStatement> conformanceStatementMap = new HashSet<ConformanceStatement>();
+  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
   private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
   private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
   private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
@@ -49,14 +49,6 @@ public class ConformanceProfileDataModel implements Serializable{
 
   public void setModel(ConformanceProfile model) {
     this.model = model;
-  }
-
-  public Set<ConformanceStatement> getConformanceStatementMap() {
-    return conformanceStatementMap;
-  }
-
-  public void setConformanceStatementMap(Set<ConformanceStatement> conformanceStatementMap) {
-    this.conformanceStatementMap = conformanceStatementMap;
   }
 
   public Map<String, Predicate> getPredicateMap() {
@@ -96,7 +88,7 @@ public class ConformanceProfileDataModel implements Serializable{
       if (cp.getBinding().getConformanceStatementIds() != null) {
         for (String csId : cp.getBinding().getConformanceStatementIds()) {
           conformanceStatementRepository.findById(csId)
-              .ifPresent(cs -> this.conformanceStatementMap.add(cs));
+              .ifPresent(cs -> this.conformanceStatements.add(cs));
         }
       }
       if (cp.getBinding().getChildren() != null) {
@@ -178,4 +170,12 @@ public class ConformanceProfileDataModel implements Serializable{
     }
     return null;
   }
+
+public Set<ConformanceStatement> getConformanceStatements() {
+	return conformanceStatements;
+}
+
+public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+	this.conformanceStatements = conformanceStatements;
+}
 }

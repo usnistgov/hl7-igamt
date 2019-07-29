@@ -44,11 +44,4 @@ public class FreeTextConformanceStatement extends ConformanceStatement {
   public void setAssertionScript(String assertionScript) {
     this.assertionScript = assertionScript;
   }
-  
-  @Override
-  public String generateAssertionScript(){
-    if(assertionScript != null && !assertionScript.isEmpty()) return assertionScript;
-    
-    return "<Assertion><OR><Presence Path=\"1[1]\"/><NOT><Presence Path=\"1[1]\"/></NOT></OR></Assertion>";
-  }
 }
