@@ -27,7 +27,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level,
 			ExportConfiguration exportConfiguration) throws ResourceSerializationException {
 	    try {
-		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, exportConfiguration);
+		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, exportConfiguration.getResourceExportConfiguration());
 	      Valueset valueSet = valuesetDataModel.getModel();
 	      valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 	          valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
@@ -72,7 +72,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	        }
 	      }
 	      valueSetElement.appendChild(codesElement);
-//	      Element codeSystemsElement = new Element("CodeSystems");
+	      Element codeSystemsElement = new Element("CodeSystems");
 //	      if (this.valuesetStructure.getDisplayCodes().size() > 0) {
 //	        for (DisplayCodeSystem displayCodeSystem : this.valuesetStructure.getDisplayCodeSystems()) {
 //	          Element codeSystemElement = new Element("CodeSystem");
@@ -89,8 +89,8 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 //	          codeSystemsElement.appendChild(codeSystemElement);
 //	        }
 //	      }
-//	      valueSetElement.appendChild(codeSystemsElement);
-	      return igDataModelSerializationService.getSectionElement(valueSetElement, valuesetDataModel.getModel(), level);
+	      valueSetElement.appendChild(codeSystemsElement);
+	      return igDataModelSerializationService.getSectionElement(valueSetElement, valuesetDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
 
 	    } catch (Exception exception) {
 	      throw new ResourceSerializationException(exception, Type.VALUESET,

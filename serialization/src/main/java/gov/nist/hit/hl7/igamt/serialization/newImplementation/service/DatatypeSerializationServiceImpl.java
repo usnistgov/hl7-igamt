@@ -32,7 +32,7 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	@Override
 	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, ExportConfiguration exportConfiguration) throws SubStructElementSerializationException {
 //	    try {
-	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, exportConfiguration);
+	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, exportConfiguration.getResourceExportConfiguration());
 	      Datatype datatype = datatypeDataModel.getModel();
 	      datatypeElement
 	          .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
@@ -68,12 +68,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
 	    	  System.out.println("BOOM");
-	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap());
+	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), exportConfiguration.getDatatypeExportConfiguration().getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	datatypeElement.appendChild(constraints);
     }
 	      }
-	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level);
+	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
 
 //	    } catch (Exception exception) {
 //	    	exception.printStackTrace();

@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
@@ -20,7 +21,7 @@ import gov.nist.diff.annotation.DeltaIdentity;
  * @author jungyubw
  *
  */
-public class ValuesetBinding {
+public class ValuesetBinding implements Serializable{
   @DeltaIdentity
   private String valuesetId;
   @DeltaField

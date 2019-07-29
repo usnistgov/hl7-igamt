@@ -36,7 +36,7 @@ private ConstraintSerializationService constraintSerializationService;
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
-			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, exportConfiguration);
+			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, exportConfiguration.getResourceExportConfiguration());
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
 	        conformanceProfileElement.addAttribute(new Attribute("messageType",
@@ -52,7 +52,7 @@ private ConstraintSerializationService constraintSerializationService;
 //	        }
 	        if(!conformanceProfileDataModel.getConformanceStatementMap().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
 		    	  System.out.println("BOOM");
-	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatementMap(), conformanceProfileDataModel.getPredicateMap());
+	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatementMap(), conformanceProfileDataModel.getPredicateMap(), exportConfiguration.getConformamceProfileExportConfiguration().getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
         }
@@ -70,7 +70,7 @@ private ConstraintSerializationService constraintSerializationService;
 //	            }
 	          }
 	        }
-		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level);
+		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
 
 	      } catch (Exception exception) {
 	        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,

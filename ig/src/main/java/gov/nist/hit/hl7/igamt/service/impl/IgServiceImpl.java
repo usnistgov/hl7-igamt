@@ -1,16 +1,28 @@
 package gov.nist.hit.hl7.igamt.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -27,7 +39,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.UpdateResult;
 
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
 import gov.nist.hit.hl7.igamt.common.base.domain.DocumentMetadata;
 import gov.nist.hit.hl7.igamt.common.base.domain.Link;
 import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
@@ -56,10 +67,15 @@ import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileLabel;
 import gov.nist.hit.hl7.igamt.ig.domain.ConformanceProfileSelectItem;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.FieldDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
+import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentRefOrGroupDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetBindingDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.ig.model.IgSummary;
@@ -73,12 +89,22 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentLabel;
 import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentSelectItem;
 import gov.nist.hit.hl7.igamt.segment.domain.registry.SegmentRegistry;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeComponentSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.DatatypeSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.FieldSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.GroupSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.MessageSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.ProfileSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.SegmentSerializationException;
+import gov.nist.hit.hl7.igamt.service.impl.exception.TableSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.registry.ValueSetRegistry;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 import gov.nist.hit.hl7.igamt.xreference.service.RelationShipService;
+import nu.xom.Attribute;
+import nu.xom.Document;
+import nu.xom.Element;
 
 @Service("igService")
 public class IgServiceImpl implements IgService {
@@ -886,7 +912,663 @@ public IGContentMap collectData(Ig ig) {
     return igDataModel;
   }
 
+  /* (non-Javadoc)
+   * @see gov.nist.hit.hl7.igamt.ig.service.IgService#exportValidationXMLByZip(gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel, java.lang.String[], java.lang.String[])
+   */
+  @Override
+  public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException {
+    
+    this.normalizeIgModel(igModel, conformanceProfileIds);
+
+    ByteArrayOutputStream outputStream = null;
+    byte[] bytes;
+    outputStream = new ByteArrayOutputStream();
+    ZipOutputStream out = new ZipOutputStream(outputStream);
+
+    String profileXMLStr = this.serializeProfileToDoc(igModel).toXML();
+//    String valueSetXMLStr = this.serializeTableXML(profile, metadata, tablesMap).toXML();
+//    String constraintXMLStr = this.serializeConstraintsXML(profile, metadata, segmentsMap, datatypesMap, tablesMap).toXML();
+   
+    System.out.println(profileXMLStr);
+
+    this.generateProfileIS(out, profileXMLStr);
+//    this.generateValueSetIS(out, valueSetXMLStr);
+//    this.generateConstraintsIS(out, constraintXMLStr);
+
+    out.close();
+    bytes = outputStream.toByteArray();
+    return new ByteArrayInputStream(bytes);
+  }
+  
+  /**
+   * @param igModel
+   * @return
+   * @throws ProfileSerializationException 
+   */
+  private Document serializeProfileToDoc(IgDataModel igModel) throws ProfileSerializationException {
+    try {
+      Element e = new Element("ConformanceProfile");
+      this.serializeProfileMetaData(e, igModel, "Validation");
+
+      Element ms = new Element("Messages");
+      for (ConformanceProfileDataModel  cpModel : igModel.getConformanceProfiles()) {
+        ms.appendChild(this.serializeConformanceProfile(cpModel, igModel));
+      }
+      e.appendChild(ms);
+
+      
+      Element ss = new Element("Segments");
+      for (SegmentDataModel sModel : igModel.getSegments()) {
+        ss.appendChild(this.serializeSegment(sModel, igModel));
+      }
+      e.appendChild(ss);
+
+      Element ds = new Element("Datatypes");
+      for (DatatypeDataModel dModel : igModel.getDatatypes()) {
+        ds.appendChild(this.serializeDatatype(dModel, igModel));
+      }
+      e.appendChild(ds);
+
+      Document doc = new Document(e);
+
+      return doc;
+    } catch (Exception e) {
+      throw new ProfileSerializationException(e, igModel != null ? igModel.getModel().getId() : "");
+    }
+  }
+  
+  /**
+   * @param dModel
+   * @param igModel
+   * @return
+   * @throws DatatypeSerializationException 
+   */
+  private Element serializeDatatype(DatatypeDataModel dModel, IgDataModel igModel) throws DatatypeSerializationException {
+    try {
+      Element elmDatatype = new Element("Datatype");
+      
+      if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && dModel.getModel().getDomainInfo() != null && dModel.getModel().getDomainInfo().getVersion() != null) {
+        if(igModel.getModel().getDomainInfo().getVersion().equals(dModel.getModel().getDomainInfo().getVersion())){
+          elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel())));
+          elmDatatype.addAttribute( new Attribute("ID", this.str(dModel.getModel().getLabel())));
+        }else{
+          elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel() + "_" + dModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+          elmDatatype.addAttribute(new Attribute("ID", this.str(dModel.getModel().getLabel() + "_" + dModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+        }
+      } else {
+        elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel())));
+        elmDatatype.addAttribute(new Attribute("ID", this.str(dModel.getModel().getLabel())));
+      }
+
+      elmDatatype.addAttribute(new Attribute("Name", this.str(dModel.getModel().getName())));
+      elmDatatype.addAttribute(new Attribute("Label", this.str(dModel.getModel().getLabel())));
+      elmDatatype.addAttribute(new Attribute("Version", this.str(dModel.getModel().getDomainInfo().getVersion())));
+      if (dModel.getModel().getDescription() == null || dModel.getModel().getDescription().equals("")) {
+        elmDatatype.addAttribute(new Attribute("Description", "NoDesc"));
+      } else {
+        elmDatatype.addAttribute(new Attribute("Description", this.str(dModel.getModel().getDescription())));
+      }
+
+      if (dModel.getComponentDataModels() != null && dModel.getComponentDataModels().size() > 0) {
+        Map<Integer, ComponentDataModel> components = new HashMap<Integer, ComponentDataModel>();
+        for (ComponentDataModel cModel : dModel.getComponentDataModels()) {
+          components.put(cModel.getModel().getPosition(), cModel);
+        }
+
+        for (int i = 1; i < components.size() + 1; i++) {
+          try {
+            ComponentDataModel c = components.get(i);
+            Element elmComponent = new Element("Component");
+            
+            elmComponent.addAttribute(new Attribute("Name", this.str(c.getModel().getName())));
+            elmComponent.addAttribute(new Attribute("Usage", this.str(c.getModel().getUsage().toString())));
+
+            if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && c.getDatatype().getDomainInfo() != null && c.getDatatype().getDomainInfo().getVersion() != null) {
+              if(igModel.getModel().getDomainInfo().getVersion().equals(c.getDatatype().getDomainInfo().getVersion())){
+                elmComponent.addAttribute(new Attribute("Datatype", this.str(c.getDatatype().getLabel())));
+              }else{
+                elmComponent.addAttribute(new Attribute("Datatype", this.str(c.getDatatype().getLabel() + "_" + c.getDatatype().getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+              }
+            } else {
+              elmComponent.addAttribute(new Attribute("Datatype", this.str(c.getDatatype().getLabel())));
+            }
+            
+            if (c.getModel().getMinLength() != null && !c.getModel().getMinLength().isEmpty()) {
+              elmComponent.addAttribute(new Attribute("MinLength", this.str(c.getModel().getMinLength())));
+
+            } else {
+              elmComponent.addAttribute(new Attribute("MinLength", "NA"));
+            }
+
+            if (c.getModel().getMaxLength() != null && !c.getModel().getMaxLength().isEmpty()) {
+              elmComponent.addAttribute(new Attribute("MaxLength", this.str(c.getModel().getMaxLength())));
+
+            } else {
+              elmComponent.addAttribute(new Attribute("MaxLength", "NA"));
+
+            }
+            if (c.getModel().getConfLength() != null && !c.getModel().getConfLength().equals("")) {
+              elmComponent.addAttribute(new Attribute("ConfLength", this.str(c.getModel().getConfLength())));
+            } else {
+              elmComponent.addAttribute(new Attribute("ConfLength", "NA"));
+            }
+
+            Set<ValuesetBindingDataModel> valueSetBindings = c.getValuesets();
+            if (valueSetBindings != null && valueSetBindings.size() > 0) {
+              String bindingString = "";
+              String bindingStrength = null;
+              Set<Integer> bindingLocation = null;
+
+              for (ValuesetBindingDataModel binding : valueSetBindings) {
+                try {
+                  bindingStrength = binding.getValuesetBinding().getStrength().toString();
+                  if(binding.getValuesetBinding().getValuesetLocations() != null && binding.getValuesetBinding().getValuesetLocations().size() > 0) bindingLocation = binding.getValuesetBinding().getValuesetLocations();
+                  if (binding != null && binding.getBindingIdentifier() != null && !binding.getBindingIdentifier().equals("")) {
+                    if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && binding.getDomainInfo() != null && binding.getDomainInfo().getVersion() != null) {
+                      if(igModel.getModel().getDomainInfo().getVersion().equals(binding.getDomainInfo().getVersion())){
+                        bindingString = bindingString + binding.getBindingIdentifier() + ":";
+                      }else{
+                        bindingString = bindingString + binding.getBindingIdentifier() + "_"  + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
+                      }
+                    } else {
+                      bindingString = bindingString + binding.getBindingIdentifier() + ":";
+                    }
+                  }
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  throw new TableSerializationException(e, "" + c.getModel().getPosition());
+                }
 
 
+              }
 
+              if (!bindingString.equals("")) elmComponent.addAttribute(new Attribute("Binding", bindingString.substring(0, bindingString.length() - 1)));
+              if (bindingStrength != null) elmComponent.addAttribute(new Attribute("BindingStrength", bindingStrength));
+              if (bindingLocation != null && bindingLocation.size() > 0) {
+                String bindingLocationStr = "";
+                for(Integer index : bindingLocation) {
+                  bindingLocationStr = bindingLocationStr + index + ":";
+                }
+                
+                elmComponent.addAttribute(new Attribute("BindingLocation", bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
+              } else {
+              }
+            }
+
+            elmDatatype.appendChild(elmComponent);
+          } catch (Exception e) {
+            throw new DatatypeComponentSerializationException(e, i);
+          }
+
+        }
+      }
+      return elmDatatype;
+    } catch (Exception e) {
+      throw new DatatypeSerializationException(e, dModel.getModel().getLabel());
+    }
+  }
+
+  /**
+   * @param sModel
+   * @param igModel
+   * @return
+   * @throws SegmentSerializationException 
+   */
+  private Element serializeSegment(SegmentDataModel sModel, IgDataModel igModel) throws SegmentSerializationException {
+    try {
+      //TODO DynamicMapping Need
+      Element elmSegment = new Element("Segment");
+      
+      if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && sModel.getModel().getDomainInfo() != null && sModel.getModel().getDomainInfo().getVersion() != null) {
+        if(igModel.getModel().getDomainInfo().getVersion().equals(sModel.getModel().getDomainInfo().getVersion())){
+          elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
+          elmSegment.addAttribute( new Attribute("ID", this.str(sModel.getModel().getLabel())));
+        }else{
+          elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel() + "_" + sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+          elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel() + "_" + sModel.getModel().getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+        }
+      } else {
+        elmSegment.addAttribute(new Attribute("Label", this.str(sModel.getModel().getLabel())));
+        elmSegment.addAttribute(new Attribute("ID", this.str(sModel.getModel().getLabel())));
+      }
+      
+      elmSegment.addAttribute(new Attribute("Name", this.str(sModel.getModel().getName())));
+      elmSegment.addAttribute(new Attribute("Version", this.str(sModel.getModel().getDomainInfo().getVersion())));
+      if (sModel.getModel().getDescription() == null || sModel.getModel().getDescription().equals("")) {
+        elmSegment.addAttribute(new Attribute("Description", "NoDesc"));
+      } else {
+        elmSegment.addAttribute(new Attribute("Description", this.str(sModel.getModel().getDescription())));
+      }
+
+      Map<Integer, FieldDataModel> fields = new HashMap<Integer, FieldDataModel>();
+
+      for (FieldDataModel fModel : sModel.getFieldDataModels()) {
+        fields.put(fModel.getModel().getPosition(), fModel);
+      }
+
+      for (int i = 1; i < fields.size() + 1; i++) {
+        try {
+          FieldDataModel f = fields.get(i);
+
+          if (f != null) {
+            DatatypeBindingDataModel dBindingModel = f.getDatatype();
+
+            Element elmField = new Element("Field");
+            elmField.addAttribute(new Attribute("Name", this.str(f.getModel().getName())));
+            elmField.addAttribute(new Attribute("Usage", this.str(f.getModel().getUsage().toString())));
+            
+            if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && dBindingModel.getDomainInfo() != null && dBindingModel.getDomainInfo().getVersion() != null) {
+              if(igModel.getModel().getDomainInfo().getVersion().equals(dBindingModel.getDomainInfo().getVersion())){
+                elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
+              }else{
+                elmSegment.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel() + "_" + dBindingModel.getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+              }
+            } else {
+              elmField.addAttribute(new Attribute("Datatype", this.str(dBindingModel.getLabel())));
+            }
+
+            if (f.getModel().getMinLength() != null && !f.getModel().getMinLength().isEmpty()) {
+              elmField.addAttribute(new Attribute("MinLength", this.str(f.getModel().getMinLength())));
+
+            } else {
+              elmField.addAttribute(new Attribute("MinLength", "NA"));
+            }
+
+            if (f.getModel().getMaxLength() != null && !f.getModel().getMaxLength().isEmpty()) {
+              elmField.addAttribute(new Attribute("MaxLength", this.str(f.getModel().getMaxLength())));
+
+            } else {
+              elmField.addAttribute(new Attribute("MaxLength", "NA"));
+
+            }
+
+            if (f.getModel().getConfLength() != null && !f.getModel().getConfLength().equals("")) {
+              elmField.addAttribute(new Attribute("ConfLength", this.str(f.getModel().getConfLength())));
+            } else {
+              elmField.addAttribute(new Attribute("ConfLength", "NA"));
+            }
+
+            Set<ValuesetBindingDataModel> valueSetBindings = f.getValuesets();
+            if (valueSetBindings != null && valueSetBindings.size() > 0) {
+              String bindingString = "";
+              String bindingStrength = null;
+              Set<Integer> bindingLocation = null;
+
+              for (ValuesetBindingDataModel binding : valueSetBindings) {
+                try {
+                  bindingStrength = binding.getValuesetBinding().getStrength().toString();
+                  if(binding.getValuesetBinding().getValuesetLocations() != null && binding.getValuesetBinding().getValuesetLocations().size() > 0) bindingLocation = binding.getValuesetBinding().getValuesetLocations();
+                  if (binding != null && binding.getBindingIdentifier() != null && !binding.getBindingIdentifier().equals("")) {
+                    if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && binding.getDomainInfo() != null && binding.getDomainInfo().getVersion() != null) {
+                      if(igModel.getModel().getDomainInfo().getVersion().equals(binding.getDomainInfo().getVersion())){
+                        bindingString = bindingString + binding.getBindingIdentifier() + ":";
+                      }else{
+                        bindingString = bindingString + binding.getBindingIdentifier() + "_"  + binding.getDomainInfo().getVersion().replaceAll("\\.", "-") + ":";
+                      }
+                    } else {
+                      bindingString = bindingString + binding.getBindingIdentifier() + ":";
+                    }
+                  }
+                } catch (Exception e) {
+                  e.printStackTrace();
+                  throw new TableSerializationException(e, "" + f.getModel().getPosition());
+                }
+
+
+              }
+
+              if (!bindingString.equals("")) elmField.addAttribute(new Attribute("Binding", bindingString.substring(0, bindingString.length() - 1)));
+              if (bindingStrength != null) elmField.addAttribute(new Attribute("BindingStrength", bindingStrength));
+              if (bindingLocation != null && bindingLocation.size() > 0) {
+                String bindingLocationStr = "";
+                for(Integer index : bindingLocation) {
+                  bindingLocationStr = bindingLocationStr + index + ":";
+                }
+                
+                elmField.addAttribute(new Attribute("BindingLocation", bindingLocationStr.substring(0, bindingLocationStr.length() - 1)));
+              } else {
+              }
+            }
+
+            elmField.addAttribute(new Attribute("Min", "" + f.getModel().getMin()));
+            elmField.addAttribute(new Attribute("Max", "" + f.getModel().getMax()));
+            elmSegment.appendChild(elmField);
+          }
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new FieldSerializationException(e, "Field[" + i + "]");
+        }
+      }
+
+      return elmSegment;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new SegmentSerializationException(e, sModel != null ? sModel.getModel().getId() : "");
+    }
+  }
+
+  /**
+   * @param cpModel
+   * @param igModel
+   * @return
+   */
+  private Element serializeConformanceProfile(ConformanceProfileDataModel cpModel, IgDataModel igModel) throws MessageSerializationException {
+    try {
+      Element elmMessage = new Element("Message");
+      elmMessage.addAttribute(new Attribute("ID", cpModel.getModel().getId()));
+      if (cpModel.getModel().getIdentifier() != null && !cpModel.getModel().getIdentifier().equals("")) elmMessage.addAttribute(new Attribute("Identifier", this.str(cpModel.getModel().getIdentifier())));
+      if (cpModel.getModel().getName() != null && !cpModel.getModel().getName().equals("")) elmMessage.addAttribute(new Attribute("Name", this.str(cpModel.getModel().getName())));
+      elmMessage.addAttribute(new Attribute("Type", this.str(cpModel.getModel().getMessageType())));
+      elmMessage.addAttribute(new Attribute("Event", this.str(cpModel.getModel().getEvent())));
+      elmMessage.addAttribute(new Attribute("StructID", this.str(cpModel.getModel().getStructID())));
+      
+      if (cpModel.getModel().getDescription() != null && !cpModel.getModel().getDescription().equals("")) elmMessage.addAttribute(new Attribute("Description", this.str(cpModel.getModel().getDescription())));
+
+      Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels = new HashMap<Integer, SegmentRefOrGroupDataModel>();
+
+      for (SegmentRefOrGroupDataModel segmentRefOrGroupDataModel  : cpModel.getSegmentRefOrGroupDataModels()) {
+        segmentRefOrGroupDataModels.put(segmentRefOrGroupDataModel.getModel().getPosition(), segmentRefOrGroupDataModel);
+      }
+
+      for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
+        SegmentRefOrGroupDataModel segmentRefOrGroupDataModel = segmentRefOrGroupDataModels.get(i);
+        if (segmentRefOrGroupDataModel.getType().equals(Type.SEGMENTREF)) {
+          elmMessage.appendChild(serializeSegmentRef(segmentRefOrGroupDataModel, igModel));
+        } else if (segmentRefOrGroupDataModel.getType().equals(Type.GROUP)) {
+          elmMessage.appendChild(serializeGroup(segmentRefOrGroupDataModel, igModel));
+        }
+      }
+
+      return elmMessage;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new MessageSerializationException(e, cpModel != null ? cpModel.getModel().getId() : "");
+    }
+  }
+
+  /**
+   * @param segmentRefOrGroupDataModel
+   * @param igModel
+   * @return
+   * @throws GroupSerializationException 
+   */
+  private Element serializeGroup(SegmentRefOrGroupDataModel segmentRefOrGroupDataModel, IgDataModel igModel) throws GroupSerializationException {
+    try {
+      Element elmGroup = new Element("Group");
+      elmGroup.addAttribute(new Attribute("ID", this.str(segmentRefOrGroupDataModel.getModel().getId())));
+      elmGroup.addAttribute(new Attribute("Name", this.str(segmentRefOrGroupDataModel.getModel().getName())));
+      elmGroup.addAttribute(new Attribute("Usage", this.str(segmentRefOrGroupDataModel.getModel().getUsage().toString())));
+      elmGroup.addAttribute(new Attribute("Min", this.str(segmentRefOrGroupDataModel.getModel().getMin() + "")));
+      elmGroup.addAttribute(new Attribute("Max", this.str(segmentRefOrGroupDataModel.getModel().getMax())));
+
+      Map<Integer, SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels = new HashMap<Integer, SegmentRefOrGroupDataModel>();
+
+      for (SegmentRefOrGroupDataModel child  : segmentRefOrGroupDataModel.getChildren()) {
+        segmentRefOrGroupDataModels.put(child.getModel().getPosition(), child);
+      }
+
+      for (int i = 1; i < segmentRefOrGroupDataModels.size() + 1; i++) {
+        SegmentRefOrGroupDataModel childModel = segmentRefOrGroupDataModels.get(i);
+        if (childModel.getType().equals(Type.SEGMENTREF)) {
+          elmGroup.appendChild(serializeSegmentRef(childModel, igModel));
+        } else if (childModel.getType().equals(Type.GROUP)) {
+          elmGroup.appendChild(serializeGroup(childModel, igModel));
+        }
+      }
+
+      return elmGroup;
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new GroupSerializationException(e, segmentRefOrGroupDataModel != null ? segmentRefOrGroupDataModel.getModel().getId() : "");
+    }
+  }
+
+  /**
+   * @param segmentRefOrGroupDataModel
+   * @param igModel
+   * @return
+   * @throws SegmentSerializationException 
+   */
+  private Element serializeSegmentRef(SegmentRefOrGroupDataModel segmentRefOrGroupDataModel, IgDataModel igModel) throws SegmentSerializationException {
+    try {
+      SegmentBindingDataModel segModel = segmentRefOrGroupDataModel.getSegment();
+      Element elmSegment = new Element("Segment");
+      
+      if(igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null && segModel.getDomainInfo() != null && segModel.getDomainInfo().getVersion() != null) {
+        if(igModel.getModel().getDomainInfo().getVersion().equals(segModel.getDomainInfo().getVersion())){
+          elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel())));
+        }else{
+          elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel() + "_" + segModel.getDomainInfo().getVersion().replaceAll("\\.", "-")))); 
+        }
+      } else {
+        elmSegment.addAttribute(new Attribute("Ref", this.str(segModel.getLabel())));
+      }
+      
+      elmSegment.addAttribute(new Attribute("Usage", this.str(segmentRefOrGroupDataModel.getModel().getUsage().toString())));
+      elmSegment.addAttribute(new Attribute("Min", this.str(segmentRefOrGroupDataModel.getModel().getMin() + "")));
+      elmSegment.addAttribute(new Attribute("Max", this.str(segmentRefOrGroupDataModel.getModel().getMax())));
+      return elmSegment;
+    } catch (Exception e) {
+      e.printStackTrace();
+        throw new SegmentSerializationException(e, segmentRefOrGroupDataModel != null ? segmentRefOrGroupDataModel.getModel().getId() : "");
+    }
+  }
+
+  private void serializeProfileMetaData(Element e, IgDataModel igModel, String type) {
+    if (type.equals("Validation")) {
+      Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+          "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Validation%20Schema/Profile.xsd");
+      schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      e.addAttribute(schemaDecl);
+    } else if (type.equals("Display")) {
+      Attribute schemaDecl = new Attribute("noNamespaceSchemaLocation",
+          "https://raw.githubusercontent.com/Jungyubw/NIST_healthcare_hl7_v2_profile_schema/master/Schema/NIST%20Display%20Schema/Profile.xsd");
+      schemaDecl.setNamespace("xsi", "http://www.w3.org/2001/XMLSchema-instance");
+      e.addAttribute(schemaDecl);
+    }
+    
+    if(igModel != null && igModel.getModel() != null) {
+      e.addAttribute(new Attribute("ID", igModel.getModel().getId()));
+      if (igModel.getModel().getDomainInfo() != null && igModel.getModel().getDomainInfo().getVersion() != null) e.addAttribute(new Attribute("HL7Version", this.str(igModel.getModel().getDomainInfo().getVersion())));  
+      
+      Element elmMetaData = new Element("MetaData");
+      
+      if(igModel.getModel().getMetadata() != null) {
+        elmMetaData.addAttribute(new Attribute("Name", !this.str(igModel.getModel().getMetadata().getTitle()).equals("") ? this.str(igModel.getModel().getMetadata().getTitle()) : "No Title Info"));
+        elmMetaData.addAttribute(new Attribute("OrgName", !this.str(igModel.getModel().getMetadata().getOrgName()).equals("") ? this.str(igModel.getModel().getMetadata().getOrgName()) : "No Org Info"));
+        elmMetaData.addAttribute(new Attribute("Version", !this.str(igModel.getModel().getVersion() + "").equals("") ? this.str(igModel.getModel().getVersion() + "") : "No Version Info"));
+        
+        if(igModel.getModel().getUpdateDate() != null) 
+          elmMetaData.addAttribute(new Attribute("Date", !this.str(igModel.getModel().getUpdateDate().toString()).equals("") ? this.str(igModel.getModel().getUpdateDate().toString()) : "No Date Info"));
+        else elmMetaData.addAttribute(new Attribute("Date", "No Date Info"));
+        
+        elmMetaData.addAttribute(new Attribute("SpecificationName", !this.str(igModel.getModel().getMetadata().getSpecificationName()).equals("") ? this.str(igModel.getModel().getMetadata().getSpecificationName()) : "No Version Info"));
+      }
+      e.appendChild(elmMetaData);
+    }
+  }
+
+  private void generateProfileIS(ZipOutputStream out, String profileXML) throws IOException {
+    byte[] buf = new byte[1024];
+    out.putNextEntry(new ZipEntry("Profile.xml"));
+    InputStream inProfile = IOUtils.toInputStream(profileXML);
+    int lenTP;
+    while ((lenTP = inProfile.read(buf)) > 0) {
+      out.write(buf, 0, lenTP);
+    }
+    out.closeEntry();
+    inProfile.close();
+  }
+  
+  private String str(String value) {
+    return value != null ? value : "";
+  }
+  
+  
+  private void normalizeIgModel(IgDataModel igModel, String[] conformanceProfileIds) throws CloneNotSupportedException, ClassNotFoundException, IOException {
+    Map<String, DatatypeDataModel> toBeAddedDTs = new HashMap<String, DatatypeDataModel>();
+    Map<String, SegmentDataModel> toBeAddedSegs = new HashMap<String, SegmentDataModel>();
+
+    for (DatatypeDataModel dtModel : igModel.getDatatypes()) {
+      for (String key : dtModel.getValuesetMap().keySet()) {
+        List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
+        
+        if (pathList.size() > 1) {
+          ComponentDataModel cModel = dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+
+          DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
+          if (childDtModel == null) childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
+          DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+          int randumNum = new SecureRandom().nextInt(100000);
+          copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
+          String ext = childDtModel.getModel().getExt();
+          if (ext == null) ext = "";
+          copyDtModel.getModel().setExt(ext + "_A" + randumNum);
+          toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
+          cModel.getDatatype().setId(copyDtModel.getModel().getId());
+          cModel.getDatatype().setExt(ext + "_A" + randumNum);
+          updateChildDatatype(pathList, copyDtModel, igModel, dtModel.getValuesetMap().get(key), toBeAddedDTs);
+        }
+      }
+    }
+
+    for (SegmentDataModel segModel : igModel.getSegments()) {
+      for (String key : segModel.getValuesetMap().keySet()) {
+        List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
+
+        if (pathList.size() > 1) {
+          FieldDataModel fModel = segModel.findFieldDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+
+          DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
+          if (childDtModel == null) childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
+          DatatypeDataModel copyDtModel = (DatatypeDataModel) SerializationUtils.clone(childDtModel);
+
+          int randumNum = new SecureRandom().nextInt(100000);
+          copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
+          String ext = childDtModel.getModel().getExt();
+          if (ext == null) ext = "";
+          copyDtModel.getModel().setExt(ext + "_A" + randumNum);
+          toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
+          System.out.println(copyDtModel.getModel().getId());
+          fModel.getDatatype().setId(copyDtModel.getModel().getId());
+          fModel.getDatatype().setExt(ext + "_A" + randumNum);
+
+          updateChildDatatype(pathList, copyDtModel, igModel, segModel.getValuesetMap().get(key), toBeAddedDTs);
+        }
+      }
+    }
+
+    for (ConformanceProfileDataModel cpModel : igModel.getConformanceProfiles()) {
+      for (String key : cpModel.getValuesetMap().keySet()) {
+        List<String> pathList = new LinkedList<String>(Arrays.asList(key.split("\\.")));
+        SegmentRefOrGroupDataModel childModel = cpModel.findChildByPosition(Integer.parseInt(pathList.remove(0)));
+        updateGroupOrSegmentRefModel(pathList, childModel, igModel, cpModel.getValuesetMap().get(key), toBeAddedDTs, toBeAddedSegs);
+      }
+    }
+    
+    
+    for (String key : toBeAddedDTs.keySet()) {
+      igModel.getDatatypes().add(toBeAddedDTs.get(key));
+    }
+    
+    for(DatatypeDataModel dm : igModel.getDatatypes()) {
+      System.out.println(dm.getModel().getId() + dm.getModel().getLabel());
+    }
+    
+    for (String key : toBeAddedSegs.keySet()) {
+      igModel.getSegments().add(toBeAddedSegs.get(key));
+    }
+  }
+
+  private void updateGroupOrSegmentRefModel(List<String> pathList, SegmentRefOrGroupDataModel sgModel, IgDataModel igModel, Set<ValuesetBindingDataModel> valuesetBindingDataModels, Map<String, DatatypeDataModel> toBeAddedDTs, Map<String, SegmentDataModel> toBeAddedSegs) throws ClassNotFoundException, IOException {
+    if (sgModel.getType().equals(Type.GROUP)) {
+      SegmentRefOrGroupDataModel childModel = sgModel.findChildByPosition(Integer.parseInt(pathList.remove(0)));
+      updateGroupOrSegmentRefModel(pathList, childModel, igModel, valuesetBindingDataModels, toBeAddedDTs, toBeAddedSegs);
+    } else {
+      SegmentDataModel sModel = igModel.findSegment(sgModel.getSegment().getId());
+      if (sModel == null) sModel = toBeAddedSegs.get(sgModel.getSegment().getId());
+      SegmentDataModel copySModel = (SegmentDataModel)SerializationUtils.clone(sModel);
+      int randumNum = new SecureRandom().nextInt(100000);
+      copySModel.getModel().setId(sModel.getModel().getId() + "_A" + randumNum);
+      String ext = sModel.getModel().getExt();
+      if (ext == null) ext = "";
+      copySModel.getModel().setExt(ext + "_A" + randumNum);
+
+      if (pathList.size() == 1) {
+        if(valuesetBindingDataModels != null && valuesetBindingDataModels.size() > 0) {
+          valuesetBindingDataModels = this.makeCopySet(valuesetBindingDataModels);
+          copySModel.getValuesetMap().put(pathList.get(0), valuesetBindingDataModels);
+          FieldDataModel fModel = copySModel.findFieldDataModelByPosition(Integer.parseInt(pathList.get(0)));
+          fModel.setValuesets(valuesetBindingDataModels);
+        }
+      } else if (pathList.size() > 1) {
+        FieldDataModel fModel = copySModel.findFieldDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+        
+        DatatypeDataModel childDtModel = igModel.findDatatype(fModel.getDatatype().getId());
+        if (childDtModel == null) childDtModel = toBeAddedDTs.get(fModel.getDatatype().getId());
+        DatatypeDataModel copyDtModel = (DatatypeDataModel)SerializationUtils.clone(childDtModel);
+
+        int randumNum2 = new SecureRandom().nextInt(100000);
+        copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum2);
+        String ext2 = childDtModel.getModel().getExt();
+        if (ext2 == null) ext2 = "";
+        copyDtModel.getModel().setExt(ext2 + "_A" + randumNum2);
+        toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
+        fModel.getDatatype().setId(copyDtModel.getModel().getId());
+        fModel.getDatatype().setExt(ext2 + "_A" + randumNum2);
+        
+        this.updateChildDatatype(pathList, copyDtModel, igModel, valuesetBindingDataModels, toBeAddedDTs);
+      }
+      sgModel.getSegment().setId(copySModel.getModel().getId());
+      sgModel.getSegment().setExt(ext + "_A" + randumNum);
+      toBeAddedSegs.put(copySModel.getModel().getId(), copySModel);
+    }
+    
+  }
+
+  private void updateChildDatatype(List<String> pathList, DatatypeDataModel dtModel, IgDataModel igModel, Set<ValuesetBindingDataModel> valuesetBindingDataModels, Map<String, DatatypeDataModel> toBeAddedDTs) throws ClassNotFoundException, IOException {
+    if (pathList.size() == 1) {
+      if(valuesetBindingDataModels != null && valuesetBindingDataModels.size() > 0) {
+        valuesetBindingDataModels = this.makeCopySet(valuesetBindingDataModels);
+        dtModel.getValuesetMap().put(pathList.get(0), valuesetBindingDataModels);
+        ComponentDataModel cModel = dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.get(0)));
+        cModel.setValuesets(valuesetBindingDataModels);
+      }
+
+    } else if (pathList.size() > 1) {
+      ComponentDataModel cModel = dtModel.findComponentDataModelByPosition(Integer.parseInt(pathList.remove(0)));
+      
+      DatatypeDataModel childDtModel = igModel.findDatatype(cModel.getDatatype().getId());
+      if (childDtModel == null) childDtModel = toBeAddedDTs.get(cModel.getDatatype().getId());
+      DatatypeDataModel copyDtModel = (DatatypeDataModel)SerializationUtils.clone(childDtModel);
+
+      int randumNum = new SecureRandom().nextInt(100000);
+      copyDtModel.getModel().setId(childDtModel.getModel().getId() + "_A" + randumNum);
+      String ext = childDtModel.getModel().getExt();
+      if (ext == null) ext = "";
+      copyDtModel.getModel().setExt(ext + "_A" + randumNum);
+      toBeAddedDTs.put(copyDtModel.getModel().getId(), copyDtModel);
+      cModel.getDatatype().setId(copyDtModel.getModel().getId());
+      
+      this.updateChildDatatype(pathList, copyDtModel, igModel, valuesetBindingDataModels, toBeAddedDTs);
+    }
+    
+  }
+  
+//  private Object makeCopy(Object original) throws IOException, ClassNotFoundException {
+//    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+//    ObjectOutputStream oos = new ObjectOutputStream(baos);
+//    oos.writeObject(original);
+//    ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+//    ObjectInputStream ois = new ObjectInputStream(bais);
+//    return ois.readObject();
+//  }
+  
+  private Set<ValuesetBindingDataModel> makeCopySet(Set<ValuesetBindingDataModel> valuesetBindingDataModels) throws IOException, ClassNotFoundException {
+    Set<ValuesetBindingDataModel> copy = new HashSet<ValuesetBindingDataModel>();
+    for(ValuesetBindingDataModel o : valuesetBindingDataModels){
+      copy.add((ValuesetBindingDataModel)SerializationUtils.clone(o));
+    }
+    return copy;
+  }
 }

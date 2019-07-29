@@ -11,11 +11,11 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import gov.nist.hit.hl7.igamt.common.base.domain.Comment;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
@@ -28,7 +28,7 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  * @author jungyubw
  *
  */
-public class SegmentRefOrGroupDataModel {
+public class SegmentRefOrGroupDataModel implements Serializable{
   private SegmentRefOrGroup model;
 
   private Type type;
@@ -115,6 +115,15 @@ public class SegmentRefOrGroupDataModel {
     this.children.add(child);
   }
 
-
+  /**
+   * @param parseInt
+   * @return
+   */
+  public SegmentRefOrGroupDataModel findChildByPosition(int position) {
+    for(SegmentRefOrGroupDataModel sgModel : this.children) {
+      if (sgModel.getModel().getPosition() == position) return sgModel;
+    }
+    return null;
+  }
 
 }

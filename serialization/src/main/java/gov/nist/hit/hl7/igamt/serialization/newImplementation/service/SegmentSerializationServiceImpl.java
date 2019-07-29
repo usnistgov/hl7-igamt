@@ -13,6 +13,9 @@ import gov.nist.hit.hl7.igamt.common.binding.domain.Binding;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportTools;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -39,12 +42,14 @@ BindingSerializationService bindingSerializationService;
 ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, ExportConfiguration exportConfiguration) throws SerializationException {
-		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, exportConfiguration);
+	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
+		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
+	      if(segmentExportConfiguration.getExt()) {
 	    segmentElement
 	          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
-	      if (segment.getDynamicMappingInfo() != null) {
+	      }
+	      if (segment.getDynamicMappingInfo() != null && segmentExportConfiguration.getDynamicMappingInfo()) {
 	        try {
 	          Element dynamicMappingElement =
 	              this.serializeDynamicMapping(segment.getDynamicMappingInfo(),igDataModel);
@@ -66,13 +71,13 @@ ConstraintSerializationService constraintSerializationService;
 //	      }
 	      if(!segmentDataModel.getConformanceStatements().isEmpty()|| !segmentDataModel.getPredicateMap().isEmpty()) {
 	    	  System.out.println("BOOM");
-    	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap());
+    	  Element constraints = constraintSerializationService.serializeConstraints(segmentDataModel.getConformanceStatements(), segmentDataModel.getPredicateMap(), segmentExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
           segmentElement.appendChild(constraints);
         }
 	      }
 	      if (segment.getChildren() != null) {
-	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel);
+	        Element fieldsElement = this.serializeFields(segment.getChildren(),igDataModel,segmentDataModel, segmentExportConfiguration);
 	        if (fieldsElement != null) {
 	          segmentElement.appendChild(fieldsElement);
 	        }
@@ -89,16 +94,16 @@ ConstraintSerializationService constraintSerializationService;
 //	      }
 	        
 
-	      return igDataModelSerializationService.getSectionElement(segmentElement, segmentDataModel.getModel(), level);
+	      return igDataModelSerializationService.getSectionElement(segmentElement, segmentDataModel.getModel(), level, segmentExportConfiguration);
 	  }
 
-	  private Element serializeFields(Set<Field> fields, IgDataModel igDataModel, SegmentDataModel segmentDataModel) throws SubStructElementSerializationException {
+	  private Element serializeFields(Set<Field> fields, IgDataModel igDataModel, SegmentDataModel segmentDataModel, SegmentExportConfiguration segmentExportConfiguration) throws SubStructElementSerializationException {
 		    if (fields.size() > 0) {
 		      Element fieldsElement = new Element("Fields");
 		      for (Field field : fields) {
 //		        if (this.bindedFields.contains(field.getId())) {
 		          try {
-		            if (field != null) {
+		            if (field != null && ExportTools.CheckUsage(segmentExportConfiguration.getFieldsExport(), field.getUsage())) {
 		              Element fieldElement = new Element("Field");
 		              fieldElement.addAttribute(new Attribute("confLength",
 		                  field.getConfLength() != null ? field.getConfLength() : ""));

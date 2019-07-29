@@ -11,6 +11,7 @@
  */
 package gov.nist.hit.hl7.igamt.ig.domain.datamodel;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ExternalSingleCode;
@@ -21,7 +22,7 @@ import gov.nist.hit.hl7.igamt.segment.domain.Field;
  * @author jungyubw
  *
  */
-public class FieldDataModel {
+public class FieldDataModel implements Serializable{
   private Field model;
 
   private DatatypeBindingDataModel datatype;
