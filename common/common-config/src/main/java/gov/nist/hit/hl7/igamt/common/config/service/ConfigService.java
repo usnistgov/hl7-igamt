@@ -7,5 +7,7 @@ public interface ConfigService {
   public Config findOne();
   public Config save(Config shared);
   public boolean isCodedElement(String name);
+  public void deleteAll();
+
 
 }

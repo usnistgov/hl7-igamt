@@ -2,7 +2,10 @@ import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Actions} from '@ngrx/effects';
 import {MemoizedSelectorWithProps, Store} from '@ngrx/store';
 import {Observable} from 'rxjs';
+import {mergeMap, take} from 'rxjs/operators';
 import {selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {selectIgId} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+
 import {StructureEditorComponent} from '../../../core/components/structure-editor/structure-editor.component';
 import {Message} from '../../../core/models/message/message.class';
 import {MessageService} from '../../../core/services/message.service';
@@ -45,7 +48,12 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
     return this.valueSetService.saveChanges(id, igId, changes);
   }
   getById(id: string): Observable<IValueSet> {
-    return this.valueSetService.getById(id);
+   return this.store.select(selectIgId).pipe(
+     take(1),
+     mergeMap((x) => {
+       return this.valueSetService.getById(x, id);
+     }),
+   );
   }
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {
     return selectValueSetById;

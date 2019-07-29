@@ -16,9 +16,6 @@ export class NamingDuplicationDirective implements Validator {
   constructor() {
   }
   validate(control: AbstractControl): ValidationErrors| null {
-    console.log(this.existing);
-    console.log(this.fixedName);
-    console.log(this.domainInfo);
     return !isDuplicated(this.fixedName, control.value, this.domainInfo, this.existing) ? null : {duplicated: true};
   }
 }

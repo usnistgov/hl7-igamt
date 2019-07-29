@@ -1,14 +1,8 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
-import java.util.Arrays;
 import java.util.Properties;
 
-import javax.annotation.PostConstruct;
-
-import gov.nist.hit.hl7.igamt.coconstraints.domain.CoConstraintTable;
-import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
-import gov.nist.hit.hl7.igamt.segment.service.CoConstraintService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,12 +14,12 @@ import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfigurat
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
-import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
+import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @SpringBootApplication
@@ -33,9 +27,8 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 @EnableAutoConfiguration(exclude = {DataSourceAutoConfiguration.class,
     DataSourceTransactionManagerAutoConfiguration.class, HibernateJpaAutoConfiguration.class})
 @EnableMongoRepositories("gov.nist.hit.hl7.igamt")
-@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto",
-    "gov.nist.hit.hl7.auth.util.service"})
-
+@ComponentScan({"gov.nist.hit.hl7.igamt", "gov.nist.hit.hl7.auth.util.crypto","gov.nist.hit.hl7.auth.util.service"})
+@EnableScheduling
 public class BootstrapApplication implements CommandLineRunner {
 
 	private static final String EMAIL_PORT = "email.port";

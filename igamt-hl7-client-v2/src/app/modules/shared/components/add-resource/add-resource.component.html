@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>{{data.title}}</h2>
+<mat-dialog-content>
+  <form #form='ngForm'>
+    <div class="form-group">
+      <input name="variableName" id="variableName" appNamingDuplication appNamingConvention  [type]="data.type" [scope]="data.scope" [existing]="data.existing" [fixedName]="model.ext" [domainInfo]="{scope:'USER',version:null}" [(ngModel)] = "model.name" type="text" style="width: 100%" class="form-control" required />
+      <div *ngIf="form.controls['variableName'] && form.controls['variableName'].errors" style="color:red; font-size: 11px">
+        <div *ngIf="form.controls['variableName'].errors.required">
+          <span>*Binding Identifier is required</span>
+        </div>
+        <div *ngIf="form.controls['variableName'].errors.duplicated">
+          <span> *Binding Identifier is duplicated</span>
+        </div>
+        <div *ngIf="form.controls['variableName'].errors.invalidConvention">
+          <span> {{form.controls['variableName'].errors.invalidConvention}}</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <p-radioButton id="include-code" name="groupname" [value]="true" [(ngModel)]="model.includeChildren"></p-radioButton>  With Codes
+      <p-radioButton id="exclude-code"  name="groupname" [value]="false" [(ngModel)]="model.includeChildren"></p-radioButton> Without Codes
+
+    </div>
+    <div class="form-group">
+
+  <input *ngIf="!model.includeChildren" required id="url" name="url" type="url"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="model.url" class="form-control" width="100%"/>
+    <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
+      <span style="color:red"> Enter a valid URL</span>
+    </div>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()" [disabled]="form&& form.invalid"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

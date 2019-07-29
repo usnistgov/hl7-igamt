@@ -31,6 +31,10 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
 @JsonSubTypes({@JsonSubTypes.Type(value = FreeTextConformanceStatement.class, name = "FREE"),
     @JsonSubTypes.Type(value = AssertionConformanceStatement.class, name = "ASSERTION")})
 public class ConformanceStatement implements Serializable{
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 5188411006490923627L;
   @Id
   private String id;
   private ConstraintType type;

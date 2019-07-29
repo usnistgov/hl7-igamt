@@ -1,6 +1,9 @@
 import {Type} from '../constants/type.enum';
 import {IDomainInfo} from './domain-info.interface';
-
+export enum SourceType {
+  INTERNAL = 'INTERNAL',
+  EXTERNAL = 'EXTERNAL',
+}
 export interface IAddingInfo {
   originalId: string;
   id: string;
@@ -11,4 +14,8 @@ export interface IAddingInfo {
   domainInfo?: IDomainInfo;
   ext?: string;
   flavor?: boolean;
+  sourceType?: SourceType;
+  numberOfChildren?: number;
+  includeChildren?: boolean;
+  url?: string;
 }

@@ -13,6 +13,7 @@ public class Config {
 	
 	List<String> hl7Versions=new ArrayList<String>();
 	List<String> usages=new ArrayList<String>();
+	private String phinvadsUrl; 
 
 	
 
@@ -42,6 +43,18 @@ public class Config {
 
 	public Config() {
 		
+	}
+
+
+
+	public String getPhinvadsUrl() {
+		return phinvadsUrl;
+	}
+
+
+
+	public void setPhinvadsUrl(String phinvadsUrl) {
+		this.phinvadsUrl = phinvadsUrl;
 	}
 
 }

@@ -98,7 +98,7 @@ const routes: Routes = [
         canDeactivate: [IgEditSaveDeactivateGuard],
         data: {
           editorMetadata: {
-            id: EditorID.VALUESET_STRUCTURE,
+            id: EditorID.VALUESET_METADATA,
             title: 'Metadata',
             resourceType: Type.VALUESET,
           },

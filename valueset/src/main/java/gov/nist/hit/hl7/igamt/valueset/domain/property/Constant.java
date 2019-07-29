@@ -99,15 +99,5 @@ public class Constant {
   public enum BindingType {
     singlecode, valueset
   }
-  
-  public enum SourceType {
-    INTERNAL("Internally managed"), EXTERNAL("Externally managed");
-    private final String value;
-    SourceType(String v){
-	  value = v;
-    }
-    public String getValue() {
-      return this.value;
-    }
-  }
+ 
 }

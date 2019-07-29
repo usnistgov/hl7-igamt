@@ -17,8 +17,8 @@ import java.util.Set;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
@@ -37,12 +37,23 @@ public class Valueset extends Resource {
 	private Extensibility extensibility = Extensibility.Undefined;
 	private ContentDefinition contentDefinition = ContentDefinition.Undefined;
 	private SourceType sourceType = SourceType.INTERNAL;
+	private int numberOfCodes;
+	
+	@org.springframework.data.annotation.Transient
+	private boolean includeCodes;
+	
+	
+	public boolean isIncludeCodes() {
+		return includeCodes;
+	}
 
-	protected int numberOfCodes;
-//	public int getNumberOfCodes() {
-//		return numberOfCodes;
-//	}
+	public void setIncludeCodes(boolean includeCodes) {
+		this.includeCodes = includeCodes;
+	}
 
+	public int getNumberOfCodes() {
+		return numberOfCodes;
+	}
 	private Set<String> codeSystems = new HashSet<String>();
 	private Set<Code> codes = new HashSet<Code>();
 
@@ -166,10 +177,5 @@ public class Valueset extends Resource {
 	public void setCodes(Set<Code> codes) {
 		this.codes = codes;
 	};
-	
-	public int getNumberOfCodes(){
-	  if (this.codes == null) return 0;
-	  return this.codes.size();
-	}
 
 }

@@ -2,7 +2,7 @@
   <p-table #dt1 [style]="{'overflow':'hidden', 'grid-area': 'loaded'}" [value]="table" [globalFilterFields]="['bindingIdentifier','name']" scrollHeight="100%" sortField="bindingIdentifier"
            scrollable="true">
     <ng-template pTemplate="caption">
-      <app-select-versions (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
+      <app-select-versions *ngIf="scope!=='PHINVADS'" (selected)="select($event)" [hl7Versions]="hl7Versions" [selectedVersion]="selectedVersion"></app-select-versions>
       <div style="text-align: left">
         <div class="input-group" style="margin-left: 10px;">
           <div class="input-group-prepend" style="height: 35px;">
@@ -15,13 +15,16 @@
     </ng-template>
     <ng-template let-columns pTemplate="header">
       <tr>
-        <th>
+        <th class="header-padding">
           Value Sets
         </th>
-        <th style="width:100px">
+        <th class="header-padding" style="width:65px">
+          #codes
+        </th>
+        <th class="header-padding" style="width:65px">
           As Is
         </th>
-        <th style="width:100px">
+        <th class="header-padding" style="width:65px">
           As Flavor
         </th>
       </tr>
@@ -37,12 +40,15 @@
             </ng-container>
           </span>
         </td>
-        <td style="width:100px">
+        <td style="width:65px">
+          <span class="badge badge-info">{{rowData.numberOfCodes}}</span>
+        </td>
+        <td style="width:65px">
           <button class="btn-primary btn btn-sm" (click)="addAsIs(rowData)">
             <i class="fa fa-plus"></i>
           </button>
         </td>
-        <td style="width:100px">
+        <td style="width:65px">
           <button class="btn-primary btn btn-sm" (click)="addAsFlavor(rowData)">
             <i class="fa fa-plus"></i>
           </button>
@@ -66,13 +72,19 @@
     </ng-template>
     <ng-template let-columns pTemplate="header">
       <tr>
-        <th>
-          Value Set
+        <th class="header-padding">
+          Scope
         </th>
-        <th>
+        <th class="header-padding" style="width:100px;">
           Binding identifier
         </th>
-        <th>
+        <th class="header-padding">
+          Type
+        </th>
+        <th class="header-padding">
+          Include Codes
+        </th>
+        <th class="header-padding">
           Actions
         </th>
       </tr>
@@ -80,14 +92,11 @@
     <ng-template let-columns="columns" let-index="rowIndex" let-node="node" let-rowData pTemplate="body">
       <tr [pReorderableRow]="index">
         <td>
-          <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version">
-          </app-scope-badge>
-          <span> {{rowData.name}}
-          </span>
+          <app-scope-badge [scope]="rowData.domainInfo.scope" [version]="rowData.domainInfo.version"></app-scope-badge>
         </td>
-        <td>
-          <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD'">
-            <input [name]="rowData.id" [id]="rowData.id" appNamingDuplication [existing]="existing" [fixedName]="null" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.name" required (input)="emitData()"/>
+        <td style="width:100px;">
+          <ng-container *ngIf="rowData.domainInfo.scope !='HL7STANDARD' && rowData.domainInfo.scope !='PHINVADS'">
+            <input class="form-control"[name]="rowData.id" [id]="rowData.id" appNamingDuplication [existing]="existing" [fixedName]="null" [domainInfo]="rowData.domainInfo" type="text" style="width: 100%"  [(ngModel)]="rowData.name" required (input)="emitData()"/>
             <div *ngIf="addingEditForm.controls[rowData.id] && addingEditForm.controls[rowData.id].errors" style="color:red; font-size: 11px">
               <div *ngIf="addingEditForm.controls[rowData.id].errors.required">
                 <span>*Binding Identifier is required</span>
@@ -97,6 +106,16 @@
               </div>
             </div>
           </ng-container>
+          <ng-container *ngIf="rowData.domainInfo.scope =='HL7STANDARD' || rowData.domainInfo.scope =='PHINVADS'">
+            <span> {{rowData.name}} </span>
+          </ng-container>
+        </td>
+        <td>
+          {{rowData.sourceType}}
+        </td>
+        <td>
+          <p-checkbox [id]="rowData.id" [name]="rowData.id+'includeCode'" [(ngModel)]="rowData.includeChildren" binary="true" (ngModelChange)="switchType(rowData)"></p-checkbox>
+          <span class="badge badge-info" style="margin-left: 5px;"> {{rowData.numberOfChildren}}</span>
         </td>
         <td>
           <button (click)="unselect(rowData)" class="btn btn-sm btn-danger">

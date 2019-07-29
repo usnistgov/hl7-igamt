@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { Icons } from '../../constants/icons.enum';
+import {Type} from '../../constants/type.enum';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { SubMenu } from '../../models/sub-menu.class';
 
@@ -33,9 +34,10 @@ export class TocSubMenuComponent implements OnInit {
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post-definition', Icons.POST));
+    if (type !== Type.VALUESET) {
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
 
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
-
+    }
     if (type === 'segment' && this.element.fixedName === 'OBX') {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'co-constraint', 'Co-Constraints', Icons.TABLE));
 

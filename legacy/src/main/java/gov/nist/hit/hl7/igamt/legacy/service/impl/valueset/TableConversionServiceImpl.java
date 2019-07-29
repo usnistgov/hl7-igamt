@@ -15,7 +15,6 @@ import gov.nist.hit.hl7.igamt.legacy.service.util.ConversionUtil;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
 import gov.nist.hit.hl7.igamt.valueset.domain.CodeUsage;
 import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
-import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SourceType;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.ContentDefinition;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Extensibility;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Stability;
@@ -52,10 +51,10 @@ public class TableConversionServiceImpl implements ConversionService {
 		v.setIntensionalComment(table.getIntensionalComment());
 		if (table.getSourceType()
 				.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.EXTERNAL))
-			v.setSourceType(SourceType.EXTERNAL);
+			v.setSourceType(gov.nist.hit.hl7.igamt.common.base.domain.SourceType.EXTERNAL);
 		else if (table.getSourceType()
 				.equals(gov.nist.healthcare.tools.hl7.v2.igamt.lite.domain.Constant.SourceType.INTERNAL))
-			v.setSourceType(SourceType.INTERNAL);
+			v.setSourceType(gov.nist.hit.hl7.igamt.common.base.domain.SourceType.INTERNAL);
 
 		// v.setSourceType(table.getSourceType().value);
 		if (table.getContentDefinition()
@@ -118,6 +117,12 @@ public class TableConversionServiceImpl implements ConversionService {
 		}
 		v.setCodeSystems(table.getCodeSystems());
 		v.setId(table.getId());
+		if(table.getCodes().isEmpty()) {
+			v.setNumberOfCodes(table.getNumberOfCodes());
+
+		}else {
+			v.setNumberOfCodes(table.getCodes().size());
+		}
 		valuesetService.save(v);
 		
 	}

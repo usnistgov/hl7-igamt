@@ -93,6 +93,45 @@ export class OpenEditorService {
     );
   }
 
+  openConformanceStatementEditor<T, A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: (action: A) => Observable<T>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<T, A>(
+      _action,
+      displayElement$,
+      resource$,
+      notFoundMessage,
+      (action: A, resource: T, display: IDisplayElement) => {
+        const openEditor = new OpenEditor({
+          id: action.payload.id,
+          element: display,
+          editor: action.payload.editor,
+          initial: {
+            changes: [],
+            resource,
+          },
+        });
+        this.store.dispatch(new LoadResourceReferences({ resourceType: type, id: action.payload.id }));
+        return this.rxjsHelper.listenAndReact(this.actions$, {
+          [IgEditActionTypes.LoadResourceReferencesSuccess]: {
+            do: (loadSuccess: LoadResourceReferencesSuccess) => {
+              return of(openEditor);
+            },
+          },
+          [IgEditActionTypes.LoadResourceReferencesFailure]: {
+            do: (loadFailure: LoadResourceReferencesFailure) => {
+              return of(new OpenEditorFailure({ id: action.payload.id }));
+            },
+          },
+        });
+      },
+    );
+  }
+
   openDefEditorHandler<T extends string, A extends OpenEditorBase>(
     _action: string,
     displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,

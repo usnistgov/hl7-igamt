@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import {
   LoadSegment,
+  OpenSegmentConformanceStatementEditor,
   OpenSegmentCrossRefEditor,
   OpenSegmentMetadataEditor,
   OpenSegmentPostDefEditor,
@@ -14,7 +15,9 @@ import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.'
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
 import { Type } from '../shared/constants/type.enum';
 import { EditorID } from '../shared/models/editor.enum';
-import {SegmentCrossRefsComponent} from './components/cross-refs/segment-cross-refs.component';
+import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
+import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
+import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -113,7 +116,25 @@ const routes: Routes = [
           idKey: 'segmentId',
         },
       },
-
+      {
+        path: 'conformance-statement',
+        component: SegmentConformanceStatementEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.SEGMENT_CS,
+            title: 'Conformance Statements',
+            resourceType: Type.SEGMENT,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenSegmentConformanceStatementEditor,
+          idKey: 'segmentId',
+        },
+      },
       {
         path: 'cross-references',
         component: SegmentCrossRefsComponent,

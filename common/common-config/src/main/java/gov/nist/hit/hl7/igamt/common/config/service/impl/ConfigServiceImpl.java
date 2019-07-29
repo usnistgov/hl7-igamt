@@ -37,4 +37,10 @@ public boolean isCodedElement(String name) {
 	return name.matches("^C(W|N)?E$");
 }
 
+@Override
+public void deleteAll() {
+	// TODO Auto-generated method stub
+	configRepository.deleteAll();
+}
+
 }

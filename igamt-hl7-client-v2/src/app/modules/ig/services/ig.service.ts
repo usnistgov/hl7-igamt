@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable, throwError} from 'rxjs';
+import {ISelectedIds} from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
@@ -8,8 +9,8 @@ import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IG_END_POINT } from '../models/end-points';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IgDocument } from '../models/ig/ig-document.class';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
+import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
 import {IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode} from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
@@ -19,7 +20,6 @@ import { Message } from './../../core/models/message/message.class';
 })
 export class IgService {
 
-  // @ts-ignore
   constructor(private http: HttpClient) {
   }
 
@@ -131,4 +131,20 @@ export class IgService {
       return this.http.delete<Message<any>>(url);
     } else { throwError('Unsupported Url'); }
   }
+
+  exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
+    const form = document.createElement('form');
+    form.action = '/api/igdocuments/' + igId + '/xml/validation';
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(selectedIds);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    console.log(form);
+    form.submit();
+  }
+
 }

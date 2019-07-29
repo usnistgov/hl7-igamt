@@ -9,61 +9,29 @@
  * works bear some notice that they are derived from it, and any modified versions bear some notice
  * that they have been modified.
  */
-package gov.nist.hit.hl7.igamt.valueset.domain.display;
-
-import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
+package gov.nist.hit.hl7.igamt.ig.controller.wrappers;
 
 /**
  * @author jungyubw
  *
  */
-public class ValuesetLabel {
+public class ReqId {
 
-  private String id;
-  private Scope scope;
-  private String label;
-  private String name;
-  private String version;
+	private String[] conformanceProfilesId;
+	private String[] compositeProfilesId;
+	public String[] getConformanceProfilesId() {
+		return conformanceProfilesId;
+	}
+	public void setConformanceProfilesId(String[] conformanceProfilesId) {
+		this.conformanceProfilesId = conformanceProfilesId;
+	}
+	public String[] getCompositeProfilesId() {
+		return compositeProfilesId;
+	}
+	public void setCompositeProfilesId(String[] compositeProfilesId) {
+		this.compositeProfilesId = compositeProfilesId;
+	}
 
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  public Scope getScope() {
-    return scope;
-  }
-
-  public void setScope(Scope scope) {
-    this.scope = scope;
-  }
-
-  public String getLabel() {
-    return label;
-  }
-
-  public void setLabel(String label) {
-    this.label = label;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getVersion() {
-    return version;
-  }
-
-  public void setVersion(String version) {
-    this.version = version;
-  }
 
 
 }
