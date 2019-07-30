@@ -27,7 +27,6 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.xalan.processor.TransformerFactoryImpl;
 
 import gov.nist.hit.hl7.igamt.export.domain.ExportParameters;
 import gov.nist.hit.hl7.igamt.export.domain.XSLTIncludeUriResolver;
