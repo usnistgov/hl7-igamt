@@ -16,10 +16,9 @@ export class ConformanceStatementService {
 
   getFreeConformanceStatement(): IFreeTextConformanceStatement {
     return {
-      id: '',
       identifier: '',
       freeText: '',
-      assertionScript: '',
+      assertionScript: null,
       type: ConstraintType.FREE,
     };
   }
@@ -28,7 +27,6 @@ export class ConformanceStatementService {
     const bag = this.getCsDataAssertion(assertion);
     return {
       cs: {
-        id: '',
         identifier: '',
         type: ConstraintType.ASSERTION,
         assertion: bag.assertion,
@@ -55,7 +53,7 @@ export class ConformanceStatementService {
         values: [],
         desc: '',
         descs: [],
-        codesys: [''],
+        codesys: '',
       },
       subject: {
         path: undefined,

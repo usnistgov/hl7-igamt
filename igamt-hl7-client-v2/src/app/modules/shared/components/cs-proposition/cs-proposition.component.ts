@@ -48,7 +48,7 @@ export enum VerbType {
 }
 
 export enum DeclarativeType {
-  CONTAINS_VALUE = 'containtValue',
+  CONTAINS_VALUE = 'containValue',
   CONTAINS_VALUE_DESC = 'containValueDesc',
   CONTAINS_CODE = 'containCode',
   CONTAINS_CODE_DESC = 'containCodeDesc',
@@ -63,14 +63,14 @@ export enum DeclarativeType {
 }
 
 export enum PropositionType {
-  CONTAINS_VALUE = 'containtValue',
-  NOT_CONTAINS_VALUE = 'notContaintValue',
+  CONTAINS_VALUE = 'containValue',
+  NOT_CONTAINS_VALUE = 'notContainValue',
   CONTAINS_VALUE_DESC = 'containValueDesc',
   NOT_CONTAINS_VALUE_DESC = 'notContainValueDesc',
   CONTAINS_VALUES = 'containListValues',
   CONTAINS_VALUES_DESC = 'containListValuesDesc',
-  NOT_CONTAINS_VALUES = 'notContaintValues',
-  NOT_CONTAINS_VALUES_DESC = 'notContaintValuesDesc',
+  NOT_CONTAINS_VALUES = 'notContainValues',
+  NOT_CONTAINS_VALUES_DESC = 'notContainValuesDesc',
   VALUED = 'valued',
   NOT_VALUED = 'notValued',
 }
@@ -132,7 +132,7 @@ export class CsPropositionComponent implements OnInit {
       values: [],
       descs: [],
       desc: '',
-      codesys: [''],
+      codesys: '',
     },
     subject: {
       path: undefined,
@@ -443,7 +443,7 @@ export class CsPropositionComponent implements OnInit {
       values: [],
       desc: '',
       descs: [],
-      codesys: [''],
+      codesys: '',
     };
   }
 
@@ -484,7 +484,7 @@ export class CsPropositionComponent implements OnInit {
       ...this.assertion.complement,
       value: '',
       values: [],
-      codesys: [''],
+      codesys: '',
       desc: '',
       descs: [],
     };
@@ -502,7 +502,7 @@ export class CsPropositionComponent implements OnInit {
       complementKey: undefined,
       value: '',
       values: [],
-      codesys: [''],
+      codesys: '',
       desc: '',
       descs: [],
     };

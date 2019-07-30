@@ -110,10 +110,10 @@
             does not contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE">
-            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys[0]" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
+            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE_DESC">
-            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">) drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys[0]" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
+            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">) drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
@@ -138,13 +138,13 @@
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
-              <span> drawn from the code system </span><input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys[0]" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+              <span> drawn from the code system </span><input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES_DESC">
             <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
               <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs  }"></ng-container>
-              <span> drawn from the code system </span><input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys[0]" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+              <span> drawn from the code system </span><input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
             </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_REGEX">

@@ -1,5 +1,5 @@
 export interface IConformanceStatement {
-  id: string;
+  id?: string;
   type: ConstraintType;
   identifier: string;
   context?: IPath;
@@ -81,7 +81,7 @@ export interface IComplement {
   values?: string[];
   descs?: string[];
   desc?: string;
-  codesys?: string[];
+  codesys?: string;
 }
 
 export interface IPath {
