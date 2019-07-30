@@ -58,7 +58,6 @@ import { SelectResourceIdsComponent } from './components/select-resource-ids/sel
 import { SelectSegmentsComponent } from './components/select-segments/select-segments.component';
 import { SelectValueSetsComponent } from './components/select-value-sets/select-value-sets.component';
 import { SelectVersionsComponent } from './components/select-versions/select-versions.component';
-import { StringListComponent } from './components/string-list/string-list.component';
 import { StructureTreeComponent } from './components/structure-tree/structure-tree.component';
 import { TextEditorDialogComponent } from './components/text-editor-dialog/text-editor-dialog.component';
 import { TocSubMenuComponent } from './components/toc-sub-menu/toc-sub-menu.component';
@@ -71,8 +70,8 @@ import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
-import { MinNumberDirective } from './validators/min-number.directive';
 import { MaxNumberDirective } from './validators/max-number.directive';
+import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
@@ -125,7 +124,6 @@ import { MaxNumberDirective } from './validators/max-number.directive';
     AddResourceComponent,
     SelectResourceIdsComponent,
     ExportXmlDialogComponent,
-    StringListComponent,
     MinNumberDirective,
     MaxNumberDirective,
   ],
@@ -237,7 +235,6 @@ import { MaxNumberDirective } from './validators/max-number.directive';
     ValueSetStructureComponent,
     AddResourceComponent,
     ExportXmlDialogComponent,
-    StringListComponent,
     MinNumberDirective,
     MaxNumberDirective,
   ],

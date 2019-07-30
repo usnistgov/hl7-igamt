@@ -54,7 +54,8 @@ export class ConformanceStatementService {
         value: '',
         values: [],
         desc: '',
-        codesys: '',
+        descs: [],
+        codesys: [''],
       },
       subject: {
         path: undefined,

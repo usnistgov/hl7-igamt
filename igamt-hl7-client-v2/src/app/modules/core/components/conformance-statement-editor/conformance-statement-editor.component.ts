@@ -1,10 +1,10 @@
-import { OnInit } from '@angular/core';
+import { OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, pluck, take, takeUntil, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take, takeWhile, tap } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
@@ -38,7 +38,7 @@ export interface IEditableListNode<T> {
   payload: T;
 }
 
-export abstract class ConformanceStatementEditorComponent extends AbstractEditorComponent implements OnInit {
+export abstract class ConformanceStatementEditorComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
   _types = Type;
   conformanceStatementView: ReplaySubject<IConformanceStatementView>;
   conformanceStatementView$: Observable<IConformanceStatementView>;
@@ -73,6 +73,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       tap((data) => {
         this.conformanceStatementView.next(plucker(data.resource));
         this.changes.next({ ...data.changes });
+        console.log(plucker(data.resource));
       }),
     ).subscribe();
 
@@ -209,9 +210,12 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
+    console.log('ABC E');
+
     return combineLatest(this.elementId$, this.ig$.pipe(take(1), map((ig) => ig.id)), this.changes.asObservable()).pipe(
       take(1),
       concatMap(([id, igId, changes]) => {
+        console.log('ABC');
         return this.saveChanges(id, igId, this.convert(changes)).pipe(
           mergeMap((message) => {
             return this.getById(id, igId).pipe(
@@ -242,4 +246,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   ngOnInit() {
   }
 
+  ngOnDestroy(): void {
+    this.alive = false;
+  }
 }

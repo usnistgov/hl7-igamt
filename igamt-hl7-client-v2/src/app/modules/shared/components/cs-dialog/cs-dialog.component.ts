@@ -4,7 +4,7 @@ import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion } from '../../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';

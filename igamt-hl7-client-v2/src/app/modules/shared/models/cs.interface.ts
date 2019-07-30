@@ -79,8 +79,9 @@ export interface IComplement {
   occurenceType: string;
   value?: string;
   values?: string[];
+  descs?: string[];
   desc?: string;
-  codesys?: string;
+  codesys?: string[];
 }
 
 export interface IPath {

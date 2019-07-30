@@ -24,7 +24,7 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let segment of keys(viewData.complementConformanceStatements[_types.SEGMENT])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: complementConformanceStatements[_types.SEGMENT][segment], viewOnly: true, header: segment, editable: false }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment], viewOnly: true, header: segment, editable: false }"></ng-container>
         </ng-container>
       </div>
     </div>
@@ -37,7 +37,7 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let dt of keys(viewData.complementConformanceStatements[_types.DATATYPE])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: complementConformanceStatements[_types.DATATYPE][dt], viewOnly: true, header: dt, editable: false }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt], viewOnly: true, header: dt, editable: false }"></ng-container>
         </ng-container>
       </div>
     </div>
@@ -55,7 +55,7 @@
     <tr>
       <th>ID</th>
       <th>Description</th>
-      <th style="width: 190px;"></th>
+      <th *ngIf="!viewOnly" style="width: 190px;"></th>
     </tr>
     <ng-container *ngIf="!editable">
       <tr *ngFor="let cs of csList">

@@ -12,6 +12,7 @@ export enum DatatypeEditActionTypes {
   OpenDatatypeMetadataEditorNode = '[Datatype Edit] Open Datatype Metadata Editor Node',
   OpenDatatypeCrossRefEditor = '[Datatype Edit] Open Datatype Cross References',
   OpenDatatypeStructureEditor = '[Datatype Edit] Open Datatype Structure Editor',
+  OpenDatatypeConformanceStatementEditor = '[Datatype Edit] Open Datatype Conformance Statement Editor',
 }
 
 export class LoadDatatype implements Action {
@@ -54,6 +55,14 @@ export class OpenDatatypeStructureEditor implements Action {
   }) { }
 }
 
+export class OpenDatatypeConformanceStatementEditor implements Action {
+  readonly type = DatatypeEditActionTypes.OpenDatatypeConformanceStatementEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) { }
+}
+
 export class OpenDatatypeMetadataEditorNode implements Action {
   readonly type = DatatypeEditActionTypes.OpenDatatypeMetadataEditorNode;
   constructor(readonly payload: {
@@ -77,4 +86,5 @@ export type DatatypeEditActions =
   | OpenDatatypePreDefEditor
   | OpenDatatypePostDefEditor
   | OpenDatatypeMetadataEditorNode
+  | OpenDatatypeConformanceStatementEditor
   | OpenDatatypeCrossRefEditor;

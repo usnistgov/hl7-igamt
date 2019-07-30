@@ -8,7 +8,7 @@ describe('ConfigurationTocComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ConfigurationTocComponent ]
+      declarations: [ ConfigurationTocComponent ],
     })
     .compileComponents();
   }));
