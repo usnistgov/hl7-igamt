@@ -40,8 +40,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
-import gov.nist.hit.hl7.igamt.common.config.domain.Config;
-import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+//import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+//import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -104,8 +104,8 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	DatatypeService datatypeService;
 
-	@Autowired
-	ConfigService configService;
+//	@Autowired
+//	ConfigService configService;
 
 	@Autowired
 	SegmentService segmentService;
@@ -842,35 +842,36 @@ public class IgServiceImpl implements IgService {
 	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
 		// TODO Auto-generated method stub
 
-		Ig ig = this.findById(id);
-		if(ig == null ) {
-			throw new IGNotFoundException(id);
-		}
-		Valueset vs= valueSetService.findById(vsId);
-		if(vs == null) {
-			throw new ValuesetNotFoundException(vsId);
-		}
-		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
-			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
-				Config conf=	this.configService.findOne();
-				if(conf !=null) {
-					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
-				}
-			}
-		}
-		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
-			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-					vs.setIncludeCodes(true);
-				} else {
-					vs.setIncludeCodes(false);
-					vs.setCodes(new HashSet<Code>());
-				}
-			}else {
-				vs.setIncludeCodes(true);
-			}		
-		}
-		return vs;
+//		Ig ig = this.findById(id);
+//		if(ig == null ) {
+//			throw new IGNotFoundException(id);
+//		}
+//		Valueset vs= valueSetService.findById(vsId);
+//		if(vs == null) {
+//			throw new ValuesetNotFoundException(vsId);
+//		}
+//		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
+//			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
+//				Config conf=	this.configService.findOne();
+//				if(conf !=null) {
+//					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+//				}
+//			}
+//		}
+//		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
+//			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+//				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+//					vs.setIncludeCodes(true);
+//				} else {
+//					vs.setIncludeCodes(false);
+//					vs.setCodes(new HashSet<Code>());
+//				}
+//			}else {
+//				vs.setIncludeCodes(true);
+//			}
+//		}
+//		return vs;
+		return null;
 
 	}
 	
