@@ -50,9 +50,9 @@ private ConstraintSerializationService constraintSerializationService;
 //	        if (bindingElement != null) {
 //	          conformanceProfileElement.appendChild(bindingElement);
 //	        }
-	        if(!conformanceProfileDataModel.getConformanceStatementMap().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
+	        if(!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
 		    	  System.out.println("BOOM");
-	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatementMap(), conformanceProfileDataModel.getPredicateMap(), exportConfiguration.getConformamceProfileExportConfiguration().getConstraintExportConfiguration());
+	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), exportConfiguration.getConformamceProfileExportConfiguration().getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
         }

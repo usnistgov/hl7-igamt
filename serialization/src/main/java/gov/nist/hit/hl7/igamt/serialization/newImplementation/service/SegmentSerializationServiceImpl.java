@@ -96,7 +96,7 @@ ConstraintSerializationService constraintSerializationService;
 
 	      return igDataModelSerializationService.getSectionElement(segmentElement, segmentDataModel.getModel(), level, segmentExportConfiguration);
 	  }
-
+// test
 	  private Element serializeFields(Set<Field> fields, IgDataModel igDataModel, SegmentDataModel segmentDataModel, SegmentExportConfiguration segmentExportConfiguration) throws SubStructElementSerializationException {
 		    if (fields.size() > 0) {
 		      Element fieldsElement = new Element("Fields");

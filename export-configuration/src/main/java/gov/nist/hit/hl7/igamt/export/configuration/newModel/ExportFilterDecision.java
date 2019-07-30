@@ -30,8 +30,7 @@ public class ExportFilterDecision {
 		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setO(false);
 		exportFilterDecision.setOveriddedSegmentMap(overiddedSegmentMap);
 		overiddedSegmentMap.put("579654555455fa34e848e353", exportConfiguration.getSegmentExportConfiguration());
-		return exportFilterDecision;
-		
+		return exportFilterDecision;		
 		}
 	
 	public Map<String, Boolean> getDatatypesFilterMap() {
