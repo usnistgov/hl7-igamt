@@ -159,18 +159,4 @@ public abstract class Predicate implements Serializable{
   public void setLocation(String location) {
     this.location = location;
   }
-
-  /**
-   * @return
-   */
-  public String generateConditionScript() {
-    if(this instanceof  FreeTextPredicate){
-      FreeTextPredicate cp = (FreeTextPredicate)this;
-      return cp.generateConditionScript().replace("\n", "").replace("\r", "");
-    }else if(this instanceof AssertionPredicate){
-      AssertionPredicate cp = (AssertionPredicate)this;
-      if(cp.getAssertion() != null) return cp.generateConditionScript().replace("\n", "").replace("\r", "");
-    }
-    return null;
-  }
 }

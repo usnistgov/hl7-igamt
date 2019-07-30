@@ -134,18 +134,4 @@ public class ConformanceStatement implements Serializable{
       this.sourceIds.remove(sourceId);
     }
   }
-
-  /**
-   * @return
-   */
-  public String generateAssertionScript() {
-    if(this instanceof  FreeTextConformanceStatement){
-      FreeTextConformanceStatement cs = (FreeTextConformanceStatement)this;
-      return cs.generateAssertionScript().replace("\n", "").replace("\r", "");
-    }else if(this instanceof  AssertionConformanceStatement){
-      AssertionConformanceStatement cs = (AssertionConformanceStatement)this;
-      if(cs.getAssertion() != null) return cs.generateAssertionScript().replace("\n", "").replace("\r", "");
-    }
-    return null;
-  }
 }
