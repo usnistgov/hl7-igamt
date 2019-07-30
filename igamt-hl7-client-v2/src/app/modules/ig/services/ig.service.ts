@@ -149,7 +149,6 @@ export class IgService {
   }
 
   exportAsWord(igId) {
-    console.log('Exporting');
     window.open(this.prepareUrl(igId, 'word'));
   }
 
