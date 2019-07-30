@@ -2,7 +2,7 @@
     <xsl:template name="predicateHeader">
         <xsl:element name="col">
             <xsl:attribute name="width">
-                <xsl:text>10%</xsl:text>
+                <xsl:text>25%</xsl:text>
             </xsl:attribute>
         </xsl:element>
         <xsl:element name="col">
@@ -12,7 +12,12 @@
         </xsl:element>
         <xsl:element name="col">
             <xsl:attribute name="width">
-                <xsl:text>80%</xsl:text>
+                <xsl:text>10%</xsl:text>
+            </xsl:attribute>
+        </xsl:element>
+        <xsl:element name="col">
+            <xsl:attribute name="width">
+                <xsl:text>65%</xsl:text>
             </xsl:attribute>
         </xsl:element>
         <xsl:element name="thead">
@@ -24,7 +29,10 @@
                     <xsl:text>Location</xsl:text>
                 </xsl:element>
                 <xsl:element name="th">
-                    <xsl:text>Usage</xsl:text>
+                    <xsl:text>TrueUsage</xsl:text>
+                </xsl:element>
+                <xsl:element name="th">
+                    <xsl:text>FalseUsage</xsl:text>
                 </xsl:element>
                 <xsl:element name="th">
                     <xsl:text>Description</xsl:text>

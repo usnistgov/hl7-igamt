@@ -1,7 +1,11 @@
 package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -20,6 +24,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
 @SpringBootApplication
@@ -46,8 +53,8 @@ public class BootstrapApplication implements CommandLineRunner {
   }
 
 
-//  @Autowired
-//  ConfigService sharedConstantService;
+  @Autowired
+  ConfigService sharedConstantService;
 //  
 // 
   @Autowired
@@ -168,33 +175,51 @@ public class BootstrapApplication implements CommandLineRunner {
 //   }
 //  
    //
-//    @PostConstruct
-//   void createSharedConstant() {
-//    Config constant = new Config();
-//    List<String> hl7Versions = new ArrayList<String>();
-//    hl7Versions.add("2.3.1");
-//    hl7Versions.add("2.4");
-//    hl7Versions.add("2.5");
-//    hl7Versions.add("2.5.1");
-//    hl7Versions.add("2.6");
-//    hl7Versions.add("2.7");
-//    hl7Versions.add("2.7.1");
-//    hl7Versions.add("2.8");
-//    hl7Versions.add("2.8.1");
-//    hl7Versions.add("2.8.2");
-//   
-//    List<String> usages = new ArrayList<String>();
-//   
-//    usages.add("R");
-//    usages.add("RE");
-//    usages.add("RC");
-//    usages.add("C");
-//    usages.add("X");
-//    constant.setHl7Versions(hl7Versions);
-//    constant.setUsages(usages);
-//    sharedConstantService.save(constant);
-//  
-//   }
+    @PostConstruct
+   void createSharedConstant() {
+    Config constant = new Config();
+    this.sharedConstantService.deleteAll();
+
+    List<String> hl7Versions = new ArrayList<String>();
+    hl7Versions.add("2.3.1");
+    hl7Versions.add("2.4");
+    hl7Versions.add("2.5");
+    hl7Versions.add("2.5.1");
+    hl7Versions.add("2.6");
+    hl7Versions.add("2.7");
+    hl7Versions.add("2.7.1");
+    hl7Versions.add("2.8");
+    hl7Versions.add("2.8.1");
+    hl7Versions.add("2.8.2");
+   
+    List<String> usages = new ArrayList<String>();
+   
+    usages.add("R");
+    usages.add("RE");
+    usages.add("RC");
+    usages.add("C");
+    usages.add("X");
+    constant.setHl7Versions(hl7Versions);
+    constant.setUsages(usages);
+    String redirectToken = "#/uploadTokens";
+    String loginEndpoint = "api/accounts/login";
+    String createDomainInput = "api/domains/new";
+
+    
+    List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
+    connection.add(new ConnectingInfo("GVT", "https://hl7v2.gvt.nist.gov/gvt/", redirectToken, loginEndpoint,createDomainInput, 1));
+    
+    connection.add(new ConnectingInfo("GVT-DEV", "https://hit-dev.nist.gov:8099/gvt/", redirectToken, loginEndpoint,createDomainInput, 2));
+
+    
+    connection.add(new ConnectingInfo("IZ-TOOL-DEV", "https://hit-dev.nist.gov:8098/iztool/", redirectToken, loginEndpoint,createDomainInput, 3));
+
+    connection.add(new ConnectingInfo("IZ-TOOL", "https://hl7v2-iz-r1.5-testing.nist.gov/iztool/", redirectToken, loginEndpoint,createDomainInput, 4)); 
+    constant.setConnection(connection);    
+    
+    sharedConstantService.save(constant);
+  
+   }
   //
   // // @PostConstruct
   // void generateDatatypeLibrary()

@@ -1,8 +1,7 @@
 <h2 mat-dialog-title>Export XML</h2>
 
 <mat-dialog-content>
-  <h4>Conformance profiles</h4>
-
+  <label> <strong> Conformance profiles </strong> </label>
   <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
   </app-select-resource-ids>
 </mat-dialog-content>

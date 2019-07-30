@@ -52,13 +52,17 @@
                         <xsl:element name="td">
                             <xsl:value-of select="@identifier" />
                         </xsl:element>
+                        
                     </xsl:if>
                     <xsl:if test="$type='pre'">
                         <xsl:element name="td">
                             <xsl:value-of select="@location"></xsl:value-of>
                         </xsl:element>
                         <xsl:element name="td">
-                            <xsl:value-of select="@usage" />
+                            <xsl:value-of select="@trueUsage" />
+                        </xsl:element>
+                        <xsl:element name="td">
+                            <xsl:value-of select="@falseUsage" />
                         </xsl:element>
                     </xsl:if>
                      <xsl:element name="td">
