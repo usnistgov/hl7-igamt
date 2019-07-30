@@ -9,7 +9,6 @@
 		<version>0.0.1-SNAPSHOT</version>
 	</parent>
 	<artifactId>legacy</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
 	<name>legacy</name>
 	<url>http://maven.apache.org</url>
 	<properties>

@@ -13,7 +13,9 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.display.tableOptions;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import gov.nist.hit.hl7.igamt.export.configuration.domain.CodeUsageConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ColumnsConfiguration;
@@ -22,11 +24,29 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.NameAndPositionAndPres
 import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ValuesetMetadataConfiguration;
 
+
 /**
  *
  * @author Maxence Lefort on Jun 5, 2018.
  */
 public class ValuesetTableOptionsDisplay implements TableOptionsDisplay {
+	
+	private Boolean bindingIdentifier;
+	private Boolean oid;
+	private Boolean intensionalComment;
+	private Boolean url;
+	private Boolean stability;
+	private Boolean extensibility;
+	private Boolean contentDefinition;
+	private Boolean sourceType;
+
+//	protected int numberOfCodes;
+////	public int getNumberOfCodes() {
+////		return numberOfCodes;
+////	}
+
+	private Boolean codeSystems;
+	private Boolean codes;
 
   private boolean includeValuesetsTable = true;
   private UsageConfiguration valuesetsExport;
@@ -92,7 +112,89 @@ public class ValuesetTableOptionsDisplay implements TableOptionsDisplay {
     this.maxCodeNumber = maxCodeNumber;
   }
 
-  public boolean isIncludeValuesetsTable() {
+  
+  
+  public Boolean getBindingIdentifier() {
+	return bindingIdentifier;
+}
+
+public void setBindingIdentifier(Boolean bindingIdentifier) {
+	this.bindingIdentifier = bindingIdentifier;
+}
+
+public Boolean getOid() {
+	return oid;
+}
+
+public void setOid(Boolean oid) {
+	this.oid = oid;
+}
+
+public Boolean getIntensionalComment() {
+	return intensionalComment;
+}
+
+public void setIntensionalComment(Boolean intensionalComment) {
+	this.intensionalComment = intensionalComment;
+}
+
+public Boolean getUrl() {
+	return url;
+}
+
+public void setUrl(Boolean url) {
+	this.url = url;
+}
+
+public Boolean getStability() {
+	return stability;
+}
+
+public void setStability(Boolean stability) {
+	this.stability = stability;
+}
+
+public Boolean getExtensibility() {
+	return extensibility;
+}
+
+public void setExtensibility(Boolean extensibility) {
+	this.extensibility = extensibility;
+}
+
+public Boolean getContentDefinition() {
+	return contentDefinition;
+}
+
+public void setContentDefinition(Boolean contentDefinition) {
+	this.contentDefinition = contentDefinition;
+}
+
+public Boolean getSourceType() {
+	return sourceType;
+}
+
+public void setSourceType(Boolean sourceType) {
+	this.sourceType = sourceType;
+}
+
+public Boolean getCodeSystems() {
+	return codeSystems;
+}
+
+public void setCodeSystems(Boolean codeSystems) {
+	this.codeSystems = codeSystems;
+}
+
+public Boolean getCodes() {
+	return codes;
+}
+
+public void setCodes(Boolean codes) {
+	this.codes = codes;
+}
+
+public boolean isIncludeValuesetsTable() {
     return includeValuesetsTable;
   }
 

@@ -86,7 +86,7 @@
             </xsl:if>
             <xsl:if test="$columnDisplay.segment.valueSet = 'true'">
                 <xsl:element name="td">
-                    <xsl:value-of disable-output-escaping="yes" select="@bindingIdentifier" />
+                    <xsl:value-of disable-output-escaping="yes" select="@valueset" />
                 </xsl:element>
             </xsl:if>
         </xsl:element>

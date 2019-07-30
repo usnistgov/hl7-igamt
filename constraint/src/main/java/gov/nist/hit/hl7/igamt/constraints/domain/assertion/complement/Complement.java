@@ -18,127 +18,133 @@ import gov.nist.hit.hl7.igamt.constraints.domain.assertion.Path;
  *
  */
 
-
 public class Complement {
 
-  private ComplementKey complementKey;
+	private ComplementKey complementKey;
 
-  private String occurenceType;
-  private String occurenceValue;
-  private String occurenceIdPath;
-  private String occurenceLocationStr;
+	private String occurenceType;
+	private int occurenceValue;
+	private String occurenceIdPath;
+	private String occurenceLocationStr;
 
-  private Path path;
+	private Path path;
 
-  private String value;
-  private String desc;
-  
-  private String[] values;
-  private String[] descs;
-  
-  private String[] codesys;
-  
-  private boolean ignoreCase;
+	private String value;
+	private String desc;
+	private String codesys;
 
-  public Complement() {
-    super();
-  }
+	private String[] values;
+	private String[] descs;
+	private String[] codesyses;
 
-  public ComplementKey getComplementKey() {
-    return complementKey;
-  }
+	private boolean ignoreCase;
 
-  public void setComplementKey(ComplementKey complementKey) {
-    this.complementKey = complementKey;
-  }
+	public Complement() {
+		super();
+	}
 
-  public String getOccurenceType() {
-    return occurenceType;
-  }
+	public ComplementKey getComplementKey() {
+		return complementKey;
+	}
 
-  public void setOccurenceType(String occurenceType) {
-    this.occurenceType = occurenceType;
-  }
+	public void setComplementKey(ComplementKey complementKey) {
+		this.complementKey = complementKey;
+	}
 
-  public String getOccurenceValue() {
-    return occurenceValue;
-  }
+	public String getOccurenceType() {
+		return occurenceType;
+	}
 
-  public void setOccurenceValue(String occurenceValue) {
-    this.occurenceValue = occurenceValue;
-  }
+	public void setOccurenceType(String occurenceType) {
+		this.occurenceType = occurenceType;
+	}
 
-  public String getOccurenceIdPath() {
-    return occurenceIdPath;
-  }
+	public int getOccurenceValue() {
+		return occurenceValue;
+	}
 
-  public void setOccurenceIdPath(String occurenceIdPath) {
-    this.occurenceIdPath = occurenceIdPath;
-  }
+	public void setOccurenceValue(int occurenceValue) {
+		this.occurenceValue = occurenceValue;
+	}
 
-  public String getOccurenceLocationStr() {
-    return occurenceLocationStr;
-  }
+	public String getOccurenceIdPath() {
+		return occurenceIdPath;
+	}
 
-  public void setOccurenceLocationStr(String occurenceLocationStr) {
-    this.occurenceLocationStr = occurenceLocationStr;
-  }
+	public void setOccurenceIdPath(String occurenceIdPath) {
+		this.occurenceIdPath = occurenceIdPath;
+	}
 
-  public Path getPath() {
-    return path;
-  }
+	public String getOccurenceLocationStr() {
+		return occurenceLocationStr;
+	}
 
-  public void setPath(Path path) {
-    this.path = path;
-  }
+	public void setOccurenceLocationStr(String occurenceLocationStr) {
+		this.occurenceLocationStr = occurenceLocationStr;
+	}
 
-  public String getValue() {
-    return value;
-  }
+	public Path getPath() {
+		return path;
+	}
 
-  public void setValue(String value) {
-    this.value = value;
-  }
+	public void setPath(Path path) {
+		this.path = path;
+	}
 
-  public String[] getValues() {
-    return values;
-  }
+	public String getValue() {
+		return value;
+	}
 
-  public void setValues(String[] values) {
-    this.values = values;
-  }
+	public void setValue(String value) {
+		this.value = value;
+	}
 
-  public String getDesc() {
-    return desc;
-  }
+	public String[] getValues() {
+		return values;
+	}
 
-  public void setDesc(String desc) {
-    this.desc = desc;
-  }
+	public void setValues(String[] values) {
+		this.values = values;
+	}
 
-  public String[] getCodesys() {
-    return codesys;
-  }
+	public String getDesc() {
+		return desc;
+	}
 
-  public void setCodesys(String[] codesys) {
-    this.codesys = codesys;
-  }
+	public void setDesc(String desc) {
+		this.desc = desc;
+	}
 
-public String[] getDescs() {
-	return descs;
-}
+	public String[] getDescs() {
+		return descs;
+	}
 
-public void setDescs(String[] descs) {
-	this.descs = descs;
-}
+	public void setDescs(String[] descs) {
+		this.descs = descs;
+	}
 
-public boolean isIgnoreCase() {
-	return ignoreCase;
-}
+	public boolean isIgnoreCase() {
+		return ignoreCase;
+	}
 
-public void setIgnoreCase(boolean ignoreCase) {
-	this.ignoreCase = ignoreCase;
-}
+	public void setIgnoreCase(boolean ignoreCase) {
+		this.ignoreCase = ignoreCase;
+	}
 
+	public String[] getCodesyses() {
+		return codesyses;
+	}
+
+	public void setCodesyses(String[] codesyses) {
+		this.codesyses = codesyses;
+	}
+
+	public String getCodesys() {
+		return codesys;
+	}
+
+	public void setCodesys(String codesys) {
+		this.codesys = codesys;
+	}
 
 }
