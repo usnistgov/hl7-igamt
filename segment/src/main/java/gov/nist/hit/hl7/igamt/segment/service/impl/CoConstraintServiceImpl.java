@@ -78,7 +78,7 @@
 //	CoConstraintService coConstraintService;
 //	@Autowired
 //	DatatypeService datatypeService;
-//	
+//
 //	  private Map<String, Datatype> datatypesMap = new HashMap<>();
 //
 //	@Override
@@ -161,21 +161,21 @@
 //
 //			XSSFWorkbook workbook = new XSSFWorkbook();
 //			XSSFSheet sheet = workbook.createSheet("Coconstaints Export");
-//			
+//
 //
 //			CoConstraintTableHeaders headers = coConstraintTable.getHeaders();
 //			CoConstraintTableContent content = coConstraintTable.getContent();
-//			
-//			//Defining styles for headers   
+//
+//			//Defining styles for headers
 //			 XSSFFont ifHeaderFont = workbook.createFont();
 //			 ifHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 //			 ifHeaderFont.setBold(true);
 //			 ifHeaderFont.setColor(HSSFColor.WHITE.index);
-//			 
+//
 //			 XSSFFont thenHeaderFont = workbook.createFont();
 //			 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 //			 thenHeaderFont.setBold(true);
-//		      
+//
 //            CellStyle ifHeaderStyle = workbook.createCellStyle();
 //            ifHeaderStyle.setFillForegroundColor(IndexedColors.ROYAL_BLUE.getIndex());
 //            ifHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -186,7 +186,7 @@
 //            ifHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
 //            ifHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
 //
-//            
+//
 //            CellStyle thenHeaderStyle = workbook.createCellStyle();
 //            thenHeaderStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
 //            thenHeaderStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -207,14 +207,14 @@
 //            userHeaderStyle.setBorderTop(BorderStyle.MEDIUM);
 //            userHeaderStyle.setBorderRight(BorderStyle.MEDIUM);
 //            userHeaderStyle.setBorderLeft(BorderStyle.MEDIUM);
-//            
+//
 //            CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
 //            usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //            usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderTop(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
 //            usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
-//            
+//
 //			//Counting headers
 //			int headerCount = countNumberOfColumnInSelector(headers.getSelectors())+ countNumberOfColumnInData(headers.getData())+headers.getUser().size();
 //			System.out.println("hERE " +headers.getUser().size());
@@ -230,28 +230,28 @@
 //			usageHeaderCell2.setCellValue("Usage");
 //			usageHeaderCell2.setCellStyle(usageAndCardinalityStyle);
 //			sheet.addMergedRegion(new CellRangeAddress(0,1,0,0));
-//			
+//
 //			Cell cardinalityHeaderCell = headerRow.createCell(headerCellNumber++);
 //			cardinalityHeaderCell.setCellStyle(usageAndCardinalityStyle);
 //			sheet.addMergedRegion(new CellRangeAddress(0,1,1,2));
 //			cardinalityHeaderCell.setCellValue("Cardinality");
 //			headerCellNumber++;
-//			
+//
 //			Cell ifCell = headerRow.createCell(headerCellNumber);
 //			headerCellNumber=headerCellNumber+headers.getSelectors().size();
 //			ifCell.setCellValue("IF");
 //		    ifCell.setCellStyle(ifHeaderStyle);
-//		    
+//
 //			Cell thenCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+3);
 //			headerCellNumber=headerCellNumber+headers.getData().size();
 //			thenCell.setCellValue("THEN");
 //			thenCell.setCellStyle(thenHeaderStyle);
-//			
+//
 //			Cell userCell = headerRow.createCell(countNumberOfColumnInSelector(headers.getSelectors())+countNumberOfColumnInData(headers.getData())+3);
 //			headerCellNumber=headerCellNumber+headers.getSelectors().size();
 //			userCell.setCellValue("USER");
 //			userCell.setCellStyle(userHeaderStyle);
-//			
+//
 //			headerCellNumber=3;
 //			for (CoConstraintTableHeader coConstraintTableHeader : headers.getSelectors()) {
 //				if(coConstraintTableHeader.getContent().getType().equals(CellType.Code)) {
@@ -311,17 +311,17 @@
 ////				 ifHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 ////				 ifHeaderFont.setBold(true);
 ////				 ifHeaderFont.setColor(HSSFColor.WHITE.index);
-////				 
+////
 ////				 XSSFFont groupHeaderStyle = workbook.createFont();
 ////				 thenHeaderFont.setFontHeightInPoints((short) HEADER_FONT_SIZE);
 ////				 thenHeaderFont.setBold(true);
-//				
+//
 //				XSSFFont groupHeaderFont = workbook.createFont();
 //				groupHeaderFont.setFontHeightInPoints((short) 19);
 //				groupHeaderFont.setBold(true);
 ////				groupHeaderFont.setColor(HSSFColor.WHITE.index);
 //
-//			      
+//
 //	            CellStyle headerGroupStyle = workbook.createCellStyle();
 //	            headerGroupStyle.setFillForegroundColor(IndexedColors.GREY_40_PERCENT.getIndex());
 //	            headerGroupStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -333,7 +333,7 @@
 //	            headerGroupStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //
 //
-//	            
+//
 //				Row headerGroupRow = sheet.createRow(rowNumber++);
 //				int cellNumber = 0;
 //				Cell usageGroupCell = headerGroupRow.createCell(cellNumber++);
@@ -357,7 +357,7 @@
 //				}
 //				sheet.setDisplayGridlines(true);
 //				sheet.setPrintGridlines(true);
-//			
+//
 //				System.out.println("look1 :" + sheet.isDisplayGridlines());
 //				System.out.println("look2 :" + sheet.isPrintGridlines());
 //
@@ -380,8 +380,8 @@
 //			for(int i = 0; i <= headerCount+22; i++) {
 //				sheet.autoSizeColumn(i);
 //			}
-//			
-//		
+//
+//
 //
 //		}
 //
@@ -390,13 +390,13 @@
 //
 //	private void serializeRowToExcel(XSSFWorkbook workbook,CoConstraintTable coConstraintTable, CoConstraintTableRow coConstraintTableRow,
 //			XSSFSheet sheet, int rowNumber) {
-//		// Defining row Styles	
+//		// Defining row Styles
 //		final int ROW_FONT_SIZE = 15;
 //
-//		
+//
 //		 XSSFFont tableRowFont = workbook.createFont();
 //		 tableRowFont.setFontHeightInPoints((short) ROW_FONT_SIZE);
-//		 
+//
 //		   CellStyle ifRowStyle = workbook.createCellStyle();
 //           ifRowStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
 //           ifRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -406,7 +406,7 @@
 //           ifRowStyle.setBorderTop(BorderStyle.MEDIUM);
 //           ifRowStyle.setBorderRight(BorderStyle.MEDIUM);
 //           ifRowStyle.setBorderLeft(BorderStyle.MEDIUM);
-//           
+//
 //           CellStyle thenRowStyle = workbook.createCellStyle();
 //           thenRowStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //           thenRowStyle.setFont(tableRowFont);
@@ -422,7 +422,7 @@
 //           userRowStyle.setBorderTop(BorderStyle.MEDIUM);
 //           userRowStyle.setBorderRight(BorderStyle.MEDIUM);
 //           userRowStyle.setBorderLeft(BorderStyle.MEDIUM);
-//           
+//
 //           CellStyle usageAndCardinalityStyle = workbook.createCellStyle();
 //           usageAndCardinalityStyle.setAlignment(CellStyle.ALIGN_CENTER);
 //           usageAndCardinalityStyle.setBorderBottom(BorderStyle.MEDIUM);
@@ -430,7 +430,7 @@
 //           usageAndCardinalityStyle.setBorderRight(BorderStyle.MEDIUM);
 //           usageAndCardinalityStyle.setBorderLeft(BorderStyle.MEDIUM);
 //
-//           
+//
 //		Row row = sheet.createRow(rowNumber);
 //		int cellNumber = 0;
 //		Cell usageCell = row.createCell(cellNumber++);

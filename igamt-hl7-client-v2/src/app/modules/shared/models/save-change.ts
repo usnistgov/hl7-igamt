@@ -1,8 +1,8 @@
-export interface IChange {
+export interface IChange<T = any> {
   location: string;
   propertyType: string;
-  propertyValue: any;
-  oldPropertyValue: any;
+  propertyValue: T;
+  oldPropertyValue: T;
   position: number;
   changeType: ChangeType;
 }
@@ -40,5 +40,6 @@ export enum PropertyType {
   STABILITY = 'STABILITY',
   BINDINGIDENTIFIER = 'BINDINGIDENTIFIER',
   URL = 'URL',
-  INTENSIONALCOMMENT= 'INTENSIONALCOMMENT',
+  INTENSIONALCOMMENT = 'INTENSIONALCOMMENT',
+  STATEMENT = 'STATEMENT',
 }

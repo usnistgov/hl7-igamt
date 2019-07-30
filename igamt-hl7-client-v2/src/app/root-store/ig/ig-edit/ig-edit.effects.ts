@@ -59,6 +59,7 @@ export class IgEditEffects {
         blockUI: true,
       }));
       return this.store.select(selectIgId).pipe(
+        take(1),
         mergeMap((igId) => {
           return this.resourceService.getResources(action.payload.id, action.payload.resourceType, igId).pipe(
             flatMap((resources: IResource[]) => {

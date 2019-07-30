@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
+import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { CrossReferencesService } from 'src/app/modules/shared/services/cross-references.service';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { MessageService } from '../../modules/core/services/message.service';
@@ -11,10 +11,12 @@ import { OpenEditorService } from '../../modules/core/services/open-editor.servi
 import { DatatypeService } from '../../modules/datatype/services/datatype.service';
 import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
+import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
-import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
+import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
+import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
+import { OpenDatatypeConformanceStatementEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
   LoadDatatype,
@@ -113,6 +115,22 @@ export class DatatypeEditEffects {
     Type.DATATYPE,
     fromIgEdit.selectIgId,
     this.crossReferenceService.findUsagesDisplay,
+    this.DatatypeNotFound,
+  );
+
+  @Effect()
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<IConformanceStatementList, OpenDatatypeConformanceStatementEditor>(
+    DatatypeEditActionTypes.OpenDatatypeConformanceStatementEditor,
+    Type.DATATYPE,
+    fromIgEdit.selectDatatypesById,
+    (action: OpenEditorBase) => {
+      return this.store.select(selectIgId).pipe(
+        take(1),
+        mergeMap((igId) => {
+          return this.datatypeService.getSegmentConformanceStatements(action.payload.id, igId);
+        }),
+      );
+    },
     this.DatatypeNotFound,
   );
 
