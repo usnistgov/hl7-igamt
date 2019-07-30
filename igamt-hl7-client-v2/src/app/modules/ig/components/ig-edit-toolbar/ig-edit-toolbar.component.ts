@@ -60,10 +60,21 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   exportWord() {
+    const subscription = this.getIgId().pipe(
+      take(1),
+      map((x) => { this.igService.exportAsWord(x); }),
+    ).subscribe();
+
+    subscription.unsubscribe();
 
   }
   exportHTML() {
+    const subscription = this.getIgId().pipe(
+      take(1),
+      map((x) => { this.igService.exportAsHtml(x); }),
+    ).subscribe();
 
+    subscription.unsubscribe();
   }
 
   exportXML() {
@@ -81,8 +92,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           map(([result, igId]) => {
 
             this.igService.exportXML(igId, result, null);
-            console.log(result);
-            console.log(igId);
           }),
         ).subscribe();
       }),
