@@ -1,15 +1,15 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
-import {AbstractEditorComponent} from "../../../core/components/abstract-editor-component/abstract-editor-component.component";
-import {Observable} from "rxjs";
-import {IUsages} from "../../../shared/models/cross-reference";
-import {Actions} from "@ngrx/effects";
-import {Action, Store} from "@ngrx/store";
-import {EditorID} from "../../../shared/models/editor.enum";
-import {Type} from "../../../shared/constants/type.enum";
-import {map, switchMap} from "rxjs/operators";
-import {IDisplayElement} from "../../../shared/models/display-element.interface";
-import * as fromIgEdit from "../../../../root-store/ig/ig-edit/ig-edit.index";
-import {EditorSave} from "../../../../root-store/ig/ig-edit/ig-edit.index";
+import {Actions} from '@ngrx/effects';
+import {Action, Store} from '@ngrx/store';
+import {Observable} from 'rxjs';
+import {map, switchMap} from 'rxjs/operators';
+import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import {EditorSave} from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import {Type} from '../../../shared/constants/type.enum';
+import {IUsages} from '../../../shared/models/cross-reference';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {EditorID} from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-value-set-cross-refs',

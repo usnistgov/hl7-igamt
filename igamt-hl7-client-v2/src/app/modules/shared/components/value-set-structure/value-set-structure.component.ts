@@ -3,7 +3,6 @@ import {Guid} from 'guid-typescript';
 import {SelectItem} from 'primeng/api';
 import {ChangeType, IChange, PropertyType} from '../../models/save-change';
 import {ICodes, IValueSet} from '../../models/value-set.interface';
-import {Scope} from "../../constants/scope.enum";
 
 @Component({
   selector: 'app-value-set-structure',

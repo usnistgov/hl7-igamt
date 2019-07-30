@@ -3,12 +3,12 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {from, Observable, throwError} from 'rxjs';
 import {concatMap, map, mergeMap, reduce, switchMap, take, tap, toArray} from 'rxjs/operators';
+import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
 import {Message, MessageType, UserMessage} from '../../core/models/message/message.class';
 import {Type} from '../constants/type.enum';
 import {IRelationShip, IUsages} from '../models/cross-reference';
 import {IDisplayElement} from '../models/display-element.interface';
 import {StoreResourceRepositoryService} from './resource-repository.service';
-import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
 
 @Injectable({
   providedIn: 'root',

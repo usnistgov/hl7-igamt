@@ -11,6 +11,7 @@ import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
+import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
 import { IgEditContainerComponent } from './components/ig-edit-container/ig-edit-container.component';
 import { IgEditSidebarComponent } from './components/ig-edit-sidebar/ig-edit-sidebar.component';
@@ -42,6 +43,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ExportGvtComponent,
   ],
   imports: [
     IgRoutingModule,
