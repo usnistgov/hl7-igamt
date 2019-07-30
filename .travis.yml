@@ -1,16 +1,38 @@
-language: node_js
-node_js:
-  - "9"
-dist: trusty
-sudo: required
-branches:
-  only:
-  - develop
-  - staging
-before_script:
-  - cd igamt-hl7-client-v2
-  - npm install
-  - npm install -g @angular/cli
-script:
-- ng lint
-- ng build --prod --base-href https://github.com/usnistgov/hl7-igamt/
+matrix:
+  include:
+    - language: node_js
+      node_js:
+        - "9"
+      dist: trusty
+      sudo: required
+      branches:
+        only:
+          - develop
+          - staging
+      before_script:
+        - cd igamt-hl7-client-v2
+        - npm install
+        - npm install -g @angular/cli
+      script:
+        - ng lint
+        - ng build --prod --base-href https://github.com/usnistgov/hl7-igamt/
+
+    - language: java
+      jdk:
+        - oraclejdk9
+      before_install:
+        - rm "${JAVA_HOME}/lib/security/cacerts"
+        - ln -s /etc/ssl/certs/java/cacerts "${JAVA_HOME}/lib/security/cacerts"
+      branches:
+        only:
+          - develop
+      install:
+        - git clone https://github.com/usnistgov/hl7-auth.git -b develop
+        - cd ./hl7-auth/
+        - mvn -Dmaven.test.skip=true -q install
+        - cd ..
+        - mvn -Dmaven.test.skip=true -q install
+      script:
+        - echo "BUILD PASSED"
+notifications:
+  slack: igamt:AguUmFpxIC0okakY5LtQ3c22
