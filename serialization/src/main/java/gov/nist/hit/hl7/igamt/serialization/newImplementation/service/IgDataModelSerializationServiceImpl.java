@@ -12,6 +12,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Section;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.NewExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
@@ -30,11 +35,11 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	private SectionSerializationService sectionSerializationService;
 
 	@Override
-	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration) throws RegistrySerializationException {
+	public Element serializeIgDocument(IgDataModel igDataModel, ExportConfiguration exportConfiguration, ExportFilterDecision exportFilterDecision) throws RegistrySerializationException {
 		Ig igDocument = igDataModel.getModel();
-		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName());
+		Element igDocumentElement = serializeAbstractDomain(igDocument, Type.IGDOCUMENT, 1, igDocument.getName(), exportConfiguration.getAbstractDomainExportConfiguration());
 		Element metadataElement = serializeDocumentMetadata(igDocument.getMetadata(), igDocument.getDomainInfo(),
-				igDocument.getPublicationInfo());
+				igDocument.getPublicationInfo(), exportConfiguration.getDocumentMetadataConfiguration());
 		if (metadataElement != null) {
 			igDocumentElement.appendChild(metadataElement);
 		}
@@ -42,7 +47,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 		for (Section section : igDocument.getContent()) {
 			// startLevel is the base header level in the html/export. 1 = h1, 2 = h2...
 			int startLevel = 1;
-			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, igDataModel, exportConfiguration);
+			Element sectionElement = sectionSerializationService.SerializeSection(section, startLevel, igDataModel, exportConfiguration, exportFilterDecision);
 			igDocumentElement.appendChild(sectionElement);
 		}
 		return igDocumentElement;
@@ -51,7 +56,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 
 
 	public Element serializeDocumentMetadata(DocumentMetadata metadata, DomainInfo domainInfo,
-			PublicationInfo publicationInfo) {
+			PublicationInfo publicationInfo, DocumentMetadataConfiguration documentMetadataConfiguration) {
 		Element metadataElement = new Element("Metadata");
 		metadataElement.addAttribute(new Attribute("title", metadata.getTitle() != null ? metadata.getTitle() : ""));
 		metadataElement.addAttribute(new Attribute("topics", metadata.getTopics() != null ? metadata.getTopics() : ""));
@@ -91,7 +96,7 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	}
 	
 
-	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title) {
+	public Element serializeAbstractDomain(AbstractDomain abstractDomain, Type type, int position, String title, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
 		Element element = getElement(type, position, abstractDomain.getId(), title);
 		if (abstractDomain != null) {
 			if (abstractDomain.getComment() != null && !abstractDomain.getComment().isEmpty()) {
@@ -140,8 +145,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	}
 	
 	@Override
-	public Element serializeResource(Resource resource, Type type, ExportConfiguration exportConfiguration) {
-	    Element element = serializeAbstractDomain(resource,type,1, resource.getName());
+	public Element serializeResource(Resource resource, Type type, ResourceExportConfiguration resourceExportConfiguration) {
+	    Element element = serializeAbstractDomain(resource,type,1, resource.getName(), resourceExportConfiguration);
 	    if (resource != null && element != null) {
 	      element.addAttribute(new Attribute("postDef",
 	          resource.getPostDef() != null && !resource.getPostDef().isEmpty()
@@ -157,8 +162,8 @@ public class IgDataModelSerializationServiceImpl implements IgDataModelSerializa
 	}
 	
 	
-	 public Element getSectionElement(Element resourceElement, Resource resource, int level) {
-		    Element element = serializeAbstractDomain(resource, Type.SECTION, 1, resource.getName());
+	 public Element getSectionElement(Element resourceElement, Resource resource, int level, AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
+		    Element element = serializeAbstractDomain(resource, Type.SECTION, 1, resource.getName(), abstractDomainExportConfiguration);
 		    element.addAttribute(new Attribute("h", String.valueOf(level)));
 		    element.addAttribute(
 		        new Attribute("title", resource.getLabel() != null ? resource.getLabel() : ""));

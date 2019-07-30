@@ -1,6 +1,7 @@
 package gov.nist.hit.hl7.igamt.common.base.wrappers;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.DomainInfo;
+import gov.nist.hit.hl7.igamt.common.base.domain.SourceType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class AddingInfo {
@@ -14,7 +15,10 @@ public class AddingInfo {
 	private DomainInfo domainInfo;
 	private String ext;
 	private boolean flavor;
-	
+	private boolean includeChildren;
+	private boolean numberOfChildren;
+	private SourceType sourceType;
+	private String url;
 	
 	public String getOriginalId() {
 		return originalId;
@@ -69,5 +73,30 @@ public class AddingInfo {
 	}
 	public void setFlavor(boolean flavor) {
 		this.flavor = flavor;
+	}
+	public boolean isNumberOfChildren() {
+		return numberOfChildren;
+	}
+	public void setNumberOfChildren(boolean numberOfChildren) {
+		this.numberOfChildren = numberOfChildren;
+	}
+	public boolean isIncludeChildren() {
+		return includeChildren;
+	}
+	public void setIncludeChildren(boolean includeChildren) {
+		this.includeChildren = includeChildren;
+	}
+	public SourceType getSourceType() {
+		return sourceType;
+	}
+	public void setSourceType(SourceType sourceType) {
+		this.sourceType = sourceType;
+	}
+	public String getUrl() {
+		// TODO Auto-generated method stub
+		return this.url;
+	}
+	public void setUrl(String url) {
+		this.url = url;
 	} 
 }

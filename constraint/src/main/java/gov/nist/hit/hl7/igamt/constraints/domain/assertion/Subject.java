@@ -26,7 +26,7 @@ public class Subject {
   @DeltaField
   private String occurenceType;
   @DeltaField
-  private String occurenceValue;
+  private int occurenceValue;
   @DeltaField
   private String occurenceIdPath;
   @DeltaField
@@ -40,11 +40,11 @@ public class Subject {
     this.occurenceType = occurenceType;
   }
 
-  public String getOccurenceValue() {
+  public int getOccurenceValue() {
     return occurenceValue;
   }
 
-  public void setOccurenceValue(String occurenceValue) {
+  public void setOccurenceValue(int occurenceValue) {
     this.occurenceValue = occurenceValue;
   }
 

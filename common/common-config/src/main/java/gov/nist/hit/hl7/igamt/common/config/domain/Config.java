@@ -13,35 +13,43 @@ public class Config {
 	
 	List<String> hl7Versions=new ArrayList<String>();
 	List<String> usages=new ArrayList<String>();
-
-	
+	private String phinvadsUrl; 
+	private List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
 
 	public List<String> getHl7Versions() {
 		return hl7Versions;
 	}
 
-
-
 	public void setHl7Versions(List<String> hl7Versions) {
 		this.hl7Versions = hl7Versions;
 	}
-
-
 
 	public List<String> getUsages() {
 		return usages;
 	}
 
-
-
 	public void setUsages(List<String> usages) {
 		this.usages = usages;
 	}
 
-
-
 	public Config() {
 		
+	}
+
+	public String getPhinvadsUrl() {
+		return phinvadsUrl;
+	}
+
+	public void setPhinvadsUrl(String phinvadsUrl) {
+		this.phinvadsUrl = phinvadsUrl;
+	}
+
+	public List<ConnectingInfo> getConnection() {
+		return connection;
+	}
+
+	public void setConnection(List<ConnectingInfo> connection) {
+		this.connection = connection;
 	}
 
 }

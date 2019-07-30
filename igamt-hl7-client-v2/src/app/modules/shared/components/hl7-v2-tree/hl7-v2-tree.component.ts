@@ -1,17 +1,12 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, QueryList, TemplateRef, ViewChildren } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { filter, switchMap, take, tap } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
-import { IConformanceProfile } from '../../models/conformance-profile.interface';
-import { IDatatype } from '../../models/datatype.interface';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { IChange } from '../../models/save-change';
-import { ISegment } from '../../models/segment.interface';
-import { PredicateService } from '../../service/predicate.service';
 import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
 import { ILengthAndConfLength } from './columns/length/length.component';
@@ -69,6 +64,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     bindings: IElementBinding,
     level: number,
   };
+  parent?: IHL7v2TreeNode;
   children?: IHL7v2TreeNode[];
   $hl7V2TreeHelpers: {
     predicate$: Observable<IPredicate>;
@@ -106,36 +102,23 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   set resource(resource: IResource) {
     this.type = resource.type;
     this.close(this.s_resource);
+    console.log(resource);
+    this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
+      this.nodes = [...value];
+    });
     switch (resource.type) {
       case Type.DATATYPE:
         this.context = { resource: Type.DATATYPE };
-        this.s_resource = this.treeService.formatDatatype(resource as IDatatype, this.repository, this.viewOnly, true).pipe(
-          take(1),
-          tap((value) => {
-            this.nodes = [...value];
-          }),
-        ).subscribe();
         break;
       case Type.SEGMENT:
         this.context = { resource: Type.SEGMENT };
-        this.s_resource = this.treeService.formatSegment(resource as ISegment, this.repository, this.viewOnly, true).pipe(
-          take(1),
-          tap((value) => {
-            this.nodes = [...value];
-          }),
-        ).subscribe();
         break;
       case Type.CONFORMANCEPROFILE:
         this.context = { resource: Type.CONFORMANCEPROFILE };
-        this.s_resource = this.treeService.formatConformanceProfile(resource as IConformanceProfile, this.repository, this.viewOnly, true).pipe(
-          take(1),
-          tap((value) => {
-            this.nodes = [...value];
-          }),
-        ).subscribe();
         break;
     }
   }
+
   @Input()
   set columns(cols: HL7v2TreeColumnType[]) {
     this.cols = cols.map((col) => {
@@ -217,43 +200,12 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
     console.log(x);
   }
 
-  addChildren(node: IHL7v2TreeNode): (nodes: IHL7v2TreeNode[]) => void {
-    return (nodes: IHL7v2TreeNode[]) => {
-      if (nodes && nodes.length > 0) {
-        node.children = nodes;
-        node.leaf = false;
-      } else {
-        node.children = [];
-        node.expanded = true;
-        node.leaf = true;
-      }
-      this.refreshTree();
-    };
-  }
-
   resolveReference(node: IHL7v2TreeNode) {
-    if (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed) {
-      node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
-        filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
-        switchMap((ref) => {
-          return this.repository.getResource(ref.type, ref.id).pipe(
-            switchMap((resource) => {
-              switch (ref.type) {
-                case Type.DATATYPE:
-                  return this.treeService.formatDatatype(resource as IDatatype, this.repository, this.viewOnly, false, node).pipe(
-                    tap(this.addChildren(node)),
-                  );
-                case Type.SEGMENT:
-                  return this.treeService.formatSegment(resource as ISegment, this.repository, this.viewOnly, false, node).pipe(
-                    tap(this.addChildren(node)),
-                    tap(() => node.data.name = (resource as ISegment).name),
-                  );
-              }
-            }),
-          );
-        }),
-      ).subscribe();
-      this.treeSubscriptions.push(node.$hl7V2TreeHelpers.treeChildrenSubscription);
+    const subscription = this.treeService.resolveReference(node, this.repository, this.viewOnly, () => {
+      this.nodes = [...this.nodes];
+    });
+    if (subscription) {
+      this.treeSubscriptions.push(subscription);
     }
   }
 

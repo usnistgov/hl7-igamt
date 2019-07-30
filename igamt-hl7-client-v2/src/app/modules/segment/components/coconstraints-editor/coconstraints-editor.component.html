@@ -1,0 +1,202 @@
+<!-- <p-table [value]="coconstraints" [resizableColumns]="true">
+    <ng-template pTemplate="caption">
+    <div style="text-align: start;">
+      <button class="btn btn-sm btn-primary">
+        <i class="fa fa-plus"></i>
+        Add Group
+      </button>
+      <button class="btn btn-sm btn-primary" style="margin-left: 5px;">
+        <i class="fa fa-plus"></i>
+        Add Co-Constraint
+      </button>
+    </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th rowspan="3" pResizableColumn style="width: 100px; background-color: white;">Usage</th>
+            <th rowspan="3" pResizableColumn style="width: 100px; background-color: white;">Cardinality</th>
+            <th [attr.colspan]="headers.selectors.length" style="background-color: #96c8f5;" pResizableColumn>IF</th>
+            <th [attr.colspan]="headers.data.length" pResizableColumn>THEN</th>
+            <th [attr.colspan]="headers.user.length" pResizableColumn>USER</th>
+        </tr>
+        <tr>
+            <ng-container
+              *ngTemplateOutlet="headerList; context : {$implicit : headers.selectors }">
+            </ng-container>
+            <ng-container
+              *ngTemplateOutlet="headerList; context : {$implicit : headers.data }">
+            </ng-container>
+            <ng-container
+              *ngTemplateOutlet="headerList; context : {$implicit : headers.user }">
+            </ng-container>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-node let-index="rowIndex">
+        <ng-container *ngIf="node.type === 'GROUP'">
+            <tr class="ui-widget-header" [pReorderableRow]="index">
+                <td>
+                    <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.requirements, id: node.id }"></ng-container>
+                </td>
+                <td>
+                    <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : node.requirements, id : node.id }"></ng-container>
+                </td>
+                <td [attr.colspan]="headers.selectors.length + headers.data.length + headers.user.length">
+                    <span style="font-weight:bold">{{node.name}}</span>
+                </td>
+            </tr>
+            <ng-container *ngTemplateOutlet="ccList; context : {$implicit : node.rows}"></ng-container>
+        </ng-container>
+        <ng-container *ngIf="node.type === 'CC'">
+            <ng-container *ngTemplateOutlet="ccList; context : {$implicit : [node] }"></ng-container>
+        </ng-container>
+    </ng-template>
+</p-table> -->
+
+<!-- <app-structure-tree
+  [resource]="segment | async"
+  [repository]="repository"
+  (selection)="selected($event)"
+></app-structure-tree> -->
+
+<app-cs-dialog
+[structure]="segment | async"
+></app-cs-dialog>
+
+<ng-template #cclist let-list>
+    <tbody>
+
+    <tr *ngFor="let node of list; let i = index">
+
+      <!--REQUIREMENTS-->
+      <td>
+        <ng-container *ngTemplateOutlet="usage; context : {$implicit : node.requirements, id : node.id}"></ng-container>
+      </td>
+      <td>
+        <ng-container *ngTemplateOutlet="cardinality; context : {$implicit : node.requirements, id : node.id}"></ng-container>
+      </td>
+
+      <!--SELECTORS-->
+      <ng-container *ngIf="!table.headers.selectors.length">
+        <td class="table-ndef wide"></td>
+      </ng-container>
+
+      <td *ngFor="let field of headers.selectors">
+        <ng-container *ngIf="node.row.cells[field.id]">
+          <ng-container *ngTemplateOutlet="cTemplate(field); context :
+                  {
+                      $implicit : node.row.cells[field.id],
+                      obj : node.row.cells,
+                      key : field.id,
+                      field : field,
+                      req : true,
+                      id : node.id
+                  }">
+          </ng-container>
+        </ng-container>
+      </td>
+
+      <!--DATA-->
+      <ng-container *ngIf="!table.headers.selectors.length">
+        <td class="table-ndef wide"></td>
+      </ng-container>
+
+      <td *ngFor="let field of headers.data">
+        <ng-container *ngIf="node.row.cells[field.id]">
+          <ng-container *ngTemplateOutlet="cTemplate(field); context :
+                  {
+                      $implicit : node.row.cells[field.id],
+                      obj : node.row.cells,
+                      key : field.id,
+                      field : field,
+                      req : true,
+                      id : node.id
+                  }">
+          </ng-container>
+        </ng-container>
+      </td>
+
+
+      <!--USER-->
+      <ng-container *ngIf="!table.headers.selectors.length">
+        <td class="table-ndef wide"></td>
+      </ng-container>
+
+      <td *ngFor="let field of headers.data">
+        <ng-container *ngIf="node.row.cells[field.id]">
+          <ng-container *ngTemplateOutlet="cTemplate(field); context :
+                  {
+                      $implicit : node.row.cells[field.id],
+                      obj : node.row.cells,
+                      key : field.id,
+                      field : field,
+                      req : true,
+                      id : node.id
+                  }">
+          </ng-container>
+        </ng-container>
+      </td>
+
+
+    </tr>
+    </tbody>
+  </ng-template>
+
+
+<ng-template #headerList let-list let-user="user">
+  <th *ngFor="let header of list; let i = index" pResizableColumn>
+    <ng-container *ngIf="user">
+      <ng-container
+        *ngTemplateOutlet="userHeader; context : {$implicit : header, list : list, index : i }">
+      </ng-container>
+    </ng-container>
+    <ng-container *ngIf="!user">
+      <ng-container
+        *ngTemplateOutlet="dataElement; context : {$implicit : header, list : list, index : i }">
+      </ng-container>
+    </ng-container>
+  </th>
+</ng-template>
+
+<ng-template #userHeader let-header let-index="index" let-list="list">
+  {{header.label}}
+  <i *ngIf="!header.keep" style="color: red; cursor: pointer; float: right;"
+      class="fa fa-times" aria-hidden="true"></i>
+</ng-template>
+
+<ng-template #dataElement let-header let-index="index" let-list="list">
+  <div style="width: 100%; text-align: center; vertical-align : middle; font-size: 13px;">
+    <span>
+      <span *ngIf="header.template">
+          <span class="badge label-icon label-gray">{{header.template}}</span>
+      </span>
+      <span *ngIf="!header.template">
+          <span class="badge label-icon label-gray">{{header.content.type}}</span>
+      </span>
+    </span>
+    <app-entity-bagde [type]="header.content.elmType"></app-entity-bagde>
+    <strong>{{header.label}}</strong>
+    <i *ngIf="!header.keep" style="color: red; cursor: pointer; right : 3px;" class="fa fa-times" aria-hidden="true"></i>
+  </div>
+</ng-template>
+
+<ng-template #usage let-node let-id="id">
+  <p-dropdown appendTo="body" [options]="usages" [name]="'usage-'+id"
+              [id]="'usage-'+id" [(ngModel)]="node.usage" [style]="{'width':'100%'}"></p-dropdown>
+</ng-template>
+
+<ng-template #cardinality let-node let-id="id">
+  <input [(ngModel)]="node.cardinality.min" type="number" style="width:45%;border-width:0px 0px 1px 0px"
+          #min="ngModel"
+          [name]="id+'-min'"
+          [id]="id+'-min'"
+          min="0"
+          [ngStyle]="{ 'background-color' : min.control.errors ? 'pink' : 'white' }"
+          [required]="true"
+  />
+  <input [(ngModel)]="node.cardinality.max" type="text" style="width:45%;border-width:0px 0px 1px 0px"
+          #max="ngModel"
+          [name]="id+'-max'"
+          [id]="id+'-max'"
+          [ngStyle]="{ 'background-color' : max.control.errors ? 'pink' : 'white' }"
+          [required]="true"/>
+</ng-template>

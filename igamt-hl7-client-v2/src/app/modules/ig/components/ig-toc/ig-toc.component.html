@@ -59,8 +59,15 @@
           <div #vsLib>
             <span [contextMenu]="valueSetsContextMenu"> {{node.data.path}} {{node.data.variableName}}</span>
             <context-menu #valueSetsContextMenu>
+
+              <ng-template (execute)="createNew(node.data, 'VALUESET')" contextMenuItem>
+                <i class="fa fa-plus"></i> Create new value set
+              </ng-template>
               <ng-template (execute)="import(node.data, 'VALUESET', 'HL7STANDARD')" contextMenuItem>
                 <i class="fa fa-plus"></i> Add Hl7 Value Sets
+              </ng-template>
+              <ng-template (execute)="import(node.data, 'VALUESET', 'PHINVADS')" contextMenuItem>
+                <i class="fa fa-plus"></i> Add PHINVADS Value Sets
               </ng-template>
             </context-menu>
           </div>
@@ -125,7 +132,7 @@
 
         <ng-container *ngSwitchCase="'VALUESET'">
           <app-display-section  [contextMenu]='valueSetContextMenu' [element]="node.data" #rla="routerLinkActive"
-                               [routerLink]="getElementUrl(node.data)" routerLinkActive="active-node"></app-display-section>
+                               [routerLink]="getElementUrl(node.data)" routerLinkActive></app-display-section>
           <context-menu #valueSetContextMenu>
             <ng-template (execute)="copyResource(node)" contextMenuItem>
               <i class="fa fa-copy"></i> Create Flavor

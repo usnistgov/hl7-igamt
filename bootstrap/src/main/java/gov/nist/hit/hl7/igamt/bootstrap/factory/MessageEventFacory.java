@@ -2,11 +2,7 @@ package gov.nist.hit.hl7.igamt.bootstrap.factory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,9 +15,8 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.service.event.MessageEventServi
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
-import gov.nist.hit.hl7.igamt.valueset.domain.CodeSystem;
+import gov.nist.hit.hl7.igamt.valueset.domain.Valueset;
 import gov.nist.hit.hl7.igamt.valueset.domain.property.Constant.SCOPE;
-import gov.nist.hit.hl7.igamt.valueset.service.CodeSystemService;
 import gov.nist.hit.hl7.igamt.valueset.service.ValuesetService;
 
 
@@ -33,8 +28,6 @@ public class MessageEventFacory {
   @Autowired
   MessageEventService messageEventService;
 
-  @Autowired
-  CodeSystemService codeSystemService;
 
   @Autowired
   ValuesetService valueSetService;
@@ -66,10 +59,10 @@ public class MessageEventFacory {
       String version) {
 
 
-    List<CodeSystem> HL70354s =
-        codeSystemService.findByDomainInfoScopeAndDomainInfoVersionAndIdentifier(
-            SCOPE.HL7STANDARD.toString(), version, "HL70354");
-    CodeSystem HL70354 = null;
+    List<Valueset> HL70354s =
+        valueSetService.findByDomainInfoScopeAndDomainInfoVersionAndBindingIdentifier(
+            SCOPE.HL7STANDARD.toString(), version, "0354");
+    Valueset HL70354 = null;
     if (HL70354s != null) {
       if (!HL70354s.isEmpty()) {
         HL70354 = HL70354s.get(0);
@@ -101,9 +94,9 @@ public class MessageEventFacory {
   }
 
 
-  private Code findCodeByValue(CodeSystem codeSystem, String structID) {
-    if (codeSystem.getCodes() != null)
-      for (Code c : codeSystem.getCodes()) {
+  private Code findCodeByValue(Valueset vs, String structID) {
+    if (vs.getCodes() != null)
+      for (Code c : vs.getCodes()) {
         if (structID.equals(c.getValue())) {
           return c;
         }

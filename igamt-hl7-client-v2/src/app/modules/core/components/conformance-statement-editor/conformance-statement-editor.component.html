@@ -1,0 +1,71 @@
+<ng-container *ngIf="conformanceStatementView$ | async as viewData">
+  <ng-container *ngIf="viewData.resourceConformanceStatement">
+    <div class="header-title">
+      <h5>List of conformance statements</h5>
+      <div>
+        <button class="btn btn-success btn-sm" (click)="createCs()">
+          <i class="fa fa-plus"></i> New
+        </button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.resourceConformanceStatement, viewOnly: viewOnly | async }"></ng-container>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="viewData.complementConformanceStatements">
+    <div *ngIf="viewData.complementConformanceStatements[_types.SEGMENT]" style="margin-top: 10px;">
+      <div class="header-title">
+        <h5>Associated segments conformance statements</h5>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="keys(viewData.complementConformanceStatements[_types.SEGMENT]).length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+          <span> No Conformance Statement </span>
+        </div>
+        <ng-container *ngFor="let segment of keys(viewData.complementConformanceStatements[_types.SEGMENT])" >
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: complementConformanceStatements[_types.SEGMENT][segment], viewOnly: true, header: segment}"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+    <div *ngIf="viewData.complementConformanceStatements[_types.DATATYPE]" style="margin-top: 10px;">
+      <div class="header-title">
+        <h5>Associated datatypes conformance statements</h5>
+      </div>
+      <div class="panel-body">
+        <div *ngIf="keys(viewData.complementConformanceStatements[_types.DATATYPE]).length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+          <span> No Conformance Statement </span>
+        </div>
+        <ng-container *ngFor="let dt of keys(viewData.complementConformanceStatements[_types.DATATYPE])" >
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: complementConformanceStatements[_types.DATATYPE][dt], viewOnly: true, header: dt}"></ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #csList let-csList let-viewOnly="viewOnly" let-header="header">
+  <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
+    <span> No Conformance Statement </span>
+  </div>
+  <table class="table table-striped table-bordered table-sm" *ngIf="csList && csList.length > 0">
+    <tr *ngIf="header">
+      <th colspan="3">{{header}}</th>
+    </tr>
+    <tr>
+      <th>ID</th>
+      <th>Description</th>
+      <th style="width: 190px;"></th>
+    </tr>
+    <tr *ngFor="let cs of csList">
+      <td>{{cs.identifier}}</td>
+      <td>{{ cs.type === 'ASSERTION' ? cs.assertion.description : cs.freeText }}</td>
+      <td *ngIf="!viewOnly" style="width: 190px;">
+        <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+          <i class="fa fa-pencil"></i> Edit
+        </button>
+        <button class="btn btn-sm btn-danger" style="margin-left: 5px;">
+          <i class="fa fa-trash"></i> Delete
+        </button>
+      </td>
+    </tr>
+  </table>
+</ng-template>

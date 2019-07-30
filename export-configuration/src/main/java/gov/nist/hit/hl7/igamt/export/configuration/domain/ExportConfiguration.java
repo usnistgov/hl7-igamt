@@ -20,13 +20,30 @@ import javax.persistence.Column;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.AbstractDomainExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ResourceExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.SegmentExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DocumentMetadataConfiguration;
+
+
 /**
  *
  * @author Maxence Lefort on Mar 13, 2018.
  */
 @Document(collection = "exportConfiguration")
 public class ExportConfiguration {
-
+	
+	private DatatypeExportConfiguration datatypeExportConfiguration;
+	private SegmentExportConfiguration segmentExportConfiguration;
+	private ConformanceProfileExportConfiguration conformamceProfileExportConfiguration;
+	private ValueSetExportConfiguration valueSetExportConfiguration;
+	private AbstractDomainExportConfiguration abstractDomainExportConfiguration;
+	private ResourceExportConfiguration resourceExportConfiguration;
+	private DocumentMetadataConfiguration DocumentMetadataConfiguration;
+	
   @Id
   private String id;
   boolean defaultType = false;
@@ -82,7 +99,11 @@ public class ExportConfiguration {
   private boolean datatypeLibraryIncludeSummary = true;
   private boolean datatypeLibraryIncludeDerived = false;
 
-
+public static ExportConfiguration populateRestOfExportConfiguration(ExportConfiguration exportConfiguration) {
+	SegmentExportConfiguration segmentExportConfiguration = new SegmentExportConfiguration(true, true, true,exportConfiguration.isIncludeSegmentTable()  ,exportConfiguration.isGreyOutOBX2FlavorColumn(), exportConfiguration.getSegmentsExport(), exportConfiguration.getFieldsExport(), exportConfiguration.getCoConstraintExportMode(), exportConfiguration.getSegmentColumn().getColumns(), exportConfiguration.getSegmentMetadataConfig());
+	exportConfiguration.setSegmentExportConfiguration(segmentExportConfiguration);
+	return exportConfiguration;
+}
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
@@ -209,7 +230,92 @@ public class ExportConfiguration {
 
 
 
-  public String getId() {
+  public DatatypeExportConfiguration getDatatypeExportConfiguration() {
+	return datatypeExportConfiguration;
+}
+
+
+
+public void setDatatypeExportConfiguration(DatatypeExportConfiguration datatypeExportConfiguration) {
+	this.datatypeExportConfiguration = datatypeExportConfiguration;
+}
+
+
+
+public SegmentExportConfiguration getSegmentExportConfiguration() {
+	return segmentExportConfiguration;
+}
+
+
+
+public void setSegmentExportConfiguration(SegmentExportConfiguration segmentExportConfiguration) {
+	this.segmentExportConfiguration = segmentExportConfiguration;
+}
+
+
+
+public ConformanceProfileExportConfiguration getConformamceProfileExportConfiguration() {
+	return conformamceProfileExportConfiguration;
+}
+
+
+
+public void setConformamceProfileExportConfiguration(
+		ConformanceProfileExportConfiguration conformamceProfileExportConfiguration) {
+	this.conformamceProfileExportConfiguration = conformamceProfileExportConfiguration;
+}
+
+
+
+public ValueSetExportConfiguration getValueSetExportConfiguration() {
+	return valueSetExportConfiguration;
+}
+
+
+
+public void setValueSetExportConfiguration(ValueSetExportConfiguration valueSetExportConfiguration) {
+	this.valueSetExportConfiguration = valueSetExportConfiguration;
+}
+
+
+
+public AbstractDomainExportConfiguration getAbstractDomainExportConfiguration() {
+	return abstractDomainExportConfiguration;
+}
+
+
+
+public void setAbstractDomainExportConfiguration(AbstractDomainExportConfiguration abstractDomainExportConfiguration) {
+	this.abstractDomainExportConfiguration = abstractDomainExportConfiguration;
+}
+
+
+
+public ResourceExportConfiguration getResourceExportConfiguration() {
+	return resourceExportConfiguration;
+}
+
+
+
+public void setResourceExportConfiguration(ResourceExportConfiguration resourceExportConfiguration) {
+	this.resourceExportConfiguration = resourceExportConfiguration;
+}
+
+
+
+public DocumentMetadataConfiguration getDocumentMetadataConfiguration() {
+	return DocumentMetadataConfiguration;
+}
+
+
+
+public void setDocumentMetadataConfiguration(DocumentMetadataConfiguration documentMetadataConfiguration) {
+	DocumentMetadataConfiguration = documentMetadataConfiguration;
+}
+
+
+
+public String getId() {
     return id;
   }
 

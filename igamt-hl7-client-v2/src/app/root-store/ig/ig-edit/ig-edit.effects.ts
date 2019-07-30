@@ -42,7 +42,7 @@ import {
   ToolbarSave,
 } from './ig-edit.actions';
 import {
-  selectIgDocument,
+  selectIgDocument, selectIgId,
   selectSectionDisplayById,
   selectSectionFromIgById,
   selectTableOfContentChanged,
@@ -58,23 +58,25 @@ export class IgEditEffects {
       this.store.dispatch(new TurnOnLoader({
         blockUI: true,
       }));
-
-      return this.resourceService.getResources(action.payload.id, action.payload.resourceType).pipe(
-        flatMap((resources: IResource[]) => {
-          return [
-            new TurnOffLoader(),
-            new LoadResourceReferencesSuccess(resources),
-          ];
-        }),
-        catchError((error: HttpErrorResponse) => {
-          return of(
-            new TurnOffLoader(),
-            new LoadResourceReferencesFailure(error),
+      return this.store.select(selectIgId).pipe(
+        mergeMap((igId) => {
+          return this.resourceService.getResources(action.payload.id, action.payload.resourceType, igId).pipe(
+            flatMap((resources: IResource[]) => {
+              return [
+                new TurnOffLoader(),
+                new LoadResourceReferencesSuccess(resources),
+              ];
+            }),
+            catchError((error: HttpErrorResponse) => {
+              return of(
+                new TurnOffLoader(),
+                new LoadResourceReferencesFailure(error),
+              );
+            }),
           );
         }),
       );
-    }),
-  );
+    }));
 
   @Effect()
   loadReferencesFailure$ = this.actions$.pipe(

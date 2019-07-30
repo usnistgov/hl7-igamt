@@ -134,13 +134,6 @@ public class SegmentController extends BaseController {
 		return conformanceStatementDisplay;
 	}
 
-	@RequestMapping(value = "/api/segments/{id}/dynamicmapping", method = RequestMethod.GET, produces = {
-			"application/json" })
-	public SegmentDynamicMapping getSegmentDynamicMapping(@PathVariable("id") String id, Authentication authentication)
-			throws SegmentNotFoundException {
-		Segment segment = findById(id);
-		return segmentService.convertDomainToSegmentDynamicMapping(segment);
-	}
 
 	@RequestMapping(value = "/api/segments/{id}/metadata", method = RequestMethod.GET, produces = {
 			"application/json" })

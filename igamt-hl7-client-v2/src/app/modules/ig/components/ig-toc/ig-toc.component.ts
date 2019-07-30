@@ -16,7 +16,7 @@ import {Type} from '../../../shared/constants/type.enum';
 import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {NodeHelperService} from '../../../shared/services/node-helper.service';
-import {IAddWrapper} from '../../models/ig/add-wrapper.class';
+import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
 import {IClickInfo} from '../../models/toc/click-info.interface';
 
 @Component({
@@ -45,6 +45,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
   delete = new EventEmitter<IDisplayElement>();
   @Output()
   addChildren = new EventEmitter<IAddWrapper>();
+  @Output()
+  addChild = new EventEmitter<IAddNewWrapper>();
   @ViewChild(TreeComponent) private tree: TreeComponent;
 
   constructor(private nodeHelperService: NodeHelperService, private cd: ChangeDetectorRef) {
@@ -160,5 +162,8 @@ export class IgTocComponent implements OnInit, AfterViewInit {
 
   select($event: IClickInfo) {
     console.log($event);
+  }
+  createNew(node: IDisplayElement, type: Type) {
+    this.addChild.emit({node, type});
   }
 }

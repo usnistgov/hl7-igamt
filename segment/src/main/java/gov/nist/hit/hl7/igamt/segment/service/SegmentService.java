@@ -82,7 +82,6 @@ public interface SegmentService extends ResourceService {
 
 	public List<Segment> findDisplayFormatByScopeAndVersion(String scope, String version);
 
-	public SegmentDynamicMapping convertDomainToSegmentDynamicMapping(Segment segment);
 
 	public Link cloneSegment(String compositeKey, HashMap<String, String> valuesetsMap,
 //			HashMap<String, String> datatypesMap, Link l, String username, Scope user) throws CoConstraintSaveException;

@@ -17,6 +17,10 @@ package gov.nist.hit.hl7.igamt.constraints.domain;
  */
 public class FreeTextConformanceStatement extends ConformanceStatement {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = -7899147064970467492L;
   private String freeText;
   private String assertionScript;
 

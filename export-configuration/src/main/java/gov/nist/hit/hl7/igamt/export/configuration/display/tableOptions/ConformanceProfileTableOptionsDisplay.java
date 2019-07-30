@@ -26,6 +26,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
  * @author Maxence Lefort on Jun 5, 2018.
  */
 public class ConformanceProfileTableOptionsDisplay implements TableOptionsDisplay{
+	
   private boolean includeMessageTable = true;
   private UsageConfiguration segmentORGroupsMessageExport;
   private List<NameAndPositionAndPresence> columns;

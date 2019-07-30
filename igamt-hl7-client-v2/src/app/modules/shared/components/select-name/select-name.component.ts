@@ -26,7 +26,6 @@ export class SelectNameComponent implements OnInit {
   ngOnInit() {
   }
   emitData() {
-    console.log(this.element);
     this.flavor.emit({
       originalId: this.element.id,
       id: null,

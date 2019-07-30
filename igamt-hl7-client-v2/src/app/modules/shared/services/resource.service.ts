@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { UserMessage } from 'src/app/modules/core/models/message/message.class';
 import { Message, MessageType } from '../../core/models/message/message.class';
+import {Scope} from '../constants/scope.enum';
 import { Type } from '../constants/type.enum';
 import { IResourceInfo } from '../models/resource-info.interface';
 import { IResource } from '../models/resource.interface';
@@ -28,12 +29,16 @@ export class ResourceService {
       case Type.SEGMENT:
         return 'api/segments/' + info.scope + '/' + info.version;
       case Type.VALUESET:
-        return 'api/valuesets/' + info.scope + '/' + info.version;
+        if (info.scope !== Scope.PHINVADS) {
+          return 'api/valuesets/' + info.scope + '/' + info.version;
+        } else {
+          return 'api/valuesets/' + info.scope + '/info';
+        }
     }
   }
 
-  getResources(id: string, type: Type): Observable<IResource[]> {
-    const url = this.getResourcesUrl(type, id);
+  getResources(id: string, type: Type, documentId: string): Observable<IResource[]> {
+    const url = this.getResourcesUrl(type, id, documentId);
     if (url) {
       return this.http.get<IResource[]>(url);
     } else {
@@ -41,7 +46,7 @@ export class ResourceService {
     }
   }
 
-  private getResourcesUrl(type: Type, id: string): string {
+  private getResourcesUrl(type: Type, id: string, documentId: string): string {
     switch (type) {
       case Type.CONFORMANCEPROFILE:
         return 'api/conformanceprofiles/' + id + this.resource;
@@ -49,6 +54,8 @@ export class ResourceService {
         return 'api/datatypes/' + id + this.resource;
       case Type.SEGMENT:
         return 'api/segments/' + id + this.resource;
+      case Type.VALUESET:
+        return 'api/igdocuments/' + documentId + '/valueset/' + id + '/resource';
       default: return null;
     }
   }

@@ -5,6 +5,8 @@ import { StoreModule } from '@ngrx/store';
 import { SegmentEditEffects } from '../../root-store/segment-edit/segment-edit.effects';
 import * as fromSegmentEdit from '../../root-store/segment-edit/segment-edit.reducer';
 import { SharedModule } from '../shared/shared.module';
+import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
+import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
@@ -14,7 +16,7 @@ import { SegmentRoutingModule } from './segment-routing.module';
 import { SegmentService } from './services/segment.service';
 
 @NgModule({
-  declarations: [PredefEditorComponent, PostdefEditorComponent, SegmentStructureEditorComponent, SegmentCrossRefsComponent, MetadataEditorComponent],
+  declarations: [PredefEditorComponent, PostdefEditorComponent, SegmentStructureEditorComponent, SegmentCrossRefsComponent, MetadataEditorComponent, CoconstraintsEditorComponent, SegmentConformanceStatementEditorComponent],
   imports: [
     CommonModule,
     SegmentRoutingModule,
@@ -26,6 +28,6 @@ import { SegmentService } from './services/segment.service';
     SegmentService,
     SegmentEditEffects,
   ],
-  exports: [PredefEditorComponent, PostdefEditorComponent, MetadataEditorComponent],
+  exports: [PredefEditorComponent, PostdefEditorComponent, MetadataEditorComponent, CoconstraintsEditorComponent, SegmentConformanceStatementEditorComponent],
 })
 export class SegmentModule { }

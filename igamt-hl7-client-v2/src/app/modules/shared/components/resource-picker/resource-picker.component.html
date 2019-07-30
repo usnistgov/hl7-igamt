@@ -21,7 +21,7 @@
                              (selected)="data.versionChange($event)"
                              [existing]="data.existing"
                              [hl7Versions]="data.hl7Versions"
-                             [selectedVersion]="data.version" [table]="data.data | async "></app-select-value-sets>
+                             [selectedVersion]="data.version" [table]="data.data | async " [scope]="data.scope"></app-select-value-sets>
     </ng-container>
     <ng-container *ngSwitchCase="'DATATYPE'">
       <app-select-datatypes #child (added)="selected($event)"
