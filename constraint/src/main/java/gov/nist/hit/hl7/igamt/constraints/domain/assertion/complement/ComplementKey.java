@@ -17,8 +17,8 @@ package gov.nist.hit.hl7.igamt.constraints.domain.assertion.complement;
 public enum ComplementKey {
 	 valued, 
 	 notValued, 
-	 containtValue, 
-	 notContaintValue, 
+	 containValue, 
+	 notContainValue, 
 	 containValueDesc, 
 	 notContainValueDesc, 
 	 containListValues, 

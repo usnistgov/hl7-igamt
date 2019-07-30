@@ -800,14 +800,14 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		Elements elements = constraints_group_Elm.getChildElements("ByID");
 		if(elements != null && elements.size() > 0) {
 			for(int i=0; i < elements.size(); i ++) {
-				if(elements.get(i).getAttribute("ID").getValue().equals(group.getId())) {
+				if(elements.get(i).getAttribute("ID").getValue().equals(conformanceProfile.getId() + "-" + group.getId())) {
 					return elements.get(i);
 				}
 			}
 		}
 		
 		Element elm_ByID = new Element("ByID");
-		elm_ByID.addAttribute(new Attribute("ID", group.getId()));
+		elm_ByID.addAttribute(new Attribute("ID", conformanceProfile.getId() + "-" + group.getId()));
 		constraints_group_Elm.appendChild(elm_ByID);
 		return elm_ByID;
 	}
@@ -1405,7 +1405,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			throws GroupSerializationException {
 		try {
 			Element elmGroup = new Element("Group");
-			elmGroup.addAttribute(new Attribute("ID", this.str(segmentRefOrGroupDataModel.getModel().getId())));
+			elmGroup.addAttribute(new Attribute("ID", this.str(igModel.getModel().getId()) + "-" + this.str(segmentRefOrGroupDataModel.getModel().getId())));
 			elmGroup.addAttribute(new Attribute("Name", this.str(segmentRefOrGroupDataModel.getModel().getName())));
 			elmGroup.addAttribute(
 					new Attribute("Usage", this.str(segmentRefOrGroupDataModel.getModel().getUsage().toString())));
@@ -1846,10 +1846,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		case notValued:
 			result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
 			break;
-		case containtValue:
+		case containValue:
 			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
-		case notContaintValue:
+		case notContainValue:
 			result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
 			break;
 		case containValueDesc:
@@ -1865,10 +1865,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""+ String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
 			break;
 		case containCode:
-			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + false +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
 		case containListCodes:
-			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
 		case regex:
 			result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + complement.getValue() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
