@@ -6,6 +6,7 @@ sudo: required
 branches:
   only:
   - develop
+  - staging
 before_script:
   - cd igamt-hl7-client-v2
   - npm install
