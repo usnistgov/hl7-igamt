@@ -21,20 +21,18 @@ export class ValueSetStructureComponent implements OnInit {
   edit = {};
   temp: string = null;
   filteredCodeSystems: string[] = [];
-  selectedColumns: any[];
   @Output()
   changes: EventEmitter<IChange> = new EventEmitter<IChange>();
 
   @Input()
   viewOnly: boolean;
+  @Input()
   codeSystemOptions: any[];
-  cols = [
-    {field: 'value', header: 'Value'},
-    {field: 'description', header: 'Description'},
-    {field: 'codeSystem', header: 'Code System'},
-    {field: 'usage', header: 'Usage'},
-    {field: 'comments', header: 'Comments'},
-  ];
+  @Input()
+  cols: any[];
+  @Input()
+  selectedColumns: any[];
+
   stabilityOptionsOptions = [
     this.notDefinedOption, {label: 'Dynamic', value: 'Dynamic'}, {label: 'Static', value: 'Static'},
   ];
@@ -51,9 +49,9 @@ export class ValueSetStructureComponent implements OnInit {
   editMap = {};
 
   ngOnInit() {
-    this.selectedColumns = this.cols;
+    // this.selectedColumns = this.cols;
     this.editMap[this.valueSet.id] = false;
-    this.codeSystemOptions = this.getCodeSystemOptions();
+    // this.codeSystemOptions = this.getCodeSystemOptions();
   }
   toggleEdit(id: string) {
     this.temp = null;
