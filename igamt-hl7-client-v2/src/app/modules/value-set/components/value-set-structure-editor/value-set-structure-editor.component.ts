@@ -61,11 +61,9 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
       }
       this.cols.push({field: 'comments', header: 'Comments'});
       this.selectedColumns = this.cols;
-
       this.codeSystemOptions = this.getCodeSystemOptions(resource);
     });
   }
-
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
     return resource.codeSystems.map((codeSystem: string) => {
       return {label: codeSystem, value: codeSystem};
