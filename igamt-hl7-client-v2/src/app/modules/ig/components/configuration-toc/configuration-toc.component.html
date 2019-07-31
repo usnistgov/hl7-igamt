@@ -1,0 +1,83 @@
+<tree-root #treeroot [nodes]="nodes" [options]="options">
+  <ng-template #treeNodeTemplate let-index="index" let-node>
+    <ng-container [ngSwitch]="node.data.type">
+
+      <ng-container *ngSwitchCase="'TEXT'">
+        <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <span> {{node.data.path}} {{node.data.variableName}}</span>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'PROFILE'">
+        <span> {{node.data.path}} {{node.data.variableName}}</span>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'PROFILECOMPONENTREGISTRY'">
+        <span> {{node.data.path}} {{node.data.variableName}}</span>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILEREGISTRY'">
+        <div #cpLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'COMPOSITEPROFILEREGISTRY'">
+        <div #compositePLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'DATATYPEREGISTRY'">
+        <div #dtLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'VALUESETREGISTRY'">
+        <div #vsLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'SEGMENTREGISTRY'">
+        <div #segLib>
+          <span> {{node.data.path}} {{node.data.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'DATATYPE'">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <span>{{node.variableName}}</span>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'SEGMENT'">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data" ></app-display-section>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'VALUESET'">
+        <div style="display: flex; flex-direction: row; align-items: center;">
+          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+        </div>
+      </ng-container>
+
+      <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
+      </ng-container>
+
+    </ng-container>
+  </ng-template>
+
+</tree-root>

@@ -10,6 +10,7 @@ import * as fromIg from '../../root-store/ig/ig.reducer';
 import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
+import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
 import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
@@ -43,6 +44,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ConfigurationTocComponent,
     ExportGvtComponent,
   ],
   imports: [
@@ -72,6 +74,7 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
+    ConfigurationTocComponent,
   ],
 })
 export class IgModule {

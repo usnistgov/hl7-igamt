@@ -1,5 +1,5 @@
 export interface IConformanceStatement {
-  id: string;
+  id?: string;
   type: ConstraintType;
   identifier: string;
   context?: IPath;
@@ -79,6 +79,7 @@ export interface IComplement {
   occurenceType: string;
   value?: string;
   values?: string[];
+  descs?: string[];
   desc?: string;
   codesys?: string;
 }

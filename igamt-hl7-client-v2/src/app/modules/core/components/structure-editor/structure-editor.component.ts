@@ -76,7 +76,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    return combineLatest(this.elementId$, this.ig$.pipe(map((ig) => ig.id)), this.changes.asObservable()).pipe(
+    return combineLatest(this.elementId$, this.ig$.pipe(take(1), map((ig) => ig.id)), this.changes.asObservable()).pipe(
       take(1),
       concatMap(([id, igId, changes]) => {
         return this.saveChanges(id, igId, this.convert(changes)).pipe(
