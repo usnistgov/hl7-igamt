@@ -46,12 +46,12 @@ export class CrossReferencesService {
             return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
               take(1),
               map((elm: IDisplayElement) => {
+                this.store.dispatch(new TurnOffLoader());
                 return {
                   usage: r.usage,
                   element: elm,
                   location: r.location,
                 };
-                this.store.dispatch(new TurnOffLoader());
               }),
             );
           }),

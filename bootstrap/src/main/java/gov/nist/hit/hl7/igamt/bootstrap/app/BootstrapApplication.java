@@ -216,6 +216,7 @@ public class BootstrapApplication implements CommandLineRunner {
 
     connection.add(new ConnectingInfo("IZ-TOOL", "https://hl7v2-iz-r1.5-testing.nist.gov/iztool/", redirectToken, loginEndpoint,createDomainInput, 4)); 
     constant.setConnection(connection);    
+    constant.setPhinvadsUrl("https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=");
     
     
     sharedConstantService.save(constant);

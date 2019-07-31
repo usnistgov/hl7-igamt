@@ -144,7 +144,6 @@ export class IgService {
     form.appendChild(json);
     form.style.display = 'none';
     document.body.appendChild(form);
-    console.log(form);
     form.submit();
   }
 

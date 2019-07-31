@@ -40,6 +40,8 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -104,8 +106,8 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	DatatypeService datatypeService;
 
-//	@Autowired
-//	ConfigService configService;
+	@Autowired
+	ConfigService configService;
 
 	@Autowired
 	SegmentService segmentService;
@@ -839,39 +841,36 @@ public class IgServiceImpl implements IgService {
 
 	}
 	@Override
-	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
-		// TODO Auto-generated method stub
-
-//		Ig ig = this.findById(id);
-//		if(ig == null ) {
-//			throw new IGNotFoundException(id);
-//		}
-//		Valueset vs= valueSetService.findById(vsId);
-//		if(vs == null) {
-//			throw new ValuesetNotFoundException(vsId);
-//		}
-//		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
-//			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
-//				Config conf=	this.configService.findOne();
-//				if(conf !=null) {
-//					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
-//				}
-//			}
-//		}
-//		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
-//			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-//				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-//					vs.setIncludeCodes(true);
-//				} else {
-//					vs.setIncludeCodes(false);
-//					vs.setCodes(new HashSet<Code>());
-//				}
-//			}else {
-//				vs.setIncludeCodes(true);
-//			}
-//		}
-//		return vs;
-		return null;
+	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
+		Ig ig = this.findById(id);
+		if(ig == null ) {
+			throw new IGNotFoundException(id);
+		}
+		Valueset vs= valueSetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(vsId);
+		}
+		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
+			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
+				Config conf=	this.configService.findOne();
+				if(conf !=null) {
+					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+				}
+			}
+		}
+		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
+			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+					vs.setIncludeCodes(true);
+				} else {
+					vs.setIncludeCodes(false);
+					vs.setCodes(new HashSet<Code>());
+				}
+			}else {
+				vs.setIncludeCodes(true);
+			}
+		}
+		return vs;
 
 	}
 	
@@ -896,7 +895,7 @@ public class IgServiceImpl implements IgService {
 	        new HashMap<String, ValuesetBindingDataModel>();
 
 	    for (Link link : ig.getValueSetRegistry().getChildren()) {
-	      Valueset vs = this.getValueSetIngIg(ig.getId(), link.getId());
+	      Valueset vs = this.getValueSetInIg(ig.getId(), link.getId());
 	      if (vs != null) {
 	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
 	        valuesetDataModel.setModel(vs);
