@@ -1,4 +1,4 @@
-import { OnDestroy, OnInit } from '@angular/core';
+import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
@@ -40,6 +40,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     actions$: Actions,
     store: Store<any>,
     editorMetadata: IEditorMetadata,
+    public LoadAction: CoreType<Action>,
     public legend: BindingLegend,
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
@@ -59,6 +60,10 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
 
   ngOnDestroy(): void {
     this.workspace_s.unsubscribe();
+  }
+
+  onDeactivate() {
+    this.ngOnDestroy();
   }
 
   change(change: IChange) {
@@ -83,7 +88,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
           mergeMap((message) => {
             return this.getById(id).pipe(
               flatMap((resource) => {
-                return [this.messageService.messageToAction(message), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
+                return [this.messageService.messageToAction(message), new this.LoadAction(id), new EditorUpdate({ value: { changes: {}, resource }, updateDate: false })];
               }),
             );
           }),

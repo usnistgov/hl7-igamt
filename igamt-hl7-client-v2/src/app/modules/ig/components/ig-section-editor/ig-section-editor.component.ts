@@ -72,6 +72,10 @@ export class IgSectionEditorComponent extends AbstractEditorComponent {
         }),
       );
   }
+
+  onDeactivate() {
+
+  }
 }
 
 export interface INarrative {

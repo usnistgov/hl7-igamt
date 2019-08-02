@@ -46,6 +46,7 @@ public class BindingServiceImpl implements BindingService {
 			Set<RelationShip> used, String path, Usage usage) {
 
 		String location = processLocation(path, binding.getLocationInfo());
+
 		if (binding.getValuesetBindings() != null) {
 			for (ValuesetBinding vs : binding.getValuesetBindings()) {
 				if (vs.getValuesetId() != null) {
@@ -56,11 +57,11 @@ public class BindingServiceImpl implements BindingService {
 				}
 			}
 		}
+
 		if (binding.getChildren() != null) {
 			for (StructureElementBinding child : binding.getChildren()) {
 				processChildStructureBinding(parent, child, used, location, usage);
 			}
-
 		}
 
 	}
@@ -78,7 +79,6 @@ public class BindingServiceImpl implements BindingService {
 			return Type.FIELD;
 		default:
 			break;
-		
 		}
 		return null;
 	}
@@ -92,7 +92,6 @@ public class BindingServiceImpl implements BindingService {
 			} else {
 				location = path + "." + locationInfo.getPosition();
 			}
-
 		}
 		return location;
 	}

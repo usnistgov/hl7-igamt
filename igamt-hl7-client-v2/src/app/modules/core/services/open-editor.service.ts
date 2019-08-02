@@ -79,7 +79,6 @@ export class OpenEditorService {
         return this.rxjsHelper.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
-              console.log(openEditor);
               return of(openEditor);
             },
           },
