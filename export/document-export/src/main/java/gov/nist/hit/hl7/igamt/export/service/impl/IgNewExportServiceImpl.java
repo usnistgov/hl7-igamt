@@ -65,8 +65,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		      ExportFontConfiguration exportFontConfiguration =
 		          exportFontConfigurationService.getExportFontConfiguration(username);
 		      
-//		      ExportFilterDecision exportFilterDecision = exportConfigurationFilterService.getExportFilterConfiguration(username);
-		      ExportFilterDecision exportFilterDecision = ExportFilterDecision.CreateExportFilterDecision(exportConfiguration);
+		      ExportFilterDecision exportFilterDecision = exportConfigurationFilterService.getExportFilterConfiguration(username);
+//		      ExportFilterDecision exportFilterDecision = ExportFilterDecision.CreateExportFilterDecision(exportConfiguration);
 
 		      
 //		      String xmlContent =

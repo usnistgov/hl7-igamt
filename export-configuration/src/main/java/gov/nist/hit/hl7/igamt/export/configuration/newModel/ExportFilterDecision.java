@@ -21,18 +21,18 @@ public class ExportFilterDecision {
 	private Map<String, Boolean> valueSetFilterMap;
 	private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap;
 	
-	public static ExportFilterDecision CreateExportFilterDecision(ExportConfiguration exportConfiguration) {
-		ExportFilterDecision exportFilterDecision = new ExportFilterDecision();
-		Map<String, Boolean> segmentFilterMap = new HashMap<>();
-		Map<String, SegmentExportConfiguration> overiddedSegmentMap = new HashMap<>();
-		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setR(true);
-		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setRe(false);
-		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setO(false);
-		exportFilterDecision.setOveriddedSegmentMap(overiddedSegmentMap);
-		overiddedSegmentMap.put("579654555455fa34e848e353", exportConfiguration.getSegmentExportConfiguration());
-		return exportFilterDecision;		
-		}
-	
+//	public static ExportFilterDecision CreateExportFilterDecision(ExportConfiguration exportConfiguration) {
+//		ExportFilterDecision exportFilterDecision = new ExportFilterDecision();
+//		Map<String, Boolean> segmentFilterMap = new HashMap<>();
+//		Map<String, SegmentExportConfiguration> overiddedSegmentMap = new HashMap<>();
+//		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setR(true);
+//		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setRe(false);
+//		exportConfiguration.getSegmentExportConfiguration().getFieldsExport().setO(false);
+//		exportFilterDecision.setOveriddedSegmentMap(overiddedSegmentMap);
+//		overiddedSegmentMap.put("579654555455fa34e848e353", exportConfiguration.getSegmentExportConfiguration());
+//		return exportFilterDecision;		
+//		}
+//	
 	public Map<String, Boolean> getDatatypesFilterMap() {
 		return datatypesFilterMap;
 	}
