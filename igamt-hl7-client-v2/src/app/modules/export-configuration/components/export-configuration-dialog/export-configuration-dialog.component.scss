@@ -1,0 +1,63 @@
+.dg-container {
+  overflow: auto;
+  display: grid;
+  grid-template-columns: [config-toc] 1fr [config-panel] 5fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+}
+
+:host {
+  overflow: hidden;
+}
+
+.config-toc {
+  grid-column: config-toc;
+  overflow: scroll;
+}
+
+.config-panel {
+  grid-column: config-panel;
+}
+
+// :host {
+//   display: grid;
+//   grid-gap: 2px;
+//   grid-template-columns: [sidebar-content] auto;
+//   grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-content-row] auto;
+//   overflow: hidden;
+// }
+
+// .sidebar-filter {
+//   grid-column: sidebar-content;
+//   grid-row: sidebar-filter;
+//   background-color: #f7f7f7;
+//   -webkit-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+//   -moz-box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+//   box-shadow: 0px 3px 5px -2px rgba(0,0,0,0.75);
+//   z-index: 1;
+// }
+
+// .sidebar-controls {
+//   grid-column: sidebar-content;
+//   grid-row: sidebar-controls;
+//   background-color: #f7f7f7;
+//   display: flex;
+//   flex-direction: row;
+//   align-items: center;
+//   justify-content: space-between;
+
+// }
+
+// .sidebar-content {
+//   grid-column: sidebar-content;
+//   grid-row: sidebar-content-row;
+//   background-color: #f7f7f7;
+//   overflow: scroll;
+//   padding: 10px;
+// }
+
+.btn-text {
+  color: white;
+  border: 1px solid #e3e3e3;
+  font-weight: bold;
+}

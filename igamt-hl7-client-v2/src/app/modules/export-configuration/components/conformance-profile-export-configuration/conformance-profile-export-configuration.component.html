@@ -1,0 +1,80 @@
+<p-card>
+    <p-header>
+      <h1>
+        <p-checkbox  binary="true"
+                     label="Include Conformance Profile Table Options"></p-checkbox>
+      </h1>
+    </p-header>
+
+    <div>
+      <!-- Usages card -->
+      <div>
+        <p-card>
+          <h2>Usages (Segments/Groups to Export)</h2>
+          <hr/>
+          <div>
+            <div>
+              <p-checkbox
+                 disabled="true" label="R" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                disabled="true" label="RE" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 disabled="true" label="C" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="O" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="X" binary="true"></p-checkbox>
+            </div>
+          </div>
+        </p-card>
+        <p-card>
+          <h2>Metadata</h2>
+          <hr/>
+          <div layout="column">
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="HL7 Version" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="Publication Date" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="Publication Version" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="Scope" binary="true"></p-checkbox>
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <!-- Columns card-->
+      <!-- <div flex>
+        <p-card>
+          <h2>Columns</h2>
+          <hr/>
+          <div layout="column" style="width: 100%">
+            <div *ngFor="let column of tableOptions.columns">
+              <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                          (onChange)="setChanged()" [label]="column.name">
+              </p-checkbox>
+            </div>
+          </div>
+        </p-card>
+      </div> -->
+    </div>
+
+    <p-footer>
+      <p-button label="Save"></p-button>
+    </p-footer>
+  </p-card>
