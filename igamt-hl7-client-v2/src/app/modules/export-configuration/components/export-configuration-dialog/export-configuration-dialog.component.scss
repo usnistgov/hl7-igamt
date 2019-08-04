@@ -12,9 +12,10 @@
   background-color: #d2d1d2;
   display: grid;
   overflow: hidden;
+  height: 100%;
   grid-gap: 2px;
   grid-template-columns: [sidebar-content] auto;
-  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-content-row] minmax(min-content, max-content);
+  grid-template-rows: [sidebar-controls] 40px [sidebar-filter] 40px  [sidebar-content-row] auto;
 }
 
 .config-panel {
@@ -30,6 +31,7 @@
 .content {
   background-color: white;
   padding: 10px;
+  overflow: scroll;
 }
 
 .titlebar {
@@ -65,6 +67,14 @@
   background-color: #f7f7f7;
   overflow: scroll;
   padding: 10px;
+}
+
+.button-row {
+  background-color: white;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 5px;
 }
 
 // :host {
