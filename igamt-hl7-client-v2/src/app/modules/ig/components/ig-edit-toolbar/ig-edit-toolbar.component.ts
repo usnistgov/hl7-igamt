@@ -75,6 +75,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       maxHeight: '90vh',
       width: '95vw',
       height: '95vh',
+      panelClass: 'export-dialog',
       data: {
         toc: this.store.select(fromIgDocumentEdit.selectToc),
       },
@@ -83,7 +84,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     //   take(1),
     //   map((x) => { this.igService.exportAsHtml(x); }),
     // ).subscribe();
-
     // subscription.unsubscribe();
   }
 
