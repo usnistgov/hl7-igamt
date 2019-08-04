@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angu
 import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
+import { AssertionMode, IComplement, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
@@ -48,24 +48,29 @@ export enum VerbType {
 }
 
 export enum DeclarativeType {
-  CONTAINS_VALUE = 'containtValue',
+  CONTAINS_VALUE = 'containValue',
   CONTAINS_VALUE_DESC = 'containValueDesc',
   CONTAINS_CODE = 'containCode',
+  CONTAINS_CODE_DESC = 'containCodeDesc',
   CONTAINS_VALUES = 'containListValues',
   CONTAINS_CODES = 'containListCodes',
   CONTAINS_REGEX = 'regex',
+  CONTAINS_VALUES_DESC = 'containListValuesDesc',
+  CONTAINS_CODES_DESC = 'containListCodesDesc',
   INTEGER = 'positiveInteger',
   SEQUENCE = 'sequentially',
   ISO = 'iso',
 }
 
 export enum PropositionType {
-  CONTAINS_VALUE = 'containtValue',
-  NOT_CONTAINS_VALUE = 'notContaintValue',
+  CONTAINS_VALUE = 'containValue',
+  NOT_CONTAINS_VALUE = 'notContainValue',
   CONTAINS_VALUE_DESC = 'containValueDesc',
   NOT_CONTAINS_VALUE_DESC = 'notContainValueDesc',
   CONTAINS_VALUES = 'containListValues',
-  NOT_CONTAINS_VALUES = 'notContaintValues',
+  CONTAINS_VALUES_DESC = 'containListValuesDesc',
+  NOT_CONTAINS_VALUES = 'notContainValues',
+  NOT_CONTAINS_VALUES_DESC = 'notContainValuesDesc',
   VALUED = 'valued',
   NOT_VALUED = 'notValued',
 }
@@ -125,6 +130,7 @@ export class CsPropositionComponent implements OnInit {
       occurenceType: undefined,
       value: '',
       values: [],
+      descs: [],
       desc: '',
       codesys: '',
     },
@@ -189,18 +195,21 @@ export class CsPropositionComponent implements OnInit {
     { label: 'SHOULD', value: VerbType.SHOULD },
     { label: 'SHOULD NOT', value: VerbType.SHOULD_NOT },
     { label: 'MAY', value: VerbType.MAY },
-    { label: 'MAY NOT', value: VerbType.MAY_NOT },
+    // { label: 'MAY NOT', value: VerbType.MAY_NOT },
   ];
 
   declarative_statements = [
     { label: 'contain the value \'VALUE\'.', value: DeclarativeType.CONTAINS_VALUE },
     { label: 'contain the value \'VALUE\' (DESCRIPTION).', value: DeclarativeType.CONTAINS_VALUE_DESC },
+    { label: 'contain the value \‘VALUE\’ (DESCRIPTION) drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODE_DESC },
     { label: 'contain the value \'VALUE\' drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODE },
     { label: 'contain one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' }.', value: DeclarativeType.CONTAINS_VALUES },
+    { label: 'contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: DeclarativeType.CONTAINS_VALUES_DESC },
     { label: 'contain one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' } drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODES },
+    { label: 'contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) } drawn from the code system \'CODE SYSTEM\'.', value: DeclarativeType.CONTAINS_CODES_DESC },
     { label: 'match the regular expression \'REGULAR EXPRESSION\'.', value: DeclarativeType.CONTAINS_REGEX },
     { label: 'contain a positive integer.', value: DeclarativeType.INTEGER },
-    { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
+    // { label: 'be valued sequentially starting with the value \'1\'.', value: DeclarativeType.SEQUENCE },
     { label: 'be valued with an ISO-compliant OID.', value: DeclarativeType.ISO },
   ];
 
@@ -226,7 +235,9 @@ export class CsPropositionComponent implements OnInit {
     { label: 'contains the value \'VALUE\' (DESCRIPTION).', value: PropositionType.CONTAINS_VALUE_DESC },
     { label: 'does not contain the value \'VALUE\' (DESCRIPTION).', value: PropositionType.NOT_CONTAINS_VALUE_DESC },
     { label: 'contains one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' }.', value: PropositionType.CONTAINS_VALUES },
+    { label: 'contains one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: PropositionType.CONTAINS_VALUES_DESC },
     { label: 'does not contain one of the values in the list: { \'VALUE 1\', \'VALUE 2\', \'VALUE N\' }.', value: PropositionType.NOT_CONTAINS_VALUES },
+    { label: 'does not contain one of the values in the list: { \‘VALUE 1\’ (DESCRIPTION), \'VALUE 2\' (DESCRIPTION), \'VALUE N\' (DESCRIPTION) }.', value: PropositionType.NOT_CONTAINS_VALUES_DESC },
   ];
 
   labelsMap = {};
@@ -243,10 +254,6 @@ export class CsPropositionComponent implements OnInit {
     this.map(this.comparative_statements);
     this.map(this.proposition_statements);
   }
-
-  // getNode(path: IPath): IHL7v2TreeNode {
-
-  // }
 
   map(list: Array<{ label: string, value: string }>) {
     for (const item of list) {
@@ -274,7 +281,7 @@ export class CsPropositionComponent implements OnInit {
     const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
     const compNode = this.assertion.complement.occurenceLocationStr;
     const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-    this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb) : ''} ${this.valueOrBlank(statement)}
+    this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
     ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
     this.valueChange.emit(this.assertion);
   }
@@ -287,14 +294,35 @@ export class CsPropositionComponent implements OnInit {
     if (elm.occurenceType) {
       switch (elm.occurenceType) {
         case OccurrenceType.COUNT:
-          return `${elm.occurenceValue ? elm.occurenceValue : '#'} occurrences of`;
+          return `${elm.occurenceValue ? elm.occurenceValue : '#'} occurrence${elm.occurenceValue > 1 ? 's' : ''} of`;
         case OccurrenceType.INSTANCE:
-          return `The \'${elm.occurenceValue ? elm.occurenceValue : '#'}\' occurrence of`;
+          return `The ${elm.occurenceValue ? this.getLiteralForNumber(elm.occurenceValue) : '#'} occurrence of`;
         default:
           return this.labelsMap[elm.occurenceType];
       }
     }
     return '';
+  }
+
+  min(a: number, b: number) {
+    return a < b ? a : b;
+  }
+
+  getLiteralForNumber(nb: number) {
+    switch (nb) {
+      case 1: return 'first';
+      case 2: return 'second';
+      case 3: return 'third';
+      case 4: return 'fourth';
+      case 6: return 'sixth';
+      case 7: return 'seventh';
+      case 8: return 'eight';
+      default: return '#';
+    }
+  }
+
+  trackByFn(index, item) {
+    return index;
   }
 
   getStatementLiteral(complement: IComplement): string {
@@ -309,15 +337,32 @@ export class CsPropositionComponent implements OnInit {
         case PropositionType.NOT_CONTAINS_VALUE_DESC:
           return `does not contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}).`;
         case DeclarativeType.CONTAINS_CODE:
-          return `contain the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain the value \'${this.valueOrBlank(complement.value)}\' drawn from the code system \'${this.valueOrBlank(complement.codesys[0])}\'.`;
+        case DeclarativeType.CONTAINS_CODE_DESC:
+          return `contain the value \'${this.valueOrBlank(complement.value)}\' (${this.valueOrBlank(complement.desc)}) drawn from the code system \'${this.valueOrBlank(complement.codesys[0])}\'.`;
         case DeclarativeType.CONTAINS_VALUES:
-          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.join(','))}].`;
+          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
+        case DeclarativeType.CONTAINS_VALUES_DESC:
+          const values = complement.values.map((v) => '\'' + v + '\'').map((val, i) => {
+            return `${val} (${complement.descs[i]})`;
+          });
+          return `contain one of the values in the list: [${this.valueOrBlank(values.join(','))}].`;
         case PropositionType.NOT_CONTAINS_VALUES:
-          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.join(','))}].`;
+          return `does not contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}].`;
         case DeclarativeType.CONTAINS_CODES:
-          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys)}\'.`;
+          return `contain one of the values in the list: [${this.valueOrBlank(complement.values.map((v) => '\'' + v + '\'').join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys[0])}\'.`;
+        case DeclarativeType.CONTAINS_CODES_DESC:
+          const _values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
+            return `${val} (${complement.descs[i]})`;
+          });
+          return `contain one of the values in the list: [${this.valueOrBlank(_values.join(','))}] drawn from the code system \'${this.valueOrBlank(complement.codesys[0])}\'.`;
         case DeclarativeType.CONTAINS_REGEX:
           return `match the regular expression \'${this.valueOrBlank(complement.value)}\'.`;
+        case PropositionType.NOT_CONTAINS_VALUES_DESC:
+          const __values = complement.values.map((v) => `\'${v}\'`).map((val, i) => {
+            return `${val} (${complement.descs[i]})`;
+          });
+          return `does not contain one of the values in the list: [${this.valueOrBlank(__values.join(','))}].`;
         default:
           return this.labelsMap[complement.complementKey];
       }
@@ -342,8 +387,8 @@ export class CsPropositionComponent implements OnInit {
   }
 
   targetOccurenceValid() {
-    if ((this.assertion.subject && this.assertion.subject.occurenceType) || this.subjectRepeatMax > 0) {
-      return !!this.assertion.subject.occurenceType && this.targetOccurenceValues.valid;
+    if (this.targetOccurenceValues && (this.assertion.subject && this.assertion.subject.occurenceType) || this.subjectRepeatMax > 0) {
+      return !!this.assertion.subject.occurenceType && !!this.targetOccurenceValues.valid;
     } else {
       return true;
     }
@@ -370,7 +415,7 @@ export class CsPropositionComponent implements OnInit {
   }
 
   comparisonOccurenceValid() {
-    if (this.statementType === this._statementType.COMPARATIVE && (this.assertion.complement && this.assertion.complement.occurenceType) || this.complementRepeatMax > 0) {
+    if (this.compOccurenceValues && this.statementType === this._statementType.COMPARATIVE && (this.assertion.complement && this.assertion.complement.occurenceType) || this.complementRepeatMax > 0) {
       return !!this.assertion.complement.occurenceType && !!this.compOccurenceValues.valid;
     } else {
       return true;
@@ -397,6 +442,7 @@ export class CsPropositionComponent implements OnInit {
       value: '',
       values: [],
       desc: '',
+      descs: [],
       codesys: '',
     };
   }
@@ -440,6 +486,7 @@ export class CsPropositionComponent implements OnInit {
       values: [],
       codesys: '',
       desc: '',
+      descs: [],
     };
     this.change();
   }
@@ -447,12 +494,20 @@ export class CsPropositionComponent implements OnInit {
   changeStatementType() {
     this.assertion.complement = {
       ...this.assertion.complement,
+      path: undefined,
+      occurenceIdPath: undefined,
+      occurenceLocationStr: undefined,
+      occurenceValue: undefined,
+      occurenceType: undefined,
       complementKey: undefined,
       value: '',
       values: [],
       codesys: '',
       desc: '',
+      descs: [],
     };
+    this.complementRepeatMax = 0;
+    this.change();
   }
 
   // tslint:disable-next-line: cognitive-complexity
@@ -465,7 +520,7 @@ export class CsPropositionComponent implements OnInit {
       }
 
       const pre = loop(node.parent);
-      if (node.data.type === Type.CONFORMANCEPROFILE || node.data.type === Type.GROUP || node.data.type === Type.SEGMENT) {
+      if (node.data.type === Type.CONFORMANCEPROFILE || node.data.type === Type.GROUP || node.data.type === Type.SEGMENT || node.data.type === Type.DATATYPE) {
         return (pre ? pre + '.' : '') + node.data.name;
       } else {
         let separator = '.';
@@ -482,6 +537,28 @@ export class CsPropositionComponent implements OnInit {
     } else {
       return prep + ' (' + elm.data.name + ')';
     }
+  }
+
+  removeStr(list: any[], i: number) {
+    list.splice(i, 1);
+    this.change();
+  }
+
+  addStr(list: any[]) {
+    list.push('');
+    this.change();
+  }
+
+  removeStrDesc(list: any[], descs: any[], i: number) {
+    list.splice(i, 1);
+    descs.splice(i, 1);
+    this.change();
+  }
+
+  addStrDesc(list: any[], descs: any[]) {
+    list.push('');
+    descs.push('');
+    this.change();
   }
 
   ngOnInit() {

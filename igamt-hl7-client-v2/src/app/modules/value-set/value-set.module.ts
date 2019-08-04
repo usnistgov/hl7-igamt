@@ -18,7 +18,6 @@ import {ValueSetRoutingModule} from './value-set-routing.module';
     ValueSetRoutingModule,
     EffectsModule.forFeature([ValueSetEditEffects]),
     SharedModule,
-
   ],
   providers: [ValueSetService, ValueSetEditEffects],
 })

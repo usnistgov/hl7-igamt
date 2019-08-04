@@ -4,7 +4,7 @@ import { ActivatedRouteSnapshot, CanDeactivate, RouterStateSnapshot } from '@ang
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, of } from 'rxjs';
-import { concatMap, map, take } from 'rxjs/operators';
+import { concatMap, map, take, tap } from 'rxjs/operators';
 import { ToolbarSave } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IgEditActionTypes } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import { selectWorkspaceCurrentIsChanged, selectWorkspaceCurrentIsValid } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
@@ -29,7 +29,6 @@ export class IgEditSaveDeactivateGuard implements CanDeactivate<AbstractEditorCo
       concatMap(([editorChanged, editorValid]) => {
         if (!editorValid) {
           // TOGGLE INVALID DIALOG
-          console.log('INVALID DATA DIALOG');
           const dialogRef = this.dialog.open(ConfirmDialogComponent, {
             data: {
               question: 'You have invalid data in your form, leaving will result in unsaved work. Do you want to leave ?',
@@ -47,13 +46,17 @@ export class IgEditSaveDeactivateGuard implements CanDeactivate<AbstractEditorCo
               ofType(IgEditActionTypes.EditorSaveSuccess, IgEditActionTypes.EditorSaveFailure),
               map((action: Action) => {
                 switch (action.type) {
-                  case IgEditActionTypes.EditorSaveSuccess: return true;
+                  case IgEditActionTypes.EditorSaveSuccess:
+                    component.onDeactivate();
+                    return true;
                   case IgEditActionTypes.EditorSaveFailure: return false;
                 }
               }),
             );
           } else {
-            return of(true);
+            return of(true).pipe(
+              tap(() => component.onDeactivate()),
+            );
           }
         }
       }),

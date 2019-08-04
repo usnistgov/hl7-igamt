@@ -64,6 +64,7 @@ export abstract class AbstractEditorComponent {
 
   abstract onEditorSave(action: EditorSave): Observable<Action>;
   abstract editorDisplayNode(): Observable<IDisplayElement>;
+  abstract onDeactivate(): void;
 
   registerSaveListener() {
     this.saveSubscription = this.actions$.pipe(

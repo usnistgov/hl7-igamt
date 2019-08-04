@@ -30,11 +30,15 @@ export class TocSubMenuComponent implements OnInit {
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'metadata', 'Metadata', Icons.EDIT));
 
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'pre-def', 'Pre-definition', Icons.PRE));
+    if (type !== Type.VALUESET.toLowerCase()) {
 
-    ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Structure', Icons.TABLE));
+    } else {
+      ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'structure', 'Value Set Definition', Icons.TABLE));
 
+    }
     ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'post-def', 'Post-definition', Icons.POST));
-    if (type !== Type.VALUESET) {
+    if (type !== Type.VALUESET.toLowerCase()) {
       ret.push(new SubMenu('./' + type + '/' + this.element.id + '/' + 'conformance-statement', 'Conformance statements', Icons.TABLE));
 
     }

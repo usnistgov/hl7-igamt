@@ -31,9 +31,7 @@ export class ValueSetStructureComponent implements OnInit {
   cols = [
     {field: 'value', header: 'Value'},
     {field: 'description', header: 'Description'},
-
     {field: 'codeSystem', header: 'Code System'},
-
     {field: 'usage', header: 'Usage'},
     {field: 'comments', header: 'Comments'},
   ];
@@ -163,9 +161,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   updateAttribute(propertyType: PropertyType, value: any) {
-    console.log(propertyType);
-    console.log(value);
-
     this.changes.emit({
       location: 'ROOT',
       propertyType,
@@ -180,7 +175,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   updateStability($event) {
-    console.log();
     this.updateAttribute(PropertyType.STABILITY, $event);
   }
 

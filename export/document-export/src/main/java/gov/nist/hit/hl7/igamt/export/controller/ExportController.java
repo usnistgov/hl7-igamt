@@ -29,9 +29,7 @@ public class ExportController {
 	@RequestMapping(value = "/api/export/igdocuments/{id}/export/html", method = RequestMethod.GET)
 	  public @ResponseBody void exportIgDocumentToHtml(@PathVariable("id") String id,
 	      HttpServletResponse response) throws ExportException {
-		System.out.println("Let's Gooo");
 	    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-	    System.out.println("We in");
 	    if (authentication != null) {
 	    	try {
 	      String username = authentication.getPrincipal().toString();
@@ -48,5 +46,4 @@ public class ExportController {
 	      throw new AuthenticationCredentialsNotFoundException("No Authentication ");
 	    }
 	  }
-
 }

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 class ForwardingController { 
 
-//    @RequestMapping(value = "/**/{path:[^.]*}")       
-//    public String redirect() {
-//        return "forward:/";
-//    }
+    @RequestMapping(value = "/**/{path:[^.]*}")       
+    public String redirect() {
+        return "forward:/";
+    }
 }

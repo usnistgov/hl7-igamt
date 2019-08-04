@@ -33,14 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     http.csrf().disable()
         // http.formLogin().disable();
         // sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-        .authorizeRequests().antMatchers("/api/login").permitAll().
-        antMatchers("/api/register").permitAll()
-        .antMatchers("/api/password/**").permitAll()
-        .antMatchers("/api/config/**")
-        .permitAll().
-        antMatchers("/api/**").permitAll();
-
-
+        .authorizeRequests().antMatchers("/api/login").permitAll().antMatchers("/api/register")
+        .permitAll().antMatchers("/api/password/**").permitAll().antMatchers("/api/config/**")
+        .permitAll().antMatchers("/api/**")
+        .fullyAuthenticated().and()
+        .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
   }
 
 

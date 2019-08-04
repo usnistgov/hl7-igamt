@@ -15,12 +15,16 @@
 
     <!-- Statement -->
     <th [attr.colspan]="csType === _csType.PROPOSITION ? 2 : 1">
-      <div style="justify-content: space-between; display: flex; align-items: start;">
+      <div style="justify-content: start; display: flex; align-items: start; flex-direction: row; flex-wrap: wrap;">
         <span>Content Declarative Statement  <strong class="asteriks">*</strong></span>
-        <div *ngIf="csType !== _csType.PROPOSITION">
-          <p-radioButton (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" [style]="{'margin-left': '10px'}" [label]="'Declaration'" styleClass="'radio-inline'" [value]="_statementType.DECLARATIVE"></p-radioButton>
-          <p-radioButton (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" [style]="{'margin-left': '10px'}" [label]="'Comparison'" styleClass="'radio-inline'" [value]="_statementType.COMPARATIVE"></p-radioButton>
-        </div>
+        <ng-container *ngIf="csType !== _csType.PROPOSITION">
+          <span style="display: flex;
+          flex-direction: row;
+          align-items: center;"> <input type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.DECLARATIVE"/> Declaration </span>
+          <span style="display: flex;
+          flex-direction: row;
+          align-items: center;"> <input type="radio" (ngModelChange)="changeStatementType($event)" [(ngModel)]="statementType" style="margin-right: 5px; margin-left: 5px;" class="radio-inline" [value]="_statementType.COMPARATIVE"/> Comparison </span>
+        </ng-container>
       </div>
     </th>
 
@@ -48,10 +52,26 @@
       <form #targetOccurenceValues="ngForm">
         <ng-container [ngSwitch]="assertion.subject.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            The <input (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [max]="subjectRepeatMax"> occurrence of
+            The <input #occ="ngModel" (ngModelChange)="change()" name="target-occurence" required type="number" [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, subjectRepeatMax)" [appMaxNumber]="min(8, subjectRepeatMax)"> occurrence of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  min(8, subjectRepeatMax)  }}
+              </span>
+            </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [max]="subjectRepeatMax"> occurrence(s) of
+            <input #occ="ngModel" (ngModelChange)="change()" type="number" name="target-occurence" required [(ngModel)]="assertion.subject.occurenceValue" [min]="1" [appMinNumber]="1" [max]="subjectRepeatMax" [appMaxNumber]="subjectRepeatMax"> occurrence(s) of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  subjectRepeatMax }}
+              </span>
+            </div>
           </ng-container>
           <ng-container *ngSwitchDefault>
             {{ labelsMap[assertion.subject.occurenceType] }}
@@ -73,41 +93,111 @@
     </td>
 
     <!-- Statement -->
-    <td style="display: flex; align-items: center;" [ngClass]="{'invalid': !statementValid()}">
+    <td [ngClass]="{'invalid': !statementValid()}">
       <span class="value" *ngIf="!assertion.complement.complementKey"> SELECT </span>
-      <form #statementValues="ngForm" style="display: flex; align-items: center;">
+      <form #statementValues="ngForm">
         <ng-container [ngSwitch]="assertion.complement.complementKey">
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE">
-            contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+            contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE">
-            does not contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
+            does not contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" style="margin-left: 5px; margin-right: 5px;" required>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUE_DESC">
-            contain the value <input type="text" name="value" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+            contain the value <input type="text" name="value" class="form-control" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" class="form-control" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUE_DESC">
-            does not contain the value <input name="value" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
+            does not contain the value <input name="value" class="form-control" type="text" (change)="change()" [(ngModel)]="assertion.complement.value" placeholder="value" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" class="form-control" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">)
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE">
-            contain the code <input name="code" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
+            contain the code <input name="code" class="form-control" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> drawn from the code system <input name="codeSys" class="form-control" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODE_DESC">
+            contain the code <input name="code" class="form-control" type="text" [(ngModel)]="assertion.complement.value" (change)="change()" placeholder="code" required style="margin-left: 5px; margin-right: 5px;"> (<input (change)="change()" class="form-control" name="description" type="text" required [(ngModel)]="assertion.complement.desc" placeholder="description" style="margin-left: 5px; margin-right: 5px;">) drawn from the code system <input name="codeSys" class="form-control" (change)="change()" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;" >
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES">
-            contain one of the values in the list:  <p-chips name="values" (change)="change()" required [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips>
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_VALUES_DESC">
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs }"></ng-container>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUES_DESC">
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >does not contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs }"></ng-container>
+            </div>
           </ng-container>
           <ng-container *ngSwitchCase="_propositionType.NOT_CONTAINS_VALUES">
-            does not contain one of the values in the list:  <p-chips name="values" (change)="change()"  required [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips>
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >does not contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
+            </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES">
-            contain one of the values in the list: <p-chips name="values" required (change)="change()" [(ngModel)]="assertion.complement.values" placeholder="values" [style]="{ 'margin-left': '5px', 'margin-right' : '5px' }"></p-chips> drawn from the code system <input (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="stringList; context : { $implicit: assertion.complement.values }"></ng-container>
+              <span> drawn from the code system </span><input class="form-control" (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="_declarativeType.CONTAINS_CODES_DESC">
+            <div style="display: flex; flex-direction: row; align-items: center; flex-wrap: wrap;">
+              <span style="margin-right: 5px;" >contain one of the values in the list </span> <ng-container *ngTemplateOutlet="valueStrList; context : { $implicit: assertion.complement.values, descs: assertion.complement.descs  }"></ng-container>
+              <span> drawn from the code system </span><input class="form-control" (change)="change()" name="codeSys" type="text" required [(ngModel)]="assertion.complement.codesys" placeholder="code system" style="margin-left: 5px; margin-right: 5px;">
+            </div>
           </ng-container>
           <ng-container *ngSwitchCase="_declarativeType.CONTAINS_REGEX">
-            match the regular expression <input (change)="change()" name="regex" type="text" required [(ngModel)]="assertion.complement.value" placeholder="regular expression" style="margin-left: 5px; margin-right: 5px;" >
+            match the regular expression <input class="form-control" (change)="change()" name="regex" type="text" required [(ngModel)]="assertion.complement.value" placeholder="regular expression" style="margin-left: 5px; margin-right: 5px;" >
           </ng-container>
           <ng-container *ngSwitchDefault>
             {{ labelsMap[assertion.complement.complementKey] }}
           </ng-container>
         </ng-container>
+
+        <ng-template #stringList let-list  >
+          <div style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center;">
+            <span style="margin-right: 5px;"> [ </span>
+            <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;" >
+              <div class="input-group">
+                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" (change)="change()" style="width: 100px;" >
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStr(list, i)">
+                    <i class="fa fa-minus" style="color: red;"></i>
+                  </button>
+                </div>
+                <span *ngIf="(i + 1) !== list.length">, </span>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" (click)="addStr(list)" style="margin-left: 5px;">
+              <i class="fa fa-plus"></i>
+            </button>
+            <span style="margin-left: 5px;"> ] </span>
+          </div>
+        </ng-template>
+
+        <ng-template #valueStrList let-list let-descs="descs" >
+          <div style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center;">
+            <span style="margin-right: 5px;"> [ </span>
+            <div *ngFor="let str of list; let i = index; trackBy: trackByFn" style="margin-right: 5px;">
+              <div class="input-group">
+                <input class="form-control" [name]="'str' + i" [id]="'str' + i" type="text" [(ngModel)]="list[i]" required placeholder="value" style="width: 100px;"  (change)="change()">
+                <input class="form-control" [name]="'desc' + i" [id]="'desc' + i" type="text" [(ngModel)]="descs[i]" required placeholder="description" style="width: 100px;" (change)="change()">
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="button" id="button-addon2" (click)="removeStrDesc(list, descs, i)">
+                    <i class="fa fa-minus" style="color: red;"></i>
+                  </button>
+                </div>
+                <span *ngIf="(i + 1) !== list.length">, </span>
+              </div>
+            </div>
+            <button class="btn btn-sm btn-primary" (click)="addStrDesc(list, descs)" style="margin-left: 5px;">
+              <i class="fa fa-plus"></i>
+            </button>
+            <span style="margin-left: 5px;" > ] </span>
+          </div>
+        </ng-template>
+
       </form>
     </td>
 
@@ -117,10 +207,26 @@
       <form #compOccurenceValues="ngForm">
         <ng-container [ngSwitch]="assertion.complement.occurenceType">
           <ng-container *ngSwitchCase="_occurrenceType.INSTANCE">
-            the <input (change)="change()" name="comp-occurence" required type="number" [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [max]="complementRepeatMax"> occurrence of
+            the <input class="form-control" (change)="change()" #occ="ngModel"  name="comp-occurence" required type="number" [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [appMinNumber]="1" [max]="min(8, complementRepeatMax)" [appMaxNumber]="min(8, complementRepeatMax)"> occurrence of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  min(8, complementRepeatMax) }}
+              </span>
+            </div>
           </ng-container>
           <ng-container *ngSwitchCase="_occurrenceType.COUNT">
-            <input (change)="change()" type="number" name="comp-occurence" required [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [max]="complementRepeatMax"> occurrence(s) of
+            <input class="form-control" (change)="change()" #occ="ngModel" type="number" name="comp-occurence" required [(ngModel)]="assertion.complement.occurenceValue" [min]="1" [appMinNumber]="1" [max]="complementRepeatMax" [appMaxNumber]="complementRepeatMax"> occurrence(s) of
+            <div style="color:red; font-size: 0.7em;" *ngIf="occ?.errors">
+              <span *ngIf="occ.errors.min">
+                  the minimum value is 1
+              </span>
+              <span *ngIf="occ.errors.max">
+                  the maximum value is {{  complementRepeatMax }}
+              </span>
+            </div>
           </ng-container>
           <ng-container *ngSwitchDefault>
             {{ labelsMap[assertion.complement.occurenceType] }}
@@ -147,7 +253,7 @@
     <!-- Occurrence -->
     <td *ngIf="(assertion.subject && assertion.subject.occurenceType) || subjectRepeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <p-radioButton  [name]="id + 'target-occurences'" [value]="occurence.value" [label]="occurence.label" [(ngModel)]="assertion.subject.occurenceType" (ngModelChange)="change()"></p-radioButton><br>
+        <input type="radio" [name]="id + 'target-occurences'" [value]="occurence.value" [(ngModel)]="assertion.subject.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 
@@ -165,21 +271,21 @@
     <!-- Verb -->
     <td *ngIf="csType === _csType.STATEMENT" class="table-font">
       <ng-container *ngFor="let verb of verbs">
-        <p-radioButton [name]="id + 'verbs'" [value]="verb.value" [label]="verb.label" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"></p-radioButton><br>
+        <input type="radio" [name]="id + 'verbs'" [value]="verb.value" [(ngModel)]="assertion.verbKey" (ngModelChange)="change()"/> {{ verb.label }}<br>
       </ng-container>
     </td>
 
     <!-- Statement -->
     <td class="table-font">
       <ng-container  *ngFor="let complement of statementList()" >
-          <p-radioButton [name]="id + 'complement'" [value]="complement.value" [label]="complement.label" [(ngModel)]="assertion.complement.complementKey" (ngModelChange)="changeStatement($event)"></p-radioButton><br>
+        <input type="radio" [name]="id + 'complement'" [value]="complement.value" [(ngModel)]="assertion.complement.complementKey" (ngModelChange)="changeStatement($event)"/> {{ complement.label }}<br>
       </ng-container>
     </td>
 
     <!-- Occurrence -->
     <td *ngIf="(assertion.complement && assertion.complement.occurenceType) || complementRepeatMax > 0" class="table-font">
       <ng-container *ngFor="let occurence of occurences">
-        <p-radioButton  [name]="id + 'comp-occurences'" [value]="occurence.value" [label]="occurence.label" [(ngModel)]="assertion.complement.occurenceType" (ngModelChange)="change()"></p-radioButton><br>
+        <input type="radio"  [name]="id + 'comp-occurences'" [value]="occurence.value" [(ngModel)]="assertion.complement.occurenceType" (ngModelChange)="change()"/> {{ occurence.label }}<br>
       </ng-container>
     </td>
 
@@ -198,3 +304,5 @@
 
   </tr>
 </table>
+
+

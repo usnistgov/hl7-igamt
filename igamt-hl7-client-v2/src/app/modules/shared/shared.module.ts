@@ -70,6 +70,8 @@ import { TooltipTextOverflowDirective } from './directives/tooltip-text-overflow
 import { ConfigService } from './services/config.service';
 import { StoreResourceRepositoryService } from './services/resource-repository.service';
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
+import { MaxNumberDirective } from './validators/max-number.directive';
+import { MinNumberDirective } from './validators/min-number.directive';
 
 @NgModule({
   declarations: [
@@ -122,6 +124,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     AddResourceComponent,
     SelectResourceIdsComponent,
     ExportXmlDialogComponent,
+    MinNumberDirective,
+    MaxNumberDirective,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -212,6 +216,7 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     LengthComponent,
     ConformanceLengthComponent,
     DatatypeComponent,
+    RadioButtonModule,
     DragDropModule,
     SegmentComponent,
     ValuesetComponent,
@@ -231,6 +236,8 @@ import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
     ValueSetStructureComponent,
     AddResourceComponent,
     ExportXmlDialogComponent,
+    MinNumberDirective,
+    MaxNumberDirective,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })

@@ -14,6 +14,7 @@ import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { SegmentService } from '../../services/segment.service';
 import { HL7v2TreeColumnType } from './../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
+import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 
 @Component({
   selector: 'app-segment-structure-editor',
@@ -48,6 +49,7 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
         title: 'Structure',
         resourceType: Type.SEGMENT,
       },
+      LoadSegment,
       [
         {
           context: {
