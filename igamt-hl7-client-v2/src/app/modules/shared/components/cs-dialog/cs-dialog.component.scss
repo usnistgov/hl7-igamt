@@ -1,3 +1,4 @@
-.invalid {
-  background-color: rgb(252, 220, 225);
+input.ng-invalid {
+  background-color: #ffe9ec;
+  border-left: 5px solid red;
 }

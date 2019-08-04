@@ -17,6 +17,7 @@ import {IChange} from '../../../shared/models/save-change';
 import {IValueSet} from '../../../shared/models/value-set.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {ValueSetService} from '../../service/value-set.service';
+import {LoadValueSet} from "../../../../root-store/value-set-edit/value-set-edit.actions";
 
 @Component({
   selector: 'app-value-set-structure-editor',
@@ -47,6 +48,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
         title: 'Structure',
         resourceType: Type.VALUESET,
       },
+      LoadValueSet,
       [
       ],
       [

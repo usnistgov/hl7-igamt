@@ -58,6 +58,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },
+          availableConformanceStatements: [],
         };
       },
       selectedDatatype);

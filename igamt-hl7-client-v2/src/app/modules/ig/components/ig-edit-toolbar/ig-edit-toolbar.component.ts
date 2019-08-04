@@ -9,6 +9,7 @@ import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
+import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -69,11 +70,31 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   }
   exportHTML() {
+
     const subscription = this.getIgId().pipe(
       take(1),
-      map((x) => { this.igService.exportAsHtml(x); }),
-    ).subscribe();
+      map((x) => {
+        const dialogRef = this.dialog.open(ExportConfigurationDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          width: '95vw',
+          height: '95vh',
+          data: {
+            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+            firstDecision: this.igService.getExportFirstDecision(x),
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((x) => x !== undefined),
+          withLatestFrom(this.getIgId()),
+          take(1),
+          map(([result, igId]) => {
 
+            this.igService.exportXML(igId, result, null);
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
     subscription.unsubscribe();
   }
 

@@ -159,4 +159,8 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
+  getExportFirstDecision(id: string ): Observable<any> {
+    return this.http.get<any> ('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  }
+
 }

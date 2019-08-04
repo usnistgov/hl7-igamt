@@ -14,6 +14,7 @@ import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
+import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 
 @Component({
   selector: 'app-datatype-structure-editor',
@@ -38,6 +39,7 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
         title: 'Structure',
         resourceType: Type.DATATYPE,
       },
+      LoadDatatype,
       [
         {
           context: {

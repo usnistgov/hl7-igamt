@@ -11,7 +11,7 @@
   </div>
   <div class="form-group">
     <label for="free" class="form-label-lg"> Identifier </label>
-    <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier" [ngClass]="{'invalid': identifier.errors }">
+    <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
   </div>
   <!-- <div class="form-group">
     <label for="free" class="form-label-lg"> Context </label>
@@ -23,7 +23,7 @@
   <div *ngIf="activeTab === tabType.FREE">
     <div class="form-group">
       <label for="free" class="form-label-lg"> Description </label>
-      <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [ngClass]="{'invalid': description.errors }" [(ngModel)]="cs.freeText">
+      <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [(ngModel)]="cs.freeText">
     </div>
     <div style="margin-top: 30px; margin-bottom: 20px; cursor: pointer;" (click)="hideAdvanced = !hideAdvanced">
       <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>

@@ -1,0 +1,121 @@
+<p-card>
+    <p-header>
+      <h1>
+        <p-checkbox binary="true"
+                     label="Include Valueset Table Options"></p-checkbox>
+      </h1>
+    </p-header>
+
+    <div>
+      <!-- Usages card -->
+      <div>
+        <p-card>
+          <h2>Usages</h2>
+          <hr/>
+          <div>
+            <h3>Value Sets to Export:</h3>
+            <div>
+              <p-checkbox
+                 disabled="true" label="R" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 disabled="true" label="RE" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 disabled="true" label="C" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="O" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="X" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="All HL7 Unbound" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="All Custom Unbound" binary="true"></p-checkbox>
+            </div>
+          </div>
+          <hr/>
+          <div>
+            <h3>Codes to export</h3>
+            <div>
+              <p-checkbox
+                 disabled="true" label="R" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="P" binary="true"></p-checkbox>
+            </div>
+            <div>
+              <p-checkbox
+                 label="E" binary="true"></p-checkbox>
+            </div>
+          </div>
+          <hr/>
+          <div>
+            <h3>Max Number of Codes to Export: </h3>
+            <!-- <p-slider [(ngModel)]="tableOptions.codeNumber" min="0" (onChange)="setChanged()" [max]="tableOptions.maxCodeNumber" [style]="{'width':'30%'}" [animate]="true"></p-slider> -->
+          </div>
+        </p-card>
+        <p-card>
+          <h2>Metadata</h2>
+          <hr/>
+          <div layout="column">
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="Stability" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                label="Extensibility" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                label="Content Definition" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                 label="OID" binary="true"></p-checkbox>
+            </div>
+            <div class="config-checkbox">
+              <p-checkbox
+                label="Type" binary="true"></p-checkbox>
+            </div>
+          </div>
+        </p-card>
+      </div>
+      <!-- Columns card-->
+      <!-- <div flex>
+        <p-card>
+          <h2>Columns</h2>
+          <hr/>
+          <div layout="column" style="width: 100%">
+            <div *ngFor="let column of tableOptions.columns">
+              <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
+                          (onChange)="setChanged()" [label]="column.name">
+              </p-checkbox>
+            </div>
+          </div>
+        </p-card>
+      </div> -->
+      <!-- Co-Constraints card-->
+      <div flex>
+        <p-card>
+          <h2>PHINVADS email Notification</h2>
+          <hr/>
+          <p-checkbox  binary="true"
+                       label="Subscribe"></p-checkbox>
+        </p-card>
+      </div>
+    </div>
+    <p-footer>
+      <p-button label="Save" ></p-button>
+    </p-footer>

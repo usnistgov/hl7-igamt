@@ -102,7 +102,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   set resource(resource: IResource) {
     this.type = resource.type;
     this.close(this.s_resource);
-    console.log(resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
       this.nodes = [...value];
     });

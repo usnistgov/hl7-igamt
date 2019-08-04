@@ -46,35 +46,27 @@
 
       <ng-container *ngSwitchCase="'DATATYPE'">
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+          <input type="checkbox" checked="true" [(ngModel)]="decision.datatypesFilterMap[node.id]"style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+          <input type="checkbox" checked="true" [(ngModel)]="decision.conformanceProfileFilterMap[node.id]" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
         </div>
       </ng-container>
 
-      <ng-container *ngSwitchCase="'COMPOSITEPROFILE'">
-        <div style="display: flex; flex-direction: row; align-items: center;">
-          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <span>{{node.variableName}}</span>
-        </div>
-      </ng-container>
 
       <ng-container *ngSwitchCase="'SEGMENT'">
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data" ></app-display-section>
+          <input type="checkbox" checked="true" [(ngModel)]="decision.segmentFilterMap[node.id]" style="margin-right: 5px;"> <app-display-section [element]="node.data" ></app-display-section>
         </div>
       </ng-container>
 
       <ng-container *ngSwitchCase="'VALUESET'">
         <div style="display: flex; flex-direction: row; align-items: center;">
-          <input type="checkbox" checked="true" (change)="check($event, node, node.data.type)" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
+          <input type="checkbox" checked="true" [(ngModel)]="decision.valueSetFilterMap[node.id]" style="margin-right: 5px;"> <app-display-section [element]="node.data"></app-display-section>
         </div>
-      </ng-container>
-
-      <ng-container *ngSwitchCase="'PROFILECOMPONENT'">
       </ng-container>
 
     </ng-container>

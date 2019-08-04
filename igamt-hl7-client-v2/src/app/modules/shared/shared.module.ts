@@ -216,6 +216,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     LengthComponent,
     ConformanceLengthComponent,
     DatatypeComponent,
+    RadioButtonModule,
     DragDropModule,
     SegmentComponent,
     ValuesetComponent,

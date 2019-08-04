@@ -80,6 +80,20 @@ export class IgTOCNodeHelper {
     return this.sort(ret);
   }
 
+  static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
+    const ret: IDisplayElement[] = [];
+    for (const section of structure) {
+      switch (section.type) {
+        case Type.PROFILE:
+          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
+          break;
+        default:
+          break;
+      }
+    }
+    return this.sort(ret);
+  }
+
   static updatePositions(children: IContent[]) {
     for (let i = 0; i < children.length; i++) {
       children[i].position = i + 1;

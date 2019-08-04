@@ -47,7 +47,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
       (segmentCsList: IConformanceStatementList) => {
         const DTCSMap = {};
         console.log(segmentCsList);
-        Object.keys(segmentCsList.associatedConformanceStatementMap).forEach((key) => {
+        Object.keys(segmentCsList.associatedConformanceStatementMap || []).forEach((key) => {
           DTCSMap[key] = [
             ...(DTCSMap[key] ? DTCSMap[key] : []),
             ...segmentCsList.associatedConformanceStatementMap[key].conformanceStatements,
@@ -58,6 +58,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },
+          availableConformanceStatements: segmentCsList.availableConformanceStatements,
         };
       },
       selectedSegment);
