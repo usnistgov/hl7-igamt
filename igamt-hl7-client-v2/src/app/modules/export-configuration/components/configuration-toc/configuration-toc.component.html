@@ -1,4 +1,4 @@
-<tree-root #treeroot [nodes]="nodes" [options]="options">
+<tree-root #treeroot [nodes]="nodes" [options]="options" *ngIf="decision">
   <ng-template #treeNodeTemplate let-index="index" let-node>
     <ng-container [ngSwitch]="node.data.type">
 

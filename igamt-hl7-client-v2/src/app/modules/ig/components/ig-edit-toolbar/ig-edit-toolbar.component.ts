@@ -81,16 +81,14 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           height: '95vh',
           data: {
             toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
-            firstDecision: this.igService.getExportFirstDecision(x),
+            decision: this.igService.getExportFirstDecision(x),
           },
         });
         dialogRef.afterClosed().pipe(
-          filter((x) => x !== undefined),
           withLatestFrom(this.getIgId()),
           take(1),
           map(([result, igId]) => {
-
-            this.igService.exportXML(igId, result, null);
+            this.igService.exportAsHtml(igId, result);
           }),
         ).subscribe();
       }),

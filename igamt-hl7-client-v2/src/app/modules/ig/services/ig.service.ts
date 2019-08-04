@@ -151,8 +151,32 @@ export class IgService {
     window.open(this.prepareUrl(igId, 'word'));
   }
 
-  exportAsHtml(igId) {
-    window.open(this.prepareUrl(igId, 'html'));
+  export(igId, decision: any, format: string) {
+    const form = document.createElement('form');
+    form.action = '/api/export/ig/' + igId + '/' + format;
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(decision);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  exportAsHtml(igId, decision: any) {
+    const form = document.createElement('form');
+    form.action = '/api/export/ig/' + igId + '/html';
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(decision);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
   }
 
   private prepareUrl(igId: string, type: string): string {

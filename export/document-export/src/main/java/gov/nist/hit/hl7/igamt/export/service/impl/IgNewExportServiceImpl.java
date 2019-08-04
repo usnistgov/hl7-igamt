@@ -76,34 +76,28 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 	private static final String IG_XSLT_PATH = "/IGDocumentExport.xsl";
 
-	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId) throws Exception {
+	@Override
+	public ExportedFile exportIgDocumentToHtml(String username, String igDocumentId,ExportFilterDecision decision) throws Exception {
 		Ig igDocument = igService.findById(igDocumentId);
 		if (igDocument != null) {
 			ExportedFile htmlFile =
-					this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML);
+					this.serializeIgDocumentToHtml(username, igDocument, ExportFormat.HTML, decision);
 			return htmlFile;
 		}
 		return null;
 	}
-
-	private ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
-			ExportFormat exportFormat) throws Exception {
+	@Override
+	public  ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
+			ExportFormat exportFormat, ExportFilterDecision decision) throws Exception {
 		try {
 			ExportConfiguration exportConfiguration =
 					exportConfigurationService.getExportConfiguration(username);
 			exportConfiguration = ExportConfiguration.populateRestOfExportConfiguration(exportConfiguration);
 			ExportFontConfiguration exportFontConfiguration =
 					exportFontConfigurationService.getExportFontConfiguration(username);
-
-			//		      ExportFilterDecision exportFilterDecision = exportConfigurationFilterService.getExportFilterConfiguration(username);
-			ExportFilterDecision exportFilterDecision = ExportFilterDecision.CreateExportFilterDecision(exportConfiguration);
-
-
-			//		      String xmlContent =
-			//		          igSerializationService.serializeIgDocument(igDocument, exportConfiguration); 
 			IgDataModel igDataModel = igService.generateDataModel(igDocument);
 			String xmlContent =
-					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,exportFilterDecision).toXML();
+					igDataModelSerializationService.serializeIgDocument(igDataModel, exportConfiguration,decision).toXML();
 			//		      System.out.println("XML_EXPORT : " + xmlContent);
 			//		      System.out.println("XmlContent in IgExportService is : " + xmlContent);
 			// TODO add app infoservice to get app version

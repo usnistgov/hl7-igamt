@@ -1,4 +1,7 @@
-  <div style="width: 100%;" class="dg-container">
+<h2 mat-dialog-title>Export</h2>
+
+<mat-dialog-content>
+<div style="width: 100%;" class="dg-container">
     <div class="config-toc">
         <div class="input-group sidebar-filter">
             <div class="input-group-prepend">
@@ -34,14 +37,20 @@
             </div>
           </div>
       <app-configuration-toc
-        [nodes]="toc | async" [decision] ="data.firstDecision |async"
+        [nodes]="toc | async" [decision] ="data.decision |async"
       ></app-configuration-toc>
     </div>
     <div class="config-panel">
-       <app-segment-export-configuration></app-segment-export-configuration>
-       <app-datatype-export-configuration></app-datatype-export-configuration>
-       <app-conformance-profile-export-configuration></app-conformance-profile-export-configuration>
-       <app-value-set-export-configuration></app-value-set-export-configuration>
+<!--       <app-segment-export-configuration></app-segment-export-configuration>-->
+<!--       <app-datatype-export-configuration></app-datatype-export-configuration>-->
+<!--       <app-conformance-profile-export-configuration></app-conformance-profile-export-configuration>-->
+<!--       <app-value-set-export-configuration></app-value-set-export-configuration>-->
     </div>
   </div>
 
+
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

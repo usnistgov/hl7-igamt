@@ -8,7 +8,7 @@ describe('DatatypeExportConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ DatatypeExportConfigurationComponent ]
+      declarations: [ DatatypeExportConfigurationComponent ],
     })
     .compileComponents();
   }));

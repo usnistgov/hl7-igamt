@@ -6,6 +6,7 @@ import {mergeMap, take} from 'rxjs/operators';
 import {selectIgId, selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 
 import {SelectItem} from 'primeng/api';
+import {LoadValueSet} from '../../../../root-store/value-set-edit/value-set-edit.actions';
 import {StructureEditorComponent} from '../../../core/components/structure-editor/structure-editor.component';
 import {Message} from '../../../core/models/message/message.class';
 import {MessageService} from '../../../core/services/message.service';
@@ -17,7 +18,6 @@ import {IChange} from '../../../shared/models/save-change';
 import {IValueSet} from '../../../shared/models/value-set.interface';
 import {StoreResourceRepositoryService} from '../../../shared/services/resource-repository.service';
 import {ValueSetService} from '../../service/value-set.service';
-import {LoadValueSet} from "../../../../root-store/value-set-edit/value-set-edit.actions";
 
 @Component({
   selector: 'app-value-set-structure-editor',

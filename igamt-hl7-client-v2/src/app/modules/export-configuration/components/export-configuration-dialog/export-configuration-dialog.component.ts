@@ -2,7 +2,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { TreeNode } from 'angular-tree-component';
-import {Observable} from "rxjs";
+import {Observable} from 'rxjs';
 
 @Component({
   selector: 'app-export-configuration-dialog',
@@ -21,7 +21,14 @@ export class ExportConfigurationDialogComponent implements OnInit {
 
   }
 
+
   ngOnInit() {
   }
 
+  submit() {
+    this.dialogRef.close(this.data.decision);
+  }
+  cancel() {
+    this.dialogRef.close();
+  }
 }
