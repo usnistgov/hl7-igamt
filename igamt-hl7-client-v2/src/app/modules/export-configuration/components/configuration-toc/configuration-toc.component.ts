@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TreeModel, TreeNode } from 'angular-tree-component';
+import { TREE_ACTIONS, TreeNode } from 'angular-tree-component';
+import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
 
 @Component({
   selector: 'app-configuration-toc',
@@ -11,7 +12,7 @@ export class ConfigurationTocComponent implements OnInit {
   @Input()
   nodes: TreeNode[];
   @Output()
-  select: EventEmitter<TreeNode>;
+  select: EventEmitter<IDisplayElement>;
   options;
 
   constructor() {
@@ -20,7 +21,10 @@ export class ConfigurationTocComponent implements OnInit {
       allowDrag: (node: TreeNode) => false,
       actionMapping: {
         mouse: {
-          click: (node) => this.onSelect(node),
+          click: (tree, node, event) => {
+            TREE_ACTIONS.TOGGLE_SELECTED(tree, node, event);
+            this.onSelect(node.data);
+          },
         },
       },
     };

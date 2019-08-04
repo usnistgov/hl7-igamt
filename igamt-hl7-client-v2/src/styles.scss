@@ -208,6 +208,11 @@ body {
   margin-top: 10px;
 }
 
+.export-dialog .mat-dialog-container {
+  overflow: hidden;
+  padding: 0px !important;
+}
+
 body .ui-accordion .ui-accordion-header:not(.ui-state-disabled).ui-state-active a {
   background-color: #162986 !important;
 }
