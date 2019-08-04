@@ -65,9 +65,14 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
     });
   }
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
-    return resource.codeSystems.map((codeSystem: string) => {
-      return {label: codeSystem, value: codeSystem};
-    });
+    if (resource.codeSystems && resource.codeSystems.length > 0) {
+      return resource.codeSystems.map((codeSystem: string) => {
+        return {label: codeSystem, value: codeSystem};
+      });
+    } else {
+      return [];
+    }
+
   }
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
     return this.valueSetService.saveChanges(id, igId, changes);

@@ -206,7 +206,7 @@ export class IgEditSidebarComponent implements OnInit {
   }
 
   private getNewTitle(type: Type) {
-    return 'add New ' + this.getStringFromType(type);
+    return 'Add new ' + this.getStringFromType(type);
   }
 
   addChild($event: IAddNewWrapper) {
