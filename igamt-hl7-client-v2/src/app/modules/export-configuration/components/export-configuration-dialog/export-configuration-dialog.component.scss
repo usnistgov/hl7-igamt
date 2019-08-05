@@ -2,7 +2,7 @@
   overflow: auto;
   display: grid;
   grid-gap: 5px;
-  grid-template-columns: [config-toc] 1fr [config-panel] 5fr;
+  grid-template-columns: [config-toc] 2fr [config-panel] 3fr;
   overflow: hidden;
   background-color: #d2d1d2;
 }

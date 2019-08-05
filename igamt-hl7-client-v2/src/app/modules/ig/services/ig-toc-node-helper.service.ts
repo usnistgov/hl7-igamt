@@ -83,12 +83,8 @@ export class IgTOCNodeHelper {
   static buildProfileTree(structure: IContent[], messageNodes: IDisplayElement[], segmentsNodes: IDisplayElement[], datatypesNodes: IDisplayElement[], valueSetsNodes: IDisplayElement[]) {
     const ret: IDisplayElement[] = [];
     for (const section of structure) {
-      switch (section.type) {
-        case Type.PROFILE:
-          ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
-          break;
-        default:
-          break;
+      if (section.type === Type.PROFILE) {
+        ret.push(this.createProfileSection(section, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes, section.position + ''));
       }
     }
     return this.sort(ret);

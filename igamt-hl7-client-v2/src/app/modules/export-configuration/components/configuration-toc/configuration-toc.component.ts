@@ -1,6 +1,7 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TREE_ACTIONS, TreeNode } from 'angular-tree-component';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {TREE_ACTIONS, TreeComponent, TreeNode} from 'angular-tree-component';
 import { IDisplayElement } from 'src/app/modules/shared/models/display-element.interface';
+import {NodeHelperService} from '../../../shared/services/node-helper.service';
 
 @Component({
   selector: 'app-configuration-toc',
@@ -14,11 +15,18 @@ export class ConfigurationTocComponent implements OnInit {
   @Input()
   decision: any = {}; // model to be defined
 
+  @ViewChild('vsLib') vsLib: ElementRef;
+  @ViewChild('dtLib') dtLib: ElementRef;
+  @ViewChild('segLib') segLib: ElementRef;
+  @ViewChild('cpLib') cpLib: ElementRef;
+
+  @ViewChild(TreeComponent) private tree: TreeComponent;
+
   @Output()
   select: EventEmitter<IDisplayElement>;
   options;
 
-  constructor() {
+  constructor(private nodeHelperService: NodeHelperService) {
     this.select = new EventEmitter();
     this.options = {
       allowDrag: (node: TreeNode) => false,
@@ -43,7 +51,26 @@ export class ConfigurationTocComponent implements OnInit {
     this.select.emit(node);
   }
 
+  scrollTo(type: string) {
+    if (type === 'messages') {
+      this.cpLib.nativeElement.scrollIntoView();
+    } else if (type === 'segments') {
+      this.segLib.nativeElement.scrollIntoView();
+    } else if (type === 'datatypes') {
+      this.dtLib.nativeElement.scrollIntoView();
+    } else if (type === 'valueSets') {
+      this.vsLib.nativeElement.scrollIntoView();
+    }
+  }
+
   ngOnInit() {
+  }
+  filter(value: string) {
+    this.tree.treeModel.filterNodes((node) => {
+      return this.nodeHelperService
+        .getFilteringLabel(node.data.fixedName, node.data.variableName).toLowerCase()
+        .startsWith(value.toLowerCase());
+    });
   }
 
 }
