@@ -40,6 +40,9 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
+import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 //import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
@@ -104,8 +107,8 @@ public class IgServiceImpl implements IgService {
 	@Autowired
 	DatatypeService datatypeService;
 
-//	@Autowired
-//	ConfigService configService;
+	@Autowired
+	ConfigService configService;
 
 	@Autowired
 	SegmentService segmentService;
@@ -839,9 +842,7 @@ public class IgServiceImpl implements IgService {
 
 	}
 	@Override
-	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
-		// TODO Auto-generated method stub
-
+	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
 		Ig ig = this.findById(id);
 		if(ig == null ) {
 			throw new IGNotFoundException(id);
@@ -852,10 +853,10 @@ public class IgServiceImpl implements IgService {
 		}
 		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
 			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
-//				Config conf=	this.configService.findOne();
-//				if(conf !=null) {
-//					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
-//				}
+				Config conf=	this.configService.findOne();
+				if(conf !=null) {
+					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
+				}
 			}
 		}
 		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
@@ -868,10 +869,9 @@ public class IgServiceImpl implements IgService {
 				}
 			}else {
 				vs.setIncludeCodes(true);
-			}		
+			}
 		}
 		return vs;
-//		return null;
 
 	}
 	
@@ -896,7 +896,7 @@ public class IgServiceImpl implements IgService {
 	        new HashMap<String, ValuesetBindingDataModel>();
 
 	    for (Link link : ig.getValueSetRegistry().getChildren()) {
-	      Valueset vs = this.getValueSetIngIg(ig.getId(), link.getId());
+	      Valueset vs = this.getValueSetInIg(ig.getId(), link.getId());
 	      if (vs != null) {
 	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
 	        valuesetDataModel.setModel(vs);
@@ -974,5 +974,75 @@ public class IgServiceImpl implements IgService {
 	    bytes = outputStream.toByteArray();
 	    return new ByteArrayInputStream(bytes);
 	  }
+
+	@Override
+	public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId) {
+		relations.removeIf(x -> (!x.getChild().getId().equals(elementId) || !x.getChild().getType().equals(type)));
+		return relations;
+	}
+	
+	
+	@Override
+	public Set<RelationShip> buildRelationShip(Ig ig, Type type) {
+		// TODO Auto-generated method stub
+		Set<RelationShip> ret = new HashSet<RelationShip>();
+
+		switch (type) {
+		case DATATYPE:
+
+			addSegmentsRelations(ig, ret);
+			addDatatypesRelations(ig, ret);
+			return ret;
+
+		case SEGMENT:
+
+			addConformanceProfilesRelations(ig, ret);
+			return ret;
+
+		case VALUESET:
+			addConformanceProfilesRelations(ig, ret);
+			addSegmentsRelations(ig, ret);
+			addDatatypesRelations(ig, ret);
+			return ret;
+
+		default:
+			return ret;
+
+		}
+	}
+	
+	@Override
+	public Set<RelationShip> builAllRelations(Ig ig) {
+		// TODO Auto-generated method stub
+		Set<RelationShip> ret = new HashSet<RelationShip>();
+		addConformanceProfilesRelations(ig, ret);
+		addSegmentsRelations(ig, ret);
+		addDatatypesRelations(ig, ret);
+		return ret;
+	}
+	
+
+	private void addConformanceProfilesRelations(Ig ig, Set<RelationShip> ret) {
+		List<ConformanceProfile> profiles = conformanceProfileService
+				.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
+		for (ConformanceProfile profile : profiles) {
+			ret.addAll(conformanceProfileService.collectDependencies(profile));
+		}
+	}
+
+	private void addSegmentsRelations(Ig ig, Set<RelationShip> ret) {
+		List<Segment> segments = segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());
+		for (Segment s : segments) {
+			ret.addAll(segmentService.collectDependencies(s));
+		}
+
+	}
+
+	private void addDatatypesRelations(Ig ig, Set<RelationShip> ret) {
+		List<Datatype> datatypes = datatypeService.findByIdIn(ig.getDatatypeRegistry().getLinksAsIds());
+		for (Datatype dt : datatypes) {
+			ret.addAll(datatypeService.collectDependencies(dt));
+		}
+	}
 	  
 	}

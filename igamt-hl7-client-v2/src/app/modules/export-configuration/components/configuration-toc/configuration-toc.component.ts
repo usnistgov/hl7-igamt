@@ -11,6 +11,9 @@ export class ConfigurationTocComponent implements OnInit {
 
   @Input()
   nodes: TreeNode[];
+  @Input()
+  decision: any = {}; // model to be defined
+
   @Output()
   select: EventEmitter<IDisplayElement>;
   options;

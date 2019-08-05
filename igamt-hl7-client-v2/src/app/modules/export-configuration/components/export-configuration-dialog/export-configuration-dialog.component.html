@@ -1,77 +1,56 @@
-  <div style="width: 100%; height: 100%;" class="dg-container">
-  <div class="config-toc">
-    <div class="input-group sidebar-filter">
-      <div class="input-group-prepend">
-        <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
-      </div>
-      <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername" placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
-    </div>
-    <div class="sidebar-controls">
-      <div></div>
-      <div class="btn-group mr-2" role="group">
-        <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
-          CP
-        </button>
-        <button (click)="scrollTo('segments')" class="btn btn-text btn-sm entity-badge-segment" type="button">
-          S
-        </button>
-        <button (click)="scrollTo('datatypes')" class="btn btn-text btn-sm entity-badge-datatype" type="button">
-          DT
-        </button>
-        <button (click)="scrollTo('valueSets')" class="btn btn-text btn-sm entity-badge-valueset" type="button">
-          VS
-        </button>
-        <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
-          <i class="fa fa-expand"></i>
-        </button>
-        <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
-          <i class="fa fa-compress"></i>
-        </button>
-        <button  class="btn btn-text btn-sm btn-primary" type="button" (click)="addSection()">
-          <i class="fa fa-plus"></i>
-        </button>
-      </div>
-    </div>
-    <div class="sidebar-content">
+<h2 mat-dialog-title>Export</h2>
+
+<mat-dialog-content>
+<div style="width: 100%;" class="dg-container">
+    <div class="config-toc">
+        <div class="input-group sidebar-filter">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroupPrepend3"><i class="fa fa-filter"></i></span>
+            </div>
+            <input (keyup)="filterFn($event.target.value)" class="form-control" id="validationServerUsername"
+                    placeholder="Filter" required style="background-color: #f0f0f0;" type="text">
+          </div>
+          <div class="sidebar-controls">
+            <button (click)="collapseToc()" class="btn btn-sm btn-default" style="border: 1px solid grey; border-radius: 50%; width: 35px; height: 35px; margin-left: 5px;"><i class="fa fa-chevron-left"></i></button>
+            <div class="btn-group mr-2" role="group">
+              <button (click)="scrollTo('messages')" class="btn btn-text btn-sm entity-badge-conformance-profile" type="button">
+                CP
+              </button>
+              <button (click)="scrollTo('segments')" class="btn btn-text btn-sm entity-badge-segment" type="button">
+                S
+              </button>
+              <button (click)="scrollTo('datatypes')" class="btn btn-text btn-sm entity-badge-datatype" type="button">
+                DT
+              </button>
+              <button (click)="scrollTo('valueSets')" class="btn btn-text btn-sm entity-badge-valueset" type="button">
+                VS
+              </button>
+              <button  class="btn btn-text btn-sm btn-primary" (click)="expandAll()">
+                <i class="fa fa-expand"></i>
+              </button>
+              <button  class="btn btn-text btn-sm btn-primary"  (click)="collapseAll()">
+                <i class="fa fa-compress"></i>
+              </button>
+              <button  class="btn btn-text btn-sm btn-primary" type="button">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
       <app-configuration-toc
-        [nodes]="toc | async"
-        (select)="select($event)"
+        [nodes]="toc | async" [decision] ="data.decision |async"
       ></app-configuration-toc>
     </div>
-  </div>
-  <div class="config-panel">
-    <div class="titlebar">
-        <h5 class="title-text">
-            <app-scope-badge *ngIf="selected?.domainInfo" [scope]="selected?.domainInfo.scope" [version]="selected?.domainInfo.version"></app-scope-badge>
-            <app-entity-bagde [type]="selected?.type"></app-entity-bagde>
-            <span *ngIf="selected?.type !== 'IGDOCUMENT'" >
-              <span *ngIf="selected?.path"> {{selected?.path}} </span>
-              <span> {{selected?.fixedName}}</span>
-              <span *ngIf="selected?.fixedName && selected?.variableName">_</span>
-                <span> {{selected?.variableName}}</span>
-            </span>
-            <span *ngIf="selected?.type === 'IGDOCUMENT'" > Implementation Guide</span>
-        </h5>
-    </div>
-    <div class="content">
-      <ng-container [ngSwitch]="type" >
-        <ng-container *ngSwitchCase="'SEGMENT'">
-          <app-segment-export-configuration></app-segment-export-configuration>
-        </ng-container>
-        <ng-container *ngSwitchCase="'VALUESET'">
-          <app-value-set-export-configuration></app-value-set-export-configuration>
-        </ng-container>
-        <ng-container *ngSwitchCase="'DATATYPE'">
-          <app-datatype-export-configuration></app-datatype-export-configuration>
-        </ng-container>
-        <ng-container *ngSwitchCase="'CONFORMANCEPROFILE'">
-          <app-conformance-profile-export-configuration></app-conformance-profile-export-configuration>
-        </ng-container>
-      </ng-container>
-    </div>
-    <div class="button-row">
-      <button class="btn btn-sm btn-success">Export</button>
+    <div class="config-panel">
+<!--       <app-segment-export-configuration></app-segment-export-configuration>-->
+<!--       <app-datatype-export-configuration></app-datatype-export-configuration>-->
+<!--       <app-conformance-profile-export-configuration></app-conformance-profile-export-configuration>-->
+<!--       <app-value-set-export-configuration></app-value-set-export-configuration>-->
     </div>
   </div>
-</div>
 
+
+</mat-dialog-content>
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="cancel()" class="btn btn-sm btn-danger" style="margin-right: 5px;">Cancel</button>
+  <button (click)="submit()"  class="btn btn-sm btn-success">Submit</button>
+</mat-dialog-actions>

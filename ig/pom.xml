@@ -64,17 +64,8 @@
 			<artifactId>export-configuration</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
-		<!-- <dependency>
-		<dependency>
-			<groupId>gov.nist.hit.hl7</groupId>
-			<artifactId>common-config</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-
-		</dependency>
-
-		<dependency> <groupId>gov.nist.hit.hl7</groupId> <artifactId>document-export</artifactId> 
-			<version>${parent.version}</version> </dependency> -->
+		<!-- <dependency> <groupId>gov.nist.hit.hl7</groupId> <artifactId>document-export</artifactId> 
+			<version>${parent.version}</version> </dependency>  -->
 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -82,6 +73,12 @@
 			<version>1.3.2</version>
 		</dependency> 
 
+		<dependency>
+			<groupId>gov.nist.hit.hl7</groupId>
+			<artifactId>common-config</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+
+		</dependency>
 		<dependency>
 			<groupId>commons-lang</groupId>
 			<artifactId>commons-lang</artifactId>

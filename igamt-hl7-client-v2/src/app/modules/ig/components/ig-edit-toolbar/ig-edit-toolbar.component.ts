@@ -70,21 +70,30 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
 
   }
   exportHTML() {
-    this.dialog.open(ExportConfigurationDialogComponent, {
-      maxWidth: '95vw',
-      maxHeight: '90vh',
-      width: '95vw',
-      height: '95vh',
-      panelClass: 'export-dialog',
-      data: {
-        toc: this.store.select(fromIgDocumentEdit.selectToc),
-      },
-    });
-    // const subscription = this.getIgId().pipe(
-    //   take(1),
-    //   map((x) => { this.igService.exportAsHtml(x); }),
-    // ).subscribe();
-    // subscription.unsubscribe();
+
+    const subscription = this.getIgId().pipe(
+      take(1),
+      map((x) => {
+        const dialogRef = this.dialog.open(ExportConfigurationDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          width: '95vw',
+          height: '95vh',
+          data: {
+            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+            decision: this.igService.getExportFirstDecision(x),
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          withLatestFrom(this.getIgId()),
+          take(1),
+          map(([result, igId]) => {
+            this.igService.exportAsHtml(igId, result);
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
+    subscription.unsubscribe();
   }
 
   exportXML() {

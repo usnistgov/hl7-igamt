@@ -25,6 +25,6 @@ public class IGNotFoundException extends Exception {
   private static final long serialVersionUID = 2756893001270154399L;
 
   public IGNotFoundException(String id) {
-    super("Segment with id " + id + " not found");
+    super("IG with id " + id + " not found");
   }
 }

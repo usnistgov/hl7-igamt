@@ -8,7 +8,7 @@ describe('ExportConfigurationDialogComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExportConfigurationDialogComponent ]
+      declarations: [ ExportConfigurationDialogComponent ],
     })
     .compileComponents();
   }));

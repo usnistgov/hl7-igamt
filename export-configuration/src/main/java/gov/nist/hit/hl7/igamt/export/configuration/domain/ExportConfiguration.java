@@ -128,11 +128,10 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-
     displayAll.setC(true);
     displayAll.setRe(true);
-    displayAll.setX(true);
-    displayAll.setO(true);
+    displayAll.setX(false);
+    displayAll.setO(false);
     displayAll.setR(true);
 
     defaultConfiguration.setSegmentORGroupsMessageExport(displayAll);

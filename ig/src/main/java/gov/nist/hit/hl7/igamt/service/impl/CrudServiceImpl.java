@@ -134,7 +134,6 @@ public class CrudServiceImpl implements CrudService {
         processSegmentorGroup(child, ids);
       }
     }
-
   }
 
   @Override

@@ -8,7 +8,14 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class Group extends SegmentRefOrGroup {
 
-  @DeltaField
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -1254281710792010573L;
+/**
+	 * 
+	 */
+@DeltaField
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
 
   public Group() {
