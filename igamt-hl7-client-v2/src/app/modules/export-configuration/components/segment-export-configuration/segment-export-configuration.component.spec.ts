@@ -8,7 +8,7 @@ describe('SegmentExportConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SegmentExportConfigurationComponent ]
+      declarations: [ SegmentExportConfigurationComponent ],
     })
     .compileComponents();
   }));

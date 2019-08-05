@@ -8,7 +8,7 @@ describe('ValueSetExportConfigurationComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ValueSetExportConfigurationComponent ]
+      declarations: [ ValueSetExportConfigurationComponent ],
     })
     .compileComponents();
   }));

@@ -1,8 +1,10 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import { MatDialogRef } from '@angular/material';
 import { MAT_DIALOG_DATA, MatDialog } from '@angular/material/dialog';
 import { TreeNode } from 'angular-tree-component';
-import {Observable} from 'rxjs';
+import {Type} from '../../../shared/constants/type.enum';
+import {IDisplayElement} from '../../../shared/models/display-element.interface';
+import {ConfigurationTocComponent} from '../configuration-toc/configuration-toc.component';
 
 @Component({
   selector: 'app-export-configuration-dialog',
@@ -10,25 +12,33 @@ import {Observable} from 'rxjs';
   styleUrls: ['./export-configuration-dialog.component.scss'],
 })
 export class ExportConfigurationDialogComponent implements OnInit {
-
-  toc: Observable<TreeNode[]>;
-
+  selected: IDisplayElement;
+  type: Type;
+  @ViewChild(ConfigurationTocComponent) toc;
   constructor(
-    private dialog: MatDialog,
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
-    this.toc = data.toc;
-
   }
 
+  select(node) {
+    this.selected = node;
+    this.type = node.type;
+  }
 
   ngOnInit() {
   }
-
   submit() {
+    console.log(this.data.decision);
     this.dialogRef.close(this.data.decision);
   }
   cancel() {
     this.dialogRef.close();
+  }
+  filterFn(value: any) {
+    this.toc.filter(value);
+  }
+
+  scrollTo(messages: string) {
+    this.toc.scrollTo(messages);
   }
 }

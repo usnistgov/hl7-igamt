@@ -1,108 +1,49 @@
-<p-card>
-    <p-header>
-      <h1>
-        <p-checkbox binary="true"
-                    (onChange)="setChanged()" label="Include Datatype Table Options"></p-checkbox>
-      </h1>
-    </p-header>
-
-    <div>
-      <!-- Usages card -->
-      <div>
-        <p-card>
-          <h2>Usages</h2>
-          <hr/>
-          <div>
-            <h3>Datatypes to export</h3>
-            <div>
-              <p-checkbox
-
-                 disabled="true" label="R" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 disabled="true" label="RE" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                disabled="true" label="C" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 label="O" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 label="X" binary="true"></p-checkbox>
-            </div>
-          </div>
-          <p-checkbox
-             label="Include varies" binary="true"></p-checkbox>
-          <hr/>
-          <div>
-            <h3>Components to export</h3>
-            <div>
-              <p-checkbox
-                 disabled="true" label="R" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 disabled="true" label="RE" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 disabled="true" label="C" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                label="O" binary="true"></p-checkbox>
-            </div>
-            <div>
-              <p-checkbox
-                 label="X" binary="true"></p-checkbox>
-            </div>
-          </div>
-        </p-card>
-        <p-card>
-          <h2>Metadata</h2>
-          <hr/>
-          <div layout="column">
-            <div class="config-checkbox">
-              <p-checkbox
-                 label="HL7 Version" binary="true"></p-checkbox>
-            </div>
-            <div class="config-checkbox">
-              <p-checkbox
-                 label="Publication Date" binary="true"></p-checkbox>
-            </div>
-            <div class="config-checkbox">
-              <p-checkbox
-                label="Publication Version" binary="true"></p-checkbox>
-            </div>
-            <div class="config-checkbox">
-              <p-checkbox
-                label="Scope" binary="true"></p-checkbox>
-            </div>
-          </div>
-        </p-card>
+<p-checkbox binary="true" (onChange)="setChanged()" label="Include Datatype Table Options"></p-checkbox>
+<table class="table table-sm table-striped">
+  <tr>
+    <th>Usages</th>
+  </tr>
+  <tr>
+    <td>Datatypes to export</td>
+  </tr>
+  <tr>
+    <td>
+      <p-checkbox disabled="true" label="R" binary="true"></p-checkbox><br>
+      <p-checkbox disabled="true" label="RE" binary="true"></p-checkbox><br>
+      <p-checkbox disabled="true" label="C" binary="true"></p-checkbox><br>
+      <p-checkbox label="O" binary="true"></p-checkbox><br>
+      <p-checkbox label="X" binary="true"></p-checkbox><br>
+    </td>
+  </tr>
+  <tr>
+    <td>Components to export</td>
+  </tr>
+  <tr>
+    <td>
+      <p-checkbox disabled="true" label="R" binary="true"></p-checkbox><br>
+      <p-checkbox disabled="true" label="RE" binary="true"></p-checkbox><br>
+      <p-checkbox disabled="true" label="C" binary="true"></p-checkbox><br>
+      <p-checkbox label="O" binary="true"></p-checkbox><br>
+      <p-checkbox label="X" binary="true"></p-checkbox><br>
+    </td>
+  </tr>
+  <tr>
+    <th>Metadata</th>
+  </tr>
+  <tr>
+    <div layout="column">
+      <div class="config-checkbox">
+        <p-checkbox label="HL7 Version" binary="true"></p-checkbox>
       </div>
-      <!-- Columns card-->
-      <!-- <div flex>
-        <p-card>
-          <h2>Columns</h2>
-          <hr/>
-          <div layout="column" style="width: 100%">
-            <div *ngFor="let column of tableOptions.columns">
-              <p-checkbox [(ngModel)]="column.present" binary="true" [disabled]="column.disabled"
-                          (onChange)="setChanged()" [label]="column.name">
-              </p-checkbox>
-            </div>
-          </div>
-        </p-card>
-      </div> -->
+      <div class="config-checkbox">
+        <p-checkbox label="Publication Date" binary="true"></p-checkbox>
+      </div>
+      <div class="config-checkbox">
+        <p-checkbox label="Publication Version" binary="true"></p-checkbox>
+      </div>
+      <div class="config-checkbox">
+        <p-checkbox label="Scope" binary="true"></p-checkbox>
+      </div>
     </div>
-
-    <p-footer>
-      <p-button label="Save"></p-button>
-    </p-footer>
-  </p-card>
+  </tr>
+</table>
