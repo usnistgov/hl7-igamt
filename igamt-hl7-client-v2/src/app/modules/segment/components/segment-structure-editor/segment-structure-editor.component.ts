@@ -25,8 +25,6 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
 
   type = Type;
   segment: ReplaySubject<ISegment>;
-  datatypes: Observable<IDisplayElement[]>;
-  segments: Observable<IDisplayElement[]>;
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;

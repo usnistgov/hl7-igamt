@@ -48,3 +48,8 @@ export interface IStructureElementBinding extends IBinding, IStructureElementBin
 export interface IResourceBinding extends IBinding {
   conformanceStatementIds: string[];
 }
+
+export enum IBindingType {
+  VALUESET = 'VALUESET',
+  SINGLECODE = 'SINGLECODE',
+}

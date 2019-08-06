@@ -5,7 +5,11 @@ import { combineLatest, Observable, ReplaySubject, Subscription, throwError } fr
 import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {
+  selectAllDatatypes,
+  selectAllSegments,
+  selectValueSetsNodes,
+} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
@@ -27,8 +31,9 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
 
   type = Type;
   resourceSubject: ReplaySubject<T>;
-  datatypes: Observable<IDisplayElement[]>;
-  segments: Observable<IDisplayElement[]>;
+  public datatypes: Observable<IDisplayElement[]>;
+  public segments: Observable<IDisplayElement[]>;
+  public valueSets: Observable<IDisplayElement[]>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
@@ -46,6 +51,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     super(editorMetadata, actions$, store);
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
+    this.valueSets = this.store.select(selectValueSetsNodes);
     this.username = store.select(fromAuth.selectUsername);
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);

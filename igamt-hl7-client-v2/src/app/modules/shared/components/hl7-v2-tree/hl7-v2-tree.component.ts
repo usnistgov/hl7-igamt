@@ -94,6 +94,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   @Input()
   segments: IDisplayElement[];
   @Input()
+  valueSets: IDisplayElement[];
+  @Input()
   repository: AResourceRepositoryService;
   @Input()
   username: string;
