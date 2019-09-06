@@ -38,8 +38,8 @@ export interface IBinding {
 export interface IStructureElementBindingProperties {
   valuesetBindings: IValuesetBinding[];
   internalSingleCode: InternalSingleCode;
-  externalSingleCode: IExternalSingleCode;
-  predicateId: string;
+  externalSingleCode?: IExternalSingleCode;
+  predicateId?: string;
 }
 
 export interface IStructureElementBinding extends IBinding, IStructureElementBindingProperties {

@@ -3,6 +3,7 @@ import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
+import {IBindingInfo, IValueSetBindingConfigMap} from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
@@ -95,6 +96,8 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   segments: IDisplayElement[];
   @Input()
   valueSets: IDisplayElement[];
+  @Input()
+  bindingConfig: IValueSetBindingConfigMap;
   @Input()
   repository: AResourceRepositoryService;
   @Input()

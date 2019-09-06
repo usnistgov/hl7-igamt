@@ -852,14 +852,14 @@ public class IgServiceImpl implements IgService {
 			throw new ValuesetNotFoundException(vsId);
 		}
 		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
-			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
+			if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 				Config conf=	this.configService.findOne();
 				if(conf !=null) {
 					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
 				}
 			}
 		}
-		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
+		if(ig.getValueSetRegistry().getCodesPresence() != null ) {
 			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
 				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
 					vs.setIncludeCodes(true);

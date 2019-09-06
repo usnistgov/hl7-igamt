@@ -8,7 +8,7 @@ describe('BindingSelectorComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ BindingSelectorComponent ]
+      declarations: [ BindingSelectorComponent ],
     })
     .compileComponents();
   }));
