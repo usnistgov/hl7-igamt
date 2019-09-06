@@ -13,7 +13,6 @@ public class RelationShip {
 	private Usage usage; 
 	@Indexed
 	private ReferenceIndentifier child;
-	
 	@Indexed
 	private ReferenceIndentifier parent;
 	

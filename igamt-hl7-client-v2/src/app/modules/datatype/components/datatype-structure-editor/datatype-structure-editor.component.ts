@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -38,6 +39,7 @@ export class DatatypeStructureEditorComponent extends StructureEditorComponent<I
         title: 'Structure',
         resourceType: Type.DATATYPE,
       },
+      LoadDatatype,
       [
         {
           context: {

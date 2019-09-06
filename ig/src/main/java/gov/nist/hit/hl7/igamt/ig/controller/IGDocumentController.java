@@ -604,8 +604,8 @@ public class IGDocumentController extends BaseController {
 			@PathVariable("elementId") String elementId, Authentication authentication) throws IGNotFoundException {
 		Ig ig = findIgById(igId);
 
-		Set<RelationShip> relations = buildRelationShip(ig, type);
-		return findUsage(relations, type, elementId);
+		Set<RelationShip> relations = igService.buildRelationShip(ig, type);
+		return igService.findUsage(relations, type, elementId);
 	}
 
 	private Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId) {

@@ -1,23 +1,23 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Actions} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {concatMap, map, switchMap} from 'rxjs/operators';
-import {EditorSave} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { concatMap, map, switchMap } from 'rxjs/operators';
+import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {selectSegmentsById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
+import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-datatype-cross-refs',
   templateUrl: './datatype-cross-refs.component.html',
   styleUrls: ['./datatype-cross-refs.component.css'],
 })
-export class DatatypeCrossRefsComponent extends AbstractEditorComponent implements OnInit, OnDestroy  {
+export class DatatypeCrossRefsComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
   usages: Observable<IUsages[]>;
 
@@ -53,5 +53,9 @@ export class DatatypeCrossRefsComponent extends AbstractEditorComponent implemen
   }
 
   ngOnInit(): void {
+  }
+
+  onDeactivate() {
+
   }
 }

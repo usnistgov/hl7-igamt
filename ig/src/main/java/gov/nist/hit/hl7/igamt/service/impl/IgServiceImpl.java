@@ -40,6 +40,7 @@ import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 //import gov.nist.hit.hl7.igamt.common.config.domain.Config;
@@ -851,14 +852,14 @@ public class IgServiceImpl implements IgService {
 			throw new ValuesetNotFoundException(vsId);
 		}
 		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
-			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
+			if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 				Config conf=	this.configService.findOne();
 				if(conf !=null) {
 					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
 				}
 			}
 		}
-		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
+		if(ig.getValueSetRegistry().getCodesPresence() != null ) {
 			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
 				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
 					vs.setIncludeCodes(true);
@@ -973,5 +974,75 @@ public class IgServiceImpl implements IgService {
 	    bytes = outputStream.toByteArray();
 	    return new ByteArrayInputStream(bytes);
 	  }
+
+	@Override
+	public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId) {
+		relations.removeIf(x -> (!x.getChild().getId().equals(elementId) || !x.getChild().getType().equals(type)));
+		return relations;
+	}
+	
+	
+	@Override
+	public Set<RelationShip> buildRelationShip(Ig ig, Type type) {
+		// TODO Auto-generated method stub
+		Set<RelationShip> ret = new HashSet<RelationShip>();
+
+		switch (type) {
+		case DATATYPE:
+
+			addSegmentsRelations(ig, ret);
+			addDatatypesRelations(ig, ret);
+			return ret;
+
+		case SEGMENT:
+
+			addConformanceProfilesRelations(ig, ret);
+			return ret;
+
+		case VALUESET:
+			addConformanceProfilesRelations(ig, ret);
+			addSegmentsRelations(ig, ret);
+			addDatatypesRelations(ig, ret);
+			return ret;
+
+		default:
+			return ret;
+
+		}
+	}
+	
+	@Override
+	public Set<RelationShip> builAllRelations(Ig ig) {
+		// TODO Auto-generated method stub
+		Set<RelationShip> ret = new HashSet<RelationShip>();
+		addConformanceProfilesRelations(ig, ret);
+		addSegmentsRelations(ig, ret);
+		addDatatypesRelations(ig, ret);
+		return ret;
+	}
+	
+
+	private void addConformanceProfilesRelations(Ig ig, Set<RelationShip> ret) {
+		List<ConformanceProfile> profiles = conformanceProfileService
+				.findByIdIn(ig.getConformanceProfileRegistry().getLinksAsIds());
+		for (ConformanceProfile profile : profiles) {
+			ret.addAll(conformanceProfileService.collectDependencies(profile));
+		}
+	}
+
+	private void addSegmentsRelations(Ig ig, Set<RelationShip> ret) {
+		List<Segment> segments = segmentService.findByIdIn(ig.getSegmentRegistry().getLinksAsIds());
+		for (Segment s : segments) {
+			ret.addAll(segmentService.collectDependencies(s));
+		}
+
+	}
+
+	private void addDatatypesRelations(Ig ig, Set<RelationShip> ret) {
+		List<Datatype> datatypes = datatypeService.findByIdIn(ig.getDatatypeRegistry().getLinksAsIds());
+		for (Datatype dt : datatypes) {
+			ret.addAll(datatypeService.collectDependencies(dt));
+		}
+	}
 	  
 	}

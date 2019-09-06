@@ -3,6 +3,7 @@ import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
+import {IBindingInfo, IValueSetBindingConfigMap} from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
@@ -94,6 +95,10 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   @Input()
   segments: IDisplayElement[];
   @Input()
+  valueSets: IDisplayElement[];
+  @Input()
+  bindingConfig: IValueSetBindingConfigMap;
+  @Input()
   repository: AResourceRepositoryService;
   @Input()
   username: string;
@@ -102,7 +107,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   set resource(resource: IResource) {
     this.type = resource.type;
     this.close(this.s_resource);
-    console.log(resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
       this.nodes = [...value];
     });

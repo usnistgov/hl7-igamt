@@ -7,10 +7,10 @@ import { TableModule } from 'primeng/table';
 import { IgListEffects } from 'src/app/root-store/ig/ig-list/ig-list.effects';
 import { CreateIgEffects } from '../../root-store/create-ig/create-ig.effects';
 import * as fromIg from '../../root-store/ig/ig.reducer';
+import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
-import { ConfigurationTocComponent } from './components/configuration-toc/configuration-toc.component';
 import { CreateIGComponent } from './components/create-ig/create-ig.component';
 import { ExportGvtComponent } from './components/export-gvt/export-gvt.component';
 import { IgEditActiveTitlebarComponent } from './components/ig-edit-active-titlebar/ig-edit-active-titlebar.component';
@@ -44,7 +44,6 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
-    ConfigurationTocComponent,
     ExportGvtComponent,
   ],
   imports: [
@@ -57,6 +56,7 @@ import { IgService } from './services/ig.service';
     RadioButtonModule,
     TableModule,
     ContextMenuModule,
+    ExportConfigurationModule,
   ],
   providers: [
     IgListService,
@@ -74,7 +74,6 @@ import { IgService } from './services/ig.service';
     IgEditActiveTitlebarComponent,
     IgSectionEditorComponent,
     IgMetadataEditorComponent,
-    ConfigurationTocComponent,
   ],
 })
 export class IgModule {

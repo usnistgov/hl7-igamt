@@ -6,6 +6,7 @@ import {mergeMap, take} from 'rxjs/operators';
 import {selectIgId, selectValueSetById} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 
 import {SelectItem} from 'primeng/api';
+import {LoadValueSet} from '../../../../root-store/value-set-edit/value-set-edit.actions';
 import {StructureEditorComponent} from '../../../core/components/structure-editor/structure-editor.component';
 import {Message} from '../../../core/models/message/message.class';
 import {MessageService} from '../../../core/services/message.service';
@@ -47,6 +48,7 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
         title: 'Structure',
         resourceType: Type.VALUESET,
       },
+      LoadValueSet,
       [
       ],
       [
@@ -65,9 +67,14 @@ export class ValueSetStructureEditorComponent extends StructureEditorComponent<I
     });
   }
   getCodeSystemOptions(resource: IValueSet): SelectItem[] {
-    return resource.codeSystems.map((codeSystem: string) => {
-      return {label: codeSystem, value: codeSystem};
-    });
+    if (resource.codeSystems && resource.codeSystems.length > 0) {
+      return resource.codeSystems.map((codeSystem: string) => {
+        return {label: codeSystem, value: codeSystem};
+      });
+    } else {
+      return [];
+    }
+
   }
   saveChanges(id: string, igId: string, changes: IChange[]): Observable<Message<any>> {
     return this.valueSetService.saveChanges(id, igId, changes);

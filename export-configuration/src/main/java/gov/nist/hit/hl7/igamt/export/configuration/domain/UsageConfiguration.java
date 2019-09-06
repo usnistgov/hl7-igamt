@@ -13,6 +13,10 @@
  */
 package gov.nist.hit.hl7.igamt.export.configuration.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import gov.nist.hit.hl7.igamt.common.base.domain.Usage;
 
 /**
@@ -95,6 +99,25 @@ public class UsageConfiguration {
       default:
         return false;
     }
+  }
+  public List<Usage> getUsagesToInclude() {
+	  List<Usage> usages = new ArrayList<Usage>();
+	  if (this.isR()) {
+		  usages.add(Usage.R);
+	  }
+	  if (this.isC()) {
+		  usages.add(Usage.C);
+	  }
+	  if (this.isRe()) {
+		  usages.add(Usage.RE);
+	  }
+	  if (this.isX()) {
+		  usages.add(Usage.X);
+	  }
+	  if (this.isO()) {
+		  usages.add(Usage.O);
+	  }
+	return usages;
   }
 
 }
