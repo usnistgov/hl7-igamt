@@ -69,6 +69,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     subscription.unsubscribe();
 
   }
+
   exportHTML() {
     this.dialog.open(ExportConfigurationDialogComponent, {
       maxWidth: '95vw',
@@ -80,11 +81,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         toc: this.store.select(fromIgDocumentEdit.selectToc),
       },
     });
-    // const subscription = this.getIgId().pipe(
-    //   take(1),
-    //   map((x) => { this.igService.exportAsHtml(x); }),
-    // ).subscribe();
-    // subscription.unsubscribe();
   }
 
   exportXML() {

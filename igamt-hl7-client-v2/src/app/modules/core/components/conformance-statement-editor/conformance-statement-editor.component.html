@@ -41,7 +41,7 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let segment of keys(viewData.complementConformanceStatements[_types.SEGMENT])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment] }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment], header: segment, type: 'SEGMENT' }"></ng-container>
         </ng-container>
       </div>
     </div>
@@ -54,7 +54,7 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let dt of keys(viewData.complementConformanceStatements[_types.DATATYPE])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt] }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt], header: dt, type: 'DATATYPE' }"></ng-container>
         </ng-container>
       </div>
     </div>

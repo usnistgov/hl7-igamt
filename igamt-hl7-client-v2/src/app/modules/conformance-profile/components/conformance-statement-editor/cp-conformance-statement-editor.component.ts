@@ -45,7 +45,28 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
         resourceType: Type.CONFORMANCEPROFILE,
       },
       (cpList: ICPConformanceStatementList) => {
-        return undefined;
+        const DTCSMap = {};
+        const SGCSMap = {};
+        Object.keys(cpList.associatedSEGConformanceStatementMap).forEach((key) => {
+          SGCSMap[key] = [
+            ...(SGCSMap[key] ? SGCSMap[key] : []),
+            ...cpList.associatedSEGConformanceStatementMap[key].conformanceStatements,
+          ];
+        });
+        Object.keys(cpList.associatedDTConformanceStatementMap).forEach((key) => {
+          DTCSMap[key] = [
+            ...(DTCSMap[key] ? DTCSMap[key] : []),
+            ...cpList.associatedDTConformanceStatementMap[key].conformanceStatements,
+          ];
+        });
+        return {
+          resourceConformanceStatement: cpList.conformanceStatements,
+          complementConformanceStatements: {
+            [Type.DATATYPE]: DTCSMap,
+            [Type.SEGMENT]: SGCSMap,
+          },
+          availableConformanceStatements: cpList.availableConformanceStatements,
+        };
       },
       selectedConformanceProfile);
   }
@@ -55,7 +76,7 @@ export class CPConformanceStatementEditorComponent extends ConformanceStatementE
   }
 
   getById(id: string, igId: string): Observable<IConformanceStatementList> {
-    return this.cpService.getSegmentConformanceStatements(id, igId);
+    return this.cpService.getConformanceStatements(id, igId);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

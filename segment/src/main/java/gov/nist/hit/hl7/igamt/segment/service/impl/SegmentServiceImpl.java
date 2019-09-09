@@ -239,6 +239,7 @@ public class SegmentServiceImpl implements SegmentService {
 					fModel.setIdPath(f.getId());
 					fModel.setPath(f.getPosition() + "");
 					fModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
+					fModel.setConstantValue(f.getConstantValue());
 					StructureElementBinding fSeb = this.findStructureElementBindingByFieldIdForSegment(segment,
 							f.getId());
 					if (fSeb != null) {
@@ -268,6 +269,7 @@ public class SegmentServiceImpl implements SegmentService {
 									cModel.setIdPath(f.getId() + "-" + c.getId());
 									cModel.setPath(f.getPosition() + "-" + c.getPosition());
 									cModel.setDatatypeLabel(this.createDatatypeLabel(childChildDt));
+									cModel.setConstantValue(c.getConstantValue());
 									StructureElementBinding childSeb = this
 											.findStructureElementBindingByComponentIdFromStructureElementBinding(fSeb,
 													c.getId());
@@ -323,6 +325,7 @@ public class SegmentServiceImpl implements SegmentService {
 															+ sc.getPosition());
 													scModel.setDatatypeLabel(
 															this.createDatatypeLabel(childChildChildDt));
+													scModel.setConstantValue(sc.getConstantValue());
 													StructureElementBinding childChildSeb = this
 															.findStructureElementBindingByComponentIdFromStructureElementBinding(
 																	childSeb, sc.getId());
@@ -449,6 +452,7 @@ public class SegmentServiceImpl implements SegmentService {
 					dvb.setStrength(vb.getStrength());
 					dvb.setValuesetId(vb.getValuesetId());
 					dvb.setValuesetLocations(vb.getValuesetLocations());
+					dvb.setDomainInfo(vs.getDomainInfo());
 					result.add(dvb);
 				}
 			}

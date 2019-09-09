@@ -13,7 +13,7 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
@@ -25,6 +25,8 @@ import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dial
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
+import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
+import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
@@ -126,6 +128,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportXmlDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
+    DeltaTreeComponent,
+    DeltaColumnComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -156,6 +160,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DragDropModule,
     RadioButtonModule,
     AccordionModule,
+    InputSwitchModule,
     TableModule,
     ExtendedModule,
     FroalaEditorModule.forRoot(),
@@ -176,6 +181,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     RegisterFormComponent,
     TooltipModule,
     NgbModule,
+    InputSwitchModule,
     NgbAlert,
     CardModule,
     AccordionModule,
@@ -238,6 +244,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportXmlDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
+    DeltaTreeComponent,
+    DeltaColumnComponent,
   ],
   entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
 })

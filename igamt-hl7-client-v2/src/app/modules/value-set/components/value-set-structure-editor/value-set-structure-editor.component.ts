@@ -6,6 +6,7 @@ import { mergeMap, take } from 'rxjs/operators';
 import { selectValueSetById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { selectIgId } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 
+import { ActivatedRoute, Router } from '@angular/router';
 import { LoadValueSet } from 'src/app/root-store/value-set-edit/value-set-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';

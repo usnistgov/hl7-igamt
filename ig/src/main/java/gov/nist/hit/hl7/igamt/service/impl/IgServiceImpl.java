@@ -527,7 +527,7 @@ public class IgServiceImpl implements IgService {
 		HashMap<String, String> map = new HashMap<String, String>();
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
-				if (l.getDomainInfo().getScope().equals(Scope.USER)) {
+				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 					map.put(l.getId(), new ObjectId().toString());
 				}
 			}
@@ -842,36 +842,35 @@ public class IgServiceImpl implements IgService {
 	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
 		// TODO Auto-generated method stub
 
-//		Ig ig = this.findById(id);
-//		if(ig == null ) {
-//			throw new IGNotFoundException(id);
-//		}
-//		Valueset vs= valueSetService.findById(vsId);
-//		if(vs == null) {
-//			throw new ValuesetNotFoundException(vsId);
-//		}
+		Ig ig = this.findById(id);
+		if(ig == null ) {
+			throw new IGNotFoundException(id);
+		}
+		Valueset vs= valueSetService.findById(vsId);
+		if(vs == null) {
+			throw new ValuesetNotFoundException(vsId);
+		}
 //		if(vs.getDomainInfo() !=null && vs.getDomainInfo().getScope() != null){
-//			if(vs.getDomainInfo().getScope()==Scope.PHINVADS) {
-//				Config conf=	this.configService.findOne();
+//			if(vs.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
+//				Config conf=    this.configService.findOne();
 //				if(conf !=null) {
 //					vs.setUrl(conf.getPhinvadsUrl()+vs.getOid());
 //				}
 //			}
 //		}
-//		if(ig.getValueSetRegistry().getCodesPresence() !=null ) {
-//			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
-//				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
-//					vs.setIncludeCodes(true);
-//				} else {
-//					vs.setIncludeCodes(false);
-//					vs.setCodes(new HashSet<Code>());
-//				}
-//			}else {
-//				vs.setIncludeCodes(true);
-//			}
-//		}
-//		return vs;
-		return null;
+		if(ig.getValueSetRegistry().getCodesPresence() != null ) {
+			if (ig.getValueSetRegistry().getCodesPresence().containsKey(vs.getId())) {
+				if (ig.getValueSetRegistry().getCodesPresence().get(vs.getId())) {
+					vs.setIncludeCodes(true);
+				} else {
+					vs.setIncludeCodes(false);
+					vs.setCodes(new HashSet<Code>());
+				}
+			}else {
+				vs.setIncludeCodes(true);
+			}
+		}
+		return vs;
 
 	}
 	

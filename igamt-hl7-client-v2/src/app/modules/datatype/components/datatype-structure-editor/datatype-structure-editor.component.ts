@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 import { selectDatatypesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -12,9 +14,9 @@ import { IDatatype } from '../../../shared/models/datatype.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
+import { DeltaService } from '../../../shared/services/delta.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
-import { LoadDatatype } from '../../../../root-store/datatype-edit/datatype-edit.actions';
 
 @Component({
   selector: 'app-datatype-structure-editor',

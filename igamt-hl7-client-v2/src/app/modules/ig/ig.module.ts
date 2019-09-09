@@ -7,6 +7,7 @@ import { TableModule } from 'primeng/table';
 import { IgListEffects } from 'src/app/root-store/ig/ig-list/ig-list.effects';
 import { CreateIgEffects } from '../../root-store/create-ig/create-ig.effects';
 import * as fromIg from '../../root-store/ig/ig.reducer';
+import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 import { IgEditEffects } from './../../root-store/ig/ig-edit/ig-edit.effects';
 import { CoreModule } from './../core/core.module';
 import { SharedModule } from './../shared/shared.module';
@@ -28,7 +29,6 @@ import { IgEditorActivateGuard } from './services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from './services/ig-editor-deactivate.service';
 import { IgListService } from './services/ig-list.service';
 import { IgService } from './services/ig.service';
-import { ExportConfigurationModule } from '../export-configuration/export-configuration.module';
 
 @NgModule({
   declarations: [

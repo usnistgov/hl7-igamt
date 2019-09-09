@@ -35,7 +35,7 @@
     <th *ngIf="statementType === _statementType.COMPARATIVE" >Comparison Node Location  <strong class="asteriks">*</strong></th>
 
   </tr>
-  <tr>
+  <tr class="values-row">
 
     <td>
       <span [ngSwitch]="complete()">
@@ -82,8 +82,8 @@
 
     <!-- Location -->
     <td [ngClass]="{'invalid': !targetNodeValid()}">
-      <span class="value" *ngIf="!assertion.subject.occurenceLocationStr"> SELECT </span>
-      <span *ngIf="assertion.subject.occurenceLocationStr"> {{assertion.subject.occurenceLocationStr}} </span>
+      <span class="value" *ngIf="!assertion.subject.path"> SELECT </span>
+      <span *ngIf="assertion.subject.path"> {{ subjectName }} </span>
     </td>
 
     <!-- Verb -->
@@ -237,8 +237,8 @@
 
     <!-- Comparative Node -->
     <td *ngIf="statementType === _statementType.COMPARATIVE" [ngClass]="{'invalid': !comparisonNodeValid()}">
-      <span class="value" *ngIf="!assertion.complement.occurenceLocationStr"> SELECT </span>
-      <span *ngIf="assertion.complement.occurenceLocationStr"> {{assertion.complement.occurenceLocationStr}} </span>
+      <span class="value" *ngIf="!assertion.complement.path"> SELECT </span>
+      <span *ngIf="assertion.complement.path"> {{ compareName }} </span>
     </td>
 
     <th *ngIf="csType === _csType.PROPOSITION"> then </th>
@@ -261,7 +261,8 @@
     <td>
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
-          [resource]="resource"
+          [tree]="tree"
+          [resourceType]="resourceType"
           [repository]="repository"
           (selection)="targetElement($event)"
         ></app-structure-tree>
@@ -293,7 +294,8 @@
     <td *ngIf="statementType === _statementType.COMPARATIVE">
       <div style="height: 200px; width: 250px;">
         <app-structure-tree
-          [resource]="resource"
+          [tree]="tree"
+          [resourceType]="resourceType"
           [repository]="repository"
           (selection)=" comparativeElement($event)"
         ></app-structure-tree>

@@ -37,11 +37,9 @@ public abstract class Resource extends AbstractDomain {
   public abstract Resource clone();
   
   protected void complete(Resource elm) {
-		
-		super.complete(elm);
-		elm.postDef=preDef;
-		elm.postDef=postDef;
-  		
+      super.complete(elm);
+      elm.postDef=preDef;
+      elm.postDef=postDef;
   }  
   
  

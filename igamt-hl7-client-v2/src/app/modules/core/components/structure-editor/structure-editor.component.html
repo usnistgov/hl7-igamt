@@ -1,3 +1,9 @@
+<ng-template #headerControls let-router="router" *ngIf="hasOrigin$ | async">
+    <button class="btn btn-sm btn-default toggle-btn" style="margin-left: 10px; border: 1px solid black;" [routerLink]="'../delta'">
+      <span style="font-weight: bold;" ><span style="font-size: 1em;" >Δ</span> delta</span>
+    </button>
+</ng-template>
+
 <strong>Binding Context Legend : </strong>
 <div style="display: flex; flex-direction: row; align-items: center;">
   <div *ngFor="let item of legend" style="display: flex; flex-direction: row; align-items: center; margin-right: 5px;">
@@ -5,13 +11,14 @@
     <span style="margin-left: 5px;">{{ item.label }}</span>
   </div>
 </div>
+
 <app-hl7-v2-tree
-[columns]="columns"
-[datatypes]="datatypes | async"
-[segments]="segments | async"
-[repository]="repository"
-[viewOnly]="viewOnly$ | async"
-(changes)="change($event)"
-[resource]="resource$ | async"
-[username]="username | async">
+  [columns]="columns"
+  [datatypes]="datatypes | async"
+  [segments]="segments | async"
+  [repository]="repository"
+  [viewOnly]="viewOnly$ | async"
+  (changes)="change($event)"
+  [resource]="resource$ | async"
+  [username]="username | async">
 </app-hl7-v2-tree>

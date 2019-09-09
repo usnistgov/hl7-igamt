@@ -73,7 +73,7 @@ export interface IHL7v2TreeNode extends TreeNode {
   };
 }
 
-type ColumnOptions = Array<{
+export type ColumnOptions = Array<{
   field: string,
   header: HL7v2TreeColumnType,
 }>;

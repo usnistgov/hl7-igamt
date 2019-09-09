@@ -1,5 +1,9 @@
 package gov.nist.hit.hl7.igamt.delta.service;
 
+import gov.nist.hit.hl7.igamt.conformanceprofile.domain.display.ConformanceProfileStructureDisplay;
+import gov.nist.hit.hl7.igamt.datatype.domain.display.DatatypeStructureDisplay;
+import gov.nist.hit.hl7.igamt.delta.domain.*;
+import gov.nist.hit.hl7.igamt.segment.domain.display.SegmentStructureDisplay;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,13 +18,12 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.service.ConformanceProfileService;
 import gov.nist.hit.hl7.igamt.datatype.domain.Datatype;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
-import gov.nist.hit.hl7.igamt.delta.domain.DiffableResult;
-import gov.nist.hit.hl7.igamt.delta.domain.EntityDelta;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.repository.IgRepository;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
 import gov.nist.hit.hl7.igamt.segment.domain.Segment;
 import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
+import java.util.List;
 
 @Service
 public class DeltaServiceImpl implements DeltaService {
@@ -35,6 +38,62 @@ public class DeltaServiceImpl implements DeltaService {
   public IgRepository igRepository;
   @Autowired
   public IgService igService;
+  @Autowired
+  public EntityDeltaServiceImpl entityDeltaService;
+
+  public Delta delta(Type type, String documentId, String entityId) {
+    Ig targetIg = this.igService.findById(documentId);
+    Ig sourceIg = this.igService.findById(targetIg.getFrom());
+
+    if(type.equals(Type.DATATYPE)) {
+
+      Datatype target = this.datatypeService.findById(entityId);
+      Datatype source = this.datatypeService.findById(target.getOrigin());
+
+      DatatypeStructureDisplay sourceDisplay = this.datatypeService.convertDomainToStructureDisplay(source, true);
+      DatatypeStructureDisplay targetDisplay = this.datatypeService.convertDomainToStructureDisplay(target, true);
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
+
+      List<StructureDelta> structure = entityDeltaService.datatype(sourceDisplay, targetDisplay);
+
+      return new Delta(sourceInfo, targetInfo, structure);
+
+    } else if(type.equals(Type.SEGMENT)) {
+
+      Segment target = this.segmentService.findById(entityId);
+      Segment source = this.segmentService.findById(target.getOrigin());
+
+      SegmentStructureDisplay sourceDisplay = this.segmentService.convertDomainToDisplayStructure(source, true);
+      SegmentStructureDisplay targetDisplay = this.segmentService.convertDomainToDisplayStructure(target, true);
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), source.getExt(), source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), target.getExt(), target.getDescription(), target.getId());
+
+      List<StructureDelta> structure = entityDeltaService.segment(sourceDisplay, targetDisplay);
+
+      return new Delta(sourceInfo, targetInfo, structure);
+
+    } else if(type.equals(Type.CONFORMANCEPROFILE)) {
+
+      ConformanceProfile target = this.conformanceProfileService.findById(entityId);
+      ConformanceProfile source = this.conformanceProfileService.findById(target.getOrigin());
+
+      ConformanceProfileStructureDisplay sourceDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(source, true);
+      ConformanceProfileStructureDisplay targetDisplay = this.conformanceProfileService.convertDomainToDisplayStructure(target, true);
+
+      DeltaInfo sourceInfo = new DeltaInfo(new SourceDocument(sourceIg.getId(), sourceIg.getMetadata().getTitle(), sourceIg.getDomainInfo().getScope()), source.getDomainInfo(), source.getLabel(), null, source.getDescription(), source.getId());
+      DeltaInfo targetInfo = new DeltaInfo(new SourceDocument(targetIg.getId(), targetIg.getMetadata().getTitle(), targetIg.getDomainInfo().getScope()), target.getDomainInfo(), target.getLabel(), null, target.getDescription(), target.getId());
+
+      List<StructureDelta> structure = entityDeltaService.conformanceProfile(sourceDisplay, targetDisplay);
+
+      return new Delta(sourceInfo, targetInfo, structure);
+
+    }
+
+    return null;
+  }
 
   public <T extends SectionInfo, E extends AbstractDomain> EntityDelta<T> compute(String id,
       AbstractDomain document, Function<E, Boolean, T> converter,
