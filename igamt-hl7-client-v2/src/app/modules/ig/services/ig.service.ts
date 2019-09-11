@@ -1,3 +1,4 @@
+import {LocationStrategy} from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {Observable, throwError} from 'rxjs';
@@ -20,7 +21,7 @@ import { Message } from './../../core/models/message/message.class';
 })
 export class IgService {
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private location: LocationStrategy) {
   }
 
   igToIDisplayElement(ig: IgDocument): IDisplayElement {
@@ -143,8 +144,19 @@ export class IgService {
     form.appendChild(json);
     form.style.display = 'none';
     document.body.appendChild(form);
-    console.log(form);
     form.submit();
+  }
+
+  exportAsWord(igId) {
+    window.open(this.prepareUrl(igId, 'word'));
+  }
+
+  exportAsHtml(igId) {
+    window.open(this.prepareUrl(igId, 'html'));
+  }
+
+  private prepareUrl(igId: string, type: string): string {
+    return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
 }

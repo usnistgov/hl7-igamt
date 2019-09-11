@@ -21,22 +21,18 @@ export class ValueSetStructureComponent implements OnInit {
   edit = {};
   temp: string = null;
   filteredCodeSystems: string[] = [];
-  selectedColumns: any[];
   @Output()
   changes: EventEmitter<IChange> = new EventEmitter<IChange>();
 
   @Input()
   viewOnly: boolean;
+  @Input()
   codeSystemOptions: any[];
-  cols = [
-    {field: 'value', header: 'Value'},
-    {field: 'description', header: 'Description'},
+  @Input()
+  cols: any[];
+  @Input()
+  selectedColumns: any[];
 
-    {field: 'codeSystem', header: 'Code System'},
-
-    {field: 'usage', header: 'Usage'},
-    {field: 'comments', header: 'Comments'},
-  ];
   stabilityOptionsOptions = [
     this.notDefinedOption, {label: 'Dynamic', value: 'Dynamic'}, {label: 'Static', value: 'Static'},
   ];
@@ -53,9 +49,7 @@ export class ValueSetStructureComponent implements OnInit {
   editMap = {};
 
   ngOnInit() {
-    this.selectedColumns = this.cols;
     this.editMap[this.valueSet.id] = false;
-    this.codeSystemOptions = this.getCodeSystemOptions();
   }
   toggleEdit(id: string) {
     this.temp = null;
@@ -163,9 +157,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   updateAttribute(propertyType: PropertyType, value: any) {
-    console.log(propertyType);
-    console.log(value);
-
     this.changes.emit({
       location: 'ROOT',
       propertyType,
@@ -180,7 +171,6 @@ export class ValueSetStructureComponent implements OnInit {
   }
 
   updateStability($event) {
-    console.log();
     this.updateAttribute(PropertyType.STABILITY, $event);
   }
 

@@ -71,7 +71,7 @@ public interface IgService {
 	void buildDependencies(IGContentMap contentMap);
 
 
-	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
+	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException;
 
 	public IgDataModel generateDataModel(Ig ig) throws Exception;
 

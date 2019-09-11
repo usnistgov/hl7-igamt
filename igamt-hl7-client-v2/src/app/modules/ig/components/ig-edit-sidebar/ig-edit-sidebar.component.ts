@@ -1,9 +1,9 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatDialog} from '@angular/material';
-import {Store} from '@ngrx/store';
-import {$e} from 'codelyzer/angular/styles/chars';
-import {Observable} from 'rxjs';
-import {concatMap, filter, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { Store } from '@ngrx/store';
+import { $e } from 'codelyzer/angular/styles/chars';
+import { Observable } from 'rxjs';
+import { concatMap, filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import {
   CopyResource,
@@ -12,24 +12,24 @@ import {
   UpdateSections,
 } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as config from '../../../../root-store/config/config.reducer';
-import {CollapseTOC} from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import {ClearResource, LoadResource} from '../../../../root-store/resource-loader/resource-loader.actions';
+import { CollapseTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { ClearResource, LoadResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import * as fromResource from '../../../../root-store/resource-loader/resource-loader.reducer';
-import {AddResourceComponent} from '../../../shared/components/add-resource/add-resource.component';
-import {ConfirmDialogComponent} from '../../../shared/components/confirm-dialog/confirm-dialog.component';
-import {CopyResourceComponent} from '../../../shared/components/copy-resource/copy-resource.component';
-import {ResourcePickerComponent} from '../../../shared/components/resource-picker/resource-picker.component';
-import {UsageDialogComponent} from '../../../shared/components/usage-dialog/usage-dialog.component';
-import {Scope} from '../../../shared/constants/scope.enum';
-import {Type} from '../../../shared/constants/type.enum';
-import {ICopyResourceData} from '../../../shared/models/copy-resource-data';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {IResourcePickerData} from '../../../shared/models/resource-picker-data.interface';
-import {CrossReferencesService} from '../../../shared/services/cross-references.service';
-import {IAddNewWrapper, IAddWrapper} from '../../models/ig/add-wrapper.class';
-import {IGDisplayInfo} from '../../models/ig/ig-document.class';
-import {IgTocComponent} from '../ig-toc/ig-toc.component';
+import { AddResourceComponent } from '../../../shared/components/add-resource/add-resource.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { CopyResourceComponent } from '../../../shared/components/copy-resource/copy-resource.component';
+import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
+import { UsageDialogComponent } from '../../../shared/components/usage-dialog/usage-dialog.component';
+import { Scope } from '../../../shared/constants/scope.enum';
+import { Type } from '../../../shared/constants/type.enum';
+import { ICopyResourceData } from '../../../shared/models/copy-resource-data';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { IResourcePickerData } from '../../../shared/models/resource-picker-data.interface';
+import { CrossReferencesService } from '../../../shared/services/cross-references.service';
+import { IAddNewWrapper, IAddWrapper } from '../../models/ig/add-wrapper.class';
+import { IGDisplayInfo } from '../../models/ig/ig-document.class';
+import { IgTocComponent } from '../ig-toc/ig-toc.component';
 
 @Component({
   selector: 'app-ig-edit-sidebar',
@@ -44,7 +44,7 @@ export class IgEditSidebarComponent implements OnInit {
   version$: Observable<string>;
   @ViewChild(IgTocComponent) toc: IgTocComponent;
 
-  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private  crossReferencesService: CrossReferencesService) {
+  constructor(private store: Store<IGDisplayInfo>, private dialog: MatDialog, private crossReferencesService: CrossReferencesService) {
     this.nodes$ = store.select(fromIgDocumentEdit.selectToc);
     this.hl7Version$ = store.select(config.getHl7Versions);
     this.igId$ = store.select(fromIgDocumentEdit.selectIgId);
@@ -85,6 +85,7 @@ export class IgEditSidebarComponent implements OnInit {
   addChildren(event: IAddWrapper) {
     const subscription = this.hl7Version$.pipe(
       withLatestFrom(this.version$),
+      take(1),
       map(([versions, selectedVersion]) => {
         this.store.dispatch(new LoadResource({ type: event.type, scope: event.scope, version: selectedVersion }));
 
@@ -110,6 +111,7 @@ export class IgEditSidebarComponent implements OnInit {
           }),
           filter((x) => x !== undefined),
           withLatestFrom(this.igId$),
+          take(1),
           map(([result, igId]) => {
             this.store.dispatch(new IgEditTocAddResource({ documentId: igId, selected: result, type: event.type }));
           }),
@@ -121,21 +123,22 @@ export class IgEditSidebarComponent implements OnInit {
 
   copy($event: ICopyResourceData) {
     const dialogRef = this.dialog.open(CopyResourceComponent, {
-      data: {...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
+      data: { ...$event, targetScope: Scope.USER, title: this.getCopyTitle($event.element.type) },
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
       map(([result, igId]) => {
-        this.store.dispatch(new CopyResource({documentId: igId, selected: result}));
+        this.store.dispatch(new CopyResource({ documentId: igId, selected: result }));
       }),
     ).subscribe();
   }
 
   delete($event: IDisplayElement) {
     this.igId$.pipe(
+      take(1),
       concatMap((id: string) => {
-        return this.crossReferencesService.findUsagesDisplay(id, Type.IGDOCUMENT, $event.type, $event.id ).pipe(
+        return this.crossReferencesService.findUsagesDisplay(id, Type.IGDOCUMENT, $event.type, $event.id).pipe(
           take(1),
           map((usages: IUsages[]) => {
             if (usages.length === 0) {
@@ -148,13 +151,13 @@ export class IgEditSidebarComponent implements OnInit {
               dialogRef.afterClosed().subscribe(
                 (answer) => {
                   if (answer) {
-                    this.store.dispatch(new DeleteResource({documentId: id, element: $event}));
+                    this.store.dispatch(new DeleteResource({ documentId: id, element: $event }));
                   }
                 },
               );
             } else {
               const dialogRef = this.dialog.open(UsageDialogComponent, {
-                data : {
+                data: {
                   title: 'Cross References found',
                   usages,
                 },
@@ -208,11 +211,12 @@ export class IgEditSidebarComponent implements OnInit {
 
   addChild($event: IAddNewWrapper) {
     const dialogRef = this.dialog.open(AddResourceComponent, {
-      data: {existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type },
+      data: { existing: $event.node.children, scope: Scope.USER, title: this.getNewTitle($event.type), type: $event.type },
     });
     dialogRef.afterClosed().pipe(
       filter((x) => x !== undefined),
       withLatestFrom(this.igId$),
+      take(1),
       map(([result, igId]) => {
 
         console.log([result]);

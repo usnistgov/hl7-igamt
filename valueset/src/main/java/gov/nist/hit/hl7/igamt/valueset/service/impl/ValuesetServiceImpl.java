@@ -178,6 +178,7 @@ public class ValuesetServiceImpl implements ValuesetService {
 		qry.fields().include("id");
 		qry.fields().include("name");
 		qry.fields().include("bindingIdentifier");
+		qry.fields().include("numberOfCodes");
 		List<Valueset> valueSets = mongoTemplate.find(qry, Valueset.class);
 		return valueSets;
 	}

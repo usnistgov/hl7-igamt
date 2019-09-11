@@ -42,6 +42,8 @@ import gov.nist.hit.hl7.igamt.common.base.exception.ValidationException;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
+//import gov.nist.hit.hl7.igamt.common.config.domain.Config;
+//import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.CompositeProfileStructure;
 import gov.nist.hit.hl7.igamt.compositeprofile.domain.registry.CompositeProfileRegistry;
 import gov.nist.hit.hl7.igamt.compositeprofile.service.CompositeProfileStructureService;
@@ -839,9 +841,7 @@ public class IgServiceImpl implements IgService {
 
 	}
 	@Override
-	public Valueset getValueSetIngIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
-		// TODO Auto-generated method stub
-
+	public Valueset getValueSetInIg(String id, String vsId) throws ValuesetNotFoundException, IGNotFoundException {
 		Ig ig = this.findById(id);
 		if(ig == null ) {
 			throw new IGNotFoundException(id);
@@ -868,7 +868,7 @@ public class IgServiceImpl implements IgService {
 				}
 			}else {
 				vs.setIncludeCodes(true);
-			}		
+			}
 		}
 		return vs;
 
@@ -895,7 +895,7 @@ public class IgServiceImpl implements IgService {
 	        new HashMap<String, ValuesetBindingDataModel>();
 
 	    for (Link link : ig.getValueSetRegistry().getChildren()) {
-	      Valueset vs = this.getValueSetIngIg(ig.getId(), link.getId());
+	      Valueset vs = this.getValueSetInIg(ig.getId(), link.getId());
 	      if (vs != null) {
 	        ValuesetDataModel valuesetDataModel = new ValuesetDataModel();
 	        valuesetDataModel.setModel(vs);

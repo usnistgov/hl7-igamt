@@ -3,6 +3,7 @@ import {Injectable} from '@angular/core';
 import {Store} from '@ngrx/store';
 import {from, Observable, throwError} from 'rxjs';
 import {concatMap, map, mergeMap, reduce, switchMap, take, tap, toArray} from 'rxjs/operators';
+import {TurnOffLoader, TurnOnLoader} from '../../../root-store/loader/loader.actions';
 import {Message, MessageType, UserMessage} from '../../core/models/message/message.class';
 import {Type} from '../constants/type.enum';
 import {IRelationShip, IUsages} from '../models/cross-reference';
@@ -39,9 +40,13 @@ export class CrossReferencesService {
   getUsagesFromRelationShip(relations: IRelationShip[]): Observable<IUsages[]> {
         return from(relations).pipe(
           mergeMap((r: IRelationShip) => {
+            this.store.dispatch(new TurnOnLoader({
+              blockUI: true,
+            }));
             return this.resourceRepo.getResourceDisplay(r.parent.type, r.parent.id).pipe(
               take(1),
               map((elm: IDisplayElement) => {
+                this.store.dispatch(new TurnOffLoader());
                 return {
                   usage: r.usage,
                   element: elm,
@@ -54,10 +59,10 @@ export class CrossReferencesService {
         );
   }
 
-  findUsagesDisplay(documentId: string, documentType: Type, elementType: Type, elementId: string): Observable<IUsages[]> {
+  findUsagesDisplay = (documentId: string, documentType: Type, elementType: Type, elementId: string): Observable<IUsages[]> => {
     return this.findUsages (documentId, documentType, elementType, elementId).pipe(
+
       mergeMap( (rel: IRelationShip[]) => {
-        console.log(rel);
         return this.getUsagesFromRelationShip(rel);
         },
         ),

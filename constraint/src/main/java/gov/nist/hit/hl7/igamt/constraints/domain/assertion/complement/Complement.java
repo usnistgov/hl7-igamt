@@ -33,11 +33,11 @@ public class Complement {
   private String value;
   private String desc;
   private String codesys;
-  
+
   private String[] values;
   private String[] descs;
   private String[] codesyses;
-  
+
   private boolean ignoreCase;
 
   public Complement() {
@@ -124,29 +124,29 @@ public class Complement {
     this.codesys = codesys;
   }
 
-public String[] getDescs() {
-	return descs;
-}
+  public String[] getDescs() {
+    return descs;
+  }
 
-public void setDescs(String[] descs) {
-	this.descs = descs;
-}
+  public void setDescs(String[] descs) {
+    this.descs = descs;
+  }
 
-public boolean isIgnoreCase() {
-	return ignoreCase;
-}
+  public boolean isIgnoreCase() {
+    return ignoreCase;
+  }
 
-public void setIgnoreCase(boolean ignoreCase) {
-	this.ignoreCase = ignoreCase;
-}
+  public void setIgnoreCase(boolean ignoreCase) {
+    this.ignoreCase = ignoreCase;
+  }
 
-public String[] getCodesyses() {
-  return codesyses;
-}
+  public String[] getCodesyses() {
+    return codesyses;
+  }
 
-public void setCodesyses(String[] codesyses) {
-  this.codesyses = codesyses;
-}
+  public void setCodesyses(String[] codesyses) {
+    this.codesyses = codesyses;
+  }
 
 
 }
