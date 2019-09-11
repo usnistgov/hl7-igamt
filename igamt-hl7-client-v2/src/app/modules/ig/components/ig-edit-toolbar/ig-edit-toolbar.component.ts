@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import {concatMap, filter, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import { concatMap, filter, map, mergeMap, take, tap, withLatestFrom } from 'rxjs/operators';
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IgEditTocAddResource } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -61,12 +61,29 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     this.subscription.unsubscribe();
   }
   exportWord() {
-    const subscription = this.getIgId().pipe(
-      take(1),
-      map((x) => { this.igService.exportAsWord(x); }),
-    ).subscribe();
+    this.getDecision().pipe(
+      map((decision) => {
+        const dialogRef = this.dialog.open(ExportConfigurationDialogComponent, {
+          maxWidth: '95vw',
+          maxHeight: '90vh',
+          width: '95vw',
+          height: '95vh',
+          data: {
+            toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
+            decision,
+          },
+        });
+        dialogRef.afterClosed().pipe(
+          filter((y) => y !== undefined),
 
-    subscription.unsubscribe();
+          withLatestFrom(this.getIgId()),
+          take(1),
+          map(([result, igId]) => {
+            this.igService.exportAsWord(igId, result);
+          }),
+        ).subscribe();
+      }),
+    ).subscribe();
 
   }
   exportHTML() {
@@ -96,7 +113,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   getDecision(): Observable<any> {
-   return  this.getIgId().pipe(
+    return this.getIgId().pipe(
       take(1),
       concatMap((x: string) => this.igService.getExportFirstDecision(x)),
     );

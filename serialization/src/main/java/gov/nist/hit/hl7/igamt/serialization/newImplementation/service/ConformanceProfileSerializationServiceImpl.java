@@ -10,6 +10,7 @@ import gov.nist.hit.hl7.igamt.conformanceprofile.domain.ConformanceProfile;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.Group;
 import gov.nist.hit.hl7.igamt.conformanceprofile.domain.SegmentRef;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ConformanceProfileExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ConformanceProfileDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.SegmentDataModel;
@@ -32,11 +33,11 @@ private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
 	public Element serializeConformanceProfile(ConformanceProfileDataModel conformanceProfileDataModel, IgDataModel igDataModel, int level, 
-			ExportConfiguration exportConfiguration) throws ResourceSerializationException {
+			ConformanceProfileExportConfiguration conformanceProfileExportConfiguration) throws ResourceSerializationException {
 	    ConformanceProfile conformanceProfile = conformanceProfileDataModel.getModel();
 	    if (conformanceProfile != null) {
 	      try {
-			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, exportConfiguration.getResourceExportConfiguration());
+			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, conformanceProfileExportConfiguration);
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
 	        conformanceProfileElement.addAttribute(new Attribute("messageType",
@@ -52,7 +53,7 @@ private ConstraintSerializationService constraintSerializationService;
 //	        }
 	        if(!conformanceProfileDataModel.getConformanceStatements().isEmpty() || !conformanceProfileDataModel.getPredicateMap().isEmpty()) {
 		    	  System.out.println("BOOM");
-	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), exportConfiguration.getConformamceProfileExportConfiguration().getConstraintExportConfiguration());
+	        Element constraints = constraintSerializationService.serializeConstraints(conformanceProfileDataModel.getConformanceStatements(), conformanceProfileDataModel.getPredicateMap(), conformanceProfileExportConfiguration.getConstraintExportConfiguration());
 	        if (constraints != null) {
 	        	conformanceProfileElement.appendChild(constraints);
         }
@@ -70,7 +71,7 @@ private ConstraintSerializationService constraintSerializationService;
 //	            }
 	          }
 	        }
-		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
+		    return igDataModelSerializationService.getSectionElement(conformanceProfileElement, conformanceProfileDataModel.getModel(), level, conformanceProfileExportConfiguration);
 
 	      } catch (Exception exception) {
 	        throw new ResourceSerializationException(exception, Type.CONFORMANCEPROFILE,

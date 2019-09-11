@@ -13,5 +13,7 @@ public interface IgNewExportService {
 	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config);
 	public  ExportedFile serializeIgDocumentToHtml(String username, Ig igDocument,
 			ExportFormat exportFormat, ExportFilterDecision decision) throws Exception;
+
+	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision) throws Exception;
 		
 }

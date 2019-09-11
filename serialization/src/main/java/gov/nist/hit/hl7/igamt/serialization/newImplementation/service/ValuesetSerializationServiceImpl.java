@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.ValueSetExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ValuesetDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
 import gov.nist.hit.hl7.igamt.valueset.domain.Code;
@@ -25,9 +26,9 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 	
 	@Override
 	public Element serializeValueSet(ValuesetDataModel valuesetDataModel, int level,
-			ExportConfiguration exportConfiguration) throws ResourceSerializationException {
+			ValueSetExportConfiguration valueSetExportConfiguration) throws ResourceSerializationException {
 	    try {
-		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, exportConfiguration.getResourceExportConfiguration());
+		  Element valueSetElement = igDataModelSerializationService.serializeResource(valuesetDataModel.getModel(), Type.VALUESET, valueSetExportConfiguration);
 	      Valueset valueSet = valuesetDataModel.getModel();
 	      valueSetElement.addAttribute(new Attribute("bindingIdentifier",
 	          valueSet.getBindingIdentifier() != null ? valueSet.getBindingIdentifier() : ""));
@@ -90,7 +91,7 @@ public class ValuesetSerializationServiceImpl implements ValuesetSerializationSe
 //	        }
 //	      }
 //	      valueSetElement.appendChild(codeSystemsElement);
-	      return igDataModelSerializationService.getSectionElement(valueSetElement, valuesetDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
+	      return igDataModelSerializationService.getSectionElement(valueSetElement, valuesetDataModel.getModel(), level, valueSetExportConfiguration );
 
 	    } catch (Exception exception) {
 	      throw new ResourceSerializationException(exception, Type.VALUESET,
