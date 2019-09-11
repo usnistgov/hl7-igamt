@@ -1846,10 +1846,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 		case notValued:
 			result = "<NOT><Presence Path=\"" + sPathStr + "\"/></NOT>";
 			break;
-		case containtValue:
+		case containValue:
 			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
-		case notContaintValue:
+		case notContainValue:
 			result = "<NOT><PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
 			break;
 		case containValueDesc:
@@ -1865,10 +1865,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 			result = "<NOT><StringList Path=\"" + sPathStr + "\" CSV=\""+ String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/></NOT>";
 			break;
 		case containCode:
-			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			result = "<PlainText Path=\"" + sPathStr + "\" Text=\"" + complement.getValue() +"\" IgnoreCase=\"" + false +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
 		case containListCodes:
-			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + complement.isIgnoreCase() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
+			result = "<StringList Path=\"" + sPathStr + "\" CSV=\"" + String.join(",", complement.getValues()) + "\" IgnoreCase=\"" + false +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";
 			break;
 		case regex:
 			result = "<StringFormat Path=\"" + sPathStr + "\" Format=\"" + complement.getValue() +"\" AtLeastOnce=\"" + atLeastOnce + "\"/>";

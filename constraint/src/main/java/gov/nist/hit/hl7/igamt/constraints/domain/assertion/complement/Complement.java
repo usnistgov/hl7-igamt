@@ -24,7 +24,7 @@ public class Complement {
   private ComplementKey complementKey;
 
   private String occurenceType;
-  private String occurenceValue;
+  private int occurenceValue;
   private String occurenceIdPath;
   private String occurenceLocationStr;
 
@@ -32,11 +32,11 @@ public class Complement {
 
   private String value;
   private String desc;
+  private String codesys;
   
   private String[] values;
   private String[] descs;
-  
-  private String[] codesys;
+  private String[] codesyses;
   
   private boolean ignoreCase;
 
@@ -60,11 +60,11 @@ public class Complement {
     this.occurenceType = occurenceType;
   }
 
-  public String getOccurenceValue() {
+  public int getOccurenceValue() {
     return occurenceValue;
   }
 
-  public void setOccurenceValue(String occurenceValue) {
+  public void setOccurenceValue(int occurenceValue) {
     this.occurenceValue = occurenceValue;
   }
 
@@ -116,11 +116,11 @@ public class Complement {
     this.desc = desc;
   }
 
-  public String[] getCodesys() {
+  public String getCodesys() {
     return codesys;
   }
 
-  public void setCodesys(String[] codesys) {
+  public void setCodesys(String codesys) {
     this.codesys = codesys;
   }
 
@@ -138,6 +138,14 @@ public boolean isIgnoreCase() {
 
 public void setIgnoreCase(boolean ignoreCase) {
 	this.ignoreCase = ignoreCase;
+}
+
+public String[] getCodesyses() {
+  return codesyses;
+}
+
+public void setCodesyses(String[] codesyses) {
+  this.codesyses = codesyses;
 }
 
 
