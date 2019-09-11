@@ -79,7 +79,7 @@ public class GVTConnectController extends BaseController {
     try {
       log.info("Exporting messages to GVT from IG Document with id=" + id);
 
-      Ig ig = findIgById("5b5b69ad84ae99a4bd0d1f74");
+      Ig ig = findIgById(id);
       IgDataModel igModel = this.igService.generateDataModel(ig);
 
   
