@@ -4,6 +4,7 @@ import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'r
 import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
+import { IValueSetBindingConfigMap } from '../models/config.class';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
@@ -11,6 +12,7 @@ import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { PredicateService } from '../service/predicate.service';
+import { BindingService } from './binding.service';
 import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { AResourceRepositoryService } from './resource-repository.service';
 
@@ -76,10 +78,36 @@ export interface IPathInfo {
 })
 export class Hl7V2TreeService {
 
-  constructor(private predicate: PredicateService) { }
+  constructor(private predicate: PredicateService, private bindingService: BindingService) { }
 
   nodeType(node: IHL7v2TreeNode): Type {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
+  }
+
+  getBindingsForContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
+    for (const binding of bindings) {
+      if (binding.context.resource === context.resource && binding.context.element === context.element) {
+        return binding;
+      }
+    }
+    return undefined;
+  }
+
+  getBindingsAfterContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
+    const bindingsClone = [...bindings].sort((a, b) => {
+      return a.level - b.level;
+    });
+    const binding = this.getBindingsForContext<T>(context, bindingsClone);
+    if (!binding && bindings.length > 0) {
+      return bindings[0];
+    } else {
+      for (const bd of bindingsClone) {
+        if (bd.level > binding.level) {
+          return bd;
+        }
+      }
+    }
+    return undefined;
   }
 
   concatPath(pre: IPath, post: IPath): IPath {
@@ -140,6 +168,8 @@ export class Hl7V2TreeService {
     };
     return loop(elm);
   }
+
+  // this.bindingService.getBingdingInfo('2.3.1', 'HD', 1, Type.DATATYPE, this.bindingConfig)
 
   getChildrenListFromResource(resource: IResource, repository: AResourceRepositoryService): Observable<NamedChildrenList> {
     const toListItem = (leafs) => (field) => {
@@ -408,8 +438,8 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    return repository.areLeafs(segment.children.map((child) => child.ref.id)).pipe(
-      map((leafs) => {
+    return repository.getRefData(segment.children.map((child) => child.ref.id)).pipe(
+      map((refsData) => {
         return segment.children.map((child) => {
           const reference = new BehaviorSubject({
             type: Type.DATATYPE,
@@ -448,12 +478,13 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, segment.name, refsData[child.ref.id].name, child.position, Type.SEGMENT),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
               ref: reference,
               bindings,
             },
-            leaf: leafs[child.ref.id],
+            leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               predicate$: predicate,
               ref$: reference.asObservable(),
@@ -473,8 +504,8 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const components = datatype.components || [];
-    return repository.areLeafs(components.map((child) => child.ref.id)).pipe(
-      map((leafs) => {
+    return repository.getRefData(components.map((child) => child.ref.id)).pipe(
+      map((refsData) => {
         return components.map((child) => {
           const reference = new BehaviorSubject({
             type: Type.DATATYPE,
@@ -494,6 +525,7 @@ export class Hl7V2TreeService {
           if (bindings.values.predicateId && bindings.values.predicateId.length > 0) {
             predicate = this.predicate.getPredicate('', bindings.values.predicateId[0].value);
           }
+
           return {
             data: {
               id: child.id,
@@ -517,12 +549,13 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, datatype.name, refsData[child.ref.id].name, child.position, Type.DATATYPE),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
               ref: reference,
               bindings,
             },
-            leaf: leafs[child.ref.id],
+            leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               predicate$: predicate,
               ref$: reference.asObservable(),

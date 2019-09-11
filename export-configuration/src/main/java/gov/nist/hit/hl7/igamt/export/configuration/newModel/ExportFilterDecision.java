@@ -9,17 +9,17 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
 
 public class ExportFilterDecision {
 
-	private Map<String, Boolean> datatypesFilterMap;
-	private Map<String, DatatypeExportConfiguration> OveriddedDatatypesMap;
+	private Map<String, Boolean> datatypesFilterMap = new HashMap<String, Boolean>();
+	private Map<String, DatatypeExportConfiguration> OveriddedDatatypesMap = new HashMap<String, DatatypeExportConfiguration>();
 	
-	private Map<String, Boolean> segmentFilterMap;
-	private Map<String, SegmentExportConfiguration> OveriddedSegmentMap;
+	private Map<String, Boolean> segmentFilterMap = new HashMap<String, Boolean>();
+	private Map<String, SegmentExportConfiguration> OveriddedSegmentMap = new HashMap<String, SegmentExportConfiguration>();
 	
-	private Map<String, Boolean> conformanceProfileFilterMap;
-	private Map<String, ConformanceProfileExportConfiguration> OveriddedConformanceProfileMap;
+	private Map<String, Boolean> conformanceProfileFilterMap = new HashMap<String, Boolean>();
+	private Map<String, ConformanceProfileExportConfiguration> OveriddedConformanceProfileMap = new HashMap<String, ConformanceProfileExportConfiguration>();
 	
-	private Map<String, Boolean> valueSetFilterMap;
-	private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap;
+	private Map<String, Boolean> valueSetFilterMap = new HashMap<String, Boolean>();
+	private Map<String, ValueSetExportConfiguration> OveriddedValueSetMap = new HashMap<String, ValueSetExportConfiguration>();
 	
 	public static ExportFilterDecision CreateExportFilterDecision(ExportConfiguration exportConfiguration) {
 		ExportFilterDecision exportFilterDecision = new ExportFilterDecision();

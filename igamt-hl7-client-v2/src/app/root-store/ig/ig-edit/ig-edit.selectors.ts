@@ -500,6 +500,22 @@ export const selectToc = createSelector(
   },
 );
 
+export const selectProfileTree = createSelector(
+  selectStructure,
+  selectMessagesNodes,
+  selectSegmentsNodes,
+  selectDatatypesNodes,
+  selectValueSetsNodes, (
+    structure: IContent[],
+    messageNodes: IDisplayElement[],
+    segmentsNodes: IDisplayElement[],
+    datatypesNodes: IDisplayElement[],
+    valueSetsNodes: IDisplayElement[],
+  ) => {
+    return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+  },
+);
+
 export const selectVersion = createSelector(
   selectMessagesEntites,
   (messages: Dictionary<IDisplayElement>) => {

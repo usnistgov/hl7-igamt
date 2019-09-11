@@ -21,7 +21,7 @@
                 <th *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;" ttReorderableColumn ttResizableColumn>
                     {{col.header}}
                   </th>
-                <th *ngSwitchCase="columnTypes.VALUESET" style="width: 180px;" ttReorderableColumn ttResizableColumn>
+                <th *ngSwitchCase="columnTypes.VALUESET" style="width: 250px;" ttReorderableColumn ttResizableColumn>
                 {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;" ttReorderableColumn ttResizableColumn>
@@ -152,10 +152,13 @@
                 <ng-container *ngSwitchCase="columnTypes.VALUESET">
                   <app-valueset
                     [viewOnly]="viewOnly || !rowData.changeable"
+                    [context]="type"
                     [location]="rowData.pathId"
                     [position]="rowData.position"
                     [repository]="repository"
-                    [value]="rowData.bindings?.values?.valuesetBindings[0]"
+                    [valueSets]= "valueSets"
+                    [bindingInfo]= "rowData.valueSetBindingsInfo | async"
+                    [value]="rowData.bindings?.values?.valuesetBindings"
                   >
                   </app-valueset>
                 </ng-container>

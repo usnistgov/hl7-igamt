@@ -34,7 +34,7 @@
     </div>
     <div class="sidebar-content">
       <app-configuration-toc
-        [nodes]="toc | async"
+        [nodes]="data.toc | async" [decision]="data.decision"
         (select)="select($event)"
       ></app-configuration-toc>
     </div>
@@ -70,7 +70,9 @@
       </ng-container>
     </div>
     <div class="button-row">
-      <button class="btn btn-sm btn-success">Export</button>
+      <button class="btn btn-sm btn-danger" (click)="cancel()" >Cancel</button>
+      <button class="btn btn-sm btn-success" (click)="submit()">Submit</button>
+
     </div>
   </div>
 </div>

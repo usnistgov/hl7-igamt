@@ -41,7 +41,6 @@ public class TableConversionServiceImpl implements ConversionService {
 
 		v.setBindingIdentifier(table.getBindingIdentifier());
 		v.setCreatedFrom(table.getCreatedFrom());
-		v.setDescription(table.getDescription());
 		v.setComment(table.getComment());
 		v.setName(table.getName());
 		v.setPostDef(table.getDefPostText());
@@ -119,8 +118,7 @@ public class TableConversionServiceImpl implements ConversionService {
 		v.setId(table.getId());
 		if(table.getCodes().isEmpty()) {
 			v.setNumberOfCodes(table.getNumberOfCodes());
-
-		}else {
+		} else {
 			v.setNumberOfCodes(table.getCodes().size());
 		}
 		valuesetService.save(v);

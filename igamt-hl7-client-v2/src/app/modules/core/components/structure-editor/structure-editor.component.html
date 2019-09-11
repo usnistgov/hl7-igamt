@@ -13,12 +13,14 @@
 </div>
 
 <app-hl7-v2-tree
-  [columns]="columns"
-  [datatypes]="datatypes | async"
-  [segments]="segments | async"
-  [repository]="repository"
-  [viewOnly]="viewOnly$ | async"
-  (changes)="change($event)"
-  [resource]="resource$ | async"
-  [username]="username | async">
+[columns]="columns"
+[datatypes]="datatypes | async"
+[segments]="segments | async"
+[valueSets]="valueSets | async"
+[repository]="repository"
+[viewOnly]="viewOnly$ | async"
+(changes)="change($event)"
+[resource]="resource$ | async"
+[bindingConfig]= "bindingConfig | async"
+[username]="username | async">
 </app-hl7-v2-tree>

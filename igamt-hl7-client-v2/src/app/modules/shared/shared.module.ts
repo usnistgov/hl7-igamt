@@ -21,6 +21,7 @@ import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
+import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
@@ -130,6 +131,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MaxNumberDirective,
     DeltaTreeComponent,
     DeltaColumnComponent,
+    BindingSelectorComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -246,8 +248,9 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MaxNumberDirective,
     DeltaTreeComponent,
     DeltaColumnComponent,
+    BindingSelectorComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent, BindingSelectorComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

@@ -44,6 +44,12 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
       [
         {
           context: {
+            resource: Type.CONFORMANCEPROFILE,
+          },
+          label: 'Conformance Profile',
+        },
+        {
+          context: {
             resource: Type.SEGMENT,
           },
           label: 'Segment',
