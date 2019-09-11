@@ -45,7 +45,7 @@ ConstraintSerializationService constraintSerializationService;
 	public Element serializeSegment(IgDataModel igDataModel, SegmentDataModel segmentDataModel, int level, SegmentExportConfiguration segmentExportConfiguration) throws SerializationException {
 		Element segmentElement = igDataModelSerializationService.serializeResource(segmentDataModel.getModel(), Type.SEGMENT, segmentExportConfiguration);
 	      Segment segment = segmentDataModel.getModel();
-	      if(segmentExportConfiguration.getExt()) {
+	      if(segment.getExt() != null) {
 	    segmentElement
 	          .addAttribute(new Attribute("ext", segment.getExt() != null ? segment.getExt() : ""));
 	      }
