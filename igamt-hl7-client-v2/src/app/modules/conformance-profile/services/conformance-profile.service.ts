@@ -25,7 +25,7 @@ export class ConformanceProfileService {
     });
   }
 
-  getSegmentConformanceStatements(id: string, documentId: string): Observable<ICPConformanceStatementList> {
+  getConformanceStatements(id: string, documentId: string): Observable<ICPConformanceStatementList> {
     return this.http.get<ICPConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentId);
   }
 }

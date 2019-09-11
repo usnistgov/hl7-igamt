@@ -25,7 +25,7 @@ export class DatatypeService {
     });
   }
 
-  getSegmentConformanceStatements(id: string, documentId: string): Observable<IConformanceStatementList> {
+  getConformanceStatements(id: string, documentId: string): Observable<IConformanceStatementList> {
     return this.http.get<IConformanceStatementList>(this.URL + id + '/conformancestatement/' + documentId);
   }
 

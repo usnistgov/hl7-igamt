@@ -2,8 +2,12 @@ package gov.nist.hit.hl7.igamt.bootstrap.app;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -24,8 +28,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import gov.nist.hit.hl7.igamt.bootstrap.factory.MessageEventFacory;
 import gov.nist.hit.hl7.igamt.coconstraints.xml.generator.CoConstraintXmlGenerator;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
+import gov.nist.hit.hl7.igamt.common.config.domain.BindingInfo;
+import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationInfo;
+import gov.nist.hit.hl7.igamt.common.config.domain.BindingLocationOption;
 import gov.nist.hit.hl7.igamt.common.config.domain.Config;
 import gov.nist.hit.hl7.igamt.common.config.domain.ConnectingInfo;
+import gov.nist.hit.hl7.igamt.common.config.domain.VersionRepresntation;
 import gov.nist.hit.hl7.igamt.common.config.service.ConfigService;
 import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
 
@@ -49,16 +58,14 @@ public class BootstrapApplication implements CommandLineRunner {
 	
   public static void main(String[] args) {
     SpringApplication.run(BootstrapApplication.class, args);
-
   }
-
 
   @Autowired
   ConfigService sharedConstantService;
-//  
-// 
+
   @Autowired
   MessageEventFacory messageEventFactory;
+
   @Autowired
   Environment env;
   
@@ -73,8 +80,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
 //    @Autowired
 //    CoConstraintService ccService;
-    @Autowired
-    CoConstraintXmlGenerator ccXmlGen;
+	@Autowired
+	CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;
@@ -218,6 +225,8 @@ public class BootstrapApplication implements CommandLineRunner {
     constant.setConnection(connection);    
     constant.setPhinvadsUrl("https://phinvads.cdc.gov/vads/ViewValueSet.action?oid=");
     
+    constant.setValueSetBindingConfig(generateValueSetConfig(constant.getHl7Versions()));
+    
     
     sharedConstantService.save(constant);
   
@@ -244,6 +253,136 @@ public class BootstrapApplication implements CommandLineRunner {
   // // dataypeLibraryService.save(dataypeLibrary);
   //
   // }
+
+	private HashMap<String, BindingInfo> generateValueSetConfig(List<String> versions) {
+		HashMap<String,BindingInfo> ret= new HashMap<String,BindingInfo>();
+		
+
+		ret.put("ID", BindingInfo.createSimple());
+		ret.put("IS", BindingInfo.createSimple());
+		
+		BindingLocationOption location1 = new BindingLocationOption();
+		location1.setValue(Arrays.asList(1));
+		location1.setLabel("1");
+		
+		BindingLocationOption location2 = new BindingLocationOption();
+		location2.setValue(Arrays.asList(2));
+		location2.setLabel("2");
+		
+
+		BindingLocationOption location4 = new BindingLocationOption();
+		location4.setValue(Arrays.asList(4));
+		location4.setLabel("4");
+		
+		BindingLocationOption location5 = new BindingLocationOption();
+		location5.setValue(Arrays.asList(5));
+		location5.setLabel("5");
+		
+		BindingLocationOption location2_5 = new BindingLocationOption();
+		location2_5.setValue(Arrays.asList(2,5));
+		location2_5.setLabel("2 or 5");
+	
+		
+		BindingLocationOption location10= new BindingLocationOption();
+		location10.setValue(Arrays.asList(10));
+		location10.setLabel("10");
+		
+		BindingLocationOption location1_4 = new BindingLocationOption();
+		location1_4.setValue(Arrays.asList(1,4));
+		location1_4.setLabel("1 or 4");
+		
+		BindingLocationOption location1_4_10 = new BindingLocationOption();
+		location1_4_10.setValue(Arrays.asList(1,4,10));
+		location1_4_10.setLabel("1 or 4 or 10");	
+		
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_coded =new HashMap<String, List<BindingLocationOption>>();
+		
+		
+		List<BindingLocationOption> oldOptions1= Arrays.asList(location1,location4, location1_4);
+		List<BindingLocationOption> newOption1= Arrays.asList(location1,location4,location10, location1_4, location1_4_10);
+		List<BindingLocationOption> optionsHD= Arrays.asList(location1);
+		List<BindingLocationOption> optionsCSU= Arrays.asList(location2,location5,location2_5);
+		allowedBindingLocations_coded.put("2-3-1", oldOptions1);
+		allowedBindingLocations_coded.put("2-4", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-5", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-5-1", oldOptions1);
+		allowedBindingLocations_coded.put("2-6", oldOptions1);
+
+		allowedBindingLocations_coded.put("2-7", newOption1);
+		
+		allowedBindingLocations_coded.put("2-7-1", newOption1);
+		allowedBindingLocations_coded.put("2-8", newOption1);
+		
+		allowedBindingLocations_coded.put("2-8-1", newOption1);
+		allowedBindingLocations_coded.put("2-8-2", oldOptions1);
+		BindingInfo coded =  BindingInfo.createCoded();
+		coded.setAllowedBindingLocations(allowedBindingLocations_coded);
+		
+		ret.put("CE", coded);
+		ret.put("CWE", coded);
+		ret.put("CNE", coded);
+		ret.put("CF", coded);
+		BindingInfo CSUInfo =  BindingInfo.createCoded();
+		
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_CSU =new HashMap<String, List<BindingLocationOption>>();
+		for(String v: versions) {
+			allowedBindingLocations_CSU.put(v.replace('.', '-'), optionsCSU);
+		}
+		CSUInfo.setAllowedBindingLocations(allowedBindingLocations_CSU);
+		ret.put("CSU", CSUInfo);
+		
+		BindingInfo HDInfo =  BindingInfo.createCoded();
+		HDInfo.setCoded(false);
+		HashMap<String, List<BindingLocationOption>> allowedBindingLocations_hd =new HashMap<String, List<BindingLocationOption>>();
+
+		for(String v: versions) {
+			allowedBindingLocations_hd.put(v.replace('.', '-'), optionsHD);
+		}
+		HDInfo.setAllowedBindingLocations(allowedBindingLocations_hd);
+		ret.put("HD",HDInfo);
+		
+		BindingInfo stInfo = BindingInfo.createSimple();
+		stInfo.setLocationIndifferent(false);
+		
+		Set<BindingLocationInfo> stExceptions = new HashSet<BindingLocationInfo>();
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 4, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AD", 5, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"AUI", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CNN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CX", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"EI", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ERL", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 11, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 12, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"LA2", 13, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"ELD", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 2, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"OSD", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PLN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"PPN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 4, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD",5, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XAD", 8, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XCN", 1, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 3, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.DATATYPE,"XON", 10, versions ));
+		stExceptions.add(new BindingLocationInfo(Type.SEGMENT,"PID", 23, versions ));
+		stInfo.setLocationExceptions(stExceptions);
+		ret.put("ST", stInfo);
+		
+		BindingInfo nmInfo = BindingInfo.createSimple();
+		nmInfo.setLocationIndifferent(false);
+		Set<BindingLocationInfo> nmExceptions = new HashSet<BindingLocationInfo>();
+		nmExceptions.add(new BindingLocationInfo(Type.DATATYPE,"CK", 1, versions ));
+		ret.put("NM", nmInfo);
+		
+		return ret;
+	}
+
 
 //   @PostConstruct
 //   void classifyDatatypes() throws DatatypeNotFoundException {

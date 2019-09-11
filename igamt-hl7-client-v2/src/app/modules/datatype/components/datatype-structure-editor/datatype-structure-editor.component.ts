@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -13,6 +14,7 @@ import { IDatatype } from '../../../shared/models/datatype.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
+import { DeltaService } from '../../../shared/services/delta.service';
 import { StoreResourceRepositoryService } from '../../../shared/services/resource-repository.service';
 import { DatatypeService } from '../../services/datatype.service';
 

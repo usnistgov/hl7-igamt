@@ -10,6 +10,7 @@ import {
   OpenSegmentStructureEditor,
   SegmentEditActionTypes,
 } from '../../root-store/segment-edit/segment-edit.actions';
+import { OpenSegmentDeltaEditor } from '../../root-store/segment-edit/segment-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
@@ -18,6 +19,7 @@ import { EditorID } from '../shared/models/editor.enum';
 import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -80,22 +82,46 @@ const routes: Routes = [
       },
       {
         path: 'structure',
-        component: SegmentStructureEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
-        data: {
-          editorMetadata: {
-            id: EditorID.SEGMENT_STRUCTURE,
-            title: 'Structure',
-            resourceType: Type.SEGMENT,
+        children: [
+          {
+            path: '',
+            component: SegmentStructureEditorComponent,
+            canActivate: [IgEditorActivateGuard],
+            canDeactivate: [IgEditSaveDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.SEGMENT_STRUCTURE,
+                title: 'Structure',
+                resourceType: Type.SEGMENT,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenSegmentStructureEditor,
+              idKey: 'segmentId',
+            },
           },
-          onLeave: {
-            saveEditor: true,
-            saveTableOfContent: true,
+          {
+            path: 'delta',
+            component: DeltaEditorComponent,
+            canActivate: [IgEditorActivateGuard],
+            canDeactivate: [IgEditSaveDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.SEGMENT_DELTA,
+                title: 'Delta',
+                resourceType: Type.SEGMENT,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenSegmentDeltaEditor,
+              idKey: 'segmentId',
+            },
           },
-          action: OpenSegmentStructureEditor,
-          idKey: 'segmentId',
-        },
+        ],
       },
       {
         path: 'metadata',

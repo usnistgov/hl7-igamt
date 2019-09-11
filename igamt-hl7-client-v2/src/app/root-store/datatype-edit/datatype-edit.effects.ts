@@ -13,10 +13,11 @@ import { Type } from '../../modules/shared/constants/type.enum';
 import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { IDatatype } from '../../modules/shared/models/datatype.interface';
+import { DeltaService } from '../../modules/shared/services/delta.service';
 import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { OpenDatatypeConformanceStatementEditor } from './datatype-edit.actions';
+import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from './datatype-edit.actions';
 import {
   DatatypeEditActionTypes,
   LoadDatatype,
@@ -127,10 +128,19 @@ export class DatatypeEditEffects {
       return this.store.select(selectIgId).pipe(
         take(1),
         mergeMap((igId) => {
-          return this.datatypeService.getSegmentConformanceStatements(action.payload.id, igId);
+          return this.datatypeService.getConformanceStatements(action.payload.id, igId);
         }),
       );
     },
+    this.DatatypeNotFound,
+  );
+
+  @Effect()
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenDatatypeDeltaEditor>(
+    DatatypeEditActionTypes.OpenDatatypeDeltaEditor,
+    Type.DATATYPE,
+    fromIgEdit.selectDatatypesById,
+    this.deltaService.getDeltaFromOrigin,
     this.DatatypeNotFound,
   );
 
@@ -140,6 +150,7 @@ export class DatatypeEditEffects {
     private message: MessageService,
     private editorHelper: OpenEditorService,
     private datatypeService: DatatypeService,
+    private deltaService: DeltaService,
     private crossReferenceService: CrossReferencesService,
   ) { }
 

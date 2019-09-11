@@ -12,7 +12,7 @@
     <div class="page-container" [ngStyle]="{'grid-template-columns': '[sidebar] minmax(min-content, '+ (!collapsed ? positionX : '45px') +') [resize-bar] 4px [container] minmax(600px, 8fr)'}">
       <div class="container-section">
         <app-ig-edit-toolbar class="toolbar-controls"></app-ig-edit-toolbar>
-        <app-ig-edit-active-titlebar class="titlebar-content"></app-ig-edit-active-titlebar>
+        <app-ig-edit-active-titlebar class="titlebar-content" [active]="activeWorkspace | async" [controls]="activeComponent?.controls" [header]="activeComponent?.header"></app-ig-edit-active-titlebar>
         <div class="container-content">
           <router-outlet style="display: none;" (activate)="activateComponent($event)" (deactivate)="deactivateComponent($event)"></router-outlet>
         </div>

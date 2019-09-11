@@ -2,13 +2,20 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
+import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
-import { selectAllDatatypes, selectAllSegments } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import {
+  selectAllDatatypes,
+  selectAllSegments,
+  selectedResourceHasOrigin,
+  selectValueSetsNodes,
+} from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
+import { IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
@@ -27,12 +34,15 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
 
   type = Type;
   resourceSubject: ReplaySubject<T>;
-  datatypes: Observable<IDisplayElement[]>;
-  segments: Observable<IDisplayElement[]>;
+  public datatypes: Observable<IDisplayElement[]>;
+  public segments: Observable<IDisplayElement[]>;
+  public valueSets: Observable<IDisplayElement[]>;
+  public bindingConfig: Observable<IValueSetBindingConfigMap>;
   changes: ReplaySubject<IStructureChanges>;
   username: Observable<string>;
   resource$: Observable<T>;
   workspace_s: Subscription;
+  hasOrigin$: Observable<boolean>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -44,9 +54,13 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     public legend: BindingLegend,
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
+    this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
-    this.username = store.select(fromAuth.selectUsername);
+    this.valueSets = this.store.select(selectValueSetsNodes);
+    this.username = this.store.select(fromAuth.selectUsername);
+    this.bindingConfig = this.store.select(selectBindingConfig);
+    this.bindingConfig.subscribe();
     this.resourceSubject = new ReplaySubject<T>(1);
     this.changes = new ReplaySubject<IStructureChanges>(1);
     this.workspace_s = this.currentSynchronized$.pipe(
@@ -59,11 +73,12 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   ngOnDestroy(): void {
+    console.log('unsubscribe');
     this.workspace_s.unsubscribe();
   }
 
   onDeactivate() {
-    this.ngOnDestroy();
+    console.log('ON DEACTIVATE');
   }
 
   change(change: IChange) {

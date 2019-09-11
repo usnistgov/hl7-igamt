@@ -188,6 +188,23 @@ body {
   padding-bottom: 10px;
 }
 
+.eye-icon {
+  font-size: 1.5em;
+  color: green;
+}
+
+.toRight {
+  text-align: end;
+  font-weight: bold;
+  padding-right: 0 !important;
+}
+
+.toLeft {
+  text-align: start;
+  font-weight: bold;
+  padding-left: 0 !important;
+}
+
 .operator-drop-area {
   padding: 5px;
   min-width: 100px;
@@ -206,6 +223,16 @@ body {
 .pattern {
   border: 1px dashed black;
   margin-top: 10px;
+}
+
+.toggled-delta {
+  box-shadow: inset 2px 2px 2px 2px #c7c7c7 !important;
+  border: 2px solid salmon !important;
+}
+
+.toggle-btn.btn.focus {
+  outline: unset;
+  box-shadow: unset;
 }
 
 .export-dialog .mat-dialog-container {

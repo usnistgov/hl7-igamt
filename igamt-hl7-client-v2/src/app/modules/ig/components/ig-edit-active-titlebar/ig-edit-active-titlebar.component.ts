@@ -1,7 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import { Component, Input, OnInit, TemplateRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { IWorkspaceActive } from '../../../shared/models/editor.class';
 
 @Component({
@@ -11,10 +9,11 @@ import { IWorkspaceActive } from '../../../shared/models/editor.class';
 })
 export class IgEditActiveTitlebarComponent implements OnInit {
 
-  activeElement: Observable<IWorkspaceActive>;
-  constructor(private store: Store<fromIgEdit.IState>) {
-    this.activeElement = store.select(fromIgEdit.selectWorkspaceActive);
-  }
+  @Input() active: IWorkspaceActive;
+  @Input() controls: TemplateRef<any>;
+  @Input() header: TemplateRef<any>;
+
+  constructor() { }
 
   ngOnInit() {
   }

@@ -79,6 +79,7 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
 
     this.changes = new ReplaySubject(1);
     this.selectedResource$ = this.store.select(this.resource$);
+
     this.conformanceStatementView = new ReplaySubject(1);
     this.conformanceStatementView$ = this.conformanceStatementView.asObservable();
 

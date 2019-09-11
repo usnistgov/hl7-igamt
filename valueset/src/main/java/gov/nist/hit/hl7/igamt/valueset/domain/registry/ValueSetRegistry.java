@@ -7,7 +7,11 @@ import gov.nist.hit.hl7.igamt.common.base.domain.Registry;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 
 public class ValueSetRegistry extends Registry {
-  private ValueSetConfigForExport exportConfig;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+private ValueSetConfigForExport exportConfig;
   private HashMap<String, Boolean> codesPresence = new HashMap<String, Boolean>();
 
   public ValueSetRegistry() {

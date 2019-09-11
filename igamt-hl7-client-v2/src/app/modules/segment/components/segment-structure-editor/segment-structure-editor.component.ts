@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
@@ -25,8 +26,6 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
 
   type = Type;
   segment: ReplaySubject<ISegment>;
-  datatypes: Observable<IDisplayElement[]>;
-  segments: Observable<IDisplayElement[]>;
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;

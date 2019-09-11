@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -41,6 +42,12 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
       },
       LoadConformanceProfile,
       [
+        {
+          context: {
+            resource: Type.CONFORMANCEPROFILE,
+          },
+          label: 'Conformance Profile',
+        },
         {
           context: {
             resource: Type.SEGMENT,

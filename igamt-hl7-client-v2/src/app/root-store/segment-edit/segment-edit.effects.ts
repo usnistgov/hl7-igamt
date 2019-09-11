@@ -13,10 +13,16 @@ import { IUsages } from '../../modules/shared/models/cross-reference';
 import { IConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { ISegment } from '../../modules/shared/models/segment.interface';
 import { CrossReferencesService } from '../../modules/shared/services/cross-references.service';
+import { DeltaService } from '../../modules/shared/services/delta.service';
 import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
 import { selectedResourceMetadata, selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
-import { LoadSegment, LoadSegmentFailure, LoadSegmentSuccess, OpenSegmentConformanceStatementEditor, OpenSegmentCrossRefEditor, OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor, OpenSegmentStructureEditor, SegmentEditActionTypes } from './segment-edit.actions';
+import {
+  LoadSegment, LoadSegmentFailure, LoadSegmentSuccess,
+  OpenSegmentConformanceStatementEditor, OpenSegmentCrossRefEditor, OpenSegmentDeltaEditor,
+  OpenSegmentMetadataEditor, OpenSegmentPostDefEditor, OpenSegmentPreDefEditor,
+  OpenSegmentStructureEditor, SegmentEditActionTypes,
+} from './segment-edit.actions';
 
 @Injectable()
 export class SegmentEditEffects {
@@ -116,10 +122,19 @@ export class SegmentEditEffects {
       return this.store.select(selectIgId).pipe(
         take(1),
         mergeMap((igId) => {
-          return this.segmentService.getSegmentConformanceStatements(action.payload.id, igId);
+          return this.segmentService.getConformanceStatements(action.payload.id, igId);
         }),
       );
     },
+    this.SegmentNotFound,
+  );
+
+  @Effect()
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenSegmentDeltaEditor>(
+    SegmentEditActionTypes.OpenSegmentDeltaEditor,
+    Type.SEGMENT,
+    fromIgEdit.selectSegmentsById,
+    this.deltaService.getDeltaFromOrigin,
     this.SegmentNotFound,
   );
 
@@ -127,6 +142,7 @@ export class SegmentEditEffects {
     private actions$: Actions<any>,
     private store: Store<any>,
     private message: MessageService,
+    private deltaService: DeltaService,
     private segmentService: SegmentService,
     private editorHelper: OpenEditorService,
     private crossReferenceService: CrossReferencesService,
