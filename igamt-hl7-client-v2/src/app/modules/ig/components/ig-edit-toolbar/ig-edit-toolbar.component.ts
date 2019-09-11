@@ -2,16 +2,13 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import {concatMap, filter, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import { concatMap, filter, map, take, tap, withLatestFrom } from 'rxjs/operators';
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
-import { IgEditTocAddResource } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
-import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
-import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
@@ -69,6 +66,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     subscription.unsubscribe();
 
   }
+
   exportHTML() {
     this.getDecision().pipe(
       map((decision) => {
@@ -77,6 +75,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
           maxHeight: '90vh',
           width: '95vw',
           height: '95vh',
+          panelClass: 'export-dialog',
           data: {
             toc: this.store.select(fromIgDocumentEdit.selectProfileTree),
             decision,
@@ -84,7 +83,6 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
         });
         dialogRef.afterClosed().pipe(
           filter((y) => y !== undefined),
-
           withLatestFrom(this.getIgId()),
           take(1),
           map(([result, igId]) => {
@@ -96,7 +94,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   getDecision(): Observable<any> {
-   return  this.getIgId().pipe(
+    return this.getIgId().pipe(
       take(1),
       concatMap((x: string) => this.igService.getExportFirstDecision(x)),
     );

@@ -1,10 +1,11 @@
+import { TemplateRef, ViewChild } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, Store } from '@ngrx/store';
 import { combineLatest, Observable, Subscription } from 'rxjs';
 import { distinctUntilChanged, filter, map, tap, withLatestFrom } from 'rxjs/operators';
 import { IgDocument } from 'src/app/modules/ig/models/ig/ig-document.class';
-import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorSave } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
+import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorChange, EditorSaveFailure, EditorSaveSuccess, IgEditActionTypes, UpdateActiveResource } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { Scope } from '../../../shared/constants/scope.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -23,6 +24,10 @@ export abstract class AbstractEditorComponent {
   readonly initial$: Observable<any>;
   readonly viewOnly$: Observable<boolean>;
   readonly ig$: Observable<IgDocument>;
+  @ViewChild('headerControls')
+  readonly controls: TemplateRef<any>;
+  @ViewChild('headerTitle')
+  readonly header: TemplateRef<any>;
 
   constructor(
     readonly editor: IEditorMetadata,

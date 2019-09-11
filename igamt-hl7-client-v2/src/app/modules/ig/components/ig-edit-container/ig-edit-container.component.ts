@@ -1,10 +1,11 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { fromEvent, Observable, Subscription } from 'rxjs';
 import { filter, repeat, skipUntil, takeUntil, tap } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ClearIgEdit, ExpandTOC } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { IWorkspaceActive } from '../../../shared/models/editor.class';
 import { ITitleBarMetadata } from '../ig-edit-titlebar/ig-edit-titlebar.component';
 
 @Component({
@@ -22,9 +23,12 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
   positionX: string;
   resizeTocSubscription: Subscription;
   tocCollapseSubscription: Subscription;
+  activeComponent: AbstractEditorComponent;
+  activeWorkspace: Observable<IWorkspaceActive>;
 
   constructor(private store: Store<fromIgEdit.IState>) {
     this.titleBar = this.store.select(fromIgEdit.selectTitleBar);
+    this.activeWorkspace = store.select(fromIgEdit.selectWorkspaceActive);
     this.tocCollapseSubscription = this.store.select(fromIgEdit.selectTocCollapsed).subscribe(
       (collapsed) => {
         this.collapsed = collapsed;
@@ -39,6 +43,7 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
 
   activateComponent($event: Component) {
     if ($event instanceof AbstractEditorComponent) {
+      this.activeComponent = $event;
       $event.registerSaveListener();
       $event.registerTitleListener();
     }
@@ -46,9 +51,14 @@ export class IgEditContainerComponent implements OnInit, AfterViewInit, OnDestro
 
   deactivateComponent($event: Component) {
     if ($event instanceof AbstractEditorComponent) {
+      this.activeComponent = undefined;
       $event.unregisterSaveListener();
       $event.unregisterTitleListener();
     }
+  }
+
+  getControl() {
+    return this.activeComponent ? this.activeComponent.controls : undefined;
   }
 
   ngAfterViewInit(): void {

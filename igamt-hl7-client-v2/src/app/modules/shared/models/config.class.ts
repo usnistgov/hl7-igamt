@@ -1,5 +1,5 @@
-import {IBindingLocationItem} from '../components/binding-selector/binding-selector.component';
-import {Type} from '../constants/type.enum';
+import { IBindingLocationItem } from '../components/binding-selector/binding-selector.component';
+import { Type } from '../constants/type.enum';
 
 export interface IConnectingInfo {
   label: string;
@@ -10,7 +10,7 @@ export interface IConnectingInfo {
   position: number;
 }
 
-export  class IBindingLocationInfoConfig {
+export class IBindingLocationInfoConfig {
   type: Type;
   name: string;
   location: number;

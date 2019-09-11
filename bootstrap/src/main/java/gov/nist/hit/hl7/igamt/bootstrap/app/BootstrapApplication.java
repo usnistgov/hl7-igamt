@@ -58,16 +58,14 @@ public class BootstrapApplication implements CommandLineRunner {
 	
   public static void main(String[] args) {
     SpringApplication.run(BootstrapApplication.class, args);
-
   }
-
 
   @Autowired
   ConfigService sharedConstantService;
-//  
-// 
+
   @Autowired
   MessageEventFacory messageEventFactory;
+
   @Autowired
   Environment env;
   
@@ -82,8 +80,8 @@ public class BootstrapApplication implements CommandLineRunner {
 
 //    @Autowired
 //    CoConstraintService ccService;
-    @Autowired
-    CoConstraintXmlGenerator ccXmlGen;
+	@Autowired
+	CoConstraintXmlGenerator ccXmlGen;
 //  
   @Autowired
   DatatypeService dataypeService;

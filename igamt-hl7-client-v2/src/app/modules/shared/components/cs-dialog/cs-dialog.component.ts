@@ -1,12 +1,16 @@
-import { Component, Inject, Input, OnInit, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import { Component, Inject, OnDestroy, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
+import { TreeNode } from 'primeng/primeng';
+import { Observable, of, Subscription } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion } from '../../models/cs.interface';
+import { AssertionMode, ConstraintType, IAssertionConformanceStatement, IFreeTextConformanceStatement, INotAssertion, IOperatorAssertion, IPath } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { ConformanceStatementService } from '../../services/conformance-statement.service';
+import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
 import { BinaryOperator, Pattern, Statement } from '../pattern-dialog/cs-pattern.domain';
@@ -25,7 +29,7 @@ export enum CsTab {
   templateUrl: './cs-dialog.component.html',
   styleUrls: ['./cs-dialog.component.scss'],
 })
-export class CsDialogComponent implements OnInit {
+export class CsDialogComponent implements OnDestroy {
 
   pattern: Pattern;
   activeTab: CsTab;
@@ -39,6 +43,12 @@ export class CsDialogComponent implements OnInit {
   title: string;
   hideAdvanced: boolean;
   ifThenPattern: BinaryOperator;
+  structure: TreeNode[];
+  context: TreeNode[];
+  s_resource: Subscription;
+  showContext: boolean;
+  contextName: string;
+
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
   @ViewChild('csForm', { read: NgForm }) form;
 
@@ -46,19 +56,65 @@ export class CsDialogComponent implements OnInit {
     private csService: ConformanceStatementService,
     private dialog: MatDialog,
     private sanitizer: DomSanitizer,
+    private treeService: Hl7V2TreeService,
     public dialogRef: MatDialogRef<CsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public repository: StoreResourceRepositoryService) {
     this.ifThenPattern = new BinaryOperator('D', 'IF-THEN', null, 0);
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 0);
     this.ifThenPattern.putOne(new Statement('D', 0, null, 0), 1);
-    data.resource.subscribe(
+    this.s_resource = data.resource.subscribe(
       (resource: IResource) => {
+        this.resourceType = resource.type;
         this.resource = resource;
+        this.treeService.getTree(resource, this.repository, true, true, (value) => {
+          this.structure = [
+            {
+              data: {
+                id: resource.id,
+                pathId: resource.id,
+                name: resource.name,
+                type: resource.type,
+              },
+              children: [...value],
+              parent: undefined,
+            },
+          ];
+          this.context = this.structure;
+        });
       },
     );
     this.title = data.title;
     this.conformanceStatement = data.cs;
+  }
+
+  getName(path: IPath): Observable<string> {
+    if (!path) {
+      return of('');
+    }
+
+    return this.treeService.getPathName(this.resource, this.repository, path.child).pipe(
+      take(1),
+      map((pathInfo) => {
+        return this.treeService.getNameFromPath(pathInfo);
+      }),
+    );
+  }
+
+  selectContext(node) {
+    if (node.node.data.type !== Type.CONFORMANCEPROFILE) {
+      this.cs.context = node.path;
+      this.structure = [
+        node.node,
+      ];
+      this.getName(node.path).pipe(
+        take(1),
+        map((value) => {
+          this.contextName = value;
+        }),
+      ).subscribe();
+    }
+    this.showContext = false;
   }
 
   valid() {
@@ -78,7 +134,6 @@ export class CsDialogComponent implements OnInit {
     }
   }
 
-  @Input()
   set conformanceStatement(cs: IAssertionConformanceStatement | IFreeTextConformanceStatement) {
     if (cs.type === ConstraintType.ASSERTION) {
       this.pattern = this.csService.getCsPattern((cs as IAssertionConformanceStatement).assertion);
@@ -86,15 +141,8 @@ export class CsDialogComponent implements OnInit {
     } else {
       this.activeTab = CsTab.FREE;
     }
-    console.log(this.pattern);
     this.cs = cs;
     this.backUp = _.cloneDeep(cs);
-  }
-
-  @Input()
-  set structure(r: IResource) {
-    this.resource = r;
-    this.resourceType = this.resource.type;
   }
 
   updateAssertionDescription(assertion: IAssertion) {
@@ -137,9 +185,6 @@ export class CsDialogComponent implements OnInit {
     if (this.cs.type === ConstraintType.ASSERTION) {
       this.updateAssertionDescription((this.cs as IAssertionConformanceStatement).assertion);
     }
-  }
-
-  statementValid() {
   }
 
   changeTab(item: CsTab) {
@@ -195,10 +240,6 @@ export class CsDialogComponent implements OnInit {
     this.conformanceStatement = this.backUp;
   }
 
-  ngOnInit() {
-
-  }
-
   getTabForPattern(pattern: Pattern): CsTab {
     if (!pattern || !pattern.assertion) {
       return CsTab.FREE;
@@ -208,6 +249,12 @@ export class CsDialogComponent implements OnInit {
       return CsTab.CONDITIONAL;
     } else {
       return CsTab.COMPLEX;
+    }
+  }
+
+  ngOnDestroy(): void {
+    if (this.s_resource) {
+      this.s_resource.unsubscribe();
     }
   }
 

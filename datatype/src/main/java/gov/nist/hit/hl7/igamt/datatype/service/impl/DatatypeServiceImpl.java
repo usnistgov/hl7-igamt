@@ -611,6 +611,8 @@ public class DatatypeServiceImpl implements DatatypeService {
 						cModel.setIdPath(c.getId());
 						cModel.setPath(c.getPosition() + "");
 						cModel.setDatatypeLabel(this.createDatatypeLabel(childDt));
+						cModel.setConstantValue(c.getConstantValue());
+						cModel.setText(c.getText());
 						StructureElementBinding cSeb = this
 								.findStructureElementBindingByComponentIdForDatatype(datatype, c.getId());
 						if (cSeb != null) {
@@ -747,6 +749,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 					dvb.setStrength(vb.getStrength());
 					dvb.setValuesetId(vb.getValuesetId());
 					dvb.setValuesetLocations(vb.getValuesetLocations());
+					dvb.setDomainInfo(vs.getDomainInfo());
 					result.add(dvb);
 				}
 			}
