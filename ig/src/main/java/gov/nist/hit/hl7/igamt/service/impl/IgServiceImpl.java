@@ -530,7 +530,7 @@ public class IgServiceImpl implements IgService {
 		HashMap<String, String> map = new HashMap<String, String>();
 		if (reg != null && reg.getChildren() != null) {
 			for (Link l : reg.getChildren()) {
-				if (l.getDomainInfo().getScope().equals(Scope.USER)) {
+				if (!l.getDomainInfo().getScope().equals(Scope.HL7STANDARD) && !l.getDomainInfo().getScope().equals(Scope.PHINVADS)) {
 					map.put(l.getId(), new ObjectId().toString());
 				}
 			}

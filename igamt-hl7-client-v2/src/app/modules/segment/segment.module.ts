@@ -8,6 +8,7 @@ import { SharedModule } from '../shared/shared.module';
 import { CoconstraintsEditorComponent } from './components/coconstraints-editor/coconstraints-editor.component';
 import { SegmentConformanceStatementEditorComponent } from './components/conformance-statement-editor/segment-conformance-statement-editor.component';
 import { SegmentCrossRefsComponent } from './components/cross-refs/segment-cross-refs.component';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -16,7 +17,16 @@ import { SegmentRoutingModule } from './segment-routing.module';
 import { SegmentService } from './services/segment.service';
 
 @NgModule({
-  declarations: [PredefEditorComponent, PostdefEditorComponent, SegmentStructureEditorComponent, SegmentCrossRefsComponent, MetadataEditorComponent, CoconstraintsEditorComponent, SegmentConformanceStatementEditorComponent],
+  declarations: [
+    PredefEditorComponent,
+    PostdefEditorComponent,
+    SegmentStructureEditorComponent,
+    SegmentCrossRefsComponent,
+    MetadataEditorComponent,
+    CoconstraintsEditorComponent,
+    SegmentConformanceStatementEditorComponent,
+    DeltaEditorComponent,
+  ],
   imports: [
     CommonModule,
     SegmentRoutingModule,

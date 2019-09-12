@@ -42,7 +42,9 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   treeSubscriptions: Subscription[] = [];
   s_resource: Subscription;
   @Input()
-  restrictions: ITreeRestrictions = {};
+  restrictions: ITreeRestrictions = {
+    primitive: true,
+  };
 
   constructor(private treeService: Hl7V2TreeService) {
     this.configuration = {
@@ -52,11 +54,37 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
   }
 
   @Input()
+  set filter(restrictions: ITreeRestrictions) {
+    this.restrictions = {
+      ...this.restrictions,
+      ...restrictions,
+    };
+
+    if (this.structure) {
+      this.evaluateTree(this.structure, this.restrictions);
+      this.structure = [
+        ...this.structure,
+      ];
+    }
+  }
+
+  evaluateTree(tree: TreeNode[], restrictions: ITreeRestrictions): void {
+    if (tree && tree.length > 0) {
+      tree.forEach((node) => {
+        this.evaluate(node as IHL7v2TreeNode, restrictions);
+        if (node.children) {
+          this.evaluateTree(node.children, restrictions);
+        }
+      });
+    }
+  }
+
+  @Input()
   set resource(resource: IResource) {
     this.type = resource.type;
     this.close(this.s_resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, true, true, (value) => {
-      this.structure = [
+      const tree = [
         {
           data: {
             id: resource.id,
@@ -64,9 +92,13 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
             name: resource.name,
             type: resource.type,
           },
-          children: [...value.map((node) => this.evaluate(node, this.restrictions))],
+          children: [...value],
           parent: undefined,
         },
+      ];
+      this.evaluateTree(tree, this.restrictions);
+      this.structure = [
+        ...tree,
       ];
     });
   }
@@ -78,7 +110,10 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
 
   @Input()
   set tree(str: TreeNode[]) {
-    this.structure = str;
+    this.evaluateTree(str, this.restrictions);
+    this.structure = [
+      ...str,
+    ];
   }
 
   // tslint:disable-next-line: cognitive-complexity
@@ -92,8 +127,8 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     const node_usage = node.data.usage ? node.data.usage.value : undefined;
 
     // --- Primitive Filter
-    if (restrictions.primitive === undefined) {
-      filter = filter && (restrictions.primitive || !node_has_children) && (!restrictions.primitive || node_has_children);
+    if (restrictions.primitive !== undefined) {
+      filter = filter && (!restrictions.primitive || !node_has_children) && (restrictions.primitive || node_has_children);
     }
 
     // --- Datatypes Filter
@@ -145,9 +180,12 @@ export class StructureTreeComponent implements OnInit, OnDestroy {
     });
   }
 
-  onNodeExpand(event) {
+  onNodeExpand(event, then?: (nodes: TreeNode[]) => void) {
     const subs = this.treeService.resolveReference(event.node, this.repository, true, () => {
       this.structure = [...this.structure];
+      if (then) {
+        then(this.structure);
+      }
     }, (nodes: IHL7v2TreeNode[]) => {
       return nodes.map((node) => {
         return this.evaluate(node, this.restrictions);

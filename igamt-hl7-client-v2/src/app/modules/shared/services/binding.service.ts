@@ -1,12 +1,16 @@
 import { Injectable } from '@angular/core';
-import {IBindingLocationInfo, IBindingLocationItem} from '../components/binding-selector/binding-selector.component';
-import {Type} from '../constants/type.enum';
-import {IBindingInfo, IBindingLocationInfoConfig, IValueSetBindingConfigMap} from '../models/config.class';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { selectBindingConfig } from '../../../root-store/config/config.reducer';
+import { IBindingLocationInfo } from '../components/binding-selector/binding-selector.component';
+import { Type } from '../constants/type.enum';
+import { IBindingLocationInfoConfig } from '../models/config.class';
 
-function contains(locationExceptions: IBindingLocationInfoConfig[], version: string, location: number, type: Type, elementName: string) {
+function contains(locationExceptions: IBindingLocationInfoConfig[], version: string, location: number, type: Type, parent: string) {
   return locationExceptions.filter((x: IBindingLocationInfoConfig) => {
-    return elementName === x.name && type === x.type && location === x.location && x.version.includes(version);
-   }).length > 0;
+    return parent === x.name && type === x.type && location === x.location && x.version.includes(version);
+  }).length > 0;
 }
 
 @Injectable({
@@ -14,33 +18,38 @@ function contains(locationExceptions: IBindingLocationInfoConfig[], version: str
 })
 export class BindingService {
 
-  getBingdingInfo(version: string, elementName: string, location: number, type: Type, valueSetBindingConfig: IValueSetBindingConfigMap): IBindingLocationInfo {
-    const ret: IBindingLocationInfo = {
-      allowedBindingLocations: [],
-      singleCodeAllowed: false,
-      multiple: false,
-      coded: false,
-      allowSingleCode: false,
-      allowValueSets: false,
-    };
-    console.log(valueSetBindingConfig[elementName]);
-    if (valueSetBindingConfig[elementName]) {
-      const config = valueSetBindingConfig[elementName];
-      if (config.locationIndifferent || contains(config.locationExceptions, version, location, type, elementName)) {
-          ret.multiple = config.multiple;
-          ret.allowValueSets = true;
-          ret.singleCodeAllowed = config.allowSingleCode;
-          ret.coded = config.allowSingleCode;
-          if (config.allowedBindingLocations) {
-            const versionKey = version.replace(/\./g, '-');
-            if (config.allowedBindingLocations[versionKey]) {
-              ret.allowedBindingLocations = config.allowedBindingLocations[versionKey];
+  constructor(private store: Store<any>) { }
+
+  getBingdingInfo(version: string, parent: string, elementName: string, location: number, type: Type): Observable<IBindingLocationInfo> {
+    return this.store.select(selectBindingConfig).pipe(
+      map((valueSetBindingConfig) => {
+        const ret: IBindingLocationInfo = {
+          allowedBindingLocations: [],
+          singleCodeAllowed: false,
+          multiple: false,
+          coded: false,
+          allowSingleCode: false,
+          allowValueSets: false,
+        };
+
+        if (valueSetBindingConfig[elementName]) {
+          const config = valueSetBindingConfig[elementName];
+          if (config.locationIndifferent || contains(config.locationExceptions, version, location, type, parent)) {
+            ret.multiple = config.multiple;
+            ret.allowValueSets = true;
+            ret.singleCodeAllowed = config.allowSingleCode;
+            ret.coded = config.allowSingleCode;
+            if (config.allowedBindingLocations) {
+              const versionKey = version.replace(/\./g, '-');
+              if (config.allowedBindingLocations[versionKey]) {
+                ret.allowedBindingLocations = config.allowedBindingLocations[versionKey];
+              }
             }
           }
         }
-    }
-    return ret;
+        return ret;
+      }),
+    );
   }
 
-  constructor() { }
 }

@@ -1,8 +1,11 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { Guid } from 'guid-typescript';
+import { TreeNode } from 'primeng/primeng';
+import { combineLatest, Observable, of } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
-import { AssertionMode, IComplement, ISimpleAssertion, ISubject } from '../../models/cs.interface';
+import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '../../models/cs.interface';
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
@@ -119,6 +122,9 @@ export class CsPropositionComponent implements OnInit {
   @Input()
   collapsed = false;
 
+  subjectName: string;
+  compareName: string;
+
   blank = {
     mode: AssertionMode.SIMPLE,
     complement: {
@@ -150,9 +156,17 @@ export class CsPropositionComponent implements OnInit {
 
   csType: ConformanceStatementType;
   @Input()
-  resource: IResource;
+  set resource(r: IResource) {
+    this.res = r;
+  }
+  res: IResource;
+  @Input()
+  resourceType: Type;
+  @Input()
+  tree: TreeNode[];
   @Input()
   repository: AResourceRepositoryService;
+  _context: IPath;
   @Output()
   valueChange: EventEmitter<ISimpleAssertion>;
 
@@ -178,6 +192,33 @@ export class CsPropositionComponent implements OnInit {
   @Input()
   set type(type: ConformanceStatementType) {
     this.csType = type;
+  }
+
+  @Input()
+  set context(ctx: IPath) {
+    this._context = ctx;
+    if (this.assertion) {
+      this.assertion.complement = {
+        ...this.assertion.complement,
+        path: undefined,
+        occurenceIdPath: undefined,
+        occurenceLocationStr: undefined,
+        occurenceValue: undefined,
+        occurenceType: undefined,
+      };
+
+      this.assertion.subject = {
+        path: undefined,
+        occurenceIdPath: undefined,
+        occurenceLocationStr: undefined,
+        occurenceValue: undefined,
+        occurenceType: undefined,
+      };
+    }
+  }
+
+  get context() {
+    return this._context;
   }
 
   occurences = [
@@ -274,16 +315,22 @@ export class CsPropositionComponent implements OnInit {
   }
 
   change() {
-    const occurenceTarget = this.getOccurenceLiteral(this.assertion.subject);
-    const node = this.assertion.subject.occurenceLocationStr;
-    const verb = this.labelsMap[this.assertion.verbKey];
-    const statement = this.getStatementLiteral(this.assertion.complement);
-    const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
-    const compNode = this.assertion.complement.occurenceLocationStr;
-    const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
-    this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
-    ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
-    this.valueChange.emit(this.assertion);
+    combineLatest(
+      this.getName(this.assertion.subject.path),
+      this.getName(this.assertion.complement.path),
+    ).pipe(
+      take(1),
+      map(([node, compNode]) => {
+        const occurenceTarget = this.getOccurenceLiteral(this.assertion.subject);
+        const verb = this.labelsMap[this.assertion.verbKey];
+        const statement = this.getStatementLiteral(this.assertion.complement);
+        const comparisonTarget = this.getOccurenceLiteral(this.assertion.complement);
+        const comparison = `${comparisonTarget.toLowerCase()} ${this.valueOrBlank(compNode)}`;
+        this.assertion.description = `${occurenceTarget} ${this.valueOrBlank(node)} ${this.csType === ConformanceStatementType.STATEMENT ? this.valueOrBlank(verb).toLowerCase() : ''} ${this.valueOrBlank(statement)}
+        ${this.statementType === StatementType.COMPARATIVE ? comparison : ''}`;
+        this.valueChange.emit(this.assertion);
+      }),
+    ).subscribe();
   }
 
   valueOrBlank(val): string {
@@ -399,7 +446,7 @@ export class CsPropositionComponent implements OnInit {
   }
 
   nodeValid(elm: ISubject | IComplement) {
-    return !!elm.path && !!elm.occurenceIdPath && !!elm.occurenceLocationStr;
+    return !!elm.path && !!elm.occurenceIdPath;
   }
 
   verbValid() {
@@ -449,25 +496,48 @@ export class CsPropositionComponent implements OnInit {
 
   targetElement(event) {
     this.changeElement(event, this.assertion.subject);
+    this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
+      take(1),
+      map((name) => {
+        this.subjectName = name;
+      }),
+    ).subscribe();
     this.subjectRepeatMax = this.repeatMax(event.node.data.cardinality);
   }
 
   comparativeElement(event) {
     this.changeElement(event, this.assertion.complement);
+    this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
+      take(1),
+      map((name) => {
+        this.compareName = name;
+      }),
+    ).subscribe();
     this.complementRepeatMax = this.repeatMax(event.node.data.cardinality);
   }
 
   changeElement(event, elm: ISubject | IComplement) {
-    elm.path = event.path;
+    elm.path = this.treeService.concatPath(this.context, event.path);
     elm.occurenceIdPath = event.node.data.id;
-    elm.occurenceLocationStr = this.getName(event.node);
     elm.occurenceValue = undefined;
     elm.occurenceType = undefined;
     this.change();
   }
 
+  getName(path: IPath): Observable<string> {
+    if (!path) {
+      return of('');
+    }
+
+    return this.treeService.getPathName(this.res, this.repository, path.child).pipe(
+      take(1),
+      map((pathInfo) => {
+        return this.treeService.getNameFromPath(pathInfo);
+      }),
+    );
+  }
+
   repeatMax(cardinality: ICardinalityRange) {
-    console.log(cardinality);
     if (!cardinality) {
       return 0;
     } else if (cardinality.max === '*') {
@@ -508,35 +578,6 @@ export class CsPropositionComponent implements OnInit {
     };
     this.complementRepeatMax = 0;
     this.change();
-  }
-
-  // tslint:disable-next-line: cognitive-complexity
-  getName(elm: IHL7v2TreeNode): string {
-    console.log(elm);
-
-    const loop = (node: IHL7v2TreeNode): string => {
-      if (!node) {
-        return undefined;
-      }
-
-      const pre = loop(node.parent);
-      if (node.data.type === Type.CONFORMANCEPROFILE || node.data.type === Type.GROUP || node.data.type === Type.SEGMENT || node.data.type === Type.DATATYPE) {
-        return (pre ? pre + '.' : '') + node.data.name;
-      } else {
-        let separator = '.';
-        if (node.data.type === Type.FIELD) {
-          separator = '-';
-        }
-        return (pre ? pre + separator : '') + node.data.position;
-      }
-    };
-
-    const prep = loop(elm);
-    if (elm.data.type === Type.CONFORMANCEPROFILE || elm.data.type === Type.GROUP || elm.data.type === Type.SEGMENT) {
-      return prep;
-    } else {
-      return prep + ' (' + elm.data.name + ')';
-    }
   }
 
   removeStr(list: any[], i: number) {

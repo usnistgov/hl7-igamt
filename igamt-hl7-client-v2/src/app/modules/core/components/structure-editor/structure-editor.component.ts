@@ -2,20 +2,20 @@ import { OnDestroy, OnInit, Type as CoreType } from '@angular/core';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take } from 'rxjs/operators';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import * as fromAuth from 'src/app/root-store/authentication/authentication.reducer';
-import * as config from 'src/app/root-store/config/config.reducer';
-import {getHl7Versions, selectBindingConfig} from '../../../../root-store/config/config.reducer';
+import { selectBindingConfig } from '../../../../root-store/config/config.reducer';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectAllDatatypes,
   selectAllSegments,
+  selectedResourceHasOrigin,
   selectValueSetsNodes,
 } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { IStructureChanges } from '../../../segment/components/segment-structure-editor/segment-structure-editor.component';
 import { HL7v2TreeColumnType } from '../../../shared/components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../../../shared/constants/type.enum';
-import {IBindingInfo, IValueSetBindingConfigMap} from '../../../shared/models/config.class';
+import { IValueSetBindingConfigMap } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
@@ -42,6 +42,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   username: Observable<string>;
   resource$: Observable<T>;
   workspace_s: Subscription;
+  hasOrigin$: Observable<boolean>;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -53,6 +54,7 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
     public legend: BindingLegend,
     public columns: HL7v2TreeColumnType[]) {
     super(editorMetadata, actions$, store);
+    this.hasOrigin$ = this.store.select(selectedResourceHasOrigin);
     this.datatypes = this.store.select(selectAllDatatypes);
     this.segments = this.store.select(selectAllSegments);
     this.valueSets = this.store.select(selectValueSetsNodes);
@@ -71,11 +73,12 @@ export abstract class StructureEditorComponent<T> extends AbstractEditorComponen
   }
 
   ngOnDestroy(): void {
+    console.log('unsubscribe');
     this.workspace_s.unsubscribe();
   }
 
   onDeactivate() {
-    this.ngOnDestroy();
+    console.log('ON DEACTIVATE');
   }
 
   change(change: IChange) {

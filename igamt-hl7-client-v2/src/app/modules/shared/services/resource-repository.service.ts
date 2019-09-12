@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { Observable, of } from 'rxjs';
-import { filter, map, mergeMap } from 'rxjs/operators';
+import { combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { filter, map, mergeMap, take } from 'rxjs/operators';
 import { LoadResourceReferences } from '../../../root-store/ig/ig-edit/ig-edit.actions';
 import {
   selectDatatypesById,
@@ -21,6 +21,13 @@ export abstract class AResourceRepositoryService {
   abstract fetchResource<T extends IResource>(type: Type, id: string): Observable<T>;
   abstract getResourceDisplay(type: Type, id: string): Observable<IDisplayElement>;
   abstract areLeafs(ids: string[]): Observable<{ [id: string]: boolean }>;
+  abstract getRefData(ids: string[]): Observable<{
+    [id: string]: {
+      leaf: boolean,
+      version: string,
+      name: string,
+    },
+  }>;
 }
 
 @Injectable()
@@ -55,6 +62,32 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
     );
   }
 
+  getRefData(ids: string[]): Observable<{
+    [id: string]: {
+      leaf: boolean,
+      version: string,
+      name: string,
+    },
+  }> {
+    const values = ids.map((id) => this.store.select(selectDatatypesById, { id }).pipe(take(1)));
+    return combineLatest(
+      forkJoin(values),
+      this.areLeafs(ids),
+    ).pipe(
+      map(([vals, leafs]) => {
+        const val = {};
+        vals.forEach((value) => {
+          val[value.id] = {
+            leaf: leafs[value.id],
+            name: value.fixedName,
+            version: value.domainInfo.version,
+          };
+        });
+        return val;
+      }),
+    );
+  }
+
   getResourceDisplay(type: Type, id: string): Observable<IDisplayElement> {
     switch (type) {
       case Type.DATATYPE:
@@ -65,7 +98,7 @@ export class StoreResourceRepositoryService extends AResourceRepositoryService {
         return this.store.select(selectValueSetById, { id });
       case Type.CONFORMANCEPROFILE:
         return this.store.select(selectMessagesById, { id });
-        default:
+      default:
         return of(undefined);
     }
   }
