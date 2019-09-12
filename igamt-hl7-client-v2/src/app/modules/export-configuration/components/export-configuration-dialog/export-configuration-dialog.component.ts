@@ -28,7 +28,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
   ngOnInit() {
   }
   submit() {
-    console.log(this.data.decision);
     this.dialogRef.close(this.data.decision);
   }
   cancel() {

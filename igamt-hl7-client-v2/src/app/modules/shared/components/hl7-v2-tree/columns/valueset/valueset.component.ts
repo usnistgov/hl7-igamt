@@ -45,9 +45,7 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<IBinding<IValues
   }
 
   editBinding() {
-
     const locationInfo: IBindingLocationInfo =  this.bindingService.getBingdingInfo('2.3.1', 'HD', 1, Type.DATATYPE, this.bindingConfig);
-    console.log(locationInfo);
     const dialogRef = this.dialog.open(BindingSelectorComponent, {
       data: { resources: this.valueSets, locationInfo, path: null,  current: this.valueSetBindings},
     });

@@ -1,0 +1,62 @@
+<h2 mat-dialog-title>Export GVT</h2>
+
+<mat-dialog-content style="min-width: 500px; min-height: 200px">
+  <form #loginForm='ngForm'>
+    <ng-container *ngIf="!hasDomains">
+    <p-dropdown [options]="data.tools" [(ngModel)]="tool" optionLabel="label" placeholder="Select tool" required name="tool" id="tool" [style]="{'minWidth':'100%', 'margin-bottom': '20px'}"></p-dropdown>
+    <div class="alerts">
+      <app-alerts-container></app-alerts-container>
+    </div>
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" style="width: 40px;"> <i class="fa fa-user"></i> </span>
+        </div>
+        <input class="form-control" [disabled]="!tool" id="username"  name="username" placeholder="Username" [(ngModel)]="username"  type="username">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <span class="input-group-text" style="width: 40px;"> <i class="fa fa-key"></i> </span>
+        </div>
+        <input class="form-control" id="password" [disabled]="!tool"  name="password" [(ngModel)]="password" placeholder="password" type="password">
+      </div>
+    </div>
+    </ng-container>
+   </form>
+
+  <ng-container *ngIf="hasDomains">
+
+    <p-dropdown [options]="domains" required (onChange)="selectDomain($event)" optionLabel="name" placeholder="select tool scopes" [style]="{'minWidth':'100%'}"></p-dropdown>
+
+    <p-accordion [multiple]="true">
+      <p-accordionTab header="Conformance profiles" [selected]="true">
+        <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
+        </app-select-resource-ids>
+      </p-accordionTab>
+      <p-accordionTab header="Composite profiles" [selected]="true">
+        Coming soon
+      </p-accordionTab>
+      <p-accordionTab header="Result" *ngIf="redirectUrl" [selected]="true">
+       <div class="alert alert alert-info">
+         Profile successfully pushed to <a [href]="redirectUrl">{{redirectUrl}}</a>
+       </div>
+      </p-accordionTab>
+      <p-accordionTab header="Result" *ngIf="errors" [selected]="true">
+        {{errors |json}}
+      </p-accordionTab>
+    </p-accordion>
+  </ng-container>
+</mat-dialog-content>
+
+
+<mat-dialog-actions style="justify-content: flex-end;">
+  <button (click)="hasDomains=false" *ngIf="hasDomains" class="btn btn-sm btn-info" style="margin-right: 5px;">back</button>
+
+  <button (click)="loadDomain()" *ngIf="!hasDomains" [disabled]="!loginForm.valid" class="btn btn-sm btn-success" type="submit">
+    Login
+  </button>
+  <button *ngIf="hasDomains && selectedDomain" (click)="submit()" [disabled]="!isSelected()" class="btn btn-sm btn-success">Submit</button>
+
+</mat-dialog-actions>

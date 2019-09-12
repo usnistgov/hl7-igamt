@@ -73,6 +73,8 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
+import { ExportToolComponent } from './components/export-tool/export-tool.component';
+import {AlertsContainerComponent} from "../core/components/alerts-container/alerts-container.component";
 
 @NgModule({
   declarations: [
@@ -128,6 +130,8 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MinNumberDirective,
     MaxNumberDirective,
     BindingSelectorComponent,
+    ExportToolComponent,
+    AlertsContainerComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -241,8 +245,10 @@ import { MinNumberDirective } from './validators/min-number.directive';
     MinNumberDirective,
     MaxNumberDirective,
     BindingSelectorComponent,
+    ExportToolComponent,
+    AlertsContainerComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent , BindingSelectorComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent , ExportToolComponent, BindingSelectorComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

@@ -1,8 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { Store } from '@ngrx/store';
-import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import {concatMap, filter, map, mergeMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {combineLatest, forkJoin, Observable, of, Subscription} from 'rxjs';
+import {concatMap, filter, map, mergeMap, take, takeLast, tap, withLatestFrom} from 'rxjs/operators';
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IgEditTocAddResource } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
@@ -15,6 +15,9 @@ import { ResourcePickerComponent } from '../../../shared/components/resource-pic
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
+import {ExportToolComponent} from "../../../shared/components/export-tool/export-tool.component";
+import {IConnectingInfo} from "../../../shared/models/config.class";
+import {selectExternalTools} from "../../../../root-store/config/config.reducer";
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -28,6 +31,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   changed: Observable<boolean>;
   fullscreen: boolean;
   subscription: Subscription;
+  toolConfig: Observable<IConnectingInfo[]>;
 
   constructor(private store: Store<IGDisplayInfo>, private igService: IgService, private dialog: MatDialog) {
     this.subscription = this.store.select(fromIgDocumentEdit.selectViewOnly).subscribe(
@@ -35,6 +39,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     );
     this.valid = this.store.select(fromIgDocumentEdit.selectWorkspaceCurrentIsValid);
     this.changed = this.store.select(fromIgDocumentEdit.selectWorkspaceOrTableOfContentChanged);
+    this.toolConfig = this.store.select(selectExternalTools);
     combineLatest(store.select(selectIsLoggedIn), store.select(selectFullScreen)).pipe(
       tap(([logged, full]) => {
         this.fullscreen = logged && full;
@@ -122,6 +127,17 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       }),
     ).subscribe();
     subscription.unsubscribe();
+  }
+  exportTool() {
+    combineLatest(this.store.select(fromIgDocumentEdit.selectMessagesNodes), this.store.select(selectExternalTools), this.getCompositeProfies(), this.getIgId()).pipe(
+      map(([conformanceProfiles, tools, compositeProfiles, igId]) => {
+        const dialogRef = this.dialog.open(ExportToolComponent, {
+          data: { conformanceProfiles, tools, compositeProfiles, igId},
+        });
+        dialogRef.afterClosed().pipe(
+        ).subscribe();
+      }),
+    ).subscribe();
   }
   getIgId(): Observable<string> {
     return this.store.select(fromIgDocumentEdit.selectIgId);

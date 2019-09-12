@@ -45,3 +45,10 @@ export const selectBindingConfig = createSelector(
     return state.valueSetBindingConfig;
   },
 );
+
+export const selectExternalTools = createSelector(
+  getHl7ConfigState,
+  (state) => {
+    return state.connection;
+  },
+);
