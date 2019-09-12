@@ -7,17 +7,17 @@ import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { IgEditTocAddResource } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
+import {selectExternalTools} from '../../../../root-store/config/config.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ClearResource } from '../../../../root-store/resource-loader/resource-loader.actions';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
+import {ExportToolComponent} from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
 import { ResourcePickerComponent } from '../../../shared/components/resource-picker/resource-picker.component';
+import {IConnectingInfo} from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
-import {ExportToolComponent} from "../../../shared/components/export-tool/export-tool.component";
-import {IConnectingInfo} from "../../../shared/models/config.class";
-import {selectExternalTools} from "../../../../root-store/config/config.reducer";
 
 @Component({
   selector: 'app-ig-edit-toolbar',

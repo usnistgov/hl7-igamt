@@ -17,6 +17,7 @@ import {
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
+import {AlertsContainerComponent} from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
@@ -28,6 +29,7 @@ import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
@@ -73,8 +75,6 @@ import { StoreResourceRepositoryService } from './services/resource-repository.s
 import { DEFAULT_MESSAGE_OPTION } from './shared-injection-token';
 import { MaxNumberDirective } from './validators/max-number.directive';
 import { MinNumberDirective } from './validators/min-number.directive';
-import { ExportToolComponent } from './components/export-tool/export-tool.component';
-import {AlertsContainerComponent} from "../core/components/alerts-container/alerts-container.component";
 
 @NgModule({
   declarations: [

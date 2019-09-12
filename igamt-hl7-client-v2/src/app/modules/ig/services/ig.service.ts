@@ -4,18 +4,18 @@ import { Injectable } from '@angular/core';
 import {Observable, throwError} from 'rxjs';
 import {ISelectedIds} from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { Type } from '../../shared/constants/type.enum';
+import {IConnectingInfo} from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IG_END_POINT } from '../models/end-points';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
+import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
 import {IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode} from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
-import {IConnectingInfo} from "../../shared/models/config.class";
 
 @Injectable({
   providedIn: 'root',
@@ -187,20 +187,16 @@ export class IgService {
   getGvtOptions(username: string, password: string, tool: IConnectingInfo) {
     const auth =  btoa(username + ':' + password);
 
-    const httpOptions = {
+    return {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'target-auth': 'Basic ' + auth,
         'target-url': tool.url,
       }),
     };
-    return httpOptions;
   }
   exportToTesting(igId: string, selectedIds: ISelectedIds, username: string, password: string, tool: IConnectingInfo, targetDomain: string) {
   return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool) );
-  }
-
-  getBasicAuth(username, password) {
   }
   private prepareUrl(igId: string, type: string): string {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');

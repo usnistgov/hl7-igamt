@@ -1,14 +1,14 @@
+import {HttpErrorResponse} from '@angular/common/http';
 import {Component, Inject, OnInit} from '@angular/core';
-import {ISelectedIds} from "../select-resource-ids/select-resource-ids.component";
-import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {IDisplayElement} from "../../models/display-element.interface";
-import {IConnectingInfo} from "../../models/config.class";
-import {IgService} from "../../../ig/services/ig.service";
-import {HttpErrorResponse} from "@angular/common/http";
-import {Store} from "@ngrx/store";
-import {TurnOffLoader, TurnOnLoader} from "../../../../root-store/loader/loader.actions";
-import {AddMessage, ClearAll} from "../../../../root-store/page-messages/page-messages.actions";
-import {MessageType, UserMessage} from "../../../core/models/message/message.class";
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {Store} from '@ngrx/store';
+import {TurnOffLoader, TurnOnLoader} from '../../../../root-store/loader/loader.actions';
+import {AddMessage, ClearAll} from '../../../../root-store/page-messages/page-messages.actions';
+import {MessageType, UserMessage} from '../../../core/models/message/message.class';
+import {IgService} from '../../../ig/services/ig.service';
+import {IConnectingInfo} from '../../models/config.class';
+import {IDisplayElement} from '../../models/display-element.interface';
+import {ISelectedIds} from '../select-resource-ids/select-resource-ids.component';
 
 @Component({
   selector: 'app-export-tool',
@@ -35,18 +35,22 @@ export class ExportToolComponent implements OnInit {
     this.dialogRef.close();
   }
   submit() {
+    this.store.dispatch(new TurnOnLoader({blockUI: false}));
 
     this.igService.exportToTesting(this.data.igId, this.ids, this.username, this.password, this.tool, this.selectedDomain).subscribe(
       (x: any) => {
+        this.store.dispatch(new TurnOffLoader());
         if (x.token) {
           this.redirectUrl = this.tool.url + this.tool.redirectToken + '?x=' + encodeURIComponent(x.token) + '&y=' + encodeURIComponent(btoa(this.username + ':' + this.password)) + '&d=' + encodeURIComponent(this.selectedDomain);
           window.open(this.redirectUrl, '_blank');
         } else if (x.success === false && x.report) {
           this.errors = x.report;
         }
-
       },
-    );
+      (response: HttpErrorResponse) => {
+        this.store.dispatch(new TurnOffLoader());
+        this.store.dispatch(new AddMessage(new UserMessage(MessageType.FAILED, response.error.text)));
+      });
   }
   matchId($event: ISelectedIds) {
     this.ids = $event;
