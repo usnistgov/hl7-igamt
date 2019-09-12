@@ -1,8 +1,8 @@
-import {LocationStrategy} from '@angular/common';
+import { LocationStrategy } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable, throwError} from 'rxjs';
-import {ISelectedIds} from '../../shared/components/select-resource-ids/select-resource-ids.component';
+import { Observable, throwError } from 'rxjs';
+import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { Type } from '../../shared/constants/type.enum';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
@@ -13,7 +13,7 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import {IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode} from '../models/toc/toc-operation.class';
+import { IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
@@ -126,7 +126,7 @@ export class IgService {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/updatemetadata', metadata);
   }
 
-  deleteResource(documentId: string, element: IDisplayElement):  Observable<Message<any>> {
+  deleteResource(documentId: string, element: IDisplayElement): Observable<Message<any>> {
     const url = this.buildDeleteUrl(documentId, element);
     if (url != null) {
       return this.http.delete<Message<any>>(url);
@@ -147,8 +147,18 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId) {
-    window.open(this.prepareUrl(igId, 'word'));
+  exportAsWord(igId, decision: any) {
+    const form = document.createElement('form');
+    form.action = '/api/export/ig/' + igId + '/word';
+    form.method = 'POST';
+    const json = document.createElement('input');
+    json.type = 'hidden';
+    json.name = 'json';
+    json.value = JSON.stringify(decision);
+    form.appendChild(json);
+    form.style.display = 'none';
+    document.body.appendChild(form);
+    form.submit();
   }
 
   export(igId, decision: any, format: string) {
@@ -183,8 +193,8 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(id: string ): Observable<any> {
-    return this.http.get<any> ('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  getExportFirstDecision(id: string): Observable<any> {
+    return this.http.get<any>('/api/export/igdocuments/' + id + '/getFilteredDocument');
   }
 
 }
