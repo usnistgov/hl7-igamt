@@ -913,8 +913,8 @@ public class IgServiceImpl implements IgService {
 	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
 	            this.conformanceStatementRepository, this.predicateRepository);
 	        datatypes.add(datatypeDataModel);
-	      } else
-	        throw new Exception("Datatype is missing.");
+	      }
+	      else throw new Exception("Datatype is missing.");
 	    }
 
 	    for (Link link : ig.getSegmentRegistry().getChildren()) {

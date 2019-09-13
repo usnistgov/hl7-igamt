@@ -55,8 +55,6 @@ public class ValueSetExportConfiguration extends ResourceExportConfiguration{
 	    return exportConfiguration;
 	  }
 
-
-
 	  public ValueSetExportConfiguration(boolean includeValuesetsTable,
 	      UsageConfiguration valuesetsExport, CodeUsageConfiguration codesExport,
 	      List<NameAndPositionAndPresence> columns, ValuesetMetadataConfiguration metadataConfig,

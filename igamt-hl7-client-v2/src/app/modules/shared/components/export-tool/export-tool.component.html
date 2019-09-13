@@ -35,16 +35,16 @@
         <app-select-resource-ids [conformanceProfiles]="data.conformanceProfiles" (selected)="matchId($event)">
         </app-select-resource-ids>
       </p-accordionTab>
-      <p-accordionTab header="Composite profiles" [selected]="true">
-        Coming soon
-      </p-accordionTab>
+<!--      <p-accordionTab header="Composite profiles" [selected]="true">-->
+<!--        Coming soon-->
+<!--      </p-accordionTab>-->
       <p-accordionTab header="Result" *ngIf="redirectUrl" [selected]="true">
        <div class="alert alert alert-info">
          Profile successfully pushed to <a [href]="redirectUrl">{{redirectUrl}}</a>
        </div>
       </p-accordionTab>
       <p-accordionTab header="Result" *ngIf="errors" [selected]="true">
-        {{errors |json}}
+        <div [innerHTML]="errors"></div>
       </p-accordionTab>
     </p-accordion>
   </ng-container>

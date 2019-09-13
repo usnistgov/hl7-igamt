@@ -13,6 +13,7 @@ import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeComponentDefinition;
 import gov.nist.hit.hl7.igamt.datatype.domain.DateTimeDatatype;
 import gov.nist.hit.hl7.igamt.datatype.exception.DatatypeNotFoundException;
 import gov.nist.hit.hl7.igamt.export.configuration.domain.ExportConfiguration;
+import gov.nist.hit.hl7.igamt.export.configuration.newModel.DatatypeExportConfiguration;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.ComponentDataModel;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.DatatypeDataModel;
 import gov.nist.hit.hl7.igamt.serialization.exception.ResourceSerializationException;
@@ -30,9 +31,9 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	private ConstraintSerializationService constraintSerializationService;
 	
 	@Override
-	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, ExportConfiguration exportConfiguration) throws SubStructElementSerializationException {
+	public Element serializeDatatype(DatatypeDataModel datatypeDataModel, int level, DatatypeExportConfiguration datatypeExportConfiguration) throws SubStructElementSerializationException {
 //	    try {
-	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, exportConfiguration.getResourceExportConfiguration());
+	      Element datatypeElement = igDataModelSerializationService.serializeResource(datatypeDataModel.getModel(), Type.DATATYPE, datatypeExportConfiguration);
 	      Datatype datatype = datatypeDataModel.getModel();
 	      datatypeElement
 	          .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
@@ -68,12 +69,12 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
 	    	  System.out.println("BOOM");
-	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), exportConfiguration.getDatatypeExportConfiguration().getConstraintExportConfiguration());
-	        if (constraints != null) {
-	        	datatypeElement.appendChild(constraints);
-    }
+//	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
+//	        if (constraints != null) {
+//	        	datatypeElement.appendChild(constraints);
+//    }
 	      }
-	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, exportConfiguration.getAbstractDomainExportConfiguration());
+	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
 //	    } catch (Exception exception) {
 //	    	exception.printStackTrace();

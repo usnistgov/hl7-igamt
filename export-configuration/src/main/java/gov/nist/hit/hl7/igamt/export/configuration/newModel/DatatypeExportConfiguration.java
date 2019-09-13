@@ -10,7 +10,6 @@ import gov.nist.hit.hl7.igamt.export.configuration.domain.UsageConfiguration;
 
 public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 
-	  private Boolean ext;
 	  private Boolean purposeAndUse;
 	  private Boolean binding;
 	  private ConstraintExportConfiguration constraintExportConfiguration;
@@ -61,13 +60,7 @@ public class DatatypeExportConfiguration extends ResourceExportConfiguration{
 		  }
 
 
-		  public Boolean getExt() {
-			return ext;
-		}
 
-		public void setExt(Boolean ext) {
-			this.ext = ext;
-		}
 
 		public Boolean getPurposeAndUse() {
 			return purposeAndUse;

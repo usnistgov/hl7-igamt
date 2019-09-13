@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.ExportService;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
+import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.datamodel.IgDataModel;
 import gov.nist.hit.hl7.igamt.ig.service.IgService;
@@ -117,6 +118,8 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 		}
 	}
 
+	
+	
 	@Override
 	public ExportFilterDecision getExportFilterDecision(Ig ig, ExportConfiguration config) {
 		ExportFilterDecision decision = new ExportFilterDecision();
@@ -280,6 +283,17 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 			}
 		}
 	}
+	@Override
+	public ExportedFile exportIgDocumentToWord(String username, String id, ExportFilterDecision decision) throws Exception {
+	    Ig igDocument = igService.findById(id);
+	    if (igDocument != null) {
+	      ExportedFile htmlFile =
+	          this.serializeIgDocumentToHtml( username, igDocument, ExportFormat.WORD, decision);
+	      ExportedFile wordFile = WordUtil.convertHtmlToWord(htmlFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
+	      return wordFile;
+	    }
+	    return null;
+	  }
 
-
+	
 }
