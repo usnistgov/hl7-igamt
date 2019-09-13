@@ -40,7 +40,7 @@ public class GVTConnectController extends BaseController {
   @Autowired
   IgService igService;
 
-  @RequestMapping(value = "/api/gvt/login", method = RequestMethod.GET, produces = {"application/json"})
+  @RequestMapping(value = "/api/testing/login", method = RequestMethod.GET, produces = {"application/json"})
   public boolean validCredentials(@RequestHeader("target-auth") String authorization, @RequestHeader("target-url") String host) throws GVTLoginException {
     log.info("Logging to " + host);
     try {
@@ -52,13 +52,13 @@ public class GVTConnectController extends BaseController {
   }
 
 
-  @RequestMapping(value = "/api/gvt/domains", method = RequestMethod.GET, produces = {"application/json"})
+  @RequestMapping(value = "/api/testing/domains", method = RequestMethod.GET, produces = {"application/json"})
   public ResponseEntity<?> getDomains(@RequestHeader("target-url") String url, @RequestHeader("target-auth") String authorization) throws GVTLoginException {
     log.info("Logging to " + url);
     return gvtService.getDomains(authorization, url);
   }
 
-  @RequestMapping(value = "/api/gvt/createDomain", method = RequestMethod.POST, produces = "application/json")
+  @RequestMapping(value = "/api/testing/createDomain", method = RequestMethod.POST, produces = "application/json")
   public ResponseEntity<?> createDomain(@RequestHeader("target-auth") String authorization, @RequestHeader("target-url") String url, @RequestBody HashMap<String, String> params, HttpServletRequest request, HttpServletResponse response) throws GVTExportException {
     try {
       log.info("Creating domain with name " + params.get("name") + ", key=" + params.get("key") + ",url=" + url);
@@ -68,18 +68,18 @@ public class GVTConnectController extends BaseController {
     }
   }
 
-  @RequestMapping(value = "/api/gvt/{id}/push", method = RequestMethod.POST, produces = "application/json")
+  @RequestMapping(value = "/api/testing/{id}/push/{domain}", method = RequestMethod.POST, produces = "application/json")
   public Map<String, Object> exportToGVT(
       @PathVariable("id") String id,
       @RequestBody ReqId reqIds, 
+      @PathVariable("domain") String domain,
       @RequestHeader("target-auth") String authorization,
       @RequestHeader("target-url") String url, 
-      @RequestHeader("target-domain") String domain,
       HttpServletRequest request, HttpServletResponse response) throws GVTExportException {
     try {
       log.info("Exporting messages to GVT from IG Document with id=" + id);
 
-      Ig ig = findIgById("5b5b69ad84ae99a4bd0d1f74");
+      Ig ig = findIgById(id);
       IgDataModel igModel = this.igService.generateDataModel(ig);
 
   

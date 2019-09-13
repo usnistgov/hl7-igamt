@@ -1067,7 +1067,7 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						elmCase.addAttribute(new Attribute("Value", item.getValue()));
 
 						DatatypeDataModel itemDTModel = igModel.findDatatype(item.getDatatypeId());
-
+						if(itemDTModel != null) {
 						if (igModel.getModel().getDomainInfo() != null
 								&& igModel.getModel().getDomainInfo().getVersion() != null
 								&& itemDTModel.getModel().getDomainInfo() != null
@@ -1084,6 +1084,9 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 						} else {
 							elmCase.addAttribute(
 									new Attribute("Datatype", this.str(itemDTModel.getModel().getLabel())));
+						}
+						}else {
+						//	throw new SegmentSerializationException("Datatype not found");
 						}
 
 						elmMapping.appendChild(elmCase);

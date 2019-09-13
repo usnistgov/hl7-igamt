@@ -152,8 +152,13 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if( exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap()!=null &&  exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeLink.getId()) && exportFilterDecision.getDatatypesFilterMap().get(datatypeLink.getId())) {
 
 							DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream().filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+							if(datatypeDataModel == null) {
+								
+								System.out.println("--------- ");
+							}
 							Element datatypeElement = datatypeSerializationService
 									.serializeDatatype(datatypeDataModel, level + 1, exportConfiguration.getDatatypeExportConfiguration());
+			
 							if (datatypeElement != null) {
 								datatypeRegistryElement.appendChild(datatypeElement);
 							}			 

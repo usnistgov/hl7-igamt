@@ -69,10 +69,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      }
 	      if(!datatypeDataModel.getConformanceStatements().isEmpty()|| !datatypeDataModel.getPredicateMap().isEmpty()) {
 	    	  System.out.println("BOOM");
-	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
-	        if (constraints != null) {
-	        	datatypeElement.appendChild(constraints);
-    }
+//	      Element constraints = constraintSerializationService.serializeConstraints(datatypeDataModel.getConformanceStatements(), datatypeDataModel.getPredicateMap(), datatypeExportConfiguration.getConstraintExportConfiguration());
+//	        if (constraints != null) {
+//	        	datatypeElement.appendChild(constraints);
+//    }
 	      }
 	      return igDataModelSerializationService.getSectionElement(datatypeElement, datatypeDataModel.getModel(), level, datatypeExportConfiguration);
 
