@@ -204,9 +204,6 @@
           </ng-template>
         </p-table>
       </div>
-
-
-
       <div *ngIf="!valueSet.includeCodes">
         <div *ngIf="viewOnly">
           <label  class="form-label-lg">URL: </label>
@@ -214,14 +211,14 @@
         </div>
         <div class="form-group" *ngIf="!viewOnly">
           <label  class="form-label-lg"> URL</label>
-        <input required id="url" name="url" type="url" (ngModelChange)="updateAttribute('URL' ,valueSet.url)"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
+        <input required id="url" name="url" type="url" (ngModelChange)="updateURl($event)"  placeholder="enter a valid url"  pattern="^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$" [(ngModel)]="valueSet.url" class="form-control" width="100%"/>
            <div *ngIf="form.controls['url'] && form.controls['url'].invalid" class="input-form-invalid-feedback" style="margin-left: 10px;">
              <span style="color:red"> Enter a valid URL</span>
            </div>
         </div>
         <div class="form-group" *ngIf="!viewOnly && !valueSet.includeCodes && valueSet.contentDefinition =='Intensional'">
-          <label  class="form-label-lg"> Intensional comment</label>
-          <input required id="intensionalComment" name="intensionalComment" type="text"  placeholder="Comment For Intensional content definition"  [(ngModel)]="valueSet.intensionalComment" (ngModelChange)="updateAttribute('INTENSIONALCOMMENT' ,valueSet.intensionalComment)" class="form-control" width="100%"/>
+          <label  class="form-label-lg"> Description</label>
+          <input required id="intensionalComment" name="intensionalComment" type="text"  placeholder="Description"  [(ngModel)]="valueSet.intensionalComment" (ngModelChange)="updateAttribute('INTENSIONALCOMMENT' ,valueSet.intensionalComment)" class="form-control" width="100%"/>
         </div>
         <div>
         </div>

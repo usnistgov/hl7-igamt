@@ -7,7 +7,7 @@ export interface IState {
 }
 
 export const initialState: IState = {
-  hl7Config: new Hl7Config([], []),
+  hl7Config: {},
 };
 
 export function reducer(state = initialState, action: ConfigActions): IState {
@@ -28,10 +28,27 @@ export const getHl7ConfigState = createSelector(
 
 export const getHl7Versions = createSelector(
   getHl7ConfigState,
-  (state: Hl7Config) => state.hl7Versions,
+  (state: Hl7Config) => {
+    console.log(state);
+    return state.hl7Versions; },
 );
 
 export const getHl7Usages = createSelector(
   getHl7ConfigState,
   (state: Hl7Config) => state.usages,
+);
+
+export const selectBindingConfig = createSelector(
+  getHl7ConfigState,
+  (state) => {
+    console.log(state);
+    return state.valueSetBindingConfig;
+  },
+);
+
+export const selectExternalTools = createSelector(
+  getHl7ConfigState,
+  (state) => {
+    return state.connection;
+  },
 );

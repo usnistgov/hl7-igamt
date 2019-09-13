@@ -1,22 +1,22 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Actions} from '@ngrx/effects';
-import {Action, Store} from '@ngrx/store';
-import {Observable} from 'rxjs';
-import {map, switchMap} from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Actions } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import * as fromIgEdit from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {EditorSave} from '../../../../root-store/ig/ig-edit/ig-edit.index';
-import {AbstractEditorComponent} from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
-import {Type} from '../../../shared/constants/type.enum';
-import {IUsages} from '../../../shared/models/cross-reference';
-import {IDisplayElement} from '../../../shared/models/display-element.interface';
-import {EditorID} from '../../../shared/models/editor.enum';
+import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.index';
+import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
+import { Type } from '../../../shared/constants/type.enum';
+import { IUsages } from '../../../shared/models/cross-reference';
+import { IDisplayElement } from '../../../shared/models/display-element.interface';
+import { EditorID } from '../../../shared/models/editor.enum';
 
 @Component({
   selector: 'app-value-set-cross-refs',
   templateUrl: './value-set-cross-refs.component.html',
   styleUrls: ['./value-set-cross-refs.component.css'],
 })
-export class ValueSetCrossRefsComponent extends AbstractEditorComponent implements OnInit, OnDestroy  {
+export class ValueSetCrossRefsComponent extends AbstractEditorComponent implements OnInit, OnDestroy {
 
   usages: Observable<IUsages[]>;
 
@@ -52,5 +52,9 @@ export class ValueSetCrossRefsComponent extends AbstractEditorComponent implemen
   }
 
   ngOnInit(): void {
+  }
+
+  onDeactivate() {
+
   }
 }

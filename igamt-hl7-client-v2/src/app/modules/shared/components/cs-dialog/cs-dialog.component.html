@@ -11,19 +11,36 @@
   </div>
   <div class="form-group">
     <label for="free" class="form-label-lg"> Identifier </label>
-    <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier" [ngClass]="{'invalid': identifier.errors }">
+    <input type="text" class="form-control" id="id" name="id" placeholder="Assertion Identifier" required #identifier="ngModel" [(ngModel)]="cs.identifier">
   </div>
-  <!-- <div class="form-group">
+  <div class="form-group" *ngIf="resourceType === 'CONFORMANCEPROFILE'">
     <label for="free" class="form-label-lg"> Context </label>
-    <span>{{ contextName() }}</span>
-    <button class="btn btn-primary" (click)="edit()" style="margin-left: 10px;" (click)="openPatternDialog()">
+    <span *ngIf="cs?.context" >
+      <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ contextName }}</span>
+    </span>
+    <span *ngIf="!cs?.context" >
+        <span style="margin-left: 5px;" ><app-entity-bagde [type]='structure[0].data.type' ></app-entity-bagde> {{ structure[0].data.name }}</span>
+      </span>
+    <button class="btn btn-primary" (click)="showContext = true;" style="margin-left: 10px;" *ngIf="!showContext">
       <i class="fa fa-pencil"></i>
     </button>
-  </div> -->
+    <div *ngIf="showContext" style="height: 100px;">
+      <app-structure-tree
+        [tree]="context"
+        [filter]= "{
+          primitive: false,
+          types: [ 'GROUP', 'CONFORMANCEPROFILE' ]
+        }"
+        [resourceType]="resourceType"
+        [repository]="repository"
+        (selection)="selectContext($event)"
+      ></app-structure-tree>
+    </div>
+  </div>
   <div *ngIf="activeTab === tabType.FREE">
     <div class="form-group">
       <label for="free" class="form-label-lg"> Description </label>
-      <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [ngClass]="{'invalid': description.errors }" [(ngModel)]="cs.freeText">
+      <input type="text" class="form-control" id="free" name="free" placeholder="Assertion Free Text Description" required #description="ngModel" [(ngModel)]="cs.freeText">
     </div>
     <div style="margin-top: 30px; margin-bottom: 20px; cursor: pointer;" (click)="hideAdvanced = !hideAdvanced">
       <hr style="margin-bottom: -14px; margin-left: 110px;"> <span style="margin-left: 5px; color: gray;"><i class="fa" [ngClass]="{'fa-chevron-down': hideAdvanced, 'fa-chevron-right': !hideAdvanced }"></i> Advanced </span>
@@ -44,7 +61,10 @@
 
   <div *ngIf="activeTab === tabType.SIMPLE">
     <app-cs-proposition
+      [resourceType]="resourceType"
       [resource]="resource"
+      [tree]="structure"
+      [context]="cs.context"
       [repository]="repository"
       [type]="'STATEMENT'"
       [(value)]="cs.assertion"
@@ -58,7 +78,10 @@
       </tr>
       <tr>
         <app-cs-proposition
+          [resourceType]="resourceType"
           [resource]="resource"
+          [tree]="structure"
+          [context]="cs.context"
           [repository]="repository"
           [type]="'PROPOSITION'"
           [(value)]="cs.assertion.ifAssertion"
@@ -73,7 +96,10 @@
       </tr>
       <tr>
         <app-cs-proposition
+          [resourceType]="resourceType"
           [resource]="resource"
+          [tree]="structure"
+          [context]="cs.context"
           [repository]="repository"
           [type]="'STATEMENT'"
           [(value)]="cs.assertion.thenAssertion"
@@ -99,7 +125,10 @@
           </tr>
           <tr>
             <app-cs-proposition
+            [resourceType]="resourceType"
             [resource]="resource"
+            [tree]="structure"
+            [context]="cs.context"
             [repository]="repository"
             [type]="leaf.data.branch === 'D' ? 'STATEMENT' : 'PROPOSITION'"
             [(value)]="leaf.payload"

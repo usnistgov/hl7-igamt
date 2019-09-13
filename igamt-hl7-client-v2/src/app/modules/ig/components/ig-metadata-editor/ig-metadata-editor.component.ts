@@ -161,4 +161,8 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
   ngOnInit() {
   }
 
+  onDeactivate() {
+
+  }
+
 }

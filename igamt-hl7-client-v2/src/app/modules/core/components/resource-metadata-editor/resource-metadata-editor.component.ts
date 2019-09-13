@@ -160,6 +160,10 @@ export abstract class ResourceMetadataEditorComponent extends AbstractEditorComp
   ngOnInit() {
   }
 
+  onDeactivate() {
+
+  }
+
 }
 
 export interface IResourceMetadata {

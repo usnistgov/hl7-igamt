@@ -3,12 +3,14 @@ import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
 import { Type } from '../../constants/type.enum';
 import { IComment } from '../../models/comment.interface';
+import { IValueSetBindingConfigMap } from '../../models/config.class';
 import { IDisplayElement } from '../../models/display-element.interface';
 import { IPredicate } from '../../models/predicate.interface';
 import { IResource } from '../../models/resource.interface';
 import { IChange } from '../../models/save-change';
 import { Hl7V2TreeService, IBindingContext, IElementBinding } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
+import { IBindingLocationInfo } from '../binding-selector/binding-selector.component';
 import { ILengthAndConfLength } from './columns/length/length.component';
 
 export enum HL7v2TreeColumnType {
@@ -60,6 +62,7 @@ export interface IHL7v2TreeNode extends TreeNode {
     changeable?: boolean,
     viewOnly?: boolean,
     confLength?: string,
+    valueSetBindingsInfo?: Observable<IBindingLocationInfo>,
     ref: BehaviorSubject<IResourceRef>,
     bindings: IElementBinding,
     level: number,
@@ -73,7 +76,7 @@ export interface IHL7v2TreeNode extends TreeNode {
   };
 }
 
-type ColumnOptions = Array<{
+export type ColumnOptions = Array<{
   field: string,
   header: HL7v2TreeColumnType,
 }>;
@@ -94,6 +97,10 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   @Input()
   segments: IDisplayElement[];
   @Input()
+  valueSets: IDisplayElement[];
+  @Input()
+  bindingConfig: IValueSetBindingConfigMap;
+  @Input()
   repository: AResourceRepositoryService;
   @Input()
   username: string;
@@ -102,7 +109,6 @@ export class Hl7V2TreeComponent implements OnInit, OnDestroy {
   set resource(resource: IResource) {
     this.type = resource.type;
     this.close(this.s_resource);
-    console.log(resource);
     this.s_resource = this.treeService.getTree(resource, this.repository, this.viewOnly, true, (value) => {
       this.nodes = [...value];
     });

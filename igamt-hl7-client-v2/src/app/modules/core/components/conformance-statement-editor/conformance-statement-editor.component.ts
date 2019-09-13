@@ -3,14 +3,14 @@ import { MatDialog } from '@angular/material';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import * as _ from 'lodash';
-import { BehaviorSubject, combineLatest, Observable, ReplaySubject, throwError } from 'rxjs';
-import { catchError, concatMap, flatMap, map, mergeMap, take, takeWhile, tap } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, Observable, ReplaySubject, Subscription, throwError } from 'rxjs';
+import { catchError, concatMap, flatMap, map, mergeMap, take, tap } from 'rxjs/operators';
 import { IResource } from 'src/app/modules/shared/models/resource.interface';
 import { EditorSave, EditorUpdate } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { CsDialogComponent } from '../../../shared/components/cs-dialog/cs-dialog.component';
 import { Type } from '../../../shared/constants/type.enum';
 import { IConformanceStatementList, ICPConformanceStatementList } from '../../../shared/models/cs-list.interface';
-import { IConformanceStatement } from '../../../shared/models/cs.interface';
+import { ConstraintType, IConformanceStatement } from '../../../shared/models/cs.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IEditorMetadata } from '../../../shared/models/editor.enum';
 import { ChangeType, IChange, PropertyType } from '../../../shared/models/save-change';
@@ -29,6 +29,7 @@ export interface IConformanceStatementView {
       [name: string]: IConformanceStatement[];
     };
   };
+  availableConformanceStatements: IConformanceStatement[];
 }
 
 export interface IEditableListNode<T> {
@@ -42,13 +43,21 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   _types = Type;
   conformanceStatementView: ReplaySubject<IConformanceStatementView>;
   conformanceStatementView$: Observable<IConformanceStatementView>;
+
   selectedResource$: Observable<IResource>;
+
   editable: BehaviorSubject<Array<IEditableListNode<IConformanceStatement>>>;
   editable$: Observable<Array<IEditableListNode<IConformanceStatement>>>;
+
+  available: BehaviorSubject<IConformanceStatement[]>;
+  available$: Observable<IConformanceStatement[]>;
+
   changes: ReplaySubject<{
     [index: string]: IChange,
   }>;
-  alive = true;
+  s_workspace: Subscription;
+  s_view: Subscription;
+  s_available: Subscription;
 
   constructor(
     readonly repository: StoreResourceRepositoryService,
@@ -61,24 +70,29 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
     plucker: ConformanceStatementPluck,
     protected resource$: MemoizedSelector<any, IResource>) {
     super(editorMetadata, actions$, store);
+
     this.editable = new BehaviorSubject<Array<IEditableListNode<IConformanceStatement>>>([]);
     this.editable$ = this.editable.asObservable();
+
+    this.available = new BehaviorSubject<IConformanceStatement[]>([]);
+    this.available$ = this.available.asObservable();
+
     this.changes = new ReplaySubject(1);
     this.selectedResource$ = this.store.select(this.resource$);
+
     this.conformanceStatementView = new ReplaySubject(1);
     this.conformanceStatementView$ = this.conformanceStatementView.asObservable();
 
-    this.currentSynchronized$.pipe(
-      takeWhile(() => this.alive),
+    this.s_workspace = this.currentSynchronized$.pipe(
       tap((data) => {
-        this.conformanceStatementView.next(plucker(data.resource));
+        if (data.resource) {
+          this.conformanceStatementView.next(plucker(data.resource));
+        }
         this.changes.next({ ...data.changes });
-        console.log(plucker(data.resource));
       }),
     ).subscribe();
 
-    this.conformanceStatementView$.pipe(
-      takeWhile(() => this.alive),
+    this.s_view = this.conformanceStatementView$.pipe(
       map((view) => {
         return view.resourceConformanceStatement.map((cs) => {
           const changePrototype = this.createPrototypeChange(cs);
@@ -92,6 +106,52 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
       }),
     ).subscribe(this.editable);
 
+    this.s_available = this.conformanceStatementView$.pipe(
+      map((view) => {
+        return view.availableConformanceStatements;
+      }),
+    ).subscribe(this.available);
+
+  }
+
+  getId(cs) {
+    if (cs.payload) {
+      return cs.payload.identifier;
+    } else {
+      return cs.identifier;
+    }
+  }
+
+  getDescription(cs) {
+    if (cs.payload) {
+      if (cs.payload.type === ConstraintType.ASSERTION) {
+        return cs.payload.assertion.description;
+      } else {
+        return cs.payload.freeText;
+      }
+    } else {
+      if (cs.type === ConstraintType.ASSERTION) {
+        return cs.assertion.description;
+      } else {
+        return cs.freeText;
+      }
+    }
+  }
+
+  use(cs: IConformanceStatement, i: number) {
+    const changePrototype = {
+      location: cs.identifier,
+      propertyType: PropertyType.STATEMENT,
+      oldPropertyValue: undefined,
+      position: undefined,
+      changeType: undefined,
+      propertyValue: cs,
+    };
+    this.change(changePrototype, ChangeType.ADD);
+    this.addEditableNode(changePrototype);
+    this.available.next([
+      ..._.without(this.available.getValue(), cs),
+    ]);
   }
 
   addEditableNode(changePrototype: IChange<IConformanceStatement>) {
@@ -193,6 +253,16 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   deleteCs(node: IEditableListNode<IConformanceStatement>) {
     this.change(node.changePrototype, ChangeType.DELETE);
     this.removeEditableNode(node);
+    if (node.payload.id) {
+      this.restoreAvailable(node.payload);
+    }
+  }
+
+  restoreAvailable(cs: IConformanceStatement) {
+    this.available.next([
+      ...this.available.getValue(),
+      cs,
+    ]);
   }
 
   keys(obj) {
@@ -210,12 +280,9 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   }
 
   onEditorSave(action: EditorSave): Observable<Action> {
-    console.log('ABC E');
-
     return combineLatest(this.elementId$, this.ig$.pipe(take(1), map((ig) => ig.id)), this.changes.asObservable()).pipe(
       take(1),
       concatMap(([id, igId, changes]) => {
-        console.log('ABC');
         return this.saveChanges(id, igId, this.convert(changes)).pipe(
           mergeMap((message) => {
             return this.getById(id, igId).pipe(
@@ -247,6 +314,20 @@ export abstract class ConformanceStatementEditorComponent extends AbstractEditor
   }
 
   ngOnDestroy(): void {
-    this.alive = false;
+    if (this.s_workspace) {
+      this.s_workspace.unsubscribe();
+    }
+
+    if (this.s_view) {
+      this.s_view.unsubscribe();
+    }
+
+    if (this.s_available) {
+      this.s_available.unsubscribe();
+    }
+  }
+
+  onDeactivate() {
+    this.ngOnDestroy();
   }
 }

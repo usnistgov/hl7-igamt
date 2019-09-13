@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core';
 import { Actions, ofType } from '@ngrx/effects';
 import { Action, MemoizedSelector, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of } from 'rxjs';
-import { concatMap, switchMap, take } from 'rxjs/operators';
+import { concatMap, flatMap, switchMap, take } from 'rxjs/operators';
 import { IgEditActionTypes, LoadResourceReferences, LoadResourceReferencesFailure, LoadResourceReferencesSuccess, OpenEditor, OpenEditorBase, OpenEditorFailure } from '../../../root-store/ig/ig-edit/ig-edit.actions';
+import { selectIgId } from '../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { Type } from '../../shared/constants/type.enum';
 import { IUsages } from '../../shared/models/cross-reference';
+import { IDelta } from '../../shared/models/delta';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IResource } from '../../shared/models/resource.interface';
 import { RxjsStoreHelperService } from '../../shared/services/rxjs-store-helper.service';
@@ -79,7 +81,6 @@ export class OpenEditorService {
         return this.rxjsHelper.listenAndReact(this.actions$, {
           [IgEditActionTypes.LoadResourceReferencesSuccess]: {
             do: (loadSuccess: LoadResourceReferencesSuccess) => {
-              console.log(openEditor);
               return of(openEditor);
             },
           },
@@ -90,6 +91,28 @@ export class OpenEditorService {
           },
         });
       },
+    );
+  }
+
+  openDeltaEditor<A extends OpenEditorBase>(
+    _action: string,
+    type: Type,
+    displayElement$: MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement>,
+    resource$: (type: Type, elementId: string, igId: string) => Observable<IDelta>,
+    notFoundMessage: string,
+  ): Observable<Action> {
+    return this.openEditor<IDelta, A>(
+      _action,
+      displayElement$,
+      (a: OpenEditorBase) => {
+        return this.store.select(selectIgId).pipe(
+          flatMap((igId) => {
+            return resource$(type, a.payload.id, igId);
+          }),
+        );
+      },
+      notFoundMessage,
+      this.openEditorProvider<A, IDelta>(),
     );
   }
 
@@ -143,17 +166,21 @@ export class OpenEditorService {
       displayElement$,
       () => resource$,
       notFoundMessage,
-      (action: A, resource: T, display: IDisplayElement) => {
-        return of(new OpenEditor({
-          id: action.payload.id,
-          element: display,
-          editor: action.payload.editor,
-          initial: {
-            value: resource,
-          },
-        }));
-      },
+      this.openEditorProvider<A, T>(),
     );
+  }
+
+  openEditorProvider<A extends OpenEditorBase, T>() {
+    return (action: A, resource: T, display: IDisplayElement) => {
+      return of(new OpenEditor({
+        id: action.payload.id,
+        element: display,
+        editor: action.payload.editor,
+        initial: {
+          value: resource,
+        },
+      }));
+    };
   }
 
   openMetadataEditor<A extends OpenEditorBase>(

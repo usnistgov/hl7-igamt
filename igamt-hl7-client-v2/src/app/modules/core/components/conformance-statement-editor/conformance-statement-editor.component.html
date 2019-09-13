@@ -1,18 +1,35 @@
+<!-- RESOURCE CS -->
 <ng-container *ngIf="editable$ | async as editableCs">
   <div class="header-title">
     <h5>List of conformance statements</h5>
     <div>
-      <button class="btn btn-success btn-sm" (click)="createCs()">
+      <button class="btn btn-success btn-sm" (click)="createCs()" *ngIf="!(viewOnly$ | async)">
         <i class="fa fa-plus"></i> New
       </button>
     </div>
   </div>
   <div class="panel-body">
-    <ng-container *ngTemplateOutlet="csList; context: { $implicit: editableCs, viewOnly: viewOnly | async, editable: true }"></ng-container>
+    <ng-container *ngTemplateOutlet="csList; context: { $implicit: editableCs, tmpl: editable }"></ng-container>
   </div>
 </ng-container>
+
+<!-- ASSOCIATED AND AVAILABLE CS -->
 <ng-container *ngIf="conformanceStatementView$ | async as viewData">
 
+  <!-- AVAILABLE -->
+  <ng-container *ngIf="available$ | async as availableView">
+    <div style="margin-top: 10px;" *ngIf="!(viewOnly$ | async)">
+      <div class="header-title">
+        <h5>Available Conformance Statements</h5>
+        <hr>
+      </div>
+      <div class="panel-body">
+        <ng-container *ngTemplateOutlet="csList; context: { $implicit: availableView, tmpl: useable }"></ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- ASSOCIATED -->
   <ng-container *ngIf="viewData.complementConformanceStatements">
     <div *ngIf="viewData.complementConformanceStatements[_types.SEGMENT]" style="margin-top: 10px;">
       <div class="header-title">
@@ -24,7 +41,7 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let segment of keys(viewData.complementConformanceStatements[_types.SEGMENT])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment], viewOnly: true, header: segment, editable: false }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.SEGMENT][segment], header: segment, type: 'SEGMENT' }"></ng-container>
         </ng-container>
       </div>
     </div>
@@ -37,14 +54,15 @@
           <span> No Conformance Statement </span>
         </div>
         <ng-container *ngFor="let dt of keys(viewData.complementConformanceStatements[_types.DATATYPE])" >
-          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt], viewOnly: true, header: dt, editable: false }"></ng-container>
+          <ng-container *ngTemplateOutlet="csList; context: { $implicit: viewData.complementConformanceStatements[_types.DATATYPE][dt], header: dt, type: 'DATATYPE' }"></ng-container>
         </ng-container>
       </div>
     </div>
   </ng-container>
+
 </ng-container>
 
-<ng-template #csList let-csList let-viewOnly="viewOnly" let-header="header" let-editable="editable">
+<ng-template #csList let-csList let-header="header" let-tmpl="tmpl">
   <div *ngIf="!csList || csList.length === 0" style="padding: 10px; background-color: #f1f1f1; color: #888888; text-align: center;">
     <span> No Conformance Statement </span>
   </div>
@@ -55,35 +73,33 @@
     <tr>
       <th>ID</th>
       <th>Description</th>
-      <th *ngIf="!viewOnly" style="width: 190px;"></th>
+      <th *ngIf="tmpl" style="width: 190px;"></th>
     </tr>
-    <ng-container *ngIf="!editable">
-      <tr *ngFor="let cs of csList">
-        <td>{{ cs.identifier }}</td>
-        <td>{{ cs.type === 'ASSERTION' ? cs.assertion.description : cs.freeText }}</td>
-        <td *ngIf="!viewOnly" style="width: 190px;">
-          <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
-            <i class="fa fa-pencil"></i> Edit
-          </button>
-          <button class="btn btn-sm btn-danger" style="margin-left: 5px;">
-            <i class="fa fa-trash"></i> Delete
-          </button>
-        </td>
-      </tr>
-    </ng-container>
-    <ng-container *ngIf="editable">
-      <tr *ngFor="let cs of csList" [ngClass]="{'table-warning': !cs.persisted}">
-        <td>{{ cs.payload.identifier }}</td>
-        <td>{{ cs.payload.type === 'ASSERTION' ? cs.payload.assertion.description : cs.payload.freeText }}</td>
-        <td *ngIf="!viewOnly" style="width: 190px;">
-          <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
-            <i class="fa fa-pencil"></i> Edit
-          </button>
-          <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteCs(cs)">
-            <i class="fa fa-trash"></i> Delete
-          </button>
-        </td>
-      </tr>
-    </ng-container>
+    <tr *ngFor="let cs of csList; let i = index;" [ngClass]="{'table-warning': !cs.id && !cs.assertion.id && !cs.persisted && tmpl}">
+      <td>{{ getId(cs) }}</td>
+      <td>{{ getDescription(cs) }}</td>
+      <ng-container *ngIf="tmpl">
+        <ng-container *ngTemplateOutlet="tmpl; context: { $implicit: cs, index: i }"></ng-container>
+      </ng-container>
+    </tr>
   </table>
+</ng-template>
+
+<ng-template #editable let-cs>
+  <td style="width: 190px;">
+    <button class="btn btn-sm btn-primary" (click)="editDialog(cs)">
+      <i class="fa fa-pencil"></i> Edit
+    </button>
+    <button class="btn btn-sm btn-danger" style="margin-left: 5px;" (click)="deleteCs(cs)">
+      <i class="fa fa-trash"></i> Delete
+    </button>
+  </td>
+</ng-template>
+
+<ng-template #useable let-cs let-index="index">
+  <td style="width: 190px;">
+    <button class="btn btn-sm btn-info" (click)="use(cs, index)">
+      <i class="fa fa-plus-circle"></i> Use
+    </button>
+  </td>
 </ng-template>

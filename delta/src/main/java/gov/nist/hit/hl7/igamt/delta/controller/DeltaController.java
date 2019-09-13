@@ -1,5 +1,6 @@
 package gov.nist.hit.hl7.igamt.delta.controller;
 
+import gov.nist.hit.hl7.igamt.delta.domain.Delta;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +20,14 @@ public class DeltaController {
 
   @RequestMapping(value = "/api/delta/{type}/{ig}/{id}", method = RequestMethod.GET,
       produces = {"application/json"})
-  public <T> EntityDelta<T> deltaConformanceProfile(@PathVariable("type") Type type,
-      @PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication)
+  public Delta deltaConformanceProfile(@PathVariable("type") Type type,
+                                       @PathVariable("ig") String ig, @PathVariable("id") String id, Authentication authentication)
       throws Exception {
 
-    return deltaService.computeDelta(type, ig, id);
+    return deltaService.delta(type, ig, id);
   }
+
+
 
   @RequestMapping(value = "/api/delta/{type}/{igId}/diffable/{idSource}/{idTarget}",
       method = RequestMethod.GET, produces = {"application/json"})

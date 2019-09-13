@@ -46,8 +46,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
       },
       (segmentCsList: IConformanceStatementList) => {
         const DTCSMap = {};
-        console.log(segmentCsList);
-        Object.keys(segmentCsList.associatedConformanceStatementMap).forEach((key) => {
+        Object.keys(segmentCsList.associatedConformanceStatementMap || []).forEach((key) => {
           DTCSMap[key] = [
             ...(DTCSMap[key] ? DTCSMap[key] : []),
             ...segmentCsList.associatedConformanceStatementMap[key].conformanceStatements,
@@ -58,6 +57,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },
+          availableConformanceStatements: segmentCsList.availableConformanceStatements,
         };
       },
       selectedSegment);
@@ -68,7 +68,7 @@ export class SegmentConformanceStatementEditorComponent extends ConformanceState
   }
 
   getById(id: string, igId: string): Observable<IConformanceStatementList> {
-    return this.segmentService.getSegmentConformanceStatements(id, igId);
+    return this.segmentService.getConformanceStatements(id, igId);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

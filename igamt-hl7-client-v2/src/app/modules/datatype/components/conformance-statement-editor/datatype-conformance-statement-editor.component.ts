@@ -58,6 +58,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
           complementConformanceStatements: {
             [Type.DATATYPE]: DTCSMap,
           },
+          availableConformanceStatements: [],
         };
       },
       selectedDatatype);
@@ -68,7 +69,7 @@ export class DatatypeConformanceStatementEditorComponent extends ConformanceStat
   }
 
   getById(id: string, igId: string): Observable<IConformanceStatementList> {
-    return this.datatypeService.getSegmentConformanceStatements(id, igId);
+    return this.datatypeService.getConformanceStatements(id, igId);
   }
 
   elementSelector(): MemoizedSelectorWithProps<object, { id: string; }, IDisplayElement> {

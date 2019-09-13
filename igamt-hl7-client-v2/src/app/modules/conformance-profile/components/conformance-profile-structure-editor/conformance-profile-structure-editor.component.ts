@@ -1,7 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { LoadConformanceProfile } from '../../../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { selectMessagesById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
@@ -38,7 +40,14 @@ export class ConformanceProfileStructureEditorComponent extends StructureEditorC
         title: 'Structure',
         resourceType: Type.CONFORMANCEPROFILE,
       },
+      LoadConformanceProfile,
       [
+        {
+          context: {
+            resource: Type.CONFORMANCEPROFILE,
+          },
+          label: 'Conformance Profile',
+        },
         {
           context: {
             resource: Type.SEGMENT,

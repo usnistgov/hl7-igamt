@@ -33,7 +33,6 @@ import { AuthenticatedGuard, NotAuthenticatedGuard } from './services/auth-guard
     ResetPasswordRequestComponent,
     NewPasswordComponent,
     HomeComponent,
-    AlertsContainerComponent,
     ErrorPageComponent,
   ],
   imports: [

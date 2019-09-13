@@ -10,7 +10,9 @@ export enum ConformanceProfileEditActionTypes {
   LoadConformanceProfileFailure = '[ConformanceProfileEdit] Load Conformance Profile Failure',
   OpenConformanceProfilePreDefEditor = '[ConformanceProfileEdit] Open Conformance Profile PreDef Editor',
   OpenConformanceProfilePostDefEditor = '[ConformanceProfileEdit] Open Conformance Profile PostDef Editor',
+  OpenConformanceProfileDeltaEditor = '[ConformanceProfileEdit] Open Conformance Profile Delta Editor',
   OpenConformanceProfileStructureEditor = '[ConformanceProfileEdit] Open Conformance Profile Structure Editor',
+  OpenCPConformanceStatementEditor = '[ConformanceProfileEdit] Open Conformance Profile Conformance Statement Editor',
 }
 
 export class LoadConformanceProfile implements Action {
@@ -30,6 +32,16 @@ export class LoadConformanceProfileFailure implements Action {
 
 export class OpenConformanceProfilePreDefEditor extends OpenEditorBase {
   readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfilePreDefEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) {
+    super();
+  }
+}
+
+export class OpenConformanceProfileDeltaEditor extends OpenEditorBase {
+  readonly type = ConformanceProfileEditActionTypes.OpenConformanceProfileDeltaEditor;
   constructor(readonly payload: {
     id: string,
     editor: IEditorMetadata,
@@ -58,10 +70,22 @@ export class OpenConformanceProfilePostDefEditor extends OpenEditorBase {
   }
 }
 
+export class OpenCPConformanceStatementEditor extends OpenEditorBase {
+  readonly type = ConformanceProfileEditActionTypes.OpenCPConformanceStatementEditor;
+  constructor(readonly payload: {
+    id: string,
+    editor: IEditorMetadata,
+  }) {
+    super();
+  }
+}
+
 export type ConformanceProfileEditActions =
   | LoadConformanceProfile
   | OpenConformanceProfilePreDefEditor
   | OpenConformanceProfilePostDefEditor
   | OpenConformanceProfileStructureEditor
+  | OpenConformanceProfileDeltaEditor
+  | OpenCPConformanceStatementEditor
   | LoadConformanceProfileSuccess
   | LoadConformanceProfileFailure;

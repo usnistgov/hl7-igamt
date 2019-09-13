@@ -107,6 +107,8 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 
   public static ExportConfiguration getBasicExportConfiguration(boolean setAllTrue) {
     ExportConfiguration defaultConfiguration = new ExportConfiguration();
+    
+    
     defaultConfiguration.setCoConstraintExportMode(CoConstraintExportMode.COMPACT);
     defaultConfiguration.setDefaultType(true);
     defaultConfiguration.setUsername(null);
@@ -128,11 +130,10 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
     codeUsageExport.setE(setAllTrue);
     codeUsageExport.setP(true);
     codeUsageExport.setR(true);
-
     displayAll.setC(true);
     displayAll.setRe(true);
-    displayAll.setX(true);
-    displayAll.setO(true);
+    displayAll.setX(false);
+    displayAll.setO(false);
     displayAll.setR(true);
 
     defaultConfiguration.setSegmentORGroupsMessageExport(displayAll);
@@ -225,6 +226,13 @@ public static ExportConfiguration populateRestOfExportConfiguration(ExportConfig
 
     defaultConfiguration.setValuesetColumn(new ColumnsConfiguration(valuesetsDefaultList));
     defaultConfiguration.setMaxCodeNumber(MAX_CODE);
+    
+    // Setting DatatypeExportConfiguration
+    
+    
+    
+    
+    
     return defaultConfiguration;
   }
 

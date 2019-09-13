@@ -3,7 +3,7 @@ import { FormControl, FormGroup } from '@angular/forms';
 import { Actions } from '@ngrx/effects';
 import { Action, MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { combineLatest, Observable, of, Subscription } from 'rxjs';
-import {concatMap, flatMap, take, tap} from 'rxjs/operators';
+import { concatMap, flatMap, take, tap } from 'rxjs/operators';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
@@ -75,6 +75,10 @@ export abstract class DefinitionEditorComponent extends AbstractEditorComponent 
   }
 
   ngOnInit() {
+  }
+
+  onDeactivate() {
+    this.ngOnDestroy();
   }
 
 }

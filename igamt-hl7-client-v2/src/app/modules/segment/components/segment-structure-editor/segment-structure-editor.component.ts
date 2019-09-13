@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Actions } from '@ngrx/effects';
 import { MemoizedSelectorWithProps, Store } from '@ngrx/store';
 import { Observable, ReplaySubject, Subscription } from 'rxjs';
@@ -6,6 +7,7 @@ import { IDisplayElement } from 'src/app/modules/shared/models/display-element.i
 import { ISegment } from 'src/app/modules/shared/models/segment.interface';
 import { StoreResourceRepositoryService } from 'src/app/modules/shared/services/resource-repository.service';
 import { selectSegmentsById } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
+import { LoadSegment } from '../../../../root-store/segment-edit/segment-edit.actions';
 import { StructureEditorComponent } from '../../../core/components/structure-editor/structure-editor.component';
 import { Message } from '../../../core/models/message/message.class';
 import { MessageService } from '../../../core/services/message.service';
@@ -24,8 +26,6 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
 
   type = Type;
   segment: ReplaySubject<ISegment>;
-  datatypes: Observable<IDisplayElement[]>;
-  segments: Observable<IDisplayElement[]>;
   changes: ReplaySubject<IStructureChanges>;
   columns: HL7v2TreeColumnType[];
   username: Observable<string>;
@@ -48,6 +48,7 @@ export class SegmentStructureEditorComponent extends StructureEditorComponent<IS
         title: 'Structure',
         resourceType: Type.SEGMENT,
       },
+      LoadSegment,
       [
         {
           context: {

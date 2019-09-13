@@ -50,7 +50,6 @@ export class IgEditorActivateGuard implements CanActivate {
             ofType(IgEditActionTypes.OpenEditor, IgEditActionTypes.OpenEditorFailure),
             filter((action: OpenEditor | OpenEditorFailure) => action.payload.id === id),
             take(1),
-            tap(() => console.log('OPEN OR FAILURE')),
             map((action) => {
               switch (action.type) {
                 case IgEditActionTypes.OpenEditor:

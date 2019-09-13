@@ -999,6 +999,7 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 					dvb.setStrength(vb.getStrength());
 					dvb.setValuesetId(vb.getValuesetId());
 					dvb.setValuesetLocations(vb.getValuesetLocations());
+					dvb.setDomainInfo(vs.getDomainInfo());
 					result.add(dvb);
 				}
 			}

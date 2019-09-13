@@ -9,7 +9,7 @@ import {
   OpenDatatypePreDefEditor,
   OpenDatatypeStructureEditor,
 } from '../../root-store/datatype-edit/datatype-edit.actions';
-import { OpenDatatypeConformanceStatementEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
+import { OpenDatatypeConformanceStatementEditor, OpenDatatypeDeltaEditor } from '../../root-store/datatype-edit/datatype-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
@@ -18,6 +18,7 @@ import { EditorID } from '../shared/models/editor.enum';
 import { DatatypeConformanceStatementEditorComponent } from './components/conformance-statement-editor/datatype-conformance-statement-editor.component';
 import { DatatypeCrossRefsComponent } from './components/datatype-cross-refs/datatype-cross-refs.component';
 import { DatatypeStructureEditorComponent } from './components/datatype-structure-editor/datatype-structure-editor.component';
+import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
 import { MetadataEditComponent } from './components/metadata-edit/metadata-edit.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
@@ -132,23 +133,48 @@ const routes: Routes = [
       },
       {
         path: 'structure',
-        component: DatatypeStructureEditorComponent,
-        canActivate: [IgEditorActivateGuard],
-        canDeactivate: [IgEditSaveDeactivateGuard],
-        data: {
-          editorMetadata: {
-            id: EditorID.DATATYPE_STRUCTURE,
-            title: 'Structure',
-            resourceType: Type.DATATYPE,
+        children: [
+          {
+            path: '',
+            component: DatatypeStructureEditorComponent,
+            canActivate: [IgEditorActivateGuard],
+            canDeactivate: [IgEditSaveDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.DATATYPE_STRUCTURE,
+                title: 'Structure',
+                resourceType: Type.DATATYPE,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenDatatypeStructureEditor,
+              idKey: 'datatypeId',
+            },
           },
-          onLeave: {
-            saveEditor: true,
-            saveTableOfContent: true,
+          {
+            path: 'delta',
+            component: DeltaEditorComponent,
+            canActivate: [IgEditorActivateGuard],
+            canDeactivate: [IgEditSaveDeactivateGuard],
+            data: {
+              editorMetadata: {
+                id: EditorID.DATATYPE_DELTA,
+                title: 'Delta',
+                resourceType: Type.DATATYPE,
+              },
+              onLeave: {
+                saveEditor: true,
+                saveTableOfContent: true,
+              },
+              action: OpenDatatypeDeltaEditor,
+              idKey: 'datatypeId',
+            },
           },
-          action: OpenDatatypeStructureEditor,
-          idKey: 'datatypeId',
-        },
+        ],
       },
+
     ],
   },
 ];

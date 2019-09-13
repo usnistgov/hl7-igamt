@@ -1,9 +1,10 @@
 {
   "editor.formatOnSave": true,
   "prettier.singleQuote": true,
-  "prettier.bracketSpacing": true,
-  "editor.fontLigatures": true,
-  "editor.fontFamily": "Fira Code",
+  "prettier.bracketSpacing": false,
+  "editor.fontLigatures": false,
+  "editor.fontFamily": "Arial",
   "editor.fontSize": 13,
-  "editor.defaultFormatter": "vscode.typescript-language-features"
+  "editor.defaultFormatter": "vscode.typescript-language-features",
+  // "terminal.fontSize": 18,
 }

@@ -3,15 +3,17 @@ import { Injectable } from '@angular/core';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
 import { of } from 'rxjs';
-import { catchError, flatMap, map, switchMap } from 'rxjs/operators';
+import { catchError, flatMap, map, mergeMap, switchMap, take } from 'rxjs/operators';
 import { IConformanceProfile } from 'src/app/modules/shared/models/conformance-profile.interface';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { ConformanceProfileService } from '../../modules/conformance-profile/services/conformance-profile.service';
 import { MessageService } from '../../modules/core/services/message.service';
 import { OpenEditorService } from '../../modules/core/services/open-editor.service';
 import { Type } from '../../modules/shared/constants/type.enum';
-import { LoadSelectedResource } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourcePostDef, selectedResourcePreDef } from '../ig/ig-edit/ig-edit.selectors';
+import { ICPConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
+import { DeltaService } from '../../modules/shared/services/delta.service';
+import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
+import { selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   ConformanceProfileEditActions,
@@ -22,7 +24,7 @@ import {
   OpenConformanceProfilePostDefEditor,
   OpenConformanceProfilePreDefEditor,
 } from './conformance-profile-edit.actions';
-import { OpenConformanceProfileStructureEditor } from './conformance-profile-edit.actions';
+import { OpenConformanceProfileDeltaEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
 
 @Injectable()
@@ -95,10 +97,36 @@ export class ConformanceProfileEditEffects {
     this.ConfPNotFound,
   );
 
+  @Effect()
+  openConformanceStatementEditor$ = this.editorHelper.openConformanceStatementEditor<ICPConformanceStatementList, OpenCPConformanceStatementEditor>(
+    ConformanceProfileEditActionTypes.OpenCPConformanceStatementEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgEdit.selectMessagesById,
+    (action: OpenEditorBase) => {
+      return this.store.select(selectIgId).pipe(
+        take(1),
+        mergeMap((igId) => {
+          return this.conformanceProfileService.getConformanceStatements(action.payload.id, igId);
+        }),
+      );
+    },
+    this.ConfPNotFound,
+  );
+
+  @Effect()
+  openDeltaEditor$ = this.editorHelper.openDeltaEditor<OpenConformanceProfileDeltaEditor>(
+    ConformanceProfileEditActionTypes.OpenConformanceProfileDeltaEditor,
+    Type.CONFORMANCEPROFILE,
+    fromIgEdit.selectMessagesById,
+    this.deltaService.getDeltaFromOrigin,
+    this.ConfPNotFound,
+  );
+
   constructor(
     private actions$: Actions<ConformanceProfileEditActions>,
     private store: Store<IState>,
     private message: MessageService,
+    private deltaService: DeltaService,
     private conformanceProfileService: ConformanceProfileService,
     private editorHelper: OpenEditorService,
   ) { }

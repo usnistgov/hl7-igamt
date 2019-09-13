@@ -1,7 +1,10 @@
 package gov.nist.hit.hl7.igamt.common.config.domain;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +18,24 @@ public class Config {
 	List<String> usages=new ArrayList<String>();
 	private String phinvadsUrl; 
 	private List<ConnectingInfo> connection = new ArrayList<ConnectingInfo>();
+	private HashMap<String, BindingInfo> valueSetBindingConfig = new HashMap<String, BindingInfo>();
+	
+	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public HashMap<String, BindingInfo> getValueSetBindingConfig() {
+		return valueSetBindingConfig;
+	}
+
+	public void setValueSetBindingConfig(HashMap<String, BindingInfo> valueSetBindingConfig) {
+		this.valueSetBindingConfig = valueSetBindingConfig;
+	}
 
 	public List<String> getHl7Versions() {
 		return hl7Versions;
@@ -51,5 +72,6 @@ public class Config {
 	public void setConnection(List<ConnectingInfo> connection) {
 		this.connection = connection;
 	}
+	
 
 }

@@ -1,15 +1,18 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, combineLatest, from, Observable, of, Subscription } from 'rxjs';
-import { filter, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
+import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
+import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
 import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
+import { IValueSetBindingConfigMap } from '../models/config.class';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
+import { IRef } from '../models/ref.interface';
 import { IResource } from '../models/resource.interface';
 import { ISegment } from '../models/segment.interface';
 import { PredicateService } from '../service/predicate.service';
+import { BindingService } from './binding.service';
 import { IBindingValues, IElementBinding } from './hl7-v2-tree.service';
 import { AResourceRepositoryService } from './resource-repository.service';
 
@@ -49,15 +52,89 @@ export interface IBinding<T> {
   value: T;
 }
 
+export type NamedChildrenList = INamedChildrenItem[];
+
+export interface INamedChildrenItem {
+  name: string;
+  id: string;
+  ref?: IRef;
+  type: Type;
+  children?: NamedChildrenList;
+  position: number;
+  leaf: boolean;
+}
+
+export interface IPathInfo {
+  name: string;
+  id: string;
+  type: Type;
+  position: number;
+  leaf: boolean;
+  child?: IPathInfo;
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class Hl7V2TreeService {
 
-  constructor(private predicate: PredicateService) { }
+  constructor(private predicate: PredicateService, private bindingService: BindingService) { }
 
   nodeType(node: IHL7v2TreeNode): Type {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
+  }
+
+  getBindingsForContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
+    for (const binding of bindings) {
+      if (binding.context.resource === context.resource && binding.context.element === context.element) {
+        return binding;
+      }
+    }
+    return undefined;
+  }
+
+  getBindingsAfterContext<T>(context: IBindingContext, bindings: Array<IBinding<T>>): IBinding<T> {
+    const bindingsClone = [...bindings].sort((a, b) => {
+      return a.level - b.level;
+    });
+    const binding = this.getBindingsForContext<T>(context, bindingsClone);
+    if (!binding && bindings.length > 0) {
+      return bindings[0];
+    } else {
+      for (const bd of bindingsClone) {
+        if (bd.level > binding.level) {
+          return bd;
+        }
+      }
+    }
+    return undefined;
+  }
+
+  concatPath(pre: IPath, post: IPath): IPath {
+    const path = pre ? {
+      elementId: pre.elementId,
+      instanceParameter: pre.instanceParameter,
+    } : post;
+    let writer = path;
+    let reader = pre;
+    while (reader) {
+
+      if (reader.elementId === post.elementId) {
+        reader = post.child;
+      } else {
+        reader = reader.child;
+      }
+
+      if (reader) {
+        writer.child = {
+          elementId: reader.elementId,
+          instanceParameter: reader.instanceParameter,
+        };
+      }
+      writer = writer.child;
+    }
+
+    return path;
   }
 
   formatBindings(nodes: IBindingNode[]): IBindingMap {
@@ -75,9 +152,157 @@ export class Hl7V2TreeService {
     return payload;
   }
 
-  // getNode(resource: IResource, repository: AResourceRepositoryService, path: IPath): IHL7v2TreeNode {
+  getNameFromPath(elm: IPathInfo): string {
+    const loop = (node: IPathInfo): string => {
+      if (!node) {
+        return '';
+      }
+      const post = loop(node.child);
+      const separator = node.child ? node.child.type === Type.FIELD ? '-' : '.' : '';
+      const desc = node.child ? '' : ' (' + node.name + ')';
+      if (node.type === Type.CONFORMANCEPROFILE || node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
+        return node.name + separator + post;
+      } else {
+        return node.position + separator + post + desc;
+      }
+    };
+    return loop(elm);
+  }
 
-  // }
+  // this.bindingService.getBingdingInfo('2.3.1', 'HD', 1, Type.DATATYPE, this.bindingConfig)
+
+  getChildrenListFromResource(resource: IResource, repository: AResourceRepositoryService): Observable<NamedChildrenList> {
+    const toListItem = (leafs) => (field) => {
+      return {
+        id: field.id,
+        name: field.name,
+        position: field.position,
+        leaf: leafs[field.ref.id],
+        type: field.type,
+        ref: field.ref,
+      };
+    };
+
+    switch (resource.type) {
+      case Type.SEGMENT:
+        return repository.areLeafs((resource as ISegment).children.map((child) => child.ref.id)).pipe(
+          take(1),
+          map((leafs) => {
+            return (resource as ISegment).children.map(toListItem(leafs));
+          }),
+        );
+      case Type.DATATYPE:
+        return repository.areLeafs(((resource as IDatatype).components || []).map((child) => child.ref.id)).pipe(
+          take(1),
+          map((leafs) => {
+            return ((resource as IDatatype).components || []).map(toListItem(leafs));
+          }),
+        );
+      case Type.CONFORMANCEPROFILE:
+        const profile = resource as IConformanceProfile;
+        const segmentRefs = this.getAllSegmentRef(profile.children);
+        return repository.areLeafs(segmentRefs).pipe(
+          take(1),
+          map((leafs) => {
+            const itemize = (elm) => {
+              return {
+                id: elm.id,
+                name: elm.name,
+                position: elm.position,
+                leaf: false,
+                type: elm.type,
+                ref: elm.type === Type.SEGMENTREF ? (elm as ISegmentRef).ref : undefined,
+                children: elm.type === Type.GROUP ? ((elm as IGroup).children || []).map(itemize) : undefined,
+              };
+            };
+            return profile.children.map(itemize);
+          }),
+        );
+    }
+  }
+
+  getChildrenListFromRef(type: Type, id: string, repository: AResourceRepositoryService, seg?: IPathInfo): Observable<NamedChildrenList> {
+    return repository.fetchResource(type, id).pipe(
+      take(1),
+      flatMap((resource) => {
+        if (seg) {
+          seg.name = resource.name;
+        }
+        return this.getChildrenListFromResource(resource, repository);
+      }),
+    );
+  }
+
+  // tslint:disable-next-line: cognitive-complexity
+  getPathName(resource: IResource, repository: AResourceRepositoryService, path: IPath): Observable<IPathInfo> {
+    const pathSubject = new ReplaySubject<IPathInfo>(1);
+    const refType = (type: Type) => {
+      if (type === Type.FIELD || type === Type.COMPONENT || type === Type.SUBCOMPONENT) {
+        return Type.DATATYPE;
+      } else {
+        return Type.SEGMENT;
+      }
+    };
+    const intialPathInfo = {
+      id: resource.id,
+      name: resource.name,
+      type: resource.type,
+      position: -1,
+      leaf: false,
+    };
+
+    const fn = (children: NamedChildrenList, portion: IPath, pathInfo: IPathInfo, subject: Subject<IPathInfo>) => {
+      const next = children.find((child) => {
+        return child.id === portion.elementId;
+      });
+
+      if (next) {
+        pathInfo.child = {
+          name: next.name,
+          id: next.id,
+          type: next.type,
+          position: next.position,
+          leaf: next.leaf,
+        };
+
+        if (portion.child) {
+          if (next.leaf) {
+            subject.complete();
+          } else {
+            if (next.ref) {
+              this.getChildrenListFromRef(refType(next.type), next.ref.id, repository,
+                next.type === Type.SEGMENTREF ? pathInfo.child : undefined).pipe(
+                  take(1),
+                  map((list) => {
+                    fn(list, portion.child, pathInfo.child, subject);
+                  }),
+                ).subscribe();
+            } else {
+              fn(next.children, portion.child, pathInfo.child, subject);
+            }
+          }
+        } else {
+          subject.next(intialPathInfo);
+          subject.complete();
+        }
+      } else {
+        subject.complete();
+      }
+    };
+
+    if (path) {
+      this.getChildrenListFromResource(resource, repository).pipe(
+        take(1),
+        map((list) => {
+          fn(list, path, intialPathInfo, pathSubject);
+        }),
+      ).subscribe();
+    } else {
+      pathSubject.next(intialPathInfo);
+      pathSubject.complete();
+    }
+    return pathSubject.asObservable();
+  }
 
   getTree(resource: IResource, repository: AResourceRepositoryService, viewOnly: boolean, changeable: boolean, then?: (value: any) => void): Subscription {
     switch (resource.type) {
@@ -100,7 +325,7 @@ export class Hl7V2TreeService {
   }
 
   resolveReference(node: IHL7v2TreeNode, repository: AResourceRepositoryService, viewOnly: boolean, then?: () => void, transform?: (children: IHL7v2TreeNode[]) => IHL7v2TreeNode[]): Subscription {
-    if (node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
+    if (node.data.ref && node.$hl7V2TreeHelpers && (!node.$hl7V2TreeHelpers.treeChildrenSubscription || node.$hl7V2TreeHelpers.treeChildrenSubscription.closed)) {
       node.$hl7V2TreeHelpers.treeChildrenSubscription = node.data.ref.asObservable().pipe(
         filter((ref) => ref.type === Type.DATATYPE || ref.type === Type.SEGMENT),
         switchMap((ref) => {
@@ -213,8 +438,8 @@ export class Hl7V2TreeService {
     viewOnly: boolean,
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
-    return repository.areLeafs(segment.children.map((child) => child.ref.id)).pipe(
-      map((leafs) => {
+    return repository.getRefData(segment.children.map((child) => child.ref.id)).pipe(
+      map((refsData) => {
         return segment.children.map((child) => {
           const reference = new BehaviorSubject({
             type: Type.DATATYPE,
@@ -253,12 +478,13 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, segment.name, refsData[child.ref.id].name, child.position, Type.SEGMENT),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
               ref: reference,
               bindings,
             },
-            leaf: leafs[child.ref.id],
+            leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               predicate$: predicate,
               ref$: reference.asObservable(),
@@ -278,8 +504,8 @@ export class Hl7V2TreeService {
     changeable: boolean,
     parent?: IHL7v2TreeNode): Observable<IHL7v2TreeNode[]> {
     const components = datatype.components || [];
-    return repository.areLeafs(components.map((child) => child.ref.id)).pipe(
-      map((leafs) => {
+    return repository.getRefData(components.map((child) => child.ref.id)).pipe(
+      map((refsData) => {
         return components.map((child) => {
           const reference = new BehaviorSubject({
             type: Type.DATATYPE,
@@ -299,6 +525,7 @@ export class Hl7V2TreeService {
           if (bindings.values.predicateId && bindings.values.predicateId.length > 0) {
             predicate = this.predicate.getPredicate('', bindings.values.predicateId[0].value);
           }
+
           return {
             data: {
               id: child.id,
@@ -322,12 +549,13 @@ export class Hl7V2TreeService {
               constantValue: {
                 value: child.constantValue,
               },
+              valueSetBindingsInfo: this.bindingService.getBingdingInfo(refsData[child.ref.id].version, datatype.name, refsData[child.ref.id].name, child.position, Type.DATATYPE),
               pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
               confLength: child.confLength,
               ref: reference,
               bindings,
             },
-            leaf: leafs[child.ref.id],
+            leaf: refsData[child.ref.id].leaf,
             $hl7V2TreeHelpers: {
               predicate$: predicate,
               ref$: reference.asObservable(),
@@ -422,13 +650,13 @@ export class Hl7V2TreeService {
           },
           comments: child.comments || [],
           pathId: (parent && parent.data.pathId) ? parent.data.pathId + '-' + child.id : child.id,
-          ref: reference,
+          ref: child.type === Type.SEGMENTREF ? reference : undefined,
           bindings: bds,
         },
         leaf,
         $hl7V2TreeHelpers: {
           predicate$: predicate,
-          ref$: reference.asObservable(),
+          ref$: child.type === Type.SEGMENTREF ? reference.asObservable() : undefined,
           treeChildrenSubscription: undefined,
         },
       };

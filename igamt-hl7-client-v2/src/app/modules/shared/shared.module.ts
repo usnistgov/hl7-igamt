@@ -13,20 +13,25 @@ import { ContextMenuModule } from 'ngx-contextmenu';
 import { CardModule } from 'primeng/card';
 import { DropdownModule } from 'primeng/dropdown';
 import {
-  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
+  AccordionModule, AutoCompleteModule, CheckboxModule, ChipsModule, DragDropModule, FileUploadModule, InputSwitchModule, MultiSelectModule, OrganizationChartModule, PanelModule, RadioButtonModule, TooltipModule, TreeTableModule,
 } from 'primeng/primeng';
 import { TableModule } from 'primeng/table';
 import { TreeModule as pTreeModule } from 'primeng/tree';
+import {AlertsContainerComponent} from '../core/components/alerts-container/alerts-container.component';
 import { MessageService } from '../core/services/message.service';
 import { AddResourceComponent } from './components/add-resource/add-resource.component';
 import { AlertsComponent } from './components/alerts/alerts.component';
 import { BindingBadgeComponent } from './components/binding-badge/binding-badge.component';
+import { BindingSelectorComponent } from './components/binding-selector/binding-selector.component';
 import { ConfirmDialogComponent } from './components/confirm-dialog/confirm-dialog.component';
 import { CopyResourceComponent } from './components/copy-resource/copy-resource.component';
 import { CsDialogComponent } from './components/cs-dialog/cs-dialog.component';
 import { CsPropositionComponent } from './components/cs-proposition/cs-proposition.component';
+import { DeltaColumnComponent } from './components/delta-column/delta-column.component';
+import { DeltaTreeComponent } from './components/delta-tree/delta-tree.component';
 import { DisplaySectionComponent } from './components/display-section/display-section.component';
 import { EntityBagdeComponent } from './components/entity-bagde/entity-bagde.component';
+import { ExportToolComponent } from './components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from './components/export-xml-dialog/export-xml-dialog.component';
 import { FileSelectInputComponent } from './components/file-select-input/file-select-input.component';
 import { FormInputComponent } from './components/form-input/form-input.component';
@@ -126,6 +131,11 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportXmlDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
+    DeltaTreeComponent,
+    DeltaColumnComponent,
+    BindingSelectorComponent,
+    ExportToolComponent,
+    AlertsContainerComponent,
   ],
   providers: [
     StoreResourceRepositoryService,
@@ -156,6 +166,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     DragDropModule,
     RadioButtonModule,
     AccordionModule,
+    InputSwitchModule,
     TableModule,
     ExtendedModule,
     FroalaEditorModule.forRoot(),
@@ -176,6 +187,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     RegisterFormComponent,
     TooltipModule,
     NgbModule,
+    InputSwitchModule,
     NgbAlert,
     CardModule,
     AccordionModule,
@@ -216,6 +228,7 @@ import { MinNumberDirective } from './validators/min-number.directive';
     LengthComponent,
     ConformanceLengthComponent,
     DatatypeComponent,
+    RadioButtonModule,
     DragDropModule,
     SegmentComponent,
     ValuesetComponent,
@@ -237,8 +250,14 @@ import { MinNumberDirective } from './validators/min-number.directive';
     ExportXmlDialogComponent,
     MinNumberDirective,
     MaxNumberDirective,
+    DeltaTreeComponent,
+    DeltaColumnComponent,
+    BindingSelectorComponent,
+    ExportToolComponent,
+    AlertsContainerComponent,
   ],
-  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent],
+  entryComponents: [ConfirmDialogComponent, ResourcePickerComponent, CopyResourceComponent, TextEditorDialogComponent, UsageDialogComponent, CsDialogComponent, PatternDialogComponent, AddResourceComponent, ExportXmlDialogComponent , ExportToolComponent, BindingSelectorComponent],
+
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders {

@@ -14,7 +14,9 @@ import com.mongodb.client.result.UpdateResult;
 
 import gov.nist.hit.hl7.igamt.common.base.domain.Scope;
 import gov.nist.hit.hl7.igamt.common.base.domain.TextSection;
+import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.base.exception.ValuesetNotFoundException;
+import gov.nist.hit.hl7.igamt.common.base.util.RelationShip;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.IGContentMap;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
 import gov.nist.hit.hl7.igamt.ig.domain.IgDocumentConformanceStatement;
@@ -76,5 +78,8 @@ public interface IgService {
 	public IgDataModel generateDataModel(Ig ig) throws Exception;
 
 	public InputStream exportValidationXMLByZip(IgDataModel igModel, String[] conformanceProfileIds, String[] compositeProfileIds) throws CloneNotSupportedException, IOException, ClassNotFoundException, ProfileSerializationException, TableSerializationException;
+	public Set<RelationShip> findUsage(Set<RelationShip> relations, Type type, String elementId);
+	public Set<RelationShip> buildRelationShip(Ig ig, Type type);
+	public Set<RelationShip> builAllRelations(Ig ig) ;
 
 }
