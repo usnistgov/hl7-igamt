@@ -13,6 +13,7 @@
 package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author ena3
@@ -21,7 +22,8 @@ import java.io.Serializable;
 public class DocumentMetadata implements Serializable{
 
   private String title;
-
+  private String version;
+  private List<String> hl7Versions;
   private String topics;
   private String specificationName;
   private String identifier;
