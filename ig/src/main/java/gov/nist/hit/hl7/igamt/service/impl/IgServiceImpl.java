@@ -913,8 +913,8 @@ public class IgServiceImpl implements IgService {
 	        datatypeDataModel.putModel(d, this.datatypeService, valuesetBindingDataModelMap,
 	            this.conformanceStatementRepository, this.predicateRepository);
 	        datatypes.add(datatypeDataModel);
-	      } else
-	        throw new Exception("Datatype is missing.");
+	      }
+	      else throw new Exception("Datatype is missing.");
 	    }
 
 	    for (Link link : ig.getSegmentRegistry().getChildren()) {
@@ -966,7 +966,7 @@ public class IgServiceImpl implements IgService {
 	    String valueSetXMLStr = this.xmlSerializeService.serializeValueSetXML(igModel).toXML();
 	    String constraintXMLStr = this.xmlSerializeService.serializeConstraintsXML(igModel).toXML();
 
-	    this.xmlSerializeService.generateIS(out, profileXMLStr, "Profiles.xml");
+	    this.xmlSerializeService.generateIS(out, profileXMLStr, "Profile.xml");
 	    this.xmlSerializeService.generateIS(out, valueSetXMLStr, "ValueSets.xml");
 	    this.xmlSerializeService.generateIS(out, constraintXMLStr, "Constraints.xml");
 

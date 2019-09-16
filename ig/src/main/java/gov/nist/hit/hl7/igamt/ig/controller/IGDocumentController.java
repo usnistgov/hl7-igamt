@@ -1359,7 +1359,7 @@ public class IGDocumentController extends BaseController {
 	}
 
 
-	@RequestMapping(value = "/api/igdocuments/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
+	@RequestMapping(value = "/api/export/ig/{id}/xml/validation", method = RequestMethod.POST, produces = { "application/json" }, consumes = "application/x-www-form-urlencoded; charset=UTF-8")
 
 	public void exportXML(@PathVariable("id") String id, Authentication authentication,FormData formData,
 			HttpServletResponse response)

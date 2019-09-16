@@ -1,26 +1,27 @@
 import {LocationStrategy} from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable, throwError} from 'rxjs';
-import {ISelectedIds} from '../../shared/components/select-resource-ids/select-resource-ids.component';
+import { Observable, throwError } from 'rxjs';
+import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { Type } from '../../shared/constants/type.enum';
+import {IConnectingInfo} from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
 import { INarrative } from '../components/ig-section-editor/ig-section-editor.component';
 import { IG_END_POINT } from '../models/end-points';
 import { IDocumentCreationWrapper } from '../models/ig/document-creation.interface';
-import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { IgDocument } from '../models/ig/ig-document.class';
+import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import {IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode} from '../models/toc/toc-operation.class';
+import { IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
   providedIn: 'root',
 })
 export class IgService {
-
+  export_end_point = '/api/export/ig/';
   constructor(private http: HttpClient, private location: LocationStrategy) {
   }
 
@@ -126,7 +127,7 @@ export class IgService {
     return this.http.post<Message<string>>(IG_END_POINT + id + '/updatemetadata', metadata);
   }
 
-  deleteResource(documentId: string, element: IDisplayElement):  Observable<Message<any>> {
+  deleteResource(documentId: string, element: IDisplayElement): Observable<Message<any>> {
     const url = this.buildDeleteUrl(documentId, element);
     if (url != null) {
       return this.http.delete<Message<any>>(url);
@@ -135,7 +136,7 @@ export class IgService {
 
   exportXML(igId: string, selectedIds: ISelectedIds, xmlFormat) {
     const form = document.createElement('form');
-    form.action = '/api/igdocuments/' + igId + '/xml/validation';
+    form.action = this.export_end_point + igId + '/xml/validation';
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
@@ -147,13 +148,13 @@ export class IgService {
     form.submit();
   }
 
-  exportAsWord(igId) {
-    window.open(this.prepareUrl(igId, 'word'));
+  exportAsWord(igId, decision: any) {
+    this.submitForm(igId, decision, this.export_end_point + igId + '/word');
   }
 
   export(igId, decision: any, format: string) {
     const form = document.createElement('form');
-    form.action = '/api/export/ig/' + igId + '/' + format;
+    form.action = this.export_end_point + igId + '/' + format;
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
@@ -166,8 +167,11 @@ export class IgService {
   }
 
   exportAsHtml(igId, decision: any) {
+    this.submitForm(igId, decision, this.export_end_point + igId + '/html');
+  }
+  submitForm(igId, decision: any, end_point: string) {
     const form = document.createElement('form');
-    form.action = '/api/export/ig/' + igId + '/html';
+    form.action = end_point;
     form.method = 'POST';
     const json = document.createElement('input');
     json.type = 'hidden';
@@ -179,12 +183,29 @@ export class IgService {
     form.submit();
   }
 
+  loadDomain(username: string, password: string, tool: IConnectingInfo): Observable<any[]> {
+
+    return this.http.get<any[]>('/api/testing/domains', this.getGvtOptions(username, password, tool));
+  }
+  getGvtOptions(username: string, password: string, tool: IConnectingInfo) {
+    const auth =  btoa(username + ':' + password);
+    return {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'target-auth': 'Basic ' + auth,
+        'target-url': tool.url,
+      }),
+    };
+  }
+  exportToTesting(igId: string, selectedIds: ISelectedIds, username: string, password: string, tool: IConnectingInfo, targetDomain: string) {
+  return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool) );
+  }
   private prepareUrl(igId: string, type: string): string {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(id: string ): Observable<any> {
-    return this.http.get<any> ('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  getExportFirstDecision(id: string): Observable<any> {
+    return this.http.get<any>('/api/export/igdocuments/' + id + '/getFilteredDocument');
   }
 
 }

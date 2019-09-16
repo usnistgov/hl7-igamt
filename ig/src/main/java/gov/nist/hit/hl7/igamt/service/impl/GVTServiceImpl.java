@@ -94,7 +94,7 @@ public class GVTServiceImpl implements GVTService {
     parts.add("domain", domain);
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-    headers.add("Authorization", "Basic " + authorization);
+    headers.add("Authorization",authorization);
     HttpEntity<LinkedMultiValueMap<String, Object>> requestEntity =
         new HttpEntity<LinkedMultiValueMap<String, Object>>(parts, headers);
     ResponseEntity<?> response =
@@ -166,21 +166,27 @@ public class GVTServiceImpl implements GVTService {
       if (response.getStatusCode() == HttpStatus.OK) {
         return true;
       }
-      throw new GVTLoginException(response.getBody());
     } catch (HttpClientErrorException e) {
-      throw new GVTLoginException(e.getMessage());
+    	if(e.getStatusCode() == HttpStatus.UNAUTHORIZED) {
+      throw new GVTLoginException("Invalid credentials");
+    	}
     } catch (Exception e) {
       throw new GVTLoginException(e.getMessage());
     }
+	return false;
   }
 
   public ResponseEntity<?> getDomains(String authorization, String url) throws GVTLoginException {
     try {
       HttpHeaders headers = new HttpHeaders();
+      this.validCredentials(authorization, url);
       headers.add("Authorization", authorization);
       HttpEntity<String> entity = new HttpEntity<String>("", headers);
       ResponseEntity<List> response =
           restTemplate.exchange(url + env.getProperty(DOMAINS_ENDPOINT), HttpMethod.GET, entity, List.class);
+     if(response.getBody().isEmpty()) {
+    	 	throw new GVTLoginException("No tool scope available for this user");
+     }
       return response;
     } catch (HttpClientErrorException e) {
       throw new GVTLoginException(e.getMessage());

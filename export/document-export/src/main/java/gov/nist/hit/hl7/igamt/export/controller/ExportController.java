@@ -33,6 +33,7 @@ import gov.nist.hit.hl7.igamt.export.configuration.newModel.ExportFilterDecision
 import gov.nist.hit.hl7.igamt.export.domain.ExportedFile;
 import gov.nist.hit.hl7.igamt.export.exception.ExportException;
 import gov.nist.hit.hl7.igamt.export.service.IgNewExportService;
+import gov.nist.hit.hl7.igamt.export.util.WordUtil;
 import gov.nist.hit.hl7.igamt.ig.controller.FormData;
 import gov.nist.hit.hl7.igamt.ig.controller.wrappers.ReqId;
 import gov.nist.hit.hl7.igamt.ig.domain.Ig;
@@ -67,11 +68,29 @@ public class ExportController {
 
 				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
 				}
+				
+				if(format.toLowerCase().equals("word")) {					
+					ObjectMapper mapper = new ObjectMapper();
+					mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+					ExportFilterDecision decision = mapper.readValue(formData.getJson(), ExportFilterDecision.class);
+				ExportedFile exportedFile = igExportService.exportIgDocumentToWord(username, id, decision);
+//			    Ig igDocument = igService.findById(id);
+//			    ExportedFile wordFile = WordUtil.convertHtmlToWord(exportedFile, igDocument.getMetadata(), igDocument.getUpdateDate(), igDocument.getDomainInfo() != null ? igDocument.getDomainInfo().getVersion() : null);
+
+				response.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+				response.setHeader("Content-disposition",
+						"attachment;filename=" + exportedFile.getFileName());
+
+				System.out.println("ICI : " + exportedFile.getFileName());
+				FileCopyUtils.copy(exportedFile.getContent(), response.getOutputStream());
+				}
+				
+				
 			} catch (Exception e) {
 				throw new ExportException(e, "Error while sending back exported IG Document with id " + id);
 			}
 		} else {
-			throw new AuthenticationCredentialsNotFoundException("No Authentication ");
+			throw new AuthenticationCredentialsNotFoundException("No Authentication");
 		}
 	}
 	
@@ -85,7 +104,7 @@ public class ExportController {
 			ExportConfiguration config = ExportConfiguration.getBasicExportConfiguration(false);
 			Ig ig = igService.findById(id);
 			if (ig == null) {
-				throw new IGNotFoundException(id);
+				throw  new IGNotFoundException(id);
 			} else {	
 				return igExportService.getExportFilterDecision(ig, config);
 			}

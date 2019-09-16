@@ -152,8 +152,13 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 							if( exportFilterDecision != null && exportFilterDecision.getDatatypesFilterMap()!=null &&  exportFilterDecision.getDatatypesFilterMap().containsKey(datatypeLink.getId()) && exportFilterDecision.getDatatypesFilterMap().get(datatypeLink.getId())) {
 
 							DatatypeDataModel datatypeDataModel = igDataModel.getDatatypes().stream().filter(dt -> datatypeLink.getId().equals(dt.getModel().getId())).findAny().orElseThrow(() -> new DatatypeNotFoundException(datatypeLink.getId()));
+							if(datatypeDataModel == null) {
+								
+								System.out.println("--------- ");
+							}
 							Element datatypeElement = datatypeSerializationService
-									.serializeDatatype(datatypeDataModel, level + 1, exportConfiguration);
+									.serializeDatatype(datatypeDataModel, level + 1, exportConfiguration.getDatatypeExportConfiguration());
+			
 							if (datatypeElement != null) {
 								datatypeRegistryElement.appendChild(datatypeElement);
 							}			 
@@ -181,7 +186,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 
 							ValuesetDataModel valuesetDataModel = igDataModel.getValuesets().stream().filter(vs -> valuesetLink.getId().equals(vs.getModel().getId())).findAny().orElseThrow(() -> new ValuesetNotFoundException(valuesetLink.getId()));
 							//	                SerializableValuesetStructure serializableValuesetStructure = valuesetsMap.get(valuesetLink.getId());
-							Element valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportConfiguration);
+							Element valuesetElement = valuesetSerializationService.serializeValueSet(valuesetDataModel, level+1, exportConfiguration.getValueSetExportConfiguration());
 							if (valuesetElement != null) {
 								valuesetRegistryElement.appendChild(valuesetElement);
 							}
@@ -208,7 +213,7 @@ public class SectionSerializationServiceImpl implements SectionSerializationServ
 						for (Link conformanceProfileLink : conformanceProfileRegistry.getChildren()) {
 							if( exportFilterDecision != null && exportFilterDecision.getConformanceProfileFilterMap() !=null &&  exportFilterDecision.getConformanceProfileFilterMap().containsKey(conformanceProfileLink.getId()) && exportFilterDecision.getConformanceProfileFilterMap().get(conformanceProfileLink.getId())) {
 							ConformanceProfileDataModel conformanceProfileDataModel = igDataModel.getConformanceProfiles().stream().filter(cp -> conformanceProfileLink.getId().equals(cp.getModel().getId())).findAny().orElseThrow(() -> new ConformanceProfileNotFoundException(conformanceProfileLink.getId()));
-							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level+1, exportConfiguration);
+							Element conformanceProfileElement = conformanceProfileSerializationService.serializeConformanceProfile(conformanceProfileDataModel,igDataModel, level+1, exportConfiguration.getConformamceProfileExportConfiguration());
 							if (conformanceProfileElement != null) {
 								conformanceProfileRegistryElement.appendChild(conformanceProfileElement);
 							}
