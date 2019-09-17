@@ -33,152 +33,156 @@ import gov.nist.hit.hl7.igamt.datatype.service.DatatypeService;
  *
  */
 public class DatatypeDataModel implements Serializable {
-  private Datatype model;
+	private Datatype model;
 
-  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
-  private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-  private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
-  private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
-  private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
+	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
+	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
+	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
+	private Set<ComponentDataModel> componentDataModels = new HashSet<ComponentDataModel>();
 
-  public Datatype getModel() {
-    return model;
-  }
+	public Datatype getModel() {
+		return model;
+	}
 
-  public void setModel(Datatype model) {
-    this.model = model;
-  }
+	public void setModel(Datatype model) {
+		this.model = model;
+	}
 
-  public Map<String, Predicate> getPredicateMap() {
-    return predicateMap;
-  }
+	public Map<String, Predicate> getPredicateMap() {
+		return predicateMap;
+	}
 
-  public void setPredicateMap(Map<String, Predicate> predicateMap) {
-    this.predicateMap = predicateMap;
-  }
+	public void setPredicateMap(Map<String, Predicate> predicateMap) {
+		this.predicateMap = predicateMap;
+	}
 
-  public Map<String, ExternalSingleCode> getSingleCodeMap() {
-    return singleCodeMap;
-  }
+	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+		return singleCodeMap;
+	}
 
-  public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
-    this.singleCodeMap = singleCodeMap;
-  }
+	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+		this.singleCodeMap = singleCodeMap;
+	}
 
-  public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
-    return valuesetMap;
-  }
+	public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
+		return valuesetMap;
+	}
 
-  public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
-    this.valuesetMap = valuesetMap;
-  }
-  
-  /**
-   * @param d
-   * @param valuesetBindingDataModelMap
-   * @param conformanceStatementRepository
-   * @param predicateRepository
-   */
-  public void putModel(Datatype d, DatatypeService dataytpeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
-    this.model = d;
-    
-    if (d.getBinding() != null){
-      if(d.getBinding().getConformanceStatementIds() != null){
-        for(String csId: d.getBinding().getConformanceStatementIds()){
-          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
-        }
-      }
-    }
-    
-    if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
-     this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
-    }
-    
-    if (d instanceof ComplexDatatype) {
-      ComplexDatatype cd = (ComplexDatatype)d;
-     
-      if(cd.getComponents() != null) {
-        cd.getComponents().forEach(c -> {
-          String key = c.getPosition() + "";
-          if(c.getRef() != null && c.getRef().getId() != null){
-            Datatype childDt = dataytpeService.findById(c.getRef().getId());
-            if(childDt != null) {
-              this.componentDataModels.add(new ComponentDataModel(
-                  c, 
-                  this.predicateMap.get(key), 
-                  this.singleCodeMap.get(key),
-                  this.valuesetMap.get(key),
-                  new DatatypeBindingDataModel(childDt)
-                  ));    
-            }
-          }
-        });
-      }
-    }
-  }
+	public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
+		this.valuesetMap = valuesetMap;
+	}
 
-  /**
-   * @param children
-   * @param object
-   */
-  private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
-    for (StructureElementBinding seb : sebs) {
-      String key;
-      if(path == null){
-        key = seb.getLocationInfo().getPosition() + "";
-      }else {
-        key = path + "." + seb.getLocationInfo().getPosition();
-      }
-      
-      if(seb.getPredicateId() != null){
-        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
-      
-      if(seb.getExternalSingleCode() != null){
-        this.singleCodeMap.put(key, seb.getExternalSingleCode());
-      }
-      
-      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
-        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for(ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if(valuesetBindingDataModel != null) {
-            valuesetBindingDataModel.setValuesetBinding(vb);
-            vbdm.add(valuesetBindingDataModel);
-          }
-        }
-        
-        if(vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);          
-        }
-      }
-      
-      if (seb.getChildren() != null) {
-       this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
-      }
-    }
-  }
+	/**
+	 * @param d
+	 * @param valuesetBindingDataModelMap
+	 * @param conformanceStatementRepository
+	 * @param predicateRepository
+	 */
+	public void putModel(Datatype d, DatatypeService dataytpeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+		this.model = d;
 
-  public Set<ConformanceStatement> getConformanceStatements() {
-    return conformanceStatements;
-  }
+		if (d.getBinding() != null){
+			if(d.getBinding().getConformanceStatementIds() != null){
+				for(String csId: d.getBinding().getConformanceStatementIds()){
+					conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
+				}
+			}
+		}
 
-  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatemens) {
-    this.conformanceStatements = conformanceStatemens;
-  }
+		if ( d.getBinding() !=null && d.getBinding().getChildren() != null) {
+			this.popPathBinding(d.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+		}
 
-  public Set<ComponentDataModel> getComponentDataModels() {
-    return componentDataModels;
-  }
+		if (d instanceof ComplexDatatype) {
+			ComplexDatatype cd = (ComplexDatatype)d;
 
-  public void setComponentDataModels(Set<ComponentDataModel> componentDataModels) {
-    this.componentDataModels = componentDataModels;
-  }
+			if(cd.getComponents() != null) {
+				cd.getComponents().forEach(c -> {
+					String key = c.getPosition() + "";
+					if(c.getRef() != null && c.getRef().getId() != null){
+						Datatype childDt = dataytpeService.findById(c.getRef().getId());
+						if(childDt != null) {
+							this.componentDataModels.add(new ComponentDataModel(
+									c, 
+									this.predicateMap.get(key), 
+									this.singleCodeMap.get(key),
+									this.valuesetMap.get(key),
+									new DatatypeBindingDataModel(childDt)
+									));    
+						}
+					}
+				});
+			}
+		}
+	}
 
-  public ComponentDataModel findComponentDataModelByPosition(int position) {
-    for(ComponentDataModel cModel : this.componentDataModels) {
-      if (cModel.getModel().getPosition() == position) return cModel;
-    }
-    return null;
-  }
+	/**
+	 * @param children
+	 * @param object
+	 */
+	private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository,  Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+		for (StructureElementBinding seb : sebs) {
+			String key;
+			if(path == null){
+				key = seb.getLocationInfo().getPosition() + "";
+			}else {
+				key = path + "." + seb.getLocationInfo().getPosition();
+			}
+
+			if(seb.getPredicateId() != null){
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+			}
+
+			if(seb.getExternalSingleCode() != null){
+				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			}
+
+			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+				for(ValuesetBinding vb : seb.getValuesetBindings()) {
+					if(vb.getValueSets() != null) {
+						for(String s : vb.getValueSets()) {
+							ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(s);
+							if(valuesetBindingDataModel != null) {
+								valuesetBindingDataModel.setValuesetBinding(vb);
+								vbdm.add(valuesetBindingDataModel);
+							}
+						}
+					}
+				}
+
+				if(vbdm != null && vbdm.size() > 0) {
+					this.valuesetMap.put(key, vbdm);          
+				}
+			}
+
+			if (seb.getChildren() != null) {
+				this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+			}
+		}
+	}
+
+	public Set<ConformanceStatement> getConformanceStatements() {
+		return conformanceStatements;
+	}
+
+	public void setConformanceStatements(Set<ConformanceStatement> conformanceStatemens) {
+		this.conformanceStatements = conformanceStatemens;
+	}
+
+	public Set<ComponentDataModel> getComponentDataModels() {
+		return componentDataModels;
+	}
+
+	public void setComponentDataModels(Set<ComponentDataModel> componentDataModels) {
+		this.componentDataModels = componentDataModels;
+	}
+
+	public ComponentDataModel findComponentDataModelByPosition(int position) {
+		for(ComponentDataModel cModel : this.componentDataModels) {
+			if (cModel.getModel().getPosition() == position) return cModel;
+		}
+		return null;
+	}
 }

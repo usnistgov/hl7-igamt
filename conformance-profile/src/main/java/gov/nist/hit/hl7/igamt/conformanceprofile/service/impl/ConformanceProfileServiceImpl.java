@@ -464,19 +464,19 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 	 */
 	private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
 		// TODO Auto-generated method stub
-		if (binding.getChildren() != null) {
-			for (StructureElementBinding child : binding.getChildren()) {
-				if (child.getValuesetBindings() != null) {
-					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null) {
-							if (valuesetsMap.containsKey(vs.getValuesetId())) {
-								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
-							}
-						}
-					}
-				}
-			}
-		}
+//		if (binding.getChildren() != null) {
+//			for (StructureElementBinding child : binding.getChildren()) {
+//				if (child.getValuesetBindings() != null) {
+//					for (ValuesetBinding vs : child.getValuesetBindings()) {
+//						if (vs.getValuesetId() != null) {
+//							if (valuesetsMap.containsKey(vs.getValuesetId())) {
+//								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
+//							}
+//						}
+//					}
+//				}
+//			}
+//		}
 	}
 
 	private void processCp(ConformanceProfile cp, HashMap<String, String> segmentsMap) {
@@ -984,27 +984,27 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
 			HashMap<String, Valueset> valueSetsMap) {
-		if (valuesetBindings != null) {
-			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-			for (ValuesetBinding vb : valuesetBindings) {
-				Valueset vs = valueSetsMap.get(vb.getValuesetId());
-				if (vs == null) {
-					vs = this.valuesetService.findById(vb.getValuesetId());
-					valueSetsMap.put(vs.getId(), vs);
-				}
-				if (vs != null) {
-					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-					dvb.setLabel(vs.getBindingIdentifier());
-					dvb.setName(vs.getName());
-					dvb.setStrength(vb.getStrength());
-					dvb.setValuesetId(vb.getValuesetId());
-					dvb.setValuesetLocations(vb.getValuesetLocations());
-					dvb.setDomainInfo(vs.getDomainInfo());
-					result.add(dvb);
-				}
-			}
-			return result;
-		}
+//		if (valuesetBindings != null) {
+//			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+//			for (ValuesetBinding vb : valuesetBindings) {
+//				Valueset vs = valueSetsMap.get(vb.getValuesetId());
+//				if (vs == null) {
+//					vs = this.valuesetService.findById(vb.getValuesetId());
+//					valueSetsMap.put(vs.getId(), vs);
+//				}
+//				if (vs != null) {
+//					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+//					dvb.setLabel(vs.getBindingIdentifier());
+//					dvb.setName(vs.getName());
+//					dvb.setStrength(vb.getStrength());
+//					dvb.setValuesetId(vb.getValuesetId());
+//					dvb.setValuesetLocations(vb.getValuesetLocations());
+//					dvb.setDomainInfo(vs.getDomainInfo());
+//					result.add(dvb);
+//				}
+//			}
+//			return result;
+//		}
 		return null;
 	}
 
@@ -1261,17 +1261,17 @@ public class ConformanceProfileServiceImpl implements ConformanceProfileService 
 
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-		if (displayValuesetBindings != null) {
-			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-				ValuesetBinding vb = new ValuesetBinding();
-				vb.setStrength(dvb.getStrength());
-				vb.setValuesetId(dvb.getValuesetId());
-				vb.setValuesetLocations(dvb.getValuesetLocations());
-				result.add(vb);
-			}
-			return result;
-		}
+//		if (displayValuesetBindings != null) {
+//			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+//			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+//				ValuesetBinding vb = new ValuesetBinding();
+//				vb.setStrength(dvb.getStrength());
+//				vb.setValuesetId(dvb.getValuesetId());
+//				vb.setValuesetLocations(dvb.getValuesetLocations());
+//				result.add(vb);
+//			}
+//			return result;
+//		}
 		return null;
 	}
 

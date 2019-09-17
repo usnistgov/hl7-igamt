@@ -416,14 +416,17 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	private void updateBindings(ResourceBinding binding, HashMap<String, String> valuesetsMap) {
 		// TODO Auto-generated method stub
-		Set<String> vauleSetIds = new HashSet<String>();
 		if (binding.getChildren() != null) {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null) {
-							if (valuesetsMap.containsKey(vs.getValuesetId())) {
-								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
+						if (vs.getValueSets() != null) {
+							for(String s: vs.getValueSets()) {
+								if (valuesetsMap.containsKey(s)) {
+									if(!vs.getValueSets().contains(s)) {
+										vs.getValueSets().add(valuesetsMap.get(s));
+									}
+								}
 							}
 						}
 					}
@@ -501,7 +504,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 														scModel.setPredicate(op.get());
 														if (op.get().getIdentifier() != null)
 															scModel.getPredicate()
-																	.setIdentifier(c.getId() + "-" + sc.getId());
+															.setIdentifier(c.getId() + "-" + sc.getId());
 													}
 												}
 											}
@@ -734,27 +737,29 @@ public class DatatypeServiceImpl implements DatatypeService {
 
 	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
 			HashMap<String, Valueset> valueSetsMap) {
-		if (valuesetBindings != null) {
-			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-			for (ValuesetBinding vb : valuesetBindings) {
-				Valueset vs = valueSetsMap.get(vb.getValuesetId());
-				if (vs == null) {
-					vs = this.valueSetService.findById(vb.getValuesetId());
-					valueSetsMap.put(vs.getId(), vs);
-				}
-				if (vs != null) {
-					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-					dvb.setLabel(vs.getBindingIdentifier());
-					dvb.setName(vs.getName());
-					dvb.setStrength(vb.getStrength());
-					dvb.setValuesetId(vb.getValuesetId());
-					dvb.setValuesetLocations(vb.getValuesetLocations());
-					dvb.setDomainInfo(vs.getDomainInfo());
-					result.add(dvb);
-				}
-			}
-			return result;
-		}
+		//		if (valuesetBindings != null) {
+		//			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
+		//			for (ValuesetBinding vb : valuesetBindings) {
+		//				for(String s: vb.getValueSets()) {
+		//					Valueset vs = valueSetsMap.get(s);
+		//					if (vs == null) {
+		//						vs = this.valueSetService.findById(s);
+		//						valueSetsMap.put(vs.getId(), vs);
+		//					}
+		//					if (vs != null) {
+		//						DisplayValuesetBinding dvb = new DisplayValuesetBinding();
+		//						dvb.setLabel(vs.getBindingIdentifier());
+		//						dvb.setName(vs.getName());
+		//						dvb.setStrength(vb.getStrength());
+		//						dvb.setValueSets(vb.getValueSets());
+		//						dvb.setValuesetLocations(vb.getValuesetLocations());
+		//						dvb.setDomainInfo(vs.getDomainInfo());
+		//						result.add(dvb);
+		//					}
+		//				}
+		//			}
+		//			return result;
+		//		}
 		return null;
 	}
 
@@ -984,15 +989,15 @@ public class DatatypeServiceImpl implements DatatypeService {
 				item.setOldPropertyValue(seb.getExternalSingleCode());
 				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-			  Component c = this.findComponentById(d, item.getLocation());
-              if (c != null) {
-                  item.setOldPropertyValue(c.getConstantValue());
-                  if (item.getPropertyValue() == null) {
-                    c.setConstantValue(null);
-                } else {
-                    c.setConstantValue((String) item.getPropertyValue());
-                }
-              }
+				Component c = this.findComponentById(d, item.getLocation());
+				if (c != null) {
+					item.setOldPropertyValue(c.getConstantValue());
+					if (item.getPropertyValue() == null) {
+						c.setConstantValue(null);
+					} else {
+						c.setConstantValue((String) item.getPropertyValue());
+					}
+				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Component f = this.findComponentById(d, item.getLocation());
 				if (f != null) {
@@ -1004,13 +1009,13 @@ public class DatatypeServiceImpl implements DatatypeService {
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-		        ObjectMapper mapper = new ObjectMapper();
-		        String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-		        Component c = this.findComponentById(d, item.getLocation());
-		        if (c != null) {
-		          item.setOldPropertyValue(c.getComments());
-		          c.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-		        }
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+				Component c = this.findComponentById(d, item.getLocation());
+				if (c != null) {
+					item.setOldPropertyValue(c.getComments());
+					c.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+				}
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -1105,7 +1110,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
 				ValuesetBinding vb = new ValuesetBinding();
 				vb.setStrength(dvb.getStrength());
-				vb.setValuesetId(dvb.getValuesetId());
+				//vb.setValuesetId(dvb.getValuesetId());
 				vb.setValuesetLocations(dvb.getValuesetLocations());
 				result.add(vb);
 			}
@@ -1246,7 +1251,7 @@ public class DatatypeServiceImpl implements DatatypeService {
 				if (c.getRef() != null && c.getRef().getId() != null) {
 					RelationShip rel = new RelationShip(new ReferenceIndentifier(c.getRef().getId(), Type.DATATYPE),
 							new ReferenceIndentifier(elm.getId(), Type.DATATYPE),
-							
+
 							new ReferenceLocation(Type.COMPONENT, c.getPosition()+ "" , c.getName())
 							);
 					rel.setUsage( c.getUsage());

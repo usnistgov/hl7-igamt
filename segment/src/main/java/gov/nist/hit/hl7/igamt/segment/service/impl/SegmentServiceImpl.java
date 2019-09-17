@@ -115,8 +115,8 @@ public class SegmentServiceImpl implements SegmentService {
 	@Autowired
 	private InMemoryDomainExtentionService domainExtention;
 
-//	@Autowired
-//	private CoConstraintService coConstraintService;
+	//	@Autowired
+	//	private CoConstraintService coConstraintService;
 
 	@Autowired
 	private MongoTemplate mongoTemplate;
@@ -129,7 +129,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Autowired
 	ValuesetService valueSetService;
-	
+
 	@Autowired
 	private ConformanceStatementRepository conformanceStatementRepository;
 
@@ -184,7 +184,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 	@Override
 	public List<Segment> findByDomainInfoScope(String scope) {
-		return findByDomainInfoScope(scope);
+		return segmentRepository.findByDomainInfoScope(scope);
 	}
 
 	@Override
@@ -342,7 +342,7 @@ public class SegmentServiceImpl implements SegmentService {
 																scModel.setPredicate(op.get());
 																if (op.get().getIdentifier() != null)
 																	scModel.getPredicate()
-																			.setIdentifier(scModel.getIdPath());
+																	.setIdentifier(scModel.getIdPath());
 															}
 														}
 													}
@@ -391,7 +391,7 @@ public class SegmentServiceImpl implements SegmentService {
 
 													subComponentStructureTreeModel.setData(scModel);
 													componentStructureTreeModel
-															.addSubComponent(subComponentStructureTreeModel);
+													.addSubComponent(subComponentStructureTreeModel);
 												} else {
 													// TODO need to handle exception
 												}
@@ -435,31 +435,6 @@ public class SegmentServiceImpl implements SegmentService {
 	 * @param valuesetBindings
 	 * @return
 	 */
-	private Set<DisplayValuesetBinding> covertDisplayVSBinding(Set<ValuesetBinding> valuesetBindings,
-			HashMap<String, Valueset> valueSetsMap) {
-		if (valuesetBindings != null) {
-			Set<DisplayValuesetBinding> result = new HashSet<DisplayValuesetBinding>();
-			for (ValuesetBinding vb : valuesetBindings) {
-				Valueset vs = valueSetsMap.get(vb.getValuesetId());
-				if (vs == null) {
-					vs = this.valueSetService.findById(vb.getValuesetId());
-					valueSetsMap.put(vs.getId(), vs);
-				}
-				if (vs != null) {
-					DisplayValuesetBinding dvb = new DisplayValuesetBinding();
-					dvb.setLabel(vs.getBindingIdentifier());
-					dvb.setName(vs.getName());
-					dvb.setStrength(vb.getStrength());
-					dvb.setValuesetId(vb.getValuesetId());
-					dvb.setValuesetLocations(vb.getValuesetLocations());
-					dvb.setDomainInfo(vs.getDomainInfo());
-					result.add(dvb);
-				}
-			}
-			return result;
-		}
-		return null;
-	}
 
 	/**
 	 * @param childDt
@@ -611,7 +586,7 @@ public class SegmentServiceImpl implements SegmentService {
 		newLink.setDomainInfo(elm.getDomainInfo());
 		updateDependencies(elm, valuesetsMap, datatypesMap, username);
 		this.save(elm);
-//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
+		//		updateCoConstraint(elm, obj, valuesetsMap, datatypesMap, username);
 		return newLink;
 
 	}
@@ -640,11 +615,11 @@ public class SegmentServiceImpl implements SegmentService {
 
 	private void updateCoConstraint(Segment elm, Segment old, HashMap<String, String> valuesetsMap,
 			HashMap<String, String> datatypesMap, String username) {
-//		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
-//		if (cc != null) {
-//			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
-//			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
-//		}
+		//		CoConstraintTable cc = coConstraintService.getCoConstraintForSegment(old.getId());
+		//		if (cc != null) {
+		//			CoConstraintTable cc_ = coConstraintService.clone(valuesetsMap, datatypesMap, elm.getId(), cc);
+		//			coConstraintService.saveCoConstraintForSegment(elm.getId(), cc_, username);
+		//		}
 
 	}
 
@@ -658,11 +633,15 @@ public class SegmentServiceImpl implements SegmentService {
 			for (StructureElementBinding child : binding.getChildren()) {
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null) {
-							if (valuesetsMap.containsKey(vs.getValuesetId())) {
-								vs.setValuesetId(valuesetsMap.get(vs.getValuesetId()));
+							if (vs.getValueSets() != null) {
+								for(String s: vs.getValueSets()) {
+									if (valuesetsMap.containsKey(s)) {
+										if(!vs.getValueSets().contains(s)) {
+											vs.getValueSets().add(valuesetsMap.get(s));
+										}
+									}
+								}
 							}
-						}
 					}
 				}
 			}
@@ -796,15 +775,15 @@ public class SegmentServiceImpl implements SegmentService {
 				item.setOldPropertyValue(seb.getExternalSingleCode());
 				seb.setExternalSingleCode(mapper.readValue(jsonInString, ExternalSingleCode.class));
 			} else if (item.getPropertyType().equals(PropertyType.CONSTANTVALUE)) {
-			  Field f = this.findFieldById(s, item.getLocation());
-              if (f != null) {
-                  item.setOldPropertyValue(f.getConstantValue());
-                  if (item.getPropertyValue() == null) {
-                    f.setConstantValue(null);
-                } else {
-                    f.setConstantValue((String) item.getPropertyValue());
-                }
-              }
+				Field f = this.findFieldById(s, item.getLocation());
+				if (f != null) {
+					item.setOldPropertyValue(f.getConstantValue());
+					if (item.getPropertyValue() == null) {
+						f.setConstantValue(null);
+					} else {
+						f.setConstantValue((String) item.getPropertyValue());
+					}
+				}
 			} else if (item.getPropertyType().equals(PropertyType.DEFINITIONTEXT)) {
 				Field f = this.findFieldById(s, item.getLocation());
 				if (f != null) {
@@ -816,13 +795,13 @@ public class SegmentServiceImpl implements SegmentService {
 					}
 				}
 			} else if (item.getPropertyType().equals(PropertyType.COMMENT)) {
-			  ObjectMapper mapper = new ObjectMapper();
-              String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
-              Field f = this.findFieldById(s, item.getLocation());
-              if (f != null) {
-                item.setOldPropertyValue(f.getComments());
-                f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
-              }
+				ObjectMapper mapper = new ObjectMapper();
+				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
+				Field f = this.findFieldById(s, item.getLocation());
+				if (f != null) {
+					item.setOldPropertyValue(f.getComments());
+					f.setComments(new HashSet<Comment>(Arrays.asList(mapper.readValue(jsonInString, Comment[].class))));
+				}
 			} else if (item.getPropertyType().equals(PropertyType.STATEMENT)) {
 				ObjectMapper mapper = new ObjectMapper();
 				String jsonInString = mapper.writeValueAsString(item.getPropertyValue());
@@ -918,17 +897,17 @@ public class SegmentServiceImpl implements SegmentService {
 	 */
 	private Set<ValuesetBinding> convertDisplayValuesetBinding(
 			HashSet<DisplayValuesetBinding> displayValuesetBindings) {
-		if (displayValuesetBindings != null) {
-			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
-			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
-				ValuesetBinding vb = new ValuesetBinding();
-				vb.setStrength(dvb.getStrength());
-				vb.setValuesetId(dvb.getValuesetId());
-				vb.setValuesetLocations(dvb.getValuesetLocations());
-				result.add(vb);
-			}
-			return result;
-		}
+//		if (displayValuesetBindings != null) {
+//			Set<ValuesetBinding> result = new HashSet<ValuesetBinding>();
+//			for (DisplayValuesetBinding dvb : displayValuesetBindings) {
+//				ValuesetBinding vb = new ValuesetBinding();
+//				vb.setStrength(dvb.getStrength());
+//				vb.setValuesetId(dvb.getValuesetId());
+//				vb.setValuesetLocations(dvb.getValuesetLocations());
+//				result.add(vb);
+//			}
+//			return result;
+//		}
 		return null;
 	}
 
@@ -1052,15 +1031,7 @@ public class SegmentServiceImpl implements SegmentService {
 	private BindingDisplay createBindingDisplay(StructureElementBinding seb, String sourceId, ViewScope sourceType,
 			int priority, HashMap<String, Valueset> valueSetsMap) {
 		BindingDisplay bindingDisplay = new BindingDisplay();
-		bindingDisplay.setSourceId(sourceId);
-		bindingDisplay.setSourceType(sourceType);
-		bindingDisplay.setPriority(priority);
-		bindingDisplay.setExternalSingleCode(seb.getExternalSingleCode());
-		bindingDisplay.setInternalSingleCode(seb.getInternalSingleCode());
-		if (seb.getPredicateId() != null)
-			bindingDisplay.setPredicate(this.predicateRepository.findById(seb.getPredicateId()).get());
-		bindingDisplay.setValuesetBindings(this.covertDisplayVSBinding(seb.getValuesetBindings(), valueSetsMap));
-
+		
 		return bindingDisplay;
 	}
 
@@ -1185,7 +1156,7 @@ public class SegmentServiceImpl implements SegmentService {
 													scModel.setIdPath(idPath + "-" + f.getId() + "-" + c.getId() + "-"
 															+ sc.getId());
 													scModel.setPath(path + "-" + f.getPosition() + "-" + c.getPosition()
-															+ "-" + sc.getPosition());
+													+ "-" + sc.getPosition());
 													scModel.setDatatypeLabel(
 															this.createDatatypeLabel(childChildChildDt));
 													StructureElementBinding childChildSeb = this
@@ -1250,7 +1221,7 @@ public class SegmentServiceImpl implements SegmentService {
 													}
 													subComponentStructureTreeModel.setData(scModel);
 													componentStructureTreeModel
-															.addSubComponent(subComponentStructureTreeModel);
+													.addSubComponent(subComponentStructureTreeModel);
 												} else {
 													// TODO need to handle exception
 												}
