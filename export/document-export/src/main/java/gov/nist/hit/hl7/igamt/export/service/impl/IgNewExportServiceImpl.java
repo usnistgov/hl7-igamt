@@ -142,7 +142,6 @@ public class IgNewExportServiceImpl implements IgNewExportService {
 
 
 	private void processConformanceProfiles(Ig ig,ExportFilterDecision decision , ExportConfiguration config) {
-
 		Set<String> segmentIds = new HashSet<String>(); 
 		Set<String> datatypesIds = new HashSet<String>();
 		List<ConformanceProfile> profiles = conformanceProfileService

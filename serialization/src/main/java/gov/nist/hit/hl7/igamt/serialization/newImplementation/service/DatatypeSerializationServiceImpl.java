@@ -37,8 +37,10 @@ public class DatatypeSerializationServiceImpl implements DatatypeSerializationSe
 	      Datatype datatype = datatypeDataModel.getModel();
 	      datatypeElement
 	          .addAttribute(new Attribute("ext", datatype.getExt() != null ? datatype.getExt() : ""));
+	      if(datatypeExportConfiguration.getPurposeAndUse()) {
 	      datatypeElement.addAttribute(new Attribute("purposeAndUse",
 	          datatype.getPurposeAndUse() != null ? datatype.getPurposeAndUse() : ""));
+	      }
 //	      if (datatype.getBinding() != null) {
 //	        Element bindingElement =  
 //	            super.serializeResourceBinding(datatype.getBinding(), valuesetNamesMap);

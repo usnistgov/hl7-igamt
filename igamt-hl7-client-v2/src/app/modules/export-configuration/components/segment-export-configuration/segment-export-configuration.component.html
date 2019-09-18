@@ -1,49 +1,105 @@
-<table class="table table-sm table-striped">
-  <tr>
-    <th>Usages</th>
-  </tr>
-  <tr>
-    <td>Fields to export</td>
-  </tr>
-  <tr>
-    <td>
-      <p-checkbox disabled="true" label="R" binary="true"></p-checkbox><br>
-      <p-checkbox disabled="true" label="RE" binary="true"></p-checkbox><br>
-      <p-checkbox disabled="true" label="C" binary="true"></p-checkbox><br>
-      <p-checkbox label="O" binary="true"></p-checkbox><br>
-      <p-checkbox label="X" binary="true"></p-checkbox><br>
-    </td>
-  </tr>
-  <tr>
-    <th>Metadata</th>
-  </tr>
-  <tr>
-    <div layout="column">
-      <div class="config-checkbox">
-        <p-checkbox label="HL7 Version" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Publication Date" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Publication Version" binary="true"></p-checkbox>
-      </div>
-      <div class="config-checkbox">
-        <p-checkbox label="Scope" binary="true"></p-checkbox>
-      </div>
-    </div>
-  </tr>
-  <tr>
-    <th>Co-Constraints</th>
-  </tr>
-  <tr>
-    <td><p-checkbox binary="true" label="Grey out OBX-2 Flavor column"></p-checkbox></td>
-  </tr>
-  <tr>
-    <td>Display</td>
-  </tr>
-  <tr>
-    <div><p-radioButton name="coConstraintExportMode" value="COMPACT" label="Compact"></p-radioButton></div>
-    <div><p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose"></p-radioButton></div>
-  </tr>
-</table>
+<div style="width: 100%; display: flex; align-items: flex-start;">
+  <div style="width: 50%;">
+    <table class="table table-sm table-striped">
+      <tr>
+        <th>Usages
+          <button (click)="print()">print</button>
+        </th>{{current.fieldsExport.x}}
+      </tr>
+      <tr>
+        <td>Fields to export</td>
+      </tr>
+      <tr>
+        <td>
+          <p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="current.fieldsExport.r"></p-checkbox>
+          <br>
+          <p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="current.fieldsExport.re"></p-checkbox>
+          <br>
+          <p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="current.fieldsExport.c"> </p-checkbox>
+          <br>
+          <p-checkbox label="O" binary="true" [(ngModel)]="current.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox>
+          <br>
+          <p-checkbox label="X" binary="true" [(ngModel)]="current.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox>
+          <br>
+        </td>
+      </tr>
+      <tr>
+        <th>Metadata</th>
+      </tr>
+      <tr>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox label="HL7 Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Publication Date" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Publication Version" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Scope" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </tr>
+      <tr>
+        <th>Co-Constraints</th>
+      </tr>
+      <tr>
+        <td>
+          <p-checkbox binary="true" label="Grey out OBX-2 Flavor column"></p-checkbox>
+        </td>
+      </tr>
+      <tr>
+        <th>Display</th>
+      </tr>
+      <tr>
+        <div>
+          <p-radioButton name="coConstraintExportMode" value="COMPACT" label="Compact"></p-radioButton>
+        </div>
+        <div>
+          <p-radioButton name="coConstraintExportMode" value="VERBOSE" label="Verbose"></p-radioButton>
+        </div>
+      </tr>
+    </table>
+  </div>
+  <div style="width: 50%;">
+    <table class="table table-sm table-striped">
+      <tr>
+        <th>Columns</th>
+      </tr>
+      <tr>
+        <td>Columns to export</td>
+      </tr>
+      <tr>
+        <div layout="column">
+          <div class="config-checkbox">
+            <p-checkbox label="Name" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Conformance Length" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Length" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Usage" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Cardinality" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Value Set" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Constant Value" binary="true"></p-checkbox>
+          </div>
+          <div class="config-checkbox">
+            <p-checkbox label="Definition Text" binary="true"></p-checkbox>
+          </div>
+        </div>
+      </tr>
+      <!-- </div> -->
+    </table>
+  </div>
+</div>

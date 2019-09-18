@@ -15,6 +15,7 @@ import { IgDocument } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
 import { IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
+import { IExportConfigurationGlobal } from './../../export-configuration/models/config.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -193,8 +194,8 @@ export class IgService {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');
   }
 
-  getExportFirstDecision(id: string): Observable<any> {
-    return this.http.get<any>('/api/export/igdocuments/' + id + '/getFilteredDocument');
+  getExportFirstDecision(id: string): Observable<IExportConfigurationGlobal> {
+    return this.http.get<IExportConfigurationGlobal>('/api/export/igdocuments/' + id + '/getFilteredDocument');
   }
 
 }

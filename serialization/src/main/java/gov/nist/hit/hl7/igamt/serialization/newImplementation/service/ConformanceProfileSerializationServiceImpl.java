@@ -38,15 +38,20 @@ private ConstraintSerializationService constraintSerializationService;
 	    if (conformanceProfile != null) {
 	      try {
 			Element conformanceProfileElement = igDataModelSerializationService.serializeResource(conformanceProfileDataModel.getModel(), Type.CONFORMANCEPROFILE, conformanceProfileExportConfiguration);
+			if(conformanceProfileExportConfiguration.getIdentifier()) {
 	        conformanceProfileElement.addAttribute(new Attribute("identifier",
 	            conformanceProfile.getIdentifier() != null ? conformanceProfile.getIdentifier() : ""));
+			}
+			if(conformanceProfileExportConfiguration.getMessageType()) {
 	        conformanceProfileElement.addAttribute(new Attribute("messageType",
 	            conformanceProfile.getMessageType() != null ? conformanceProfile.getMessageType()
-	                : ""));
+	                : ""));}
+			if(conformanceProfileExportConfiguration.getEvent()) {
 	        conformanceProfileElement.addAttribute(new Attribute("event",
-	            conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));
+	            conformanceProfile.getEvent() != null ? conformanceProfile.getEvent() : ""));}
+			if(conformanceProfileExportConfiguration.getStructID()) {
 	        conformanceProfileElement.addAttribute(new Attribute("structID",
-	            conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));
+	            conformanceProfile.getStructID() != null ? conformanceProfile.getStructID() : ""));}
 //	        Element bindingElement = super.serializeResourceBinding(conformanceProfile.getBinding(), this.valuesetNamesMap);
 //	        if (bindingElement != null) {
 //	          conformanceProfileElement.appendChild(bindingElement);

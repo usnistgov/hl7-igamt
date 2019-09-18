@@ -15,6 +15,7 @@ import { ResourcePickerComponent } from '../../../shared/components/resource-pic
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
+import { IExportConfigurationGlobal } from '../../../export-configuration/models/config.interface';
 
 @Component({
   selector: 'app-ig-edit-toolbar',
@@ -112,7 +113,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
     ).subscribe();
   }
 
-  getDecision(): Observable<any> {
+  getDecision(): Observable<IExportConfigurationGlobal> {
     return this.getIgId().pipe(
       take(1),
       concatMap((x: string) => this.igService.getExportFirstDecision(x)),
