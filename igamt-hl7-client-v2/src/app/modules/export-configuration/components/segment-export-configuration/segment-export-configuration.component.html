@@ -4,22 +4,22 @@
       <tr>
         <th>Usages
           <button (click)="print()">print</button>
-        </th>{{current.fieldsExport.x}}
+        </th>{{config.fieldsExport.x}}
       </tr>
       <tr>
         <td>Fields to export</td>
       </tr>
       <tr>
         <td>
-          <p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="current.fieldsExport.r"></p-checkbox>
+          <p-checkbox disabled="true" label="R" binary="true" [(ngModel)]="config.fieldsExport.r"></p-checkbox>
           <br>
-          <p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="current.fieldsExport.re"></p-checkbox>
+          <p-checkbox disabled="true" label="RE" binary="true" [(ngModel)]="config.fieldsExport.re"></p-checkbox>
           <br>
-          <p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="current.fieldsExport.c"> </p-checkbox>
+          <p-checkbox disabled="true" label="C" binary="true" [(ngModel)]="config.fieldsExport.c"> </p-checkbox>
           <br>
-          <p-checkbox label="O" binary="true" [(ngModel)]="current.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox>
+          <p-checkbox label="O" binary="true" [(ngModel)]="config.fieldsExport.o" (onChange)="triggerChange()"></p-checkbox>
           <br>
-          <p-checkbox label="X" binary="true" [(ngModel)]="current.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox>
+          <p-checkbox label="X" binary="true" [(ngModel)]="config.fieldsExport.x" (onChange)="triggerChange()"></p-checkbox>
           <br>
         </td>
       </tr>

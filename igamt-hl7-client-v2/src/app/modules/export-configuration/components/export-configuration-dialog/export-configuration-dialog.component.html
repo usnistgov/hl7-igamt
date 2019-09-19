@@ -56,7 +56,7 @@
     <div class="content">
       <ng-container [ngSwitch]="type">
         <ng-container *ngSwitchCase="'SEGMENT'">
-          <app-segment-export-configuration [config]="current" (change)="applyChange($event)" *ngIf="loading"></app-segment-export-configuration>
+          <app-segment-export-configuration [config]="current" (change)="applyChange($event)" *ngIf="!loading"></app-segment-export-configuration>
         </ng-container>
         <ng-container *ngSwitchCase="'VALUESET'">
           <app-value-set-export-configuration></app-value-set-export-configuration>

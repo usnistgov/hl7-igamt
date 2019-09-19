@@ -9,22 +9,18 @@ export class SegmentExportConfigurationComponent implements OnInit {
 
   @Input()
   config: any;
-  current: any;
   @Output()
   change: EventEmitter<any> = new EventEmitter<any>();
 
   constructor() { }
 
   ngOnInit() {
-    this.current = _.cloneDeep(this.config);
   }
 
   triggerChange() {
-    console.log(this.current);
-    this.change.emit(this.current);
+    this.change.emit(this.config);
   }
 
   print() {
-    console.log(this.current);
   }
 }
