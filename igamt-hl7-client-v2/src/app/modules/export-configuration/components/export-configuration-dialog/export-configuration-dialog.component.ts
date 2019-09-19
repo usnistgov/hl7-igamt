@@ -23,7 +23,7 @@ export class ExportConfigurationDialogComponent implements OnInit {
   loading = false;
   defaultConfig: any;
   nodes: Observable<TreeNode>;
-  current: any;
+  current: any = {};
   constructor(
     public dialogRef: MatDialogRef<ExportConfigurationDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) {
@@ -32,8 +32,6 @@ export class ExportConfigurationDialogComponent implements OnInit {
     this.filter = this.initialConfig.exportFilterDecision;
     this.defaultConfig = _.cloneDeep(data.decision.exportConfiguration);
   }
-
-
   select(node) {
     this.loading = true;
     this.selected = node;
@@ -41,18 +39,11 @@ export class ExportConfigurationDialogComponent implements OnInit {
     switch (this.type) {
       case Type.SEGMENT: {
         if (this.filter.overiddedSegmentMap[node.id]) {
-          console.log("found");
           this.current = this.filter.overiddedSegmentMap[node.id];
         } else {
-          console.log("Not found");
-
-          this.current = Object.assign({}, this.defaultConfig.segmentExportConfiguration);
-
-          // this.current = _.cloneDeep(this.defaultConfig.segmentExportConfiguration);
+          this.current = _.cloneDeep(this.defaultConfig.segmentExportConfiguration);
         }
         this.loading = false;
-
-        console.log(this.defaultConfig.segmentExportConfiguration);
         break;
       }
       case Type.DATATYPE: {
@@ -79,14 +70,12 @@ export class ExportConfigurationDialogComponent implements OnInit {
         } else {
           this.current = _.cloneDeep(this.defaultConfig.valueSetExportConfiguration);
         }
-
         break;
       }
       default: {
         break;
       }
     }
-    this.current = this.defaultConfig.segmentExportConfiguration;
   }
 
   applyChange(event: any) {
