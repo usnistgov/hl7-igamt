@@ -2,6 +2,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
@@ -27,6 +28,9 @@ public abstract class AbstractDomain implements Serializable{
 	private String createdFrom;
 	private String authorNotes;
 	private String usageNotes;
+	private String organization;
+	private List<String> authors;
+	private Status status;
 	private String from;
 
 	@Version
@@ -185,6 +189,30 @@ public abstract class AbstractDomain implements Serializable{
 
 	public void setOrigin(String origin) {
 		this.origin = origin;
+	}
+
+	public String getOrganization() {
+		return organization;
+	}
+
+	public void setOrganization(String organization) {
+		this.organization = organization;
+	}
+
+	public List<String> getAuthors() {
+		return authors;
+	}
+
+	public void setAuthors(List<String> authors) {
+		this.authors = authors;
+	}
+
+	public Status getStatus() {
+		return status;
+	}
+
+	public void setStatus(Status status) {
+		this.status = status;
 	}
 
 	public String getOrigin() {

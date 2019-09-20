@@ -15,6 +15,6 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
  * @author ena3
  *
  */
-public enum STATUS {
-  PUBLISHED, UNPUBLISHED
+public enum Status {
+  DRAFT, PUBLISHED, SUPERSEDED, WITHDRAWN
 }
