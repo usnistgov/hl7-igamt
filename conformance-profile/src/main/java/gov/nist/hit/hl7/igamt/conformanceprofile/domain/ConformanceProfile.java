@@ -64,7 +64,6 @@ public class ConformanceProfile extends Resource {
   }
 
   public ConformanceProfile() {
-	
     super();
     super.setType(Type.CONFORMANCEPROFILE);
   }

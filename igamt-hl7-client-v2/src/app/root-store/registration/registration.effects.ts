@@ -1,14 +1,15 @@
-import {HttpErrorResponse} from '@angular/common/http';
-import {Injectable} from '@angular/core';
-import {Actions, Effect, ofType} from '@ngrx/effects';
-import {Store} from '@ngrx/store';
-import {of} from 'rxjs';
-import {catchError, concatMap, map} from 'rxjs/operators';
-import {User} from 'src/app/modules/core/models/user/user.class';
-import {RxjsStoreHelperService} from 'src/app/modules/shared/services/rxjs-store-helper.service';
-import {Message} from '../../modules/core/models/message/message.class';
-import {RegistrationService} from '../../modules/core/services/registration.service';
-import {TurnOnLoader} from '../loader/loader.actions';
+import { HttpErrorResponse } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
+import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Action, Store } from '@ngrx/store';
+import { of } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
+import { User } from 'src/app/modules/core/models/user/user.class';
+import { RxjsStoreHelperService } from 'src/app/modules/shared/services/rxjs-store-helper.service';
+import { Message } from '../../modules/core/models/message/message.class';
+import { RegistrationService } from '../../modules/core/services/registration.service';
+import { TurnOnLoader } from '../loader/loader.actions';
 import {
   RegistrationActionTypes,
   RegistrationFailure,
@@ -45,6 +46,10 @@ export class RegistrationEffects {
       message: (action: RegistrationSuccess): Message => {
         return action.payload;
       },
+      handler: (action: RegistrationSuccess): Action[] => {
+        this.router.navigate(['/login']);
+        return [];
+      },
     }),
   );
   @Effect()
@@ -63,6 +68,7 @@ export class RegistrationEffects {
     private actions$: Actions,
     private registrationService: RegistrationService,
     private store: Store<any>,
+    private router: Router,
     private helper: RxjsStoreHelperService,
   ) {
   }

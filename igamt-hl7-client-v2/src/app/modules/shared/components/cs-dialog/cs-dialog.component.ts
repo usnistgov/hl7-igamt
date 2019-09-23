@@ -113,6 +113,11 @@ export class CsDialogComponent implements OnDestroy {
           this.contextName = value;
         }),
       ).subscribe();
+    } else if (node.node.data.type === Type.CONFORMANCEPROFILE) {
+      this.cs.context = undefined;
+      this.structure = [
+        node.node,
+      ];
     }
     this.showContext = false;
   }
@@ -191,13 +196,25 @@ export class CsDialogComponent implements OnDestroy {
     this.statementsValidity = [];
     switch (item) {
       case CsTab.FREE:
-        this.cs = this.csService.getFreeConformanceStatement();
+        this.cs = {
+          ...this.csService.getFreeConformanceStatement(),
+          identifier: this.cs.identifier,
+          context: this.cs.context,
+        };
         break;
       case CsTab.SIMPLE:
-        this.cs = this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0)).cs;
+        this.cs = {
+          ...this.csService.getAssertionConformanceStatement(new Statement('D', 0, null, 0)).cs,
+          identifier: this.cs.identifier,
+          context: this.cs.context,
+        };
         break;
       case CsTab.CONDITIONAL:
-        this.cs = this.csService.getAssertionConformanceStatement(this.ifThenPattern).cs;
+        this.cs = {
+          ...this.csService.getAssertionConformanceStatement(this.ifThenPattern).cs,
+          identifier: this.cs.identifier,
+          context: this.cs.context,
+        };
         break;
       case CsTab.COMPLEX:
         if (this.cs.type === ConstraintType.ASSERTION) {
@@ -205,7 +222,11 @@ export class CsDialogComponent implements OnDestroy {
         }
 
         if (this.pattern && this.pattern.assertion) {
-          this.cs = this.csService.getAssertionConformanceStatement(this.pattern.assertion).cs;
+          this.cs = {
+            ...this.csService.getAssertionConformanceStatement(this.pattern.assertion).cs,
+            identifier: this.cs.identifier,
+            context: this.cs.context,
+          };
         }
         break;
     }
@@ -229,6 +250,7 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   done() {
+    console.log(this.cs);
     this.dialogRef.close(this.cs);
   }
 

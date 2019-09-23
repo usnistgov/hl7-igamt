@@ -193,9 +193,16 @@ export class BinaryOperator extends Operator {
 
   public setOperand(i: Position, operand: Assertion) {
     if (this.data.type === 'IF-THEN' && i === LEFT) {
-      operand.data.branch = 'P';
+      this.drillDown(operand, 'P');
     }
     this.children[i] = operand;
+  }
+
+  drillDown(operand: Assertion, branch: StatementType) {
+    operand.data.branch = branch;
+    operand.children.forEach((child) => {
+      this.drillDown(child, branch);
+    });
   }
 
   public putOne(a: Assertion, i: number) {

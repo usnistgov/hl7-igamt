@@ -36,7 +36,7 @@ export class ConformanceStatementService {
   }
 
   getCsPattern(assertion: IAssertion): Pattern {
-    return new Pattern(this.getCsViewAssertion(assertion, 0));
+    return new Pattern(this.getCsViewAssertion(assertion, { counter: 0 }));
   }
 
   createSimpleAssertion(): ISimpleAssertion {
@@ -177,20 +177,20 @@ export class ConformanceStatementService {
     throw new Error('Unrecognized assertion');
   }
 
-  getCsViewAssertion(assertion: IAssertion, id: number, parent?: Operator, position?: number): Assertion {
+  getCsViewAssertion(assertion: IAssertion, idsRef: { counter: number }, parent?: Operator, position?: number): Assertion {
     switch (assertion.mode) {
       case AssertionMode.SIMPLE:
-        return this.getCsSimplePattern(assertion as ISimpleAssertion, id, parent, position);
+        return this.getCsSimplePattern(assertion as ISimpleAssertion, idsRef.counter++, parent, position);
       case AssertionMode.IFTHEN:
         const ifThenAssertion = assertion as IIfThenAssertion;
         const ifThen = this.getCsConditionalPattern(ifThenAssertion, parent, position);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, id + 1, ifThen, LEFT), LEFT);
-        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, id + 2, ifThen, RIGHT), RIGHT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.ifAssertion, idsRef, ifThen, LEFT), LEFT);
+        ifThen.putOne(this.getCsViewAssertion(ifThenAssertion.thenAssertion, idsRef, ifThen, RIGHT), RIGHT);
         return ifThen;
       case AssertionMode.NOT:
         const notAssertion = assertion as INotAssertion;
         const not = this.getCsNotPattern(notAssertion, parent, position);
-        not.putOne(this.getCsViewAssertion(notAssertion.child, id + 1, not, LEFT), LEFT);
+        not.putOne(this.getCsViewAssertion(notAssertion.child, idsRef, not, LEFT), LEFT);
         return not;
       case AssertionMode.ANDOR:
         const opAssertion = assertion as IOperatorAssertion;
@@ -198,13 +198,13 @@ export class ConformanceStatementService {
           if (opAssertion.assertions.length > 2) {
             const nOp = this.getCsNaryOpPattern(opAssertion, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              nOp.putOne(this.getCsViewAssertion(a, id + i, nOp, i), i);
+              nOp.putOne(this.getCsViewAssertion(a, idsRef, nOp, i), i);
             });
             return nOp;
           } else {
             const biOp = this.getCsBinaryOpPattern(opAssertion, parent, position);
             opAssertion.assertions.forEach((a, i) => {
-              biOp.putOne(this.getCsViewAssertion(a, id + i, biOp, i), i);
+              biOp.putOne(this.getCsViewAssertion(a, idsRef, biOp, i), i);
             });
             return biOp;
           }

@@ -1,10 +1,10 @@
-import {LocationStrategy} from '@angular/common';
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import { LocationStrategy } from '@angular/common';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { ISelectedIds } from '../../shared/components/select-resource-ids/select-resource-ids.component';
 import { Type } from '../../shared/constants/type.enum';
-import {IConnectingInfo} from '../../shared/models/config.class';
+import { IConnectingInfo } from '../../shared/models/config.class';
 import { IContent } from '../../shared/models/content.interface';
 import { IDisplayElement } from '../../shared/models/display-element.interface';
 import { IMetadata } from '../../shared/models/metadata.interface';
@@ -188,17 +188,17 @@ export class IgService {
     return this.http.get<any[]>('/api/testing/domains', this.getGvtOptions(username, password, tool));
   }
   getGvtOptions(username: string, password: string, tool: IConnectingInfo) {
-    const auth =  btoa(username + ':' + password);
+    const auth = btoa(username + ':' + password);
     return {
       headers: new HttpHeaders({
-        'Content-Type':  'application/json',
+        'Content-Type': 'application/json',
         'target-auth': 'Basic ' + auth,
         'target-url': tool.url,
       }),
     };
   }
   exportToTesting(igId: string, selectedIds: ISelectedIds, username: string, password: string, tool: IConnectingInfo, targetDomain: string) {
-  return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool) );
+    return this.http.post('/api/testing/' + igId + '/push/' + targetDomain, selectedIds, this.getGvtOptions(username, password, tool));
   }
   private prepareUrl(igId: string, type: string): string {
     return this.location.prepareExternalUrl('api/export/igdocuments/' + igId + '/export/' + type).replace('#', '');

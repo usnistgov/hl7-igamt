@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { TreeNode } from 'primeng/primeng';
 import { BehaviorSubject, combineLatest, from, Observable, ReplaySubject, Subject, Subscription } from 'rxjs';
 import { filter, flatMap, map, mergeMap, switchMap, take, tap, toArray } from 'rxjs/operators';
-import { IHL7v2TreeNode } from '../components/hl7-v2-tree/hl7-v2-tree.component';
+import { ICardinalityRange, IHL7v2TreeNode, ILengthRange, IResourceRef, IStringValue } from '../components/hl7-v2-tree/hl7-v2-tree.component';
 import { Type } from '../constants/type.enum';
 import { IStructureElementBinding, IStructureElementBindingProperties } from '../models/binding.interface';
-import { IValueSetBindingConfigMap } from '../models/config.class';
+import { IComment } from '../models/comment.interface';
 import { IConformanceProfile, IGroup, IMsgStructElement, ISegmentRef } from '../models/conformance-profile.interface';
 import { IPath } from '../models/cs.interface';
 import { IDatatype } from '../models/datatype.interface';
@@ -79,6 +80,99 @@ export interface IPathInfo {
 export class Hl7V2TreeService {
 
   constructor(private predicate: PredicateService, private bindingService: BindingService) { }
+
+  cloneViewTree(tree: TreeNode[]): TreeNode[] {
+    return tree ? tree.map((node: TreeNode) => {
+      return {
+        data: node.data,
+        children: this.cloneViewTree(node.children),
+        leaf: node.leaf,
+        $hl7V2TreeHelpers: this.cloneViewHL7v2Helper(node['$hl7V2TreeHelpers']),
+      };
+    }) : [];
+  }
+
+  cloneViewHL7v2Helper(helpers: any): any {
+    if (helpers) {
+      return {
+        predicate$: helpers.predicate$,
+        ref$: helpers.ref$,
+        treeChildrenSubscription: undefined,
+      };
+    } else {
+      return undefined;
+    }
+  }
+
+  cloneTree(tree: IHL7v2TreeNode[]): IHL7v2TreeNode[] {
+    return tree.map((node) => this.cloneTreeNode(node));
+  }
+
+  cloneTreeNode(node: IHL7v2TreeNode): IHL7v2TreeNode {
+    const cloneTextValue = (value: IStringValue): IStringValue => {
+      if (value) {
+        return {
+          value: value.value,
+        };
+      } else {
+        return undefined;
+      }
+    };
+
+    const cloneRange = (value: any): any => {
+      if (value) {
+        return {
+          min: value.min,
+          max: value.max,
+        };
+      } else {
+        return undefined;
+      }
+    };
+
+    const cloneComments = (value: IComment[]): IComment[] => {
+      if (value) {
+        return value.map((val) => {
+          return {
+            dateupdated: val.dateupdated,
+            description: val.description,
+            username: val.username,
+          };
+        });
+      } else {
+        return undefined;
+      }
+    };
+
+    const ref = new BehaviorSubject<IResourceRef>(node.data.ref.value);
+    return {
+      data: {
+        id: node.data.id,
+        name: node.data.name,
+        position: node.data.position,
+        type: node.data.type,
+        usage: cloneTextValue(node.data.usage),
+        text: cloneTextValue(node.data.text),
+        cardinality: cloneRange(node.data.cardinality) as ICardinalityRange,
+        length: cloneRange(node.data.length) as ILengthRange,
+        comments: cloneComments(node.data.comments),
+        constantValue: cloneTextValue(node.data.constantValue),
+        pathId: node.data.pathId,
+        changeable: node.data.changeable,
+        viewOnly: node.data.viewOnly,
+        confLength: node.data.confLength,
+        valueSetBindingsInfo: node.data.valueSetBindingsInfo,
+        ref,
+        bindings: node.data.bindings,
+        level: node.data.level,
+      },
+      leaf: node.leaf,
+      $hl7V2TreeHelpers: {
+        ref$: ref.asObservable(),
+        treeChildrenSubscription: undefined,
+      },
+    };
+  }
 
   nodeType(node: IHL7v2TreeNode): Type {
     return node ? (node.parent && node.parent.data.type === Type.COMPONENT) ? Type.SUBCOMPONENT : node.data.type : undefined;
@@ -160,8 +254,10 @@ export class Hl7V2TreeService {
       const post = loop(node.child);
       const separator = node.child ? node.child.type === Type.FIELD ? '-' : '.' : '';
       const desc = node.child ? '' : ' (' + node.name + ')';
-      if (node.type === Type.CONFORMANCEPROFILE || node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
+      if (node.type === Type.GROUP || node.type === Type.SEGMENT || node.type === Type.SEGMENTREF || node.type === Type.DATATYPE) {
         return node.name + separator + post;
+      } else if (node.type === Type.CONFORMANCEPROFILE) {
+        return post;
       } else {
         return node.position + separator + post + desc;
       }
