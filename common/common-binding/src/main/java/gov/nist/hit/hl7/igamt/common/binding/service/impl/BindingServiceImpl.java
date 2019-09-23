@@ -49,11 +49,13 @@ public class BindingServiceImpl implements BindingService {
 
 		if (binding.getValuesetBindings() != null) {
 			for (ValuesetBinding vs : binding.getValuesetBindings()) {
-				if (vs.getValuesetId() != null) {
-					RelationShip rel = new RelationShip(new ReferenceIndentifier(vs.getValuesetId(), Type.VALUESET),
-							parent,new ReferenceLocation(getSubtypeTypeFromParent(parent.getType()), location, binding.getLocationInfo().getName()));
-					rel.setUsage(usage);
-					used.add(rel);
+				if(vs.getValueSets() !=null) {
+					for(String s: vs.getValueSets()) {
+						RelationShip rel = new RelationShip(new ReferenceIndentifier(s, Type.VALUESET),
+								parent,new ReferenceLocation(getSubtypeTypeFromParent(parent.getType()), location, binding.getLocationInfo().getName()));
+						rel.setUsage(usage);
+						used.add(rel);
+					}
 				}
 			}
 		}
@@ -105,8 +107,10 @@ public class BindingServiceImpl implements BindingService {
 
 				if (child.getValuesetBindings() != null) {
 					for (ValuesetBinding vs : child.getValuesetBindings()) {
-						if (vs.getValuesetId() != null) {
-							vauleSetIds.add(vs.getValuesetId());
+						if(vs.getValueSets() !=null) {
+							for(String s: vs.getValueSets()) {
+								vauleSetIds.add(s);
+							}
 						}
 					}
 				}
@@ -126,8 +130,10 @@ public class BindingServiceImpl implements BindingService {
 
 			if (child.getValuesetBindings() != null) {
 				for (ValuesetBinding vs : child.getValuesetBindings()) {
-					if (vs.getValuesetId() != null) {
-						vauleSetIds.add(vs.getValuesetId());
+					if(vs.getValueSets() != null) {
+						for(String s: vs.getValueSets()) {
+							vauleSetIds.add(s);
+						}
 					}
 				}
 			}

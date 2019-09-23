@@ -28,9 +28,7 @@ db:
   host: localhost
   
 key: 
-
   public: /usr/local/etc/hit/igamt/publicKey.txt
-  
 auth:
   url: http://localhost:8090
    

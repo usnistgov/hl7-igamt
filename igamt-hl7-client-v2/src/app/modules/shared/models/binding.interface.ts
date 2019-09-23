@@ -15,9 +15,9 @@ export enum IValuesetStrength {
 }
 
 export interface IValuesetBinding {
-  valuesetId: string;
   strength: IValuesetStrength;
   valuesetLocations: number[];
+  valueSets: string[];
 }
 
 export interface InternalSingleCode {

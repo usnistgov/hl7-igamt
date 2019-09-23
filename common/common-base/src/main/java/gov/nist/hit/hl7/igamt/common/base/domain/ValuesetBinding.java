@@ -13,6 +13,7 @@ package gov.nist.hit.hl7.igamt.common.base.domain;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import gov.nist.diff.annotation.DeltaField;
 import gov.nist.diff.annotation.DeltaIdentity;
@@ -22,49 +23,48 @@ import gov.nist.diff.annotation.DeltaIdentity;
  *
  */
 public class ValuesetBinding implements Serializable{
-  @DeltaIdentity
-  private String valuesetId;
-  @DeltaField
-  private ValuesetStrength strength;
-  @DeltaField
-  private Set<Integer> valuesetLocations = new HashSet<Integer>();
+	@DeltaIdentity
+	private List<String> valueSets;
+	@DeltaField
+	private ValuesetStrength strength;
+	@DeltaField
+	private Set<Integer> valuesetLocations = new HashSet<Integer>();
 
-  public ValuesetBinding() {
-    super();
-  }
+	public ValuesetBinding() {
+		super();
+	}
 
-  public String getValuesetId() {
-    return valuesetId;
-  }
+	public ValuesetStrength getStrength() {
+		return strength;
+	}
 
-  public void setValuesetId(String valuesetId) {
-    this.valuesetId = valuesetId;
-  }
+	public void setStrength(ValuesetStrength strength) {
+		this.strength = strength;
+	}
 
-  public ValuesetStrength getStrength() {
-    return strength;
-  }
+	public Set<Integer> getValuesetLocations() {
+		return valuesetLocations;
+	}
 
-  public void setStrength(ValuesetStrength strength) {
-    this.strength = strength;
-  }
+	public void setValuesetLocations(Set<Integer> valuesetLocations) {
+		this.valuesetLocations = valuesetLocations;
+	}
 
-  public Set<Integer> getValuesetLocations() {
-    return valuesetLocations;
-  }
+	public void addValuesetLocation(Integer location) {
+		this.valuesetLocations.add(location);
+	}
 
-  public void setValuesetLocations(Set<Integer> valuesetLocations) {
-    this.valuesetLocations = valuesetLocations;
-  }
+	@Override
+	public String toString() {
+		return "ValuesetBinding [valuesetId=" + valueSets.toString() + ", strength=" + strength
+				+ ", valuesetLocations=" + valuesetLocations + "]";
+	}
 
-  public void addValuesetLocation(Integer location) {
-    this.valuesetLocations.add(location);
+	public List<String> getValueSets() {
+		return valueSets;
+	}
 
-  }
-
-  @Override
-  public String toString() {
-    return "ValuesetBinding [valuesetId=" + valuesetId + ", strength=" + strength
-        + ", valuesetLocations=" + valuesetLocations + "]";
-  }
+	public void setValueSets(List<String> valueSets) {
+		this.valueSets = valueSets;
+	}
 }

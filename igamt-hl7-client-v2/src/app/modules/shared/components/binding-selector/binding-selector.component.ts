@@ -19,6 +19,9 @@ export class BindingSelectorComponent<T> implements OnInit {
   selectedBindingType: IBindingType = IBindingType.VALUESET;
   selectedValueSet: IDisplayElement;
   currentValueSet: IValueSet;
+  edit = {};
+  editableBinding: IValueSetBindingDisplay;
+  temp: IDisplayElement = null;
   selectedSingleCode: ISingleCodeDisplay;
   bindingStrengthOptions = [
     {label: 'Required', value: 'R'}, {label: 'Suggested', value: 'S'}, {label: 'Unspecified', value: 'U'},
@@ -49,16 +52,33 @@ export class BindingSelectorComponent<T> implements OnInit {
   cancel() {
     this.dialogRef.close();
   }
-
-  selectValueSet(elem: IDisplayElement) {
-    const newBinding: IValueSetBindingDisplay = {display: elem, bindingStrength: IValuesetStrength.R};
-    if (this.data.locationInfo.allowedBindingLocations && this.data.locationInfo.allowedBindingLocations.length === 1) {
-      newBinding.bindingLocation = this.data.locationInfo.allowedBindingLocations[0].value;
-    }
-    if (!this.selectedValueSets) {
+  addBinding() {
+    if (!this.selectedValueSets ) {
       this.selectedValueSets = [];
     }
-    this.selectedValueSets.push(newBinding);
+    this.editableBinding = {valueSets : [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindinglcation()};
+    this.selectedValueSets.push(this.editableBinding);
+  }
+  submitValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {
+    if (!binding.valueSets.filter((x) =>   x.id === vs.id).length) {
+      binding.valueSets.push(vs);
+    }
+    this.temp = null;
+    this.edit = {};
+  }
+  addValueSet(binding: IValueSetBindingDisplay, index) {
+    this.edit[index] = true;
+    this.temp = null;
+  }
+  removeValueSet(binding: IValueSetBindingDisplay,  index: number) {
+   binding.valueSets.splice(index, 1);
+  }
+  getDefaultBindinglcation() {
+    if (this.data.locationInfo.allowedBindingLocations && this.data.locationInfo.allowedBindingLocations.length === 1 ) {
+      return [... this.data.locationInfo.allowedBindingLocations[0].value];
+    } else {
+      return [];
+    }
   }
 
   ngOnInit() {
@@ -90,8 +110,8 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCode = null;
   }
 
-  remove(rowData: IValueSetBindingDisplay) {
-    this.selectedValueSets = this.selectedValueSets.filter((x) => (x.display.id !== rowData.display.id) || (x.bindingLocation !== rowData.bindingLocation) || (x.bindingStrength !== rowData.bindingStrength));
+  removeBinding(index: number) {
+    this.selectedValueSets.splice(index, 1);
   }
 }
 
@@ -110,7 +130,7 @@ export interface IBindingLocationInfo {
 }
 
 export class IValueSetBindingDisplay {
-  display: IDisplayElement;
+  valueSets: IDisplayElement[];
   bindingStrength: IValuesetStrength;
   bindingLocation?: number[];
 }

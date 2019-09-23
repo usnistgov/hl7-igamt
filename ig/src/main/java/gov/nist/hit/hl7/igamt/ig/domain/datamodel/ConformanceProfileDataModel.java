@@ -32,150 +32,156 @@ import gov.nist.hit.hl7.igamt.segment.service.SegmentService;
  *
  */
 public class ConformanceProfileDataModel implements Serializable{
-  private ConformanceProfile model;
+	private ConformanceProfile model;
 
-  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
-  private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-  private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
-  private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
-      new HashMap<String, Set<ValuesetBindingDataModel>>();
+	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
+	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
+	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap =
+			new HashMap<String, Set<ValuesetBindingDataModel>>();
 
-  private Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
-      new HashSet<SegmentRefOrGroupDataModel>();
+	private Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels =
+			new HashSet<SegmentRefOrGroupDataModel>();
 
-  public ConformanceProfile getModel() {
-    return model;
-  }
+	public ConformanceProfile getModel() {
+		return model;
+	}
 
-  public void setModel(ConformanceProfile model) {
-    this.model = model;
-  }
+	public void setModel(ConformanceProfile model) {
+		this.model = model;
+	}
 
-  public Map<String, Predicate> getPredicateMap() {
-    return predicateMap;
-  }
+	public Map<String, Predicate> getPredicateMap() {
+		return predicateMap;
+	}
 
-  public void setPredicateMap(Map<String, Predicate> predicateMap) {
-    this.predicateMap = predicateMap;
-  }
+	public void setPredicateMap(Map<String, Predicate> predicateMap) {
+		this.predicateMap = predicateMap;
+	}
 
-  public Map<String, ExternalSingleCode> getSingleCodeMap() {
-    return singleCodeMap;
-  }
+	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+		return singleCodeMap;
+	}
 
-  public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
-    this.singleCodeMap = singleCodeMap;
-  }
+	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+		this.singleCodeMap = singleCodeMap;
+	}
 
-  public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
-    return valuesetMap;
-  }
+	public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
+		return valuesetMap;
+	}
 
-  public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
-    this.valuesetMap = valuesetMap;
-  }
+	public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
+		this.valuesetMap = valuesetMap;
+	}
 
-  /**
-   * @param cp
-   */
-  public void putModel(ConformanceProfile cp,
-      Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,
-      ConformanceStatementRepository conformanceStatementRepository,
-      PredicateRepository predicateRepository, SegmentService segmentService) {
-    this.model = cp;
+	/**
+	 * @param cp
+	 */
+	public void putModel(ConformanceProfile cp,
+			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap,
+			ConformanceStatementRepository conformanceStatementRepository,
+			PredicateRepository predicateRepository, SegmentService segmentService) {
+		this.model = cp;
 
-    if (cp.getBinding() != null) {
-      if (cp.getBinding().getConformanceStatementIds() != null) {
-        for (String csId : cp.getBinding().getConformanceStatementIds()) {
-          conformanceStatementRepository.findById(csId)
-              .ifPresent(cs -> this.conformanceStatements.add(cs));
-        }
-      }
-      if (cp.getBinding().getChildren() != null) {
-          this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
-              valuesetBindingDataModelMap);
-        }
-    }
+		if (cp.getBinding() != null) {
+			if (cp.getBinding().getConformanceStatementIds() != null) {
+				for (String csId : cp.getBinding().getConformanceStatementIds()) {
+					conformanceStatementRepository.findById(csId)
+					.ifPresent(cs -> this.conformanceStatements.add(cs));
+				}
+			}
+			if (cp.getBinding().getChildren() != null) {
+				this.popPathBinding(cp.getBinding().getChildren(), null, predicateRepository,
+						valuesetBindingDataModelMap);
+			}
+		}
 
 
 
-    if (cp.getChildren() != null) {
-      cp.getChildren().forEach(child -> {
-        this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, null,
-            this.predicateMap, segmentService));
-      });
-    }
+		if (cp.getChildren() != null) {
+			cp.getChildren().forEach(child -> {
+				this.segmentRefOrGroupDataModels.add(new SegmentRefOrGroupDataModel(child, null,
+						this.predicateMap, segmentService));
+			});
+		}
 
-  }
+	}
 
-  private void popPathBinding(Set<StructureElementBinding> sebs, String path,
-      PredicateRepository predicateRepository,
-      Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
-    for (StructureElementBinding seb : sebs) {
-      String key;
-      if (path == null) {
-        key = seb.getLocationInfo().getPosition() + "";
-      } else {
-        key = path + "." + seb.getLocationInfo().getPosition();
-      }
+	private void popPathBinding(Set<StructureElementBinding> sebs, String path,
+			PredicateRepository predicateRepository,
+			Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+		for (StructureElementBinding seb : sebs) {
+			String key;
+			if (path == null) {
+				key = seb.getLocationInfo().getPosition() + "";
+			} else {
+				key = path + "." + seb.getLocationInfo().getPosition();
+			}
 
-      if (seb.getPredicateId() != null) {
-        predicateRepository.findById(seb.getPredicateId())
-            .ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
+			if (seb.getPredicateId() != null) {
+				predicateRepository.findById(seb.getPredicateId())
+				.ifPresent(cp -> this.predicateMap.put(key, cp));
+			}
 
-      if (seb.getExternalSingleCode() != null) {
-        this.singleCodeMap.put(key, seb.getExternalSingleCode());
-      }
+			if (seb.getExternalSingleCode() != null) {
+				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			}
 
-      if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {
-        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for (ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel =
-              valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if (valuesetBindingDataModel != null) {
-            valuesetBindingDataModel.setValuesetBinding(vb);
-            vbdm.add(valuesetBindingDataModel);
-          }
-        }
+			if (seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0) {
 
-        if (vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);
-        }
-      }
 
-      if (seb.getChildren() != null) {
-        this.popPathBinding(seb.getChildren(), key, predicateRepository,
-            valuesetBindingDataModelMap);
-      }
-    }
-  }
+				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+				for (ValuesetBinding vb : seb.getValuesetBindings()) {
+					if(vb.getValueSets() != null) {
+						for(String vs: vb.getValueSets()) {
+							ValuesetBindingDataModel valuesetBindingDataModel =
+									valuesetBindingDataModelMap.get(vs);
+							if (valuesetBindingDataModel != null) {
+								valuesetBindingDataModel.setValuesetBinding(vb);
+								vbdm.add(valuesetBindingDataModel);
+							}
+						}
+					} 
+				}
+				if (vbdm != null && vbdm.size() > 0) {
+					this.valuesetMap.put(key, vbdm);
+				}
 
-  public Set<SegmentRefOrGroupDataModel> getSegmentRefOrGroupDataModels() {
-    return segmentRefOrGroupDataModels;
-  }
+			}
 
-  public void setSegmentRefOrGroupDataModels(
-      Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels) {
-    this.segmentRefOrGroupDataModels = segmentRefOrGroupDataModels;
-  }
+			if (seb.getChildren() != null) {
+				this.popPathBinding(seb.getChildren(), key, predicateRepository,
+						valuesetBindingDataModelMap);
+			}
+		}
+	}
 
-  /**
-   * @param parseInt
-   * @return
-   */
-  public SegmentRefOrGroupDataModel findChildByPosition(int position) {
-    for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
-      if (sgModel.getModel().getPosition() == position) return sgModel;
-    }
-    return null;
-  }
+	public Set<SegmentRefOrGroupDataModel> getSegmentRefOrGroupDataModels() {
+		return segmentRefOrGroupDataModels;
+	}
 
-public Set<ConformanceStatement> getConformanceStatements() {
-	return conformanceStatements;
-}
+	public void setSegmentRefOrGroupDataModels(
+			Set<SegmentRefOrGroupDataModel> segmentRefOrGroupDataModels) {
+		this.segmentRefOrGroupDataModels = segmentRefOrGroupDataModels;
+	}
 
-public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
-	this.conformanceStatements = conformanceStatements;
-}
+	/**
+	 * @param parseInt
+	 * @return
+	 */
+	public SegmentRefOrGroupDataModel findChildByPosition(int position) {
+		for(SegmentRefOrGroupDataModel sgModel : this.segmentRefOrGroupDataModels) {
+			if (sgModel.getModel().getPosition() == position) return sgModel;
+		}
+		return null;
+	}
+
+	public Set<ConformanceStatement> getConformanceStatements() {
+		return conformanceStatements;
+	}
+
+	public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+		this.conformanceStatements = conformanceStatements;
+	}
 }
