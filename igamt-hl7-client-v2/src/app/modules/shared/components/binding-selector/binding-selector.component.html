@@ -20,18 +20,21 @@
   </p-dropdown>
 
 
-  <div *ngIf="selectedBindingType=='VALUESET'" >
+  <div *ngIf="selectedBindingType=='VALUESET'">
     <p-table [value]="selectedValueSets">
       <ng-template let-columns pTemplate="header">
       <tr>
         <th>
           Binding Strength
         </th>
-        <th *ngIf="data.locationInfo.allowedBindingLocations&&data.locationInfo.allowedBindingLocations.length">
+        <th *ngIf="data.locationInfo.allowedBindingLocations&& data.locationInfo.allowedBindingLocations.length>1">
           Binding Location
         </th>
         <th>
           Value Sets
+        </th>
+        <th style="width: 50px;">
+
         </th>
       </tr>
       </ng-template>
@@ -42,17 +45,25 @@
         <p-dropdown [(ngModel)]="rowData.bindingStrength" [appendTo]="anchor1" [style]="{'min-width': 'unset','width': '100%'}"
                                                       [id]="'bindingStrength'+index" [name]="'bindingStrength'+index" [options]="bindingStrengthOptions"></p-dropdown>
       </td>
-      <td #anchor2 *ngIf="data.locationInfo.allowedBindingLocations&&data.locationInfo.allowedBindingLocations.length">
+      <td #anchor2 *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1">
         <p-dropdown [(ngModel)]="rowData.bindingLocation" [appendTo]="anchor2" [style]="{'min-width': 'unset','width': '100%'}"
                                                      [id]="'bindingLocation'+index" [name]="'bindingLocation'+index" [options]="data.locationInfo.allowedBindingLocations"></p-dropdown>
       </td>
       <td #anchor3>
-        <div *ngFor="let vs of rowData.valueSets" style="display: grid; flex-direction: row">
-          <app-display-section [element]="vs" style="width: 70%"></app-display-section>
-          <button (click)="addValueSet(rowData, index)" class="btn btn-danger btn-sm"><i class="fa fa-remove"></i></button>
+        <div *ngFor="let vs of rowData.valueSets" style="display: flex; flex-direction: row;">
+          <div style="width:90%;">
+          <app-display-section [element]="vs"></app-display-section>
+          </div>
+          <div style="width: 10%">
+            <button (click)="removeValueSet(rowData, index)" class="btn btn-danger btn-sm">
+              <i class="fa fa-remove"></i></button>
+          </div>
         </div>
-        <p-dropdown (ngModelChange)="temp=$event" [(ngModel)]="temp" *ngIf="edit[index]" [appendTo]="anchor3"
-                    [optionLabel]="'variableName'" [options]="data.resources" placeholder="select value set" [style]="{'minWidth':'100%'}">
+        <div>
+          <div style="display: flex; flex-direction: row">
+            <div style="width:90%;">
+        <p-dropdown (ngModelChange)="submitValueSet(rowData, $event)" [(ngModel)]="temp" *ngIf="edit[index]" [appendTo]="anchor3"
+                    [optionLabel]="'variableName'" [options]="data.resources" placeholder="select value set" [style]="{'minWidth': '100%'}">
           <ng-template let-item pTemplate="selectedItem">
             <ng-container *ngIf="item.value">
               <app-display-section [element]="item.value"></app-display-section>
@@ -62,13 +73,23 @@
             <app-display-section [element]="item.value"></app-display-section>
           </ng-template>
         </p-dropdown>
-        <button (click)="addValueSet(rowData, index)" class="btn btn-info btn-sm" *ngIf="!edit[index]"><i class="fa fa-plus"></i></button>
-        <button (click)="submitValueSet(rowData)" class="btn btn-info btn-sm" *ngIf="edit[index]"><i class="fa fa-plus"></i></button>
+            </div>
+            <div style="width: 10%">
+              <button (click)="edit[index]=!edit[index]" class="btn btn-danger btn-sm" style="height: 100%" *ngIf="edit[index]"><i class="fa fa-remove"></i></button>
+              <button (click)="addValueSet(rowData, index)" class="btn btn-info btn-sm" *ngIf="!edit[index]"><i class="fa fa-plus"></i></button>
+            </div>
+          </div>
+        </div>
+      </td>
+      <td style="width: 50px;">
+      <button class="btn btn-sm btn-danger" (click)="removeBinding(index)">
+        <i class="fa fa-remove" ></i>
+      </button>
       </td>
     </tr>
       </ng-template>
     </p-table>
-    <button (click)="addBinding()" class="btn btn-sm btn-info" style="float: right"><i class="fa fa-plus"></i>Add Binding </button>
+    <button (click)="addBinding()" class="btn btn-sm btn-info" style="float: right" *ngIf="data.locationInfo.allowedBindingLocations && data.locationInfo.allowedBindingLocations.length>1 || !selectedValueSets||!selectedValueSets.length"><i class="fa fa-plus"></i>Add Binding</button>
   </div>
   <div class="select-binding-container">
     <div class="loaded" *ngIf="selectedBindingType=='SINGLECODE'">

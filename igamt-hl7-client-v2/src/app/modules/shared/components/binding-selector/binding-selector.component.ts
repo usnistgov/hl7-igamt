@@ -52,26 +52,17 @@ export class BindingSelectorComponent<T> implements OnInit {
   cancel() {
     this.dialogRef.close();
   }
-
-  // selectValueSet(elem: IDisplayElement) {
-  //   const newBinding: IValueSetBindingDisplay = {display: elem, bindingStrength: IValuesetStrength.R};
-  //   if (this.data.locationInfo.allowedBindingLocations && this.data.locationInfo.allowedBindingLocations.length === 1) {
-  //     newBinding.bindingLocation = this.data.locationInfo.allowedBindingLocations[0].value;
-  //   }
-  //   if (!this.selectedValueSets) {
-  //     this.selectedValueSets = [];
-  //   }
-  //   this.selectedValueSets.push(newBinding);
-  // }
   addBinding() {
     if (!this.selectedValueSets ) {
       this.selectedValueSets = [];
     }
-    this.editableBinding = {valueSets : [], bindingStrength: IValuesetStrength.R, bindingLocation: []};
+    this.editableBinding = {valueSets : [], bindingStrength: IValuesetStrength.R, bindingLocation: this.getDefaultBindinglcation()};
     this.selectedValueSets.push(this.editableBinding);
   }
-  submitValueSet(binding: IValueSetBindingDisplay) {
-    binding.valueSets.push(this.temp);
+  submitValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {
+    if (!binding.valueSets.filter((x) =>   x.id === vs.id).length) {
+      binding.valueSets.push(vs);
+    }
     this.temp = null;
     this.edit = {};
   }
@@ -79,19 +70,14 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.edit[index] = true;
     this.temp = null;
   }
-  resetBinding(binding: IValueSetBindingDisplay, index) {
-    this.edit[index] = true;
-    this.temp = null;
-  }
-  submitBinding() {
-  }
-  removeValueSet(binding: IValueSetBindingDisplay, vs: IDisplayElement) {
+  removeValueSet(binding: IValueSetBindingDisplay,  index: number) {
+   binding.valueSets.splice(index, 1);
   }
   getDefaultBindinglcation() {
     if (this.data.locationInfo.allowedBindingLocations && this.data.locationInfo.allowedBindingLocations.length === 1 ) {
-      return this.data.locationInfo.allowedBindingLocations[1];
+      return [... this.data.locationInfo.allowedBindingLocations[0].value];
     } else {
-      return [1];
+      return [];
     }
   }
 
@@ -124,8 +110,8 @@ export class BindingSelectorComponent<T> implements OnInit {
     this.selectedSingleCode = null;
   }
 
-  remove(rowData: IValueSetBindingDisplay) {
-    //this.selectedValueSets = this.selectedValueSets.filter((x) => (x.display.id !== rowData.display.id) || (x.bindingLocation !== rowData.bindingLocation) || (x.bindingStrength !== rowData.bindingStrength));
+  removeBinding(index: number) {
+    this.selectedValueSets.splice(index, 1);
   }
 }
 
