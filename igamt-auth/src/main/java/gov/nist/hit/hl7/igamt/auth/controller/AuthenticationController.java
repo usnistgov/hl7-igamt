@@ -151,7 +151,7 @@ public class AuthenticationController {
     String scheme = request.getScheme();
     String host = request.getHeader("Host");
 
-    return scheme + "://" + host +'/' + request.getContextPath()+ "/reset-password-confirm/" + token;
+    return scheme + "://" + "igamt" +'/' + request.getContextPath()+ "/reset-password-confirm/" + token;
   }
 
 
