@@ -3,7 +3,6 @@ import { NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material';
 import { DomSanitizer } from '@angular/platform-browser';
 import * as _ from 'lodash';
-import { TreeNode } from 'primeng/primeng';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { Type } from '../../constants/type.enum';
@@ -13,6 +12,7 @@ import { ConformanceStatementService } from '../../services/conformance-statemen
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { StoreResourceRepositoryService } from '../../services/resource-repository.service';
 import { CsPropositionComponent } from '../cs-proposition/cs-proposition.component';
+import { IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 import { BinaryOperator, Pattern, Statement } from '../pattern-dialog/cs-pattern.domain';
 import { PatternDialogComponent } from '../pattern-dialog/pattern-dialog.component';
 import { IAssertion, IIfThenAssertion } from './../../models/cs.interface';
@@ -43,14 +43,14 @@ export class CsDialogComponent implements OnDestroy {
   title: string;
   hideAdvanced: boolean;
   ifThenPattern: BinaryOperator;
-  structure: TreeNode[];
-  context: TreeNode[];
+  structure: IHL7v2TreeNode[];
+  context: IHL7v2TreeNode[];
   s_resource: Subscription;
   showContext: boolean;
   contextName: string;
 
   @ViewChildren(CsPropositionComponent) propositions: QueryList<CsPropositionComponent>;
-  @ViewChild('csForm', { read: NgForm }) form;
+  @ViewChild('csForm', { read: NgForm }) form: NgForm;
 
   constructor(
     private csService: ConformanceStatementService,
@@ -75,6 +75,7 @@ export class CsDialogComponent implements OnDestroy {
                 pathId: resource.id,
                 name: resource.name,
                 type: resource.type,
+                position: 0,
               },
               children: [...value],
               parent: undefined,
@@ -101,25 +102,55 @@ export class CsDialogComponent implements OnDestroy {
     );
   }
 
-  selectContext(node) {
-    if (node.node.data.type !== Type.CONFORMANCEPROFILE) {
-      this.cs.context = node.path;
+  selectContext(node: IHL7v2TreeNode, path: IPath) {
+    if (node.data.type !== Type.CONFORMANCEPROFILE) {
+      this.cs.context = path;
       this.structure = [
-        node.node,
+        node,
       ];
-      this.getName(node.path).pipe(
+      this.getName(path).pipe(
         take(1),
         map((value) => {
           this.contextName = value;
         }),
       ).subscribe();
-    } else if (node.node.data.type === Type.CONFORMANCEPROFILE) {
+    } else if (node.data.type === Type.CONFORMANCEPROFILE) {
       this.cs.context = undefined;
       this.structure = [
-        node.node,
+        node,
       ];
     }
     this.showContext = false;
+  }
+
+  selectContextNode(node) {
+    this.selectContext(node.node, node.path);
+    this.showContext = false;
+  }
+
+  setContext(path: IPath) {
+    if (path) {
+      const node = this.getNode(this.context, path);
+      this.selectContext(node, path);
+    } else {
+      this.selectContext(this.structure[0], path);
+    }
+  }
+
+  getNode(tree: IHL7v2TreeNode[], path: IPath): IHL7v2TreeNode {
+    if (path) {
+      const elm = tree.filter((e: IHL7v2TreeNode) => e.data.id === path.elementId);
+      if (!elm || elm.length !== 1) {
+        return undefined;
+      } else {
+        if (path.child) {
+          return this.getNode(elm[0].children, path.child);
+        } else {
+          return elm[0];
+        }
+      }
+    }
+    return undefined;
   }
 
   valid() {
@@ -148,6 +179,7 @@ export class CsDialogComponent implements OnDestroy {
     }
     this.cs = cs;
     this.backUp = _.cloneDeep(cs);
+    this.setContext(cs.context);
   }
 
   updateAssertionDescription(assertion: IAssertion) {
@@ -250,7 +282,6 @@ export class CsDialogComponent implements OnDestroy {
   }
 
   done() {
-    console.log(this.cs);
     this.dialogRef.close(this.cs);
   }
 

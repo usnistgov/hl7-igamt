@@ -428,7 +428,6 @@ export class CsPropositionComponent implements OnInit {
   }
 
   targetElement(event) {
-    console.log(this.context);
     this.changeElement(event, this.assertion.subject);
     this.getName(this.treeService.concatPath(this.context, event.path)).pipe(
       take(1),
@@ -466,7 +465,6 @@ export class CsPropositionComponent implements OnInit {
     return this.treeService.getPathName(this.res, this.repository, path.child).pipe(
       take(1),
       map((pathInfo) => {
-        console.log('PATH INFO');
         return this.treeService.getNameFromPath(pathInfo);
       }),
     );
