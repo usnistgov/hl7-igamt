@@ -6,12 +6,13 @@ import { concatMap, filter, map, mergeMap, take, tap, withLatestFrom } from 'rxj
 import { ToggleFullScreen } from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import * as fromIgDocumentEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { selectIsLoggedIn } from '../../../../root-store/authentication/authentication.reducer';
-import {selectExternalTools} from '../../../../root-store/config/config.reducer';
+import { selectExternalTools } from '../../../../root-store/config/config.reducer';
 import { selectFullScreen } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { ExportConfigurationDialogComponent } from '../../../export-configuration/components/export-configuration-dialog/export-configuration-dialog.component';
-import {ExportToolComponent} from '../../../shared/components/export-tool/export-tool.component';
+import { ConfirmDialogComponent } from '../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { ExportToolComponent } from '../../../shared/components/export-tool/export-tool.component';
 import { ExportXmlDialogComponent } from '../../../shared/components/export-xml-dialog/export-xml-dialog.component';
-import {IConnectingInfo} from '../../../shared/models/config.class';
+import { IConnectingInfo } from '../../../shared/models/config.class';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { IGDisplayInfo } from '../../models/ig/ig-document.class';
 import { IgService } from '../../services/ig.service';
@@ -49,7 +50,20 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
   }
 
   reset() {
-    this.store.dispatch(new fromIgDocumentEdit.EditorReset());
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        question: 'Are you sure you want to reset ?',
+        action: 'Reset',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe(
+      (answer) => {
+        if (answer) {
+          this.store.dispatch(new fromIgDocumentEdit.EditorReset());
+        }
+      },
+    );
   }
 
   save() {
@@ -147,7 +161,7 @@ export class IgEditToolbarComponent implements OnInit, OnDestroy {
       take(1),
       map(([conformanceProfiles, tools, compositeProfiles, igId]) => {
         const dialogRef = this.dialog.open(ExportToolComponent, {
-          data: { conformanceProfiles, tools, compositeProfiles, igId},
+          data: { conformanceProfiles, tools, compositeProfiles, igId },
         });
         dialogRef.afterClosed().pipe(
         ).subscribe();

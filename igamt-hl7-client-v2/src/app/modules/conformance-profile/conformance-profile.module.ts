@@ -9,6 +9,7 @@ import { ConfomanceProfileCrossRefsComponent } from './components/confomance-pro
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 import { ConformanceProfileRoutingModule } from './conformance-profile-routing.module';
@@ -22,6 +23,7 @@ import { ConformanceProfileService } from './services/conformance-profile.servic
     ConformanceProfileStructureEditorComponent,
     CPConformanceStatementEditorComponent,
     DeltaEditorComponent,
+    MetadataEditorComponent,
   ],
   imports: [
     CommonModule,

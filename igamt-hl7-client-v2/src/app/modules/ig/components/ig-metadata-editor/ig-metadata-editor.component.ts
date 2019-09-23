@@ -8,12 +8,24 @@ import { Type } from 'src/app/modules/shared/constants/type.enum';
 import { EditorID } from 'src/app/modules/shared/models/editor.enum';
 import * as fromIgEdit from 'src/app/root-store/ig/ig-edit/ig-edit.index';
 import { EditorSave, EditorSaveSuccess, IgEditResolverLoad } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
+import { selectIgVersions } from '../../../../root-store/ig/ig-edit/ig-edit.selectors';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { MessageService } from '../../../core/services/message.service';
-import { FieldType, IMetadataFormInput, MetadataModel } from '../../../shared/components/metadata-form/metadata-form.component';
+import { FieldType, IMetadataFormInput } from '../../../shared/components/metadata-form/metadata-form.component';
+import { Status } from '../../../shared/models/abstract-domain.interface';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
-import { IMetadata } from '../../../shared/models/metadata.interface';
 import { IgService } from '../../services/ig.service';
+
+export interface IIgEditMetadata {
+  coverPicture: string;
+  title: string;
+  subTitle: string;
+  version: string;
+  organization: string;
+  authors: string[];
+  status: Status;
+  implementationNotes?: any;
+}
 
 @Component({
   selector: 'app-ig-metadata-editor',
@@ -23,7 +35,7 @@ import { IgService } from '../../services/ig.service';
 export class IgMetadataEditorComponent extends AbstractEditorComponent implements OnInit {
 
   coverPictureFile$: BehaviorSubject<File>;
-  metadataFormInput: IMetadataFormInput<IMetadata>;
+  metadataFormInput: IMetadataFormInput<IIgEditMetadata>;
 
   constructor(
     store: Store<fromIgEdit.IState>,
@@ -44,13 +56,19 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
     this.metadataFormInput = {
       viewOnly: this.viewOnly$,
       data: this.currentSynchronized$.pipe(
-        map((metadata) => {
-          return {
-            ...metadata,
-            pictureFile: {
-              url: metadata.coverPicture,
-            },
-          };
+        flatMap((metadata) => {
+          return this.store.select(selectIgVersions).pipe(
+            map((versions) => {
+              console.log(versions);
+              return {
+                ...metadata,
+                pictureFile: {
+                  url: metadata.coverPicture,
+                },
+                hl7Versions: versions,
+              };
+            }),
+          );
         }),
       ),
       model: {
@@ -78,7 +96,15 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
           id: 'subtitle',
           name: 'Subtitle',
         },
-        orgName: {
+        version: {
+          label: 'Version',
+          placeholder: 'Version',
+          validators: [],
+          type: FieldType.TEXT,
+          id: 'version',
+          name: 'Version',
+        },
+        organization: {
           label: 'Organization',
           placeholder: 'Organization',
           validators: [],
@@ -86,6 +112,25 @@ export class IgMetadataEditorComponent extends AbstractEditorComponent implement
           type: FieldType.TEXT,
           id: 'Organization',
           name: 'Organization',
+        },
+        authors: {
+          label: 'Authors',
+          placeholder: 'Authors',
+          validators: [],
+          enum: [],
+          type: FieldType.STRING_LIST,
+          id: 'Authors',
+          name: 'Authors',
+        },
+        hl7Versions: {
+          label: 'HL7 Versions',
+          placeholder: 'HL7 Versions',
+          validators: [],
+          disabled: true,
+          enum: [],
+          type: FieldType.STRING_LIST,
+          id: 'HL7Versions',
+          name: 'HL7Versions',
         },
         implementationNotes: {
           label: 'Author Notes',

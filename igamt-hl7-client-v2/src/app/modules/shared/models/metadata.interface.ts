@@ -1,5 +1,7 @@
 export interface IMetadata {
   title: string;
+  version: string;
+  hl7Versions: string[];
   topics: string;
   specificationName: string;
   identifier?: any;

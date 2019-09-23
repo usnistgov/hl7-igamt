@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoadConformanceProfile, OpenConformanceProfileDeltaEditor, OpenConformanceProfilePreDefEditor } from 'src/app/root-store/conformance-profile-edit/conformance-profile-edit.actions';
-import { ConformanceProfileEditActionTypes, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
+import { ConformanceProfileEditActionTypes, OpenConformanceProfileMetadataEditor, OpenConformanceProfilePostDefEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from '../../root-store/conformance-profile-edit/conformance-profile-edit.actions';
 import { DataLoaderResolverService } from '../ig/services/data-loader-resolver.service';
 import { IgEditorActivateGuard } from '../ig/services/ig-editor-activate.guard.';
 import { IgEditSaveDeactivateGuard } from '../ig/services/ig-editor-deactivate.service';
@@ -10,6 +10,7 @@ import { EditorID } from '../shared/models/editor.enum';
 import { ConformanceProfileStructureEditorComponent } from './components/conformance-profile-structure-editor/conformance-profile-structure-editor.component';
 import { CPConformanceStatementEditorComponent } from './components/conformance-statement-editor/cp-conformance-statement-editor.component';
 import { DeltaEditorComponent } from './components/delta-editor/delta-editor.component';
+import { MetadataEditorComponent } from './components/metadata-editor/metadata-editor.component';
 import { PostdefEditorComponent } from './components/postdef-editor/postdef-editor.component';
 import { PredefEditorComponent } from './components/predef-editor/predef-editor.component';
 
@@ -127,6 +128,25 @@ const routes: Routes = [
             saveTableOfContent: true,
           },
           action: OpenConformanceProfilePostDefEditor,
+          idKey: 'conformanceProfileId',
+        },
+      },
+      {
+        path: 'metadata',
+        component: MetadataEditorComponent,
+        canActivate: [IgEditorActivateGuard],
+        canDeactivate: [IgEditSaveDeactivateGuard],
+        data: {
+          editorMetadata: {
+            id: EditorID.MESSAGE_METADATA,
+            title: 'Metadata',
+            resourceType: Type.CONFORMANCEPROFILE,
+          },
+          onLeave: {
+            saveEditor: true,
+            saveTableOfContent: true,
+          },
+          action: OpenConformanceProfileMetadataEditor,
           idKey: 'conformanceProfileId',
         },
       },

@@ -12,8 +12,8 @@ import { OpenEditorService } from '../../modules/core/services/open-editor.servi
 import { Type } from '../../modules/shared/constants/type.enum';
 import { ICPConformanceStatementList } from '../../modules/shared/models/cs-list.interface';
 import { DeltaService } from '../../modules/shared/services/delta.service';
-import { LoadSelectedResource, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
-import { selectedResourcePostDef, selectedResourcePreDef, selectIgId } from '../ig/ig-edit/ig-edit.selectors';
+import { LoadSelectedResource, OpenEditor, OpenEditorBase } from '../ig/ig-edit/ig-edit.actions';
+import { selectedConformanceProfile, selectedResourcePostDef, selectedResourcePreDef, selectIgId, selectMessagesById } from '../ig/ig-edit/ig-edit.selectors';
 import { TurnOffLoader, TurnOnLoader } from '../loader/loader.actions';
 import {
   ConformanceProfileEditActions,
@@ -24,7 +24,7 @@ import {
   OpenConformanceProfilePostDefEditor,
   OpenConformanceProfilePreDefEditor,
 } from './conformance-profile-edit.actions';
-import { OpenConformanceProfileDeltaEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
+import { OpenConformanceProfileDeltaEditor, OpenConformanceProfileMetadataEditor, OpenConformanceProfileStructureEditor, OpenCPConformanceStatementEditor } from './conformance-profile-edit.actions';
 import { IState } from './conformance-profile-edit.reducer';
 
 @Injectable()
@@ -67,6 +67,29 @@ export class ConformanceProfileEditEffects {
     ofType(ConformanceProfileEditActionTypes.LoadConformanceProfileFailure),
     map((action: LoadConformanceProfileFailure) => {
       return this.message.actionFromError(action.error);
+    }),
+  );
+
+  @Effect()
+  openCpMetadataNode$ = this.actions$.pipe(
+    ofType(ConformanceProfileEditActionTypes.OpenConformanceProfileMetadataEditor),
+    switchMap((action: OpenConformanceProfileMetadataEditor) => {
+      return this.store.select(selectedConformanceProfile)
+        .pipe(
+          take(1),
+          flatMap((conformanceProfile) => {
+            return this.store.select(selectMessagesById, { id: conformanceProfile.id }).pipe(
+              map((messageDisplay) => {
+                return new OpenEditor({
+                  id: action.payload.id,
+                  element: messageDisplay,
+                  editor: action.payload.editor,
+                  initial: this.conformanceProfileService.conformanceProfileToMetadata(conformanceProfile),
+                });
+              }),
+            );
+          }),
+        );
     }),
   );
 

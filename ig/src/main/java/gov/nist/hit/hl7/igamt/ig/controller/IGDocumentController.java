@@ -13,10 +13,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.plaf.synth.SynthSeparatorUI;
 
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,7 +139,6 @@ public class IGDocumentController extends BaseController {
 
 	@Autowired
 	ConformanceStatementRepository conformanceStatementRepository;
-
 
 	@Autowired
 	PredicateRepository predicateRepository;
@@ -455,7 +451,6 @@ public class IGDocumentController extends BaseController {
 
 	@RequestMapping(value = "/api/igdocuments/{id}/updatemetadata", method = RequestMethod.POST, produces = {
 	"application/json" })
-
 	public @ResponseBody ResponseMessage<Object> get(@PathVariable("id") String id,
 			@RequestBody DocumentMetadata metadata, Authentication authentication)
 					throws IGNotFoundException, IGUpdateException {

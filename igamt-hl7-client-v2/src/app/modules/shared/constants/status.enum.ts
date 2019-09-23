@@ -1,4 +1,0 @@
-export enum Status {
-  PUBLISHED = 'PUBLISHED',
-  UNPUBLISHED= 'UNPUBLISHED',
-}
