@@ -45,26 +45,26 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<Array<IBinding<I
     this.editList$ = this.editableList.asObservable();
   }
 
-  getValueSetBindingDisplay(bindings: IValuesetBinding[]): Observable<IValueSetBindingDisplay[]> {
-    return forkJoin(bindings.map((x) =>
-      combineLatest(
-        of(x),
-        this.getValueSetById(x.valuesetId).pipe(
-          take(1),
-        ),
-      ))).pipe(
-        map((vsList) => {
-          return vsList.map((vsB) => {
-            const [binding, display] = vsB;
-            return {
-              display,
-              bindingStrength: binding.strength,
-              bindingLocation: binding.valuesetLocations,
-            };
-          });
-        }),
-      );
-  }
+  // getValueSetBindingDisplay(bindings: IValuesetBinding[]): Observable<IValueSetBindingDisplay[]> {
+  //   return forkJoin(bindings.map((x) =>
+  //     combineLatest(
+  //       of(x),
+  //       this.getValueSetById(x.valuesetId).pipe(
+  //         take(1),
+  //       ),
+  //     ))).pipe(
+  //       map((vsList) => {
+  //         return vsList.map((vsB) => {
+  //           const [binding, display] = vsB;
+  //           return {
+  //             display,
+  //             bindingStrength: binding.strength,
+  //             bindingLocation: binding.valuesetLocations,
+  //           };
+  //         });
+  //       }),
+  //     );
+  // }
 
   getValueSetById(id: string): Observable<IDisplayElement> {
     return this.repository.getResourceDisplay(Type.VALUESET, id);
@@ -82,35 +82,35 @@ export class ValuesetComponent extends HL7v2TreeColumnComponent<Array<IBinding<I
   }
 
   ngOnInit() {
-    this.value$.subscribe(
-      (value) => {
-        if (value) {
-          this.valueSetBindings = value[0];
-          this.vsBindingsList = value;
-          const editable = this.treeService.getBindingsForContext<IValuesetBinding[]>({ resource: this.context }, value);
-          const freeze = this.treeService.getBindingsAfterContext<IValuesetBinding[]>({ resource: this.context }, value);
-
-          if (editable) {
-            this.getValueSetBindingDisplay(editable.value).pipe(
-              map((vsDisplay) => {
-                this.editableList.next(vsDisplay);
-              }),
-            );
-          }
-
-          if (freeze) {
-            this.freezeList = this.getValueSetBindingDisplay(freeze.value).pipe(
-              map((vsDisplay) => {
-                return {
-                  context: freeze.context,
-                  vsList: vsDisplay,
-                };
-              }),
-            );
-          }
-        }
-      },
-    );
+    // this.value$.subscribe(
+    //   (value) => {
+    //     if (value) {
+    //       this.valueSetBindings = value[0];
+    //       this.vsBindingsList = value;
+    //       const editable = this.treeService.getBindingsForContext<IValuesetBinding[]>({ resource: this.context }, value);
+    //       const freeze = this.treeService.getBindingsAfterContext<IValuesetBinding[]>({ resource: this.context }, value);
+    //
+    //       if (editable) {
+    //         this.getValueSetBindingDisplay(editable.value).pipe(
+    //           map((vsDisplay) => {
+    //             this.editableList.next(vsDisplay);
+    //           }),
+    //         );
+    //       }
+    //
+    //       if (freeze) {
+    //         this.freezeList = this.getValueSetBindingDisplay(freeze.value).pipe(
+    //           map((vsDisplay) => {
+    //             return {
+    //               context: freeze.context,
+    //               vsList: vsDisplay,
+    //             };
+    //           }),
+    //         );
+    //       }
+    //     }
+    //   },
+    // );
   }
 
 }
