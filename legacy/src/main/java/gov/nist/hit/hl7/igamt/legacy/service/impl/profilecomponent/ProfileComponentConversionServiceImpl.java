@@ -278,7 +278,7 @@ public class ProfileComponentConversionServiceImpl implements ConversionService 
             } else {
               vb.setStrength(ValuesetStrength.R);
             }
-            vb.setValuesetId(oldValueSetBinding.getTableId());
+            //vb.setValuesetId(oldValueSetBinding.getTableId());
             if (oldValueSetBinding.getBindingLocation() == null) {
               vb.addValuesetLocation(1);
             } else if (oldValueSetBinding.getBindingLocation().equals("1")) {

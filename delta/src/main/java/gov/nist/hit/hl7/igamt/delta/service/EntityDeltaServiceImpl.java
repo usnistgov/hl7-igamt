@@ -355,23 +355,23 @@ public class EntityDeltaServiceImpl {
     private DeltaValueSetBinding compare(Set<DisplayValuesetBinding> source, Set<DisplayValuesetBinding> target) {
 
         DeltaValueSetBinding delta = new DeltaValueSetBinding();
-        Set<DisplayValuesetBinding> unchanged = source.stream().filter((vs) -> {
-            return target.stream().filter((tVs) -> tVs.getValuesetId().equals(vs.getValuesetId()) && tVs.getStrength().equals(vs.getStrength()) && tVs.getValuesetLocations().equals(vs.getValuesetLocations())).findFirst().isPresent();
-        }).collect(Collectors.toSet());
-        Set<DisplayValuesetBinding> updated = source.stream().filter((vs) -> {
-            return target.stream().filter((tVs) -> tVs.getValuesetId().equals(vs.getValuesetId()) && (!tVs.getStrength().equals(vs.getStrength()) || !tVs.getValuesetLocations().equals(vs.getValuesetLocations()))).findFirst().isPresent();
-        }).collect(Collectors.toSet());
-        Set<DisplayValuesetBinding> deleted = source.stream().filter((vs) -> {
-            return !target.stream().filter((tVs) -> tVs.getLabel().equals(vs.getLabel())).findFirst().isPresent();
-        }).collect(Collectors.toSet());
-        Set<DisplayValuesetBinding> added = target.stream().filter((vs) -> {
-            return !source.stream().filter((tVs) -> tVs.getLabel().equals(vs.getLabel())).findFirst().isPresent();
-        }).collect(Collectors.toSet());
-
-        delta.setRemoved(deleted);
-        delta.setUnchanged(unchanged);
-        delta.setAdded(added);
-        delta.setUpdated(updated);
+//        Set<DisplayValuesetBinding> unchanged = source.stream().filter((vs) -> {
+//            return target.stream().filter((tVs) -> tVs.getValuesetId().equals(vs.getValuesetId()) && tVs.getStrength().equals(vs.getStrength()) && tVs.getValuesetLocations().equals(vs.getValuesetLocations())).findFirst().isPresent();
+//        }).collect(Collectors.toSet());
+//        Set<DisplayValuesetBinding> updated = source.stream().filter((vs) -> {
+//            return target.stream().filter((tVs) -> tVs.getValuesetId().equals(vs.getValuesetId()) && (!tVs.getStrength().equals(vs.getStrength()) || !tVs.getValuesetLocations().equals(vs.getValuesetLocations()))).findFirst().isPresent();
+//        }).collect(Collectors.toSet());
+//        Set<DisplayValuesetBinding> deleted = source.stream().filter((vs) -> {
+//            return !target.stream().filter((tVs) -> tVs.getLabel().equals(vs.getLabel())).findFirst().isPresent();
+//        }).collect(Collectors.toSet());
+//        Set<DisplayValuesetBinding> added = target.stream().filter((vs) -> {
+//            return !source.stream().filter((tVs) -> tVs.getLabel().equals(vs.getLabel())).findFirst().isPresent();
+//        }).collect(Collectors.toSet());
+//
+//        delta.setRemoved(deleted);
+//        delta.setUnchanged(unchanged);
+//        delta.setAdded(added);
+//        delta.setUpdated(updated);
 
         return  delta;
     }

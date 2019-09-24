@@ -34,166 +34,170 @@ import gov.nist.hit.hl7.igamt.segment.domain.Segment;
  *
  */
 public class SegmentDataModel implements Serializable {
-  private Segment model;
+	private Segment model;
 
-  private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
-  private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
-  private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
-  private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
-  private CoConstraintTable coConstraintTable = new CoConstraintTable();
-  
-  private Set<FieldDataModel> fieldDataModels = new HashSet<FieldDataModel>();
+	private Set<ConformanceStatement> conformanceStatements = new HashSet<ConformanceStatement>();
+	private Map<String, Predicate> predicateMap = new HashMap<String, Predicate>();
+	private Map<String, ExternalSingleCode> singleCodeMap = new HashMap<String, ExternalSingleCode>();
+	private Map<String, Set<ValuesetBindingDataModel>> valuesetMap = new HashMap<String, Set<ValuesetBindingDataModel>>();
+	private CoConstraintTable coConstraintTable = new CoConstraintTable();
 
-  public Segment getModel() {
-    return model;
-  }
+	private Set<FieldDataModel> fieldDataModels = new HashSet<FieldDataModel>();
 
-  public void setModel(Segment model) {
-    this.model = model;
-  }
+	public Segment getModel() {
+		return model;
+	}
 
-  public Map<String, Predicate> getPredicateMap() {
-    return predicateMap;
-  }
+	public void setModel(Segment model) {
+		this.model = model;
+	}
 
-  public void setPredicateMap(Map<String, Predicate> predicateMap) {
-    this.predicateMap = predicateMap;
-  }
+	public Map<String, Predicate> getPredicateMap() {
+		return predicateMap;
+	}
 
-  public Map<String, ExternalSingleCode> getSingleCodeMap() {
-    return singleCodeMap;
-  }
+	public void setPredicateMap(Map<String, Predicate> predicateMap) {
+		this.predicateMap = predicateMap;
+	}
 
-  public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
-    this.singleCodeMap = singleCodeMap;
-  }
+	public Map<String, ExternalSingleCode> getSingleCodeMap() {
+		return singleCodeMap;
+	}
 
-  public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
-    return valuesetMap;
-  }
+	public void setSingleCodeMap(Map<String, ExternalSingleCode> singleCodeMap) {
+		this.singleCodeMap = singleCodeMap;
+	}
 
-  public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
-    this.valuesetMap = valuesetMap;
-  }
+	public Map<String, Set<ValuesetBindingDataModel>> getValuesetMap() {
+		return valuesetMap;
+	}
 
-  public CoConstraintTable getCoConstraintTable() {
-    return coConstraintTable;
-  }
+	public void setValuesetMap(Map<String, Set<ValuesetBindingDataModel>> valuesetMap) {
+		this.valuesetMap = valuesetMap;
+	}
 
-  public void setCoConstraintTable(CoConstraintTable coConstraintTable) {
-    this.coConstraintTable = coConstraintTable;
-  }
+	public CoConstraintTable getCoConstraintTable() {
+		return coConstraintTable;
+	}
 
-  /**
-   * @param s
-   * @param valuesetBindingDataModelMap
-   * @param conformanceStatementRepository
-   * @param predicateRepository
-   */
-  public void putModel(Segment s, DatatypeService datatypeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
-    this.model = s;
-    
-    if (s.getBinding() != null){
-      if(s.getBinding().getConformanceStatementIds() != null){
-        for(String csId: s.getBinding().getConformanceStatementIds()){
-          conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
-        }
-      }
-      if (s.getBinding().getChildren() != null) {
-    	     this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
-    	    }
-    	    
-    }
-    
- 
-    if(s.getChildren() != null) {
-      s.getChildren().forEach(f -> {
-        String key = f.getPosition() + "";
-        if(f.getRef() != null && f.getRef().getId() != null){
-          Datatype childDt = datatypeService.findById(f.getRef().getId());
-          if(childDt != null) {
-            this.fieldDataModels.add(new FieldDataModel(
-                f, 
-                this.predicateMap.get(key),
-                this.singleCodeMap.get(key),
-                this.valuesetMap.get(key),
-                new DatatypeBindingDataModel(childDt)
-                ));    
-          }
-        }
-      });
-    }
-  }
+	public void setCoConstraintTable(CoConstraintTable coConstraintTable) {
+		this.coConstraintTable = coConstraintTable;
+	}
 
-  /**
-   * @param children
-   * @param object
-   * @param predicateRepository
-   * @param valuesetBindingDataModelMap
-   */
-  private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
-    for (StructureElementBinding seb : sebs) {
-      String key;
-      if(path == null){
-        key = seb.getLocationInfo().getPosition() + "";
-      }else {
-        key = path + "." + seb.getLocationInfo().getPosition();
-      }
-      
-      if(seb.getPredicateId() != null){
-        predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
-      }
+	/**
+	 * @param s
+	 * @param valuesetBindingDataModelMap
+	 * @param conformanceStatementRepository
+	 * @param predicateRepository
+	 */
+	public void putModel(Segment s, DatatypeService datatypeService, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap, ConformanceStatementRepository conformanceStatementRepository, PredicateRepository predicateRepository) {
+		this.model = s;
 
-      if(seb.getExternalSingleCode() != null){
-        this.singleCodeMap.put(key, seb.getExternalSingleCode());
-      }
-      
-      if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
-        Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
-        for(ValuesetBinding vb : seb.getValuesetBindings()) {
-          ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(vb.getValuesetId());
-          if(valuesetBindingDataModel != null) {
-            valuesetBindingDataModel.setValuesetBinding(vb);
-            vbdm.add(valuesetBindingDataModel);
-          }
-        }
-        
-        if(vbdm != null && vbdm.size() > 0) {
-          this.valuesetMap.put(key, vbdm);          
-        }
-      }
-      
-      if (seb.getChildren() != null) {
-        this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
-      }
-    }
-    
-  }
+		if (s.getBinding() != null){
+			if(s.getBinding().getConformanceStatementIds() != null){
+				for(String csId: s.getBinding().getConformanceStatementIds()){
+					conformanceStatementRepository.findById(csId).ifPresent(cs -> this.conformanceStatements.add(cs));
+				}
+			}
+			if (s.getBinding().getChildren() != null) {
+				this.popPathBinding(s.getBinding().getChildren(), null, predicateRepository, valuesetBindingDataModelMap);
+			}
 
-  public Set<ConformanceStatement> getConformanceStatements() {
-    return conformanceStatements;
-  }
+		}
 
-  public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
-    this.conformanceStatements = conformanceStatements;
-  }
 
-  public Set<FieldDataModel> getFieldDataModels() {
-    return fieldDataModels;
-  }
+		if(s.getChildren() != null) {
+			s.getChildren().forEach(f -> {
+				String key = f.getPosition() + "";
+				if(f.getRef() != null && f.getRef().getId() != null){
+					Datatype childDt = datatypeService.findById(f.getRef().getId());
+					if(childDt != null) {
+						this.fieldDataModels.add(new FieldDataModel(
+								f, 
+								this.predicateMap.get(key),
+								this.singleCodeMap.get(key),
+								this.valuesetMap.get(key),
+								new DatatypeBindingDataModel(childDt)
+								));    
+					}
+				}
+			});
+		}
+	}
 
-  public void setFieldDataModels(Set<FieldDataModel> fieldDataModels) {
-    this.fieldDataModels = fieldDataModels;
-  }
+	/**
+	 * @param children
+	 * @param object
+	 * @param predicateRepository
+	 * @param valuesetBindingDataModelMap
+	 */
+	private void popPathBinding(Set<StructureElementBinding> sebs, String path, PredicateRepository predicateRepository, Map<String, ValuesetBindingDataModel> valuesetBindingDataModelMap) {
+		for (StructureElementBinding seb : sebs) {
+			String key;
+			if(path == null){
+				key = seb.getLocationInfo().getPosition() + "";
+			}else {
+				key = path + "." + seb.getLocationInfo().getPosition();
+			}
 
-  /**
-   * @param parseInt
-   * @return
-   */
-  public FieldDataModel findFieldDataModelByPosition(int position) {
-    for(FieldDataModel fModel : this.fieldDataModels) {
-      if (fModel.getModel().getPosition() == position) return fModel;
-    }
-    return null;
-  }
+			if(seb.getPredicateId() != null){
+				predicateRepository.findById(seb.getPredicateId()).ifPresent(cp -> this.predicateMap.put(key, cp));
+			}
+
+			if(seb.getExternalSingleCode() != null){
+				this.singleCodeMap.put(key, seb.getExternalSingleCode());
+			}
+
+			if(seb.getValuesetBindings() != null && seb.getValuesetBindings().size() > 0){
+				Set<ValuesetBindingDataModel> vbdm = new HashSet<ValuesetBindingDataModel>();
+				for(ValuesetBinding vb : seb.getValuesetBindings()) {
+					if(vb.getValueSets() !=null) {
+						for(String s: vb.getValueSets()) {
+							ValuesetBindingDataModel valuesetBindingDataModel = valuesetBindingDataModelMap.get(s);
+							if(valuesetBindingDataModel != null) {
+								valuesetBindingDataModel.setValuesetBinding(vb);
+								vbdm.add(valuesetBindingDataModel);
+							}
+						}
+					}
+
+					if(vbdm != null && vbdm.size() > 0) {
+						this.valuesetMap.put(key, vbdm);          
+					}
+				}
+
+				if (seb.getChildren() != null) {
+					this.popPathBinding(seb.getChildren(), key, predicateRepository, valuesetBindingDataModelMap);
+				}
+			}
+
+		}
+	}
+
+	public Set<ConformanceStatement> getConformanceStatements() {
+		return conformanceStatements;
+	}
+
+	public void setConformanceStatements(Set<ConformanceStatement> conformanceStatements) {
+		this.conformanceStatements = conformanceStatements;
+	}
+
+	public Set<FieldDataModel> getFieldDataModels() {
+		return fieldDataModels;
+	}
+
+	public void setFieldDataModels(Set<FieldDataModel> fieldDataModels) {
+		this.fieldDataModels = fieldDataModels;
+	}
+
+	/**
+	 * @param parseInt
+	 * @return
+	 */
+	public FieldDataModel findFieldDataModelByPosition(int position) {
+		for(FieldDataModel fModel : this.fieldDataModels) {
+			if (fModel.getModel().getPosition() == position) return fModel;
+		}
+		return null;
+	}
 }
