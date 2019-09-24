@@ -60,7 +60,10 @@ export class MetadataFormComponent implements OnInit, OnDestroy {
       (vOnly) => this.viewOnly = vOnly,
     );
     this.dataSubscription = input.data.subscribe(
-      (data) => this.metadataForm.patchValue(data, { emitEvent: false }),
+      (data) => {
+        console.log(data);
+        this.metadataForm.patchValue(data, { emitEvent: false });
+      },
     );
     this.changesSubscription = this.metadataForm.valueChanges.subscribe(
       (change) => {

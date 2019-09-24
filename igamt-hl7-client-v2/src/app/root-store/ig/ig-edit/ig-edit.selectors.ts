@@ -495,9 +495,9 @@ export const selectToc = createSelector(
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
-  ) => {
-    return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
-  },
+) => {
+  return IgTOCNodeHelper.buildTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+},
 );
 
 export const selectProfileTree = createSelector(
@@ -511,9 +511,9 @@ export const selectProfileTree = createSelector(
     segmentsNodes: IDisplayElement[],
     datatypesNodes: IDisplayElement[],
     valueSetsNodes: IDisplayElement[],
-  ) => {
-    return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
-  },
+) => {
+  return IgTOCNodeHelper.buildProfileTree(structure, messageNodes, segmentsNodes, datatypesNodes, valueSetsNodes);
+},
 );
 
 export const selectVersion = createSelector(
@@ -521,4 +521,13 @@ export const selectVersion = createSelector(
   (messages: Dictionary<IDisplayElement>) => {
     const sorted = Object.keys(messages).map((key) => messages[key].domainInfo.version).sort();
     return sorted[sorted.length - 1];
+  });
+
+export const selectIgVersions = createSelector(
+  selectMessagesEntites,
+  (messages: Dictionary<IDisplayElement>): string[] => {
+    const distinct = (value, index, self) => {
+      return self.indexOf(value) === index;
+    };
+    return Object.keys(messages).map((key) => messages[key].domainInfo.version).filter(distinct);
   });

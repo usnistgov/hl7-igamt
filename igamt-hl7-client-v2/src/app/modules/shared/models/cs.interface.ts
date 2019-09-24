@@ -80,6 +80,7 @@ export interface IComplement {
   value?: string;
   values?: string[];
   descs?: string[];
+  codesyses?: string[];
   desc?: string;
   codesys?: string;
 }

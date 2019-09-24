@@ -14,9 +14,12 @@
 package gov.nist.hit.hl7.igamt.conformanceprofile.domain;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import gov.nist.hit.hl7.igamt.common.base.domain.ProfileType;
 import gov.nist.hit.hl7.igamt.common.base.domain.Resource;
+import gov.nist.hit.hl7.igamt.common.base.domain.Role;
 import gov.nist.hit.hl7.igamt.common.base.domain.Type;
 import gov.nist.hit.hl7.igamt.common.binding.domain.ResourceBinding;
 
@@ -30,9 +33,11 @@ public class ConformanceProfile extends Resource {
   private String messageType; // Message/@Type
   private String event; // Message/@Event
   private String structID; // Message/@StructID private String identifier;
+  private ProfileType profileType;
+  private Role role;
+  private List<MessageProfileIdentifier> profileIdentifier;
   private Set<SegmentRefOrGroup> children = new HashSet<SegmentRefOrGroup>();
   private ResourceBinding binding;
-
 
   public String getMessageType() {
     return messageType;
@@ -59,7 +64,6 @@ public class ConformanceProfile extends Resource {
   }
 
   public ConformanceProfile() {
-	
     super();
     super.setType(Type.CONFORMANCEPROFILE);
   }
@@ -108,19 +112,43 @@ public class ConformanceProfile extends Resource {
     return this.getName();
   }
 
-public void complete(ConformanceProfile elm) {
-	super.complete(elm);
-	elm.identifier = identifier;
-	elm.messageType = messageType;
-	elm.event = event;
-	elm.structID = structID;
-	elm.children = children;
-	elm.binding = binding;
-}
-public ConformanceProfile clone() {
-	ConformanceProfile elm= new ConformanceProfile();
-	complete(elm);
-	return elm;
-}
+  public void complete(ConformanceProfile elm) {
+      super.complete(elm);
+      elm.identifier = identifier;
+      elm.messageType = messageType;
+      elm.event = event;
+      elm.structID = structID;
+      elm.children = children;
+      elm.binding = binding;
+  }
 
+  public ConformanceProfile clone() {
+      ConformanceProfile elm= new ConformanceProfile();
+      complete(elm);
+      return elm;
+  }
+
+  public ProfileType getProfileType() {
+    return profileType;
+  }
+
+  public void setProfileType(ProfileType profileType) {
+    this.profileType = profileType;
+  }
+
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
+  }
+
+  public List<MessageProfileIdentifier> getProfileIdentifier() {
+    return profileIdentifier;
+  }
+
+  public void setProfileIdentifier(List<MessageProfileIdentifier> profileIdentifier) {
+    this.profileIdentifier = profileIdentifier;
+  }
 }

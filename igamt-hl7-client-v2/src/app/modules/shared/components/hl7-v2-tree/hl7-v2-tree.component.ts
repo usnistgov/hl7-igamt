@@ -52,8 +52,8 @@ export interface IHL7v2TreeNode extends TreeNode {
     name: string,
     position: number,
     type: Type,
-    usage: IStringValue,
-    text: IStringValue,
+    usage?: IStringValue,
+    text?: IStringValue,
     cardinality?: ICardinalityRange,
     length?: ILengthRange,
     comments?: IComment[],
@@ -63,14 +63,14 @@ export interface IHL7v2TreeNode extends TreeNode {
     viewOnly?: boolean,
     confLength?: string,
     valueSetBindingsInfo?: Observable<IBindingLocationInfo>,
-    ref: BehaviorSubject<IResourceRef>,
-    bindings: IElementBinding,
-    level: number,
+    ref?: BehaviorSubject<IResourceRef>,
+    bindings?: IElementBinding,
+    level?: number,
   };
   parent?: IHL7v2TreeNode;
   children?: IHL7v2TreeNode[];
-  $hl7V2TreeHelpers: {
-    predicate$: Observable<IPredicate>;
+  $hl7V2TreeHelpers?: {
+    predicate$?: Observable<IPredicate>;
     ref$: Observable<IResourceRef>;
     treeChildrenSubscription: Subscription;
   };
