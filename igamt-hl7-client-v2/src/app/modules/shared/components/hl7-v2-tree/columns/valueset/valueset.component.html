@@ -1,21 +1,100 @@
-<div class="tt-cell">
-  <div *ngIf="valueSetBindings" style="margin-right: 10px;">
-    <div *ngFor="let item of valueSetBindings.value" style="display: flex; flex-direction: row; align-items: center;">
-      <ng-container *ngIf="getValueSetById(item.valuesetId) | async as vs">
-        <app-binding-badge [context]="valueSetBindings.context" style="margin-right: 5px;"></app-binding-badge>
-        <ng-container *ngTemplateOutlet="display; context: { $implicit: vs }"></ng-container>
+<div style="display: flex; justify-content: space-between;">
+  <div>
+    <ng-container *ngIf="editable$ | async as edit">
+      <ng-container [ngSwitch]="!!edit.value">
+        <ng-container *ngSwitchCase="true">
+
+            <ng-container [ngSwitch]="edit.type">
+              <ng-container *ngSwitchCase="'VALUESET'">
+
+                <ng-container *ngFor="let item of edit.value">
+                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : { resource : context} }"></ng-container>
+                </ng-container>
+
+              </ng-container>
+              <ng-container *ngSwitchCase="'SINGLECODE'">
+                  <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: edit.value, context : { resource : context } }"></ng-container>
+              </ng-container>
+            </ng-container>
+
+        </ng-container>
+        <ng-container *ngSwitchCase="false">
+
+          <ng-container *ngIf="freeze$ | async as freeze">
+            <ng-container [ngSwitch]="freeze.binding.type">
+              <ng-container *ngSwitchCase="'VALUESET'">
+
+                <ng-container *ngFor="let item of freeze.binding.value">
+                  <ng-container *ngTemplateOutlet="displayVsBinding; context: { $implicit: item, context : freeze.context }"></ng-container>
+                </ng-container>
+
+              </ng-container>
+              <ng-container *ngSwitchCase="'SINGLECODE'">
+                <ng-container *ngTemplateOutlet="displaySingleCode; context: { $implicit: freeze.binding.value, context : freeze.context }"></ng-container>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+
+        </ng-container>
       </ng-container>
-    </div>
+    </ng-container>
   </div>
-  <span></span>
-   <button class="btn btn-sm btn-primary" *ngIf="bindingInfo?.allowValueSets" (click)="editBinding()"><i class="fa fa-pencil"></i></button>
+  <div *ngIf="bindingInfo?.allowValueSets" style="margin-left: 5px;">
+    <button class="btn btn-sm btn-primary"  (click)="editBinding()"><i class="fa fa-pencil"></i></button>
+  </div>
 </div>
 
-<ng-template #display let-item>
-  <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
-    <app-entity-bagde [type]="item.type"></app-entity-bagde>
-    <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
-    <strong *ngIf="item.variableName" style="margin-left: 5px;"> {{item.variableName}}</strong>
-  </div>
+
+<ng-template #displayVsBinding let-vsBinding let-ctx="context">
+  <table class="table table-striped table-sm table-bordered" style="text-align: center;">
+    <tr>
+      <td [attr.rowspan]="vsBinding.valueSets.length + 1" style="width: 10px;" class="binding-vs">
+      </td>
+      <td style="vertical-align: middle; width: 25px;">
+        <app-binding-badge [context]="ctx"></app-binding-badge>
+      </td>
+      <td pTooltip="Binding Strength" tooltipPosition="top">
+        <strong>{{vsBinding.bindingStrength}}</strong>
+      </td>
+      <td pTooltip="Binding Locations" tooltipPosition="top">
+        <strong>{{vsBinding.bindingLocation.length > 0 ? (vsBinding.bindingLocation | json) : '.'}}</strong>
+      </td>
+    </tr>
+    <tr *ngFor="let item of vsBinding.valueSets" >
+      <td colspan="3">
+        <div [pTooltip]="item.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+          <app-entity-bagde [type]="item.type"></app-entity-bagde>
+          <app-scope-badge *ngIf="item.domainInfo" [scope]="item.domainInfo.scope" [version]="item.domainInfo.version"></app-scope-badge>
+          <strong *ngIf="item.variableName" style="margin-left: 5px;"> {{item.variableName}}</strong>
+        </div>
+      </td>
+    </tr>
+  </table>
 </ng-template>
 
+<ng-template #displaySingleCode let-singleCode let-ctx="context">
+    <table class="table table-striped table-sm table-bordered" style="text-align: center;">
+      <tr>
+        <td rowspan="2" style="width: 10px;" class="binding-sg" >
+        </td>
+        <td style="vertical-align: middle; width: 25px;">
+          <app-binding-badge [context]="ctx"></app-binding-badge>
+        </td>
+        <td pTooltip="Code" tooltipPosition="top">
+          <strong>{{singleCode.code}}</strong>
+        </td>
+        <td pTooltip="Code System" tooltipPosition="top">
+          <strong>{{singleCode.codeSystem}}</strong>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="3">
+          <div [pTooltip]="singleCode.valueSet.description" tooltipPosition="top" style="display: flex; flex-direction: row; align-items: center;">
+            <app-entity-bagde [type]="singleCode.valueSet.type"></app-entity-bagde>
+            <app-scope-badge *ngIf="singleCode.valueSet.domainInfo" [scope]="singleCode.valueSet.domainInfo.scope" [version]="singleCode.valueSet.domainInfo.version"></app-scope-badge>
+            <strong *ngIf="singleCode.valueSet.variableName" style="margin-left: 5px;"> {{singleCode.valueSet.variableName}}</strong>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </ng-template>

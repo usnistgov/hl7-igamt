@@ -19,10 +19,12 @@
                   {{col.header}}
                 </th>
                 <th *ngSwitchCase="columnTypes.SEGMENT" style="width: 250px;" ttReorderableColumn ttResizableColumn>
-                    {{col.header}}
-                  </th>
+                  {{col.header}}
+                </th>
                 <th *ngSwitchCase="columnTypes.VALUESET" style="width: 250px;" ttReorderableColumn ttResizableColumn>
-                {{col.header}}
+                  <div style="display: flex; align-items: center; width: 100%;">
+                    <div class="binding binding-vs" style="margin-right: 5px;"></div> Value Set or  <div class="binding binding-sg" style="margin-right: 5px; margin-left: 5px;"></div> Single Code
+                  </div>
                 </th>
                 <th *ngSwitchCase="columnTypes.CONSTANTVALUE" style="width: 180px;" ttReorderableColumn ttResizableColumn>
                   {{col.header}}
@@ -158,7 +160,11 @@
                     [repository]="repository"
                     [valueSets]= "valueSets"
                     [bindingInfo]= "rowData.valueSetBindingsInfo | async"
-                    [value]="rowData.bindings?.values?.valuesetBindings"
+                    [value]="{
+                      valueSetBindings: rowData.bindings?.values?.valuesetBindings,
+                      singleCodeBindings: rowData.bindings?.values?.internalSingleCode
+                    }"
+                    (valueChange)="registerChange($event)"
                   >
                   </app-valueset>
                 </ng-container>

@@ -14,7 +14,7 @@ import { IDocumentCreationWrapper } from '../models/ig/document-creation.interfa
 import { IgDocument } from '../models/ig/ig-document.class';
 import { IGDisplayInfo } from '../models/ig/ig-document.class';
 import { MessageEventTreeNode } from '../models/message-event/message-event.class';
-import { IAddNodes, ICopyNode, ICopyResourceResponse, IDeleteNode } from '../models/toc/toc-operation.class';
+import { IAddNodes, ICopyNode, ICopyResourceResponse } from '../models/toc/toc-operation.class';
 import { Message } from './../../core/models/message/message.class';
 
 @Injectable({
@@ -115,7 +115,6 @@ export class IgService {
   uploadCoverImage(file: File): Observable<{
     link: string,
   }> {
-    console.log(file);
     const form: FormData = new FormData();
     form.append('file', file);
     return this.http.post<{
