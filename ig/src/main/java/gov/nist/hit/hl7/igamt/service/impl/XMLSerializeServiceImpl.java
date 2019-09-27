@@ -1139,7 +1139,10 @@ public class XMLSerializeServiceImpl implements XMLSerializeService {
 				if (sModel.getValuesetMap().get("2") != null) {
 					for (ValuesetBindingDataModel m : sModel.getValuesetMap().get("2")) {
 						// TODO update value set binding export
-						//refValuesetId = m.getValuesetBinding().getValuesetId();
+					  
+					  if (m.getValuesetBinding() != null && m.getValuesetBinding().getValueSets() != null && m.getValuesetBinding().getValueSets().size() == 1) {
+					    refValuesetId = m.getValuesetBinding().getValueSets().get(0);
+					  }
 					}
 				}
 				if (refValuesetId != null) {
