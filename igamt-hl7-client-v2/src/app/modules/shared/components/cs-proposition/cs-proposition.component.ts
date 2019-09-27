@@ -10,7 +10,7 @@ import { AssertionMode, IComplement, IPath, ISimpleAssertion, ISubject } from '.
 import { IResource } from '../../models/resource.interface';
 import { Hl7V2TreeService } from '../../services/hl7-v2-tree.service';
 import { AResourceRepositoryService } from '../../services/resource-repository.service';
-import { ICardinalityRange } from '../hl7-v2-tree/hl7-v2-tree.component';
+import { ICardinalityRange, IHL7v2TreeNode } from '../hl7-v2-tree/hl7-v2-tree.component';
 
 @Component({
   selector: 'app-cs-proposition',

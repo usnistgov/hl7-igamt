@@ -67,17 +67,17 @@ export enum PropositionType {
 }
 
 export enum ComparativeType {
-  IDENTICAL = 'c-identical',
-  EARLIER = 'c-earlier',
-  EARLIER_EQUIVALENT = 'c-earlier-equivalent',
-  TRUNCATED_EARLIER = 'c-truncated-earlier',
-  TRUNCATED_EARLIER_EQUIVALENT = 'c-truncated-earlier-equivalent',
-  EQUIVALENT = 'c-equivalent',
-  TRUNCATED_EQUIVALENT = 'c-truncated-equivalent',
-  EQUIVALENT_LATER = 'c-equivalent-later',
-  LATER = 'c-later',
-  TRUNCATED_EQUIVALENT_LATER = 'c-truncated-equivalent-later',
-  TRUNCATED_LATER = 'c-truncated-later',
+  IDENTICAL = 'cIdentical',
+  EARLIER = 'cEarlier',
+  EARLIER_EQUIVALENT = 'cEarlierEquivalent',
+  TRUNCATED_EARLIER = 'cTruncatedEarlier',
+  TRUNCATED_EARLIER_EQUIVALENT = 'cTruncatedEarlierEquivalent',
+  EQUIVALENT = 'cEquivalent',
+  TRUNCATED_EQUIVALENT = 'cTruncatedEquivalent',
+  EQUIVALENT_LATER = 'cEquivalentLater',
+  LATER = 'cLater',
+  TRUNCATED_EQUIVALENT_LATER = 'cTruncatedEquivalentLater',
+  TRUNCATED_LATER = 'cTruncatedLater',
 }
 
 export enum StatementType {
