@@ -12,6 +12,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
 import { SegmentService } from '../../services/segment.service';
+import {FroalaService} from '../../../shared/services/froala.service';
 
 @Component({
   selector: 'app-metadata-editor',
@@ -24,12 +25,12 @@ export class MetadataEditorComponent extends ResourceMetadataEditorComponent imp
     protected actions$: Actions,
     messageService: MessageService,
     protected store: Store<any>,
-    protected segmentService: SegmentService) {
+    protected segmentService: SegmentService, froalaService: FroalaService) {
     super({
       id: EditorID.SEGMENT_METADATA,
       title: 'Metadata',
       resourceType: Type.SEGMENT,
-    }, actions$, messageService, store);
+    }, actions$, messageService, store, froalaService);
   }
 
   save(changes: IChange[]): Observable<Message<any>> {

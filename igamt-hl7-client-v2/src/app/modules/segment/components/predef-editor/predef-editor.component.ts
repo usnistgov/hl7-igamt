@@ -14,6 +14,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
 import { SegmentService } from '../../services/segment.service';
+import {FroalaService} from "../../../shared/services/froala.service";
 
 @Component({
   selector: 'app-predef-editor',
@@ -29,14 +30,14 @@ export class PredefEditorComponent extends DefinitionEditorComponent implements 
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private segmentService: SegmentService) {
+    private segmentService: SegmentService, froalaService: FroalaService) {
     super({
       id: EditorID.PREDEF,
       resourceType: Type.SEGMENT,
       title: 'Pre-definition',
     },
       PropertyType.PREDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

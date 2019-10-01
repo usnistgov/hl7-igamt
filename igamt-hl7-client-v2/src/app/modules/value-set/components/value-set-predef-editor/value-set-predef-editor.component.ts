@@ -16,6 +16,7 @@ import {IDisplayElement} from '../../../shared/models/display-element.interface'
 import {EditorID} from '../../../shared/models/editor.enum';
 import {ChangeType, PropertyType} from '../../../shared/models/save-change';
 import {ValueSetService} from '../../service/value-set.service';
+import {FroalaService} from "../../../shared/services/froala.service";
 
 @Component({
   selector: 'app-value-set-predef-editor',
@@ -31,14 +32,14 @@ export class ValueSetPredefEditorComponent extends DefinitionEditorComponent imp
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private valueSetService: ValueSetService) {
+    private valueSetService: ValueSetService, froalaService: FroalaService) {
     super({
         id: EditorID.PREDEF,
         resourceType: Type.VALUESET,
         title: 'Pre-definition',
       },
       PropertyType.PREDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

@@ -10,6 +10,7 @@ import { EditorSave } from '../../../../root-store/ig/ig-edit/ig-edit.actions';
 import { AbstractEditorComponent } from '../../../core/components/abstract-editor-component/abstract-editor-component.component';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
+import {FroalaService} from '../../../shared/services/froala.service';
 
 export interface IConformanceProfileEditMetadata {
   name: string;
@@ -38,6 +39,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
 
   conformanceProfileMetadata: Observable<IConformanceProfileEditMetadata>;
   formGroup: FormGroup;
+  froalaConfig: Observable<any>;
   typeOptions = [
     {
       label: 'HL7',
@@ -72,6 +74,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
     protected actions$: Actions,
     protected formBuilder: FormBuilder,
     protected store: Store<any>,
+    private froalaService: FroalaService,
   ) {
     super({
       id: EditorID.MESSAGE_METADATA,
@@ -82,6 +85,7 @@ export class MetadataEditorComponent extends AbstractEditorComponent implements 
       store,
     );
     this.conformanceProfileMetadata = this.currentSynchronized$;
+    this.froalaConfig = this.froalaService.getConfig();
 
     this.s_workspace = this.currentSynchronized$.pipe(
       tap((metadata: IConformanceProfileEditMetadata) => {

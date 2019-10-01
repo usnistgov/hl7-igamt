@@ -13,6 +13,7 @@ import {Type} from '../../../shared/constants/type.enum';
 import {IDisplayElement} from '../../../shared/models/display-element.interface';
 import {EditorID} from '../../../shared/models/editor.enum';
 import {IChange} from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import {ValueSetService} from '../../service/value-set.service';
 
 @Component({
@@ -26,7 +27,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
     store: Store<fromIgEdit.IState>,
     actions$: Actions,
     private valueSetService: ValueSetService,
-    messageService: MessageService) {
+    messageService: MessageService, froalaService: FroalaService) {
     super(
       {
         id: EditorID.VALUESET_METADATA,
@@ -36,6 +37,7 @@ export class ValueSetMetadataEditorComponent extends ResourceMetadataEditorCompo
       actions$,
       messageService,
       store,
+      froalaService,
     );
     const authorNotes = 'Author notes';
     const usageNotes = 'Usage notes';

@@ -14,6 +14,7 @@ import { IDisplayElement } from '../../../shared/models/display-element.interfac
 import { EditorID } from '../../../shared/models/editor.enum';
 import { ChangeType, PropertyType } from '../../../shared/models/save-change';
 import { SegmentService } from '../../services/segment.service';
+import {FroalaService} from "../../../shared/services/froala.service";
 
 @Component({
   selector: 'app-predef-editor',
@@ -29,14 +30,14 @@ export class PostdefEditorComponent extends DefinitionEditorComponent implements
     actions$: Actions,
     store: Store<any>,
     messageService: MessageService,
-    private segmentService: SegmentService) {
+    private segmentService: SegmentService, froalaService: FroalaService) {
     super({
       id: EditorID.POSTDEF,
       resourceType: Type.SEGMENT,
       title: 'Post-definition',
     },
       PropertyType.PREDEF,
-      actions$, store, messageService);
+      actions$, store, messageService, froalaService);
   }
 
   saveChange(elementId: string, igId: string, value: any, old: any, property: PropertyType): Observable<Action> {

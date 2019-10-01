@@ -12,6 +12,7 @@ import { Type } from '../../../shared/constants/type.enum';
 import { IDisplayElement } from '../../../shared/models/display-element.interface';
 import { EditorID } from '../../../shared/models/editor.enum';
 import { IChange } from '../../../shared/models/save-change';
+import {FroalaService} from '../../../shared/services/froala.service';
 import { DatatypeService } from '../../services/datatype.service';
 
 @Component({
@@ -25,7 +26,7 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
     store: Store<fromIgEdit.IState>,
     actions$: Actions,
     private datatypeService: DatatypeService,
-    messageService: MessageService) {
+    messageService: MessageService, froalaService: FroalaService) {
     super(
       {
         id: EditorID.DATATYPE_METADATA,
@@ -35,6 +36,7 @@ export class MetadataEditComponent extends ResourceMetadataEditorComponent imple
       actions$,
       messageService,
       store,
+      froalaService,
     );
   }
 
